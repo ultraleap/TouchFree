@@ -1,0 +1,105 @@
+﻿using UnityEngine;
+
+public class PinchGrabCursor : Cursor
+{
+    [Header("Graphics")]
+    public UnityEngine.UI.Image cursorDot;
+    public UnityEngine.UI.Image cursorDotFill;
+
+    protected float cursorDotSize;
+    protected Color dotFillColor;
+    protected Color dotBorderColor;
+
+    private bool leftHanded;
+
+    [Header("HandGraphics")]
+    public UnityEngine.UI.Image openHandImage;
+    public UnityEngine.UI.Image closedHandImage;
+
+    protected override void OnHandleInputAction(InputActionData _inputData)
+    {
+        InputType _type = _inputData.Type;
+        Vector2 _cursorPosition = _inputData.CursorPosition;
+        Vector2 _clickPosition = _inputData.ClickPosition;
+        float _distanceFromScreen = _inputData.ProgressToClick;
+        
+        switch (_type)
+        {
+            case InputType.MOVE:
+                UpdateCursor(_cursorPosition, _distanceFromScreen);
+                break;
+            case InputType.DOWN:
+            case InputType.HOLD:
+                openHandImage.enabled = false;
+                closedHandImage.enabled = true;
+                break;
+
+            case InputType.DRAG:
+                openHandImage.enabled = false;
+                closedHandImage.enabled = true;
+                break;
+
+            case InputType.UP:
+            case InputType.HOVER:
+            case InputType.CANCEL:
+                openHandImage.enabled = true;
+                closedHandImage.enabled = false;
+                break;
+
+            case InputType.SETLEFT:
+                if (!leftHanded)
+                {
+                    cursorDot.transform.Rotate(0f, 180f, 0f);
+                    leftHanded = true;
+                }
+                break;
+            case InputType.SETRIGHT:
+                if (leftHanded)
+                {
+                    cursorDot.transform.Rotate(0f, 180f, 0f);
+                    leftHanded = false;
+                }
+                break;
+        }
+    }
+
+    protected override void OnConfigUpdated()
+    {
+        dotFillColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
+        dotBorderColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
+
+        openHandImage.color = ReachUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+        closedHandImage.color = ReachUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+
+        cursorDot.color = dotBorderColor;
+        cursorDotFill.color = dotFillColor;
+
+        cursorDotSize = (GlobalSettings.ScreenHeight / PhysicalConfigurable.Config.ScreenHeightM) * SettingsConfig.Config.CursorDotSizeM / 100f;
+        var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
+        cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
+        cursorDot.enabled = !dotSizeIsZero;
+
+        if(!hidingCursor)
+        {
+            cursorDot.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
+        }    
+    }
+
+    public override void ShowCursor()
+    {
+        base.ShowCursor();
+        cursorDot.enabled = true;
+        cursorDotFill.enabled = true;
+        openHandImage.enabled = true;
+        closedHandImage.enabled = true;
+    }
+
+    public override void HideCursor()
+    {
+        base.HideCursor();
+        cursorDot.enabled = false;
+        cursorDotFill.enabled = false;
+        openHandImage.enabled = false;
+        closedHandImage.enabled = false;
+    }
+}
