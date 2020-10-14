@@ -57,11 +57,11 @@ public abstract class ConfigUI : MonoBehaviour
 
         if(_convertToDisplayUnits)
         {
-            val = ReachUtility.ToDisplayUnits(val);
+            val = ScreenControlUtility.ToDisplayUnits(val);
         }
         else if(_convertToStorageUnits)
         {
-            val = ReachUtility.FromDisplayUnits(val);
+            val = ScreenControlUtility.FromDisplayUnits(val);
         }
 
         return val;

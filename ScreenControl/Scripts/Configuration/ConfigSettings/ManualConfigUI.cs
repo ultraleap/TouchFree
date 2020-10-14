@@ -30,17 +30,17 @@ public class ManualConfigUI : ConfigUI
     void InitialiseUI()
     {
         PhysicalScreenTiltAngleSlider.minValue = PhysicalConfigurable.ScreenTilt_Min;
-        ScreenHeightSlider.minValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.ScreenHeight_Min);
-        TrackingOriginXSlider.minValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginX_Min);
-        TrackingOriginYSlider.minValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginY_Min);
-        TrackingOriginZSlider.minValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginZ_Min);
+        ScreenHeightSlider.minValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.ScreenHeight_Min);
+        TrackingOriginXSlider.minValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginX_Min);
+        TrackingOriginYSlider.minValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginY_Min);
+        TrackingOriginZSlider.minValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginZ_Min);
         TrackingRotationXSlider.minValue = PhysicalConfigurable.TrackingRoation_Min;
 
         PhysicalScreenTiltAngleSlider.maxValue = PhysicalConfigurable.ScreenTilt_Max;
-        ScreenHeightSlider.maxValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.ScreenHeight_Max);
-        TrackingOriginXSlider.maxValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginX_Max);
-        TrackingOriginYSlider.maxValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginY_Max);
-        TrackingOriginZSlider.maxValue = ReachUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginZ_Max);
+        ScreenHeightSlider.maxValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.ScreenHeight_Max);
+        TrackingOriginXSlider.maxValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginX_Max);
+        TrackingOriginYSlider.maxValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginY_Max);
+        TrackingOriginZSlider.maxValue = ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.TrackingOriginZ_Max);
         TrackingRotationXSlider.maxValue = PhysicalConfigurable.TrackingRoation_Max;
     }
 
@@ -81,18 +81,18 @@ public class ManualConfigUI : ConfigUI
     protected override void LoadConfigValuesIntoFields()
     {
         PhysicalScreenTiltAngle.SetTextWithoutNotify(PhysicalConfigurable.Config.ScreenRotationD.ToString("##0.0"));
-        ScreenHeight.SetTextWithoutNotify(ReachUtility.ToDisplayUnits(PhysicalConfigurable.Config.ScreenHeightM).ToString("#0.00#"));
-        TrackingOriginX.SetTextWithoutNotify(ReachUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.x).ToString("#0.00#"));
-        TrackingOriginY.SetTextWithoutNotify(ReachUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y).ToString("#0.00#"));
-        TrackingOriginZ.SetTextWithoutNotify(ReachUtility.ToDisplayUnits(-PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.z).ToString("#0.00#"));
+        ScreenHeight.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.Config.ScreenHeightM).ToString("#0.00#"));
+        TrackingOriginX.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.x).ToString("#0.00#"));
+        TrackingOriginY.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y).ToString("#0.00#"));
+        TrackingOriginZ.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(-PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.z).ToString("#0.00#"));
         TrackingRotationX.SetTextWithoutNotify(PhysicalConfigurable.Config.LeapRotationD.x.ToString("##0.0"));
 
         var bottomMount = Mathf.Approximately(PhysicalConfigurable.Config.LeapRotationD.z, 0f);
         PhysicalScreenTiltAngleSlider.SetValueWithoutNotify(PhysicalConfigurable.Config.ScreenRotationD);
-        ScreenHeightSlider.SetValueWithoutNotify(ReachUtility.ToDisplayUnits(PhysicalConfigurable.Config.ScreenHeightM));
-        TrackingOriginXSlider.SetValueWithoutNotify(ReachUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.x));
-        TrackingOriginYSlider.SetValueWithoutNotify(ReachUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y));
-        TrackingOriginZSlider.SetValueWithoutNotify(ReachUtility.ToDisplayUnits(-PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.z));
+        ScreenHeightSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.Config.ScreenHeightM));
+        TrackingOriginXSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.x));
+        TrackingOriginYSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y));
+        TrackingOriginZSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(-PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.z));
         TrackingRotationXSlider.SetValueWithoutNotify(PhysicalConfigurable.Config.LeapRotationD.x);
     }
 

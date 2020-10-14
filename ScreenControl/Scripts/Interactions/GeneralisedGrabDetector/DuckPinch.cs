@@ -22,7 +22,7 @@ public class DuckPinch : MonoBehaviour
                 return 1;
             }
 
-            float duckPinchStrength = ReachUtility.MapRangeToRange(metric, pinchActivateDistance, strengthZeroDistance, 1, 0);
+            float duckPinchStrength = ScreenControlUtility.MapRangeToRange(metric, pinchActivateDistance, strengthZeroDistance, 1, 0);
             duckPinchStrength = Mathf.Clamp(duckPinchStrength, 0, 1);
             return duckPinchStrength;        
         } 

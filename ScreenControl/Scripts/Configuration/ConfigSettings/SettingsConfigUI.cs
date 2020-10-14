@@ -109,18 +109,18 @@ public class SettingsConfigUI : ConfigUI
 
     void InitialiseUI()
     {
-        cursorDotSizeSlider.minValue = ReachUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Min);
-        cursorDotSizeSlider.maxValue = ReachUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Max);
+        cursorDotSizeSlider.minValue = ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Min);
+        cursorDotSizeSlider.maxValue = ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Max);
         cursorMaxRingScaleSlider.minValue = SettingsConfig.CursorRingMaxScale_Min;
         cursorMaxRingScaleSlider.maxValue = SettingsConfig.CursorRingMaxScale_Max;
-        cursorMaxRingScaleAtDistanceSlider.minValue = ReachUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Min);
-        cursorMaxRingScaleAtDistanceSlider.maxValue = ReachUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Max);
+        cursorMaxRingScaleAtDistanceSlider.minValue = ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Min);
+        cursorMaxRingScaleAtDistanceSlider.maxValue = ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Max);
 
         cursorDeadzoneSlider.minValue = SettingsConfig.CursorDeadzone_Min;
         cursorDeadzoneSlider.maxValue = SettingsConfig.CursorDeadzone_Max;
 
-        cursorVerticalOffsetSlider.minValue = ReachUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Min);
-        cursorVerticalOffsetSlider.maxValue = ReachUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Max);
+        cursorVerticalOffsetSlider.minValue = ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Min);
+        cursorVerticalOffsetSlider.maxValue = ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Max);
 
         HoverCursorStartTimeSlider.minValue = SettingsConfig.HoverCursorStartTime_Min;
         HoverCursorStartTimeSlider.maxValue = SettingsConfig.HoverCursorStartTime_Max;
@@ -283,12 +283,12 @@ public class SettingsConfigUI : ConfigUI
         resolutionWidth.text = Screen.currentResolution.width.ToString();
         resolutionHeight.text = Screen.currentResolution.height.ToString();
 
-        cursorDotSize.SetTextWithoutNotify(ReachUtility.ToDisplayUnits(SettingsConfig.Config.CursorDotSizeM).ToString("#0.00#"));
-        cursorDotSizeSlider.SetValueWithoutNotify(ReachUtility.ToDisplayUnits(SettingsConfig.Config.CursorDotSizeM));
+        cursorDotSize.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(SettingsConfig.Config.CursorDotSizeM).ToString("#0.00#"));
+        cursorDotSizeSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(SettingsConfig.Config.CursorDotSizeM));
         cursorMaxRingScale.SetTextWithoutNotify(SettingsConfig.Config.CursorRingMaxScale.ToString("#0.00#"));
         cursorMaxRingScaleSlider.SetValueWithoutNotify(SettingsConfig.Config.CursorRingMaxScale);
-        cursorMaxRingScaleAtDistance.SetTextWithoutNotify(ReachUtility.ToDisplayUnits(SettingsConfig.Config.CursorMaxRingScaleAtDistanceM).ToString("#0.00#"));
-        cursorMaxRingScaleAtDistanceSlider.SetValueWithoutNotify(ReachUtility.ToDisplayUnits(SettingsConfig.Config.CursorMaxRingScaleAtDistanceM));
+        cursorMaxRingScaleAtDistance.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(SettingsConfig.Config.CursorMaxRingScaleAtDistanceM).ToString("#0.00#"));
+        cursorMaxRingScaleAtDistanceSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(SettingsConfig.Config.CursorMaxRingScaleAtDistanceM));
         scrollingOrDraggingTog.SetIsOnWithoutNotify(SettingsConfig.Config.UseScrollingOrDragging);
         setupOnStartup.SetIsOnWithoutNotify(SettingsConfig.Config.ShowSetupScreenOnStartup);
         sendHoverEventsTog.SetIsOnWithoutNotify(SettingsConfig.Config.SendHoverEvents);
@@ -301,8 +301,8 @@ public class SettingsConfigUI : ConfigUI
         cursorDotBorderOpacity.SetValueWithoutNotify(SettingsConfig.Config.CursorDotBorderOpacity);
 
         cursorDeadzoneSlider.SetValueWithoutNotify(SettingsConfig.Config.DeadzoneRadius);
-        cursorVerticalOffset.SetTextWithoutNotify(ReachUtility.ToDisplayUnits(SettingsConfig.Config.CursorVerticalOffset).ToString("#0.00#"));
-        cursorVerticalOffsetSlider.SetValueWithoutNotify(ReachUtility.ToDisplayUnits(SettingsConfig.Config.CursorVerticalOffset));
+        cursorVerticalOffset.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(SettingsConfig.Config.CursorVerticalOffset).ToString("#0.00#"));
+        cursorVerticalOffsetSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(SettingsConfig.Config.CursorVerticalOffset));
 
         HoverCursorStartTime.SetTextWithoutNotify(SettingsConfig.Config.HoverCursorStartTimeS.ToString("#0.00#"));
         HoverCursorStartTimeSlider.SetValueWithoutNotify(SettingsConfig.Config.HoverCursorStartTimeS);
@@ -424,7 +424,7 @@ public class SettingsConfigUI : ConfigUI
 
     protected override void ValidateValues()
     {
-        var dotSize = Mathf.Clamp(cursorDotSizeSlider.value, ReachUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Min), ReachUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Max));
+        var dotSize = Mathf.Clamp(cursorDotSizeSlider.value, ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Min), ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorDotSize_Max));
         cursorDotSizeSlider.SetValueWithoutNotify(dotSize);
         cursorDotSize.SetTextWithoutNotify(dotSize.ToString("#0.00#"));
 
@@ -432,14 +432,14 @@ public class SettingsConfigUI : ConfigUI
         cursorMaxRingScaleSlider.SetValueWithoutNotify(ringScale);
         cursorMaxRingScale.SetTextWithoutNotify(ringScale.ToString("#0.00#"));
 
-        var maxDistance = Mathf.Clamp(cursorMaxRingScaleAtDistanceSlider.value, ReachUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Min), ReachUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Max));
+        var maxDistance = Mathf.Clamp(cursorMaxRingScaleAtDistanceSlider.value, ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Min), ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorMaxRingScaleAtDistance_Max));
         cursorMaxRingScaleAtDistanceSlider.SetValueWithoutNotify(maxDistance);
         cursorMaxRingScaleAtDistance.SetTextWithoutNotify(maxDistance.ToString("#0.00#"));
 
         var deadzoneRadius = Mathf.Clamp(cursorDeadzoneSlider.value, SettingsConfig.CursorDeadzone_Min, SettingsConfig.CursorDeadzone_Max);
         cursorDeadzoneSlider.SetValueWithoutNotify(deadzoneRadius);
 
-        var verticalOffset = Mathf.Clamp(cursorVerticalOffsetSlider.value, ReachUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Min), ReachUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Max));
+        var verticalOffset = Mathf.Clamp(cursorVerticalOffsetSlider.value, ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Min), ScreenControlUtility.ToDisplayUnits(SettingsConfig.CursorVerticalOffset_Max));
         cursorVerticalOffsetSlider.SetValueWithoutNotify(verticalOffset);
         cursorVerticalOffset.SetTextWithoutNotify(verticalOffset.ToString("#0.00#"));
 
@@ -590,9 +590,9 @@ public class SettingsConfigUI : ConfigUI
 
     void DisplayCursorPreview()
     {
-        var dotFillColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
-        var dotBorderColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
-        var ringColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+        var dotFillColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
+        var dotBorderColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
+        var ringColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
 
         pushCursorPreview.SetActive(false);
         grabCursorPreview.SetActive(false);

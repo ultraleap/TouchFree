@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ReachUtility
+public static class ScreenControlUtility
 {
     public static float MapRangeToRange(float _value, float _oldMin, float _oldMax, float _newMin, float _newMax)
     {

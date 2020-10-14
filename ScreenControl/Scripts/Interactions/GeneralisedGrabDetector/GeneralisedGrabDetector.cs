@@ -146,12 +146,12 @@ public class GeneralisedGrabDetector : MonoBehaviour
         if (grabbing)
         {
             grabbing = (pinchStrength >= unpinchThreshold);
-            GeneralisedGrabStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, unpinchThreshold), 0, unpinchThreshold, 0, 1);
+            GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, unpinchThreshold), 0, unpinchThreshold, 0, 1);
         }
         else
         {
             grabbing = (pinchStrength >= pinchThreshold);
-            GeneralisedGrabStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
+            GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
         }
     }
 
@@ -161,12 +161,12 @@ public class GeneralisedGrabDetector : MonoBehaviour
         if (grabbing)
         {
             grabbing = (grabStrength >= ungrabThreshold);
-            GeneralisedGrabStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, ungrabThreshold), 0, ungrabThreshold, 0, 1);
+            GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, ungrabThreshold), 0, ungrabThreshold, 0, 1);
         }
         else
         {
             grabbing = (grabStrength >= grabThreshold);
-            GeneralisedGrabStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
+            GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
         }
     }
 
@@ -194,8 +194,8 @@ public class GeneralisedGrabDetector : MonoBehaviour
         }
         else
         {
-            float normalisedPinchStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
-            float normalisedGrabStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
+            float normalisedPinchStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
+            float normalisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
 
             GeneralisedGrabStrength = Mathf.Max(normalisedPinchStrength, normalisedGrabStrength);
         }
@@ -209,14 +209,14 @@ public class GeneralisedGrabDetector : MonoBehaviour
         if (grabbing)
         {
             grabbing = combinedStrength >= combinedUngrabThreshold;
-            GeneralisedGrabStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(combinedStrength, 0, combinedUngrabThreshold), 0, combinedUngrabThreshold, 0, 1);
+            GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(combinedStrength, 0, combinedUngrabThreshold), 0, combinedUngrabThreshold, 0, 1);
         }
         else
         {
             grabbing = (pinchStrength == pinchThreshold) && (combinedStrength >= combinedGrabThreshold);
             float clampedCombinedStrength = Mathf.Clamp(combinedStrength, 0, combinedGrabThreshold);
 
-            GeneralisedGrabStrength = ReachUtility.MapRangeToRange(Mathf.Clamp(clampedCombinedStrength + pinchStrength, 0, combinedGrabThreshold + pinchThreshold), 0, clampedCombinedStrength + pinchThreshold, 0, 1);
+            GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(clampedCombinedStrength + pinchStrength, 0, combinedGrabThreshold + pinchThreshold), 0, clampedCombinedStrength + pinchThreshold, 0, 1);
         }
 
     }

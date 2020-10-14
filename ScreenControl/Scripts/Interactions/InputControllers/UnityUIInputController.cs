@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// A class for dealing with Unity UI interactions based on Reach inputs.
+/// A class for dealing with Unity UI interactions based on ScreenControl inputs.
 /// </summary>
 public class UnityUIInputController : InputController
 {

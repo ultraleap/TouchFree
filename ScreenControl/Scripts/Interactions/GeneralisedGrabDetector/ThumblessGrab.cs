@@ -75,7 +75,7 @@ public class ThumblessGrab : MonoBehaviour
     {
         float handAngle = GetAngle(hand);
         float clampedHandAngle = Mathf.Clamp(handAngle, clickAngle, 180);
-        GrabStrength = ReachUtility.MapRangeToRange(clampedHandAngle, clickAngle, 180, 1, 0);
+        GrabStrength = ScreenControlUtility.MapRangeToRange(clampedHandAngle, clickAngle, 180, 1, 0);
 
         return handAngle < clickAngle;
     }
