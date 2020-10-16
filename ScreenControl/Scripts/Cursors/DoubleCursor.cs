@@ -97,9 +97,9 @@ public class DoubleCursor : Cursor
 
     protected override void OnConfigUpdated()
     {
-        dotFillColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
-        dotBorderColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
-        ringColor = ReachUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+        dotFillColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
+        dotBorderColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
+        ringColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
 
         cursorDot.color = dotBorderColor;
         cursorDotFill.color = dotFillColor;
@@ -132,7 +132,7 @@ public class DoubleCursor : Cursor
         {
             yield return yieldInstruction;
             elapsedTime += Time.deltaTime;
-            float scale = ReachUtility.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+            float scale = ScreenControlUtility.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
             SetCursorDotLocalScale(scale);
         }
 
@@ -150,7 +150,7 @@ public class DoubleCursor : Cursor
         {
             yield return yieldInstruction;
             elapsedTime += Time.deltaTime;
-            float scale = ReachUtility.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+            float scale = ScreenControlUtility.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
             SetCursorDotLocalScale(scale);
         }
 

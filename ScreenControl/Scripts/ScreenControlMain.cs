@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-public class ReachMain
+public class ScreenControlMain
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    public static void Reach_Main()
+    public static void ScreenControl_Main()
     {
         GlobalSettings.ScreenWidth = Display.main.systemWidth;
         GlobalSettings.ScreenHeight = Display.main.systemHeight;

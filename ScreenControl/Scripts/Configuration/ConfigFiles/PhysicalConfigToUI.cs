@@ -26,8 +26,8 @@ public class PhysicalConfigToUI : MonoBehaviour
     private void Update()
     {
         // side-on view
-        float sideLeapPosX = ReachUtility.MapRangeToRange(-PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.z, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, sideonScreen.sizeDelta.y);
-        float sideLeapPosY = ReachUtility.MapRangeToRange(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, sideonScreen.sizeDelta.y);
+        float sideLeapPosX = ScreenControlUtility.MapRangeToRange(-PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.z, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, sideonScreen.sizeDelta.y);
+        float sideLeapPosY = ScreenControlUtility.MapRangeToRange(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, sideonScreen.sizeDelta.y);
 
         sideonScreen.localRotation = Quaternion.Euler(0, 0, PhysicalConfigurable.Config.ScreenRotationD);
 
@@ -51,8 +51,8 @@ public class PhysicalConfigToUI : MonoBehaviour
             frontonScreen.sizeDelta = new Vector2(dynamicScreenSizePX * aspectRatio, dynamicScreenSizePX);
         }
 
-        float frontLeapPosX = ReachUtility.MapRangeToRange(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.x, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, frontonScreen.sizeDelta.y);
-        float frontLeapPosY = ReachUtility.MapRangeToRange(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, frontonScreen.sizeDelta.y);
+        float frontLeapPosX = ScreenControlUtility.MapRangeToRange(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.x, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, frontonScreen.sizeDelta.y);
+        float frontLeapPosY = ScreenControlUtility.MapRangeToRange(PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.y, 0, PhysicalConfigurable.Config.ScreenHeightM, 0, frontonScreen.sizeDelta.y);
 
         frontonLeap.localPosition = frontonScreen.localPosition + new Vector3(frontLeapPosX, (-frontonScreen.sizeDelta.y / 2) + frontLeapPosY, 0);
         frontonLeap.localRotation = Quaternion.Euler(0, 0, PhysicalConfigurable.Config.LeapRotationD.z);

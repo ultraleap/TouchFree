@@ -49,8 +49,8 @@ public class PinchGrabLineCursor : DotCursor
         UpdateLineRenderers(0f);
         SetLineRendererWidthScale(1);
 
-        Color fillColour = ReachUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
-        Color borderColour = ReachUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
+        Color fillColour = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+        Color borderColour = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
 
         Gradient gradient = new Gradient();
         gradient.SetKeys(
@@ -123,7 +123,7 @@ public class PinchGrabLineCursor : DotCursor
         {
             yield return yieldInstruction;
             elapsedTime += Time.deltaTime;
-            float scale = ReachUtility.MapRangeToRange(lineGrowCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
+            float scale = ScreenControlUtility.MapRangeToRange(lineGrowCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
             SetLineRendererWidthScale(scale);
         }
 
@@ -139,7 +139,7 @@ public class PinchGrabLineCursor : DotCursor
         {
             yield return yieldInstruction;
             elapsedTime += Time.deltaTime;
-            float scale = ReachUtility.MapRangeToRange(lineShrinkCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
+            float scale = ScreenControlUtility.MapRangeToRange(lineShrinkCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
             SetLineRendererWidthScale(scale);
         }
 
@@ -173,7 +173,7 @@ public class PinchGrabLineCursor : DotCursor
     {
         float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
         float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
-        float currentCircleOffsetRadius = ReachUtility.MapRangeToRange(radiusScale.Evaluate(_grabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
+        float currentCircleOffsetRadius = ScreenControlUtility.MapRangeToRange(radiusScale.Evaluate(_grabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
 
         Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(cursorTransform.anchoredPosition);
 
@@ -233,7 +233,7 @@ public class PinchGrabLineCursor : DotCursor
             float arcAngle = (cursorChirality == HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
             float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
             float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
-            float currentCircleOffsetRadius = ReachUtility.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
+            float currentCircleOffsetRadius = ScreenControlUtility.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
             float finalOffsetRadius = arcMidpointRadius / 2;
 
             Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(_targetPos);

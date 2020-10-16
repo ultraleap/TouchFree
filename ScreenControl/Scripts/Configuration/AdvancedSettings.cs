@@ -6,8 +6,8 @@ using System.IO;
 [DefaultExecutionOrder(-10)]
 public class AdvancedSettings : MonoBehaviour
 {
-    [Tooltip("Used to destroy all Reach elements if Reach is 'Disabled'. The GameObject containing this Component should be last in the Array.")]
-    public GameObject[] reachGameobjects;
+    [Tooltip("Used to destroy all ScreenControl elements if ScreenControl is 'Disabled'. The GameObject containing this Component should be last in the Array.")]
+    public GameObject[] screenControlGameobjects;
 
     private void Awake()
     {
@@ -24,9 +24,9 @@ public class AdvancedSettings : MonoBehaviour
     {
         string[] lines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, "AdvancedSettings.txt"));
 
-        if (_fileText.Contains("Disable Reach"))
+        if (_fileText.Contains("Disable ScreenControl"))
         {
-            foreach (var go in reachGameobjects)
+            foreach (var go in screenControlGameobjects)
             {
                 Destroy(go);
             }
