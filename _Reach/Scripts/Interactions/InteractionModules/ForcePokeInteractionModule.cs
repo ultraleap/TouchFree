@@ -85,9 +85,9 @@ public class ForcePokeInteractionModule : InteractionModule
     public bool logData = false;
     public DataLogger dataLogger;
 
-    void Update()
+    protected override void UpdateData(Leap.Hand hand)
     {
-        if (SingleHandManager.Instance.CurrentHand == null)
+        if (hand == null)
         {
             handLastSeen = false;
             appliedForce = 0f;
@@ -102,22 +102,18 @@ public class ForcePokeInteractionModule : InteractionModule
             return;
         }
 
-        positions = positioningModule.CalculatePositions();
+        positions = positioningModule.CalculatePositions(hand);
 
-        HandleInteractionsForcePoke();
+        HandleInteractionsForcePoke(hand);
     }
 
-    private void HandleInteractionsForcePoke()
+    private void HandleInteractionsForcePoke(Leap.Hand hand)
     {
-        long frameId = SingleHandManager.Instance.CurrentHand.FrameId;
-        long currentTimestamp = SingleHandManager.Instance.GetTimestamp();
+        long currentTimestamp = latestTimestamp;
 
-        Vector3 cursorPosition = positions.CursorPosition;
-        Vector3 clickPosition = positions.ClickPosition;
-        float distanceFromScreen = cursorPosition.z;
-
-        Vector2 cursorPosition2D = cursorPosition;
-        Vector2 clickPosition2D = clickPosition;
+        Vector2 cursorPosition = positions.CursorPosition;
+        Vector2 clickPosition = positions.ClickPosition;
+        float distanceFromScreen = positions.DistanceFromScreen;
 
         /**
             Update the hand-appeared cooldown timer if needed.
@@ -147,7 +143,7 @@ public class ForcePokeInteractionModule : InteractionModule
             float dz = (-1f) * (distanceFromScreen - previousScreenDistance);   // Metres +ve = towards screen
             float currentVelocity = dz / dt;    // m/s
 
-            Vector2 dPerpPx = cursorPosition2D - previousScreenPos;
+            Vector2 dPerpPx = cursorPosition - previousScreenPos;
             Vector2 dPerp = GlobalSettings.virtualScreen.PixelsToMeters(dPerpPx);
 
             // Update AppliedForce, which is the crux of the ForcePoke algorithm
@@ -178,28 +174,27 @@ public class ForcePokeInteractionModule : InteractionModule
             }
 
             // Calculate the positions to use for events
-            Vector2 clickInputPos;
-            Vector2 cursorInputPos;
+            Positions eventPositions = new Positions(Vector2.zero, Vector2.zero, distanceFromScreen);
             if (pressing && ignoreDragging && clampOnPress)
             {
-                clickInputPos = clickPressPosition;
-                cursorInputPos = cursorPressPosition;
+                eventPositions.ClickPosition = clickPressPosition;
+                eventPositions.CursorPosition = cursorPressPosition;
             }
             else
             {
-                clickInputPos = clickPosition2D;
-                cursorInputPos = cursorPosition2D;
+                eventPositions.ClickPosition = clickPosition;
+                eventPositions.CursorPosition = cursorPosition;
             }
 
             // Send the move event
-            SendInputAction(InputType.MOVE, cursorInputPos, clickInputPos, appliedForce);
+            SendInputAction(InputType.MOVE, eventPositions, appliedForce);
 
             // Determine whether to send any other events
             if (pressing)
             {
                 if (requireHold)
                 {
-                    SendInputAction(InputType.HOLD, cursorInputPos, clickInputPos, appliedForce);
+                    SendInputAction(InputType.HOLD, eventPositions, appliedForce);
                     requireHold = false;
                 }
                 else if (appliedForce < unclickThreshold || ignoreDragging)
@@ -208,27 +203,27 @@ public class ForcePokeInteractionModule : InteractionModule
                     isDragging = false;
                     cursorPressPosition = Vector2.zero;
                     clickPressPosition = Vector2.zero;
-                    SendInputAction(InputType.UP, cursorInputPos, clickInputPos, appliedForce);
+                    SendInputAction(InputType.UP, eventPositions, appliedForce);
                 }
                 else
                 {
                     if (isDragging)
                     {
-                        if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, cursorPosition2D))
+                        if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, cursorPosition))
                         {
                             positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, dragDeadzoneShrinkRate);
                             dragDeadzoneShrinkTriggered = true;
                         }
-                        SendInputAction(InputType.DRAG, cursorInputPos, clickInputPos, appliedForce);
+                        SendInputAction(InputType.DRAG, eventPositions, appliedForce);
                     }
                     else
                     {
-                        if (!ignoreDragging && CheckForStartDrag(cursorPressPosition, cursorPosition2D))
+                        if (!ignoreDragging && CheckForStartDrag(cursorPressPosition, cursorPosition))
                         {
                             isDragging = true;
                             dragDeadzoneShrinkTriggered = false;
                         }
-                        SendInputAction(InputType.HOLD, cursorInputPos, clickInputPos, appliedForce);
+                        SendInputAction(InputType.HOLD, eventPositions, appliedForce);
                     }
 
                 }
@@ -239,9 +234,9 @@ public class ForcePokeInteractionModule : InteractionModule
                 // when ignoring dragging and moving past the touch-plane.
 
                 pressing = true;
-                SendInputAction(InputType.DOWN, cursorInputPos, clickInputPos, appliedForce);
-                cursorPressPosition = cursorPosition2D;
-                clickPressPosition = clickPosition2D;
+                SendInputAction(InputType.DOWN, eventPositions, appliedForce);
+                cursorPressPosition = cursorPosition;
+                clickPressPosition = clickPosition;
 
                 // If dragging is off, we want to decay the force after a click back to the unclick threshold
                 if (decayForceOnClick && ignoreDragging)
@@ -255,7 +250,7 @@ public class ForcePokeInteractionModule : InteractionModule
             }
             else if (allowHover)
             {
-                SendInputAction(InputType.HOVER, cursorInputPos, clickInputPos, appliedForce);
+                SendInputAction(InputType.HOVER, eventPositions, appliedForce);
             }
             
             if (decayingForce && (appliedForce <= decayThreshold))
@@ -267,10 +262,10 @@ public class ForcePokeInteractionModule : InteractionModule
         else
         {
             // If ignoring clicks, just move horizontally
-            SendInputAction(InputType.MOVE, cursorPosition2D, clickPosition2D, 0f);
+            SendInputAction(InputType.MOVE, positions, 0f);
             if (allowHover)
             {
-                SendInputAction(InputType.HOVER, cursorPosition2D, clickPosition2D, 0f);
+                SendInputAction(InputType.HOVER, positions, 0f);
             }
             
         }
@@ -278,7 +273,7 @@ public class ForcePokeInteractionModule : InteractionModule
         // Update stored variables
         previousTime = currentTimestamp;
         previousScreenDistance = distanceFromScreen;
-        previousScreenPos = cursorPosition2D;
+        previousScreenPos = cursorPosition;
     }
     
     private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)

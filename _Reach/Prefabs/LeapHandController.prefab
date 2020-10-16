@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 626407472998123009}
   - component: {fileID: 626407472988217775}
-  - component: {fileID: 626407472998030613}
+  - component: {fileID: 1150082351714812467}
   m_Layer: 0
   m_Name: LeapHandController
   m_TagString: Untagged
@@ -49,7 +49,7 @@ MonoBehaviour:
   _physicsExtrapolation: 1
   _physicsExtrapolationTime: 0.011111111
   _workerThreadProfiling: 0
---- !u!114 &626407472998030613
+--- !u!114 &1150082351714812467
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,7 +58,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 626407472997864609}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb42e6fe0dc3cde4d835a1f281d9dde0, type: 3}
+  m_Script: {fileID: 11500000, guid: 25a149d59df7da2498514f9d3185d89d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useTrackingTransform: 1

@@ -1,5 +1,94 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2581891099264974723
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7706505561840765875}
+  - component: {fileID: 1209870512470156362}
+  - component: {fileID: 6387090419489200927}
+  m_Layer: 0
+  m_Name: PositioningUtils
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7706505561840765875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2581891099264974723}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5911777841778895747}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1209870512470156362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2581891099264974723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9e47a1ec703b9429c6c4da5ef8ba27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultDeadzoneRadius: 0.003
+  smoothingRate: 10
+  characteristicVelocity: 0.4
+  internalShrinkFactor: 2
+  deadzoneDistanceScaling:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0.11026442
+      outSlope: 0.11026442
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.09752045
+    - serializedVersion: 3
+      time: 1
+      value: 0.0021362305
+      inSlope: -1.386103
+      outSlope: -1.386103
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.07603401
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &6387090419489200927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2581891099264974723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05b6162ca2df24d47a4834d3d90e47ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  snapRadius: 0.1
+  maxDistance: 0.15
+  drawDebug: 0
+  snapMultiplier: 2
+  DistanceFromScreen: 0
 --- !u!1 &2617924628657150453
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,6 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5f12ce61472896499eed99452844f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackedHand: 0
   ignoreDragging: 0
   positioningModule: {fileID: 5708286018089953508}
   allowHover: 0
@@ -129,8 +219,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackedPosition: 0
   snappingMode: 0
-  colliderSnapper: {fileID: 4291941769757008427}
-  Stabiliser: {fileID: 5804944440246156063}
+  positioningUtils: {fileID: 2581891099264974723}
+  cursorSnapper: {fileID: 0}
+  Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
 --- !u!1 &2996853500264389869
 GameObject:
@@ -175,7 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e351ecb5aeea0c940bf66f29f39a7ade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionModule1: {fileID: 5911777843180374401}
+  InteractionModule1: {fileID: 5753121179731557265}
   InteractionModule2: {fileID: 331447746348606392}
   CursorCanvas: {fileID: 0}
   CursorPrefab: {fileID: 8804999213985922253, guid: 0da6e4d9faaf7eb439049bab14824de4,
@@ -196,6 +287,7 @@ GameObject:
   - component: {fileID: 3248838697595763544}
   - component: {fileID: 2786537557668511009}
   - component: {fileID: 78395782643248394}
+  - component: {fileID: 6525808913197999352}
   - component: {fileID: 833158614815339978}
   m_Layer: 0
   m_Name: PinchGrabPose_InteractionModule
@@ -230,6 +322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197404bf835d2b34eb83aff7f7a8e8e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackedHand: 0
   ignoreDragging: 0
   positioningModule: {fileID: 833158614815339978}
   allowHover: 0
@@ -257,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9110eefa74ca91f40842a69510f1437d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabAlgorithm: 8
+  grabAlgorithm: 10
   minGrabDuration: 0
   pinchThreshold: 1
   unpinchThreshold: 0.85
@@ -269,6 +362,7 @@ MonoBehaviour:
   thumblessGrab: {fileID: 3248838697595763544}
   duckPinch: {fileID: 2786537557668511009}
   pokePose: {fileID: 78395782643248394}
+  physicsGrab: {fileID: 6525808913197999352}
   pinchStrength: 0
   grabStrength: 0
   fistStrength: 0
@@ -343,6 +437,25 @@ MonoBehaviour:
   pokePoseThreshold: 0.4
   unPokePoseThreshold: 0.2
   inPose: 0
+--- !u!114 &6525808913197999352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3045357794578251532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6c1e666a1fa897438b8c16e3d865fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useDeadzone: 1
+  handMetricDeadzoneSize: 0.05
+  maxStiffness: 10
+  useVelocityThresholds: 1
+  triggerVelocityThreshold: 1
+  untriggerVelocityThreshold: 0.001
+  physicsMetric: 1
 --- !u!114 &833158614815339978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -357,8 +470,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackedPosition: 1
   snappingMode: 0
-  colliderSnapper: {fileID: 4291941769757008427}
-  Stabiliser: {fileID: 5804944440246156063}
+  positioningUtils: {fileID: 2581891099264974723}
+  cursorSnapper: {fileID: 0}
+  Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
 --- !u!1 &4362153883051029045
 GameObject:
@@ -417,8 +531,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5911777841778895747}
-  - component: {fileID: 5804944440246156063}
-  - component: {fileID: 4291941769757008427}
+  - component: {fileID: 9062216370926254001}
   m_Layer: 0
   m_Name: InteractionModules
   m_TagString: Untagged
@@ -443,10 +556,11 @@ Transform:
   - {fileID: 1786229057116414747}
   - {fileID: 5835186274816555738}
   - {fileID: 4985490534904435494}
+  - {fileID: 7706505561840765875}
   m_Father: {fileID: 5911777842215055681}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5804944440246156063
+--- !u!114 &9062216370926254001
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -455,54 +569,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5911777841778895746}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d9e47a1ec703b9429c6c4da5ef8ba27, type: 3}
+  m_Script: {fileID: 11500000, guid: 88b8de0764e3e6c4a971a5f3e023b607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultDeadzoneRadius: 0.003
-  smoothingRate: 10
-  characteristicVelocity: 0.4
-  internalShrinkFactor: 2
-  deadzoneDistanceScaling:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0.11026442
-      outSlope: 0.11026442
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.09752045
-    - serializedVersion: 3
-      time: 1
-      value: 0.0021362305
-      inSlope: -1.386103
-      outSlope: -1.386103
-      tangentMode: 5
-      weightedMode: 0
-      inWeight: 0.07603401
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
---- !u!114 &4291941769757008427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5911777841778895746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3decbfbba5e9acb4a82a13f0aaa0872d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  snapRadius: 0.1
-  maxDistance: 0.15
-  drawDebug: 0
-  snapMultiplier: 2
-  DistanceFromScreen: 0
 --- !u!1 &5911777842215055679
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,7 +581,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5911777842215055681}
-  - component: {fileID: 5911777842215055680}
   m_Layer: 0
   m_Name: ReachInteractionManager
   m_TagString: Untagged
@@ -536,18 +604,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5911777842215055680
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5911777842215055679}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b8de0764e3e6c4a971a5f3e023b607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5911777842941858530
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,6 +696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f39b03cf8d879e942a2aa8b50f2ac1e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackedHand: 0
   ignoreDragging: 0
   positioningModule: {fileID: 7622779136161741294}
   allowHover: 0
@@ -678,8 +735,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackedPosition: 0
   snappingMode: 0
-  colliderSnapper: {fileID: 4291941769757008427}
-  Stabiliser: {fileID: 5804944440246156063}
+  positioningUtils: {fileID: 2581891099264974723}
+  cursorSnapper: {fileID: 0}
+  Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
 --- !u!1 &5911777843306443419
 GameObject:
@@ -764,6 +822,7 @@ Transform:
   - {fileID: 6958899455892350802}
   - {fileID: 4608511133525060928}
   - {fileID: 8454733564757725450}
+  - {fileID: 3016649785688105489}
   m_Father: {fileID: 5911777842215055681}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -793,7 +852,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5911777843642849154}
   - component: {fileID: 5911777843642849155}
-  - component: {fileID: 1278608838522089029}
   - component: {fileID: 3899536540166993890}
   m_Layer: 0
   m_Name: OneToOne_InteractionModule
@@ -828,29 +886,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a5a1385cb462ca44a2fa1747f83a105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackedHand: 0
   ignoreDragging: 0
   positioningModule: {fileID: 3899536540166993890}
   allowHover: 0
   dragStartDistanceThresholdM: 0.04
   dragStartTimeDelaySecs: 0.6
   dragLerpSpeed: 10
---- !u!114 &1278608838522089029
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5911777843642849153}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3decbfbba5e9acb4a82a13f0aaa0872d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  snapRadius: 0.1
-  maxDistance: 0.15
-  drawDebug: 1
-  snapMultiplier: 2
-  DistanceFromScreen: 0
 --- !u!114 &3899536540166993890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -865,9 +907,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackedPosition: 0
   snappingMode: 0
-  colliderSnapper: {fileID: 4291941769757008427}
-  Stabiliser: {fileID: 5804944440246156063}
+  positioningUtils: {fileID: 2581891099264974723}
+  cursorSnapper: {fileID: 0}
+  Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
+--- !u!1 &6436637774942388277
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3016649785688105489}
+  - component: {fileID: 7731582729168041765}
+  m_Layer: 0
+  m_Name: TwoHandGrab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3016649785688105489
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6436637774942388277}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5911777843625613743}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7731582729168041765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6436637774942388277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5c59baf965a6fa42974a5c5dedbf65a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OneHandInteractionModule: {fileID: 331447746348606392}
 --- !u!1 &6491336837799979747
 GameObject:
   m_ObjectHideFlags: 0
@@ -914,8 +1001,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackedPosition: 0
   snappingMode: 0
-  colliderSnapper: {fileID: 4291941769757008427}
-  Stabiliser: {fileID: 5804944440246156063}
+  positioningUtils: {fileID: 2581891099264974723}
+  cursorSnapper: {fileID: 0}
+  Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
 --- !u!114 &5753121179731557265
 MonoBehaviour:
@@ -929,6 +1017,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195c01a09afb90d4fb44a1539453c90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackedHand: 0
   ignoreDragging: 0
   positioningModule: {fileID: 7253266500062961542}
   allowHover: 0
@@ -990,7 +1079,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8769813109315976327}
   - component: {fileID: 6851401205992118527}
-  - component: {fileID: 6084614775730981227}
   - component: {fileID: 8849672003008706658}
   m_Layer: 0
   m_Name: BitePointPush_InteractionModule
@@ -1025,6 +1113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f6ff28918bdad74a8204a46f227a061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackedHand: 0
   ignoreDragging: 0
   positioningModule: {fileID: 8849672003008706658}
   allowHover: 0
@@ -1036,23 +1125,6 @@ MonoBehaviour:
   dragStartDistanceThresholdM: 0.04
   dragStartTimeDelaySecs: 0.6
   dragLerpSpeed: 10
---- !u!114 &6084614775730981227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7382882657641699984}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3decbfbba5e9acb4a82a13f0aaa0872d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  snapRadius: 0.1
-  maxDistance: 0.15
-  drawDebug: 1
-  snapMultiplier: 2
-  DistanceFromScreen: 0
 --- !u!114 &8849672003008706658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1067,8 +1139,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackedPosition: 0
   snappingMode: 0
-  colliderSnapper: {fileID: 4291941769757008427}
-  Stabiliser: {fileID: 5804944440246156063}
+  positioningUtils: {fileID: 2581891099264974723}
+  cursorSnapper: {fileID: 0}
+  Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
 --- !u!1 &7577625936678580990
 GameObject:

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using System;
+
 
 public enum InteractionType
 {
@@ -8,23 +10,69 @@ public enum InteractionType
     Grab,
     Hover,
 }
+public enum TrackedHand
+{
+    PRIMARY,    // The current tracked hand
+    LEFT,
+    RIGHT
+}
 
 public class InteractionModule : MonoBehaviour
 {
     public virtual InteractionType InteractionType {get;} = InteractionType.Undefined;
+
+    public TrackedHand trackedHand;
+
     public bool ignoreDragging;
     public PositioningModule positioningModule;
     public bool allowHover;
 
-    public delegate void InputAction(InputActionData _inputData);
+    public delegate void InputAction(TrackedHand trackedHand, InputActionData _inputData);
     public static event InputAction HandleInputAction;
 
     protected Positions positions;
 
-    protected void SendInputAction(InputType _type, Vector2 _cursorPosition, Vector2 _clickPosition, float _distanceFromScreen)
+    private HandChirality handChirality = HandChirality.UNKNOWN;
+
+    protected long latestTimestamp;
+
+
+    void Update()
     {
-        InputActionData actionData = new InputActionData(InteractionType, _type, _cursorPosition, _clickPosition, _distanceFromScreen);
-        HandleInputAction?.Invoke(actionData);
+        // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
+
+        latestTimestamp = HandManager.Instance.Timestamp;
+
+        switch (trackedHand)
+        {
+            case TrackedHand.PRIMARY:
+                Leap.Hand hand = HandManager.Instance.PrimaryHand;
+                if (hand != null)
+                {
+                    handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
+                }
+                // If the hand == null, keep the stored chirality.
+                UpdateData(hand);
+                break;
+            case TrackedHand.LEFT:
+                handChirality = HandChirality.LEFT;
+                UpdateData(HandManager.Instance.LeftHand);
+                break;
+            case TrackedHand.RIGHT:
+                handChirality = HandChirality.RIGHT;
+                UpdateData(HandManager.Instance.RightHand);
+                break;
+        }
+
+    }
+
+    // This is the main update loop of the interaction module
+    protected virtual void UpdateData(Leap.Hand hand) { }
+
+    protected void SendInputAction(InputType _type, Positions _positions, float _progressToClick)
+    {
+        InputActionData actionData = new InputActionData(latestTimestamp, InteractionType, handChirality, _type, _positions, _progressToClick);
+        HandleInputAction?.Invoke(trackedHand, actionData);
     }
 
     protected virtual void OnEnable()
@@ -44,6 +92,6 @@ public class InteractionModule : MonoBehaviour
     {
         ignoreDragging = !SettingsConfig.Config.UseScrollingOrDragging;
         allowHover = SettingsConfig.Config.SendHoverEvents;
-        positioningModule.Stabiliser.defaultDeadzoneRadius = SettingsConfig.Config.DeadzoneRadius;
+//        positioningModule.Stabiliser.defaultDeadzoneRadius = SettingsConfig.Config.DeadzoneRadius;
     }
 }

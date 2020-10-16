@@ -238,6 +238,11 @@ PrefabInstance:
       propertyPath: CursorCanvas
       value: 
       objectReference: {fileID: 965707893730264107}
+    - target: {fileID: 5540594237627293175, guid: e08a0f516f973834ea585fb53fdd54f9,
+        type: 3}
+      propertyPath: CursorCanvas
+      value: 
+      objectReference: {fileID: 965707893730264107}
     - target: {fileID: 5911777842215055679, guid: e08a0f516f973834ea585fb53fdd54f9,
         type: 3}
       propertyPath: m_Name
@@ -304,6 +309,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 965707893730264107}
     - target: {fileID: 8458558753266193409, guid: e08a0f516f973834ea585fb53fdd54f9,
+        type: 3}
+      propertyPath: CursorCanvas
+      value: 
+      objectReference: {fileID: 965707893730264107}
+    - target: {fileID: 9026570291173270246, guid: e08a0f516f973834ea585fb53fdd54f9,
         type: 3}
       propertyPath: CursorCanvas
       value: 

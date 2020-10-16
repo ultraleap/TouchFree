@@ -39,7 +39,7 @@ public class WelcomeScreen : MonoBehaviour
             return;
         }
 
-        if (SingleHandManager.Instance.IsLeapServiceConnected())
+        if (HandManager.Instance.IsLeapServiceConnected())
         {
             // show service is connected
             if (!lastFrameServiceConnected)

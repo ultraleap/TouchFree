@@ -10,7 +10,7 @@ public class PinchGrabCursor : Cursor
     protected Color dotFillColor;
     protected Color dotBorderColor;
 
-    private bool leftHanded;
+    private HandChirality cursorChirality = HandChirality.RIGHT;
 
     [Header("HandGraphics")]
     public UnityEngine.UI.Image openHandImage;
@@ -22,6 +22,12 @@ public class PinchGrabCursor : Cursor
         Vector2 _cursorPosition = _inputData.CursorPosition;
         Vector2 _clickPosition = _inputData.ClickPosition;
         float _distanceFromScreen = _inputData.ProgressToClick;
+
+        if(_inputData.Chirality != cursorChirality && _inputData.Chirality != HandChirality.UNKNOWN)
+        {
+            cursorDot.transform.Rotate(0f, 180f, 0f);
+            cursorChirality = _inputData.Chirality;
+        }
         
         switch (_type)
         {
@@ -44,21 +50,6 @@ public class PinchGrabCursor : Cursor
             case InputType.CANCEL:
                 openHandImage.enabled = true;
                 closedHandImage.enabled = false;
-                break;
-
-            case InputType.SETLEFT:
-                if (!leftHanded)
-                {
-                    cursorDot.transform.Rotate(0f, 180f, 0f);
-                    leftHanded = true;
-                }
-                break;
-            case InputType.SETRIGHT:
-                if (leftHanded)
-                {
-                    cursorDot.transform.Rotate(0f, 180f, 0f);
-                    leftHanded = false;
-                }
                 break;
         }
     }

@@ -45,17 +45,17 @@ public class BitePointPushInteractionModule : InteractionModule
     private Stopwatch dragStartTimer = new Stopwatch();
     private Coroutine coolDownHand;
 
-    void Update()
+    protected override void UpdateData(Leap.Hand hand)
     {
         if (!InteractionEnabled)
         {
             return;
         }
 
-        if (SingleHandManager.Instance.CurrentHand == null)
+        if (hand == null)
         {
             hadHandLastFrame = false;
-            SendInputAction(InputType.CANCEL, Vector2.zero, Vector2.zero, 1);
+            SendInputAction(InputType.CANCEL, new Positions(), 0);
             pressing = false;
             handCoolDown = true;
             if (coolDownHand != null) StopCoroutine(coolDownHand);
@@ -65,16 +65,18 @@ public class BitePointPushInteractionModule : InteractionModule
 
         if (!hadHandLastFrame)
         {
-            prevWorldPos = SingleHandManager.Instance.GetTrackedPointingJoint();
+            prevWorldPos = positioningModule.GetTrackedPointingJoint(hand);
             prevScreenPos = GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(prevWorldPos, out _);
             hadHandLastFrame = true;
             coolDownHand = StartCoroutine(CoolDownHand());
         }
 
-        positions = positioningModule.CalculatePositions();
+        positions = positioningModule.CalculatePositions(hand);
 
-        float distanceFromScreen = positions.CursorPosition.z;
-        float timestamp = SingleHandManager.Instance.CurrentHand.TimeVisible * 1000f;
+        float distanceFromScreen = positions.DistanceFromScreen;
+
+        // TODO: Use InteractionModule.Timestamp instead
+        float timestamp = hand.TimeVisible * 1000f;
 
         var screenPosM = GlobalSettings.virtualScreen.PixelsToMeters(positions.CursorPosition);
         if (!handCoolDown) UpdateCachedPositions(timestamp, screenPosM, distanceFromScreen);
@@ -85,7 +87,7 @@ public class BitePointPushInteractionModule : InteractionModule
     private void HandleInteractions()
     {
 
-        float distanceFromScreen = positions.CursorPosition.z;
+        float distanceFromScreen = positions.DistanceFromScreen;
         Vector2 currentPos = positions.CursorPosition;
         Vector2 clickPos = positions.ClickPosition;
 
@@ -98,14 +100,14 @@ public class BitePointPushInteractionModule : InteractionModule
 
         // Send relevant actions based on current progress and previous state.
 
-        SendInputAction(InputType.MOVE, currentPos, clickPos, progressToPush);
+        SendInputAction(InputType.MOVE, positions, progressToPush);
 
         if (distanceFromScreen < touchPlanePosition)
         {
             // we are touching the screen
             if (!pressing)
             {
-                SendInputAction(InputType.DOWN, currentPos, clickPos, progressToPush);
+                SendInputAction(InputType.DOWN, positions, progressToPush);
                 downPos = currentPos;
                 posLastFrame = currentPos;
                 dragStartTimer.Restart();
@@ -121,27 +123,31 @@ public class BitePointPushInteractionModule : InteractionModule
                     // after entering the drag state.
                     var pos = Vector2.Lerp(posLastFrame, currentPos, 10f * Time.deltaTime);
                     posLastFrame = pos;
-                    SendInputAction(InputType.DRAG, pos, pos, progressToPush);
+
+                    Positions lerpedPositions = new Positions(pos, pos, distanceFromScreen);
+                    SendInputAction(InputType.DRAG, lerpedPositions, progressToPush);
                 }
                 else
                 {
                     // Do an instant touch up to select a button instantly.
                     if (ignoreDragging && performInstantClick)
                     {
+                        Positions clickDownPositions = new Positions(downPos, downPos, distanceFromScreen);
                         if (instantClickHoldFrame)
                         {
-                            SendInputAction(InputType.HOLD, downPos, downPos, progressToPush);
+                            SendInputAction(InputType.HOLD, clickDownPositions, progressToPush);
                             instantClickHoldFrame = false;
                         }
                         else
                         {
-                            SendInputAction(InputType.UP, downPos, downPos, progressToPush);
+                            SendInputAction(InputType.UP, clickDownPositions, progressToPush);
                             performInstantClick = false;
                         }
                     }
                     else if (!ignoreDragging)
                     {
-                        SendInputAction(InputType.HOLD, downPos, clickPos, distanceFromScreen);
+                        Positions draggingPositions = new Positions(downPos, clickPos, distanceFromScreen);
+                        SendInputAction(InputType.HOLD, draggingPositions, progressToPush);
                         if (CheckForStartDrag(downPos, currentPos))
                         {
                             isDragging = true;
@@ -157,7 +163,7 @@ public class BitePointPushInteractionModule : InteractionModule
             {
                 if (!ignoreDragging)
                 {
-                    SendInputAction(InputType.UP, currentPos, clickPos, progressToPush);
+                    SendInputAction(InputType.UP, positions, progressToPush);
                 }
 
                 pressing = false;
@@ -165,7 +171,7 @@ public class BitePointPushInteractionModule : InteractionModule
 
             if (allowHover)
             {
-                SendInputAction(InputType.HOVER, currentPos, clickPos, progressToPush);
+                SendInputAction(InputType.HOVER, positions, progressToPush);
             }
             isDragging = false;
         }

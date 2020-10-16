@@ -91,27 +91,23 @@ public class PokeToInvokeInteractionModule : InteractionModule
     // Internal deadcone params
     float pokeGestureRecognisedDistance = 0f;
 
-    void Update()
+    protected override void UpdateData(Leap.Hand hand)
     {
-        if (SingleHandManager.Instance.CurrentHand == null || !InteractionEnabled)
+        if (hand == null || !InteractionEnabled)
         {
             return;
         }
 
-        positions = positioningModule.CalculatePositions();
+        positions = positioningModule.CalculatePositions(hand);
 
-        Vector3 cursorPosition = positions.CursorPosition;
-        float distanceFromScreen = cursorPosition.z;
-
-        HandleInputForwardToClick(cursorPosition, distanceFromScreen);
+        HandleInputForwardToClick();
     }
 
-    private void HandleInputForwardToClick(Vector2 cursorPosition, float distanceFromScreen)
+    private void HandleInputForwardToClick()
     {
-        Vector3 clickPosition = positions.ClickPosition;
-        SendInputAction(InputType.MOVE, cursorPosition, clickPosition, distanceFromScreen);
+        SendInputAction(InputType.MOVE, positions, 0f);
 
-        Tuple<DateTime, float, Vector2> currentPosition = new Tuple<DateTime, float, Vector2>(DateTime.Now, distanceFromScreen, cursorPosition);
+        Tuple<DateTime, float, Vector2> currentPosition = new Tuple<DateTime, float, Vector2>(DateTime.Now, positions.DistanceFromScreen, positions.CursorPosition);
         previousPositions.Enqueue(currentPosition);
         if (previousPositions.Count <= 1)
         {
@@ -145,7 +141,7 @@ public class PokeToInvokeInteractionModule : InteractionModule
         }
 
 
-        if (distanceFromScreen > maxDistance)
+        if (positions.DistanceFromScreen > maxDistance)
         {
             isDragging = false;
             handLastSeen = false;
@@ -189,7 +185,7 @@ public class PokeToInvokeInteractionModule : InteractionModule
             {
                 // Increase deadzone radius
                 float defaultDeadzoneSize = positioningModule.Stabiliser.defaultDeadzoneRadius;
-                float distanceSincePokeBegan = Mathf.Abs(distanceFromScreen - pokeGestureRecognisedDistance);
+                float distanceSincePokeBegan = Mathf.Abs(positions.DistanceFromScreen - pokeGestureRecognisedDistance);
                 float enlargedDeadZoneSize = defaultDeadzoneSize + deadconeEnglargementRatio * distanceSincePokeBegan;
                 float maxSize = deadconeMaxSizeIncrease + defaultDeadzoneSize;
                 float newDeadzoneSize = Mathf.Min(enlargedDeadZoneSize, maxSize);
@@ -221,22 +217,22 @@ public class PokeToInvokeInteractionModule : InteractionModule
 
                     // Begin expanding deadzone
                     positioningModule.Stabiliser.StopShrinkingDeadzone();
-                    pokeGestureRecognisedDistance = distanceFromScreen;
+                    pokeGestureRecognisedDistance = positions.DistanceFromScreen;
                     positioningModule.Stabiliser.SetCurrentDeadzoneRadius(positioningModule.Stabiliser.defaultDeadzoneRadius);
                 }
             }
             if (toClick)
             {
-                SendInputAction(InputType.DOWN, cursorPosition, clickPosition, distanceFromScreen);
+                SendInputAction(InputType.DOWN, positions, 0f);
                 interactionState = InteractionState.PRESSING;
-                downPos = cursorPosition;
+                downPos = positions.CursorPosition;
                 isDragging = false;
                 heldFrames = 0; // for instant-unclick
                 dragStartTimer.Restart();
             }
             else if (allowHover)
             {
-                SendInputAction(InputType.HOVER, cursorPosition, clickPosition, distanceFromScreen);
+                SendInputAction(InputType.HOVER, positions, 0f);
             }
         }
         else if (interactionState == InteractionState.PRESSING)
@@ -268,7 +264,7 @@ public class PokeToInvokeInteractionModule : InteractionModule
                 interactionState = InteractionState.HOVERING;
                 isDragging = false;
                 clickCooldownTimer.Restart();
-                SendInputAction(InputType.UP, cursorPosition, clickPosition, distanceFromScreen);
+                SendInputAction(InputType.UP, positions, 0f);
             }
             else
             {
@@ -279,16 +275,17 @@ public class PokeToInvokeInteractionModule : InteractionModule
                         positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, dragDeadzoneShrinkRate);
                         dragDeadzoneShrinkTriggered = true;
                     }
-                    SendInputAction(InputType.DRAG, cursorPosition, clickPosition, distanceFromScreen);
+                    SendInputAction(InputType.DRAG, positions, 0f);
                 }
                 else
                 {
+                    Positions downPositions = new Positions(downPos, positions.ClickPosition, positions.DistanceFromScreen);
                     if (!ignoreDragging)
                     {
                         isDragging = CheckForStartDrag(downPos, currentPosition.Item3);
                         dragDeadzoneShrinkTriggered = false;
                     }
-                    SendInputAction(InputType.HOLD, downPos, clickPosition, distanceFromScreen);
+                    SendInputAction(InputType.HOLD, downPositions, 0f);
                 }
             }
         }

@@ -48,7 +48,7 @@ public class DuckPinch : MonoBehaviour
         return grabbing;
     }
 
-    private float DuckPinchMetric(Leap.Hand hand)
+    public static float DuckPinchDistance(Leap.Hand hand)
     {
         Vector3 thumbDistal = hand.GetThumb().bones[3].PrevJoint.ToVector3();
         Vector3 thumbTip = hand.GetThumb().TipPosition.ToVector3();
@@ -98,9 +98,14 @@ public class DuckPinch : MonoBehaviour
         float middleMetric = SegmentDisplacement.SegmentToSegmentDistance(middleMetacarpal, middleTip, thumbDistal, thumbTip);
         float ringMetric = SegmentDisplacement.SegmentToSegmentDistance(ringMetacarpal, ringTip, thumbDistal, thumbTip);
         
-        float wipMetric = (indexMetric + middleMetric + ringMetric) / (3.0f);
+        float averageDistance = (indexMetric + middleMetric + ringMetric) / (3.0f);
+        return averageDistance;
+    }
+
+    private float DuckPinchMetric(Leap.Hand hand)
+    {
+        float wipMetric = DuckPinchDistance(hand);
         metric = Mathf.Max(0f, wipMetric - 0.01f);
-   
         return metric;
     }
 

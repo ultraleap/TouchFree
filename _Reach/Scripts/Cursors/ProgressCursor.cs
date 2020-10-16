@@ -33,23 +33,15 @@ public class ProgressCursor : Cursor
 
     protected bool shrunk = false;
 
-    private ProgressTimer progressTimer;
 
     public AnimationCurve ringFillCurve;
 
-    void Start()
-    {
-        progressTimer = FindObjectOfType<ProgressTimer>();
-    }
-
-    public override void UpdateCursor(Vector2 screenPos, float distanceFromScreen)
+    public override void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
         _targetPos = screenPos;
 
-        float progress = progressTimer.Progress;
-
-        cursorProgressFill.fillAmount = ringFillCurve.Evaluate(progress);
-        cursorProgressBorder.fillAmount = ringFillCurve.Evaluate(progress);
+        cursorProgressFill.fillAmount = ringFillCurve.Evaluate(progressToClick);
+        cursorProgressBorder.fillAmount = ringFillCurve.Evaluate(progressToClick);
 
         if (ringEnabled)
         {
@@ -69,12 +61,11 @@ public class ProgressCursor : Cursor
         InputType _type = _inputData.Type;
         Vector2 _cursorPosition = _inputData.CursorPosition;
         Vector2 _clickPosition = _inputData.ClickPosition;
-        float _distanceFromScreen = _inputData.ProgressToClick;
         
         switch (_type)
         {
             case InputType.MOVE:
-                UpdateCursor(_cursorPosition, _distanceFromScreen);
+                UpdateCursor(_cursorPosition, _inputData.ProgressToClick);
                 break;
             case InputType.DOWN:
                 if (!shrunk)
