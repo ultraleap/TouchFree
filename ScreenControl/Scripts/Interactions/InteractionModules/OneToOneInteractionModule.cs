@@ -30,11 +30,11 @@ public class OneToOneInteractionModule : InteractionModule
     private bool isDragging;
     private Stopwatch dragStartTimer = new Stopwatch();
 
-    void Update()
+    protected override void UpdateData(Leap.Hand hand)
     {
-        if (SingleHandManager.Instance.CurrentHand == null)
+        if (hand == null)
         {
-            SendInputAction(InputType.CANCEL, Vector2.zero, Vector2.zero, 1);
+            SendInputAction(InputType.CANCEL, new Positions(), 0);
             pressing = false;
             return;
         }
@@ -44,21 +44,20 @@ public class OneToOneInteractionModule : InteractionModule
             return;
         }
 
-        positions = positioningModule.CalculatePositions();
-        float distanceFromScreen = positions.CursorPosition.z;
-        positioningModule.Stabiliser.ScaleDeadzoneByDistance(distanceFromScreen);
-
-        HandleInteractions(distanceFromScreen);
+        positions = positioningModule.CalculatePositions(hand);
+        positioningModule.Stabiliser.ScaleDeadzoneByDistance(positions.DistanceFromScreen);
+        HandleInteractions();
     }
 
-    private void HandleInteractions(float distanceFromScreen)
+    private void HandleInteractions()
     {
-        Vector3 currentCursorPosition = positions.CursorPosition;
-        Vector3 clickPosition = positions.ClickPosition;
+        Vector2 currentCursorPosition = positions.CursorPosition;
+        Vector2 clickPosition = positions.ClickPosition;
+        float distanceFromScreen = positions.DistanceFromScreen;
 
         float progressToClick = 1f - Mathf.InverseLerp(screenDistanceAtMaxProgress, screenDistanceAtNoProgress, distanceFromScreen);
 
-        SendInputAction(InputType.MOVE, currentCursorPosition, clickPosition, progressToClick);
+        SendInputAction(InputType.MOVE, positions, progressToClick);
 
         // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
         if (distanceFromScreen < 0f)
@@ -66,7 +65,7 @@ public class OneToOneInteractionModule : InteractionModule
             // we are touching the screen
             if (!pressing)
             {
-                SendInputAction(InputType.DOWN, currentCursorPosition, clickPosition, progressToClick);
+                SendInputAction(InputType.DOWN, positions, progressToClick);
 
                 downPos = currentCursorPosition;
                 posLastFrame = currentCursorPosition;
@@ -83,21 +82,23 @@ public class OneToOneInteractionModule : InteractionModule
                     // after entering the drag state.
                     Vector2 pos = Vector2.Lerp(posLastFrame, currentCursorPosition, 10f * Time.deltaTime);
                     posLastFrame = pos;
-                    SendInputAction(InputType.DRAG, pos, clickPosition, progressToClick);
+                    Positions dragPositions = new Positions(pos, clickPosition, distanceFromScreen);
+                    SendInputAction(InputType.DRAG, dragPositions, progressToClick);
                 }
                 else
                 {
+                    Positions downPositions = new Positions(downPos, clickPosition, distanceFromScreen);
                     // Do an instant touch up to select a button instantly.
                     if (ignoreDragging && performInstantClick)
                     {
                         if (instantClickHoldFrame)
                         {
-                            SendInputAction(InputType.HOLD, downPos, clickPosition, progressToClick);
+                            SendInputAction(InputType.HOLD, downPositions, progressToClick);
                             instantClickHoldFrame = false;
                         }
                         else
                         {
-                            SendInputAction(InputType.UP, downPos, clickPosition, progressToClick);
+                            SendInputAction(InputType.UP, downPositions, progressToClick);
                             performInstantClick = false;
                         }
                     }
@@ -105,7 +106,7 @@ public class OneToOneInteractionModule : InteractionModule
                     {
                         if (!ignoreDragging)
                         {
-                            SendInputAction(InputType.HOLD, downPos, clickPosition, progressToClick);
+                            SendInputAction(InputType.HOLD, downPositions, progressToClick);
                         }
                         // Lock in to the touch down position until dragging occurs.
                         if (!ignoreDragging && CheckForStartDrag(downPos, currentCursorPosition))
@@ -123,7 +124,7 @@ public class OneToOneInteractionModule : InteractionModule
             {
                 if (!ignoreDragging)
                 {
-                    SendInputAction(InputType.UP, currentCursorPosition, clickPosition, progressToClick);
+                    SendInputAction(InputType.UP, positions, progressToClick);
                 }
 
                 pressing = false;
@@ -131,7 +132,7 @@ public class OneToOneInteractionModule : InteractionModule
 
             if (allowHover)
             {
-                SendInputAction(InputType.HOVER, currentCursorPosition, clickPosition, progressToClick);
+                SendInputAction(InputType.HOVER, positions, progressToClick);
             }
 
             isDragging = false;

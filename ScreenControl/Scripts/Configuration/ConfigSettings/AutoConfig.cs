@@ -19,7 +19,7 @@ public class AutoConfig : MonoBehaviour
         topPosM = Vector3.zero;
         step1.SetActive(true);
         step2.SetActive(false);
-        SingleHandManager.Instance.useTrackingTransform = false;
+        HandManager.Instance.useTrackingTransform = false;
         ConfigurationSetupController.SetCursorVisual(false);
         DisplayTrackingLost(false);
     }
@@ -31,9 +31,9 @@ public class AutoConfig : MonoBehaviour
         {
             if (bottomPosM == Vector3.zero)
             {
-                if (SingleHandManager.Instance.CurrentHand != null)
+                if (HandManager.Instance.PrimaryHand != null)
                 {
-                    SetBottomPos(SingleHandManager.Instance.CurrentHand.GetIndex().TipPosition.ToVector3());
+                    SetBottomPos(HandManager.Instance.PrimaryHand.GetIndex().TipPosition.ToVector3());
                     // display second autoconfig screen
                     step1.SetActive(false);
                     step2.SetActive(true);
@@ -46,9 +46,9 @@ public class AutoConfig : MonoBehaviour
             }
             else if (topPosM == Vector3.zero)
             {
-                if (SingleHandManager.Instance.CurrentHand != null)
+                if (HandManager.Instance.PrimaryHand != null)
                 {
-                    SetTopPos(SingleHandManager.Instance.CurrentHand.GetIndex().TipPosition.ToVector3());
+                    SetTopPos(HandManager.Instance.PrimaryHand.GetIndex().TipPosition.ToVector3());
                     CompleteAutoConfig(bottomPosM, topPosM);
                 }
                 else

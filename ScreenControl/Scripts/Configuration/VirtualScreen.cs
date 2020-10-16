@@ -127,5 +127,4 @@ public class VirtualScreen
             position.y * Height_VirtualPx / Height_PhysicalMeters);
         return positionInPixels;
     }
-
 }

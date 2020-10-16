@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Leap.Unity;
 using UnityEngine;
 
-public enum SnappingMode { NONE, CLICK, CLICK_AND_CURSOR }
+public enum SnappingMode { NONE, CLICK, CLICK_AND_CURSOR, CLICK_AND_CURSOR_SOFT }
 
 public struct Positions
 {
@@ -12,12 +12,25 @@ public struct Positions
      * Cursor position is used to guide the position of the cursor representation.
      * It is calculated in Screen Space
      */
-    public Vector3 CursorPosition;
+    public Vector2 CursorPosition;
     /**
      * Click position is used to specify where the click event happens.
      * It is calculated in Screen Space.
      */
-    public Vector3 ClickPosition;
+    public Vector2 ClickPosition;
+
+    /**
+     * Distance from screen is the physical distance of the hand from the screen.
+     * It is calculated in meters.
+     */
+    public float DistanceFromScreen;
+
+    public Positions(Vector2 _cursorPosition, Vector2 _clickPosition, float _distanceFromScreen)
+    {
+        CursorPosition = _cursorPosition;
+        ClickPosition = _clickPosition;
+        DistanceFromScreen = _distanceFromScreen;
+    }
 }
 
 public class PositioningModule : MonoBehaviour
@@ -30,10 +43,16 @@ public class PositioningModule : MonoBehaviour
 
     public TRACKED_POSITION trackedPosition = TRACKED_POSITION.FINGER;
     public SnappingMode snappingMode = SnappingMode.NONE;
-    public ColliderSnapper colliderSnapper;
+
+    [Tooltip("If assigned, the cursor snapper and stabiliser will be accessed from the utils object.")]
+    public GameObject positioningUtils;
+    public CursorSnapper cursorSnapper;
 
     public PositionStabiliser Stabiliser;
     public bool VerticalOffset = false;
+
+    [Tooltip ("How firmly should the cursor snap in SOFT mode. Lower values equate to firmer snapping")]
+    public float cursorSnapSoftness = 0.005f;
     private float verticalCursorOffset = 0f;
 
     [NonSerialized]
@@ -45,10 +64,16 @@ public class PositioningModule : MonoBehaviour
 
     protected void OnEnable()
     {
-        Stabiliser.ResetValues();
         SettingsConfig.OnConfigUpdated += OnConfigUpdated;
         OnConfigUpdated();
-
+        
+        if (positioningUtils != null) 
+        {
+            cursorSnapper = positioningUtils.GetComponent<CursorSnapper>();
+            Stabiliser = positioningUtils.GetComponent<PositionStabiliser>();
+        }
+        
+        Stabiliser.ResetValues();
     }
     protected void OnDisable()
     {
@@ -60,14 +85,22 @@ public class PositioningModule : MonoBehaviour
         verticalCursorOffset = verticalCursorOffset = SettingsConfig.Config.CursorVerticalOffset;
     }
 
-    public Positions CalculatePositions()
+    public Positions CalculatePositions(Leap.Hand hand)
     {
-        if (SingleHandManager.Instance.CurrentHand == null)
+        if (hand == null)
         {
             return positions;
         }
+        if (cursorSnapper == null) 
+        {
+            cursorSnapper = positioningUtils.GetComponent<CursorSnapper>();
+        }
+        
+        Tuple<Vector2, float> oneToOneData = CalculateOneToOnePositionData(hand);
+        Vector2 oneToOnePosition = oneToOneData.Item1;
+        float distanceFromScreen = oneToOneData.Item2;
 
-        Vector3 oneToOnePosition = CalculateOneToOnePosition();
+        positions.DistanceFromScreen = distanceFromScreen;
 
         switch (snappingMode)
         {
@@ -77,20 +110,31 @@ public class PositioningModule : MonoBehaviour
                 break;
             case SnappingMode.CLICK:
                 positions.CursorPosition = oneToOnePosition;
-                positions.ClickPosition = colliderSnapper.CalculateSnappedPosition(oneToOnePosition);
+                positions.ClickPosition = cursorSnapper.CalculateSnappedPosition(oneToOnePosition);
                 break;
             case SnappingMode.CLICK_AND_CURSOR:
-                positions.CursorPosition = colliderSnapper.CalculateSnappedPosition(oneToOnePosition);
+                positions.CursorPosition = cursorSnapper.CalculateSnappedPosition(oneToOnePosition);
                 positions.ClickPosition = positions.CursorPosition;
+                break;
+            case SnappingMode.CLICK_AND_CURSOR_SOFT:
+                var snappedPosition = cursorSnapper.CalculateSnappedPosition(oneToOnePosition);
+                var distance = Vector2.Distance(snappedPosition, oneToOnePosition);
+
+                positions.CursorPosition = Vector2.Lerp(snappedPosition, oneToOnePosition, distance * cursorSnapSoftness);
+                positions.ClickPosition = snappedPosition;
                 break;
         }
         return positions;
     }
 
-    private Vector3 CalculateOneToOnePosition()
+    private Tuple<Vector2, float> CalculateOneToOnePositionData(Leap.Hand hand)
     {
-        float velocity = SingleHandManager.Instance.CurrentHand.PalmVelocity.Magnitude;
-        Vector3 worldPos = GetTrackedPosition();
+        // Return the hand position as a tuple:
+        // Vector2 position in screen-space (measured in pixels)
+        // float distanceFromScreen (measured in meters)
+
+        float velocity = hand.PalmVelocity.Magnitude;
+        Vector3 worldPos = GetTrackedPosition(hand);
         float smoothingTime = Time.deltaTime;
         if (ApplyDragLerp)
         {
@@ -105,28 +149,37 @@ public class PositioningModule : MonoBehaviour
 
         screenPosM = Stabiliser.ApplyDeadzone(screenPosM);
 
-        Vector3 oneToOnePosition = GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
+        Vector2 oneToOnePosition = GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
         if (VerticalOffset)
         {
             oneToOnePosition = ApplyVerticalOffset(oneToOnePosition);
         }
 
-        oneToOnePosition.z = distanceFromScreen;
-        return oneToOnePosition;
+        return new Tuple<Vector2, float>(oneToOnePosition, distanceFromScreen);
     }
 
-    private Vector3 GetTrackedPosition()
+    private Vector3 GetTrackedPosition(Leap.Hand hand)
     {
         switch (trackedPosition)
         {
             case TRACKED_POSITION.WRIST:
-                return SingleHandManager.Instance.CurrentHand.WristPosition.ToVector3();
+                return hand.WristPosition.ToVector3();
             case TRACKED_POSITION.FINGER:
             default:
-                return SingleHandManager.Instance.GetTrackedPointingJoint();
+                return GetTrackedPointingJoint(hand);
         }
     }
 
+    public Vector3 GetTrackedPointingJoint(Leap.Hand hand)
+    {
+        const float trackedJointDistanceOffset = 0.0533f;
+
+        var bones = hand.GetIndex().bones;
+
+        Vector3 trackedJointVector = (bones[0].NextJoint.ToVector3() + bones[1].NextJoint.ToVector3()) / 2;
+        trackedJointVector.z += trackedJointDistanceOffset;
+        return trackedJointVector;
+    }
     private Vector2 ApplyVerticalOffset(Vector2 screenPos)
     {
         var screenPosM = GlobalSettings.virtualScreen.PixelsToMeters(screenPos);

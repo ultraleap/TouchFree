@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Leap.Unity;
 using Stopwatch = System.Diagnostics.Stopwatch;
+using System;
 
 public class PinchGrabPoseInteractionModule : InteractionModule
 {
@@ -46,9 +47,11 @@ public class PinchGrabPoseInteractionModule : InteractionModule
     private bool isDragging;
     private Stopwatch dragStartTimer = new Stopwatch();
 
-    void Update()
+    Tuple<long, Positions> previousPosition = new Tuple<long, Positions>(0, new Positions());
+
+    protected override void UpdateData(Leap.Hand hand)
     {
-        if (SingleHandManager.Instance.CurrentHand == null)
+        if (hand == null)
         {
             return;
         }
@@ -58,59 +61,56 @@ public class PinchGrabPoseInteractionModule : InteractionModule
             return;
         }
 
-        positions = positioningModule.CalculatePositions();
-        Vector3 cursorPosition = positions.CursorPosition;
-        float distanceFromScreen = cursorPosition.z;
-        Vector3 clickPosition = positions.ClickPosition;
-
-
-        if (SingleHandManager.Instance.CurrentHand.IsRight)
+        positions = positioningModule.CalculatePositions(hand);
+        
+        float velocity = hand.PalmVelocity.Magnitude;
+        if (previousPosition.Item1 != 0)
         {
-            SendInputAction(InputType.SETRIGHT, cursorPosition, clickPosition, distanceFromScreen);
+            // Use the cursor velocity for x-y velocity
+            //
+            // I find that this velocity is quite similar to hand.PalmVelocity.Magnitude, but (as expected)
+            // this velocity calculation gets much closer to 0 when the hand is more still.
+            Vector3 previousWorldPos = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
+            Vector3 currentWorldPos = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
+            float changeInPos = (currentWorldPos - previousWorldPos).magnitude;
+            float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
+            velocity = changeInPos / changeInTime;
         }
-        else
-        {
-            SendInputAction(InputType.SETLEFT, cursorPosition, clickPosition, distanceFromScreen);
-        }
-
-        float velocity = SingleHandManager.Instance.CurrentHand.PalmVelocity.Magnitude;
-        HandleInteractions(cursorPosition, clickPosition, distanceFromScreen, velocity);
+        HandleInteractions(hand, velocity);
+        previousPosition = new Tuple<long, Positions>(latestTimestamp, positions);
     }
 
-    private void HandleInteractions(Vector2 _cursorPosition, Vector3 _clickPosition, float _distanceFromScreen, float _velocity)
+    private void HandleInteractions(Leap.Hand hand, float _velocity)
     {
-        SendInputAction(InputType.MOVE, _cursorPosition, _clickPosition, _distanceFromScreen);
+        SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
         // If already pressing, continue regardless of velocity
-        if (grabDetector.IsGrabbing() && (pressing || _velocity < maxHandVelocity))
+        if (grabDetector.IsGrabbing(latestTimestamp, hand, _velocity) && (pressing || _velocity < maxHandVelocity))
         {
-            HandleInvoke(_cursorPosition, _clickPosition, _distanceFromScreen);
+            HandleInvoke();
         }
         else
         {
-            HandlePotentialUnclick(_cursorPosition, _clickPosition, _distanceFromScreen);
-            HandleHover(_cursorPosition, _clickPosition, _distanceFromScreen);
+            HandlePotentialUnclick();
+            HandleHover();
         }
     }
 
-    private void HandleInvoke(Vector2 _cursorPosition, Vector3 _clickPosition, float _distanceFromScreen)
+    private void HandleInvoke()
     {
         // we are touching the screen
         if (!pressing)
         {
-            HandlePress(_cursorPosition, _clickPosition, _distanceFromScreen);
+            HandlePress();
         }
         else
         {
-            HandlePressHold(_cursorPosition, _clickPosition, _distanceFromScreen);
+            HandlePressHold();
         }
     }
 
-    private void HandlePress(Vector2 _screenPosition, Vector3 _clickPosition, float _distanceFromScreen)
+    private void HandlePress()
     {
-        SendInputAction(InputType.DOWN, _screenPosition, _clickPosition, _distanceFromScreen);
-        cursorDownPos = _screenPosition;
-        clickDownPos = _clickPosition;
-        posLastFrame = _screenPosition;
+        SendInputAction(InputType.DOWN, positions, grabDetector.GeneralisedGrabStrength);
         dragStartTimer.Restart();
         pressing = true;
         if (instantUnclick && ignoreDragging)
@@ -126,19 +126,20 @@ public class PinchGrabPoseInteractionModule : InteractionModule
         positioningModule.Stabiliser.SetCurrentDeadzoneRadius(newDeadzoneRadius);
     }
 
-    private void HandlePressHold(Vector2 _cursorPosition, Vector3 _clickPosition, float _distanceFromScreen)
+    private void HandlePressHold()
     {
         if (isDragging)
         {
-            SendInputAction(InputType.DRAG, _cursorPosition, _clickPosition, _distanceFromScreen);
+            SendInputAction(InputType.DRAG, positions, grabDetector.GeneralisedGrabStrength);
         }
         else
         {
+            Positions downPositions = new Positions(cursorDownPos, clickDownPos, positions.DistanceFromScreen);
             if (instantUnclick && ignoreDragging)
             {
                 if (requireHold)
                 {
-                    SendInputAction(InputType.HOLD, cursorDownPos, clickDownPos, _distanceFromScreen);
+                    SendInputAction(InputType.HOLD, downPositions, grabDetector.GeneralisedGrabStrength);
                     if (heldFrames >= REQUIRED_HOLD_FRAMES)
                     {
                         requireHold = false;
@@ -152,16 +153,16 @@ public class PinchGrabPoseInteractionModule : InteractionModule
                 }
                 else if (requireClick)
                 {
-                    SendInputAction(InputType.UP, cursorDownPos, clickDownPos, _distanceFromScreen);
+                    SendInputAction(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
                     positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
                     requireClick = false;
                 }
             }
             else
             {
-                SendInputAction(InputType.HOLD, cursorDownPos, clickDownPos, _distanceFromScreen);
+                SendInputAction(InputType.HOLD, downPositions, grabDetector.GeneralisedGrabStrength);
                 // Lock in to the touch down position until dragging occurs.
-                if (CheckForStartDrag(cursorDownPos, _cursorPosition) && !ignoreDragging)
+                if (CheckForStartDrag(cursorDownPos, positions.CursorPosition) && !ignoreDragging)
                 {
                     isDragging = true;
                     positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
@@ -170,7 +171,7 @@ public class PinchGrabPoseInteractionModule : InteractionModule
         }
     }
 
-    private void HandlePotentialUnclick(Vector2 _cursorPosition, Vector3 _clickPosition, float _distanceFromScreen)
+    private void HandlePotentialUnclick()
     {
         // Check if an unclick is needed, and perform if so
         if (pressing)
@@ -179,7 +180,7 @@ public class PinchGrabPoseInteractionModule : InteractionModule
             {
                 if (!requireHold && !requireClick)
                 {
-                    SendInputAction(InputType.UP, _cursorPosition, _clickPosition, _distanceFromScreen);
+                    SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
                 }
                 positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
             }
@@ -188,11 +189,11 @@ public class PinchGrabPoseInteractionModule : InteractionModule
         }
     }
 
-    private void HandleHover(Vector2 _cursorPosition, Vector3 _clickPosition, float distanceFromScreen)
+    private void HandleHover()
     {
         if (allowHover)
         {
-            SendInputAction(InputType.HOVER, _cursorPosition, _clickPosition, distanceFromScreen);
+            SendInputAction(InputType.HOVER, positions, grabDetector.GeneralisedGrabStrength);
         }
         hovering = true;
         isDragging = false;

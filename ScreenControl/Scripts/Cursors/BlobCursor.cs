@@ -58,8 +58,11 @@ public class BlobCursor : Cursor
     public AnimationCurve wobbleCurve;
     public AnimationCurve snapFrom;
     
+    [Header("Mesh")]
+    public bool drawFill = true;
+    public bool maintainAspect = true;
+    
     [Header("Debug")]
-    public bool drawFill;
     public bool drawDebug;
 
     private float lineWidth;
@@ -67,7 +70,7 @@ public class BlobCursor : Cursor
     private Collider2D buttonCollider;
     private LineRenderer blobLine;
     private MeshFilter blobMesh;
-    private Mesh newMesh;
+
     private List<Vector3> blobPoints;
     private List<Vector3> basePoints;
     private Vector3[] buttonOutline;
@@ -79,6 +82,7 @@ public class BlobCursor : Cursor
     {
         BlobMeshPrefab = Instantiate(BlobMeshPrefab);
         blobMesh = BlobMeshPrefab.GetComponent<MeshFilter>();
+        blobMesh.mesh.MarkDynamic();
         cursorCanvas = gameObject.GetComponentInParent<Canvas>();
 
         ChangeToCursor(BlobState.PASSIVE);
@@ -92,7 +96,7 @@ public class BlobCursor : Cursor
         maxScreenDistance = 1;
         blobLine.colorGradient = passiveColour;
 
-        newMesh = new Mesh();
+
         wobbleActive = 1;
         lineWidth = passiveLineWidth;
 
@@ -210,6 +214,18 @@ public class BlobCursor : Cursor
         }
     }
 
+    public override void HideCursor()
+    {
+        base.HideCursor();
+        ClearBlob();
+    } 
+
+    public override void ShowCursor()
+    {
+        base.ShowCursor();
+        InitBlob();
+    }
+    
     // Return a new color with the specified opacity
     private Color ChangeOpacity(Color _oldColor, float _newOpacity)
     {
@@ -309,6 +325,7 @@ public class BlobCursor : Cursor
 
         blobLine.positionCount = 0;
         blobLine.SetPositions(blobPoints.ToArray());
+        ClearMesh();
     }
 
     private void InitBlob()
@@ -369,13 +386,18 @@ public class BlobCursor : Cursor
 
         var vertices = new List<Vector3>();
         var triangles = new List<int>();
+        var uvs = new List<Vector2>();
+        var size = BlobSize();
 
         vertices.Add(centre);
         vertices.Add(_points[0]);
+        uvs.Add(new Vector2(0.5f, 0.5f));
+        uvs.Add(BlobVertToUV(_points[0], centre, size));
 
         for (int i = 2; i < numPoints; i++)
         {
             vertices.Add(_points[i]);
+            uvs.Add(BlobVertToUV(_points[i], centre, size));
 
             triangles.Add(0);
             triangles.Add(i);
@@ -400,12 +422,43 @@ public class BlobCursor : Cursor
             Debug.DrawLine(vertices[1], vertices[numPoints - 1], Color.yellow);
         }
 
-        newMesh.vertices = vertices.ToArray();
-        newMesh.triangles = triangles.ToArray();
+        blobMesh.mesh.Clear();
+        blobMesh.mesh.SetVertices(vertices);
+        blobMesh.mesh.SetTriangles(triangles, 0);
+        blobMesh.mesh.SetUVs(0, uvs);
 
-        newMesh.RecalculateNormals();
-        blobMesh.mesh = newMesh;
+        blobMesh.mesh.RecalculateNormals();
     }
+
+    private Vector2 BlobVertToUV(Vector3 vert, Vector3 centre, Vector2 size)
+    {
+        var uvScale = Mathf.Max(size.x, size.y);
+        if (maintainAspect) size = new Vector2(uvScale, uvScale);
+        
+        var uv = new Vector2();
+        uv.x = ((vert.x - centre.x) / size.x) + 0.5f;
+        uv.y = ((vert.y - centre.y) / size.y) + 0.5f;
+        return uv;
+    }
+    public Vector2 BlobSize()
+    {
+        var minX = float.PositiveInfinity;
+        var maxX = float.NegativeInfinity;
+        
+        var minY = float.PositiveInfinity;
+        var maxY = float.NegativeInfinity;
+
+        foreach (var point in blobPoints)
+        {
+            minX = Mathf.Min(point.x, minX);
+            minY = Mathf.Min(point.y, minY);
+            maxX = Mathf.Max(point.x, maxX);
+            maxY = Mathf.Max(point.y, maxY);
+        }
+
+        return new Vector2(maxX - minX, maxY - minY);
+    }
+
 
     public Vector3 BlobCentre()
     {
@@ -417,5 +470,11 @@ public class BlobCursor : Cursor
         }
 
         return result / numPoints;
+    }
+
+    private void ClearMesh()
+    {
+        // TODO - Work out why once this has been called it stops rendering forever
+        blobMesh.mesh.Clear();
     }
 }

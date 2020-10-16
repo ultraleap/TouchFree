@@ -75,7 +75,7 @@ public class ConfigurationSetupController : MonoBehaviour
 
     void EnableCurrentState()
     {
-        SingleHandManager.Instance.useTrackingTransform = true;
+        HandManager.Instance.useTrackingTransform = true;
         foreach (var root in stateRoots)
             root.SetActive(false);
 
@@ -119,7 +119,7 @@ public class ConfigurationSetupController : MonoBehaviour
                 {
                     setupScreenActive = false;
                     EnableInteractions?.Invoke();
-                    SingleHandManager.Instance.useTrackingTransform = true;
+                    HandManager.Instance.useTrackingTransform = true;
                     configCanvas.SetActive(false);
                     OnConfigInactive?.Invoke();
                     closeConfig = false;

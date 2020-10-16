@@ -35,7 +35,7 @@ public class UnityUIInputController : InputController
 
     private bool IsHovering()
     {
-        if (SingleHandManager.Instance.CurrentHand != null && allowInteractions)
+        if (HandManager.Instance.PrimaryHand != null && allowInteractions)
         {
             return true;
         }

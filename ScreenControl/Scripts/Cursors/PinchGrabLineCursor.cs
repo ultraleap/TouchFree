@@ -28,14 +28,15 @@ public class PinchGrabLineCursor : DotCursor
     [Range(0.01f, 1)] public float LineGrowthSeconds;
     public AnimationCurve lineGrowCurve, lineShrinkCurve;
 
-    protected bool left, lineShrunk;
+    protected HandChirality cursorChirality = HandChirality.RIGHT;
+    protected bool lineShrunk;
     protected float lineWidth;
-    protected GeneralisedGrabDetector generalisedGrabDetector;
     protected Coroutine lineScalingRoutine;
+
+    private float storedGrabStrengthForGizmos = 0f;
 
     void Start()
     {
-        generalisedGrabDetector = FindObjectOfType<GeneralisedGrabDetector>();
         SetLineRendererWidthScale(1);
     }
 
@@ -45,7 +46,7 @@ public class PinchGrabLineCursor : DotCursor
 
         cursorDotSize *= 0.6f;
 
-        UpdateLineRenderers();
+        UpdateLineRenderers(0f);
         SetLineRendererWidthScale(1);
 
         Color fillColour = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
@@ -71,14 +72,19 @@ public class PinchGrabLineCursor : DotCursor
         InputType _type = _inputData.Type;
         Vector2 _cursorPosition = _inputData.CursorPosition;
         Vector2 _clickPosition = _inputData.ClickPosition;
-        float _distanceFromScreen = _inputData.ProgressToClick;
 
         base.OnHandleInputAction(_inputData);
+
+        if(_inputData.Chirality != cursorChirality && _inputData.Chirality != HandChirality.UNKNOWN)
+        {
+            cursorChirality = _inputData.Chirality;
+        }
 
         switch (_type)
         {
             case InputType.MOVE:
-                UpdateLineRenderers();
+                UpdateLineRenderers(_inputData.ProgressToClick);
+                storedGrabStrengthForGizmos = _inputData.ProgressToClick;
                 break;
             case InputType.DOWN:
                 if (lineShrunk)
@@ -102,18 +108,6 @@ public class PinchGrabLineCursor : DotCursor
                 }
                 break;
             case InputType.CANCEL:
-                break;
-            case InputType.SETLEFT:
-                if (!left)
-                {
-                    left = true;
-                }
-                break;
-            case InputType.SETRIGHT:
-                if (left)
-                {
-                    left = false;
-                }
                 break;
         }
     }
@@ -158,37 +152,28 @@ public class PinchGrabLineCursor : DotCursor
         lineWidth = cursorDotSize * BaseLineWidthScale * scale * _screenScale;
     }
 
-    private void UpdateLineRenderers()
+    private void UpdateLineRenderers(float _grabStrength)
     {
-        float arcAngle = left ? ArcAngleLeft : ArcAngleRight;
+        float arcAngle = (cursorChirality == HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
 
-        List<Vector3> positions = GenerateArcPositions(ArcLengthPercentage, arcAngle);
+        List<Vector3> positions = GenerateArcPositions(ArcLengthPercentage, arcAngle, _grabStrength);
         lineRenderer.positionCount = LineRendererPositions;
         lineRenderer.SetPositions(positions.ToArray());
         lineRenderer.startWidth = lineWidth;
         lineRenderer.endWidth = lineWidth;
 
-        positions = GenerateArcPositions(OutlineArcLengthPercentage, arcAngle);
+        positions = GenerateArcPositions(OutlineArcLengthPercentage, arcAngle, _grabStrength);
         lineRendererOutline.positionCount = LineRendererPositions;
         lineRendererOutline.SetPositions(positions.ToArray());
         lineRendererOutline.startWidth = lineWidth * BaseOutlineWidthScale;
         lineRendererOutline.endWidth = lineWidth * BaseOutlineWidthScale;
     }
 
-    List<Vector3> GenerateArcPositions(float _arcLengthPercentage, float _arcAngle)
+    List<Vector3> GenerateArcPositions(float _arcLengthPercentage, float _arcAngle, float _grabStrength)
     {
-        if (generalisedGrabDetector == null)
-        {
-            // try to re-find it!
-            generalisedGrabDetector = FindObjectOfType<GeneralisedGrabDetector>();
-
-            if (generalisedGrabDetector == null)
-                return new List<Vector3>();
-        }
-
         float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
         float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
-        float currentCircleOffsetRadius = ScreenControlUtility.MapRangeToRange(radiusScale.Evaluate(generalisedGrabDetector.GeneralisedGrabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
+        float currentCircleOffsetRadius = ScreenControlUtility.MapRangeToRange(radiusScale.Evaluate(_grabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
 
         Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(cursorTransform.anchoredPosition);
 
@@ -245,10 +230,10 @@ public class PinchGrabLineCursor : DotCursor
     {
         if (Application.isEditor && Application.isPlaying && DrawDebugGizmos)
         {
-            float arcAngle = left ? ArcAngleLeft : ArcAngleRight;
+            float arcAngle = (cursorChirality == HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
             float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
             float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
-            float currentCircleOffsetRadius = ScreenControlUtility.MapRangeToRange(radiusScale.Evaluate(generalisedGrabDetector.GeneralisedGrabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
+            float currentCircleOffsetRadius = ScreenControlUtility.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
             float finalOffsetRadius = arcMidpointRadius / 2;
 
             Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(_targetPos);

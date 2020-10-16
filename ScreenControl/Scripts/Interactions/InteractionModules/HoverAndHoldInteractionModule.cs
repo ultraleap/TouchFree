@@ -26,9 +26,9 @@ public class HoverAndHoldInteractionModule : InteractionModule
     private bool clickAlreadySent = false;
     private Stopwatch clickingTimer = new Stopwatch();
 
-    void Update()
+    protected override void UpdateData(Leap.Hand hand)
     {
-        if (SingleHandManager.Instance.CurrentHand == null)
+        if (hand == null)
         {
             return;
         }
@@ -38,15 +38,12 @@ public class HoverAndHoldInteractionModule : InteractionModule
             return;
         }
 
-        positions = positioningModule.CalculatePositions();
-        Vector3 cursorPosition = positions.CursorPosition;
-        Vector3 clickPosition = positions.ClickPosition;
-        float distanceFromScreen = clickPosition.z;
-        Vector2 cursorPositionM = GlobalSettings.virtualScreen.PixelsToMeters(cursorPosition);
+        positions = positioningModule.CalculatePositions(hand);
+        Vector2 cursorPositionM = GlobalSettings.virtualScreen.PixelsToMeters(positions.CursorPosition);
         Vector2 hoverPosM = ApplyHoverzone(cursorPositionM);
         Vector2 hoverPos = GlobalSettings.virtualScreen.MetersToPixels(hoverPosM);
         
-        HandleInteractions(cursorPosition, clickPosition, distanceFromScreen, hoverPos);
+        HandleInteractions(hoverPos);
     }
 
     private Vector2 ApplyHoverzone(Vector2 _screenPosM)
@@ -56,13 +53,13 @@ public class HoverAndHoldInteractionModule : InteractionModule
         return previousHoverPosDeadzone;
     }
 
-    private void HandleInteractions(Vector2 _cursorPosition, Vector3 _clickPosition, float _distanceFromScreen, Vector2 _hoverPosition)
+    private void HandleInteractions(Vector2 _hoverPosition)
     {
-        SendInputAction(InputType.MOVE, _cursorPosition, _clickPosition, _distanceFromScreen);
-        HandleInputHoverAndHold(_cursorPosition, _clickPosition, _distanceFromScreen, _hoverPosition);
+        SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
+        HandleInputHoverAndHold(_hoverPosition);
     }
 
-    private void HandleInputHoverAndHold(Vector2 _cursorPosition, Vector3 _clickPosition, float _distanceFromScreen, Vector2 _hoverPosition)
+    private void HandleInputHoverAndHold(Vector2 _hoverPosition)
     {
         if (!clickHeld && !hoverTriggered && _hoverPosition == previousHoverPosScreen)
         {
@@ -75,7 +72,7 @@ public class HoverAndHoldInteractionModule : InteractionModule
                 hoverTriggered = true;
                 hoverTriggerTimer.Stop();
                 hoverTriggeredDeadzoneRadius = positioningModule.Stabiliser.GetCurrentDeadzoneRadius();
-                previousScreenPos = _cursorPosition; // To prevent instant-abandonment of hover
+                previousScreenPos = positions.CursorPosition; // To prevent instant-abandonment of hover
             }
         }
 
@@ -83,7 +80,7 @@ public class HoverAndHoldInteractionModule : InteractionModule
 
         if (hoverTriggered)
         {
-            if (_cursorPosition == previousScreenPos)
+            if (positions.CursorPosition == previousScreenPos)
             {
                 if (!clickHeld)
                 {
@@ -97,7 +94,7 @@ public class HoverAndHoldInteractionModule : InteractionModule
                         progressTimer.StopTimer();
                         clickHeld = true;
                         clickingTimer.Restart();
-                        SendInputAction(InputType.DOWN, _cursorPosition, _clickPosition, _distanceFromScreen);
+                        SendInputAction(InputType.DOWN, positions, 0f);
                         sendHoverAction = false;
                     }
                     else
@@ -111,13 +108,13 @@ public class HoverAndHoldInteractionModule : InteractionModule
                 {
                     if (!clickAlreadySent && clickingTimer.ElapsedMilliseconds > clickHoldTime)
                     {
-                        SendInputAction(InputType.UP, _cursorPosition, _clickPosition, _distanceFromScreen);
+                        SendInputAction(InputType.UP, positions, progressTimer.Progress);
                         sendHoverAction = false;
                         clickAlreadySent = true;
                     }
                     else if (!clickAlreadySent)
                     {
-                        SendInputAction(InputType.HOLD, _cursorPosition, _clickPosition, _distanceFromScreen);
+                        SendInputAction(InputType.HOLD, positions, progressTimer.Progress);
                         sendHoverAction = false;
                     }
                 }
@@ -127,7 +124,7 @@ public class HoverAndHoldInteractionModule : InteractionModule
                 if (clickHeld && !clickAlreadySent)
                 {
                     // Handle unclick if move before timer's up
-                    SendInputAction(InputType.UP, _cursorPosition, _clickPosition, _distanceFromScreen);
+                    SendInputAction(InputType.UP, positions, progressTimer.Progress);
                     sendHoverAction = false;
                 }
 
@@ -146,11 +143,11 @@ public class HoverAndHoldInteractionModule : InteractionModule
 
         if (sendHoverAction && allowHover)
         {
-            SendInputAction(InputType.HOVER, _cursorPosition, _clickPosition, _distanceFromScreen);
+            SendInputAction(InputType.HOVER, positions, progressTimer.Progress);
         }
 
         previousHoverPosScreen = _hoverPosition;
-        previousScreenPos = _cursorPosition;
+        previousScreenPos = positions.CursorPosition;
     }
 
     protected override void OnSettingsUpdated()

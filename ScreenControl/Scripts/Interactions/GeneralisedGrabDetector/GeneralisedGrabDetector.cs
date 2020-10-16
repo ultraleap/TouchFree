@@ -27,6 +27,8 @@ public enum GrabAlgorithm
     THUMBLESS_OR_DUCK_PINCH,
     [Description("Thumbless Grab or Duck Pinch with PokePose Suppression")]
     THUMBLESS_OR_DUCK_PINCH_POKE_SUPPRESSED,
+    [Description("Physics Grab")]
+    PHYSICS_GRAB,
 }
 
 /**
@@ -55,6 +57,8 @@ public class GeneralisedGrabDetector : MonoBehaviour
     public ThumblessGrab thumblessGrab;
     public DuckPinch duckPinch;
     public PokePose pokePose;
+    public PhysicsGrab physicsGrab;
+    
 
     [Header("Debug Parameters")]
     public float pinchStrength;
@@ -78,10 +82,15 @@ public class GeneralisedGrabDetector : MonoBehaviour
     // Check whether a Generalised-Grab has been detected
     //
     // The result depends on the GrabAlgorithm
-    public bool IsGrabbing()
+    public bool IsGrabbing(Leap.Hand hand)
     {
-        UpdateDebugParams();
-        UpdateGrab();
+        return IsGrabbing(0, hand, 0f);
+    }
+
+    public bool IsGrabbing(long timestamp, Leap.Hand hand, float cursorVelocity)
+    {
+        UpdateDebugParams(hand);
+        UpdateGrab(timestamp, hand, cursorVelocity);
 
         if (grabbing && grabStartTime != -1.0f)
         {
@@ -94,39 +103,42 @@ public class GeneralisedGrabDetector : MonoBehaviour
     }
 
     // Update the data about the stored hand
-    private void UpdateGrab()
+    private void UpdateGrab(long timestamp, Leap.Hand hand, float cursorVelocity)
     {
         switch (grabAlgorithm)
         {
             case GrabAlgorithm.CLASSIC_PINCH:
-                ResolveClassicPinch();
+                ResolveClassicPinch(hand);
                 break;
             case GrabAlgorithm.CLASSIC_GRAB:
-                ResolveClassicGrab();
+                ResolveClassicGrab(hand);
                 break;
             case GrabAlgorithm.CLASSIC_PINCH_OR_GRAB:
-                ResolveClassicPinchOrGrab();
+                ResolveClassicPinchOrGrab(hand);
                 break;
             case GrabAlgorithm.COMBINED_PINCH_WITH_FIST:
-                ResolveCombinedPinchAndGrab();
+                ResolveCombinedPinchAndGrab(hand);
                 break;
             case GrabAlgorithm.SAFETY_PINCH:
-                ResolveSafetyPinch();
+                ResolveSafetyPinch(hand);
                 break;
             case GrabAlgorithm.THUMBLESS_GRAB:
-                ResolveThumblessGrab();
+                ResolveThumblessGrab(hand);
                 break;
             case GrabAlgorithm.THUMBLESS_OR_SAFETY_PINCH:
-                ResolveThumblessOrSafetyPinch();
+                ResolveThumblessOrSafetyPinch(hand);
                 break;
             case GrabAlgorithm.DUCK_PINCH:
-                ResolveDuckPinch();
+                ResolveDuckPinch(hand);
                 break;
             case GrabAlgorithm.THUMBLESS_OR_DUCK_PINCH:
-                ResolveThumblessOrDuckPinch();
+                ResolveThumblessOrDuckPinch(hand);
                 break;
             case GrabAlgorithm.THUMBLESS_OR_DUCK_PINCH_POKE_SUPPRESSED:
-                ResolveThumblessOrDuckWithPokeSuppression();
+                ResolveThumblessOrDuckWithPokeSuppression(hand);
+                break;
+            case GrabAlgorithm.PHYSICS_GRAB:
+                ResolvePhysicsGrab(timestamp, hand, cursorVelocity);
                 break;
         }
 
@@ -140,9 +152,9 @@ public class GeneralisedGrabDetector : MonoBehaviour
         }
     }
 
-    private void ResolveClassicPinch()
+    private void ResolveClassicPinch(Leap.Hand hand)
     {
-        float pinchStrength = SingleHandManager.Instance.CurrentHand.PinchStrength;
+        float pinchStrength = hand.PinchStrength;
         if (grabbing)
         {
             grabbing = (pinchStrength >= unpinchThreshold);
@@ -155,9 +167,9 @@ public class GeneralisedGrabDetector : MonoBehaviour
         }
     }
 
-    private void ResolveClassicGrab()
+    private void ResolveClassicGrab(Leap.Hand hand)
     {
-        float grabStrength = SingleHandManager.Instance.CurrentHand.GrabStrength;
+        float grabStrength = hand.GrabStrength;
         if (grabbing)
         {
             grabbing = (grabStrength >= ungrabThreshold);
@@ -170,10 +182,10 @@ public class GeneralisedGrabDetector : MonoBehaviour
         }
     }
 
-    private void ResolveClassicPinchOrGrab()
+    private void ResolveClassicPinchOrGrab(Leap.Hand hand)
     {
-        float pinchStrength = SingleHandManager.Instance.CurrentHand.PinchStrength;
-        float grabStrength = SingleHandManager.Instance.CurrentHand.GrabStrength;
+        float pinchStrength = hand.PinchStrength;
+        float grabStrength = hand.GrabStrength;
 
         if (grabbing)
         {
@@ -200,10 +212,10 @@ public class GeneralisedGrabDetector : MonoBehaviour
             GeneralisedGrabStrength = Mathf.Max(normalisedPinchStrength, normalisedGrabStrength);
         }
     }
-    private void ResolveCombinedPinchAndGrab()
+    private void ResolveCombinedPinchAndGrab(Leap.Hand hand)
     {
-        float pinchStrength = SingleHandManager.Instance.CurrentHand.PinchStrength;
-        float fistStrength = SingleHandManager.Instance.CurrentHand.GetFistStrength();
+        float pinchStrength = hand.PinchStrength;
+        float fistStrength = hand.GetFistStrength();
         float combinedStrength = pinchStrength + fistStrength;
 
         if (grabbing)
@@ -221,48 +233,48 @@ public class GeneralisedGrabDetector : MonoBehaviour
 
     }
 
-    private void ResolveSafetyPinch()
+    private void ResolveSafetyPinch(Leap.Hand hand)
     {
-        grabbing = safetyPinch.IsPinching(SingleHandManager.Instance.CurrentHand);
+        grabbing = safetyPinch.IsPinching(hand);
         GeneralisedGrabStrength = safetyPinch.PinchStrength;
     }
 
-    private void ResolveThumblessGrab()
+    private void ResolveThumblessGrab(Leap.Hand hand)
     {
-        grabbing = thumblessGrab.IsGrabbing(SingleHandManager.Instance.CurrentHand);
+        grabbing = thumblessGrab.IsGrabbing(hand);
         GeneralisedGrabStrength = thumblessGrab.GrabStrength;
     }
 
-    private void ResolveThumblessOrSafetyPinch()
+    private void ResolveThumblessOrSafetyPinch(Leap.Hand hand)
     {
-        bool thumblessGrabbing = thumblessGrab.IsGrabbing(SingleHandManager.Instance.CurrentHand);
-        bool safetyPinching = safetyPinch.IsPinching(SingleHandManager.Instance.CurrentHand);
+        bool thumblessGrabbing = thumblessGrab.IsGrabbing(hand);
+        bool safetyPinching = safetyPinch.IsPinching(hand);
 
         grabbing = thumblessGrabbing | safetyPinching;
         GeneralisedGrabStrength = Mathf.Max(thumblessGrab.GrabStrength, safetyPinch.PinchStrength);
     }
 
-    private void ResolveDuckPinch()
+    private void ResolveDuckPinch(Leap.Hand hand)
     {
-        grabbing = duckPinch.IsGrabbing(SingleHandManager.Instance.CurrentHand);
+        grabbing = duckPinch.IsGrabbing(hand);
         GeneralisedGrabStrength = duckPinch.DuckPinchStrength;
     }
 
-    private void ResolveThumblessOrDuckPinch()
+    private void ResolveThumblessOrDuckPinch(Leap.Hand hand)
     {
-        bool thumblessGrabbing = thumblessGrab.IsGrabbing(SingleHandManager.Instance.CurrentHand);
-        bool duckPinching = duckPinch.IsGrabbing(SingleHandManager.Instance.CurrentHand);
+        bool thumblessGrabbing = thumblessGrab.IsGrabbing(hand);
+        bool duckPinching = duckPinch.IsGrabbing(hand);
 
         grabbing = thumblessGrabbing | duckPinching;
         GeneralisedGrabStrength = Mathf.Max(thumblessGrab.GrabStrength, duckPinch.DuckPinchStrength);
     }
 
-    private void ResolveThumblessOrDuckWithPokeSuppression()
+    private void ResolveThumblessOrDuckWithPokeSuppression(Leap.Hand hand)
     {
-        bool thumblessGrabbing = thumblessGrab.IsGrabbing(SingleHandManager.Instance.CurrentHand);
-        bool duckPinching = duckPinch.IsGrabbing(SingleHandManager.Instance.CurrentHand);
+        bool thumblessGrabbing = thumblessGrab.IsGrabbing(hand);
+        bool duckPinching = duckPinch.IsGrabbing(hand);
 
-        if (pokePose.InPose(SingleHandManager.Instance.CurrentHand))
+        if (pokePose.InPose(hand))
         {
             grabbing = false;
             requireUngrab = true;
@@ -289,11 +301,18 @@ public class GeneralisedGrabDetector : MonoBehaviour
         }
     }
 
-    private void UpdateDebugParams()
+    private void ResolvePhysicsGrab(long timestamp, Leap.Hand hand, float cursorVelocity)
     {
-        pinchStrength = SingleHandManager.Instance.CurrentHand.PinchStrength;
-        grabStrength = SingleHandManager.Instance.CurrentHand.GrabStrength;
-        fistStrength = SingleHandManager.Instance.CurrentHand.GetFistStrength();
+        physicsGrab.UpdateData(timestamp, hand, cursorVelocity);
+        grabbing = physicsGrab.Grabbing;
+        GeneralisedGrabStrength = physicsGrab.GrabStrength;
+    }
+
+    private void UpdateDebugParams(Leap.Hand hand)
+    {
+        pinchStrength = hand.PinchStrength;
+        grabStrength = hand.GrabStrength;
+        fistStrength = hand.GetFistStrength();
         combinedStrength = pinchStrength + fistStrength;
     }
 }
