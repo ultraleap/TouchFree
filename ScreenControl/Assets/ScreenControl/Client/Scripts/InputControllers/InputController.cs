@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// A base Input Controller to derive from. This base class handles moving the standard cursor.
 /// </summary>
-public class InputController : BaseInput
+public virtual class InputController : BaseInput
 {
     public static InputController Instance;
 

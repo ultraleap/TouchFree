@@ -6,13 +6,13 @@ using System.Linq;
 
 /**
  * Descriptions of Blob States:
- * 
+ *
  * PASSIVE
  *  The cursor is present but not interacting with UI elements
- * 
+ *
  * ACTIVE
  *  The cursor is present and interacts with UI elements
- *  
+ *
  * HIDDEN
  *  The cursor is not visible
  *
@@ -57,11 +57,11 @@ public class BlobCursor : Cursor
 
     public AnimationCurve wobbleCurve;
     public AnimationCurve snapFrom;
-    
+
     [Header("Mesh")]
     public bool drawFill = true;
     public bool maintainAspect = true;
-    
+
     [Header("Debug")]
     public bool drawDebug;
 
@@ -86,7 +86,6 @@ public class BlobCursor : Cursor
         cursorCanvas = gameObject.GetComponentInParent<Canvas>();
 
         ChangeToCursor(BlobState.PASSIVE);
-        InteractionManager.HandleInputAction += OnHandleInputAction;
         blobPoints = new List<Vector3>();
         blobLine = GetComponent<LineRenderer>();
 
@@ -95,7 +94,6 @@ public class BlobCursor : Cursor
 
         maxScreenDistance = 1;
         blobLine.colorGradient = passiveColour;
-
 
         wobbleActive = 1;
         lineWidth = passiveLineWidth;
@@ -107,11 +105,6 @@ public class BlobCursor : Cursor
         {
             child.gameObject.layer = 8;
         }
-    }
-
-    void OnDestroy()
-    {
-        InteractionManager.HandleInputAction -= OnHandleInputAction;
     }
 
     public void UpdateBlobCursor()
@@ -218,14 +211,14 @@ public class BlobCursor : Cursor
     {
         base.HideCursor();
         ClearBlob();
-    } 
+    }
 
     public override void ShowCursor()
     {
         base.ShowCursor();
         InitBlob();
     }
-    
+
     // Return a new color with the specified opacity
     private Color ChangeOpacity(Color _oldColor, float _newOpacity)
     {
@@ -434,7 +427,7 @@ public class BlobCursor : Cursor
     {
         var uvScale = Mathf.Max(size.x, size.y);
         if (maintainAspect) size = new Vector2(uvScale, uvScale);
-        
+
         var uv = new Vector2();
         uv.x = ((vert.x - centre.x) / size.x) + 0.5f;
         uv.y = ((vert.y - centre.y) / size.y) + 0.5f;
@@ -444,7 +437,7 @@ public class BlobCursor : Cursor
     {
         var minX = float.PositiveInfinity;
         var maxX = float.NegativeInfinity;
-        
+
         var minY = float.PositiveInfinity;
         var maxY = float.NegativeInfinity;
 

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Leap.Unity;
 
-public class Cursor : BaseCursor
+public class Cursor : MonoBehaviour
 {
     public RectTransform cursorTransform;
 
