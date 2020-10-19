@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LeapHandCursor : Cursor
+public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursors.Cursor
 {
     public struct HandCursorData
     {
@@ -57,7 +57,7 @@ public class LeapHandCursor : Cursor
     private HandCursorData rightHandData;
     private LayerMask projectionMask;
 
-    
+
     private const float grabReleaseLerpMax = 60f;
     private const float grabReleaseLerpIncremenet = 1f;
     private const float grabReleaseLerpMin = 0;
@@ -76,7 +76,7 @@ public class LeapHandCursor : Cursor
     protected override void OnDisable()
     {
         base.OnDisable();
-        
+
         InteractionManager.HandleInputActionLeftHand -= OnHandleLeftInputAction;
         InteractionManager.HandleInputActionRightHand -= OnHandleRightInputAction;
         InteractionManager.HandleInputAction -= OnHandlePrimaryAction;
@@ -91,10 +91,10 @@ public class LeapHandCursor : Cursor
         currentColour = baseColour;
         targetColour = baseColour;
 
-        leftHandData = InitHandData(HandChirality.LEFT); 
+        leftHandData = InitHandData(HandChirality.LEFT);
         rightHandData = InitHandData(HandChirality.RIGHT);
     }
-    
+
 
     protected override void Update()
     {
@@ -107,10 +107,10 @@ public class LeapHandCursor : Cursor
         if (_inputData.Type == InputType.MOVE)
         {
             handProcessor.leftHandActive = _inputData.Chirality == HandChirality.LEFT;
-            handProcessor.rightHandActive = _inputData.Chirality == HandChirality.RIGHT; 
+            handProcessor.rightHandActive = _inputData.Chirality == HandChirality.RIGHT;
         }
     }
-    
+
     protected void OnHandleLeftInputAction(InputActionData _inputData)
     {
         leftHandData = UpdateHand(_inputData, leftHandData, leftHandTransform);
@@ -130,7 +130,7 @@ public class LeapHandCursor : Cursor
         {
             case InputType.MOVE:
                 // Animate the offset based on the interaction
-                handData.colour = Color.Lerp(handData.colour, handData.targetColour, colorLerpSpeed * Time.deltaTime);     
+                handData.colour = Color.Lerp(handData.colour, handData.targetColour, colorLerpSpeed * Time.deltaTime);
 
                 PlaceHandTransform(_inputData.CursorPosition, handTransform, ref handData);
                 OffsetHand(ref handData, _inputData.CursorPosition, _inputData.ProgressToClick);
@@ -173,8 +173,8 @@ public class LeapHandCursor : Cursor
 
     private void PlaceHandTransform(Vector2 cursorPos, Transform hand, ref HandCursorData handData)
     {
-                
-        if (!handData.grabbing) 
+
+        if (!handData.grabbing)
         {
             handData.grabReleaseLerpSpeed = Mathf.Clamp(handData.grabReleaseLerpSpeed + grabReleaseLerpIncremenet, grabReleaseLerpMin, grabReleaseLerpMax);
         }
@@ -206,12 +206,12 @@ public class LeapHandCursor : Cursor
     private RaycastHit ProjectedCursorHit(Vector3 screenPos)
     {
         var hit = new RaycastHit();
-        
+
         if (!Physics.Raycast(cursorCamera.ScreenPointToRay(screenPos), out hit, 200, projectionMask))
         {
             hit.point = cursorCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1f));
         };
-        
+
         return hit;
     }
 
@@ -226,9 +226,9 @@ public class LeapHandCursor : Cursor
         }
         else
         {
-            return cursorCamera.transform.rotation; 
+            return cursorCamera.transform.rotation;
         }
- 
+
     }
 
     public void ScaleHandByDistance(RaycastHit hit)

@@ -25,7 +25,7 @@ public enum BlobState
     HIDDEN
 }
 
-public class BlobCursor : Cursor
+public class BlobCursor : Ultraleap.ScreenControl.Client.Cursors.Cursor
 {
     public float cursorLerpSpeed = 15f;
 

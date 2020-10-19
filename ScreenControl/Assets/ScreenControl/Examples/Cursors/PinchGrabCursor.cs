@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PinchGrabCursor : Cursor
+public class PinchGrabCursor : Ultraleap.ScreenControl.Client.Cursors.Cursor
 {
     [Header("Graphics")]
     public UnityEngine.UI.Image cursorDot;
@@ -28,7 +28,7 @@ public class PinchGrabCursor : Cursor
             cursorDot.transform.Rotate(0f, 180f, 0f);
             cursorChirality = _inputData.Chirality;
         }
-        
+
         switch (_type)
         {
             case InputType.MOVE:
@@ -73,7 +73,7 @@ public class PinchGrabCursor : Cursor
         if(!hidingCursor)
         {
             cursorDot.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
-        }    
+        }
     }
 
     public override void ShowCursor()

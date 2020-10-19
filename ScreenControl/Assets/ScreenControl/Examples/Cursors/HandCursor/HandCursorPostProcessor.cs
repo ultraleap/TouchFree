@@ -5,11 +5,11 @@ using Leap.Unity;
 using Leap;
 
 
-public class HandCursorPostProcessor : PostProcessProvider 
+public class HandCursorPostProcessor : PostProcessProvider
 {
     public Transform leftCursor;
     public Transform rightCursor;
-    
+
     public bool overhead = false;
 
 
@@ -37,12 +37,12 @@ public class HandCursorPostProcessor : PostProcessProvider
         overhead = (Mathf.Abs(PhysicalConfigurable.Config.LeapRotationD.z) > 90f);
     }
 
-    public override void ProcessFrame(ref Frame inputFrame) 
+    public override void ProcessFrame(ref Frame inputFrame)
     {
         if (leftCursor == null || rightCursor == null) return;
 
         foreach (var hand in inputFrame.Hands) {
-       
+
             // Scale all joints based on palm position
             foreach(var finger in hand.Fingers)
             {
@@ -53,22 +53,22 @@ public class HandCursorPostProcessor : PostProcessProvider
                     offset = (bone.PrevJoint - hand.PalmPosition) * handScale;
                     bone.PrevJoint = (hand.PalmPosition + offset);
                 }
-            }   
+            }
             hand.WristPosition = hand.PalmPosition + ((hand.WristPosition - hand.PalmPosition) * handScale);
-            
+
             Quaternion handRotation = overhead ? TopDownRotatedHand(hand.Rotation.ToQuaternion()) : hand.Rotation.ToQuaternion();
-            
+
             if (hand.IsLeft)
             {
                 hand.SetTransform(
-                    leftCursor.position + (leftOffsetVector * handScale), 
+                    leftCursor.position + (leftOffsetVector * handScale),
                     leftCursor.rotation * handRotation
                     );
             }
             else
             {
                 hand.SetTransform(
-                    rightCursor.position + (rightOffsetVector * handScale), 
+                    rightCursor.position + (rightOffsetVector * handScale),
                     rightCursor.rotation * handRotation
                     );
             }

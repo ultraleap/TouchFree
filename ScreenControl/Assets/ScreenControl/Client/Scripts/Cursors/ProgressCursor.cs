@@ -1,198 +1,204 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class ProgressCursor : Cursor
+namespace Ultraleap.ScreenControl.Client
 {
-    [Header("Graphics")]
-    public Transform cursorDotTransform;
-    public Transform cursorProgressTransform;
-
-    public UnityEngine.UI.Image cursorDot;
-    public UnityEngine.UI.Image cursorDotFill;
-    public UnityEngine.UI.Image cursorProgressBorder;
-    public UnityEngine.UI.Image cursorProgressFill;
-
-    [Header("Ring")]
-    public bool ringEnabled;
-    public UnityEngine.UI.Image cursorRing;
-    public AnimationCurve ringCurve;
-
-    [Header("Pulse")]
-    public AnimationCurve pulseGrowCurve;
-    public AnimationCurve pulseShrinkCurve;
-    [Range(0.01f, 1f)] public float pulseSeconds;
-    [Range(0.01f, 2f)] public float cursorDownScale;
-
-    protected float cursorDotSize;
-    protected float maxRingScale;
-    protected float screenDistanceAtMaxScaleMeters;
-
-    protected Color dotFillColor;
-    protected Color dotBorderColor;
-    protected Color ringColor;
-
-    protected bool shrunk = false;
-
-
-    public AnimationCurve ringFillCurve;
-
-    public override void UpdateCursor(Vector2 screenPos, float progressToClick)
+    namespace Cursors
     {
-        _targetPos = screenPos;
-
-        cursorProgressFill.fillAmount = ringFillCurve.Evaluate(progressToClick);
-        cursorProgressBorder.fillAmount = ringFillCurve.Evaluate(progressToClick);
-
-        if (ringEnabled)
+        public class ProgressCursor : Cursor
         {
-            if (!hidingCursor)
+            [Header("Graphics")]
+            public Transform cursorDotTransform;
+            public Transform cursorProgressTransform;
+
+            public UnityEngine.UI.Image cursorDot;
+            public UnityEngine.UI.Image cursorDotFill;
+            public UnityEngine.UI.Image cursorProgressBorder;
+            public UnityEngine.UI.Image cursorProgressFill;
+
+            [Header("Ring")]
+            public bool ringEnabled;
+            public UnityEngine.UI.Image cursorRing;
+            public AnimationCurve ringCurve;
+
+            [Header("Pulse")]
+            public AnimationCurve pulseGrowCurve;
+            public AnimationCurve pulseShrinkCurve;
+            [Range(0.01f, 1f)] public float pulseSeconds;
+            [Range(0.01f, 2f)] public float cursorDownScale;
+
+            protected float cursorDotSize;
+            protected float maxRingScale;
+            protected float screenDistanceAtMaxScaleMeters;
+
+            protected Color dotFillColor;
+            protected Color dotBorderColor;
+            protected Color ringColor;
+
+            protected bool shrunk = false;
+
+
+            public AnimationCurve ringFillCurve;
+
+            public override void UpdateCursor(Vector2 screenPos, float progressToClick)
             {
-                cursorRing.enabled = true;
+                _targetPos = screenPos;
+
+                cursorProgressFill.fillAmount = ringFillCurve.Evaluate(progressToClick);
+                cursorProgressBorder.fillAmount = ringFillCurve.Evaluate(progressToClick);
+
+                if (ringEnabled)
+                {
+                    if (!hidingCursor)
+                    {
+                        cursorRing.enabled = true;
+                    }
+                    else
+                    {
+                        cursorRing.enabled = false;
+                    }
+                }
             }
-            else
+
+            protected override void OnHandleInputAction(InputActionData _inputData)
             {
-                cursorRing.enabled = false;
+                InputType _type = _inputData.Type;
+                Vector2 _cursorPosition = _inputData.CursorPosition;
+                Vector2 _clickPosition = _inputData.ClickPosition;
+
+                switch (_type)
+                {
+                    case InputType.MOVE:
+                        UpdateCursor(_cursorPosition, _inputData.ProgressToClick);
+                        break;
+                    case InputType.DOWN:
+                        if (!shrunk)
+                        {
+                            if (cursorScalingRoutine != null)
+                                StopCoroutine(cursorScalingRoutine);
+
+                            cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
+                        }
+                        break;
+                    case InputType.UP:
+                    case InputType.HOVER:
+                        if (shrunk)
+                        {
+                            if (cursorScalingRoutine != null)
+                                StopCoroutine(cursorScalingRoutine);
+
+                            cursorScalingRoutine = StartCoroutine(GrowCursorDot());
+                        }
+                        break;
+                    case InputType.CANCEL:
+                        break;
+                }
             }
-        }
-    }
 
-    protected override void OnHandleInputAction(InputActionData _inputData)
-    {
-        InputType _type = _inputData.Type;
-        Vector2 _cursorPosition = _inputData.CursorPosition;
-        Vector2 _clickPosition = _inputData.ClickPosition;
-        
-        switch (_type)
-        {
-            case InputType.MOVE:
-                UpdateCursor(_cursorPosition, _inputData.ProgressToClick);
-                break;
-            case InputType.DOWN:
-                if (!shrunk)
+            protected override void OnConfigUpdated()
+            {
+                dotFillColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
+                dotBorderColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
+                ringColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+
+                cursorDot.color = dotBorderColor;
+                cursorDotFill.color = dotFillColor;
+                cursorProgressBorder.color = dotBorderColor;
+                cursorProgressFill.color = ringColor;
+
+                if (ringEnabled)
                 {
-                    if (cursorScalingRoutine != null)
-                        StopCoroutine(cursorScalingRoutine);
-
-                    cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
+                    cursorRing.color = ringColor;
                 }
-                break;
-            case InputType.UP:
-            case InputType.HOVER:
-                if (shrunk)
+
+                screenDistanceAtMaxScaleMeters = SettingsConfig.Config.CursorMaxRingScaleAtDistanceM;
+
+                cursorDotSize = (GlobalSettings.ScreenHeight / PhysicalConfigurable.Config.ScreenHeightM) * SettingsConfig.Config.CursorDotSizeM / 100f;
+                var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
+                cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
+
+                // Scale up the dot by a factor of 2 for this interaction due to the smaller dot
+                cursorDotSize *= 2f;
+
+                cursorDot.enabled = !dotSizeIsZero;
+                cursorProgressBorder.enabled = !dotSizeIsZero;
+                cursorProgressFill.enabled = !dotSizeIsZero;
+                cursorDotTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
+                cursorProgressTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
+
+                maxRingScale = (1f / cursorDotSize) * SettingsConfig.Config.CursorRingMaxScale;
+            }
+
+            Coroutine cursorScalingRoutine;
+            public IEnumerator GrowCursorDot()
+            {
+                SetCursorDotLocalScale(cursorDownScale * cursorDotSize);
+                shrunk = false;
+                YieldInstruction yieldInstruction = new YieldInstruction();
+                float elapsedTime = 0.0f;
+
+                while (elapsedTime < pulseSeconds)
                 {
-                    if (cursorScalingRoutine != null)
-                        StopCoroutine(cursorScalingRoutine);
-
-                    cursorScalingRoutine = StartCoroutine(GrowCursorDot());
+                    yield return yieldInstruction;
+                    elapsedTime += Time.deltaTime;
+                    float scale = ScreenControlUtility.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                    SetCursorDotLocalScale(scale);
                 }
-                break;
-            case InputType.CANCEL:
-                break;
-        }
-    }
 
-    protected override void OnConfigUpdated()
-    {
-        dotFillColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
-        dotBorderColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
-        ringColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+                SetCursorDotLocalScale(cursorDotSize);
+                cursorScalingRoutine = null;
+            }
 
-        cursorDot.color = dotBorderColor;
-        cursorDotFill.color = dotFillColor;
-        cursorProgressBorder.color = dotBorderColor;
-        cursorProgressFill.color = ringColor;
+            public IEnumerator ShrinkCursorDot()
+            {
+                shrunk = true;
+                YieldInstruction yieldInstruction = new YieldInstruction();
+                float elapsedTime = 0.0f;
 
-        if (ringEnabled)
-        {
-            cursorRing.color = ringColor;
-        }
+                while (elapsedTime < pulseSeconds)
+                {
+                    yield return yieldInstruction;
+                    elapsedTime += Time.deltaTime;
+                    float scale = ScreenControlUtility.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                    SetCursorDotLocalScale(scale);
+                }
 
-        screenDistanceAtMaxScaleMeters = SettingsConfig.Config.CursorMaxRingScaleAtDistanceM;
+                SetCursorDotLocalScale(cursorDownScale * cursorDotSize);
+                cursorScalingRoutine = null;
+            }
 
-        cursorDotSize = (GlobalSettings.ScreenHeight / PhysicalConfigurable.Config.ScreenHeightM) * SettingsConfig.Config.CursorDotSizeM / 100f;
-        var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
-        cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
+            private void SetCursorDotLocalScale(float scale)
+            {
+                cursorDotTransform.localScale = new Vector3(scale, scale, scale);
+            }
 
-        // Scale up the dot by a factor of 2 for this interaction due to the smaller dot
-        cursorDotSize *= 2f;
+            public override void ShowCursor()
+            {
+                base.ShowCursor();
+                cursorDot.enabled = true;
+                cursorDotFill.enabled = true;
+                cursorProgressBorder.enabled = true;
+                cursorProgressFill.enabled = true;
 
-        cursorDot.enabled = !dotSizeIsZero;
-        cursorProgressBorder.enabled = !dotSizeIsZero;
-        cursorProgressFill.enabled = !dotSizeIsZero;
-        cursorDotTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
-        cursorProgressTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
+                if (ringEnabled)
+                {
+                    cursorRing.enabled = true;
+                }
+            }
 
-        maxRingScale = (1f / cursorDotSize) * SettingsConfig.Config.CursorRingMaxScale;
-    }
+            public override void HideCursor()
+            {
+                base.HideCursor();
+                cursorDot.enabled = false;
+                cursorDotFill.enabled = false;
+                cursorProgressBorder.enabled = false;
+                cursorProgressFill.enabled = false;
 
-    Coroutine cursorScalingRoutine;
-    public IEnumerator GrowCursorDot()
-    {
-        SetCursorDotLocalScale(cursorDownScale * cursorDotSize);
-        shrunk = false;
-        YieldInstruction yieldInstruction = new YieldInstruction();
-        float elapsedTime = 0.0f;
-
-        while (elapsedTime < pulseSeconds)
-        {
-            yield return yieldInstruction;
-            elapsedTime += Time.deltaTime;
-            float scale = ScreenControlUtility.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
-            SetCursorDotLocalScale(scale);
-        }
-
-        SetCursorDotLocalScale(cursorDotSize);
-        cursorScalingRoutine = null;
-    }
-
-    public IEnumerator ShrinkCursorDot()
-    {
-        shrunk = true;
-        YieldInstruction yieldInstruction = new YieldInstruction();
-        float elapsedTime = 0.0f;
-
-        while (elapsedTime < pulseSeconds)
-        {
-            yield return yieldInstruction;
-            elapsedTime += Time.deltaTime;
-            float scale = ScreenControlUtility.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
-            SetCursorDotLocalScale(scale);
-        }
-
-        SetCursorDotLocalScale(cursorDownScale * cursorDotSize);
-        cursorScalingRoutine = null;
-    }
-
-    private void SetCursorDotLocalScale(float scale)
-    {
-        cursorDotTransform.localScale = new Vector3(scale, scale, scale);
-    }
-
-    public override void ShowCursor()
-    {
-        base.ShowCursor();
-        cursorDot.enabled = true;
-        cursorDotFill.enabled = true;
-        cursorProgressBorder.enabled = true;
-        cursorProgressFill.enabled = true;
-
-        if (ringEnabled)
-        {
-            cursorRing.enabled = true;
-        }
-    }
-
-    public override void HideCursor()
-    {
-        base.HideCursor();
-        cursorDot.enabled = false;
-        cursorDotFill.enabled = false;
-        cursorProgressBorder.enabled = false;
-        cursorProgressFill.enabled = false;
-
-        if (ringEnabled)
-        {
-            cursorRing.enabled = false;
+                if (ringEnabled)
+                {
+                    cursorRing.enabled = false;
+                }
+            }
         }
     }
 }

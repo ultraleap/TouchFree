@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class DoubleCursor : Cursor
+public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursors.Cursor
 {
     [Header("Controls")]
     public InteractionType moveInteraction = InteractionType.Push;
@@ -92,7 +92,7 @@ public class DoubleCursor : Cursor
                     break;
             }
         }
-        
+
     }
 
     protected override void OnConfigUpdated()
@@ -110,7 +110,7 @@ public class DoubleCursor : Cursor
         }
 
         screenDistanceAtMaxScaleMeters = SettingsConfig.Config.CursorMaxRingScaleAtDistanceM;
-        
+
         cursorDotSize = (GlobalSettings.ScreenHeight / PhysicalConfigurable.Config.ScreenHeightM) * SettingsConfig.Config.CursorDotSizeM / 100f;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
