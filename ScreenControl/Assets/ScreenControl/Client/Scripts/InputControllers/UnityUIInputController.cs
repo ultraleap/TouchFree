@@ -39,23 +39,19 @@ namespace Ultraleap.ScreenControl.Client
 
             private bool IsHovering()
             {
-                if (HandManager.Instance.PrimaryHand != null && allowInteractions)
-                {
+                //TODO: see if this is needed? or if we can store it from an inputaction?
+                //if (HandManager.Instance.PrimaryHand != null)
+                //{
                     return true;
-                }
-                else
-                {
-                    return false;
-                }
+                //}
+                //else
+                //{
+                //    return false;
+                //}
             }
 
             private bool IsTouching()
-            {
-                if (!allowInteractions)
-                {
-                    return false;
-                }
-
+            { 
                 if ((touchPhase == TouchPhase.Ended && previousTouchPhase == TouchPhase.Ended)
                     || (touchPhase == TouchPhase.Canceled && previousTouchPhase == TouchPhase.Canceled))
                 {
@@ -77,39 +73,41 @@ namespace Ultraleap.ScreenControl.Client
                 };
             }
 
-            protected override void HandleInputAction(InputActionData _inputData)
+            protected override void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
             {
                 base.HandleInputAction(_inputData);
 
-                InputType _type = _inputData.Type;
-                Vector2 _cursorPosition = _inputData.CursorPosition;
-                Vector2 _clickPosition = _inputData.ClickPosition;
-                float _distanceFromScreen = _inputData.ProgressToClick;
+                ScreenControlTypes.InputType type = _inputData.Type;
+                Vector2 cursorPosition = _inputData.CursorPosition;
+                float distanceFromScreen = _inputData.ProgressToClick;
 
-                touchPosition = _clickPosition;
+                touchPosition = cursorPosition;
 
-                if (_type == InputType.MOVE || _type == InputType.HOVER)
+                if (type == ScreenControlTypes.InputType.MOVE)
+                {
                     return;
+                }
 
                 touchPhase = TouchPhase.Ended;
                 eventSystem.pixelDragThreshold = baseDragThreshold;
 
-                switch (_type)
+                switch (type)
                 {
-                    case InputType.DOWN:
+                    case ScreenControlTypes.InputType.DOWN:
                         touchPhase = TouchPhase.Began;
                         break;
-                    case InputType.HOLD:
-                        touchPhase = TouchPhase.Moved;
-                        break;
-                    case InputType.DRAG:
-                        touchPhase = TouchPhase.Moved;
-                        eventSystem.pixelDragThreshold = 0;
-                        break;
-                    case InputType.CANCEL:
+                        //TODO: make this functionality work without passing around hold and drag events
+                    //case InputType.HOLD:
+                    //    touchPhase = TouchPhase.Moved;
+                    //    break;
+                    //case InputType.DRAG:
+                    //    touchPhase = TouchPhase.Moved;
+                    //    eventSystem.pixelDragThreshold = 0;
+                    //    break;
+                    case ScreenControlTypes.InputType.CANCEL:
                         touchPhase = TouchPhase.Canceled;
                         break;
-                    case InputType.UP:
+                    case ScreenControlTypes.InputType.UP:
                         touchPhase = TouchPhase.Ended;
                         break;
                 }

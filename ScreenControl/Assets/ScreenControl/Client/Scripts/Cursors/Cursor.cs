@@ -20,41 +20,46 @@ namespace Ultraleap.ScreenControl.Client
             protected virtual void OnEnable()
             {
                 _screenScale = 1;
-                ConfigurationSetupController.EnableCursorVisuals += ShowCursor;
-                ConfigurationSetupController.DisableCursorVisuals += HideCursor;
-                SettingsConfig.OnConfigUpdated += OnConfigUpdated;
-                InteractionManager.HandleInputAction += OnHandleInputAction;
+                //ConfigurationSetupController.EnableCursorVisuals += ShowCursor;
+                //ConfigurationSetupController.DisableCursorVisuals += HideCursor;
+                //SettingsConfig.OnConfigUpdated += OnConfigUpdated;
+                CoreConnection.TransmitInputAction += OnHandleInputAction;
                 OnConfigUpdated();
                 ResetCursor();
+                ShowCursor();
             }
 
             protected virtual void OnDisable()
             {
-                ConfigurationSetupController.EnableCursorVisuals -= ShowCursor;
-                ConfigurationSetupController.DisableCursorVisuals -= HideCursor;
-                SettingsConfig.OnConfigUpdated -= OnConfigUpdated;
-                InteractionManager.HandleInputAction -= OnHandleInputAction;
+                //ConfigurationSetupController.EnableCursorVisuals -= ShowCursor;
+                //ConfigurationSetupController.DisableCursorVisuals -= HideCursor;
+                //SettingsConfig.OnConfigUpdated -= OnConfigUpdated;
+                CoreConnection.TransmitInputAction -= OnHandleInputAction;
             }
 
             protected virtual void Update()
             {
-                if (Hands.Provider.CurrentFrame.Hands.Count > 0)
-                {
-                    cursorTransform.gameObject.SetActive(true);
-                    cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
+                //if (Hands.Provider.CurrentFrame.Hands.Count > 0)
+                //{
+                //    cursorTransform.gameObject.SetActive(true);
+                //    cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
 
-                    if (hidingCursor && (!ConfigurationSetupController.isActive || (ConfigurationSetupController.currentState != ConfigState.AUTO)))
-                    { // Only show the cursor if we are not in the auto setup screen of the configuration
-                        ShowCursor();
-                    }
-                }
-                else
-                {
-                    if (!hidingCursor)
-                    {
-                        HideCursor();
-                    }
-                }
+                //    if (hidingCursor)
+                //    { // Only show the cursor if we are not in the auto setup screen of the configuration
+                //        ShowCursor();
+                //    }
+                //}
+                //else
+                //{
+                //    if (!hidingCursor)
+                //    {
+                //        HideCursor();
+                //    }
+                //}
+
+                //TODO: only set active if we are supposed to show the cursor (if an event has been sent recently)
+                cursorTransform.gameObject.SetActive(true);
+                cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
             }
 
             public virtual void UpdateCursor(Vector2 _screenPos, float _progressToClick)
@@ -62,7 +67,7 @@ namespace Ultraleap.ScreenControl.Client
                 _targetPos = _screenPos;
             }
 
-            protected virtual void OnHandleInputAction(InputActionData _inputData)
+            protected virtual void OnHandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
             {
             }
 

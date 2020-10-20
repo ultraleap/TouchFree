@@ -116,19 +116,18 @@ namespace Ultraleap.ScreenControl.Client
                 }
             }
 
-            protected override void OnHandleInputAction(InputActionData _inputData)
+            protected override void OnHandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
             {
-                InputType _type = _inputData.Type;
+                ScreenControlTypes.InputType _type = _inputData.Type;
                 Vector2 _cursorPosition = _inputData.CursorPosition;
-                Vector2 _clickPosition = _inputData.ClickPosition;
                 float _distanceFromScreen = _inputData.ProgressToClick;
 
                 switch (_type)
                 {
-                    case InputType.MOVE:
+                    case ScreenControlTypes.InputType.MOVE:
                         UpdateCursor(_cursorPosition, _distanceFromScreen);
                         break;
-                    case InputType.DOWN:
+                    case ScreenControlTypes.InputType.DOWN:
                         growQueued = false;
                         if (cursorScalingRoutine != null)
                         {
@@ -136,25 +135,24 @@ namespace Ultraleap.ScreenControl.Client
                         }
                         cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
                         break;
-                    case InputType.UP:
+                    case ScreenControlTypes.InputType.UP:
                         growQueued = true;
                         break;
-                    case InputType.HOVER:
-                    case InputType.CANCEL:
+                    case ScreenControlTypes.InputType.CANCEL:
                         break;
                 }
             }
 
             protected override void OnConfigUpdated()
             {
-                dotFillColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotFillColor, SettingsConfig.Config.CursorDotFillOpacity);
-                dotBorderColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorDotBorderColor, SettingsConfig.Config.CursorDotBorderOpacity);
-                ringColor = ScreenControlUtility.ParseColor(SettingsConfig.Config.CursorRingColor, SettingsConfig.Config.CursorRingOpacity);
+                dotFillColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
+                dotBorderColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
+                ringColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
 
                 cursorDot.color = dotBorderColor;
                 cursorDotFill.color = dotFillColor;
 
-                cursorDotSize = (GlobalSettings.ScreenHeight / PhysicalConfigurable.Config.ScreenHeightM) * SettingsConfig.Config.CursorDotSizeM / 100f;
+                cursorDotSize = (ClientSettings.ScreenHeight_px / ConnectionManager.coreConnection.physicalConfig.ScreenHeightM) * ClientSettings.clientConstants.CursorDotSizeM / 100f;
                 var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
                 cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
                 cursorDot.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
@@ -162,7 +160,7 @@ namespace Ultraleap.ScreenControl.Client
 
                 if (ringEnabled)
                 {
-                    maxRingScale = (1f / cursorDotSize) * SettingsConfig.Config.CursorRingMaxScale;
+                    maxRingScale = (1f / cursorDotSize) * ClientSettings.clientConstants.CursorRingMaxScale;
 
                     // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
                     ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
@@ -183,7 +181,7 @@ namespace Ultraleap.ScreenControl.Client
                 {
                     yield return yieldInstruction;
                     elapsedTime += Time.deltaTime;
-                    float scale = ScreenControlUtility.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                    float scale = ScreenControlClientUtility.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
                     SetCursorLocalScale(scale);
                 }
 
@@ -200,7 +198,7 @@ namespace Ultraleap.ScreenControl.Client
                 {
                     yield return yieldInstruction;
                     elapsedTime += Time.deltaTime;
-                    float scale = ScreenControlUtility.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                    float scale = ScreenControlClientUtility.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
                     SetCursorLocalScale(scale);
                 }
 

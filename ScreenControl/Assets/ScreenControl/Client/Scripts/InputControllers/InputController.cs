@@ -11,56 +11,29 @@ namespace Ultraleap.ScreenControl.Client
         /// </summary>
         public abstract class InputController : BaseInput
         {
-            public static InputController Instance;
-
-            public bool allowInteractions = true;
-
             protected override void Start()
             {
                 base.Start();
-
-                Instance = this;
-                InteractionManager.HandleInputAction += HandleInputAction;
-                ConfigurationSetupController.EnableInteractions += EnableInteraction;
-                ConfigurationSetupController.DisableInteractions += DisableInteraction;
-            }
-
-            protected virtual void EnableInteraction()
-            {
-                allowInteractions = true;
-            }
-
-            protected virtual void DisableInteraction()
-            {
-                allowInteractions = false;
+                CoreConnection.TransmitInputAction += HandleInputAction;
             }
 
             protected override void OnDestroy()
             {
                 base.OnDestroy();
-
-                InteractionManager.HandleInputAction -= HandleInputAction;
-                ConfigurationSetupController.EnableInteractions -= EnableInteraction;
-                ConfigurationSetupController.DisableInteractions -= DisableInteraction;
+                CoreConnection.TransmitInputAction -= HandleInputAction;
             }
 
-            protected virtual void HandleInputAction(InputActionData _inputData)
+            protected virtual void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
             {
                 switch (_inputData.Type)
                 {
-                    case InputType.MOVE:
+                    case ScreenControlTypes.InputType.MOVE:
                         break;
-                    case InputType.DOWN:
+                    case ScreenControlTypes.InputType.DOWN:
                         break;
-                    case InputType.HOLD:
+                    case ScreenControlTypes.InputType.UP:
                         break;
-                    case InputType.DRAG:
-                        break;
-                    case InputType.UP:
-                        break;
-                    case InputType.HOVER:
-                        break;
-                    case InputType.CANCEL:
+                    case ScreenControlTypes.InputType.CANCEL:
                         break;
                 }
             }

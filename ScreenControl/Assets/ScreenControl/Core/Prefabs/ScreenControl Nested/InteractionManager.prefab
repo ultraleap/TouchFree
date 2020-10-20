@@ -223,6 +223,7 @@ MonoBehaviour:
   cursorSnapper: {fileID: 0}
   Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
+  cursorSnapSoftness: 0.005
 --- !u!1 &2996853500264389869
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,6 +475,7 @@ MonoBehaviour:
   cursorSnapper: {fileID: 0}
   Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
+  cursorSnapSoftness: 0.005
 --- !u!1 &4362153883051029045
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,7 +584,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5911777842215055681}
   m_Layer: 0
-  m_Name: ReachInteractionManager
+  m_Name: InteractionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -595,7 +597,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5911777842215055679}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -739,6 +741,7 @@ MonoBehaviour:
   cursorSnapper: {fileID: 0}
   Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
+  cursorSnapSoftness: 0.005
 --- !u!1 &5911777843306443419
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,8 +841,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0be834632e1119499b7ab3f30e07279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pushInteraction: {fileID: 1103591773542635571}
-  pokeInteraction: {fileID: 5084752646473920823}
+  pushInteraction: {fileID: 4561004809390473265}
+  pokeInteraction: {fileID: 1463014649917980148}
   grabInteraction: {fileID: 8458558753266193409}
   hoverInteraction: {fileID: 5495909130341898480}
 --- !u!1 &5911777843642849153
@@ -911,6 +914,7 @@ MonoBehaviour:
   cursorSnapper: {fileID: 0}
   Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
+  cursorSnapSoftness: 0.005
 --- !u!1 &6436637774942388277
 GameObject:
   m_ObjectHideFlags: 0
@@ -1005,6 +1009,7 @@ MonoBehaviour:
   cursorSnapper: {fileID: 0}
   Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
+  cursorSnapSoftness: 0.005
 --- !u!114 &5753121179731557265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1143,6 +1148,7 @@ MonoBehaviour:
   cursorSnapper: {fileID: 0}
   Stabiliser: {fileID: 1209870512470156362}
   VerticalOffset: 1
+  cursorSnapSoftness: 0.005
 --- !u!1 &7577625936678580990
 GameObject:
   m_ObjectHideFlags: 0
