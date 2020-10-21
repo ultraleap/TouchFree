@@ -2,8 +2,7 @@
 
 namespace Ultraleap.ScreenControl.Client
 {
-
-    public class PinchGrabCursor : Ultraleap.ScreenControl.Client.Cursors.Cursor
+    public class PinchGrabCursor : Cursor
     {
         [Header("Graphics")]
         public UnityEngine.UI.Image cursorDot;
@@ -50,11 +49,11 @@ namespace Ultraleap.ScreenControl.Client
 
         protected override void OnConfigUpdated()
         {
-            dotFillColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
-            dotBorderColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
+            dotFillColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
+            dotBorderColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
 
-            openHandImage.color = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
-            closedHandImage.color = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
+            openHandImage.color = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
+            closedHandImage.color = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
 
             cursorDot.color = dotBorderColor;
             cursorDotFill.color = dotFillColor;

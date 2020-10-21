@@ -3,108 +3,105 @@ using Leap.Unity;
 
 namespace Ultraleap.ScreenControl.Client
 {
-    namespace Cursors
+    public class Cursor : MonoBehaviour
     {
-        public class Cursor : MonoBehaviour
+        public RectTransform cursorTransform;
+
+        public bool _positionOverride = false;
+        protected float _screenScale;
+
+        protected Vector2 _targetPos;
+        protected Vector2 _overridePosition;
+
+        protected bool hidingCursor = false;
+
+        protected virtual void OnEnable()
         {
-            public RectTransform cursorTransform;
+            _screenScale = 1;
+            //ConfigurationSetupController.EnableCursorVisuals += ShowCursor;
+            //ConfigurationSetupController.DisableCursorVisuals += HideCursor;
+            //SettingsConfig.OnConfigUpdated += OnConfigUpdated;
+            ConnectionManager.coreConnection.TransmitInputAction += OnHandleInputAction;
+            OnConfigUpdated();
+            ResetCursor();
+            ShowCursor();
+        }
 
-            public bool _positionOverride = false;
-            protected float _screenScale;
+        protected virtual void OnDisable()
+        {
+            //ConfigurationSetupController.EnableCursorVisuals -= ShowCursor;
+            //ConfigurationSetupController.DisableCursorVisuals -= HideCursor;
+            //SettingsConfig.OnConfigUpdated -= OnConfigUpdated;
+            ConnectionManager.coreConnection.TransmitInputAction -= OnHandleInputAction;
+        }
 
-            protected Vector2 _targetPos;
-            protected Vector2 _overridePosition;
+        protected virtual void Update()
+        {
+            //if (Hands.Provider.CurrentFrame.Hands.Count > 0)
+            //{
+            //    cursorTransform.gameObject.SetActive(true);
+            //    cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
 
-            protected bool hidingCursor = false;
+            //    if (hidingCursor)
+            //    { // Only show the cursor if we are not in the auto setup screen of the configuration
+            //        ShowCursor();
+            //    }
+            //}
+            //else
+            //{
+            //    if (!hidingCursor)
+            //    {
+            //        HideCursor();
+            //    }
+            //}
 
-            protected virtual void OnEnable()
-            {
-                _screenScale = 1;
-                //ConfigurationSetupController.EnableCursorVisuals += ShowCursor;
-                //ConfigurationSetupController.DisableCursorVisuals += HideCursor;
-                //SettingsConfig.OnConfigUpdated += OnConfigUpdated;
-                CoreConnection.TransmitInputAction += OnHandleInputAction;
-                OnConfigUpdated();
-                ResetCursor();
-                ShowCursor();
-            }
+            //TODO: only set active if we are supposed to show the cursor (if an event has been sent recently)
+            cursorTransform.gameObject.SetActive(true);
+            cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
+        }
 
-            protected virtual void OnDisable()
-            {
-                //ConfigurationSetupController.EnableCursorVisuals -= ShowCursor;
-                //ConfigurationSetupController.DisableCursorVisuals -= HideCursor;
-                //SettingsConfig.OnConfigUpdated -= OnConfigUpdated;
-                CoreConnection.TransmitInputAction -= OnHandleInputAction;
-            }
+        public virtual void UpdateCursor(Vector2 _screenPos, float _progressToClick)
+        {
+            _targetPos = _screenPos;
+        }
 
-            protected virtual void Update()
-            {
-                //if (Hands.Provider.CurrentFrame.Hands.Count > 0)
-                //{
-                //    cursorTransform.gameObject.SetActive(true);
-                //    cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
+        protected virtual void OnHandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
+        {
+        }
 
-                //    if (hidingCursor)
-                //    { // Only show the cursor if we are not in the auto setup screen of the configuration
-                //        ShowCursor();
-                //    }
-                //}
-                //else
-                //{
-                //    if (!hidingCursor)
-                //    {
-                //        HideCursor();
-                //    }
-                //}
+        protected virtual void OnConfigUpdated()
+        {
+        }
 
-                //TODO: only set active if we are supposed to show the cursor (if an event has been sent recently)
-                cursorTransform.gameObject.SetActive(true);
-                cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
-            }
+        public virtual void ResetCursor()
+        {
 
-            public virtual void UpdateCursor(Vector2 _screenPos, float _progressToClick)
-            {
-                _targetPos = _screenPos;
-            }
+        }
 
-            protected virtual void OnHandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
-            {
-            }
+        public virtual void ShowCursor()
+        {
+            hidingCursor = false;
+        }
 
-            protected virtual void OnConfigUpdated()
-            {
-            }
+        public virtual void HideCursor()
+        {
+            hidingCursor = true;
+        }
 
-            public virtual void ResetCursor()
-            {
+        public virtual void OverridePosition(bool active, Vector2 position)
+        {
+            _positionOverride = active;
+            _overridePosition = position;
+        }
 
-            }
+        public virtual Vector2 TargetPosition()
+        {
+            return _targetPos;
+        }
 
-            public virtual void ShowCursor()
-            {
-                hidingCursor = false;
-            }
-
-            public virtual void HideCursor()
-            {
-                hidingCursor = true;
-            }
-
-            public virtual void OverridePosition(bool active, Vector2 position)
-            {
-                _positionOverride = active;
-                _overridePosition = position;
-            }
-
-            public virtual Vector2 TargetPosition()
-            {
-                return _targetPos;
-            }
-
-            public virtual void SetScreenScale(float _scale)
-            {
-                _screenScale = _scale;
-            }
+        public virtual void SetScreenScale(float _scale)
+        {
+            _screenScale = _scale;
         }
     }
 }

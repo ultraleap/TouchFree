@@ -27,7 +27,7 @@ namespace Ultraleap.ScreenControl.Client
         HIDDEN
     }
 
-    public class BlobCursor : Ultraleap.ScreenControl.Client.Cursors.Cursor
+    public class BlobCursor : Cursor
     {
         public float cursorLerpSpeed = 15f;
 

@@ -7,7 +7,7 @@ namespace Ultraleap.ScreenControl.Client
     public abstract class CoreConnection
     {
         public delegate void ClientInputActionEvent(ScreenControlTypes.ClientInputAction _inputData);
-        public static event ClientInputActionEvent TransmitInputAction;
+        public event ClientInputActionEvent TransmitInputAction;
 
         public PhysicalConfiguration physicalConfig
         {

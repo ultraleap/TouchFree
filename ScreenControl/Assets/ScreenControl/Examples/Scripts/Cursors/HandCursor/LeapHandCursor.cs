@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursors.Cursor
+public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursor
 {
     public struct HandCursorData
     {

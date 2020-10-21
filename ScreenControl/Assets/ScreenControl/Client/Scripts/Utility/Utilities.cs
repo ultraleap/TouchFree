@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
-    public static class ScreenControlClientUtility
+    public static class Utilities
     {
         public static float MapRangeToRange(float _value, float _oldMin, float _oldMax, float _newMin, float _newMax)
         {

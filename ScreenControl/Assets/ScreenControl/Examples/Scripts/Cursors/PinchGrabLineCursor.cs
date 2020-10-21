@@ -121,7 +121,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
-                float scale = ScreenControlClientUtility.MapRangeToRange(lineGrowCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
+                float scale = Utilities.MapRangeToRange(lineGrowCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
                 SetLineRendererWidthScale(scale);
             }
 
@@ -137,7 +137,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
-                float scale = ScreenControlClientUtility.MapRangeToRange(lineShrinkCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
+                float scale = Utilities.MapRangeToRange(lineShrinkCurve.Evaluate(elapsedTime / LineGrowthSeconds), 0, 1, 1, LineGrowthMultiplier);
                 SetLineRendererWidthScale(scale);
             }
 
@@ -171,7 +171,7 @@ namespace Ultraleap.ScreenControl.Client
         {
             float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
             float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
-            float currentCircleOffsetRadius = ScreenControlClientUtility.MapRangeToRange(radiusScale.Evaluate(_grabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
+            float currentCircleOffsetRadius = Utilities.MapRangeToRange(radiusScale.Evaluate(_grabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
 
             Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(cursorTransform.anchoredPosition);
 
@@ -231,7 +231,7 @@ namespace Ultraleap.ScreenControl.Client
                 float arcAngle = (cursorChirality == ScreenControlTypes.HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
                 float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
                 float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
-                float currentCircleOffsetRadius = ScreenControlClientUtility.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
+                float currentCircleOffsetRadius = Utilities.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
                 float finalOffsetRadius = arcMidpointRadius / 2;
 
                 Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(_targetPos);

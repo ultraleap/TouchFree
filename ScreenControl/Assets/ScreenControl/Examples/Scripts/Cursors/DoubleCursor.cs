@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
-    public class DoubleCursor : Cursors.Cursor
+    public class DoubleCursor : Cursor
     {
         [Header("Controls")]
         public ScreenControlTypes.InteractionType moveInteraction = ScreenControlTypes.InteractionType.Push;
@@ -98,9 +98,9 @@ namespace Ultraleap.ScreenControl.Client
 
         protected override void OnConfigUpdated()
         {
-            dotFillColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
-            dotBorderColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
-            ringColor = ScreenControlClientUtility.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
+            dotFillColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
+            dotBorderColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
+            ringColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
 
             cursorDot.color = dotBorderColor;
             cursorDotFill.color = dotFillColor;
@@ -133,7 +133,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
-                float scale = ScreenControlClientUtility.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                float scale = Utilities.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
                 SetCursorDotLocalScale(scale);
             }
 
@@ -151,7 +151,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
-                float scale = ScreenControlClientUtility.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                float scale = Utilities.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
                 SetCursorDotLocalScale(scale);
             }
 

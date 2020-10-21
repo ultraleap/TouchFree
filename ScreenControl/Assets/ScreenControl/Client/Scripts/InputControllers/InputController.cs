@@ -14,13 +14,13 @@ namespace Ultraleap.ScreenControl.Client
             protected override void Start()
             {
                 base.Start();
-                CoreConnection.TransmitInputAction += HandleInputAction;
+                ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
             }
 
             protected override void OnDestroy()
             {
                 base.OnDestroy();
-                CoreConnection.TransmitInputAction -= HandleInputAction;
+                ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
             }
 
             protected virtual void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
