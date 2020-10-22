@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 
-public class ScreenControlMain
+namespace Ultraleap.ScreenControl.Core
 {
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    public static void ScreenControl_Main()
+    public class ScreenControlMain
     {
-        GlobalSettings.ScreenWidth = Display.main.systemWidth;
-        GlobalSettings.ScreenHeight = Display.main.systemHeight;
-        Screen.SetResolution(GlobalSettings.ScreenWidth, GlobalSettings.ScreenHeight, true);
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void ScreenControl_Main()
+        {
+            GlobalSettings.ScreenWidth = Display.main.systemWidth;
+            GlobalSettings.ScreenHeight = Display.main.systemHeight;
+            Screen.SetResolution(GlobalSettings.ScreenWidth, GlobalSettings.ScreenHeight, true);
+        }
     }
 }

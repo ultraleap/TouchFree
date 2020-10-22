@@ -3,21 +3,16 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
-    public enum RingAnimationStyle
-    {
-        PROGRESS_TO_CLICK,
-        CUSTOM_ANIMATION
-    }
-
-    public class DotCursor : Cursor
+    public class DotCursor : TouchlessCursor
     {
         [Header("Graphics")]
-        public UnityEngine.UI.Image cursorDot;
-        public UnityEngine.UI.Image cursorDotFill;
+        public UnityEngine.UI.Image cursorBorder;
+        public UnityEngine.UI.Image cursorFill;
         public SpriteRenderer ringOuterSprite;
 
         [Header("Ring")]
         public bool ringEnabled;
+        public float cursorMaxRingSize = 2;
 
         public AnimationCurve ringCurve;
 
@@ -26,8 +21,6 @@ namespace Ultraleap.ScreenControl.Client
 
         public float ringWidth;
         public float ringSpriteScale;
-
-        public RingAnimationStyle ringAnimationStyle;
 
         [Header("Pulse")]
         public AnimationCurve pulseGrowCurve;
@@ -66,55 +59,34 @@ namespace Ultraleap.ScreenControl.Client
 
             if (ringEnabled)
             {
-                if (ringAnimationStyle == RingAnimationStyle.CUSTOM_ANIMATION)
+                //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
+                var dist = Mathf.Clamp01(1f - _progressToClick);
+
+                if (hidingCursor)
                 {
-                    UpdateCursorCustomRingAnimation();
+                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, 0);
                 }
                 else
                 {
-                    //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
-                    var dist = Mathf.Clamp01(1f - _progressToClick);
+                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(ringColor.a, 0f, dist));
 
-                    if (hidingCursor)
+                    // 0.9f so that the boundary between ring and dot is not visible - small overlap.
+                    float minRingScale = 0.9f + ringWidth / ringSpriteScale;
+                    var ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(dist));
+
+                    ringOuter.transform.localScale = Vector3.Lerp(ringOuter.transform.localScale, Vector3.one * ringScale * ringSpriteScale, Time.deltaTime * 15);
+
+                    ringMask.transform.localScale = new Vector3()
                     {
-                        ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, 0);
-                    }
-                    else
-                    {
-                        ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(ringColor.a, 0f, dist));
-
-                        // 0.9f so that the boundary between ring and dot is not visible - small overlap.
-                        float minRingScale = 0.9f + ringWidth / ringSpriteScale;
-                        var ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(dist));
-
-                        ringOuter.transform.localScale = Vector3.Lerp(ringOuter.transform.localScale, Vector3.one * ringScale * ringSpriteScale, Time.deltaTime * 15);
-
-                        ringMask.transform.localScale = new Vector3()
-                        {
-                            x = Mathf.Max(0, ringOuter.localScale.x - ringWidth),
-                            y = Mathf.Max(0, ringOuter.localScale.y - ringWidth),
-                            z = ringOuter.localScale.z
-                        };
-                    }
+                        x = Mathf.Max(0, ringOuter.localScale.x - ringWidth),
+                        y = Mathf.Max(0, ringOuter.localScale.y - ringWidth),
+                        z = ringOuter.localScale.z
+                    };
                 }
             }
         }
 
-        void UpdateCursorCustomRingAnimation()
-        {
-            if (ringEnabled && !hidingCursor)
-            {
-                ringOuterSprite.color = ringColor;
-                var ringScale = cursorLocalScale.x * maxRingScale;
-                SetRingSize(Vector3.one * ringScale * ringSpriteScale);
-            }
-            else
-            {
-                ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, 0);
-            }
-        }
-
-        protected override void OnHandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
+        protected override void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
         {
             ScreenControlTypes.InputType _type = _inputData.Type;
             Vector2 _cursorPosition = _inputData.CursorPosition;
@@ -141,24 +113,25 @@ namespace Ultraleap.ScreenControl.Client
             }
         }
 
-        protected override void OnConfigUpdated()
+        protected override void InitialiseCursor()
         {
-            dotFillColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
-            dotBorderColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
-            ringColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
+            dotFillColor = cursorFill.color;
+            dotBorderColor = cursorBorder.color;
 
-            cursorDot.color = dotBorderColor;
-            cursorDotFill.color = dotFillColor;
+            if (ringEnabled)
+            {
+                ringColor = ringOuterSprite.color;
+            }
 
-            cursorDotSize = ClientSettings.clientConstants.CursorDotSizePixels;
+            cursorDotSize = cursorSize;
             var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
             cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
-            cursorDot.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
+            cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
             SetCursorLocalScale(cursorDotSize);
 
             if (ringEnabled)
             {
-                maxRingScale = (1f / cursorDotSize) * ClientSettings.clientConstants.CursorRingMaxScale;
+                maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
 
                 // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
                 ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
@@ -207,22 +180,7 @@ namespace Ultraleap.ScreenControl.Client
         private void SetCursorLocalScale(float scale)
         {
             cursorLocalScale = new Vector3(scale, scale, scale);
-
-            if (ringAnimationStyle != RingAnimationStyle.CUSTOM_ANIMATION)
-            {
-                cursorDot.transform.localScale = cursorLocalScale;
-            }
-        }
-
-        private void SetRingSize(Vector3 _size)
-        {
-            ringOuter.transform.localScale = _size;
-            ringMask.transform.localScale = new Vector3()
-            {
-                x = Mathf.Max(0, ringOuter.localScale.x - ringWidth),
-                y = Mathf.Max(0, ringOuter.localScale.y - ringWidth),
-                z = ringOuter.localScale.z
-            };
+            cursorBorder.transform.localScale = cursorLocalScale;
         }
 
         Coroutine fadeRoutine;
@@ -240,8 +198,8 @@ namespace Ultraleap.ScreenControl.Client
             ResetCursor();
 
             fadeRoutine = StartCoroutine(FadeCursor(0, 1, fadeDuration));
-            cursorDot.enabled = true;
-            cursorDotFill.enabled = true;
+            cursorBorder.enabled = true;
+            cursorFill.enabled = true;
 
             if (ringEnabled)
             {
@@ -289,19 +247,19 @@ namespace Ultraleap.ScreenControl.Client
                 yield return null;
                 var a = Mathf.Lerp(_from, _to, i / _duration);
 
-                cursorDot.color = new Color()
+                cursorBorder.color = new Color()
                 {
-                    r = cursorDot.color.r,
-                    g = cursorDot.color.g,
-                    b = cursorDot.color.b,
+                    r = cursorBorder.color.r,
+                    g = cursorBorder.color.g,
+                    b = cursorBorder.color.b,
                     a = a * dotBorderColor.a
                 };
 
-                cursorDotFill.color = new Color()
+                cursorFill.color = new Color()
                 {
-                    r = cursorDotFill.color.r,
-                    g = cursorDotFill.color.g,
-                    b = cursorDotFill.color.b,
+                    r = cursorFill.color.r,
+                    g = cursorFill.color.g,
+                    b = cursorFill.color.b,
                     a = a * dotFillColor.a
                 };
             };
@@ -310,8 +268,8 @@ namespace Ultraleap.ScreenControl.Client
             {
                 SetCursorLocalScale(cursorDotSize);
 
-                cursorDot.enabled = false;
-                cursorDotFill.enabled = false;
+                cursorBorder.enabled = false;
+                cursorFill.enabled = false;
 
                 if (ringEnabled)
                 {

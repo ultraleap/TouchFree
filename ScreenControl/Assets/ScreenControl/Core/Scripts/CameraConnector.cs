@@ -3,42 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
 
-[DefaultExecutionOrder(-100)]
-public class CameraConnector : MonoBehaviour
+namespace Ultraleap.ScreenControl.Core
 {
-    [Tooltip("(Optional) This will be auto-detected if not referenced.\n\nThe camera that is used to render the canvasses. This camera should be oethographic.")]
-    public Camera orthographicCamera;
-
-    public Canvas[] targetCanvasses;
-    public VideoPlayer targetVideoPlayer;
-
-    private void Awake()
+    [DefaultExecutionOrder(-100)]
+    public class CameraConnector : MonoBehaviour
     {
-        if(orthographicCamera == null)
-        {
-            var cameras = FindObjectsOfType<Camera>();
+        [Tooltip("(Optional) This will be auto-detected if not referenced.\n\nThe camera that is used to render the canvasses. This camera should be oethographic.")]
+        public Camera orthographicCamera;
 
-            foreach(var cam in cameras)
+        public Canvas[] targetCanvasses;
+
+        private void Awake()
+        {
+            if (orthographicCamera == null)
             {
-                if(cam.orthographic)
+                var cameras = FindObjectsOfType<Camera>();
+
+                foreach (var cam in cameras)
                 {
-                    orthographicCamera = cam;
-                    break;
+                    if (cam.orthographic)
+                    {
+                        orthographicCamera = cam;
+                        break;
+                    }
+                }
+
+                if (orthographicCamera == null)
+                {
+                    Debug.LogError("No orthographic cameras found. This is required for the canvasses to render properly.");
+                    return;
                 }
             }
 
-            if (orthographicCamera == null)
+            foreach (var canvas in targetCanvasses)
             {
-                Debug.LogError("No orthographic cameras found. This is required for the canvasses to render properly.");
-                return;
+                canvas.worldCamera = orthographicCamera;
             }
         }
-
-        foreach(var canvas in targetCanvasses)
-        {
-            canvas.worldCamera = orthographicCamera;
-        }
-
-        targetVideoPlayer.targetCamera = orthographicCamera;
     }
 }

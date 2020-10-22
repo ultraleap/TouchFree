@@ -2,7 +2,7 @@
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
 
-public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
+public class DoubleCursor : TouchlessCursor
 {
     [Header("Controls")]
     public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType moveInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.Push;
@@ -16,6 +16,7 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
     public bool ringEnabled;
     public UnityEngine.UI.Image cursorRing;
     public AnimationCurve ringCurve;
+    public float cursorMaxRingSize = 2;
 
     [Header("Pulse")]
     public AnimationCurve pulseGrowCurve;
@@ -25,10 +26,8 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
 
     protected float cursorDotSize;
     protected float maxRingScale;
-    protected float screenDistanceAtMaxScaleMeters;
+    public float screenDistanceAtMaxScaleMeters;
 
-    protected Color dotFillColor;
-    protected Color dotBorderColor;
     protected Color ringColor;
 
     protected bool dotShrunk = false;
@@ -55,7 +54,7 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
         }
     }
 
-    protected override void OnHandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
         if (_inputData.Type == Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE)
         {
@@ -95,29 +94,20 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
 
     }
 
-    protected override void OnConfigUpdated()
+    protected override void InitialiseCursor()
     {
-        dotFillColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
-        dotBorderColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
-        ringColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
-
-        cursorDot.color = dotBorderColor;
-        cursorDotFill.color = dotFillColor;
-
         if (ringEnabled)
         {
-            cursorRing.color = ringColor;
+            ringColor = cursorRing.color;
         }
 
-        screenDistanceAtMaxScaleMeters = ClientSettings.clientConstants.CursorMaxRingScaleAtDistanceM;
-
-        cursorDotSize = ClientSettings.clientConstants.CursorDotSizePixels;
+        cursorDotSize = cursorSize;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
         cursorDot.enabled = !dotSizeIsZero;
         cursorDot.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
 
-        maxRingScale = (1f / cursorDotSize) * ClientSettings.clientConstants.CursorRingMaxScale;
+        maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
     }
 
     Coroutine cursorScalingRoutine;

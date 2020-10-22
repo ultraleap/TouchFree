@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using Ultraleap.ScreenControl.Client;
 
-public class PinchGrabCursor : Ultraleap.ScreenControl.Client.Cursor
+public class PinchGrabCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 {
     [Header("Graphics")]
     public UnityEngine.UI.Image cursorDot;
     public UnityEngine.UI.Image cursorDotFill;
 
     protected float cursorDotSize;
-    protected Color dotFillColor;
-    protected Color dotBorderColor;
 
     private Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality cursorChirality = Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.RIGHT;
 
@@ -17,7 +15,7 @@ public class PinchGrabCursor : Ultraleap.ScreenControl.Client.Cursor
     public UnityEngine.UI.Image openHandImage;
     public UnityEngine.UI.Image closedHandImage;
 
-    protected override void OnHandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
         Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.Type;
         Vector2 cursorPosition = _inputData.CursorPosition;
@@ -46,18 +44,9 @@ public class PinchGrabCursor : Ultraleap.ScreenControl.Client.Cursor
         }
     }
 
-    protected override void OnConfigUpdated()
+    protected override void InitialiseCursor()
     {
-        dotFillColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
-        dotBorderColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
-
-        openHandImage.color = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
-        closedHandImage.color = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
-
-        cursorDot.color = dotBorderColor;
-        cursorDotFill.color = dotFillColor;
-
-        cursorDotSize = ClientSettings.clientConstants.CursorDotSizePixels;
+        cursorDotSize = cursorSize;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
         cursorDot.enabled = !dotSizeIsZero;

@@ -25,7 +25,7 @@ public enum BlobState
     HIDDEN
 }
 
-public class BlobCursor : Ultraleap.ScreenControl.Client.Cursor
+public class BlobCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 {
     public float cursorLerpSpeed = 15f;
 
@@ -158,7 +158,7 @@ public class BlobCursor : Ultraleap.ScreenControl.Client.Cursor
         return cursorState;
     }
 
-    protected override void OnHandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
         Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.Type;
         cursorPosition = _inputData.CursorPosition;

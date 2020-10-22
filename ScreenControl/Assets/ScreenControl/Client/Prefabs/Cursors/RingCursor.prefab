@@ -234,6 +234,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -333,11 +334,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorTransform: {fileID: 2292088166589006933}
+  cursorSize: 0.25
   _positionOverride: 0
-  cursorDot: {fileID: 2292088166042207031}
-  cursorDotFill: {fileID: 4385562017838604252}
+  cursorBorder: {fileID: 2292088166042207031}
+  cursorFill: {fileID: 4385562017838604252}
   ringOuterSprite: {fileID: 915649657}
   ringEnabled: 1
+  cursorMaxRingSize: 2
   ringCurve:
     serializedVersion: 2
     m_Curve:
@@ -487,6 +490,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

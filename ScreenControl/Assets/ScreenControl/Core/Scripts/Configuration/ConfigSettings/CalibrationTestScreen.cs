@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CalibrationTestScreen : MonoBehaviour
+namespace Ultraleap.ScreenControl.Core
 {
-    public Toggle[] toggles;
-
-    private void OnEnable()
+    public class CalibrationTestScreen : MonoBehaviour
     {
-        foreach(var tog in toggles)
+        public Toggle[] toggles;
+
+        private void OnEnable()
         {
-            tog.isOn = false;
+            foreach (var tog in toggles)
+            {
+                tog.isOn = false;
+            }
         }
     }
 }

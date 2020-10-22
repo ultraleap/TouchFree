@@ -1,11 +1,14 @@
-﻿public static class GlobalSettings
+﻿namespace Ultraleap.ScreenControl.Core
 {
-    public static int CursorWindowSize = 256;
+    public static class GlobalSettings
+    {
+        public static int CursorWindowSize = 256;
 
-	public static int ScreenWidth;
-	public static int ScreenHeight;
+        public static int ScreenWidth;
+        public static int ScreenHeight;
 
-    public static VirtualScreen virtualScreen;
+        public static VirtualScreen virtualScreen;
 
-    public static readonly float ConfigToDisplayMeasurementMultiplier = 100; // Store in M, display in CM
+        public static readonly float ConfigToDisplayMeasurementMultiplier = 100; // Store in M, display in CM
+    }
 }

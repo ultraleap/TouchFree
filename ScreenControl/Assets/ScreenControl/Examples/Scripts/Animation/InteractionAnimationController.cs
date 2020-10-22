@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Ultraleap.ScreenControl.Core.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Client
 {
@@ -40,34 +41,12 @@ namespace Ultraleap.ScreenControl.Client
                 }
                 currentState = "Unknown";
 
-                switch (trackedHand)
-                {
-                    case TrackedHand.PRIMARY:
-                        InteractionManager.HandleInputAction += OnHandleInputAction;
-                        break;
-                    case TrackedHand.LEFT:
-                        InteractionManager.HandleInputActionLeftHand += OnHandleInputAction;
-                        break;
-                    case TrackedHand.RIGHT:
-                        InteractionManager.HandleInputActionRightHand += OnHandleInputAction;
-                        break;
-                }
+                ConnectionManager.coreConnection.TransmitInputAction += OnHandleInputAction;
             }
 
             void OnDisable()
             {
-                switch (trackedHand)
-                {
-                    case TrackedHand.PRIMARY:
-                        InteractionManager.HandleInputAction -= OnHandleInputAction;
-                        break;
-                    case TrackedHand.LEFT:
-                        InteractionManager.HandleInputActionLeftHand -= OnHandleInputAction;
-                        break;
-                    case TrackedHand.RIGHT:
-                        InteractionManager.HandleInputActionRightHand -= OnHandleInputAction;
-                        break;
-                }
+                ConnectionManager.coreConnection.TransmitInputAction -= OnHandleInputAction;
             }
 
             // Update is called once per frame
@@ -76,13 +55,13 @@ namespace Ultraleap.ScreenControl.Client
                 CheckForActiveHand();
             }
 
-            public void OnHandleInputAction(InputActionData _inputData)
+            public void OnHandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
             {
                 if (currentState == HIDDEN) return;
 
                 string sourceName = prefixSource ? _inputData.Source.ToString() : "";
 
-                if (_inputData.Type != InputType.MOVE)
+                if (_inputData.Type != ScreenControlTypes.InputType.MOVE)
                 {
                     ChangeState(sourceName + _inputData.Type.ToString());
                 }
@@ -144,13 +123,13 @@ namespace Ultraleap.ScreenControl.Client
                 switch (trackedHand)
                 {
                     case TrackedHand.PRIMARY:
-                        handPresent = HandManager.Instance.PrimaryHand == null ? false : true;
+                        handPresent = Core.HandManager.Instance.PrimaryHand == null ? false : true;
                         break;
                     case TrackedHand.LEFT:
-                        handPresent = HandManager.Instance.LeftHand == null ? false : true;
+                        handPresent = Core.HandManager.Instance.LeftHand == null ? false : true;
                         break;
                     case TrackedHand.RIGHT:
-                        handPresent = HandManager.Instance.RightHand == null ? false : true;
+                        handPresent = Core.HandManager.Instance.RightHand == null ? false : true;
                         break;
 
                 }

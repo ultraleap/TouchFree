@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ultraleap.ScreenControl.Core;
+using Ultraleap.ScreenControl.Client.ScreenControlTypes;
 
-public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursor
+public class LeapHandCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 {
     public struct HandCursorData
     {
@@ -66,10 +68,10 @@ public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursor
     protected override void OnEnable()
     {
         base.OnEnable();
-        InteractionManager.HandleInputAction += OnHandlePrimaryAction;
-        InteractionManager.HandleInputActionLeftHand += OnHandleLeftInputAction;
-        InteractionManager.HandleInputActionRightHand += OnHandleRightInputAction;
-
+        Ultraleap.ScreenControl.Client.ConnectionManager.coreConnection.TransmitInputAction += OnHandlePrimaryAction;
+        //InteractionManager.HandleInputActionLeftHand += OnHandleLeftInputAction;
+        //InteractionManager.HandleInputActionRightHand += OnHandleRightInputAction;
+        //TODO: make these listeners work with core-client setup
         if (cursorCamera == null) cursorCamera = Camera.main;
     }
 
@@ -77,9 +79,9 @@ public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursor
     {
         base.OnDisable();
 
-        InteractionManager.HandleInputActionLeftHand -= OnHandleLeftInputAction;
-        InteractionManager.HandleInputActionRightHand -= OnHandleRightInputAction;
-        InteractionManager.HandleInputAction -= OnHandlePrimaryAction;
+        //InteractionManager.HandleInputActionLeftHand -= OnHandleLeftInputAction;
+        //InteractionManager.HandleInputActionRightHand -= OnHandleRightInputAction;
+        Ultraleap.ScreenControl.Client.ConnectionManager.coreConnection.TransmitInputAction -= OnHandlePrimaryAction;
     }
 
     // Start is called before the first frame update
@@ -102,7 +104,7 @@ public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursor
         UpdateHandColours();
     }
 
-    protected void OnHandlePrimaryAction(InputActionData _inputData)
+    protected void OnHandlePrimaryAction(ClientInputAction _inputData)
     {
         if (_inputData.Type == InputType.MOVE)
         {
@@ -111,20 +113,20 @@ public class LeapHandCursor : Ultraleap.ScreenControl.Client.Cursor
         }
     }
 
-    protected void OnHandleLeftInputAction(InputActionData _inputData)
+    protected void OnHandleLeftInputAction(ClientInputAction _inputData)
     {
         leftHandData = UpdateHand(_inputData, leftHandData, leftHandTransform);
         handProcessor.rightHandActive = true;
     }
 
-    protected void OnHandleRightInputAction(InputActionData _inputData)
+    protected void OnHandleRightInputAction(ClientInputAction _inputData)
     {
         rightHandData = UpdateHand(_inputData, rightHandData, rightHandTransform);
         handProcessor.leftHandActive = true;
     }
 
 
-    private HandCursorData UpdateHand(InputActionData _inputData, HandCursorData handData, Transform handTransform)
+    private HandCursorData UpdateHand(ClientInputAction _inputData, HandCursorData handData, Transform handTransform)
     {
         switch(_inputData.Type)
         {

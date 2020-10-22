@@ -41,9 +41,9 @@ public class PinchGrabLineCursor : DotCursor
         SetLineRendererWidthScale(1);
     }
 
-    protected override void OnConfigUpdated()
+    protected override void InitialiseCursor()
     {
-        base.OnConfigUpdated();
+        base.InitialiseCursor();
 
         cursorDotSize *= 0.6f;
 
@@ -65,12 +65,12 @@ public class PinchGrabLineCursor : DotCursor
         lineRendererOutline.colorGradient = gradient;
     }
 
-    protected override void OnHandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
         Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.Type;
         Vector2 cursorPosition = _inputData.CursorPosition;
 
-        base.OnHandleInputAction(_inputData);
+        base.HandleInputAction(_inputData);
 
         if (_inputData.Chirality != cursorChirality && _inputData.Chirality != Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.UNKNOWN)
         {
@@ -145,7 +145,7 @@ public class PinchGrabLineCursor : DotCursor
 
     private void SetLineRendererWidthScale(float scale)
     {
-        lineWidth = cursorDotSize * BaseLineWidthScale * scale * _screenScale;
+        lineWidth = cursorDotSize * BaseLineWidthScale * scale;
     }
 
     private void UpdateLineRenderers(float _grabStrength)
@@ -167,8 +167,8 @@ public class PinchGrabLineCursor : DotCursor
 
     List<Vector3> GenerateArcPositions(float _arcLengthPercentage, float _arcAngle, float _grabStrength)
     {
-        float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
-        float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
+        float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale;
+        float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale;
         float currentCircleOffsetRadius = Utilities.MapRangeToRange(radiusScale.Evaluate(_grabStrength), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
 
         Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(cursorTransform.anchoredPosition);
@@ -227,8 +227,8 @@ public class PinchGrabLineCursor : DotCursor
         if (Application.isEditor && Application.isPlaying && DrawDebugGizmos)
         {
             float arcAngle = (cursorChirality == Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
-            float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale * _screenScale;
-            float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale * _screenScale;
+            float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale;
+            float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale;
             float currentCircleOffsetRadius = Utilities.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
             float finalOffsetRadius = arcMidpointRadius / 2;
 
@@ -294,11 +294,5 @@ public class PinchGrabLineCursor : DotCursor
         base.HideCursor();
         lineRenderer.enabled = false;
         lineRendererOutline.enabled = false;
-    }
-
-    public override void SetScreenScale(float _scale)
-    {
-        base.SetScreenScale(_scale);
-        SetLineRendererWidthScale(1);
     }
 }

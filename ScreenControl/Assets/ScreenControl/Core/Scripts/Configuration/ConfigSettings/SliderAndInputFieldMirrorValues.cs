@@ -2,35 +2,38 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[DefaultExecutionOrder(-1)]
-public class SliderAndInputFieldMirrorValues : MonoBehaviour
+namespace Ultraleap.ScreenControl.Core
 {
-    public Slider Slider;
-    public InputField InputField;
-    public string InputFieldValueFormat = "#0.00#";
-
-    private void Awake()
+    [DefaultExecutionOrder(-1)]
+    public class SliderAndInputFieldMirrorValues : MonoBehaviour
     {
-        InputField.onValueChanged.AddListener(OnInputFieldValueChanged);
-        Slider.onValueChanged.AddListener(OnSliderValueChanged);
-    }
+        public Slider Slider;
+        public InputField InputField;
+        public string InputFieldValueFormat = "#0.00#";
 
-    private void OnDestroy()
-    {
-        InputField.onValueChanged.RemoveListener(OnInputFieldValueChanged);
-        Slider.onValueChanged.RemoveListener(OnSliderValueChanged);
-    }
-
-    void OnInputFieldValueChanged(string val)
-    {
-        if (float.TryParse(val, NumberStyles.Number, CultureInfo.CurrentCulture, out float result))
+        private void Awake()
         {
-            Slider.SetValueWithoutNotify(result);
+            InputField.onValueChanged.AddListener(OnInputFieldValueChanged);
+            Slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
-    }
 
-    void OnSliderValueChanged(float val)
-    {
-        InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
+        private void OnDestroy()
+        {
+            InputField.onValueChanged.RemoveListener(OnInputFieldValueChanged);
+            Slider.onValueChanged.RemoveListener(OnSliderValueChanged);
+        }
+
+        void OnInputFieldValueChanged(string val)
+        {
+            if (float.TryParse(val, NumberStyles.Number, CultureInfo.CurrentCulture, out float result))
+            {
+                Slider.SetValueWithoutNotify(result);
+            }
+        }
+
+        void OnSliderValueChanged(float val)
+        {
+            InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
+        }
     }
 }

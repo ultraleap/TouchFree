@@ -1,75 +1,77 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class WelcomeScreen : MonoBehaviour
+namespace Ultraleap.ScreenControl.Core
 {
-    public GameObject trackingServiceWarning;
-    bool serviceWarningForceClosed = false;
-    bool lastFrameServiceConnected = true;
-
-    public GameObject leapConnectedNotification;
-    public GameObject leapDisconnectedNotification;
-
-    bool delayingUpdates = false;
-
-    private void OnEnable()
+    public class WelcomeScreen : MonoBehaviour
     {
-        serviceWarningForceClosed = false;
-        lastFrameServiceConnected = true;
+        public GameObject trackingServiceWarning;
+        bool serviceWarningForceClosed = false;
+        bool lastFrameServiceConnected = true;
 
-        trackingServiceWarning.SetActive(false);
-        leapConnectedNotification.SetActive(true);
-        leapDisconnectedNotification.SetActive(false);
+        public GameObject leapConnectedNotification;
+        public GameObject leapDisconnectedNotification;
 
-        StartCoroutine(DelayUpdates());
-    }
+        bool delayingUpdates = false;
 
-    IEnumerator DelayUpdates()
-    {
-        delayingUpdates = true;
-        yield return new WaitForSeconds(0.5f);
-        delayingUpdates = false;
-    }
-
-    private void Update()
-    {
-        if(delayingUpdates)
+        private void OnEnable()
         {
-            return;
+            serviceWarningForceClosed = false;
+            lastFrameServiceConnected = true;
+
+            trackingServiceWarning.SetActive(false);
+            leapConnectedNotification.SetActive(true);
+            leapDisconnectedNotification.SetActive(false);
+
+            StartCoroutine(DelayUpdates());
         }
 
-        if (HandManager.Instance.IsLeapServiceConnected())
+        IEnumerator DelayUpdates()
         {
-            // show service is connected
-            if (!lastFrameServiceConnected)
+            delayingUpdates = true;
+            yield return new WaitForSeconds(0.5f);
+            delayingUpdates = false;
+        }
+
+        private void Update()
+        {
+            if (delayingUpdates)
             {
-                trackingServiceWarning.SetActive(false);
-                leapConnectedNotification.SetActive(true);
-                leapDisconnectedNotification.SetActive(false);
-                lastFrameServiceConnected = true;
+                return;
             }
-        }
-        else
-        {
-            if (lastFrameServiceConnected)
+
+            if (HandManager.Instance.IsLeapServiceConnected())
             {
-                // show service is not connected
-                if (!serviceWarningForceClosed)
+                // show service is connected
+                if (!lastFrameServiceConnected)
                 {
-                    trackingServiceWarning.SetActive(true);
+                    trackingServiceWarning.SetActive(false);
+                    leapConnectedNotification.SetActive(true);
+                    leapDisconnectedNotification.SetActive(false);
+                    lastFrameServiceConnected = true;
                 }
+            }
+            else
+            {
+                if (lastFrameServiceConnected)
+                {
+                    // show service is not connected
+                    if (!serviceWarningForceClosed)
+                    {
+                        trackingServiceWarning.SetActive(true);
+                    }
 
-                leapConnectedNotification.SetActive(false);
-                leapDisconnectedNotification.SetActive(true);
-                lastFrameServiceConnected = false;
+                    leapConnectedNotification.SetActive(false);
+                    leapDisconnectedNotification.SetActive(true);
+                    lastFrameServiceConnected = false;
+                }
             }
         }
-    }
 
-    public void ForceCloseWarning()
-    {
-        trackingServiceWarning.SetActive(false);
-        serviceWarningForceClosed = true;
+        public void ForceCloseWarning()
+        {
+            trackingServiceWarning.SetActive(false);
+            serviceWarningForceClosed = true;
+        }
     }
 }

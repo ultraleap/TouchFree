@@ -2,7 +2,7 @@
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
 
-public class ProgressCursor : Ultraleap.ScreenControl.Client.Cursor
+public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 {
     [Header("Graphics")]
     public Transform cursorDotTransform;
@@ -25,15 +25,8 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.Cursor
     [Range(0.01f, 2f)] public float cursorDownScale;
 
     protected float cursorDotSize;
-    protected float maxRingScale;
-    protected float screenDistanceAtMaxScaleMeters;
-
-    protected Color dotFillColor;
-    protected Color dotBorderColor;
-    protected Color ringColor;
 
     protected bool shrunk = false;
-
 
     public AnimationCurve ringFillCurve;
 
@@ -57,7 +50,7 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.Cursor
         }
     }
 
-    protected override void OnHandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
         Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType _type = _inputData.Type;
         Vector2 _cursorPosition = _inputData.CursorPosition;
@@ -90,25 +83,9 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.Cursor
         }
     }
 
-    protected override void OnConfigUpdated()
+    protected override void InitialiseCursor()
     {
-        dotFillColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotFillColor, ClientSettings.clientConstants.CursorDotFillOpacity);
-        dotBorderColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorDotBorderColor, ClientSettings.clientConstants.CursorDotBorderOpacity);
-        ringColor = Utilities.ParseColor(ClientSettings.clientConstants.CursorRingColor, ClientSettings.clientConstants.CursorRingOpacity);
-
-        cursorDot.color = dotBorderColor;
-        cursorDotFill.color = dotFillColor;
-        cursorProgressBorder.color = dotBorderColor;
-        cursorProgressFill.color = ringColor;
-
-        if (ringEnabled)
-        {
-            cursorRing.color = ringColor;
-        }
-
-        screenDistanceAtMaxScaleMeters = ClientSettings.clientConstants.CursorMaxRingScaleAtDistanceM;
-
-        cursorDotSize = ClientSettings.clientConstants.CursorDotSizePixels;
+        cursorDotSize = cursorSize;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
 
@@ -120,8 +97,6 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.Cursor
         cursorProgressFill.enabled = !dotSizeIsZero;
         cursorDotTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
         cursorProgressTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
-
-        maxRingScale = (1f / cursorDotSize) * ClientSettings.clientConstants.CursorRingMaxScale;
     }
 
     Coroutine cursorScalingRoutine;

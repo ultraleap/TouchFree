@@ -2,52 +2,55 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ScreenControlUtility
+namespace Ultraleap.ScreenControl.Core
 {
-    public static float MapRangeToRange(float _value, float _oldMin, float _oldMax, float _newMin, float _newMax)
+    public static class ScreenControlUtility
     {
-        float oldRange = (_oldMax - _oldMin);
-        float newValue;
-        if (oldRange == 0)
+        public static float MapRangeToRange(float _value, float _oldMin, float _oldMax, float _newMin, float _newMax)
         {
-            newValue = _newMin;
+            float oldRange = (_oldMax - _oldMin);
+            float newValue;
+            if (oldRange == 0)
+            {
+                newValue = _newMin;
+            }
+            else
+            {
+                float newRange = (_newMax - _newMin);
+                newValue = (((_value - _oldMin) * newRange) / oldRange) + _newMin;
+            }
+            return newValue;
         }
-        else
+
+        public static Color ParseColor(string _hexColor, float _alpha = 1)
         {
-            float newRange = (_newMax - _newMin);
-            newValue = (((_value - _oldMin) * newRange) / oldRange) + _newMin;
+            Color defaultColor = Color.white;
+            if (ColorUtility.TryParseHtmlString(_hexColor, out Color outColor))
+            {
+                outColor.a = _alpha;
+                return outColor;
+            }
+            return defaultColor;
         }
-        return newValue;
-    }
 
-    public static Color ParseColor(string _hexColor, float _alpha = 1)
-    {
-        Color defaultColor = Color.white;
-        if (ColorUtility.TryParseHtmlString(_hexColor, out Color outColor))
+        public static int ToDisplayUnits(int _value)
         {
-            outColor.a = _alpha;
-            return outColor;
+            return (int)(_value * GlobalSettings.ConfigToDisplayMeasurementMultiplier);
         }
-        return defaultColor;
-    }
 
-    public static int ToDisplayUnits(int _value)
-    {
-        return (int)(_value * GlobalSettings.ConfigToDisplayMeasurementMultiplier);
-    }
+        public static float ToDisplayUnits(float _value)
+        {
+            return _value * GlobalSettings.ConfigToDisplayMeasurementMultiplier;
+        }
 
-    public static float ToDisplayUnits(float _value)
-    {
-        return _value * GlobalSettings.ConfigToDisplayMeasurementMultiplier;
-    }
+        public static int FromDisplayUnits(int _value)
+        {
+            return (int)(_value / GlobalSettings.ConfigToDisplayMeasurementMultiplier);
+        }
 
-    public static int FromDisplayUnits(int _value)
-    {
-        return (int)(_value / GlobalSettings.ConfigToDisplayMeasurementMultiplier);
-    }
-
-    public static float FromDisplayUnits(float _value)
-    {
-        return _value / GlobalSettings.ConfigToDisplayMeasurementMultiplier;
+        public static float FromDisplayUnits(float _value)
+        {
+            return _value / GlobalSettings.ConfigToDisplayMeasurementMultiplier;
+        }
     }
 }

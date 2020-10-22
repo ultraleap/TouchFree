@@ -2,20 +2,23 @@
 using System.Linq;
 using System.Reflection;
 
-public static class EnumExtensions
+namespace Ultraleap.ScreenControl.Core
 {
-    public static string GetDescription(this Enum GenericEnum)
+    public static class EnumExtensions
     {
-        Type genericEnumType = GenericEnum.GetType();
-        MemberInfo[] memberInfo = genericEnumType.GetMember(GenericEnum.ToString());
-        if (memberInfo != null && memberInfo.Length > 0)
+        public static string GetDescription(this Enum GenericEnum)
         {
-            var attribs = memberInfo[0].GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false);
-            if (attribs != null && attribs.Count() > 0)
+            Type genericEnumType = GenericEnum.GetType();
+            MemberInfo[] memberInfo = genericEnumType.GetMember(GenericEnum.ToString());
+            if (memberInfo != null && memberInfo.Length > 0)
             {
-                return ((System.ComponentModel.DescriptionAttribute)attribs.ElementAt(0)).Description;
+                var attribs = memberInfo[0].GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false);
+                if (attribs != null && attribs.Count() > 0)
+                {
+                    return ((System.ComponentModel.DescriptionAttribute)attribs.ElementAt(0)).Description;
+                }
             }
+            return GenericEnum.ToString();
         }
-        return GenericEnum.ToString();
     }
 }

@@ -19,18 +19,12 @@ namespace Ultraleap.ScreenControl.Client
             UNKNOWN,
         }
 
-        // TODO: This needs to feature _all_ interactions available in core - what are those interactions???
         public enum InteractionType
         {
             Undefined,
-            Push,           // ForcePoke  - called airpush in docs
-            Grab,           // PinchGrab  - should rename to just grab
-            Hover,          // HoverAndHold
-
-            // Do we keep these?
-            // OneToOne / TouchPlane - maybe? (distinct to airpush)
-            // BitePoint             - probably not (airpush is similar but better)
-            // PokeToInvoke          - probably not (airpush is similar but better)
+            Push,
+            Grab,
+            Hover,
         }
 
         public readonly struct ClientInputAction

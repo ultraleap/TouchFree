@@ -3,34 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ToggleLabelSetter : MonoBehaviour
+namespace Ultraleap.ScreenControl.Core
 {
-    public string onText = "Disable";
-    public string offText = "Enable";
-
-    public Toggle targetToggle;
-    public Text targetText;
-
-    private void OnEnable()
+    public class ToggleLabelSetter : MonoBehaviour
     {
-        StartCoroutine(UpdateAfterTime());
-    }
+        public string onText = "Disable";
+        public string offText = "Enable";
 
-    public void SetToggleText()
-    {
-        if(targetToggle.isOn)
+        public Toggle targetToggle;
+        public Text targetText;
+
+        private void OnEnable()
         {
-            targetText.text = onText;
+            StartCoroutine(UpdateAfterTime());
         }
-        else
-        {
-            targetText.text = offText;
-        }
-    }
 
-    IEnumerator UpdateAfterTime()
-    {
-        yield return new WaitForSeconds(0.1f);
-        SetToggleText();
+        public void SetToggleText()
+        {
+            if (targetToggle.isOn)
+            {
+                targetText.text = onText;
+            }
+            else
+            {
+                targetText.text = offText;
+            }
+        }
+
+        IEnumerator UpdateAfterTime()
+        {
+            yield return new WaitForSeconds(0.1f);
+            SetToggleText();
+        }
     }
 }
