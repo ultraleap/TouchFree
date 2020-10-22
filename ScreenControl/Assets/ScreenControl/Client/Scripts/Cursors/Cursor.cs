@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Leap.Unity;
 
 namespace Ultraleap.ScreenControl.Client
 {

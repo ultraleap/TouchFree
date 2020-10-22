@@ -2,15 +2,16 @@
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
 
-public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
+public class ProgressCursor : Ultraleap.ScreenControl.Client.Cursor
 {
-    [Header("Controls")]
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType moveInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.Push;
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType clickInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.Grab;
-
     [Header("Graphics")]
+    public Transform cursorDotTransform;
+    public Transform cursorProgressTransform;
+
     public UnityEngine.UI.Image cursorDot;
     public UnityEngine.UI.Image cursorDotFill;
+    public UnityEngine.UI.Image cursorProgressBorder;
+    public UnityEngine.UI.Image cursorProgressFill;
 
     [Header("Ring")]
     public bool ringEnabled;
@@ -31,68 +32,62 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
     protected Color dotBorderColor;
     protected Color ringColor;
 
-    protected bool dotShrunk = false;
+    protected bool shrunk = false;
+
+
+    public AnimationCurve ringFillCurve;
 
     public override void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
         _targetPos = screenPos;
 
-        var dist = progressToClick;
-        dist = Mathf.InverseLerp(0, screenDistanceAtMaxScaleMeters, dist);
-        dist = Mathf.Lerp(0, 1, dist);
+        cursorProgressFill.fillAmount = ringFillCurve.Evaluate(progressToClick);
+        cursorProgressBorder.fillAmount = ringFillCurve.Evaluate(progressToClick);
 
-        cursorRing.color = new Color(cursorRing.color.r, cursorRing.color.g, cursorRing.color.b, Mathf.Lerp(ringColor.a, 0f, dist));
-
-        if (ringEnabled && !hidingCursor)
+        if (ringEnabled)
         {
-            cursorRing.enabled = true;
-            var ringScale = Mathf.Lerp(1f, maxRingScale, ringCurve.Evaluate(dist));
-            cursorRing.transform.localScale = Vector3.one * ringScale;
-        }
-        else
-        {
-            cursorRing.enabled = false;
+            if (!hidingCursor)
+            {
+                cursorRing.enabled = true;
+            }
+            else
+            {
+                cursorRing.enabled = false;
+            }
         }
     }
 
     protected override void OnHandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
-        if (_inputData.Type == Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE)
+        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType _type = _inputData.Type;
+        Vector2 _cursorPosition = _inputData.CursorPosition;
+
+        switch (_type)
         {
-            if (_inputData.Source == moveInteraction)
-            {
-                UpdateCursor(_inputData.CursorPosition, _inputData.ProgressToClick);
-            }
+            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
+                UpdateCursor(_cursorPosition, _inputData.ProgressToClick);
+                break;
+            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+                if (!shrunk)
+                {
+                    if (cursorScalingRoutine != null)
+                        StopCoroutine(cursorScalingRoutine);
+
+                    cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
+                }
+                break;
+            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
+                if (shrunk)
+                {
+                    if (cursorScalingRoutine != null)
+                        StopCoroutine(cursorScalingRoutine);
+
+                    cursorScalingRoutine = StartCoroutine(GrowCursorDot());
+                }
+                break;
+            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+                break;
         }
-
-        if (_inputData.Source == clickInteraction)
-        {
-            switch (_inputData.Type)
-            {
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
-                    if (!dotShrunk)
-                    {
-                        if (cursorScalingRoutine != null)
-                            StopCoroutine(cursorScalingRoutine);
-
-                        cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
-                    }
-                    break;
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
-                    if (dotShrunk)
-                    {
-                        if (cursorScalingRoutine != null)
-                            StopCoroutine(cursorScalingRoutine);
-
-                        cursorScalingRoutine = StartCoroutine(GrowCursorDot());
-                    }
-                    break;
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
-                    break;
-            }
-        }
-
     }
 
     protected override void OnConfigUpdated()
@@ -103,6 +98,8 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
 
         cursorDot.color = dotBorderColor;
         cursorDotFill.color = dotFillColor;
+        cursorProgressBorder.color = dotBorderColor;
+        cursorProgressFill.color = ringColor;
 
         if (ringEnabled)
         {
@@ -114,8 +111,15 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
         cursorDotSize = ClientSettings.clientConstants.CursorDotSizePixels;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
+
+        // Scale up the dot by a factor of 2 for this interaction due to the smaller dot
+        cursorDotSize *= 2f;
+
         cursorDot.enabled = !dotSizeIsZero;
-        cursorDot.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
+        cursorProgressBorder.enabled = !dotSizeIsZero;
+        cursorProgressFill.enabled = !dotSizeIsZero;
+        cursorDotTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
+        cursorProgressTransform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
 
         maxRingScale = (1f / cursorDotSize) * ClientSettings.clientConstants.CursorRingMaxScale;
     }
@@ -124,7 +128,7 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
     public IEnumerator GrowCursorDot()
     {
         SetCursorDotLocalScale(cursorDownScale * cursorDotSize);
-        dotShrunk = false;
+        shrunk = false;
         YieldInstruction yieldInstruction = new YieldInstruction();
         float elapsedTime = 0.0f;
 
@@ -142,7 +146,7 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
 
     public IEnumerator ShrinkCursorDot()
     {
-        dotShrunk = true;
+        shrunk = true;
         YieldInstruction yieldInstruction = new YieldInstruction();
         float elapsedTime = 0.0f;
 
@@ -157,9 +161,10 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
         SetCursorDotLocalScale(cursorDownScale * cursorDotSize);
         cursorScalingRoutine = null;
     }
+
     private void SetCursorDotLocalScale(float scale)
     {
-        cursorDot.transform.localScale = new Vector3(scale, scale, scale);
+        cursorDotTransform.localScale = new Vector3(scale, scale, scale);
     }
 
     public override void ShowCursor()
@@ -167,7 +172,13 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
         base.ShowCursor();
         cursorDot.enabled = true;
         cursorDotFill.enabled = true;
-        cursorRing.enabled = true;
+        cursorProgressBorder.enabled = true;
+        cursorProgressFill.enabled = true;
+
+        if (ringEnabled)
+        {
+            cursorRing.enabled = true;
+        }
     }
 
     public override void HideCursor()
@@ -175,6 +186,12 @@ public class DoubleCursor : Ultraleap.ScreenControl.Client.Cursor
         base.HideCursor();
         cursorDot.enabled = false;
         cursorDotFill.enabled = false;
-        cursorRing.enabled = false;
+        cursorProgressBorder.enabled = false;
+        cursorProgressFill.enabled = false;
+
+        if (ringEnabled)
+        {
+            cursorRing.enabled = false;
+        }
     }
 }

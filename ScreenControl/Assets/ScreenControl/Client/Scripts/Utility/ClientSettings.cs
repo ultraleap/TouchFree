@@ -33,7 +33,7 @@ namespace Ultraleap.ScreenControl.Client
         public string CursorDotBorderColor = "#FFFFFF";
         public float CursorDotBorderOpacity = 0.8f;
 
-        public float CursorDotSizeM = 0.008f;
+        public float CursorDotSizePixels = 50.0f;
         public float CursorRingMaxScale = 2.0f;
         public float CursorMaxRingScaleAtDistanceM = 0.1f;
         public bool UseScrollingOrDragging = false;
