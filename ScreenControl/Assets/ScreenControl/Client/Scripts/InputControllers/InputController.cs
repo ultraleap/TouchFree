@@ -14,6 +14,12 @@ namespace Ultraleap.ScreenControl.Client
             protected override void Start()
             {
                 base.Start();
+
+                ConnectionManager.AddConnectionListener(OnCoreConnection);
+            }
+
+            protected void OnCoreConnection()
+            {
                 ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
             }
 

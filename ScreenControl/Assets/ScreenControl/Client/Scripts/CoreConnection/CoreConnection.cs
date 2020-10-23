@@ -9,10 +9,6 @@ namespace Ultraleap.ScreenControl.Client
         public delegate void ClientInputActionEvent(ScreenControlTypes.ClientInputAction _inputData);
         public event ClientInputActionEvent TransmitInputAction;
 
-        public virtual void Initialise()
-        {
-        }
-
         protected void RelayInputAction(ScreenControlTypes.ClientInputAction _inputData)
         {
             TransmitInputAction?.Invoke(_inputData);

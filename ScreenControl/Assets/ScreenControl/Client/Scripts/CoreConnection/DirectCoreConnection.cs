@@ -5,14 +5,18 @@ using Ultraleap.ScreenControl.Client.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Client
 {
-#if SCREENCONTROL_CORE_AVAIL
+#if SCREENCONTROL_CORE
     public class DirectCoreConnection : CoreConnection
     {
-        // Why are we using an initialiser here instead of just a constructor?
-        public override void Initialise()
+        internal DirectCoreConnection()
         {
-                //TODO: this listener needs to be removed on deletion!
-                Core.InteractionManager.HandleInputAction += ConvertToClientInputAction;
+            Core.InteractionManager.HandleInputAction += ConvertToClientInputAction;
+        }
+
+        ~DirectCoreConnection()
+        {
+            Debug.Log("Destructor invoked");
+            Core.InteractionManager.HandleInputAction -= ConvertToClientInputAction;
         }
 
         //TODO: we will need access to Cores 'InputActionData' if we have core embedded... maybe a custom #define ?

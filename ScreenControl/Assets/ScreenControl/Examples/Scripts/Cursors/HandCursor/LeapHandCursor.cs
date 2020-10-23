@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.ScreenControl.Core;
+using Ultraleap.ScreenControl.Client;
 using Ultraleap.ScreenControl.Client.ScreenControlTypes;
 
-public class LeapHandCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
+public class LeapHandCursor : TouchlessCursor
 {
     public struct HandCursorData
     {
@@ -68,11 +69,18 @@ public class LeapHandCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
     protected override void OnEnable()
     {
         base.OnEnable();
-        Ultraleap.ScreenControl.Client.ConnectionManager.coreConnection.TransmitInputAction += OnHandlePrimaryAction;
         //InteractionManager.HandleInputActionLeftHand += OnHandleLeftInputAction;
         //InteractionManager.HandleInputActionRightHand += OnHandleRightInputAction;
         //TODO: make these listeners work with core-client setup
         if (cursorCamera == null) cursorCamera = Camera.main;
+
+        ConnectionManager.AddConnectionListener(OnCoreConnection);
+    }
+
+    protected override void OnCoreConnection()
+    {
+        base.OnCoreConnection();
+        ConnectionManager.coreConnection.TransmitInputAction += OnHandlePrimaryAction;
     }
 
     protected override void OnDisable()
@@ -81,7 +89,7 @@ public class LeapHandCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
         //InteractionManager.HandleInputActionLeftHand -= OnHandleLeftInputAction;
         //InteractionManager.HandleInputActionRightHand -= OnHandleRightInputAction;
-        Ultraleap.ScreenControl.Client.ConnectionManager.coreConnection.TransmitInputAction -= OnHandlePrimaryAction;
+        ConnectionManager.coreConnection.TransmitInputAction -= OnHandlePrimaryAction;
     }
 
     // Start is called before the first frame update

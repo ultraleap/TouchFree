@@ -575,7 +575,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
   scriptingDefineSymbols:
-    1: SCREENCONTROL_CORE_AVAIL
+    1: SCREENCONTROL_CORE
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}

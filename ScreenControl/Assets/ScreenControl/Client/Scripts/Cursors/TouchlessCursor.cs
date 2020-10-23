@@ -14,10 +14,15 @@ namespace Ultraleap.ScreenControl.Client
 
         protected virtual void OnEnable()
         {
-            ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
+            ConnectionManager.AddConnectionListener(OnCoreConnection);
             InitialiseCursor();
             ResetCursor();
             ShowCursor();
+        }
+
+        protected virtual void OnCoreConnection()
+        {
+            ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
         }
 
         protected virtual void OnDisable()
