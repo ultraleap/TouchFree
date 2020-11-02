@@ -19,10 +19,17 @@ namespace Ultraleap.ScreenControl.Client
             Core.InteractionManager.HandleInputAction -= ConvertToClientInputAction;
         }
 
-        void ConvertToClientInputAction(InputActionData _data)
+        void ConvertToClientInputAction(Core.ScreenControlTypes.InputActionData _data)
         {
             // Convert Core event into Client event
-            ClientInputAction clientInput = new ClientInputAction(_data.Timestamp, (InteractionType)_data.Source, (HandChirality)_data.Chirality, (InputType)_data.Type, _data.CursorPosition, _data.ProgressToClick);
+            ClientInputAction clientInput = new ClientInputAction(
+                _data.Timestamp,
+                (InteractionType)_data.Source,
+                (HandChirality)_data.Chirality,
+                (InputType)_data.Type,
+                _data.CursorPosition,
+                _data.ProgressToClick);
+
             RelayInputAction(clientInput);
         }
     }
