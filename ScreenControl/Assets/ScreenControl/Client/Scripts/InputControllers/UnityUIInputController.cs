@@ -13,16 +13,18 @@ namespace Ultraleap.ScreenControl.Client
             [SerializeField] private StandaloneInputModule inputModule;
             [SerializeField] private EventSystem eventSystem;
 
-            public override Vector2 mousePosition => IsHovering() ? touchPosition : base.mousePosition;
-            public override bool mousePresent => IsHovering() ? true : base.mousePresent;
-            public override bool touchSupported => IsTouching() ? true : base.touchSupported;
-            public override int touchCount => IsTouching() ? 1 : base.touchCount;
-            public override Touch GetTouch(int index) => IsTouching() ? CheckForTouch(index) : base.GetTouch(index);
+            public override Vector2 mousePosition => isHovering ? touchPosition : base.mousePosition;
+            public override bool mousePresent => isHovering? true : base.mousePresent;
+            public override bool touchSupported => isTouching ? true : base.touchSupported;
+            public override int touchCount => isTouching ? 1 : base.touchCount;
+            public override Touch GetTouch(int index) => isTouching ? CheckForTouch(index) : base.GetTouch(index);
+            public bool isHovering = true;
 
             private Vector2 touchPosition;
             private TouchPhase touchPhase = TouchPhase.Ended;
             private TouchPhase previousTouchPhase;
             private int baseDragThreshold = 100000;
+            private bool isTouching = false;
 
             protected override void Start()
             {
@@ -37,29 +39,6 @@ namespace Ultraleap.ScreenControl.Client
                 inputModule.inputOverride = this;
             }
 
-            private bool IsHovering()
-            {
-                //TODO: see if this is needed? or if we can store it from an inputaction?
-                //if (HandManager.Instance.PrimaryHand != null)
-                //{
-                    return true;
-                //}
-                //else
-                //{
-                //    return false;
-                //}
-            }
-
-            private bool IsTouching()
-            { 
-                if ((touchPhase == TouchPhase.Ended && previousTouchPhase == TouchPhase.Ended)
-                    || (touchPhase == TouchPhase.Canceled && previousTouchPhase == TouchPhase.Canceled))
-                {
-                    return false;
-                }
-
-                return true;
-            }
 
             private Touch CheckForTouch(int index)
             {
@@ -83,32 +62,30 @@ namespace Ultraleap.ScreenControl.Client
 
                 touchPosition = cursorPosition;
 
-                if (type == ScreenControlTypes.InputType.MOVE)
-                {
-                    return;
-                }
-
-                touchPhase = TouchPhase.Ended;
-                eventSystem.pixelDragThreshold = baseDragThreshold;
 
                 switch (type)
                 {
                     case ScreenControlTypes.InputType.DOWN:
                         touchPhase = TouchPhase.Began;
+                        eventSystem.pixelDragThreshold = 0;
+                        isTouching = true;
                         break;
-                        //TODO: make this functionality work without passing around hold and drag events
-                    //case InputType.HOLD:
-                    //    touchPhase = TouchPhase.Moved;
-                    //    break;
-                    //case InputType.DRAG:
-                    //    touchPhase = TouchPhase.Moved;
-                    //    eventSystem.pixelDragThreshold = 0;
-                    //    break;
+
+                    //TODO: make this functionality work without passing around hold and drag events
+                    case ScreenControlTypes.InputType.MOVE:
+                       touchPhase = TouchPhase.Moved;
+                       break;
+
                     case ScreenControlTypes.InputType.CANCEL:
                         touchPhase = TouchPhase.Canceled;
+                        eventSystem.pixelDragThreshold = baseDragThreshold;
+                        isTouching = false;
                         break;
+
                     case ScreenControlTypes.InputType.UP:
                         touchPhase = TouchPhase.Ended;
+                        eventSystem.pixelDragThreshold = baseDragThreshold;
+                        isTouching = false;
                         break;
                 }
             }
