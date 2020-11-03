@@ -160,7 +160,7 @@ public class BlobCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.Type;
+        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.InputType;
         cursorPosition = _inputData.CursorPosition;
         float _distanceFromScreen = _inputData.ProgressToClick;
 

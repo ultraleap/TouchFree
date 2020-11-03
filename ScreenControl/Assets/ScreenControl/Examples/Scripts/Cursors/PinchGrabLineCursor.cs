@@ -67,7 +67,7 @@ public class PinchGrabLineCursor : DotCursor
 
     protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.Type;
+        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.InputType;
         Vector2 cursorPosition = _inputData.CursorPosition;
 
         base.HandleInputAction(_inputData);

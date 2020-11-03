@@ -5,8 +5,8 @@ using Ultraleap.ScreenControl.Client;
 public class DoubleCursor : TouchlessCursor
 {
     [Header("Controls")]
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType moveInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.Push;
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType clickInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.Grab;
+    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType moveInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.PUSH;
+    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType clickInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.GRAB;
 
     [Header("Graphics")]
     public UnityEngine.UI.Image cursorDot;
@@ -56,17 +56,17 @@ public class DoubleCursor : TouchlessCursor
 
     protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
-        if (_inputData.Type == Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE)
+        if (_inputData.InputType == Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE)
         {
-            if (_inputData.Source == moveInteraction)
+            if (_inputData.InteractionType == moveInteraction)
             {
                 UpdateCursor(_inputData.CursorPosition, _inputData.ProgressToClick);
             }
         }
 
-        if (_inputData.Source == clickInteraction)
+        if (_inputData.InteractionType == clickInteraction)
         {
-            switch (_inputData.Type)
+            switch (_inputData.InputType)
             {
                 case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
                     if (!dotShrunk)

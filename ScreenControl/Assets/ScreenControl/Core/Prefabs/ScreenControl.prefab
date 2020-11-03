@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 7619753389815410745}
   - component: {fileID: 922183958}
   - component: {fileID: 5670778368407411115}
+  - component: {fileID: 1532953292}
   m_Layer: 0
   m_Name: ScreenControl
   m_TagString: Untagged
@@ -171,6 +172,21 @@ MonoBehaviour:
   targetCanvasses:
   - {fileID: 8949928880993260410}
   - {fileID: 965707893730264104}
+--- !u!114 &1532953292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619753389815410750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ac30281ed369894eb051bfa7bc79163, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputModule: {fileID: 0}
+  eventSystem: {fileID: 0}
+  isHovering: 0
 --- !u!1001 &452250325
 PrefabInstance:
   m_ObjectHideFlags: 0

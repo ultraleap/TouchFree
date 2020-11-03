@@ -114,7 +114,7 @@ public class LeapHandCursor : TouchlessCursor
 
     protected void OnHandlePrimaryAction(ClientInputAction _inputData)
     {
-        if (_inputData.Type == InputType.MOVE)
+        if (_inputData.InputType == InputType.MOVE)
         {
             handProcessor.leftHandActive = _inputData.Chirality == HandChirality.LEFT;
             handProcessor.rightHandActive = _inputData.Chirality == HandChirality.RIGHT;
@@ -136,7 +136,7 @@ public class LeapHandCursor : TouchlessCursor
 
     private HandCursorData UpdateHand(ClientInputAction _inputData, HandCursorData handData, Transform handTransform)
     {
-        switch(_inputData.Type)
+        switch(_inputData.InputType)
         {
             case InputType.MOVE:
                 // Animate the offset based on the interaction
@@ -148,20 +148,20 @@ public class LeapHandCursor : TouchlessCursor
                 break;
 
             case InputType.DOWN:
-                if (_inputData.Source == InteractionType.Grab)
+                if (_inputData.InteractionType == InteractionType.GRAB)
                 {
                     handData.grabbing = true;
                     handData.grabReleaseLerpSpeed = 0;
                     handData.targetColour = grabColour;
                 }
-                else if (_inputData.Source == InteractionType.Push && !handData.grabbing)
+                else if (_inputData.InteractionType == InteractionType.PUSH && !handData.grabbing)
                 {
                     handData.targetColour = pokeColour;
                 }
                 break;
 
             case InputType.UP:
-                if (_inputData.Source == InteractionType.Grab)
+                if (_inputData.InteractionType == InteractionType.GRAB)
                 {
                     handData.grabbing = false;
                 }
@@ -169,7 +169,7 @@ public class LeapHandCursor : TouchlessCursor
                 break;
 
             case InputType.CANCEL:
-                if (_inputData.Source == InteractionType.Grab)
+                if (_inputData.InteractionType == InteractionType.GRAB)
                 {
                     handData.grabbing = false;
                 }

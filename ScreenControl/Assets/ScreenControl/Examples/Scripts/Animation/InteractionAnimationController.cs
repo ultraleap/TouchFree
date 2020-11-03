@@ -19,7 +19,7 @@ namespace Animation
         public Animator animator;
 
         [Tooltip("Select which hand events to connect to the animation")]
-        public CoreTypes.TrackedHand trackedHand;
+        public CoreTypes.HandChirality trackedHand;
 
         [Tooltip("Select whether to prefix the parameter names with the interaction type, " +
                  "making it possible to apply different animations for each interaction type")]
@@ -65,15 +65,15 @@ namespace Animation
         {
             if (currentState == HIDDEN) return;
 
-            string sourceName = prefixSource ? _inputData.Source.ToString() : "";
+            string sourceName = prefixSource ? _inputData.InteractionType.ToString() : "";
 
-            if (_inputData.Type != ClientTypes.InputType.MOVE)
+            if (_inputData.InputType != ClientTypes.InputType.MOVE)
             {
-                ChangeState(sourceName + _inputData.Type.ToString());
+                ChangeState(sourceName + _inputData.InputType.ToString());
             }
             else
             {
-                SetMoveState(sourceName + _inputData.Type.ToString());
+                SetMoveState(sourceName + _inputData.InputType.ToString());
                 SetProgressValue(sourceName + PROGRESS, _inputData.ProgressToClick);
             }
         }
@@ -128,16 +128,12 @@ namespace Animation
 
             switch (trackedHand)
             {
-                case CoreTypes.TrackedHand.PRIMARY:
-                    handPresent = HandManager.Instance.PrimaryHand == null ? false : true;
-                    break;
-                case CoreTypes.TrackedHand.LEFT:
+                case CoreTypes.HandChirality.LEFT:
                     handPresent = HandManager.Instance.LeftHand == null ? false : true;
                     break;
-                case CoreTypes.TrackedHand.RIGHT:
+                case CoreTypes.HandChirality.RIGHT:
                     handPresent = HandManager.Instance.RightHand == null ? false : true;
                     break;
-
             }
 
             if (currentState != HIDDEN && !handPresent)

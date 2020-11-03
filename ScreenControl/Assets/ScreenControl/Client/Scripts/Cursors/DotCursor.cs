@@ -88,7 +88,8 @@ namespace Ultraleap.ScreenControl.Client
 
         protected override void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
         {
-            ScreenControlTypes.InputType _type = _inputData.Type;
+            base.HandleInputAction(_inputData);
+            ScreenControlTypes.InputType _type = _inputData.InputType;
             Vector2 _cursorPosition = _inputData.CursorPosition;
             float _distanceFromScreen = _inputData.ProgressToClick;
 

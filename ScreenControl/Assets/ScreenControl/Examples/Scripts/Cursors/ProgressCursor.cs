@@ -52,7 +52,7 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType _type = _inputData.Type;
+        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType _type = _inputData.InputType;
         Vector2 _cursorPosition = _inputData.CursorPosition;
 
         switch (_type)

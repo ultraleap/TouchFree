@@ -17,7 +17,7 @@ public class PinchGrabCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.Type;
+        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.InputType;
         Vector2 cursorPosition = _inputData.CursorPosition;
         float distanceFromScreen = _inputData.ProgressToClick;
 

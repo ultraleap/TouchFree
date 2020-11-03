@@ -23,21 +23,29 @@ namespace Ultraleap.ScreenControl.Core
             UNKNOWN,
         }
 
+        public enum HandType
+        {
+            PRIMARY,
+            SECONDARY,
+        }
+
         public readonly struct InputActionData
         {
             public readonly long Timestamp;
-            public readonly InteractionType Source;
+            public readonly InteractionType SourceInteraction;
+            public readonly HandType HandType;
             public readonly HandChirality Chirality;
-            public readonly InputType Type;
+            public readonly InputType InputType;
             public readonly Vector2 CursorPosition;
             public readonly float DistanceFromScreen;
             public readonly float ProgressToClick;
-            public InputActionData(long _timestamp, InteractionType _source, HandChirality _chirality, InputType _type, Positions _positions, float _progressToClick)
+            public InputActionData(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _progressToClick)
             {
                 Timestamp = _timestamp;
-                Source = _source;
+                SourceInteraction = _interactionType;
+                HandType = _handType;
                 Chirality = _chirality;
-                Type = _type;
+                InputType = _inputType;
                 CursorPosition = _positions.CursorPosition;
                 DistanceFromScreen = _positions.DistanceFromScreen;
                 ProgressToClick = _progressToClick;
@@ -62,12 +70,12 @@ namespace Ultraleap.ScreenControl.Core
             InteractionModule.HandleInputAction -= HandleInteractionModuleInputAction;
         }
 
-        private void HandleInteractionModuleInputAction(ScreenControlTypes.TrackedHand _trackedHand, ScreenControlTypes.InputActionData _inputData)
+        private void HandleInteractionModuleInputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.InputActionData _inputData)
         {
             HandleInputActionAll?.Invoke(_inputData);
 
             // Determine which conditional events to send
-            if (_trackedHand == ScreenControlTypes.TrackedHand.PRIMARY)
+            if (_handType == ScreenControlTypes.HandType.PRIMARY)
             {
                 HandleInputAction?.Invoke(_inputData);
             }

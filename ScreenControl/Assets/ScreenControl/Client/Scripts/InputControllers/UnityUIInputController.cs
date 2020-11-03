@@ -56,7 +56,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 base.HandleInputAction(_inputData);
 
-                ScreenControlTypes.InputType type = _inputData.Type;
+                ScreenControlTypes.InputType type = _inputData.InputType;
                 Vector2 cursorPosition = _inputData.CursorPosition;
                 float distanceFromScreen = _inputData.ProgressToClick;
 
@@ -71,10 +71,10 @@ namespace Ultraleap.ScreenControl.Client
                         isTouching = true;
                         break;
 
-                    //TODO: make this functionality work without passing around hold and drag events
                     case ScreenControlTypes.InputType.MOVE:
-                       touchPhase = TouchPhase.Moved;
-                       break;
+                        // TODO: this causes immediate clicks, we need to stop sending move events from Core after a 'DOWN' click until an 'UP' click unless we dragged
+                        touchPhase = TouchPhase.Ended;
+                        break;
 
                     case ScreenControlTypes.InputType.CANCEL:
                         touchPhase = TouchPhase.Canceled;
