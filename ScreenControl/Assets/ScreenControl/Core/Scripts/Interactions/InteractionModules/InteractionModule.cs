@@ -2,17 +2,6 @@
 
 namespace Ultraleap.ScreenControl.Core
 {
-    namespace ScreenControlTypes
-    {
-        public enum InteractionType
-        {
-            Undefined,
-            Push,
-            Grab,
-            Hover,
-        }
-    }
-
     public class InteractionModule : MonoBehaviour
     {
         public virtual ScreenControlTypes.InteractionType InteractionType { get; } = ScreenControlTypes.InteractionType.Undefined;

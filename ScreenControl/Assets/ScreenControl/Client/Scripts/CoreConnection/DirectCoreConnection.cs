@@ -13,9 +13,12 @@ namespace Ultraleap.ScreenControl.Client
             Core.InteractionManager.HandleInputAction += ConvertToClientInputAction;
         }
 
-        ~DirectCoreConnection()
+        ~DirectCoreConnection() {
+            Debug.Log("DirectCoreConnection deconstructed");
+        }
+
+        public override void Disconnect()
         {
-            Debug.Log("Destructor invoked");
             Core.InteractionManager.HandleInputAction -= ConvertToClientInputAction;
         }
 

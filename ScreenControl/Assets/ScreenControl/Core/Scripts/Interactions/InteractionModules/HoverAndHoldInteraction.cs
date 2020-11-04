@@ -28,6 +28,21 @@ namespace Ultraleap.ScreenControl.Core
         private bool clickHeld = false;
         private bool clickAlreadySent = false;
         private Stopwatch clickingTimer = new Stopwatch();
+        private InteractionType thisType = InteractionType.Hover;
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            InteractionManager.Instance.RegisterInteraction(thisType, this);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            InteractionManager.Instance.RemoveInteraction(thisType);
+        }
 
         protected override void UpdateData(Leap.Hand hand)
         {

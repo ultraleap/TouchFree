@@ -48,6 +48,21 @@ namespace Ultraleap.ScreenControl.Core
         private Stopwatch dragStartTimer = new Stopwatch();
 
         Tuple<long, Positions> previousPosition = new Tuple<long, Positions>(0, new Positions());
+        private ScreenControlTypes.InteractionType thisType = InteractionType.Grab;
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            InteractionManager.Instance.RegisterInteraction(thisType, this);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            InteractionManager.Instance.RemoveInteraction(thisType);
+        }
 
         protected override void UpdateData(Leap.Hand hand)
         {

@@ -9,18 +9,14 @@ namespace Ultraleap.ScreenControl.Client
     {
         static CoreConnection currentCoreConnection;
         public static event Action OnConnected;
-        public static CoreConnection coreConnection
-        {
-            get
-            {
-                if (currentCoreConnection == null)
-                {
-                    // here we would make a new connection
-                    Connect();
-                }
-
+        public static CoreConnection coreConnection {
+            get {
                 return currentCoreConnection;
             }
+        }
+
+        static ConnectionManager() {
+            Connect();
         }
 
         public static void AddConnectionListener(Action onConnectFunc)
@@ -40,7 +36,8 @@ namespace Ultraleap.ScreenControl.Client
 #if SCREENCONTROL_CORE
             currentCoreConnection = new DirectCoreConnection();
 
-            // TODO: Invoke OnConnected event when connect successfully completes
+            // Invoke OnConnected event when connect successfully completes
+            OnConnected?.Invoke();
 #else
             var errorMsg = @"Could not initialise a Direct connection to Screen Control Core as it wasn't available!
 If you wish to use ScreenControl in this manner, please import the Screen Control Core module and add
@@ -49,10 +46,12 @@ If you wish to use ScreenControl in this manner, please import the Screen Contro
 #endif
         }
 
-
         public static void Disconnect()
         {
-            currentCoreConnection = null;
+            if (currentCoreConnection != null) {
+                currentCoreConnection.Disconnect();
+                currentCoreConnection = null;
+            }
         }
     }
 }

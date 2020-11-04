@@ -30,7 +30,7 @@ namespace Ultraleap.ScreenControl.Core
         public float thetaTwo;
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
-        // If a hand moves between the two angles, this is "horizontal" to the screen 
+        // If a hand moves between the two angles, this is "horizontal" to the screen
 
         [Header("AirPush Click")]
         private Vector2 cursorPressPosition;
@@ -69,6 +69,21 @@ namespace Ultraleap.ScreenControl.Core
         private bool dragDeadzoneShrinkTriggered = false;
         private Stopwatch dragStartTimer = new Stopwatch();
         private bool isDragging = false;
+        private ScreenControlTypes.InteractionType thisType = InteractionType.Push;
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            InteractionManager.Instance.RegisterInteraction(thisType, this);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            InteractionManager.Instance.RemoveInteraction(thisType);
+        }
 
         protected override void UpdateData(Leap.Hand hand)
         {

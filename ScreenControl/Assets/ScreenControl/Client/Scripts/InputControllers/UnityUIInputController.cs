@@ -38,7 +38,7 @@ namespace Ultraleap.ScreenControl.Client
 
                 inputModule.inputOverride = this;
             }
-            
+
             private Touch CheckForTouch(int index)
             {
                 previousTouchPhase = touchPhase;

@@ -53,7 +53,11 @@ namespace Ultraleap.ScreenControl.Client
             protected override void OnDestroy()
             {
                 base.OnDestroy();
-                ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
+
+                if (ConnectionManager.coreConnection != null)
+                {
+                    ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
+                }
             }
 
             protected virtual void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)

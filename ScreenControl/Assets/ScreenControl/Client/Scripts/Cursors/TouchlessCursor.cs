@@ -27,7 +27,9 @@ namespace Ultraleap.ScreenControl.Client
 
         protected virtual void OnDisable()
         {
-            ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
+            if (ConnectionManager.coreConnection != null) {
+                ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
+            }
         }
 
         protected virtual void Update()
