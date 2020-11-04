@@ -4,7 +4,6 @@ namespace Ultraleap.ScreenControl.Core
 {
     namespace ScreenControlTypes
     {
-        //Touch Hover/Update, Touch Begin/Down, Touch Hold, Touch Up, Touch Cancel
         public enum InputType
         {
             CANCEL,

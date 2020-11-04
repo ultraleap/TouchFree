@@ -48,7 +48,6 @@ with Keyed with ${type} but there was already such an interaction reg
             }
             else
             {
-                Debug.Log($"Added the ${type} interaction");
                 interactions.Add(type, interactionObject);
             }
         }
