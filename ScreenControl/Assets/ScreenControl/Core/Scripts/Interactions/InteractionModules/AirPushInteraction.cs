@@ -13,7 +13,6 @@ namespace Ultraleap.ScreenControl.Core
 
         [Header("Hand Entry")]
         public double millisecondsCooldownOnEntry;
-        bool handLastSeen = false;
         Stopwatch handAppearedCooldown = new Stopwatch();
 
         [Header("AirPush Detection")]
@@ -34,9 +33,7 @@ namespace Ultraleap.ScreenControl.Core
         // If a hand moves between the two angles, this is "horizontal" to the screen 
 
         [Header("AirPush Click")]
-        public bool clampOnPress;
         private Vector2 cursorPressPosition;
-        private Vector2 clickPressPosition;
 
         [Header("AirPush Unclick")]
 
@@ -59,11 +56,6 @@ namespace Ultraleap.ScreenControl.Core
         private float appliedForce = 0f;
         private bool pressing = false;
 
-        // Instant-unclick params
-        private int REQUIRED_HOLD_FRAMES = 1;
-        private int heldFrames = 0;
-        private bool requireHold = false;
-
         [Header("Dragging")]
         public float dragStartDistanceThresholdM = 0.04f;
         public float dragStartTimeDelaySecs = 0.1f;
@@ -71,28 +63,22 @@ namespace Ultraleap.ScreenControl.Core
         public float dragDeadzoneShrinkDistanceThresholdM = 0.001f;
 
         [Header("Deadzone")]
-        public float deadzoneSizeIncreaseAtMaxForce;
         public float deadzoneMaxSizeIncrease;
         public float deadzoneShrinkRate;
 
         private bool dragDeadzoneShrinkTriggered = false;
         private Stopwatch dragStartTimer = new Stopwatch();
-        private Vector2 downPos;
         private bool isDragging = false;
-
-        [Header("Debug")]
-        public bool logData = false;
-        public DataLogger dataLogger;
 
         protected override void UpdateData(Leap.Hand hand)
         {
             if (hand == null)
             {
-                handLastSeen = false;
                 appliedForce = 0f;
                 pressing = false;
                 isDragging = false;
-                handAppearedCooldown.Stop();
+                // Restarts the hand timer every frame that we have no active hand
+                handAppearedCooldown.Restart();
                 return;
             }
 
@@ -102,35 +88,17 @@ namespace Ultraleap.ScreenControl.Core
             }
 
             positions = positioningModule.CalculatePositions(hand);
-
-            HandleInteractionsAirPush(hand);
+            HandleInteractionsAirPush();
         }
 
-        private void HandleInteractionsAirPush(Leap.Hand hand)
+        private void HandleInteractionsAirPush()
         {
             long currentTimestamp = latestTimestamp;
 
-            Vector2 cursorPosition = positions.CursorPosition;
-            float distanceFromScreen = positions.DistanceFromScreen;
-
-            /**
-                Update the hand-appeared cooldown timer if needed.
-
-                Do not allow clicks until a certain amount of time has elapsed after a hand first appears.
-            */
-            if (!handLastSeen)
+            if (handAppearedCooldown.IsRunning && handAppearedCooldown.ElapsedMilliseconds >= millisecondsCooldownOnEntry)
             {
-                // Start a hand appeared cooldown timer
-                handAppearedCooldown.Restart();
+                handAppearedCooldown.Stop();
             }
-            else
-            {
-                if (handAppearedCooldown.ElapsedMilliseconds >= millisecondsCooldownOnEntry | !handAppearedCooldown.IsRunning)
-                {
-                    handAppearedCooldown.Stop();
-                }
-            }
-            handLastSeen = true;
 
             // If not ignoring clicks...
             if ((previousTime != 0f) && !handAppearedCooldown.IsRunning)
@@ -138,32 +106,16 @@ namespace Ultraleap.ScreenControl.Core
                 // Calculate important variables needed in determining the key events
                 long dtMicroseconds = (currentTimestamp - previousTime);
                 float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
-                float dz = (-1f) * (distanceFromScreen - previousScreenDistance);   // Metres +ve = towards screen
+                float dz = (-1f) * (positions.DistanceFromScreen - previousScreenDistance);   // Metres +ve = towards screen
                 float currentVelocity = dz / dt;    // m/s
 
-                Vector2 dPerpPx = cursorPosition - previousScreenPos;
+                Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
                 Vector2 dPerp = GlobalSettings.virtualScreen.PixelsToMeters(dPerpPx);
 
                 // Update AppliedForce, which is the crux of the AirPush algorithm
-                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, distanceFromScreen);
+                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, positions.DistanceFromScreen);
                 appliedForce += forceChange;
                 appliedForce = Mathf.Clamp01(appliedForce);
-
-                // Optionally log data to a logger, for post-processing
-                if (logData)
-                {
-                    dataLogger.LogData(
-                        new List<float>()
-                        {
-                        currentTimestamp,
-                        distanceFromScreen,
-                        dt,
-                        dz,
-                        dPerp.magnitude,
-                        appliedForce
-                        }
-                    );
-                }
 
                 // Update the deadzone size
                 if (!pressing)
@@ -171,54 +123,33 @@ namespace Ultraleap.ScreenControl.Core
                     AdjustDeadzoneSize(forceChange);
                 }
 
-                // Calculate the positions to use for events
-                Positions eventPositions = new Positions(Vector2.zero, distanceFromScreen);
-                if (pressing && ignoreDragging && clampOnPress)
-                {
-                    eventPositions.CursorPosition = cursorPressPosition;
-                }
-                else
-                {
-                    eventPositions.CursorPosition = cursorPosition;
-                }
-
-                // Send the move event
-                SendInputAction(InputType.MOVE, eventPositions, appliedForce);
-
                 // Determine whether to send any other events
                 if (pressing)
                 {
-                    if (requireHold)
-                    {
-                        requireHold = false;
-                    }
-                    else if (appliedForce < unclickThreshold || ignoreDragging)
+                    if (appliedForce < unclickThreshold || ignoreDragging)
                     {
                         pressing = false;
                         isDragging = false;
                         cursorPressPosition = Vector2.zero;
-                        clickPressPosition = Vector2.zero;
-                        SendInputAction(InputType.UP, eventPositions, appliedForce);
+                        SendInputAction(InputType.UP, positions, appliedForce);
                     }
                     else
                     {
                         if (isDragging)
                         {
-                            if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, cursorPosition))
+                            if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, positions.CursorPosition))
                             {
                                 positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, dragDeadzoneShrinkRate);
                                 dragDeadzoneShrinkTriggered = true;
                             }
                         }
-                        else
+                        else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
-                            if (!ignoreDragging && CheckForStartDrag(cursorPressPosition, cursorPosition))
-                            {
-                                isDragging = true;
-                                dragDeadzoneShrinkTriggered = false;
-                            }
+                            isDragging = true;
+                            dragDeadzoneShrinkTriggered = false;
                         }
 
+                        SendInputAction(InputType.MOVE, positions, appliedForce);
                     }
                 }
                 else if (!decayingForce && appliedForce >= 1f)
@@ -227,18 +158,19 @@ namespace Ultraleap.ScreenControl.Core
                     // when ignoring dragging and moving past the touch-plane.
 
                     pressing = true;
-                    SendInputAction(InputType.DOWN, eventPositions, appliedForce);
-                    cursorPressPosition = cursorPosition;
+                    SendInputAction(InputType.DOWN, positions, appliedForce);
+                    cursorPressPosition = positions.CursorPosition;
 
                     // If dragging is off, we want to decay the force after a click back to the unclick threshold
                     if (decayForceOnClick && ignoreDragging)
                     {
                         decayingForce = true;
                     }
-
-                    // This might be only true if "ignoreDragging" is on, but I think because Pokes can be done quite quickly,
-                    // there's a chance that no frame is triggered 
-                    requireHold = true;
+                }
+                else if(positions.CursorPosition != previousScreenPos || positions.DistanceFromScreen != previousScreenDistance)
+                {
+                    // Send the move event
+                    SendInputAction(InputType.MOVE, positions, appliedForce);
                 }
 
                 if (decayingForce && (appliedForce <= decayThreshold))
@@ -248,14 +180,14 @@ namespace Ultraleap.ScreenControl.Core
             }
             else
             {
-                // If ignoring clicks, just move horizontally
-                SendInputAction(InputType.MOVE, positions, 0f);
+                // show them they have been seen but send no major events as we have only just discovered the hand
+                SendInputAction(InputType.MOVE, positions, appliedForce);
             }
 
             // Update stored variables
             previousTime = currentTimestamp;
-            previousScreenDistance = distanceFromScreen;
-            previousScreenPos = cursorPosition;
+            previousScreenDistance = positions.DistanceFromScreen;
+            previousScreenPos = positions.CursorPosition;
         }
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)

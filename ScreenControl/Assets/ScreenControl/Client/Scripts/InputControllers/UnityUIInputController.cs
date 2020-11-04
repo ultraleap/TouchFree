@@ -38,11 +38,16 @@ namespace Ultraleap.ScreenControl.Client
 
                 inputModule.inputOverride = this;
             }
-
-
+            
             private Touch CheckForTouch(int index)
             {
                 previousTouchPhase = touchPhase;
+
+                if(touchPhase == TouchPhase.Ended || touchPhase == TouchPhase.Canceled)
+                {
+                    isTouching = false;
+                }
+
                 return new Touch()
                 {
                     fingerId = index,
@@ -62,7 +67,6 @@ namespace Ultraleap.ScreenControl.Client
 
                 touchPosition = cursorPosition;
 
-
                 switch (type)
                 {
                     case ScreenControlTypes.InputType.DOWN:
@@ -72,20 +76,17 @@ namespace Ultraleap.ScreenControl.Client
                         break;
 
                     case ScreenControlTypes.InputType.MOVE:
-                        // TODO: this causes immediate clicks, we need to stop sending move events from Core after a 'DOWN' click until an 'UP' click unless we dragged
-                        touchPhase = TouchPhase.Ended;
+                        touchPhase = TouchPhase.Moved;
                         break;
 
                     case ScreenControlTypes.InputType.CANCEL:
                         touchPhase = TouchPhase.Canceled;
                         eventSystem.pixelDragThreshold = baseDragThreshold;
-                        isTouching = false;
                         break;
 
                     case ScreenControlTypes.InputType.UP:
                         touchPhase = TouchPhase.Ended;
                         eventSystem.pixelDragThreshold = baseDragThreshold;
-                        isTouching = false;
                         break;
                 }
             }
