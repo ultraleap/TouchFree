@@ -23,7 +23,7 @@ namespace Ultraleap.ScreenControl.Client
             // Convert Core event into Client event
             ClientInputAction clientInput = new ClientInputAction(
                 _data.Timestamp,
-                (InteractionType)_data.SourceInteraction,
+                (InteractionType)_data.InteractionType,
                 (HandType)_data.HandType,
                 (HandChirality)_data.Chirality,
                 (InputType)_data.InputType,

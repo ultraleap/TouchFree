@@ -7,7 +7,7 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class TouchPlanePushInteraction : InteractionModule
     {
-        public override InteractionType InteractionType { get; } = InteractionType.Push;
+        public override InteractionType InteractionType { get; } = InteractionType.PUSH;
         public bool InteractionEnabled { get; set; } = true;
 
         // The distance from screen at which the progressToClick is 0

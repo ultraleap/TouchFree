@@ -6,7 +6,7 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class HoverAndHoldInteraction : InteractionModule
     {
-        public override InteractionType InteractionType { get; } = InteractionType.Hover;
+        public override InteractionType InteractionType { get; } = InteractionType.HOVER;
         public bool InteractionEnabled { get; set; } = true;
 
         public ProgressTimer progressTimer;
@@ -28,21 +28,6 @@ namespace Ultraleap.ScreenControl.Core
         private bool clickHeld = false;
         private bool clickAlreadySent = false;
         private Stopwatch clickingTimer = new Stopwatch();
-        private InteractionType thisType = InteractionType.Hover;
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-
-            InteractionManager.Instance.RegisterInteraction(thisType, this);
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-
-            InteractionManager.Instance.RemoveInteraction(thisType);
-        }
 
         protected override void UpdateData(Leap.Hand hand)
         {
