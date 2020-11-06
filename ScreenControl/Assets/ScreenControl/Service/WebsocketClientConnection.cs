@@ -19,7 +19,7 @@ namespace Ultraleap.ScreenControl.Service
         public void OnEnable()
         {
             wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
-            wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/*", SetupConnection);
+            wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
 
             wsServer.AllowForwardedRequest = true;
             wsServer.ReuseAddress = true;
