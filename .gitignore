@@ -6,7 +6,7 @@ Obj/
 UnityGenerated/
 Library/
 Logs/
- 
+
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
@@ -29,7 +29,7 @@ ExportedObj/
 .idea/
 *JetBrains.meta
 JetBrains/
- 
+
 # ============ #
 # OS generated #
 # ============ #
@@ -46,4 +46,5 @@ Thumbs.db
 #  Ultraleap generated   #
 # ====================== #
 Builds/
+Build/
 AssetDirStat.asset

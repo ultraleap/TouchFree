@@ -18,7 +18,7 @@ namespace Ultraleap.ScreenControl.Client
             public override bool touchSupported => isTouching ? true : base.touchSupported;
             public override int touchCount => isTouching ? 1 : base.touchCount;
             public override Touch GetTouch(int index) => isTouching ? CheckForTouch(index) : base.GetTouch(index);
-            public bool isHovering = true;
+            public bool isHovering = false;
 
             private Vector2 touchPosition;
             private TouchPhase touchPhase = TouchPhase.Ended;

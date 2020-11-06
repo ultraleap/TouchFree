@@ -2,11 +2,11 @@
 
 namespace Ultraleap.ScreenControl.Core
 {
-    public class InteractionModule : MonoBehaviour
+    public abstract class InteractionModule : MonoBehaviour
     {
-        public virtual ScreenControlTypes.InteractionType InteractionType { get; } = ScreenControlTypes.InteractionType.Undefined;
+        public virtual ScreenControlTypes.InteractionType InteractionType { get; } = ScreenControlTypes.InteractionType.PUSH;
 
-        private ScreenControlTypes.HandChirality handChirality = ScreenControlTypes.HandChirality.UNKNOWN;
+        private ScreenControlTypes.HandChirality handChirality;
         public ScreenControlTypes.HandType handType;
 
         public bool ignoreDragging;
@@ -60,11 +60,13 @@ namespace Ultraleap.ScreenControl.Core
             OnSettingsUpdated();
             PhysicalConfigurable.CreateVirtualScreen(PhysicalConfigurable.Config);
             positioningModule.Stabiliser.ResetValues();
+            InteractionManager.Instance.RegisterInteraction(InteractionType, this);
         }
 
         protected virtual void OnDisable()
         {
             SettingsConfig.OnConfigUpdated -= OnSettingsUpdated;
+            InteractionManager.Instance.RemoveInteraction(InteractionType);
         }
 
         protected virtual void OnSettingsUpdated()

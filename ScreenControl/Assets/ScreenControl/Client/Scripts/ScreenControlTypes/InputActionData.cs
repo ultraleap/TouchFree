@@ -4,35 +4,6 @@ namespace Ultraleap.ScreenControl.Client
 {
     namespace ScreenControlTypes
     {
-        public enum InputType
-        {
-            CANCEL,
-            DOWN,
-            MOVE,
-            UP,
-        }
-
-        public enum HandChirality
-        {
-            LEFT,
-            RIGHT,
-            UNKNOWN,
-        }
-
-        public enum InteractionType
-        {
-            UNDEFINED,
-            PUSH,
-            GRAB,
-            HOVER,
-        }
-
-        public enum HandType
-        {
-            PRIMARY,
-            SECONDARY,
-        }
-
         public readonly struct ClientInputAction
         {
             public readonly long Timestamp;
@@ -60,6 +31,33 @@ namespace Ultraleap.ScreenControl.Client
                 CursorPosition = _cursorPosition;
                 ProgressToClick = _progressToClick;
             }
+        }
+
+        public enum HandChirality
+        {
+            LEFT,
+            RIGHT
+        }
+
+        public enum HandType
+        {
+            PRIMARY,
+            SECONDARY,
+        }
+
+        public enum InputType
+        {
+            CANCEL,
+            DOWN,
+            MOVE,
+            UP,
+        }
+
+        public enum InteractionType
+        {
+            GRAB,
+            HOVER,
+            PUSH,
         }
     }
 }

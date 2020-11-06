@@ -21,7 +21,7 @@ public class PinchGrabCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
         Vector2 cursorPosition = _inputData.CursorPosition;
         float distanceFromScreen = _inputData.ProgressToClick;
 
-        if (_inputData.Chirality != cursorChirality && _inputData.Chirality != Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.UNKNOWN)
+        if (_inputData.Chirality != cursorChirality)
         {
             cursorDot.transform.Rotate(0f, 180f, 0f);
             cursorChirality = _inputData.Chirality;

@@ -7,8 +7,7 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class AirPushInteraction : InteractionModule
     {
-        public override InteractionType InteractionType { get; } = InteractionType.Push;
-
+        public override InteractionType InteractionType { get; } = InteractionType.PUSH;
         public bool InteractionEnabled { get; set; } = true;
 
         [Header("Hand Entry")]
@@ -69,21 +68,6 @@ namespace Ultraleap.ScreenControl.Core
         private bool dragDeadzoneShrinkTriggered = false;
         private Stopwatch dragStartTimer = new Stopwatch();
         private bool isDragging = false;
-        private ScreenControlTypes.InteractionType thisType = InteractionType.Push;
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-
-            InteractionManager.Instance.RegisterInteraction(thisType, this);
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-
-            InteractionManager.Instance.RemoveInteraction(thisType);
-        }
 
         protected override void UpdateData(Leap.Hand hand)
         {

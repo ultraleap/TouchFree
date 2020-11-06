@@ -72,7 +72,7 @@ public class PinchGrabLineCursor : DotCursor
 
         base.HandleInputAction(_inputData);
 
-        if (_inputData.Chirality != cursorChirality && _inputData.Chirality != Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.UNKNOWN)
+        if (_inputData.Chirality != cursorChirality)
         {
             cursorChirality = _inputData.Chirality;
         }
