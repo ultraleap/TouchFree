@@ -20,7 +20,10 @@ namespace Ultraleap.ScreenControl.Service
         {
             WebsocketInputActionData converted = new WebsocketInputActionData(_data);
 
-            string jsonMessage = JsonUtility.ToJson(converted);
+            CommunicationWrapper<WebsocketInputActionData> message =
+                new CommunicationWrapper<WebsocketInputActionData>(ActionCodes.INPUT_ACTION.ToString(), converted);
+
+            string jsonMessage = JsonUtility.ToJson(message);
 
             Send(jsonMessage);
         }
