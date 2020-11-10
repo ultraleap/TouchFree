@@ -29,6 +29,8 @@ namespace Ultraleap.ScreenControl.Service
         {
             string clientApiVersion = Headers[API_HEADER_NAME];
 
+            var ws = new WebSocket("127.0.0.1:9739");
+
             if (clientApiVersion != null &&
                 GetVersionCompability(clientApiVersion, VersionInfo.ApiVersion) == Compatibility.COMPATIBLE)
             {
