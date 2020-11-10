@@ -7,7 +7,7 @@ namespace Ultraleap.ScreenControl.Core
     [DefaultExecutionOrder(-100)]
     public class InteractionManager : MonoBehaviour
     {
-        public delegate void InputAction(ScreenControlTypes.InputActionData _inputData);
+        public delegate void InputAction(ScreenControlTypes.CoreInputAction _inputData);
         public static event InputAction HandleInputAction;
 
         public static Dictionary<ScreenControlTypes.InteractionType, InteractionModule> interactions =
@@ -69,7 +69,7 @@ with Keyed with ${type} but there was already such an interaction reg
         {
         }
 
-        private void HandleInteractionModuleInputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.InputActionData _inputData)
+        private void HandleInteractionModuleInputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.CoreInputAction _inputData)
         {
             HandleInputAction?.Invoke(_inputData);
         }

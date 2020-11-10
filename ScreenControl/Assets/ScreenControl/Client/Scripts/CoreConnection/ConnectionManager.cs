@@ -5,8 +5,17 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
-    public static class ConnectionManager
+    [Serializable]
+    enum ConnectionType
     {
+        WEB_SOCKET,
+        DIRECT_CORE_MODULE
+    }
+
+    public class ConnectionManager : MonoBehaviour
+    {
+        public static ConnectionManager Instance;
+
         static CoreConnection currentCoreConnection;
         public static event Action OnConnected;
         public static CoreConnection coreConnection {
@@ -15,7 +24,20 @@ namespace Ultraleap.ScreenControl.Client
             }
         }
 
-        static ConnectionManager() {
+        [SerializeField] ConnectionType connectionType;
+
+        [Header("WebSocket connection values")]
+        [SerializeField] string iPAddress = "127.0.0.1";
+        [SerializeField] string port = "9739";
+
+        private void Awake()
+        {
+            if(Instance != null && Instance != this)
+            {
+                return;
+            }
+            Instance = this;
+
             Connect();
         }
 
@@ -31,19 +53,34 @@ namespace Ultraleap.ScreenControl.Client
             }
         }
 
-        public static void Connect()
+        public void Connect()
         {
+            switch (connectionType)
+            {
+                case ConnectionType.WEB_SOCKET:
+                    currentCoreConnection = new WebSocketCoreConnection(iPAddress, port);
+                    // Invoke OnConnected event when connect successfully completes
+                    OnConnected?.Invoke();
+                    break;
+                case ConnectionType.DIRECT_CORE_MODULE:
 #if SCREENCONTROL_CORE
-            currentCoreConnection = new DirectCoreConnection();
+                    currentCoreConnection = new DirectCoreConnection();
 
-            // Invoke OnConnected event when connect successfully completes
-            OnConnected?.Invoke();
+                    // Invoke OnConnected event when connect successfully completes
+                    OnConnected?.Invoke();
 #else
-            var errorMsg = @"Could not initialise a Direct connection to Screen Control Core as it wasn't available!
-If you wish to use ScreenControl in this manner, please import the Screen Control Core module and add
-""SCREENCONTROL_CORE"" to the ""Scripting Define Symbols"" in your Player settings.";
-            Debug.Log(errorMsg);
+                    var errorMsg = @"Could not initialise a Direct connection to Screen Control Core as it wasn't available!
+                                    If you wish to use ScreenControl in this manner, please import the Screen Control Core module and add
+                                    ""SCREENCONTROL_CORE"" to the ""Scripting Define Symbols"" in your Player settings.";
+                    Debug.Log(errorMsg);
 #endif
+                    break;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Disconnect();
         }
 
         public static void Disconnect()

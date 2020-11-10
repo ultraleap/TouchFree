@@ -46,7 +46,7 @@ namespace Ultraleap.ScreenControl.Service
             }
         }
 
-        void SendDataToWebsocket(InputActionData _data)
+        void SendDataToWebsocket(CoreInputAction _data)
         {
             if (!websocketInitalised)
             {
