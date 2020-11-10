@@ -70,8 +70,8 @@ namespace Ultraleap.ScreenControl.Client
                     OnConnected?.Invoke();
 #else
                     var errorMsg = @"Could not initialise a Direct connection to Screen Control Core as it wasn't available!
-                                    If you wish to use ScreenControl in this manner, please import the Screen Control Core module and add
-                                    ""SCREENCONTROL_CORE"" to the ""Scripting Define Symbols"" in your Player settings.";
+If you wish to use ScreenControl in this manner, please import the Screen Control Core module and add
+""SCREENCONTROL_CORE"" to the ""Scripting Define Symbols"" in your Player settings.";
                     Debug.Log(errorMsg);
 #endif
                     break;

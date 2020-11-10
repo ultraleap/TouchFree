@@ -42,7 +42,7 @@ using the Font Software.
 -----------------------------------------------------------------------------
 The MIT License (MIT)
 applies to:
-	- WebsocketSharp | At ./Assets/Plugins/WebsocketSharp/ |
+	- WebsocketSharp | At ../Plugins/WebsocketSharp/ |
 Copyright (c) 2010-2020 sta.blockhead
 -----------------------------------------------------------------------------
 
