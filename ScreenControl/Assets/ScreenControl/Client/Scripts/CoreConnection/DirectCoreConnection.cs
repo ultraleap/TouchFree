@@ -18,7 +18,7 @@ namespace Ultraleap.ScreenControl.Client
             Core.InteractionManager.HandleInputAction -= ConvertToClientInputAction;
         }
 
-        void ConvertToClientInputAction(Core.ScreenControlTypes.InputActionData _data)
+        void ConvertToClientInputAction(Core.ScreenControlTypes.CoreInputAction _data)
         {
             // Convert Core event into Client event
             ClientInputAction clientInput = new ClientInputAction(
