@@ -12,7 +12,7 @@ namespace Ultraleap.ScreenControl.Core
         public bool ignoreDragging;
         public PositioningModule positioningModule;
 
-        public delegate void InputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.InputActionData _inputData);
+        public delegate void InputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.CoreInputAction _inputData);
         public static event InputAction HandleInputAction;
 
         protected Positions positions;
@@ -50,7 +50,7 @@ namespace Ultraleap.ScreenControl.Core
 
         protected void SendInputAction(ScreenControlTypes.InputType _inputType, Positions _positions, float _progressToClick)
         {
-            ScreenControlTypes.InputActionData actionData = new ScreenControlTypes.InputActionData(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
+            ScreenControlTypes.CoreInputAction actionData = new ScreenControlTypes.CoreInputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
             HandleInputAction?.Invoke(handChirality, handType, actionData);
         }
 

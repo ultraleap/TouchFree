@@ -1,17 +1,17 @@
 using System;
-
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.ScreenControl.Client
 {
     namespace ScreenControlTypes
     {
         public static class VersionInfo
         {
             public static readonly Version ApiVersion = new Version("1.0.0");
+            public const string API_HEADER_NAME = "ScApiVersion";
         }
 
-        public readonly struct InputActionData
+        public readonly struct ClientInputAction
         {
             public readonly long Timestamp;
             public readonly InteractionType InteractionType;
@@ -19,18 +19,35 @@ namespace Ultraleap.ScreenControl.Core
             public readonly HandChirality Chirality;
             public readonly InputType InputType;
             public readonly Vector2 CursorPosition;
-            public readonly float DistanceFromScreen;
             public readonly float ProgressToClick;
-            public InputActionData(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _progressToClick)
+
+            public ClientInputAction(
+                long _timestamp,
+                InteractionType _interactionType,
+                HandType _handType,
+                HandChirality _chirality,
+                InputType _inputType,
+                Vector2 _cursorPosition,
+                float _progressToClick)
             {
                 Timestamp = _timestamp;
                 InteractionType = _interactionType;
                 HandType = _handType;
                 Chirality = _chirality;
                 InputType = _inputType;
-                CursorPosition = _positions.CursorPosition;
-                DistanceFromScreen = _positions.DistanceFromScreen;
+                CursorPosition = _cursorPosition;
                 ProgressToClick = _progressToClick;
+            }
+
+            public ClientInputAction(WebsocketInputAction _wsInput)
+            {
+                Timestamp = _wsInput.Timestamp;
+                InteractionType = Utilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags);
+                HandType = Utilities.GetHandTypeFromFlags(_wsInput.InteractionFlags);
+                Chirality = Utilities.GetChiralityFromFlags(_wsInput.InteractionFlags);
+                InputType = Utilities.GetInputTypeFromFlags(_wsInput.InteractionFlags);
+                CursorPosition = _wsInput.CursorPosition;
+                ProgressToClick = _wsInput.ProgressToClick;
             }
         }
 
@@ -90,16 +107,14 @@ namespace Ultraleap.ScreenControl.Core
         }
 
         [Serializable]
-        public struct WebsocketInputActionData
+        public struct WebsocketInputAction
         {
             public long Timestamp;
             public BitmaskFlags InteractionFlags;
-            // public long Bitmask { get { return (long) InteractionFlags; }}
             public Vector2 CursorPosition;
-            public float DistanceFromScreen;
             public float ProgressToClick;
 
-            public WebsocketInputActionData(InputActionData _data)
+            public WebsocketInputAction(ClientInputAction _data)
             {
                 Timestamp = _data.Timestamp;
                 InteractionFlags = Utilities.GetInteractionFlags(_data.InteractionType,
@@ -107,11 +122,10 @@ namespace Ultraleap.ScreenControl.Core
                                                                  _data.Chirality,
                                                                  _data.InputType);
                 CursorPosition = _data.CursorPosition;
-                DistanceFromScreen = _data.DistanceFromScreen;
                 ProgressToClick = _data.ProgressToClick;
             }
         }
-
+        
         public static class Utilities
         {
             internal static BitmaskFlags GetInteractionFlags(
@@ -131,7 +145,6 @@ namespace Ultraleap.ScreenControl.Core
                         returnVal ^= BitmaskFlags.SECONDARY;
                         break;
                 }
-
 
                 switch (_chirality)
                 {
@@ -173,6 +186,98 @@ namespace Ultraleap.ScreenControl.Core
                 }
 
                 return returnVal;
+            }
+
+            internal static HandChirality GetChiralityFromFlags (BitmaskFlags _flags)
+            {
+                HandChirality chirality = HandChirality.RIGHT;
+
+                if(_flags.HasFlag(BitmaskFlags.LEFT))
+                {
+                    chirality = HandChirality.LEFT;
+                }
+                else if(_flags.HasFlag(BitmaskFlags.RIGHT))
+                {
+                    chirality = HandChirality.RIGHT;
+                }
+                else
+                {
+                    Debug.LogError("InputActionData missing: No Chirality found. Defaulting to 'RIGHT'");
+                }
+
+                return chirality;
+            }
+
+            internal static HandType GetHandTypeFromFlags(BitmaskFlags _flags)
+            {
+                HandType handType = HandType.PRIMARY;
+
+                if (_flags.HasFlag(BitmaskFlags.PRIMARY))
+                {
+                    handType = HandType.PRIMARY;
+                }
+                else if (_flags.HasFlag(BitmaskFlags.SECONDARY))
+                {
+                    handType = HandType.SECONDARY;
+                }
+                else
+                {
+                    Debug.LogError("InputActionData missing: No HandData found. Defaulting to 'PRIMARY'");
+                }
+
+                return handType;
+            }
+
+            internal static InputType GetInputTypeFromFlags(BitmaskFlags _flags)
+            {
+                InputType inputType = InputType.CANCEL;
+
+                if (_flags.HasFlag(BitmaskFlags.CANCEL))
+                {
+                    inputType = InputType.CANCEL;
+                }
+                else if (_flags.HasFlag(BitmaskFlags.DOWN))
+                {
+                    inputType = InputType.DOWN;
+                }
+                else if (_flags.HasFlag(BitmaskFlags.MOVE))
+                {
+                    inputType = InputType.MOVE;
+                }
+                else if (_flags.HasFlag(BitmaskFlags.UP))
+                {
+                    inputType = InputType.UP;
+                }
+                else
+                {
+                    Debug.LogError("InputActionData missing: No InputType found. Defaulting to 'CANCEL'");
+                }
+
+                return inputType;
+            }
+
+            internal static InteractionType GetInteractionTypeFromFlags(BitmaskFlags _flags)
+            {
+                InteractionType interactionType = InteractionType.PUSH;
+
+                if (_flags.HasFlag(BitmaskFlags.GRAB))
+                {
+                    interactionType = InteractionType.GRAB;
+                }
+                else if (_flags.HasFlag(BitmaskFlags.HOVER))
+                {
+                    interactionType = InteractionType.HOVER;
+                }
+                else if (_flags.HasFlag(BitmaskFlags.PUSH))
+                {
+                    interactionType = InteractionType.PUSH;
+                }
+                else
+                {
+                    Debug.LogError("InputActionData missing: No InteractionType found. Defaulting to 'PUSH'");
+                }
+
+                return interactionType;
             }
         }
     }

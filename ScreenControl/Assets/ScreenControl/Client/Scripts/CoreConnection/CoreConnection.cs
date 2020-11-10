@@ -15,6 +15,5 @@ namespace Ultraleap.ScreenControl.Client
         {
             TransmitInputAction?.Invoke(_inputData);
         }
-
     }
 }
