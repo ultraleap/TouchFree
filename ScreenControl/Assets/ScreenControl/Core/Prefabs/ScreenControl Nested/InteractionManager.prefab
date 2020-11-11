@@ -116,7 +116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5f12ce61472896499eed99452844f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackedHand: 0
+  handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 5708286018089953508}
   progressTimer: {fileID: 3597414384296907840}
@@ -205,7 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197404bf835d2b34eb83aff7f7a8e8e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackedHand: 0
+  handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 833158614815339978}
   deadzoneEnlargementDistance: 0.02
@@ -478,7 +478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a5a1385cb462ca44a2fa1747f83a105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackedHand: 0
+  handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 3899536540166993890}
   dragStartDistanceThresholdM: 0.04
@@ -518,7 +518,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1786229057116414747
 Transform:
   m_ObjectHideFlags: 0
@@ -562,7 +562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195c01a09afb90d4fb44a1539453c90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackedHand: 0
+  handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 7253266500062961542}
   millisecondsCooldownOnEntry: 500
@@ -597,8 +597,7 @@ MonoBehaviour:
   horizontalDecayDist: 0.2
   thetaOne: 15
   thetaTwo: 135
-  clampOnPress: 0
-  unclickThreshold: 0.9
+  unclickThreshold: 0.5
   decayForceOnClick: 1
   decayThreshold: 0.8
   forceDecayTime: 0.1
@@ -608,8 +607,5 @@ MonoBehaviour:
   dragStartTimeDelaySecs: 0.1
   dragDeadzoneShrinkRate: 0.5
   dragDeadzoneShrinkDistanceThresholdM: 0.001
-  deadzoneSizeIncreaseAtMaxForce: 0.02
   deadzoneMaxSizeIncrease: 0.02
   deadzoneShrinkRate: 0.3
-  logData: 0
-  dataLogger: {fileID: 0}
