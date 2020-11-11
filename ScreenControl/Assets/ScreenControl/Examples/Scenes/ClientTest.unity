@@ -996,7 +996,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 211464661}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.38834956
+  m_Size: 0.3883495
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2377,7 +2377,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -674.9993, y: 141.5}
+  m_AnchoredPosition: {x: -674.952, y: 141.5}
   m_SizeDelta: {x: 2600, y: 313.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &953291539
@@ -2891,8 +2891,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1261005067}
   m_HandleRect: {fileID: 1261005066}
   m_Direction: 0
-  m_Value: -0.0000005859375
-  m_Size: 0.51922977
+  m_Value: -0.000038378905
+  m_Size: 0.4788797
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4888,6 +4888,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ScreenControlCore
+      objectReference: {fileID: 0}
+    - target: {fileID: 5898236633881950279, guid: 6abe93132ab8dbc43bb2d1959089597d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6abe93132ab8dbc43bb2d1959089597d, type: 3}
