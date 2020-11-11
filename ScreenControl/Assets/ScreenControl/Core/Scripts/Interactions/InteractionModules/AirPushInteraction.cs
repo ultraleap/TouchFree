@@ -141,6 +141,8 @@ namespace Ultraleap.ScreenControl.Core
                                 positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, dragDeadzoneShrinkRate);
                                 dragDeadzoneShrinkTriggered = true;
                             }
+
+                            SendInputAction(InputType.MOVE, positions, appliedForce);
                         }
                         else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
@@ -148,7 +150,6 @@ namespace Ultraleap.ScreenControl.Core
                             dragDeadzoneShrinkTriggered = false;
                         }
 
-                        SendInputAction(InputType.MOVE, positions, appliedForce);
                     }
                 }
                 else if (!decayingForce && appliedForce >= 1f)
@@ -166,7 +167,7 @@ namespace Ultraleap.ScreenControl.Core
                         decayingForce = true;
                     }
                 }
-                else if(positions.CursorPosition != previousScreenPos || positions.DistanceFromScreen != previousScreenDistance)
+                else if (positions.CursorPosition != previousScreenPos || positions.DistanceFromScreen != previousScreenDistance)
                 {
                     // Send the move event
                     SendInputAction(InputType.MOVE, positions, appliedForce);
@@ -194,6 +195,7 @@ namespace Ultraleap.ScreenControl.Core
             Vector2 startPosM = GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
             Vector2 currentPosM = GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
             float distFromStartPos = (startPosM - currentPosM).magnitude;
+
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
                 return true;
