@@ -48,16 +48,6 @@ namespace Ultraleap.ScreenControl.Service
 
         void SendDataToWebsocket(CoreInputAction _data)
         {
-            if (!websocketInitalised)
-            {
-                wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
-                wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
-
-                wsServer.AllowForwardedRequest = true;
-                wsServer.ReuseAddress = true;
-                wsServer.Start();
-            }
-
             if (!websocketInitalised ||
                 !socketBehaviour.isConnected)
             {

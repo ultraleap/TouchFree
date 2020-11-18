@@ -58,12 +58,6 @@ namespace Ultraleap.ScreenControl.Core
 
         private void HandleInteractions(Vector2 _hoverPosition)
         {
-            SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
-            HandleInputHoverAndHold(_hoverPosition);
-        }
-
-        private void HandleInputHoverAndHold(Vector2 _hoverPosition)
-        {
             if (!clickHeld && !hoverTriggered && _hoverPosition == previousHoverPosScreen)
             {
                 if (!hoverTriggerTimer.IsRunning)
@@ -99,6 +93,8 @@ namespace Ultraleap.ScreenControl.Core
                         }
                         else
                         {
+                            SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
+
                             float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
                             float deadzoneRadius = Mathf.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
                             positioningModule.Stabiliser.SetCurrentDeadzoneRadius(deadzoneRadius);
@@ -132,6 +128,10 @@ namespace Ultraleap.ScreenControl.Core
 
                     positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
                 }
+            }
+            else
+            {
+                SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
             }
 
             previousHoverPosScreen = _hoverPosition;

@@ -10,24 +10,28 @@ namespace Ultraleap.ScreenControl.Client
     public class WebSocketReceiverQueue : MonoBehaviour
     {
         public WebSocketCoreConnection coreConnection;
+        public int queueCullLimit = 2;
 
         public ConcurrentQueue<ClientInputAction> receiveQueue = new ConcurrentQueue<ClientInputAction>();
 
         void Update()
         {
             ClientInputAction action;
-            while (receiveQueue.TryPeek(out action))
+            while (receiveQueue.Count > queueCullLimit)
             {
-                // Parse newly received messages
                 receiveQueue.TryDequeue(out action);
-                coreConnection.HandleInputAction(action);
 
-                // Stop going through the queue this frame if we have just handled a 'key' input event
+                // Stop skipping through the queue this frame if we have just handled a 'key' input event
                 if (action.InputType != InputType.MOVE)
                 {
-                    break;
+                    coreConnection.HandleInputAction(action);
+                    return;
                 }
             }
+
+            // Parse newly received messages
+            receiveQueue.TryDequeue(out action);
+            coreConnection.HandleInputAction(action);
         }
     }
 }
