@@ -1,5 +1,6 @@
 using UnityEngine;
 
+using WebSocketSharp;
 using WebSocketSharp.Server;
 
 using Ultraleap.ScreenControl.Core;
@@ -9,21 +10,17 @@ namespace Ultraleap.ScreenControl.Service
 {
     public class WebsocketClientConnection : MonoBehaviour
     {
-        private WebSocketServer wsServer;
-        private ScreenControlWsBehaviour socketBehaviour;
+        private WebSocketServer wsServer = null;
+        private ScreenControlWsBehaviour socketBehaviour = null;
 
         private bool websocketInitalised = false;
+        private bool restartServer = false;
 
         public short port = 9739;
 
-        public void OnEnable()
+        void OnEnable()
         {
-            wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
-            wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
-
-            wsServer.AllowForwardedRequest = true;
-            wsServer.ReuseAddress = true;
-            wsServer.Start();
+            InitialiseServer();
         }
 
         internal WebsocketClientConnection()
@@ -41,25 +38,39 @@ namespace Ultraleap.ScreenControl.Service
             if (behaviour != null)
             {
                 socketBehaviour = behaviour;
-                websocketInitalised = true;
                 Debug.Log("connection set up");
             }
         }
 
+        private void InitialiseServer()
+        {
+            websocketInitalised = false;
+
+            wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
+            wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
+
+            wsServer.AllowForwardedRequest = true;
+            wsServer.ReuseAddress = true;
+            wsServer.Start();
+        }
+
         void SendDataToWebsocket(CoreInputAction _data)
         {
-            if (!websocketInitalised)
+            // if IsListening stops being true the server
+            // has aborted / stopped, so needs remaking
+            if (wsServer == null ||
+                (!wsServer.IsListening && websocketInitalised))
             {
-                wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
-                wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
+                InitialiseServer();
+            }
 
-                wsServer.AllowForwardedRequest = true;
-                wsServer.ReuseAddress = true;
-                wsServer.Start();
+            if (wsServer.IsListening) {
+                websocketInitalised = true;
             }
 
             if (!websocketInitalised ||
-                !socketBehaviour.isConnected)
+                socketBehaviour == null ||
+                socketBehaviour.ConnectionState != WebSocketState.Open)
             {
                 return;
             }
