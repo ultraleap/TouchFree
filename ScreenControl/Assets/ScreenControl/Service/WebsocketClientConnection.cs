@@ -9,22 +9,12 @@ namespace Ultraleap.ScreenControl.Service
 {
     public class WebsocketClientConnection : MonoBehaviour
     {
-        private WebSocketServer wsServer;
+        private WebSocketServer wsServer = null;
         private ScreenControlWsBehaviour socketBehaviour;
 
         private bool websocketInitalised = false;
 
         public short port = 9739;
-
-        public void OnEnable()
-        {
-            wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
-            wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
-
-            wsServer.AllowForwardedRequest = true;
-            wsServer.ReuseAddress = true;
-            wsServer.Start();
-        }
 
         internal WebsocketClientConnection()
         {
@@ -48,10 +38,20 @@ namespace Ultraleap.ScreenControl.Service
 
         void SendDataToWebsocket(CoreInputAction _data)
         {
-            if (!websocketInitalised ||
-                !socketBehaviour.isConnected)
+            if (!websocketInitalised)
             {
                 return;
+            }
+
+            if (wsServer == null ||
+                !wsServer.IsListening)
+            {
+                wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
+                wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
+
+                wsServer.AllowForwardedRequest = true;
+                wsServer.ReuseAddress = true;
+                wsServer.Start();
             }
 
             socketBehaviour.SendInputAction(_data);
