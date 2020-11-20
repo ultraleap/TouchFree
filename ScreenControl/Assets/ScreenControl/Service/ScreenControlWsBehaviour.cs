@@ -12,8 +12,6 @@ namespace Ultraleap.ScreenControl.Service
 {
     internal class ScreenControlWsBehaviour : WebSocketSharp.Server.WebSocketBehavior
     {
-        public bool isConnected = false;
-
         public void SendInputAction(CoreInputAction _data)
         {
             WebsocketInputAction converted = new WebsocketInputAction(_data);
@@ -38,7 +36,6 @@ namespace Ultraleap.ScreenControl.Service
                         GetVersionCompability(cookieApiVersion, VersionInfo.ApiVersion) == Compatibility.COMPATIBLE)
                 {
                     Debug.Log("Websocket Connection opened successfully");
-                    isConnected = true;
                 }
                 else
                 {
@@ -60,7 +57,6 @@ namespace Ultraleap.ScreenControl.Service
         protected override void OnClose(CloseEventArgs eventArgs)
         {
             Debug.Log("Websocket Connection closed");
-            isConnected = false;
         }
 
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)
