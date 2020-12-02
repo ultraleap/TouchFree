@@ -82,7 +82,7 @@ namespace Ultraleap.ScreenControl.Core
 
         private void HandleInteractions(Leap.Hand hand, float _velocity)
         {
-            SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
+            SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
             // If already pressing, continue regardless of velocity
             if (grabDetector.IsGrabbing(latestTimestamp, hand, _velocity) && (pressing || _velocity < maxHandVelocity))
             {
@@ -110,7 +110,7 @@ namespace Ultraleap.ScreenControl.Core
 
         private void HandlePress()
         {
-            SendInputAction(InputType.DOWN, positions, grabDetector.GeneralisedGrabStrength);
+            SendInputAction(InputType.DOWN, positions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
             dragStartTimer.Restart();
             pressing = true;
             if (instantUnclick && ignoreDragging)
@@ -151,7 +151,7 @@ namespace Ultraleap.ScreenControl.Core
                     }
                     else if (requireClick)
                     {
-                        SendInputAction(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
+                        SendInputAction(InputType.UP, downPositions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
                         positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
                         requireClick = false;
                     }
@@ -177,7 +177,7 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     if (!requireHold && !requireClick)
                     {
-                        SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
+                        SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
                     }
                     positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
                 }
@@ -216,7 +216,7 @@ namespace Ultraleap.ScreenControl.Core
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireSphere(-GlobalSettings.virtualScreen.PhysicalScreenPlane.normal * GlobalSettings.virtualScreen.PhysicalScreenPlane.distance, 0.01f);
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(planeHit_debug + (-GlobalSettings.virtualScreen.VirtualScreenPlane.normal * GlobalSettings.virtualScreen.VirtualScreenPlane.distance), 0.01f);
+                //Gizmos.DrawWireSphere(planeHit_debug + (-GlobalSettings.virtualScreen.VirtualScreenPlane.normal * GlobalSettings.virtualScreen.VirtualScreenPlane.distance), 0.01f);
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawWireSphere(worldPos_debug, 0.01f);
                 Gizmos.color = Color.blue;

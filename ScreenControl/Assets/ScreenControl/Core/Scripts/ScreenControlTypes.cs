@@ -20,8 +20,9 @@ namespace Ultraleap.ScreenControl.Core
             public readonly HandChirality Chirality;
             public readonly InputType InputType;
             public readonly Vector2 CursorPosition;
+            public readonly float DistanceFromScreen;
             public readonly float ProgressToClick;
-            public CoreInputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _progressToClick)
+            public CoreInputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions,float _distanceFromScreen, float _progressToClick)
             {
                 Timestamp = _timestamp;
                 InteractionType = _interactionType;
@@ -29,6 +30,7 @@ namespace Ultraleap.ScreenControl.Core
                 Chirality = _chirality;
                 InputType = _inputType;
                 CursorPosition = _positions.CursorPosition;
+                DistanceFromScreen = _distanceFromScreen;
                 ProgressToClick = _progressToClick;
             }
         }
@@ -94,6 +96,7 @@ namespace Ultraleap.ScreenControl.Core
             public long Timestamp;
             public BitmaskFlags InteractionFlags;
             public Vector2 CursorPosition;
+            public float DistanceFromScreen;
             public float ProgressToClick;
 
             public WebsocketInputAction(CoreInputAction _data)
@@ -104,6 +107,7 @@ namespace Ultraleap.ScreenControl.Core
                                                                  _data.Chirality,
                                                                  _data.InputType);
                 CursorPosition = _data.CursorPosition;
+                DistanceFromScreen = _data.DistanceFromScreen;
                 ProgressToClick = _data.ProgressToClick;
             }
         }

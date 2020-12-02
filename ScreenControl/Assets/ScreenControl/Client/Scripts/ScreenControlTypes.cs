@@ -19,6 +19,7 @@ namespace Ultraleap.ScreenControl.Client
             public readonly HandChirality Chirality;
             public readonly InputType InputType;
             public readonly Vector2 CursorPosition;
+            public readonly float DistanceFromScreen;
             public readonly float ProgressToClick;
 
             public ClientInputAction(
@@ -28,6 +29,7 @@ namespace Ultraleap.ScreenControl.Client
                 HandChirality _chirality,
                 InputType _inputType,
                 Vector2 _cursorPosition,
+                float _distanceFromScreen,
                 float _progressToClick)
             {
                 Timestamp = _timestamp;
@@ -36,6 +38,7 @@ namespace Ultraleap.ScreenControl.Client
                 Chirality = _chirality;
                 InputType = _inputType;
                 CursorPosition = _cursorPosition;
+                DistanceFromScreen = _distanceFromScreen;
                 ProgressToClick = _progressToClick;
             }
 
@@ -47,6 +50,7 @@ namespace Ultraleap.ScreenControl.Client
                 Chirality = Utilities.GetChiralityFromFlags(_wsInput.InteractionFlags);
                 InputType = Utilities.GetInputTypeFromFlags(_wsInput.InteractionFlags);
                 CursorPosition = _wsInput.CursorPosition;
+                DistanceFromScreen = _wsInput.DistanceFromScreen;
                 ProgressToClick = _wsInput.ProgressToClick;
             }
         }
@@ -112,6 +116,7 @@ namespace Ultraleap.ScreenControl.Client
             public long Timestamp;
             public BitmaskFlags InteractionFlags;
             public Vector2 CursorPosition;
+            public float DistanceFromScreen;
             public float ProgressToClick;
 
             public WebsocketInputAction(ClientInputAction _data)
@@ -122,6 +127,7 @@ namespace Ultraleap.ScreenControl.Client
                                                                  _data.Chirality,
                                                                  _data.InputType);
                 CursorPosition = _data.CursorPosition;
+                DistanceFromScreen = _data.DistanceFromScreen;
                 ProgressToClick = _data.ProgressToClick;
             }
         }

@@ -130,7 +130,7 @@ namespace Ultraleap.ScreenControl.Core
                         pressing = false;
                         isDragging = false;
                         cursorPressPosition = Vector2.zero;
-                        SendInputAction(InputType.UP, positions, appliedForce);
+                        SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, appliedForce);
                     }
                     else
                     {
@@ -142,7 +142,7 @@ namespace Ultraleap.ScreenControl.Core
                                 dragDeadzoneShrinkTriggered = true;
                             }
 
-                            SendInputAction(InputType.MOVE, positions, appliedForce);
+                            SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, appliedForce);
                         }
                         else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
@@ -158,7 +158,7 @@ namespace Ultraleap.ScreenControl.Core
                     // when ignoring dragging and moving past the touch-plane.
 
                     pressing = true;
-                    SendInputAction(InputType.DOWN, positions, appliedForce);
+                    SendInputAction(InputType.DOWN, positions, positions.DistanceFromScreen, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
 
                     // If dragging is off, we want to decay the force after a click back to the unclick threshold
@@ -170,7 +170,7 @@ namespace Ultraleap.ScreenControl.Core
                 else if (positions.CursorPosition != previousScreenPos || positions.DistanceFromScreen != previousScreenDistance)
                 {
                     // Send the move event
-                    SendInputAction(InputType.MOVE, positions, appliedForce);
+                    SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, appliedForce);
                 }
 
                 if (decayingForce && (appliedForce <= decayThreshold))
@@ -181,7 +181,7 @@ namespace Ultraleap.ScreenControl.Core
             else
             {
                 // show them they have been seen but send no major events as we have only just discovered the hand
-                SendInputAction(InputType.MOVE, positions, appliedForce);
+                SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, appliedForce);
             }
 
             // Update stored variables

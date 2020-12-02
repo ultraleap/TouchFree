@@ -89,11 +89,11 @@ namespace Ultraleap.ScreenControl.Core
                             progressTimer.StopTimer();
                             clickHeld = true;
                             clickingTimer.Restart();
-                            SendInputAction(InputType.DOWN, positions, 0f);
+                            SendInputAction(InputType.DOWN, positions, positions.DistanceFromScreen, 0f);
                         }
                         else
                         {
-                            SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
+                            SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, progressTimer.Progress);
 
                             float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
                             float deadzoneRadius = Mathf.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
@@ -104,7 +104,7 @@ namespace Ultraleap.ScreenControl.Core
                     {
                         if (!clickAlreadySent && clickingTimer.ElapsedMilliseconds > clickHoldTime)
                         {
-                            SendInputAction(InputType.UP, positions, progressTimer.Progress);
+                            SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, progressTimer.Progress);
                             clickAlreadySent = true;
                         }
                     }
@@ -114,7 +114,7 @@ namespace Ultraleap.ScreenControl.Core
                     if (clickHeld && !clickAlreadySent)
                     {
                         // Handle unclick if move before timer's up
-                        SendInputAction(InputType.UP, positions, progressTimer.Progress);
+                        SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, progressTimer.Progress);
                     }
 
                     progressTimer.ResetTimer();
@@ -131,7 +131,7 @@ namespace Ultraleap.ScreenControl.Core
             }
             else
             {
-                SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
+                SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, progressTimer.Progress);
             }
 
             previousHoverPosScreen = _hoverPosition;
