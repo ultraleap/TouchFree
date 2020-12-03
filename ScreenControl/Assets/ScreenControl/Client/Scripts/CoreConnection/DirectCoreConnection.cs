@@ -28,6 +28,7 @@ namespace Ultraleap.ScreenControl.Client
                 (HandChirality)_data.Chirality,
                 (InputType)_data.InputType,
                 _data.CursorPosition,
+                _data.DistanceFromScreen,
                 _data.ProgressToClick);
 
             RelayInputAction(clientInput);

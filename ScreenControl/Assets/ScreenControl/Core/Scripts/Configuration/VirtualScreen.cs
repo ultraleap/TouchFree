@@ -9,15 +9,12 @@ namespace Ultraleap.ScreenControl.Core
         public float Height_VirtualPx { get; private set; }
         public float Width_PhysicalMeters { get; private set; }
         public float Height_PhysicalMeters { get; private set; }
-        public float DistanceFromPhysicalScreen_Meters { get; private set; }
         /// <summary>
         /// The angle or tilt of the physical screen in degrees, where 0 would be a vertical screen facing the user, and 90 would be a flat screen facing the ceiling.
         /// </summary>
         public float AngleOfPhysicalScreen_Degrees { get; private set; }
 
         public Plane PhysicalScreenPlane { get; private set; }
-
-        public Plane VirtualScreenPlane { get; private set; }
 
         /// <summary>
         ///
@@ -39,12 +36,9 @@ namespace Ultraleap.ScreenControl.Core
             var aspectRatio = (float)widthPx / (float)heightPx;
             Width_PhysicalMeters = heightPhysicalMeters * aspectRatio;
 
-            DistanceFromPhysicalScreen_Meters = ConfigManager.InteractionConfig.Generic.TouchPlaneDistanceFromScreenM;
-
             AngleOfPhysicalScreen_Degrees = physicalScreenAngleDegrees;
             var planeNormal = new Vector3(0f, Mathf.Sin(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad), -Mathf.Cos(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad));
             PhysicalScreenPlane = new Plane(-planeNormal, 0f);
-            VirtualScreenPlane = new Plane(-planeNormal, DistanceFromPhysicalScreen_Meters);
         }
 
         /// <summary>
@@ -68,9 +62,6 @@ namespace Ultraleap.ScreenControl.Core
             PhysicalScreenPlane.Raycast(r, out float distanceFromPlane);
             planeHitWorldPosition = r.origin + (r.direction * distanceFromPlane);
 
-            // Distance between the ray origin and the virtual screen plane.
-            var distanceFromVirtualPlane = distanceFromPlane - DistanceFromPhysicalScreen_Meters;
-
             // If the screen is rotated, this effectively scales down or "projects" the rotated screen vector back onto the UP axis, giving us the new UP axis height of the screen.
             var screenHeight = Height_PhysicalMeters * Mathf.Cos(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad);
 
@@ -80,7 +71,7 @@ namespace Ultraleap.ScreenControl.Core
 
             screenPos.x = Width_VirtualPx * tX;
             screenPos.y = Height_VirtualPx * tY;
-            screenPos.z = distanceFromVirtualPlane;
+            screenPos.z = distanceFromPlane;
 
             return screenPos;
         }
@@ -97,7 +88,7 @@ namespace Ultraleap.ScreenControl.Core
 
             worldPos.x = (Width_PhysicalMeters * tX) - (Width_PhysicalMeters / 2.0f);
             worldPos.y = screenHeight * tY;
-            worldPos.z = distanceFromVirtualScreen + DistanceFromPhysicalScreen_Meters;
+            worldPos.z = distanceFromVirtualScreen;
 
             return worldPos;
         }

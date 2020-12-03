@@ -19,19 +19,25 @@ namespace Ultraleap.ScreenControl.Client
             ClientInputAction action;
             while (receiveQueue.Count > queueCullLimit)
             {
-                receiveQueue.TryDequeue(out action);
-
-                // Stop skipping through the queue this frame if we have just handled a 'key' input event
-                if (action.InputType != InputType.MOVE)
+                if (receiveQueue.TryPeek(out action))
                 {
-                    coreConnection.HandleInputAction(action);
-                    return;
+                    receiveQueue.TryDequeue(out action);
+
+                    // Stop skipping through the queue this frame if we have just handled a 'key' input event
+                    if (action.InputType != InputType.MOVE)
+                    {
+                        coreConnection.HandleInputAction(action);
+                        return;
+                    }
                 }
             }
 
-            // Parse newly received messages
-            receiveQueue.TryDequeue(out action);
-            coreConnection.HandleInputAction(action);
+            if (receiveQueue.TryPeek(out action))
+            {
+                // Parse newly received messages
+                receiveQueue.TryDequeue(out action);
+                coreConnection.HandleInputAction(action);
+            }
         }
     }
 }

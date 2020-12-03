@@ -35,7 +35,7 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (hand == null)
             {
-                SendInputAction(InputType.CANCEL, new Positions(), 0);
+                SendInputAction(InputType.CANCEL, new Positions(), 0, 0);
                 pressing = false;
                 return;
             }
@@ -57,7 +57,7 @@ namespace Ultraleap.ScreenControl.Core
 
             float progressToClick = 1f - Mathf.InverseLerp(screenDistanceAtMaxProgress, screenDistanceAtNoProgress, distanceFromScreen);
 
-            SendInputAction(InputType.MOVE, positions, progressToClick);
+            SendInputAction(InputType.MOVE, positions, distanceFromScreen, progressToClick);
 
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
             if (distanceFromScreen < 0f)
@@ -65,7 +65,7 @@ namespace Ultraleap.ScreenControl.Core
                 // we are touching the screen
                 if (!pressing)
                 {
-                    SendInputAction(InputType.DOWN, positions, progressToClick);
+                    SendInputAction(InputType.DOWN, positions, distanceFromScreen, progressToClick);
 
                     downPos = currentCursorPosition;
                     posLastFrame = currentCursorPosition;
@@ -95,7 +95,7 @@ namespace Ultraleap.ScreenControl.Core
                             }
                             else
                             {
-                                SendInputAction(InputType.UP, downPositions, progressToClick);
+                                SendInputAction(InputType.UP, downPositions, distanceFromScreen, progressToClick);
                                 performInstantClick = false;
                             }
                         }
@@ -109,7 +109,7 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     if (!ignoreDragging)
                     {
-                        SendInputAction(InputType.UP, positions, progressToClick);
+                        SendInputAction(InputType.UP, positions, distanceFromScreen, progressToClick);
                     }
 
                     pressing = false;
