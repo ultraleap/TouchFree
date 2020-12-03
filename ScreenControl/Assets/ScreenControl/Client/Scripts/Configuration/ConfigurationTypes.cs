@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Ultraleap.ScreenControl.Core
 {
     namespace ScreenControlTypes
@@ -37,7 +39,7 @@ namespace Ultraleap.ScreenControl.Core
                 SetAllValuesToDefault();
             }
 
-            public override void SetAllValuesToDefault()
+            public void SetAllValuesToDefault()
             {
                 Generic.ShowSetupScreenOnStartup = true;
                 Generic.UseScrollingOrDragging = false;
@@ -58,12 +60,7 @@ namespace Ultraleap.ScreenControl.Core
             public Vector3 LeapRotationD = Vector3.zero;
             public float ScreenRotationD = 0f;
 
-            public void SaveConfig()
-            {
-                PhysicalConfigFile.SaveConfig(this);
-            }
-
-            public override void SetAllValuesToDefault()
+            public void SetAllValuesToDefault()
             {
                 var defaults = new PhysicalConfig();
 
@@ -83,7 +80,7 @@ namespace Ultraleap.ScreenControl.Core
             // Store in M, display in CM
             public readonly float ConfigToDisplayMeasurementMultiplier = 100;
 
-            public override void SetAllValuesToDefault()
+            public void SetAllValuesToDefault()
             {
                 var defaults = new GlobalSettings();
 

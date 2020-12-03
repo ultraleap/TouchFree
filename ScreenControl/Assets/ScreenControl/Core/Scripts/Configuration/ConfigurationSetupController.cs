@@ -91,7 +91,7 @@ namespace Ultraleap.ScreenControl.Core
         private void Start()
         {
             Instance = this;
-            startWithConfig = ConfigManager.InteractionConfig.ShowSetupScreenOnStartup;
+            startWithConfig = ConfigManager.InteractionConfig.Generic.ShowSetupScreenOnStartup;
         }
 
         private void Update()
