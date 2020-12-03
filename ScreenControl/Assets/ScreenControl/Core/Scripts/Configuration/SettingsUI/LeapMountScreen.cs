@@ -45,10 +45,10 @@ namespace Ultraleap.ScreenControl.Core
             if (!enabling)
             {
                 //Check if the physicalconfig is set to default and guide the users if it is
-                var defaultConfig = PhysicalConfigurable.GetDefaultValues();
+                var defaultConfig = PhysicalConfigFile.GetDefaultValues();
 
-                if (PhysicalConfigurable.Config.ScreenHeightM == defaultConfig.ScreenHeightM &&
-                    PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
+                if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
+                    ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
                 {
                     StartCoroutine(EnableWarningAfterWait());
                     enabling = true;
@@ -65,7 +65,7 @@ namespace Ultraleap.ScreenControl.Core
             if (!enabling)
             {
                 // show the user their currently selected mounting mode
-                if (Mathf.Abs(PhysicalConfigurable.Config.LeapRotationD.z) > 90f)
+                if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
                 {
                     //top
                     topMountedCurrent.SetActive(true);

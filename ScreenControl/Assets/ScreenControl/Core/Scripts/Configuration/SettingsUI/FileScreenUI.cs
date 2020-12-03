@@ -38,14 +38,14 @@ namespace Ultraleap.ScreenControl.Core
         {
             fileDropdown.ClearOptions();
 
-            if (!Directory.Exists(PhysicalConfigurable.CustomDefaultConfigFileDirectory))
+            if (!Directory.Exists(PhysicalConfigFile.CustomDefaultConfigFileDirectory))
             {
                 fileDropdown.interactable = false;
                 return;
             }
 
             // find all folder names for custom default
-            string[] fileNames = Directory.GetDirectories(PhysicalConfigurable.CustomDefaultConfigFileDirectory);
+            string[] fileNames = Directory.GetDirectories(PhysicalConfigFile.CustomDefaultConfigFileDirectory);
 
             if (fileNames != null && fileNames.Length > 0)
             {
@@ -54,7 +54,7 @@ namespace Ultraleap.ScreenControl.Core
                 foreach (var option in fileNames)
                 {
                     // remove the full file path from the folder path
-                    fileDropdown.options.Add(new Dropdown.OptionData(option.Replace(PhysicalConfigurable.CustomDefaultConfigFileDirectory, "")));
+                    fileDropdown.options.Add(new Dropdown.OptionData(option.Replace(PhysicalConfigFile.CustomDefaultConfigFileDirectory, "")));
                 }
 
                 int dropdownIndex = 0;
@@ -70,7 +70,7 @@ namespace Ultraleap.ScreenControl.Core
         public void OpenFileLocation()
         {
             // open config files folder
-            ProcessStartInfo info = new ProcessStartInfo(PhysicalConfigurable.ConfigFileDirectory);
+            ProcessStartInfo info = new ProcessStartInfo(PhysicalConfigFile.ConfigFileDirectory);
             info.Verb = "open";
             Process.Start(info);
             //ConfigurationSetupController.Instance.closeConfig = true;
@@ -78,10 +78,10 @@ namespace Ultraleap.ScreenControl.Core
 
         public void OpenCustomFileLocation()
         {
-            if (!Directory.Exists(PhysicalConfigurable.CustomDefaultConfigFileDirectory))
+            if (!Directory.Exists(PhysicalConfigFile.CustomDefaultConfigFileDirectory))
                 return;
 
-            ProcessStartInfo info = new ProcessStartInfo(PhysicalConfigurable.CustomDefaultConfigFileDirectory);
+            ProcessStartInfo info = new ProcessStartInfo(PhysicalConfigFile.CustomDefaultConfigFileDirectory);
             info.Verb = "open";
             Process.Start(info);
             //ConfigurationSetupController.Instance.closeConfig = true;
@@ -114,7 +114,7 @@ namespace Ultraleap.ScreenControl.Core
 
         public void LoadCustomPreset()
         {
-            if (!Directory.Exists(PhysicalConfigurable.CustomDefaultConfigFileDirectory))
+            if (!Directory.Exists(PhysicalConfigFile.CustomDefaultConfigFileDirectory))
             {
                 StartCoroutine(ShowNotification(notificationImportFailed));
                 return;

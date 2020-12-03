@@ -55,7 +55,7 @@ namespace Ultraleap.ScreenControl.Core
 
         protected void OnEnable()
         {
-            SettingsConfig.OnConfigUpdated += OnConfigUpdated;
+            InteractionConfig.OnConfigUpdated += OnConfigUpdated;
             OnConfigUpdated();
 
             if (positioningUtils != null)
@@ -68,12 +68,12 @@ namespace Ultraleap.ScreenControl.Core
 
         protected void OnDisable()
         {
-            SettingsConfig.OnConfigUpdated -= OnConfigUpdated;
+            InteractionConfig.OnConfigUpdated -= OnConfigUpdated;
         }
 
         private void OnConfigUpdated()
         {
-            verticalCursorOffset = verticalCursorOffset = SettingsConfig.Config.CursorVerticalOffset;
+            verticalCursorOffset = verticalCursorOffset = ConfigManager.InteractionConfig.Generic.CursorVerticalOffset;
         }
 
         public Positions CalculatePositions(Leap.Hand hand)
@@ -110,13 +110,13 @@ namespace Ultraleap.ScreenControl.Core
             }
             worldPos = Stabiliser.ApplySmoothing(worldPos, velocity, smoothingTime);
 
-            Vector3 screenPos = GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
-            Vector2 screenPosM = GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
+            Vector3 screenPos = ConfigManager.GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
+            Vector2 screenPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
             float distanceFromScreen = screenPos.z;
 
             screenPosM = Stabiliser.ApplyDeadzone(screenPosM);
 
-            Vector2 oneToOnePosition = GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
+            Vector2 oneToOnePosition = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
             if (VerticalOffset)
             {
                 oneToOnePosition = ApplyVerticalOffset(oneToOnePosition);
@@ -150,9 +150,9 @@ namespace Ultraleap.ScreenControl.Core
 
         private Vector2 ApplyVerticalOffset(Vector2 screenPos)
         {
-            var screenPosM = GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
+            var screenPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
             screenPosM += Vector2.up * verticalCursorOffset;
-            return GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
+            return ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
         }
     }
 }

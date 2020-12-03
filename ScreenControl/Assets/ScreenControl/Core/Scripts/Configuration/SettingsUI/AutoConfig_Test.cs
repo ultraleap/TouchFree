@@ -26,7 +26,6 @@ namespace Ultraleap.ScreenControl.Core
         public float angleBetweenLeapScreenT;
         public float screenHeightT;
 
-
         public Vector3 bottomTouchInLeapSpaceM;
         public Vector3 bottomEdgeInLeapSpaceM;
         public Vector3 topTouchInLeapSpaceM;
@@ -236,14 +235,14 @@ namespace Ultraleap.ScreenControl.Core
             autoConfig.SetTopPos(topPos);
             autoConfig.SetBottomPos(bottomPos);
 
-            var setup = autoConfig.CalculateConfigurationValues(bottomPos, topPos);
+            autoConfig.CalculateConfigurationValues(bottomPos, topPos);
 
             bottomEdgeInLeapSpaceM = autoConfig.BottomCentreFromTouches(bottomPos, topPos);
             topEdgeInLeapSpaceM = autoConfig.TopCentreFromTouches(bottomPos, topPos);
 
-            leapOffsetInScreenSpaceM = setup.LeapPositionRelativeToScreenBottomM;
-            angleBetweenLeapScreenM = setup.LeapRotationD.x;
-            screenHeightM = setup.ScreenHeightM;
+            leapOffsetInScreenSpaceM = ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM;
+            angleBetweenLeapScreenM = ConfigManager.PhysicalConfig.LeapRotationD.x;
+            screenHeightM = ConfigManager.PhysicalConfig.ScreenHeightM;
 
             bottomTouchInLeapSpaceM = bottomPos;
             topTouchInLeapSpaceM = topPos;

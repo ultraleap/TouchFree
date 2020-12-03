@@ -7,9 +7,9 @@ namespace Ultraleap.ScreenControl.Core
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ScreenControl_Main()
         {
-            GlobalSettings.ScreenWidth = Display.main.systemWidth;
-            GlobalSettings.ScreenHeight = Display.main.systemHeight;
-            Screen.SetResolution(GlobalSettings.ScreenWidth, GlobalSettings.ScreenHeight, true);
+            ConfigManager.GlobalSettings.ScreenWidth = Display.main.systemWidth;
+            ConfigManager.GlobalSettings.ScreenHeight = Display.main.systemHeight;
+            Screen.SetResolution(ConfigManager.GlobalSettings.ScreenWidth, ConfigManager.GlobalSettings.ScreenHeight, true);
         }
     }
 }

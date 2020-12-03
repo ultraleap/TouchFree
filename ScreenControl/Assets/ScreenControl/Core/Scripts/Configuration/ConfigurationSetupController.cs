@@ -91,7 +91,7 @@ namespace Ultraleap.ScreenControl.Core
         private void Start()
         {
             Instance = this;
-            startWithConfig = SettingsConfig.Config.ShowSetupScreenOnStartup;
+            startWithConfig = ConfigManager.InteractionConfig.ShowSetupScreenOnStartup;
         }
 
         private void Update()
@@ -234,19 +234,23 @@ namespace Ultraleap.ScreenControl.Core
             else if (manualConfigKeyEntered == "M")
             {
                 // immediately use the selecte dmount type for manual setup
-                var setup = PhysicalConfigurable.Config;
-                bool wasBottomMounted = Mathf.Approximately(0, setup.LeapRotationD.z);
+                bool wasBottomMounted = Mathf.Approximately(0, ConfigManager.PhysicalConfig.LeapRotationD.z);
 
                 if (wasBottomMounted && selectedMountType == MountingType.OVERHEAD)
                 {
-                    setup.LeapRotationD = new Vector3(-setup.LeapRotationD.x, setup.LeapRotationD.y, 180f);
-                    PhysicalConfigurable.UpdateConfig(setup);
+                    ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(
+                        -ConfigManager.PhysicalConfig.LeapRotationD.x,
+                        ConfigManager.PhysicalConfig.LeapRotationD.y,
+                        180f);
                 }
                 else if (!wasBottomMounted && selectedMountType == MountingType.BOTTOM)
                 {
-                    setup.LeapRotationD = new Vector3(-setup.LeapRotationD.x, setup.LeapRotationD.y, 0f);
-                    PhysicalConfigurable.UpdateConfig(setup);
+                    ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(
+                        -ConfigManager.PhysicalConfig.LeapRotationD.x,
+                        ConfigManager.PhysicalConfig.LeapRotationD.y, 0f);
                 }
+
+                ConfigManager.PhysicalConfig.ConfigWasUpdated();
 
                 // dont alloe manual to flip the axes again
                 selectedMountType = MountingType.NONE;

@@ -64,31 +64,29 @@ namespace Ultraleap.ScreenControl.Core
 
         void CompleteAutoConfig(Vector3 bottomPos, Vector3 topPos)
         {
-            PhysicalConfigurable.SetAllValuesToDefault();
-            var setup = CalculateConfigurationValues(bottomPos, topPos);
+            ConfigManager.PhysicalConfig.SetAllValuesToDefault();
 
+            CalculateConfigurationValues(bottomPos, topPos);
+            ConfigManager.PhysicalConfig.SaveConfig();
 
-            PhysicalConfigurable.UpdateConfig(setup);
-            PhysicalConfigurable.SaveConfig();
             ConfigurationSetupController.Instance.ChangeState(ConfigState.AUTO_COMPLETE);
         }
 
-        public PhysicalSetup CalculateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
+        public void CalculateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
         {
-            var setup = new PhysicalSetup();
             Vector3 bottomNoX = new Vector3(0, bottomPos.y, bottomPos.z);
             Vector3 topNoX = new Vector3(0, topPos.y, topPos.z);
 
-            setup.ScreenHeightM = Vector3.Distance(bottomNoX, topNoX) * 1.25f;
+            ConfigManager.PhysicalConfig.ScreenHeightM = Vector3.Distance(bottomNoX, topNoX) * 1.25f;
 
             var bottomEdge = BottomCentreFromTouches(bottomPos, topPos);
             var topEdge = TopCentreFromTouches(bottomPos, topPos);
 
-            setup.LeapRotationD = LeapRotationRelativeToScreen(bottomPos, topPos);
+            ConfigManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(bottomPos, topPos);
 
-            setup.LeapPositionRelativeToScreenBottomM = LeapPositionInScreenSpace(bottomEdge, setup.LeapRotationD);
+            ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM = LeapPositionInScreenSpace(bottomEdge, ConfigManager.PhysicalConfig.LeapRotationD);
 
-            return setup;
+            ConfigManager.PhysicalConfig.ConfigWasUpdated();
         }
 
 
@@ -108,7 +106,7 @@ namespace Ultraleap.ScreenControl.Core
             {
                 // In overhead mode, the stored 'x' angle is inverted so that positive angles always mean
                 // the camera is pointed towards the screen. Multiply by -1 here so that it can be used
-                // in a calculation. 
+                // in a calculation.
                 rotationAngles.x *= -1f;
             }
             Vector3 rotatedVector = Quaternion.Euler(rotationAngles) * bottomEdgeRef;

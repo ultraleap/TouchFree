@@ -34,7 +34,7 @@ public class HandCursorPostProcessor : PostProcessProvider
     void Update()
     {
         // Check if the camera is mounted pointing down
-        overhead = (Mathf.Abs(PhysicalConfigurable.Config.LeapRotationD.z) > 90f);
+        overhead = (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f);
     }
 
     public override void ProcessFrame(ref Frame inputFrame)

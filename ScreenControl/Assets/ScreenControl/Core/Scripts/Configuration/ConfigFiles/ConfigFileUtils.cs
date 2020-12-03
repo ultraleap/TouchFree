@@ -20,9 +20,9 @@ namespace Ultraleap.ScreenControl.Core
             bool foundMissing = false;
 
             // We have to be specific as to which config files we read AND know the contents of them, so we must explicitly check them.
-            string path = Path.Combine(SettingsConfig.CustomDefaultConfigFileDirectory, _customName, SettingsConfig.ConfigFileNameS);
+            string path = Path.Combine(InteractionConfigFile.CustomDefaultConfigFileDirectory, _customName, InteractionConfigFile.ConfigFileNameS);
 
-            if (CheckCustomDefaultTypeInvalid<SettingsData>(path, out _corrupt, out _missing))
+            if (CheckCustomDefaultTypeInvalid<InteractionConfig>(path, out _corrupt, out _missing))
             {
                 if (_corrupt)   // there was a corrupt file, ignore the rest.
                 {
@@ -35,9 +35,9 @@ namespace Ultraleap.ScreenControl.Core
                 }
             }
 
-            path = Path.Combine(PhysicalConfigurable.CustomDefaultConfigFileDirectory, _customName, PhysicalConfigurable.ConfigFileNameS);
+            path = Path.Combine(PhysicalConfigFile.CustomDefaultConfigFileDirectory, _customName, PhysicalConfigFile.ConfigFileNameS);
 
-            if (CheckCustomDefaultTypeInvalid<PhysicalSetup>(path, out _corrupt, out _missing))
+            if (CheckCustomDefaultTypeInvalid<PhysicalConfig>(path, out _corrupt, out _missing))
             {
                 if (_corrupt)   // there was a corrupt file, ignore the rest.
                 {
@@ -105,7 +105,7 @@ namespace Ultraleap.ScreenControl.Core
 
         public static void SaveCustomDefaults(string _customName)
         {
-            DirectoryCopy(Application.persistentDataPath, Path.Combine(PhysicalConfigurable.CustomDefaultConfigFileDirectory, _customName));
+            DirectoryCopy(Application.persistentDataPath, Path.Combine(PhysicalConfigFile.CustomDefaultConfigFileDirectory, _customName));
         }
 
         public static void SaveAllConfigFiles()

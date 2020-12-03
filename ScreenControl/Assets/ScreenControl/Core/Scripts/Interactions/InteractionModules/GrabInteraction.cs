@@ -70,8 +70,8 @@ namespace Ultraleap.ScreenControl.Core
                 //
                 // I find that this velocity is quite similar to hand.PalmVelocity.Magnitude, but (as expected)
                 // this velocity calculation gets much closer to 0 when the hand is more still.
-                Vector3 previousWorldPos = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
-                Vector3 currentWorldPos = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
+                Vector3 previousWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
+                Vector3 currentWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
                 float changeInPos = (currentWorldPos - previousWorldPos).magnitude;
                 float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
                 velocity = changeInPos / changeInTime;
@@ -188,8 +188,8 @@ namespace Ultraleap.ScreenControl.Core
 
         bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            var a = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
-            var b = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
+            var a = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
+            var b = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
             var distFromStartPos = (a - b).magnitude;
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
@@ -214,9 +214,9 @@ namespace Ultraleap.ScreenControl.Core
             if (Application.isPlaying)
             {
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(-GlobalSettings.virtualScreen.PhysicalScreenPlane.normal * GlobalSettings.virtualScreen.PhysicalScreenPlane.distance, 0.01f);
+                Gizmos.DrawWireSphere(-ConfigManager.GlobalSettings.virtualScreen.PhysicalScreenPlane.normal * ConfigManager.GlobalSettings.virtualScreen.PhysicalScreenPlane.distance, 0.01f);
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(planeHit_debug + (-GlobalSettings.virtualScreen.VirtualScreenPlane.normal * GlobalSettings.virtualScreen.VirtualScreenPlane.distance), 0.01f);
+                Gizmos.DrawWireSphere(planeHit_debug + (-ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPlane.normal * ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPlane.distance), 0.01f);
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawWireSphere(worldPos_debug, 0.01f);
                 Gizmos.color = Color.blue;

@@ -125,7 +125,7 @@ namespace Ultraleap.ScreenControl.Client
                 ProgressToClick = _data.ProgressToClick;
             }
         }
-        
+
         public static class Utilities
         {
             internal static BitmaskFlags GetInteractionFlags(

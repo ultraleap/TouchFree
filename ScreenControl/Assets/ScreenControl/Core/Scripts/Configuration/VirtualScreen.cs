@@ -20,7 +20,7 @@ namespace Ultraleap.ScreenControl.Core
         public Plane VirtualScreenPlane { get; private set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="widthPx"></param>
         /// <param name="heightPx"></param>
@@ -39,7 +39,7 @@ namespace Ultraleap.ScreenControl.Core
             var aspectRatio = (float)widthPx / (float)heightPx;
             Width_PhysicalMeters = heightPhysicalMeters * aspectRatio;
 
-            DistanceFromPhysicalScreen_Meters = SettingsConfig.Config.TouchPlaneDistanceFromScreenM;
+            DistanceFromPhysicalScreen_Meters = ConfigManager.InteractionConfig.Generic.TouchPlaneDistanceFromScreenM;
 
             AngleOfPhysicalScreen_Degrees = physicalScreenAngleDegrees;
             var planeNormal = new Vector3(0f, Mathf.Sin(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad), -Mathf.Cos(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad));
