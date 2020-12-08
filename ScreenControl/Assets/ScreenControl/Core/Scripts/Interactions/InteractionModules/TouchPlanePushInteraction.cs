@@ -11,7 +11,7 @@ namespace Ultraleap.ScreenControl.Core
         public bool InteractionEnabled { get; set; } = true;
 
         // The distance from screen at which the progressToClick is 0
-        private float screenDistanceAtNoProgress = Mathf.Infinity;
+        private float screenDistanceAtNoProgress = 2.0f;
 
         // The distance from screen at which the progressToClick is 1
         private float screenDistanceAtMaxProgress = 0f;
@@ -143,7 +143,7 @@ namespace Ultraleap.ScreenControl.Core
         protected override void OnSettingsUpdated()
         {
             base.OnSettingsUpdated();
-            screenDistanceAtNoProgress = ConfigManager.InteractionConfig.TouchPlane.CursorMaxRingScaleAtDistanceM;
+            screenDistanceAtNoProgress = 2.0f;
         }
     }
 }

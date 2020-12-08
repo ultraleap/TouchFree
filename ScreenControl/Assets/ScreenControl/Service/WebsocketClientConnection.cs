@@ -5,6 +5,7 @@ using WebSocketSharp.Server;
 
 using Ultraleap.ScreenControl.Core;
 using Ultraleap.ScreenControl.Core.ScreenControlTypes;
+using Ultraleap.ScreenControl.Service.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Service
 {
@@ -12,6 +13,7 @@ namespace Ultraleap.ScreenControl.Service
     {
         private WebSocketServer wsServer = null;
         private ScreenControlWsBehaviour socketBehaviour = null;
+        public WebSocketReceiverQueue receiverQueue;
 
         private bool websocketInitalised = false;
         private bool restartServer = false;
@@ -38,6 +40,7 @@ namespace Ultraleap.ScreenControl.Service
             if (behaviour != null)
             {
                 socketBehaviour = behaviour;
+                socketBehaviour.clientConnection = this;
                 Debug.Log("connection set up");
             }
         }
@@ -52,6 +55,9 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.AllowForwardedRequest = true;
             wsServer.ReuseAddress = true;
             wsServer.Start();
+
+            receiverQueue = gameObject.AddComponent<WebSocketReceiverQueue>();
+            receiverQueue.clientConnection = this;
         }
 
         void SendDataToWebsocket(CoreInputAction _data)
@@ -76,6 +82,22 @@ namespace Ultraleap.ScreenControl.Service
             }
 
             socketBehaviour.SendInputAction(_data);
+        }
+
+        public void SetConfigState(string _content)
+        {
+            ConfigRequest newData = new ConfigRequest("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
+
+            // TODO: Ideally here we want to see if anything sent was invalid and return them with an error message so they know that something was not settable
+            JsonUtility.FromJsonOverwrite(_content, newData);
+
+            ConfigManager.InteractionConfig = newData.interaction;
+            ConfigManager.PhysicalConfig = newData.physical;
+
+            ConfigManager.PhysicalConfig.ConfigWasUpdated();
+            ConfigManager.InteractionConfig.ConfigWasUpdated();
+
+            socketBehaviour.SendConfigurationResponse(new ConfigResponse(newData.requestID, "Success", ""));
         }
     }
 }

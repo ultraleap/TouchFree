@@ -22,13 +22,11 @@ namespace Ultraleap.ScreenControl.Core
             step1.SetActive(true);
             step2.SetActive(false);
             HandManager.Instance.useTrackingTransform = false;
-            ConfigurationSetupController.SetCursorVisual(false);
             DisplayTrackingLost(false);
         }
 
         private void Update()
         {
-
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (bottomPosM == Vector3.zero)
@@ -83,19 +81,15 @@ namespace Ultraleap.ScreenControl.Core
             var topEdge = TopCentreFromTouches(bottomPos, topPos);
 
             ConfigManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(bottomPos, topPos);
-
             ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM = LeapPositionInScreenSpace(bottomEdge, ConfigManager.PhysicalConfig.LeapRotationD);
-
             ConfigManager.PhysicalConfig.ConfigWasUpdated();
         }
-
 
         /// <summary>
         /// Find the position of the camera relative to the screen, using the screen position relative to the camera.
         /// </summary>
         private Vector3 LeapPositionInScreenSpace(Vector3 bottomEdgeRef, Vector3 leapRotation)
         {
-
             // In Leap Co-ords we know the Leap is at Vector3.zero, and that the bottom of the screen is at "bottomEdgeRef"
 
             // We know the Leap is rotated at "leapRotation" from the screen.
@@ -167,8 +161,6 @@ namespace Ultraleap.ScreenControl.Core
         /// </summary>
         public float CentreRotationAroundZero(float angle)
         {
-
-
             if (angle > 180)
             {
                 return angle - 360;
@@ -182,7 +174,6 @@ namespace Ultraleap.ScreenControl.Core
                 return angle;
             }
         }
-
 
         void DisplayTrackingLost(bool _display = true)
         {

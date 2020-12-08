@@ -71,7 +71,7 @@ namespace Ultraleap.ScreenControl.Core
 
         protected virtual void OnSettingsUpdated()
         {
-            ignoreDragging = !ConfigManager.InteractionConfig.Generic.UseScrollingOrDragging;
+            ignoreDragging = !ConfigManager.InteractionConfig.UseScrollingOrDragging;
         }
     }
 }

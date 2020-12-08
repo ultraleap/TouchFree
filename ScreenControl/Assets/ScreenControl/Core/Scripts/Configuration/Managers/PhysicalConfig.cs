@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Core
 {
+    [Serializable]
     public class PhysicalConfig : BaseSettings
     {
         public float ScreenHeightM = 0.33f;

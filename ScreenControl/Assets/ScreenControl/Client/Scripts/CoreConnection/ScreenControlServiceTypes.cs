@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
+namespace Ultraleap.ScreenControl.Client.ScreenControlTypes
 {
     internal enum ActionCodes
     {

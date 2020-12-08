@@ -209,8 +209,8 @@ namespace Ultraleap.ScreenControl.Core
             // Assumes deadZoneDistanceScaling runs from 1.0 to 0.0.
             // If screenDistance = DistanceBetweenHoverStartToButtonPressM then normalisedDistance = 0.0.
             // If screenDistance = 0.0 (at touch plane) then normalisedDistance = 1.0.
-            // Therefore deadZoneRadius increases in size the closer to the screen it gets, starting to grow at PushDeadzoneStartDistance.
-            var normalisedDistance = deadzoneDistanceScaling.Evaluate(screenDistance / ConfigManager.InteractionConfig.TouchPlane.PushDeadzoneStartDistance);
+            // Therefore deadZoneRadius increases in size the closer to the screen it gets, starting to grow at 0.1f.
+            var normalisedDistance = deadzoneDistanceScaling.Evaluate(screenDistance / 0.1f);
             var deadZoneRadius = defaultDeadzoneRadius * normalisedDistance;
 
             SetCurrentDeadzoneRadius(deadZoneRadius);
@@ -235,7 +235,7 @@ namespace Ultraleap.ScreenControl.Core
 
         void OnSettingsUpdated()
         {
-            defaultDeadzoneRadius = ConfigManager.InteractionConfig.Generic.DeadzoneRadius;
+            defaultDeadzoneRadius = ConfigManager.InteractionConfig.DeadzoneRadius;
         }
     }
 }

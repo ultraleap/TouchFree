@@ -31,40 +31,22 @@ namespace Ultraleap.ScreenControl.Core
         public static ConfigState currentState;
         ConfigState previousState;
 
-        public static bool isActive = false;
-
         public static event Action OnConfigActive;
         public static event Action OnConfigInactive;
 
         public static event Action EnableInteractions;
         public static event Action DisableInteractions;
 
-        public static event Action EnableCursorVisuals;
-        public static event Action DisableCursorVisuals;
-
         private bool setupScreenActive = false;
 
         public GameObject[] stateRoots;
         public GameObject configCanvas;
-        public bool startWithConfig = true;
 
         [HideInInspector] public bool closeConfig = false;
 
         public static MountingType selectedMountType = MountingType.NONE;
 
-        bool isFocussed = false;
-
-        public static void SetCursorVisual(bool _enabled)
-        {
-            if (_enabled)
-            {
-                EnableCursorVisuals?.Invoke();
-            }
-            else
-            {
-                DisableCursorVisuals?.Invoke();
-            }
-        }
+        bool openedOnStart = false;
 
         public void ChangeState(ConfigState _newState)
         {
@@ -91,24 +73,22 @@ namespace Ultraleap.ScreenControl.Core
         private void Start()
         {
             Instance = this;
-            startWithConfig = ConfigManager.InteractionConfig.Generic.ShowSetupScreenOnStartup;
         }
 
         private void Update()
         {
             if (!setupScreenActive)
             {
-                if (Input.GetKeyDown(KeyCode.C) || startWithConfig)
+                if (Input.GetKeyDown(KeyCode.C) || !openedOnStart)
                 {
                     setupScreenActive = true;
                     DisableInteractions?.Invoke();
                     // display default autoconfig screen
                     configCanvas.SetActive(true);
 
-                    startWithConfig = false;
                     ChangeState(ConfigState.WELCOME);
                     OnConfigActive?.Invoke();
-                    isActive = true;
+                    openedOnStart = true;
                 }
             }
             else
@@ -123,7 +103,6 @@ namespace Ultraleap.ScreenControl.Core
                         configCanvas.SetActive(false);
                         OnConfigInactive?.Invoke();
                         closeConfig = false;
-                        isActive = false;
                     }
                     else
                     {

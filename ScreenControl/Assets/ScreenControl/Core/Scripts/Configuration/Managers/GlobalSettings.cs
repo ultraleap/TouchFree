@@ -4,7 +4,6 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class GlobalSettings : BaseSettings
     {
-        public int CursorWindowSize = 256;
         public int ScreenWidth;
         public int ScreenHeight;
         public VirtualScreen virtualScreen;
@@ -14,9 +13,6 @@ namespace Ultraleap.ScreenControl.Core
 
         public override void SetAllValuesToDefault()
         {
-            var defaults = new GlobalSettings();
-
-            CursorWindowSize = defaults.CursorWindowSize;
         }
 
         public void CreateVirtualScreen()

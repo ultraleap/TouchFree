@@ -62,5 +62,11 @@ namespace Ultraleap.ScreenControl.Core
             _interactions = InteractionConfigFile.LoadConfig();
             _physical = PhysicalConfigFile.LoadConfig();
         }
+
+        public static void SaveAllConfigs()
+        {
+            InteractionConfig.SaveConfig();
+            PhysicalConfig.SaveConfig();
+        }
     }
 }

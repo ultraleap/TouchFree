@@ -9,15 +9,13 @@ namespace Ultraleap.ScreenControl.Core
     [System.Serializable]
     public class InteractionTypeElements
     {
-        public CanvasGroup[] typeSpecificElements;
+        public string name;
+        public GameObject[] typeSpecificElements;
     }
 
     public class GlobalSettingsConfigUI : ConfigUI
     {
         #region Bounds
-        public const float CursorVerticalOffset_Min = -0.1f;
-        public const float CursorVerticalOffset_Max = 0.1f;
-
         public const float CursorDeadzone_Min = 0f;
         public const float CursorDeadzone_Max = 0.015f;
 
@@ -34,14 +32,8 @@ namespace Ultraleap.ScreenControl.Core
 
         [Header("Misc")]
         public Toggle scrollingOrDraggingTog;
-        public Toggle setupOnStartup;
-        public Toggle sendHoverEventsTog;
-        public GameObject hoverEventsWarning;
 
         public Slider cursorDeadzoneSlider;
-
-        public InputField cursorVerticalOffset;
-        public Slider cursorVerticalOffsetSlider;
 
         public InputField HoverCursorStartTime;
         public Slider HoverCursorStartTimeSlider;
@@ -50,34 +42,17 @@ namespace Ultraleap.ScreenControl.Core
 
         [Header("Interaction Type")]
         public Toggle interactionTypeTogglePush;
-        public Toggle interactionTypeTogglePoke;
         public Toggle interactionTypeTogglePinch;
         public Toggle interactionTypeToggleHover;
 
         [Header("Interaction Preview")]
         public GameObject pushPreview;
-        public GameObject pokePreview;
         public GameObject grabPreview;
         public GameObject hoverPreview;
 
-        [Header("Cursor Preview")]
-        public GameObject pushCursorPreview;
-        public Image pushCursorPreviewDot;
-        public Image pushCursorPreviewBorder;
-        public Image pushCursorPreviewRing;
-        public GameObject grabCursorPreview;
-        public Image grabCursorPreviewDot;
-        public Image grabCursorPreviewBorder;
-        public Image grabCursorPreviewLine;
-        public GameObject hoverCursorPreview;
-        public Image hoverCursorPreviewDot;
-        public Image hoverCursorPreviewBorder;
-        public Image hoverCursorPreviewRing;
-        public Image hoverCursorPreviewRingBorder;
-
         public GameObject resetToDefaultWarning;
 
-        [Tooltip("List all Settings elements that relate to the interactionType. This way they can be greyed out if not currently in use by the current InteractionType")]
+        [Tooltip("List all Settings elements that relate to the interactionType. Names: 'Push', 'Grab', 'Hover'")]
         public InteractionTypeElements[] interactionTypeElements;
 
         private void Awake()
@@ -92,9 +67,6 @@ namespace Ultraleap.ScreenControl.Core
         {
             cursorDeadzoneSlider.minValue = CursorDeadzone_Min;
             cursorDeadzoneSlider.maxValue = CursorDeadzone_Max;
-
-            cursorVerticalOffsetSlider.minValue = ScreenControlUtility.ToDisplayUnits(CursorVerticalOffset_Min);
-            cursorVerticalOffsetSlider.maxValue = ScreenControlUtility.ToDisplayUnits(CursorVerticalOffset_Max);
 
             HoverCursorStartTimeSlider.minValue = HoverCursorStartTime_Min;
             HoverCursorStartTimeSlider.maxValue = HoverCursorStartTime_Max;
@@ -137,11 +109,7 @@ namespace Ultraleap.ScreenControl.Core
         protected override void AddValueChangedListeners()
         {
             scrollingOrDraggingTog.onValueChanged.AddListener(OnValueChanged);
-            setupOnStartup.onValueChanged.AddListener(OnValueChanged);
             cursorDeadzoneSlider.onValueChanged.AddListener(OnValueChanged);
-            cursorVerticalOffset.onEndEdit.AddListener(OnValueChanged);
-            cursorVerticalOffsetSlider.onValueChanged.AddListener(OnValueChanged);
-            sendHoverEventsTog.onValueChanged.AddListener(OnValueChanged);
 
             HoverCursorStartTime.onEndEdit.AddListener(OnValueChanged);
             HoverCursorStartTimeSlider.onValueChanged.AddListener(OnValueChanged);
@@ -149,7 +117,6 @@ namespace Ultraleap.ScreenControl.Core
             HoverCursorCompleteTimeSlider.onValueChanged.AddListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.AddListener(OnValueChanged);
-            interactionTypeTogglePoke.onValueChanged.AddListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.AddListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.AddListener(OnValueChanged);
         }
@@ -157,11 +124,7 @@ namespace Ultraleap.ScreenControl.Core
         protected override void RemoveValueChangedListeners()
         {
             scrollingOrDraggingTog.onValueChanged.RemoveListener(OnValueChanged);
-            setupOnStartup.onValueChanged.RemoveListener(OnValueChanged);
             cursorDeadzoneSlider.onValueChanged.RemoveListener(OnValueChanged);
-            cursorVerticalOffset.onEndEdit.RemoveListener(OnValueChanged);
-            cursorVerticalOffsetSlider.onValueChanged.RemoveListener(OnValueChanged);
-            sendHoverEventsTog.onValueChanged.RemoveListener(OnValueChanged);
 
             HoverCursorStartTime.onEndEdit.RemoveListener(OnValueChanged);
             HoverCursorStartTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
@@ -169,7 +132,6 @@ namespace Ultraleap.ScreenControl.Core
             HoverCursorCompleteTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.RemoveListener(OnValueChanged);
-            interactionTypeTogglePoke.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.RemoveListener(OnValueChanged);
         }
@@ -179,9 +141,7 @@ namespace Ultraleap.ScreenControl.Core
             resolutionWidth.text = Screen.currentResolution.width.ToString();
             resolutionHeight.text = Screen.currentResolution.height.ToString();
 
-            cursorDeadzoneSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.Generic.DeadzoneRadius);
-            cursorVerticalOffset.SetTextWithoutNotify(ScreenControlUtility.ToDisplayUnits(ConfigManager.InteractionConfig.Generic.CursorVerticalOffset).ToString("#0.00#"));
-            cursorVerticalOffsetSlider.SetValueWithoutNotify(ScreenControlUtility.ToDisplayUnits(ConfigManager.InteractionConfig.Generic.CursorVerticalOffset));
+            cursorDeadzoneSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.DeadzoneRadius);
 
             HoverCursorStartTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCursorStartTimeS.ToString("#0.00#"));
             HoverCursorStartTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCursorStartTimeS);
@@ -189,13 +149,9 @@ namespace Ultraleap.ScreenControl.Core
             HoverCursorCompleteTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCursorCompleteTimeS);
 
             interactionTypeTogglePush.SetIsOnWithoutNotify(false);
-            interactionTypeTogglePoke.SetIsOnWithoutNotify(false);
             interactionTypeTogglePinch.SetIsOnWithoutNotify(false);
             interactionTypeToggleHover.SetIsOnWithoutNotify(false);
 
-            hoverEventsWarning.SetActive(sendHoverEventsTog.isOn);
-
-            DisplayCursorPreview();
             DisplayIntractionPreview();
         }
 
@@ -204,13 +160,6 @@ namespace Ultraleap.ScreenControl.Core
             var deadzoneRadius = Mathf.Clamp(cursorDeadzoneSlider.value, CursorDeadzone_Min, CursorDeadzone_Max);
             cursorDeadzoneSlider.SetValueWithoutNotify(deadzoneRadius);
 
-            var verticalOffset = Mathf.Clamp(cursorVerticalOffsetSlider.value,
-                ScreenControlUtility.ToDisplayUnits(CursorVerticalOffset_Min),
-                ScreenControlUtility.ToDisplayUnits(CursorVerticalOffset_Max));
-
-            cursorVerticalOffsetSlider.SetValueWithoutNotify(verticalOffset);
-            cursorVerticalOffset.SetTextWithoutNotify(verticalOffset.ToString("#0.00#"));
-
             var hoverStartTime = Mathf.Clamp(HoverCursorStartTimeSlider.value, HoverCursorStartTime_Min, HoverCursorStartTime_Max);
             HoverCursorStartTime.SetTextWithoutNotify(hoverStartTime.ToString("#0.00#"));
             HoverCursorStartTimeSlider.SetValueWithoutNotify(hoverStartTime);
@@ -218,31 +167,57 @@ namespace Ultraleap.ScreenControl.Core
             var hoverCompleteTime = Mathf.Clamp(HoverCursorCompleteTimeSlider.value, HoverCursorCompleteTime_Min, HoverCursorCompleteTime_Max);
             HoverCursorCompleteTime.SetTextWithoutNotify(hoverCompleteTime.ToString("#0.00#"));
             HoverCursorCompleteTimeSlider.SetValueWithoutNotify(hoverCompleteTime);
-
-            hoverEventsWarning.SetActive(sendHoverEventsTog.isOn);
-        }
-
-        string customCursorDotFillColour;
-        string customCursorDotBorderColour;
-        string customCursorRingColour;
-
-        float customCursorDotFillOpacity;
-        float customCursorDotBorderOpacity;
-        float customCursorRingOpacity;
-
-        void DisplayCursorPreview()
-        {
-            pushCursorPreview.SetActive(false);
-            grabCursorPreview.SetActive(false);
-            hoverCursorPreview.SetActive(false);
         }
 
         void DisplayIntractionPreview()
         {
             pushPreview.SetActive(false);
-            pokePreview.SetActive(false);
             grabPreview.SetActive(false);
             hoverPreview.SetActive(false);
+
+            if(interactionTypeTogglePush.isOn)
+            {
+                pushPreview.SetActive(true);
+                HandleSpecificElements("Push");
+            }
+            else if(interactionTypeTogglePinch.isOn)
+            {
+                grabPreview.SetActive(true);
+                HandleSpecificElements("Grab");
+            }
+            else if(interactionTypeToggleHover.isOn)
+            {
+                hoverPreview.SetActive(true);
+                HandleSpecificElements("Hover");
+            }
+        }
+
+        void HandleSpecificElements(string _name)
+        {
+            InteractionTypeElements matchingGroup = null;
+
+            foreach (var group in interactionTypeElements)
+            {
+                if (group.name == _name)
+                {
+                    matchingGroup = group;
+                }
+                else
+                {
+                    foreach (var element in group.typeSpecificElements)
+                    {
+                        element.SetActive(false);
+                    }
+                }
+            }
+
+            if(matchingGroup != null)
+            {
+                foreach (var element in matchingGroup.typeSpecificElements)
+                {
+                    element.SetActive(true);
+                }
+            }
         }
 
         protected override void SaveValuesToConfig()
@@ -250,13 +225,12 @@ namespace Ultraleap.ScreenControl.Core
             ConfigManager.InteractionConfig.ConfigWasUpdated();
             RestartSaveConfigTimer();
 
-            DisplayCursorPreview();
             DisplayIntractionPreview();
         }
 
         protected override void CommitValuesToFile()
         {
-            ConfigFileUtils.SaveAllConfigFiles();
+            ConfigManager.SaveAllConfigs();
         }
     }
 }

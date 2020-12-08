@@ -108,11 +108,6 @@ namespace Ultraleap.ScreenControl.Core
             DirectoryCopy(Application.persistentDataPath, Path.Combine(PhysicalConfigFile.CustomDefaultConfigFileDirectory, _customName));
         }
 
-        public static void SaveAllConfigFiles()
-        {
-            InvokeStaticMethodOnBaseTypeOfAllConfigFileImplementors("SaveConfig");
-        }
-
         private static void InvokeStaticMethodOnBaseTypeOfAllConfigFileImplementors(string methodName, object[] _params = default)
         {
             // Use reflection to get all implementors of ConfigFile<,> and call their LoadCustomDefaults static method.

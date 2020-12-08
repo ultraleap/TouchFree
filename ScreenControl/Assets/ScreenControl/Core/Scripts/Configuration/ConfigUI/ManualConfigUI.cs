@@ -5,8 +5,6 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class ManualConfigUI : ConfigUI
     {
-        public ConfigurationSetupController configController;
-
         #region Bounds
         public const float ScreenHeight_Min = 0.05f;
         public const float ScreenHeight_Max = 1f;

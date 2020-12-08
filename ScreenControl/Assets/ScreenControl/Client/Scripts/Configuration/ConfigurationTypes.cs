@@ -1,91 +1,204 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.ScreenControl.Client
 {
     namespace ScreenControlTypes
     {
-        public struct GenericInteractionSettings
+        public class HoverAndHoldInteractionSettings
         {
-            public bool ShowSetupScreenOnStartup;
-            public bool UseScrollingOrDragging;
-            public float DeadzoneRadius;
-            // Todo: Rename this to be more accurate
-            public float CursorVerticalOffset;
-            // Todo: Find a better name for this because distance from screen is calibrated based on it as well
-            public float TouchPlaneDistanceFromScreenM;
-        }
+            private float _HoverCursorStartTimeS;
+            private float _HoverCursorCompleteTimeS;
 
-        public struct HoverAndHoldInteractionSettings
-        {
-            public float HoverCursorStartTimeS;
-            public float HoverCursorCompleteTimeS;
-        }
+            public float HoverCursorStartTimeS
+            {
+                get
+                {
+                    return _HoverCursorStartTimeS;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("HoverCursorStartTimeS"))
+                    {
+                        configValues["HoverCursorStartTimeS"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("HoverCursorStartTimeS", value);
+                    }
 
-        public struct TouchPlaneInteractionSettings
-        {
-            public float CursorMaxRingScaleAtDistanceM;
-            public float PushDeadzoneStartDistance;
+                    _HoverCursorStartTimeS = value;
+                }
+            }
+            public float HoverCursorCompleteTimeS
+            {
+                get
+                {
+                    return _HoverCursorCompleteTimeS;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("HoverCursorCompleteTimeS"))
+                    {
+                        configValues["HoverCursorCompleteTimeS"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("HoverCursorCompleteTimeS", value);
+                    }
+
+                    _HoverCursorCompleteTimeS = value;
+                }
+            }
+
+            public Dictionary<string, object> configValues = new Dictionary<string, object>();
         }
 
         public class InteractionConfig
         {
-            public GenericInteractionSettings Generic;
+            private bool _UseScrollingOrDragging;
+            private float _DeadzoneRadius;
+
+            public bool UseScrollingOrDragging
+            {
+                get
+                {
+                    return _UseScrollingOrDragging;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("UseScrollingOrDragging"))
+                    {
+                        configValues["UseScrollingOrDragging"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("UseScrollingOrDragging", value);
+                    }
+
+                    _UseScrollingOrDragging = value;
+                }
+            }
+            public float DeadzoneRadius
+            {
+                get
+                {
+                    return _DeadzoneRadius;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("DeadzoneRadius"))
+                    {
+                        configValues["DeadzoneRadius"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("DeadzoneRadius", value);
+                    }
+
+                    _DeadzoneRadius = value;
+                }
+            }
+
             // Interaction-specific settings
-            public HoverAndHoldInteractionSettings HoverAndHold;
-            public TouchPlaneInteractionSettings TouchPlane;
+            public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
 
-            public InteractionConfig()
-            {
-                SetAllValuesToDefault();
-            }
-
-            public void SetAllValuesToDefault()
-            {
-                Generic.ShowSetupScreenOnStartup = true;
-                Generic.UseScrollingOrDragging = false;
-                Generic.DeadzoneRadius = 0.003f;
-                Generic.CursorVerticalOffset = 0f;
-                Generic.TouchPlaneDistanceFromScreenM = 0.05f;
-                HoverAndHold.HoverCursorStartTimeS = 0.5f;
-                HoverAndHold.HoverCursorCompleteTimeS = 0.6f;
-                TouchPlane.CursorMaxRingScaleAtDistanceM = 2.0f;
-                TouchPlane.PushDeadzoneStartDistance = 0.1f;
-            }
+            public Dictionary<string, object> configValues = new Dictionary<string, object>();
         }
 
         public class PhysicalConfig
         {
-            public float ScreenHeightM = 0.33f;
-            public Vector3 LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
-            public Vector3 LeapRotationD = Vector3.zero;
-            public float ScreenRotationD = 0f;
+            private float _ScreenHeightM = 0.33f;
+            private Vector3 _LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
+            private Vector3 _LeapRotationD = Vector3.zero;
+            private float _ScreenRotationD = 0f;
 
-            public void SetAllValuesToDefault()
+            public float ScreenHeightM
             {
-                var defaults = new PhysicalConfig();
+                get
+                {
+                    return _ScreenHeightM;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("ScreenHeightM"))
+                    {
+                        configValues["ScreenHeightM"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("ScreenHeightM", value);
+                    }
 
-                ScreenHeightM = defaults.ScreenHeightM;
-                LeapPositionRelativeToScreenBottomM = defaults.LeapPositionRelativeToScreenBottomM;
-                LeapRotationD = defaults.LeapRotationD;
-                ScreenRotationD = defaults.ScreenRotationD;
+                    _ScreenHeightM = value;
+                }
             }
+            public Vector3 LeapPositionRelativeToScreenBottomM
+            {
+                get
+                {
+                    return _LeapPositionRelativeToScreenBottomM;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("LeapPositionRelativeToScreenBottomM"))
+                    {
+                        configValues["LeapPositionRelativeToScreenBottomM"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("LeapPositionRelativeToScreenBottomM", value);
+                    }
+                    _LeapPositionRelativeToScreenBottomM = value;
+                }
+            }
+            public Vector3 LeapRotationD
+            {
+                get
+                {
+                    return _LeapRotationD;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("LeapRotationD"))
+                    {
+                        configValues["LeapRotationD"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("LeapRotationD", value);
+                    }
+                    _LeapRotationD = value;
+                }
+            }
+            public float ScreenRotationD
+            {
+                get
+                {
+                    return _ScreenRotationD;
+                }
+                set
+                {
+                    if (configValues.ContainsKey("ScreenRotationD"))
+                    {
+                        configValues["ScreenRotationD"] = value;
+                    }
+                    else
+                    {
+                        configValues.Add("ScreenRotationD", value);
+                    }
+                    _ScreenRotationD = value;
+                }
+            }
+
+            public Dictionary<string, object> configValues = new Dictionary<string, object>();
         }
 
         public class GlobalSettings
         {
-            public int CursorWindowSize = 256;
             public int ScreenWidth;
             public int ScreenHeight;
-
-            // Store in M, display in CM
-            public readonly float ConfigToDisplayMeasurementMultiplier = 100;
-
-            public void SetAllValuesToDefault()
-            {
-                var defaults = new GlobalSettings();
-
-                CursorWindowSize = defaults.CursorWindowSize;
-            }
         }
     }
 }
