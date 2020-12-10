@@ -1,0 +1,25 @@
+{
+  "name": "screencontrolsockettests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "@types/chai": "^4.2.14",
+    "@types/cucumber": "^6.0.1",
+    "@types/websocket": "^1.0.1",
+    "chai": "^4.2.0",
+    "cucumber": "^7.0.0-rc.0",
+    "cucumber-junit": "^1.7.1",
+    "gulp": "^4.0.2",
+    "gulp-cucumber": "0.0.24",
+    "gulp-util": "^3.0.8",
+    "typescript": "^4.1.2",
+    "ws": "^7.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

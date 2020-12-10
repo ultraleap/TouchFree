@@ -48,3 +48,16 @@ Thumbs.db
 Builds/
 Build/
 AssetDirStat.asset
+
+# ========= #
+#  Testing  #
+# ========= #
+
+**/usage.txt
+Testing/ServiceSocketTests/node_modules/*
+Testing/ServiceSocketTests/node_modules/**
+Testing/ServiceSocketTests/results/*
+Testing/ServiceSocketTests/results/**
+!Testing/ServiceSocketTests/results/results.md
+**/PUT_TEST_BUILD_IN_HERE/*
+!**/PUT_TEST_BUILD_IN_HERE/info.md
