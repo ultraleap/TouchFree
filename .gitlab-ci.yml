@@ -1,0 +1,46 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  UNITY_EXE: '"C:/Unity/Unity_2019.4.14f1/Editor/Unity.exe"'
+
+stages:
+  - build
+  - test
+
+# build stage jobs
+SC_Service::build:
+  stage: build
+  script:
+    - - "& ./run_unity_test.bat"
+  artifacts:
+    name: "Screen_Control_Service_${env:CI_COMMIT_SHA}"
+    paths:
+    - Build/**
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
+
+mac::run_UHW_integration_tests:
+  stage: test
+  dependencies:
+    - SC_Service::build
+  needs: ["SC_Service::build"]
+
+  script:
+    - cd ./Testing/ServiceSocketTests/
+    - npm install
+    - ./node_modules/.bin/gulp build_machine_run
+  after_script:
+    - if [ -e /build_machine_info.txt ]; then cat /build_machine_info.txt; else echo "No build machine info file"; fi
+
+  artifacts:
+    name: restuls
+    paths:
+      - ./Testing/ServiceSocketTests/results/**
+    reports:
+      junit: ./Testing/ServiceSocketTests/results/test_results.xml
+    when: always
+  tags:
+    - tools
+    - mac-10.13

@@ -1,8 +1,8 @@
 const { spawn } = require('child_process');
 const { chmodSync, readFileSync, readdirSync } = require('fs');
 
+var del = require('del');
 var gulp = require('gulp');
-// var cucumber = require('gulp-cucumber');
 
 // A child process used for the start/stopping of the server
 var serverProcess;
@@ -29,6 +29,14 @@ function cucumberXmlReport(opts) {
     });
 };
 
+gulp.task('buildServerGrab', function () {
+    return gulp.src([
+        '../Build/**',
+        '../Build/*',
+    ])
+        .pipe(gulp.dest('./PUT_TEST_BUILD_IN_HERE'));
+})
+
 gulp.task('startServer', function (callback) {
     var serverBinDir = "./PUT_TEST_BUILD_IN_HERE/";
     var startCommand;
@@ -47,17 +55,7 @@ gulp.task('startServer', function (callback) {
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
     serverProcess = spawn(startCommand, { 'cwd': serverBinDir });
-
-    // TODO: change this for SCService specifically? Do we still need this?
-
-    // serverProcess.stdout.on('data', (data) => {
-    //     const startedStr = "Ultraleap Haptics for Web is provided by Ultraleap";
-
-    //     if (data.toString().includes(startedStr)) {
-    //         console.log("Server Process started!");
     callback();
-    //     }
-    // });
 });
 
 gulp.task('cucumber', function (callback) {
@@ -71,7 +69,6 @@ gulp.task('cucumber', function (callback) {
     var startCommand;
 
     if (process.platform === "win32") {
-        // nodeBinDir = nodeBinDir.replace(/\//g, '\\');
         var startCommand = `${nodeBinDir}\cucumber-js`;
     } else {
         var startCommand = `${nodeBinDir}/cucumber-js.cmd`;
@@ -92,8 +89,6 @@ gulp.task('cucumber', function (callback) {
             stdio: "inherit"
         });
 
-    // cucumberProcess.stdout.pipe(process.stdout);
-
     return cucumberProcess;
 });
 
@@ -111,6 +106,12 @@ gulp.task('killServer', function (callback) {
 
     serverProcess.kill();
 });
+
+gulp.task('cleanLocalArtefacts', function () {
+    return del([
+        './PUT_TEST_BUILD_IN_HERE/*'
+    ]);
+})
 
 gulp.task('checkResults', function (callback) {
     let rawdata = readFileSync(`./results/test_results.json`);
@@ -134,11 +135,26 @@ gulp.task('checkResults', function (callback) {
     }
 });
 
-gulp.task('local_run',
-    gulp.series(
+function localRun() {
+    return gulp.series(
         'startServer',
         'cucumber',
         'cucumber:report',
         'killServer',
         'checkResults'
-        ));
+       );
+}
+
+gulp.task('default', localRun());
+gulp.task('local_run', localRun());
+
+gulp.task('build_machine_run',
+    gulp.series(
+        'buildServerGrab',
+        'startServer',
+        'cucumber',
+        'cucumber:report',
+        'killServer',
+        'cleanLocalArtefacts',
+        'checkResults'
+    ));
