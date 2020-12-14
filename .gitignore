@@ -53,6 +53,7 @@ AssetDirStat.asset
 #  Testing  #
 # ========= #
 
+package-lock.json
 **/usage.txt
 Testing/ServiceSocketTests/node_modules/*
 Testing/ServiceSocketTests/node_modules/**
