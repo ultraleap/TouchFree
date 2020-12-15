@@ -1,7 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  UNITY_EXE_DIR: 'C:/Unity/Unity_2019.4.13f1'
-  UNITY_EXE: 'C:/Unity/Unity_2019.4.13f1/Editor/Unity.exe'
+  UNITY_EXE_DIR: 'C:/Unity/2019.4.13f1/Editor'
+  UNITY_EXE: 'C:/Unity/2019.4.13f1/Editor/Unity.exe'
 
 stages:
   - build
