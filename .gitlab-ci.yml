@@ -1,0 +1,17 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  UNITY_EXE: '"C:/Unity/Unity_2019.4.14f1/Editor/Unity.exe"'
+
+stages:
+  - build
+  - test
+
+# build stage jobs
+SC_Service::build:
+  stage: build
+  when: always
+  script:
+    - echo "hello world"
+  tags:
+    - unity
+    - win10
