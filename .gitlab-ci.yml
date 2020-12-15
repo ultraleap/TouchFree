@@ -11,8 +11,8 @@ SC_Service::build:
   stage: build
   when: always
   script:
-    - ls ${env:UNITY_EXE}
     - "& ./run_unity_cmd.bat"
+    - ls ${env:UNITY_EXE}
   artifacts:
     name: "Screen_Control_Service_${env:CI_COMMIT_SHA}"
     paths:
