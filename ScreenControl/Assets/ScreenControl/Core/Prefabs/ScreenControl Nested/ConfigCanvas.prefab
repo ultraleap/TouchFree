@@ -11297,10 +11297,10 @@ MonoBehaviour:
   resolutionHeight: {fileID: 4971541573691151048}
   scrollingOrDraggingTog: {fileID: 744605800611862834}
   cursorDeadzoneSlider: {fileID: 4747446089625333746}
-  HoverCursorStartTime: {fileID: 4063357710144571790}
-  HoverCursorStartTimeSlider: {fileID: 6265077761398746482}
-  HoverCursorCompleteTime: {fileID: 4922398880066831755}
-  HoverCursorCompleteTimeSlider: {fileID: 1503808015715491447}
+  HoverStartTime: {fileID: 4063357710144571790}
+  HoverStartTimeSlider: {fileID: 6265077761398746482}
+  HoverCompleteTime: {fileID: 4922398880066831755}
+  HoverCompleteTimeSlider: {fileID: 1503808015715491447}
   interactionTypeTogglePush: {fileID: 409219293944509619}
   interactionTypeTogglePinch: {fileID: 8323841729419002883}
   interactionTypeToggleHover: {fileID: 3483695174882684528}

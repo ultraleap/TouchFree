@@ -35,10 +35,10 @@ namespace Ultraleap.ScreenControl.Core
 
         public Slider cursorDeadzoneSlider;
 
-        public InputField HoverCursorStartTime;
-        public Slider HoverCursorStartTimeSlider;
-        public InputField HoverCursorCompleteTime;
-        public Slider HoverCursorCompleteTimeSlider;
+        public InputField HoverStartTime;
+        public Slider HoverStartTimeSlider;
+        public InputField HoverCompleteTime;
+        public Slider HoverCompleteTimeSlider;
 
         [Header("Interaction Type")]
         public Toggle interactionTypeTogglePush;
@@ -68,10 +68,10 @@ namespace Ultraleap.ScreenControl.Core
             cursorDeadzoneSlider.minValue = CursorDeadzone_Min;
             cursorDeadzoneSlider.maxValue = CursorDeadzone_Max;
 
-            HoverCursorStartTimeSlider.minValue = HoverCursorStartTime_Min;
-            HoverCursorStartTimeSlider.maxValue = HoverCursorStartTime_Max;
-            HoverCursorCompleteTimeSlider.minValue = HoverCursorCompleteTime_Min;
-            HoverCursorCompleteTimeSlider.maxValue = HoverCursorCompleteTime_Max;
+            HoverStartTimeSlider.minValue = HoverCursorStartTime_Min;
+            HoverStartTimeSlider.maxValue = HoverCursorStartTime_Max;
+            HoverCompleteTimeSlider.minValue = HoverCursorCompleteTime_Min;
+            HoverCompleteTimeSlider.maxValue = HoverCursorCompleteTime_Max;
         }
 
         public void ResetToDefaultValues()
@@ -111,10 +111,10 @@ namespace Ultraleap.ScreenControl.Core
             scrollingOrDraggingTog.onValueChanged.AddListener(OnValueChanged);
             cursorDeadzoneSlider.onValueChanged.AddListener(OnValueChanged);
 
-            HoverCursorStartTime.onEndEdit.AddListener(OnValueChanged);
-            HoverCursorStartTimeSlider.onValueChanged.AddListener(OnValueChanged);
-            HoverCursorCompleteTime.onEndEdit.AddListener(OnValueChanged);
-            HoverCursorCompleteTimeSlider.onValueChanged.AddListener(OnValueChanged);
+            HoverStartTime.onEndEdit.AddListener(OnValueChanged);
+            HoverStartTimeSlider.onValueChanged.AddListener(OnValueChanged);
+            HoverCompleteTime.onEndEdit.AddListener(OnValueChanged);
+            HoverCompleteTimeSlider.onValueChanged.AddListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.AddListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.AddListener(OnValueChanged);
@@ -126,10 +126,10 @@ namespace Ultraleap.ScreenControl.Core
             scrollingOrDraggingTog.onValueChanged.RemoveListener(OnValueChanged);
             cursorDeadzoneSlider.onValueChanged.RemoveListener(OnValueChanged);
 
-            HoverCursorStartTime.onEndEdit.RemoveListener(OnValueChanged);
-            HoverCursorStartTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
-            HoverCursorCompleteTime.onEndEdit.RemoveListener(OnValueChanged);
-            HoverCursorCompleteTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
+            HoverStartTime.onEndEdit.RemoveListener(OnValueChanged);
+            HoverStartTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
+            HoverCompleteTime.onEndEdit.RemoveListener(OnValueChanged);
+            HoverCompleteTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.RemoveListener(OnValueChanged);
@@ -143,11 +143,14 @@ namespace Ultraleap.ScreenControl.Core
 
             cursorDeadzoneSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.DeadzoneRadius);
 
-            HoverCursorStartTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCursorStartTimeS.ToString("#0.00#"));
-            HoverCursorStartTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCursorStartTimeS);
-            HoverCursorCompleteTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCursorCompleteTimeS.ToString("#0.00#"));
-            HoverCursorCompleteTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCursorCompleteTimeS);
+            scrollingOrDraggingTog.SetIsOnWithoutNotify(ConfigManager.InteractionConfig.UseScrollingOrDragging);
 
+            HoverStartTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS.ToString("#0.00#"));
+            HoverStartTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS);
+            HoverCompleteTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS.ToString("#0.00#"));
+            HoverCompleteTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS);
+
+            // TODO: set the currently selected interaction here
             interactionTypeTogglePush.SetIsOnWithoutNotify(false);
             interactionTypeTogglePinch.SetIsOnWithoutNotify(false);
             interactionTypeToggleHover.SetIsOnWithoutNotify(false);
@@ -160,13 +163,15 @@ namespace Ultraleap.ScreenControl.Core
             var deadzoneRadius = Mathf.Clamp(cursorDeadzoneSlider.value, CursorDeadzone_Min, CursorDeadzone_Max);
             cursorDeadzoneSlider.SetValueWithoutNotify(deadzoneRadius);
 
-            var hoverStartTime = Mathf.Clamp(HoverCursorStartTimeSlider.value, HoverCursorStartTime_Min, HoverCursorStartTime_Max);
-            HoverCursorStartTime.SetTextWithoutNotify(hoverStartTime.ToString("#0.00#"));
-            HoverCursorStartTimeSlider.SetValueWithoutNotify(hoverStartTime);
+            var hoverStartTime = Mathf.Clamp(HoverStartTimeSlider.value, HoverCursorStartTime_Min, HoverCursorStartTime_Max);
+            HoverStartTime.SetTextWithoutNotify(hoverStartTime.ToString("#0.00#"));
+            HoverStartTimeSlider.SetValueWithoutNotify(hoverStartTime);
 
-            var hoverCompleteTime = Mathf.Clamp(HoverCursorCompleteTimeSlider.value, HoverCursorCompleteTime_Min, HoverCursorCompleteTime_Max);
-            HoverCursorCompleteTime.SetTextWithoutNotify(hoverCompleteTime.ToString("#0.00#"));
-            HoverCursorCompleteTimeSlider.SetValueWithoutNotify(hoverCompleteTime);
+            var hoverCompleteTime = Mathf.Clamp(HoverCompleteTimeSlider.value, HoverCursorCompleteTime_Min, HoverCursorCompleteTime_Max);
+            HoverCompleteTime.SetTextWithoutNotify(hoverCompleteTime.ToString("#0.00#"));
+            HoverCompleteTimeSlider.SetValueWithoutNotify(hoverCompleteTime);
+
+            SaveValuesToConfig();
         }
 
         void DisplayIntractionPreview()
@@ -222,9 +227,15 @@ namespace Ultraleap.ScreenControl.Core
 
         protected override void SaveValuesToConfig()
         {
+            ConfigManager.InteractionConfig.DeadzoneRadius = cursorDeadzoneSlider.value;
+            ConfigManager.InteractionConfig.UseScrollingOrDragging = scrollingOrDraggingTog.isOn;
+            ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = HoverStartTimeSlider.value;
+            ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = HoverCompleteTimeSlider.value;
+
+            // TODO: Set the current interaction here
+
             ConfigManager.InteractionConfig.ConfigWasUpdated();
             RestartSaveConfigTimer();
-
             DisplayIntractionPreview();
         }
 

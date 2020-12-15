@@ -5,8 +5,8 @@ namespace Ultraleap.ScreenControl.Core
     [Serializable]
     public class HoverAndHoldInteractionSettings
     {
-        public float HoverCursorStartTimeS = 0.5f;
-        public float HoverCursorCompleteTimeS = 0.6f;
+        public float HoverStartTimeS = 0.5f;
+        public float HoverCompleteTimeS = 0.6f;
     }
 
     [Serializable]
@@ -14,6 +14,8 @@ namespace Ultraleap.ScreenControl.Core
     {
         public bool UseScrollingOrDragging = false;
         public float DeadzoneRadius = 0.003f;
+
+        // TODO: Store the currently selected interaction here
 
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold;
@@ -24,8 +26,8 @@ namespace Ultraleap.ScreenControl.Core
 
             UseScrollingOrDragging = defaults.UseScrollingOrDragging;
             DeadzoneRadius = defaults.DeadzoneRadius;
-            HoverAndHold.HoverCursorStartTimeS = defaults.HoverAndHold.HoverCursorStartTimeS;
-            HoverAndHold.HoverCursorCompleteTimeS = defaults.HoverAndHold.HoverCursorCompleteTimeS;
+            HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
+            HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
         }
 
         public void SaveConfig()

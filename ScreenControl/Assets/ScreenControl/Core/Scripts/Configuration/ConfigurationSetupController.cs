@@ -164,13 +164,11 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "SUPPORT")
             {
                 Application.OpenURL("http://rebrand.ly/ul-contact-us");
-                //closeConfig = true;
             }
 
             if (manualConfigKeyEntered == "SETUPGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-camera-setup");
-                //closeConfig = true;
             }
         }
 
@@ -190,7 +188,6 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "SETUPGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-camera-setup");
-                //closeConfig = true;
             }
         }
 
@@ -271,7 +268,6 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "DESIGNGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-design-guidelines");
-                //closeConfig = true;
             }
         }
 
@@ -282,13 +278,11 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "SUPPORT")
             {
                 Application.OpenURL("http://rebrand.ly/ul-contact-us");
-                //closeConfig = true;
             }
 
             if (manualConfigKeyEntered == "SETUPGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-touchfree-setup");
-                //closeConfig = true;
             }
         }
 

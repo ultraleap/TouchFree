@@ -57,10 +57,10 @@ namespace Ultraleap.ScreenControl.Client
 
         public class InteractionConfig
         {
-            private bool _UseScrollingOrDragging;
+            private Vector3 _UseScrollingOrDragging;
             private float _DeadzoneRadius;
 
-            public bool UseScrollingOrDragging
+            public Vector3 UseScrollingOrDragging
             {
                 get
                 {

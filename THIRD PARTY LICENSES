@@ -42,8 +42,8 @@ using the Font Software.
 -----------------------------------------------------------------------------
 The MIT License (MIT)
 applies to:
-	- WebsocketSharp | At ../Plugins/WebsocketSharp/ |
-Copyright (c) 2010-2020 sta.blockhead
+	- WebsocketSharp | At ../Plugins/WebsocketSharp/ | Copyright (c) 2010-2020 sta.blockhead
+	- Newtonsoft.JSON "Json.NET" | At ../Plugins/Newtonsoft/ | Copyright (c) 2007, James Newton-King
 -----------------------------------------------------------------------------
 
 Full text:

@@ -35,8 +35,6 @@ namespace Ultraleap.ScreenControl.Service
             string jsonMessage = JsonUtility.ToJson(message);
 
             Send(jsonMessage);
-            Debug.LogError("sent response");
-
         }
 
         protected override void OnOpen()

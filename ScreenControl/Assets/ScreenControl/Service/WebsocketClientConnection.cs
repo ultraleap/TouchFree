@@ -11,14 +11,21 @@ namespace Ultraleap.ScreenControl.Service
 {
     public class WebsocketClientConnection : MonoBehaviour
     {
+        public static WebsocketClientConnection Instance;
+
         private WebSocketServer wsServer = null;
         private ScreenControlWsBehaviour socketBehaviour = null;
-        public WebSocketReceiverQueue receiverQueue;
+        public WebSocketReceiverHandler receiverQueue;
 
         private bool websocketInitalised = false;
         private bool restartServer = false;
 
         public short port = 9739;
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         void OnEnable()
         {
@@ -27,12 +34,12 @@ namespace Ultraleap.ScreenControl.Service
 
         internal WebsocketClientConnection()
         {
-            InteractionManager.HandleInputAction += SendDataToWebsocket;
+            InteractionManager.HandleInputAction += SendInputActionToWebsocket;
         }
 
         ~WebsocketClientConnection()
         {
-            InteractionManager.HandleInputAction -= SendDataToWebsocket;
+            InteractionManager.HandleInputAction -= SendInputActionToWebsocket;
         }
 
         private void SetupConnection(ScreenControlWsBehaviour behaviour)
@@ -56,11 +63,15 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.ReuseAddress = true;
             wsServer.Start();
 
-            receiverQueue = gameObject.AddComponent<WebSocketReceiverQueue>();
-            receiverQueue.clientConnection = this;
+            receiverQueue = gameObject.GetComponent<WebSocketReceiverHandler>();
+
+            if (receiverQueue == null)
+            {
+                receiverQueue = gameObject.AddComponent<WebSocketReceiverHandler>();
+            }
         }
 
-        void SendDataToWebsocket(CoreInputAction _data)
+        void SendInputActionToWebsocket(CoreInputAction _data)
         {
             // if IsListening stops being true the server
             // has aborted / stopped, so needs remaking
@@ -84,20 +95,9 @@ namespace Ultraleap.ScreenControl.Service
             socketBehaviour.SendInputAction(_data);
         }
 
-        public void SetConfigState(string _content)
+        public void SendConfigurationResponse(ConfigResponse _response)
         {
-            ConfigRequest newData = new ConfigRequest("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
-
-            // TODO: Ideally here we want to see if anything sent was invalid and return them with an error message so they know that something was not settable
-            JsonUtility.FromJsonOverwrite(_content, newData);
-
-            ConfigManager.InteractionConfig = newData.interaction;
-            ConfigManager.PhysicalConfig = newData.physical;
-
-            ConfigManager.PhysicalConfig.ConfigWasUpdated();
-            ConfigManager.InteractionConfig.ConfigWasUpdated();
-
-            socketBehaviour.SendConfigurationResponse(new ConfigResponse(newData.requestID, "Success", ""));
+            socketBehaviour.SendConfigurationResponse(_response);
         }
     }
 }

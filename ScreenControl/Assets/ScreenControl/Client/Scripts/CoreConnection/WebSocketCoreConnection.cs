@@ -89,8 +89,8 @@ namespace Ultraleap.ScreenControl.Client
         public void SetConfigState(InteractionConfig _interaction = null, PhysicalConfig _physical = null)
         {
             string action = ActionCodes.SET_CONFIGURATION_STATE.ToString();
-            string requestID = "";
-            // TODO: Generate a requestID
+            Guid requestGUID = Guid.NewGuid();
+            string requestID = requestGUID.ToString();
 
             string setContent = "";
             setContent += "{\"action\":\"";

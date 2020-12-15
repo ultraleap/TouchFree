@@ -141,8 +141,8 @@ namespace Ultraleap.ScreenControl.Core
         protected override void OnSettingsUpdated()
         {
             base.OnSettingsUpdated();
-            hoverTriggerTime = ConfigManager.InteractionConfig.HoverAndHold.HoverCursorStartTimeS * 1000; // s to ms
-            progressTimer.timeLimit = ConfigManager.InteractionConfig.HoverAndHold.HoverCursorCompleteTimeS * 1000; // s to ms
+            hoverTriggerTime = ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS * 1000; // s to ms
+            progressTimer.timeLimit = ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS * 1000; // s to ms
         }
     }
 }
