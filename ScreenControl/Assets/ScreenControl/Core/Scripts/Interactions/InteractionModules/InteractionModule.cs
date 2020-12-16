@@ -60,13 +60,11 @@ namespace Ultraleap.ScreenControl.Core
             OnSettingsUpdated();
             ConfigManager.GlobalSettings.CreateVirtualScreen();
             positioningModule.Stabiliser.ResetValues();
-            InteractionManager.Instance.RegisterInteraction(InteractionType, this);
         }
 
         protected virtual void OnDisable()
         {
             InteractionConfig.OnConfigUpdated -= OnSettingsUpdated;
-            InteractionManager.Instance.RemoveInteraction(InteractionType);
         }
 
         protected virtual void OnSettingsUpdated()

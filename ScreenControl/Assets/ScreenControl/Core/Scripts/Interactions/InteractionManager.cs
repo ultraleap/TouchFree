@@ -22,6 +22,10 @@ namespace Ultraleap.ScreenControl.Core
             }
         }
 
+        public InteractionModule pushInteractionModule;
+        public InteractionModule hoverInteractionModule;
+        public InteractionModule grabInteractionModule;
+
         private void Awake()
         {
             // if the singleton hasn't been initialized yet
@@ -32,6 +36,10 @@ namespace Ultraleap.ScreenControl.Core
             instance = this;
 
             InteractionModule.HandleInputAction += HandleInteractionModuleInputAction;
+
+            interactions.Add(ScreenControlTypes.InteractionType.PUSH, pushInteractionModule);
+            interactions.Add(ScreenControlTypes.InteractionType.HOVER, hoverInteractionModule);
+            interactions.Add(ScreenControlTypes.InteractionType.GRAB, grabInteractionModule);
         }
 
         private void OnDestroy()
@@ -39,34 +47,27 @@ namespace Ultraleap.ScreenControl.Core
             InteractionModule.HandleInputAction -= HandleInteractionModuleInputAction;
         }
 
-        public void RegisterInteraction(ScreenControlTypes.InteractionType type, InteractionModule interactionObject)
+        // For Config settings and Client Interaction requests
+        public void SetActiveInteractions(ScreenControlTypes.InteractionType[] _activateTypes)
         {
-            if (interactions.ContainsKey(type))
+            foreach(var interaction in interactions)
             {
-                Debug.LogError($@"InteractionManager recieved a request to register an interaction
-with Keyed with ${type} but there was already such an interaction registered!");
-            }
-            else
-            {
-                interactions.Add(type, interactionObject);
-            }
-        }
+                bool set = false;
+                foreach(var toActivate in _activateTypes)
+                {
+                    if(interaction.Key == toActivate)
+                    {
+                        set = true;
+                        interaction.Value.enabled = true;
+                        break;
+                    }
+                }
 
-        public void RemoveInteraction(ScreenControlTypes.InteractionType type)
-        {
-            if (interactions.ContainsKey(type))
-            {
-                interactions.Remove(type);
+                if(!set)
+                {
+                    interaction.Value.enabled = false;
+                }
             }
-            else
-            {
-                Debug.LogError($"Attempted to remove ");
-            }
-        }
-
-        // Todo with Config settings
-        public void SetActiveInteractions(ScreenControlTypes.InteractionType[] activeTypes)
-        {
         }
 
         private void HandleInteractionModuleInputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.CoreInputAction _inputData)

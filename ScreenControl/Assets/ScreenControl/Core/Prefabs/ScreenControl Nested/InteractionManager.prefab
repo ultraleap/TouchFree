@@ -153,8 +153,6 @@ MonoBehaviour:
   trackedPosition: 0
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  VerticalOffset: 1
-  cursorSnapSoftness: 0.005
 --- !u!1 &3045357794578251532
 GameObject:
   m_ObjectHideFlags: 0
@@ -353,8 +351,6 @@ MonoBehaviour:
   trackedPosition: 1
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  VerticalOffset: 1
-  cursorSnapSoftness: 0.005
 --- !u!1 &5911777841778895746
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +360,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5911777841778895747}
-  - component: {fileID: 9062216370926254001}
   m_Layer: 0
   m_Name: InteractionModules
   m_TagString: Untagged
@@ -391,18 +386,6 @@ Transform:
   m_Father: {fileID: 5911777842215055681}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9062216370926254001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5911777841778895746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b8de0764e3e6c4a971a5f3e023b607, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5911777842215055679
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,6 +395,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5911777842215055681}
+  - component: {fileID: 5747826863403264945}
   m_Layer: 0
   m_Name: InteractionManager
   m_TagString: Untagged
@@ -434,6 +418,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5747826863403264945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5911777842215055679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b8de0764e3e6c4a971a5f3e023b607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pushInteractionModule: {fileID: 5753121179731557265}
+  hoverInteractionModule: {fileID: 748880895319561291}
+  grabInteractionModule: {fileID: 331447746348606392}
 --- !u!1 &5911777843642849153
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,8 +498,6 @@ MonoBehaviour:
   trackedPosition: 0
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  VerticalOffset: 1
-  cursorSnapSoftness: 0.005
 --- !u!1 &6491336837799979747
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,8 +545,6 @@ MonoBehaviour:
   trackedPosition: 0
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  VerticalOffset: 1
-  cursorSnapSoftness: 0.005
 --- !u!114 &5753121179731557265
 MonoBehaviour:
   m_ObjectHideFlags: 0
