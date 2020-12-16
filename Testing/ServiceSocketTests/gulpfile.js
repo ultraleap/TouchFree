@@ -31,8 +31,8 @@ function cucumberXmlReport(opts) {
 
 gulp.task('buildServerGrab', function () {
     return gulp.src([
-        '../Build/**',
-        '../Build/*',
+        '../../Build/**',
+        '../../Build/*',
     ])
         .pipe(gulp.dest('./PUT_TEST_BUILD_IN_HERE'));
 })
@@ -111,7 +111,7 @@ gulp.task('cleanLocalArtefacts', function () {
     return del([
         './PUT_TEST_BUILD_IN_HERE/*'
     ]);
-})
+});
 
 gulp.task('checkResults', function (callback) {
     let rawdata = readFileSync(`./results/test_results.json`);
