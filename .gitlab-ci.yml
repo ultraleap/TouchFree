@@ -36,8 +36,6 @@ SC_Service::test:
     - cd ./Testing/ServiceSocketTests/
     - npm install
     - ./node_modules/.bin/gulp build_machine_run
-  after_script:
-    - if [ -e /build_machine_info.txt ]; then cat /build_machine_info.txt; else echo "No build machine info file"; fi
 
   artifacts:
     name: test_results
