@@ -26,7 +26,6 @@ SC_Service::build:
     - win10
 
 SC_Service::test:
-  image: registry.ultrahaptics.com/tools/infrastructure/docker-tools-node-tests:initial_setup
   stage: test
 
   dependencies:
@@ -48,4 +47,5 @@ SC_Service::test:
       junit: ./Testing/ServiceSocketTests/results/test_results.xml
     when: always
   tags:
-    - docker
+    - unity
+    - win10
