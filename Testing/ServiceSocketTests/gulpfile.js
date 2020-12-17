@@ -47,19 +47,19 @@ gulp.task('startServer', function (callback) {
         fs.writeFileSync("./PUT_TEST_BUILD_IN_HERE/log.txt", ' ');
     }
 
-    tail = new Tail("./PUT_TEST_BUILD_IN_HERE/log.txt");
+    // tail = new Tail("./PUT_TEST_BUILD_IN_HERE/log.txt");
 
-    tail.on("line", function(data) {
-        console.log(data);
+    // tail.on("line", function(data) {
+    //     console.log(data);
 
-        if (data.includes("Service Setup Complete")) {
-            callback();
-        }
-    });
+    //     if (data.includes("Service Setup Complete")) {
+    //         callback();
+    //     }
+    // });
 
-    tail.on("error", function(error) {
-        console.log('ERROR: ', error);
-    });
+    // tail.on("error", function(error) {
+    //     console.log('ERROR: ', error);
+    // });
 
     if (process.platform === "win32") {
         serverBinDir = serverBinDir.replace(/\//g, '\\');
@@ -81,6 +81,7 @@ gulp.task('startServer', function (callback) {
             'log.txt'
         ],
         { 'cwd': serverBinDir });
+    callback();
 
     serverProcess.on('close', () => {
         callback('Server process closed')
