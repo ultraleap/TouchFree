@@ -1,14 +1,13 @@
 const { spawn } = require('child_process');
-const { chmodSync, readFileSync, readdirSync } = require('fs');
+const { chmodSync, readFileSync } = require('fs');
+
+const Tail = require('tail').Tail;
 
 var del = require('del');
 var gulp = require('gulp');
 
 // A child process used for the start/stopping of the server
 var serverProcess;
-
-// Child process for running the LogFileHandler
-var logHandler;
 
 function cucumberXmlReport(opts) {
     var gutil = require('gulp-util'),
@@ -52,10 +51,32 @@ gulp.task('startServer', function (callback) {
         });
     }
 
+    tail = new Tail("./PUT_TEST_BUILD_IN_HERE/log.txt");
+
+    tail.on("line", function(data) {
+        console.log(data);
+
+        if (data.includes("Service Setup Complete")) {
+            callback();
+        }
+    });
+
+    tail.on("error", function(error) {
+    });
+
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
-    serverProcess = spawn(startCommand, { 'cwd': serverBinDir });
-    callback();
+    serverProcess = spawn(startCommand,
+        [
+            '-batchmode',
+            '-logfile',
+            'log.txt'
+        ],
+        { 'cwd': serverBinDir });
+
+    serverProcess.on('close', () => {
+        callback('Server process closed')
+    });
 });
 
 gulp.task('cucumber', function (callback) {
@@ -142,7 +163,7 @@ function localRun() {
         'cucumber:report',
         'killServer',
         'checkResults'
-       );
+    );
 }
 
 gulp.task('default', localRun());
@@ -150,11 +171,11 @@ gulp.task('local_run', localRun());
 
 gulp.task('build_machine_run',
     gulp.series(
+        'cleanLocalArtefacts',
         'buildServerGrab',
         'startServer',
         'cucumber',
         'cucumber:report',
         'killServer',
-        'cleanLocalArtefacts',
         'checkResults'
     ));

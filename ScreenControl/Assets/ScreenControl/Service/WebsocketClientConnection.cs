@@ -52,6 +52,8 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.AllowForwardedRequest = true;
             wsServer.ReuseAddress = true;
             wsServer.Start();
+
+            Debug.Log("Service Setup Complete");
         }
 
         void SendDataToWebsocket(CoreInputAction _data)

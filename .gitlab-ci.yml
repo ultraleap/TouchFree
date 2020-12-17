@@ -41,6 +41,7 @@ SC_Service::test:
     name: test_results
     paths:
       - ./Testing/ServiceSocketTests/results/**
+      - ./Testing/ServiceSocketTests/PUT_TEST_BUILD_IN_HERE/**
     reports:
       junit: ./Testing/ServiceSocketTests/results/test_results.xml
     when: always
