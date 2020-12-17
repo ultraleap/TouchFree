@@ -47,20 +47,6 @@ gulp.task('startServer', function (callback) {
         fs.writeFileSync("./PUT_TEST_BUILD_IN_HERE/log.txt", ' ');
     }
 
-    // tail = new Tail("./PUT_TEST_BUILD_IN_HERE/log.txt");
-
-    // tail.on("line", function(data) {
-    //     console.log(data);
-
-    //     if (data.includes("Service Setup Complete")) {
-    //         callback();
-    //     }
-    // });
-
-    // tail.on("error", function(error) {
-    //     console.log('ERROR: ', error);
-    // });
-
     if (process.platform === "win32") {
         serverBinDir = serverBinDir.replace(/\//g, '\\');
         startCommand = `.\\ScreenControlService.exe`;
