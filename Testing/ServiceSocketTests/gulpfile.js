@@ -41,16 +41,6 @@ gulp.task('startServer', function (callback) {
     var serverBinDir = "./PUT_TEST_BUILD_IN_HERE/";
     var startCommand;
 
-    if (process.platform === "win32") {
-        serverBinDir = serverBinDir.replace(/\//g, '\\');
-        startCommand = `.\\ScreenControlService.exe`;
-    } else {
-        startCommand = "./ScreenControlService";
-
-        chmodSync(serverBinDir + startCommand, 0o765, (err) => {
-            callback("The permissions for the haptic server could not be set!");
-        });
-    }
 
     if (!fs.existsSync("./PUT_TEST_BUILD_IN_HERE/log.txt"))
     {
@@ -68,7 +58,19 @@ gulp.task('startServer', function (callback) {
     });
 
     tail.on("error", function(error) {
+        console.log('ERROR: ', error);
     });
+
+    if (process.platform === "win32") {
+        serverBinDir = serverBinDir.replace(/\//g, '\\');
+        startCommand = `.\\ScreenControlService.exe`;
+    } else {
+        startCommand = "./ScreenControlService";
+
+        chmodSync(serverBinDir + startCommand, 0o765, (err) => {
+            callback("The permissions for the haptic server could not be set!");
+        });
+    }
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
