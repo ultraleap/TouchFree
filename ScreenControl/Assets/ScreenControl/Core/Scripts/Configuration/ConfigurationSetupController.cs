@@ -121,9 +121,6 @@ namespace Ultraleap.ScreenControl.Core
                     case ConfigState.AUTO_OR_MANUAL:
                         RunAutoOrManual();
                         break;
-                    case ConfigState.AUTO:
-                        RunAutoConfig();
-                        break;
                     case ConfigState.AUTO_COMPLETE:
                         RunAutoConfigComplete();
                         break;
@@ -138,6 +135,8 @@ namespace Ultraleap.ScreenControl.Core
                         break;
                     case ConfigState.TEST_CALIBRATION:
                         RunCalibrationTest();
+                        break;
+                    case ConfigState.AUTO:
                         break;
                 }
             }
@@ -228,15 +227,10 @@ namespace Ultraleap.ScreenControl.Core
 
                 ConfigManager.PhysicalConfig.ConfigWasUpdated();
 
-                // dont alloe manual to flip the axes again
+                // dont allow manual to flip the axes again
                 selectedMountType = MountingType.NONE;
                 ChangeState(ConfigState.MANUAL);
             }
-        }
-
-        void RunAutoConfig()
-        {
-            // this is handled on the auto config screen object
         }
 
         void RunAutoConfigComplete()

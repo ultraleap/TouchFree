@@ -1,24 +1,21 @@
-using UnityEngine;
-
-using WebSocketSharp;
-using WebSocketSharp.Server;
-
 using Ultraleap.ScreenControl.Core;
 using Ultraleap.ScreenControl.Core.ScreenControlTypes;
 using Ultraleap.ScreenControl.Service.ScreenControlTypes;
+using UnityEngine;
+using WebSocketSharp;
+using WebSocketSharp.Server;
 
 namespace Ultraleap.ScreenControl.Service
 {
-    public class WebsocketClientConnection : MonoBehaviour
+    public class WebSocketClientConnection : MonoBehaviour
     {
-        public static WebsocketClientConnection Instance;
+        public static WebSocketClientConnection Instance;
 
         private WebSocketServer wsServer = null;
         private ScreenControlWsBehaviour socketBehaviour = null;
-        public WebSocketReceiverHandler receiverQueue;
+        public WebSocketReceiver receiverQueue;
 
         private bool websocketInitalised = false;
-        private bool restartServer = false;
 
         public short port = 9739;
 
@@ -32,12 +29,12 @@ namespace Ultraleap.ScreenControl.Service
             InitialiseServer();
         }
 
-        internal WebsocketClientConnection()
+        internal WebSocketClientConnection()
         {
             InteractionManager.HandleInputAction += SendInputActionToWebsocket;
         }
 
-        ~WebsocketClientConnection()
+        ~WebSocketClientConnection()
         {
             InteractionManager.HandleInputAction -= SendInputActionToWebsocket;
         }
@@ -63,12 +60,8 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.ReuseAddress = true;
             wsServer.Start();
 
-            receiverQueue = gameObject.GetComponent<WebSocketReceiverHandler>();
-
-            if (receiverQueue == null)
-            {
-                receiverQueue = gameObject.AddComponent<WebSocketReceiverHandler>();
-            }
+            receiverQueue = gameObject.AddComponent<WebSocketReceiver>();
+            receiverQueue.SetWSClientConnection(this);
         }
 
         void SendInputActionToWebsocket(CoreInputAction _data)

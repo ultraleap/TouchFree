@@ -187,16 +187,16 @@ namespace Ultraleap.ScreenControl.Core
             );
 
             ConfigManager.PhysicalConfig.ConfigWasUpdated();
-
+            ConfigManager.InteractionConfig.SaveConfig();
             RestartSaveConfigTimer();
         }
 
         public void ResetToDefaultValues()
         {
             ConfigManager.PhysicalConfig.SetAllValuesToDefault();
+            ConfigManager.PhysicalConfig.ConfigWasUpdated();
             ConfigManager.PhysicalConfig.SaveConfig();
             LoadConfigValuesIntoFields();
-            SaveValuesToConfig();
         }
 
         private void OnInputFieldChanged(string _)

@@ -8,47 +8,47 @@ namespace Ultraleap.ScreenControl.Client
     {
         public class HoverAndHoldInteractionSettings
         {
-            private float _HoverCursorStartTimeS;
-            private float _HoverCursorCompleteTimeS;
+            private float _HoverStartTimeS;
+            private float _HoverCompleteTimeS;
 
-            public float HoverCursorStartTimeS
+            public float HoverStartTimeS
             {
                 get
                 {
-                    return _HoverCursorStartTimeS;
+                    return _HoverStartTimeS;
                 }
                 set
                 {
-                    if (configValues.ContainsKey("HoverCursorStartTimeS"))
+                    if (configValues.ContainsKey("HoverStartTimeS"))
                     {
-                        configValues["HoverCursorStartTimeS"] = value;
+                        configValues["HoverStartTimeS"] = value;
                     }
                     else
                     {
-                        configValues.Add("HoverCursorStartTimeS", value);
+                        configValues.Add("HoverStartTimeS", value);
                     }
 
-                    _HoverCursorStartTimeS = value;
+                    _HoverStartTimeS = value;
                 }
             }
-            public float HoverCursorCompleteTimeS
+            public float HoverCompleteTimeS
             {
                 get
                 {
-                    return _HoverCursorCompleteTimeS;
+                    return _HoverCompleteTimeS;
                 }
                 set
                 {
-                    if (configValues.ContainsKey("HoverCursorCompleteTimeS"))
+                    if (configValues.ContainsKey("HoverCompleteTimeS"))
                     {
-                        configValues["HoverCursorCompleteTimeS"] = value;
+                        configValues["HoverCompleteTimeS"] = value;
                     }
                     else
                     {
-                        configValues.Add("HoverCursorCompleteTimeS", value);
+                        configValues.Add("HoverCompleteTimeS", value);
                     }
 
-                    _HoverCursorCompleteTimeS = value;
+                    _HoverCompleteTimeS = value;
                 }
             }
 
@@ -57,10 +57,10 @@ namespace Ultraleap.ScreenControl.Client
 
         public class InteractionConfig
         {
-            private Vector3 _UseScrollingOrDragging;
+            private bool _UseScrollingOrDragging;
             private float _DeadzoneRadius;
 
-            public Vector3 UseScrollingOrDragging
+            public bool UseScrollingOrDragging
             {
                 get
                 {

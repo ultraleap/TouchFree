@@ -10,7 +10,7 @@ namespace Ultraleap.ScreenControl.Client
     public class WebSocketCoreConnection : CoreConnection
     {
         WebSocket ws;
-        WebSocketReceiverQueue receiverQueue;
+        WebSocketReceiver receiverQueue;
 
         internal WebSocketCoreConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
@@ -24,8 +24,8 @@ namespace Ultraleap.ScreenControl.Client
             };
             ws.Connect();
 
-            receiverQueue = ConnectionManager.Instance.gameObject.AddComponent<WebSocketReceiverQueue>();
-            receiverQueue.coreConnection = this;
+            receiverQueue = ConnectionManager.Instance.gameObject.AddComponent<WebSocketReceiver>();
+            receiverQueue.SetWSConnection(this);
         }
 
         public override void Disconnect()
@@ -37,7 +37,7 @@ namespace Ultraleap.ScreenControl.Client
 
             if(receiverQueue != null)
             {
-                WebSocketReceiverQueue.Destroy(receiverQueue);
+                WebSocketReceiver.Destroy(receiverQueue);
             }
         }
 
@@ -62,7 +62,7 @@ namespace Ultraleap.ScreenControl.Client
                 case ActionCodes.CONFIGURATION_STATE:
                     break;
                 case ActionCodes.CONFIGURATION_RESPONSE:
-                    ConfigResponse response = JsonUtility.FromJson<ConfigResponse>(content);
+                    WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     receiverQueue.responseQueue.Enqueue(response);
                     break;
             }
@@ -73,95 +73,126 @@ namespace Ultraleap.ScreenControl.Client
             RelayInputAction(_action);
         }
 
-        public void HandleConfigResponse(ConfigResponse _response)
+        public void SetConfigState(PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {
-            switch (_response.status)
-            {
-                case "Success":
-                    Debug.Log("Response!!");
-                    break;
-                case "Failed":
-                    Debug.LogError("Request " + _response.requestID + " failed with result: " + _response.message);
-                    break;
-            }
+            SetConfigState(null, _physical, _callback);
         }
 
-        public void SetConfigState(InteractionConfig _interaction = null, PhysicalConfig _physical = null)
+        public void SetConfigState(InteractionConfig _interaction, Action<WebSocketResponse> _callback = null)
+        {
+            SetConfigState(_interaction, null, _callback);
+        }
+
+        public void SetConfigState(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {
             string action = ActionCodes.SET_CONFIGURATION_STATE.ToString();
             Guid requestGUID = Guid.NewGuid();
             string requestID = requestGUID.ToString();
 
-            string setContent = "";
-            setContent += "{\"action\":\"";
-            setContent += action + "\",\"content\":{\"requestID\":\"";
-            setContent += requestID + "\",";
+            string jsonContent = "";
+            jsonContent += "{\"action\":\"";
+            jsonContent += action + "\",\"content\":{\"requestID\":\"";
+            jsonContent += requestID + "\",";
 
             if(_interaction != null)
             {
-                if (_interaction.configValues.Count > 0 || _interaction.HoverAndHold.configValues.Count > 0)
-                {
-                    setContent += "\"interaction\":{";
-
-                    foreach(var value in _interaction.configValues)
-                    {
-                        setContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
-                        setContent += ",";
-                    }
-
-                    if(_interaction.HoverAndHold.configValues.Count > 0)
-                    {
-                        setContent += "\"HoverAndHold\":{";
-
-                        foreach (var value in _interaction.HoverAndHold.configValues)
-                        {
-                            setContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
-                            setContent += ",";
-                        }
-
-                        // last element added was last in the list so remove the comma
-                        setContent = setContent.Remove(setContent.Length - 1);
-                        setContent += "},";
-                    }
-
-                    // last element added was last in the list so remove the comma
-                    setContent = setContent.Remove(setContent.Length - 1);
-
-                    setContent += "},";
-                }
+                jsonContent += serializeInteractionConfig(_interaction);
             }
 
             if (_physical != null)
             {
-                if (_physical.configValues.Count > 0)
-                {
-                    if (_physical.configValues.Count > 0)
-                    {
-                        setContent += ",\"physical\":{";
-
-                        foreach (var value in _physical.configValues)
-                        {
-                            setContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
-                            setContent += ",";
-                        }
-
-                        // last element added was last in the list so remove the comma
-                        setContent = setContent.Remove(setContent.Length - 1);
-                        setContent += "},";
-                    }
-                }
+                jsonContent += serializePhysicalConfig(_physical);
             }
 
             // last element added was final so remove the comma
-            setContent = setContent.Remove(setContent.Length - 1);
+            jsonContent = jsonContent.Remove(jsonContent.Length - 1);
 
-            setContent += "}}";
+            jsonContent += "}}";
 
-            SendMessage(setContent);
-        }        
+            SendMessage(jsonContent, requestID, _callback);
+        } 
 
-        public void SendMessage(string _message)
+        string serializeInteractionConfig(InteractionConfig _interaction)
         {
+            string newContent = "";
+
+            if (_interaction.configValues.Count > 0 || _interaction.HoverAndHold.configValues.Count > 0)
+            {
+                newContent += "\"interaction\":{";
+
+                foreach (var value in _interaction.configValues)
+                {
+                    newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
+                    newContent += ",";
+                }
+
+                if (_interaction.HoverAndHold.configValues.Count > 0)
+                {
+                    newContent += "\"HoverAndHold\":{";
+
+                    foreach (var value in _interaction.HoverAndHold.configValues)
+                    {
+                        newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
+                        newContent += ",";
+                    }
+
+                    // last element added was last in the list so remove the comma
+                    newContent = newContent.Remove(newContent.Length - 1);
+                    newContent += "},";
+                }
+
+                // last element added was last in the list so remove the comma
+                newContent = newContent.Remove(newContent.Length - 1);
+
+                newContent += "},";
+            }
+
+            return newContent;
+        }
+
+        string serializePhysicalConfig(PhysicalConfig _physical)
+        {
+            string newContent = "";
+
+            if (_physical.configValues.Count > 0)
+            {
+                if (_physical.configValues.Count > 0)
+                {
+                    newContent += ",\"physical\":{";
+
+                    foreach (var value in _physical.configValues)
+                    {
+                        newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
+                        newContent += ",";
+                    }
+
+                    // last element added was last in the list so remove the comma
+                    newContent = newContent.Remove(newContent.Length - 1);
+                    newContent += "},";
+                }
+            }
+
+            return newContent;
+        }
+
+        internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback)
+        {
+            if(_requestID == "")
+            {
+                if(_callback != null)
+                {
+                    WebSocketResponse response = new WebSocketResponse("", "Failure", "Request failed. This is due to a missing or invalid requestID", _message);
+                    _callback.Invoke(response);
+                }
+
+                Debug.LogError("Request failed. This is due to a missing or invalid requestID");
+                return;
+            }
+
+            if (_callback != null)
+            {
+                receiverQueue.responseCallbacks.Add(_requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
+            }
             ws.Send(_message);
         }
     }

@@ -10,9 +10,16 @@ using Newtonsoft.Json.Linq;
 
 namespace Ultraleap.ScreenControl.Service
 {
-    public class WebSocketReceiverHandler : MonoBehaviour
+    public class WebSocketReceiver : MonoBehaviour
     {
+        WebSocketClientConnection clientConnection;
+
         public ConcurrentQueue<string> setConfigQueue = new ConcurrentQueue<string>();
+
+        public void SetWSClientConnection(WebSocketClientConnection _connection)
+        {
+            clientConnection = _connection;
+        }
 
         void Update()
         {
@@ -29,9 +36,9 @@ namespace Ultraleap.ScreenControl.Service
 
         void HandleNewConfigState(string _content)
         {
-            ConfigResponse response = new ConfigResponse("", "Success", "");
+            ConfigResponse response = ValidateNewConfigState(_content);
 
-            if(ValidateNewConfigState(_content, ref response))
+            if(response.status == "Success")
             {
                 SetConfigState(_content);
             }
@@ -43,19 +50,20 @@ namespace Ultraleap.ScreenControl.Service
         /// Checks for invalid states of the config request
         /// </summary>
         /// <param name="_content">The whole json content of the request</param>
-        /// <param name="_response">A reference to be populated with appropriate data during validation</param>
-        /// <returns>Returns the validity of the _content</returns>
-        bool ValidateNewConfigState(string _content, ref ConfigResponse _response)
+        /// <returns>Returns a response as to the validity of the _content</returns>
+        ConfigResponse ValidateNewConfigState(string _content)
         {
+            ConfigResponse response = new ConfigResponse("", "Success", "", _content);
+
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
             // Explicitly check for requestID because it is the only required key
             if(!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
             {
                 // Validation has failed because there is no valid requestID
-                _response.status = "Failed";
-                _response.message = "Setting configuration failed. This is due to a missing or invalid requestID in the following content: \n\n" + _content;
-                return false;
+                response.status = "Failure";
+                response.message = "Setting configuration failed. This is due to a missing or invalid requestID";
+                return response;
             }
             
             var configRequestFields = typeof(ConfigRequest).GetFields();
@@ -71,15 +79,15 @@ namespace Ultraleap.ScreenControl.Service
                 if (!validField)
                 {
                     // Validation has failed because the field is not valid
-                    _response.status = "Failed";
-                    _response.message = "Setting configuration failed. This is due to an invalid field \"" + contentElement.Key + "\" in the following content: \n\n" + _content;
-                    return false;
+                    response.status = "Failure";
+                    response.message = "Setting configuration failed. This is due to an invalid field \"" + contentElement.Key + "\"";
+                    return response;
                 }
 
                 if (contentElement.Key == "requestID")
                 {
                     // We have a request ID so set it in the _response
-                    _response.requestID = contentElement.Value.ToString();
+                    response.requestID = contentElement.Value.ToString();
                 }
 
                 if (contentElement.Key == "interaction")
@@ -94,9 +102,9 @@ namespace Ultraleap.ScreenControl.Service
                         if (!validInteractionField)
                         {
                             // Validation has failed because the field is not valid
-                            _response.status = "Failed";
-                            _response.message = "Setting configuration failed. This is due to an invalid field \"" + interactionContent.Key + "\" in the following content: \n\n" + _content;
-                            return false;
+                            response.status = "Failure";
+                            response.message = "Setting configuration failed. This is due to an invalid field \"" + interactionContent.Key + "\"";
+                            return response;
                         }
 
                         if (interactionContent.Key == "HoverAndHold")
@@ -111,9 +119,9 @@ namespace Ultraleap.ScreenControl.Service
                                 if (!validHoverField)
                                 {
                                     // Validation has failed because the field is not valid
-                                    _response.status = "Failed";
-                                    _response.message = "Setting configuration failed. This is due to an invalid field \"" + hoverAndHoldContent.Key + "\" in the following content: \n\n" + _content;
-                                    return false;
+                                    response.status = "Failure";
+                                    response.message = "Setting configuration failed. This is due to an invalid field \"" + hoverAndHoldContent.Key + "\"";
+                                    return response;
                                 }
                             }
                         }
@@ -132,15 +140,15 @@ namespace Ultraleap.ScreenControl.Service
                         if (!validInteractionField)
                         {
                             // Validation has failed because the field is not valid
-                            _response.status = "Failed";
-                            _response.message = "Setting configuration failed. This is due to an invalid field \"" + physicalContent.Key + "\" in the following content: \n\n" + _content;
-                            return false;
+                            response.status = "Failure";
+                            response.message = "Setting configuration failed. This is due to an invalid field \"" + physicalContent.Key + "\"";
+                            return response;
                         }
                     }
                 }
             }
 
-            return true;
+            return response;
         }
 
         bool IsFieldValid(KeyValuePair<string, JToken> _field, System.Reflection.FieldInfo[] _possibleFields)
@@ -152,7 +160,7 @@ namespace Ultraleap.ScreenControl.Service
                     try
                     {
                         // Try to parse the value to the expected type, if it in invalid, we will catch th error and return false
-                        var converted = _field.Value.ToObject(configField.FieldType);
+                        _field.Value.ToObject(configField.FieldType);
                     }
                     catch
                     {

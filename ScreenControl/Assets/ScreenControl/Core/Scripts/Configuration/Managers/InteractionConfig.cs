@@ -18,7 +18,7 @@ namespace Ultraleap.ScreenControl.Core
         // TODO: Store the currently selected interaction here
 
         // Interaction-specific settings
-        public HoverAndHoldInteractionSettings HoverAndHold;
+        public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
 
         public override void SetAllValuesToDefault()
         {

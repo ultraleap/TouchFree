@@ -34,17 +34,31 @@ namespace Ultraleap.ScreenControl.Client.ScreenControlTypes
     }
 
     [Serializable]
-    public struct ConfigResponse
+    public struct WebSocketResponse
     {
         public string requestID;
         public string status;
         public string message;
+        public string originalRequest;
 
-        public ConfigResponse(string _id, string _status, string _msg)
+        public WebSocketResponse(string _id, string _status, string _msg, string _request)
         {
             requestID = _id;
             status = _status;
             message = _msg;
+            originalRequest = _request;
+        }
+    }
+
+    public struct ResponseCallback
+    {
+        public int timestamp;
+        public Action<WebSocketResponse> callback;
+
+        public ResponseCallback(int _timestamp, Action<WebSocketResponse> _callback)
+        {
+            timestamp = _timestamp;
+            callback = _callback;
         }
     }
 

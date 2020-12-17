@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4992726930522987158}
   - component: {fileID: 4992726930522987159}
-  - component: {fileID: -1971094476438958938}
   m_Layer: 5
   m_Name: ScreenControlService
   m_TagString: Untagged
@@ -25,7 +24,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4992726930522987157}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -49,17 +48,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4d429cd853ce14ebeee867155c8b87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  receiverQueue: {fileID: -1971094476438958938}
+  receiverQueue: {fileID: 0}
   port: 9739
---- !u!114 &-1971094476438958938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4992726930522987157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce716d82276521a41ba5834c14934090, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

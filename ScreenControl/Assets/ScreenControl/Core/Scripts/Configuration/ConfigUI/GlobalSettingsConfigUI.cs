@@ -77,9 +77,9 @@ namespace Ultraleap.ScreenControl.Core
         public void ResetToDefaultValues()
         {
             ConfigManager.InteractionConfig.SetAllValuesToDefault();
+            ConfigManager.InteractionConfig.ConfigWasUpdated();
             ConfigManager.InteractionConfig.SaveConfig();
             LoadConfigValuesIntoFields();
-            SaveValuesToConfig();
         }
 
         public void SetResolution()
@@ -170,8 +170,6 @@ namespace Ultraleap.ScreenControl.Core
             var hoverCompleteTime = Mathf.Clamp(HoverCompleteTimeSlider.value, HoverCursorCompleteTime_Min, HoverCursorCompleteTime_Max);
             HoverCompleteTime.SetTextWithoutNotify(hoverCompleteTime.ToString("#0.00#"));
             HoverCompleteTimeSlider.SetValueWithoutNotify(hoverCompleteTime);
-
-            SaveValuesToConfig();
         }
 
         void DisplayIntractionPreview()
@@ -235,6 +233,7 @@ namespace Ultraleap.ScreenControl.Core
             // TODO: Set the current interaction here
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();
+            ConfigManager.InteractionConfig.SaveConfig();
             RestartSaveConfigTimer();
             DisplayIntractionPreview();
         }

@@ -39,12 +39,14 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
         public string requestID;
         public string status;
         public string message;
+        public string originalRequest;
 
-        public ConfigResponse(string _id, string _status, string _msg)
+        public ConfigResponse(string _id, string _status, string _msg, string _request)
         {
             requestID = _id;
             status = _status;
             message = _msg;
+            originalRequest = _request;
         }
     }
 

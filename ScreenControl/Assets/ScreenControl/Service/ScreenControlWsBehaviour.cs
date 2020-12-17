@@ -13,7 +13,7 @@ namespace Ultraleap.ScreenControl.Service
 {
     internal class ScreenControlWsBehaviour : WebSocketBehavior
     {
-        public WebsocketClientConnection clientConnection;
+        public WebSocketClientConnection clientConnection;
 
         public void SendInputAction(CoreInputAction _data)
         {
@@ -112,6 +112,10 @@ namespace Ultraleap.ScreenControl.Service
                     clientConnection.receiverQueue.setConfigQueue.Enqueue(content);
                     break;
                 case ActionCodes.REQUEST_CONFIGURATION_STATE:
+                    Debug.LogError("Handling " + action + " is not yet implemented.");
+                    break;
+                default:
+                    Debug.LogError("Received a " + action + " action. This is not a valid request.");
                     break;
             }
         }
