@@ -43,7 +43,7 @@ namespace Ultraleap.ScreenControl.Service
                 SetConfigState(_content);
             }
 
-            WebsocketClientConnection.Instance.SendConfigurationResponse(response);
+            WebSocketClientConnection.Instance.SendConfigurationResponse(response);
         }
 
         /// <summary>
