@@ -1,6 +1,7 @@
 const { spawn } = require('child_process');
 const { chmodSync, readFileSync } = require('fs');
 
+const fs = require('fs');
 const Tail = require('tail').Tail;
 
 var del = require('del');
@@ -49,6 +50,11 @@ gulp.task('startServer', function (callback) {
         chmodSync(serverBinDir + startCommand, 0o765, (err) => {
             callback("The permissions for the haptic server could not be set!");
         });
+    }
+
+    if (!fs.existsSync("./PUT_TEST_BUILD_IN_HERE/log.txt"))
+    {
+        fs.writeFileSync("./PUT_TEST_BUILD_IN_HERE/log.txt", ' ');
     }
 
     tail = new Tail("./PUT_TEST_BUILD_IN_HERE/log.txt");
