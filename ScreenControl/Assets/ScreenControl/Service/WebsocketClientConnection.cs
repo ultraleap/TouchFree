@@ -53,6 +53,7 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.ReuseAddress = true;
             wsServer.Start();
 
+            // This is here so the test infrastructure has some sign that the app is ready
             Debug.Log("Service Setup Complete");
         }
 
