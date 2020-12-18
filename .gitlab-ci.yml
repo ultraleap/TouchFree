@@ -1,6 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  UNITY_EXE: '"C:/Unity/Unity_2019.4.14f1/Editor/Unity.exe"'
+  UNITY_EXE_DIR: 'C:/Unity/2019.4.13f1/Editor'
+  UNITY_EXE: 'C:/Unity/2019.4.13f1/Editor/Unity.exe'
 
 stages:
   - build
@@ -11,7 +12,39 @@ SC_Service::build:
   stage: build
   when: always
   script:
-    - echo "hello world"
+    - ls ${env:UNITY_EXE_DIR}
+    - "& ./run_unity_cmd.bat"
+  artifacts:
+    name: "Screen_Control_Service_${env:CI_COMMIT_SHA}"
+    paths:
+    - Build/**
+    - ./Unity.log
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
+
+SC_Service::test:
+  stage: test
+
+  dependencies:
+    - SC_Service::build
+  needs: ["SC_Service::build"]
+
+  script:
+    - cd ./Testing/ServiceSocketTests/
+    - npm install
+    - ./node_modules/.bin/gulp build_machine_run
+
+  artifacts:
+    name: test_results
+    paths:
+      - ./Testing/ServiceSocketTests/results/**
+      - ./Testing/ServiceSocketTests/PUT_TEST_BUILD_IN_HERE/**
+    reports:
+      junit: ./Testing/ServiceSocketTests/results/test_results.xml
+    when: always
   tags:
     - unity
     - win10
