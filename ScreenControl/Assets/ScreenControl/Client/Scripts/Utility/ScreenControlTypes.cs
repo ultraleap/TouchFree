@@ -55,18 +55,32 @@ namespace Ultraleap.ScreenControl.Client
             }
         }
 
+        /* Enum: HandChirality
+            LEFT - The left hand
+            RIGHT - The right hand
+        */
         public enum HandChirality
         {
             LEFT,
             RIGHT
         }
 
+        /* Enum: HandType
+            PRIMARY - The first hand found
+            SECONDARY - The second hand found
+        */
         public enum HandType
         {
             PRIMARY,
             SECONDARY,
         }
 
+        /* Enum: InputType
+            CANCEL - Used to cancel the current input if an issue occurs. Particularly when a DOWN has happened before an UP
+            DOWN - Used to begin a 'Touch' or a 'Drag'
+            MOVE - Used to move a cursor or to perform a 'Drag' after a DOWN
+            UP - Used to complete a 'Touch' or a 'Drag'
+        */
         public enum InputType
         {
             CANCEL,
@@ -75,6 +89,11 @@ namespace Ultraleap.ScreenControl.Client
             UP,
         }
 
+        /* Enum: InteractionType
+            GRAB - The user must perform a GRAB gesture to 'Touch' by bringing their fingers and thumb together
+            HOVER - The user must perform a HOVER gesture to 'Touch' by holding their hand still for a fixed time
+            PUSH - The user must perform a PUSH gesture to 'Touch' by pushing their hand toward the screen
+        */
         public enum InteractionType
         {
             GRAB,
@@ -82,6 +101,10 @@ namespace Ultraleap.ScreenControl.Client
             PUSH,
         }
 
+        /* Enum: BitmaskFlags
+            These flags represent each enum element in the <ClientInputAction> structure.
+            This is used to request any combination of these flags from the Service at once.
+        */
         [Flags]
         public enum BitmaskFlags
         {
@@ -147,6 +170,7 @@ namespace Ultraleap.ScreenControl.Client
                     case HandType.PRIMARY:
                         returnVal ^= BitmaskFlags.PRIMARY;
                         break;
+
                     case HandType.SECONDARY:
                         returnVal ^= BitmaskFlags.SECONDARY;
                         break;
@@ -157,6 +181,7 @@ namespace Ultraleap.ScreenControl.Client
                     case HandChirality.LEFT:
                         returnVal ^= BitmaskFlags.LEFT;
                         break;
+
                     case HandChirality.RIGHT:
                         returnVal ^= BitmaskFlags.RIGHT;
                         break;
@@ -167,12 +192,15 @@ namespace Ultraleap.ScreenControl.Client
                     case InputType.CANCEL:
                         returnVal ^= BitmaskFlags.CANCEL;
                         break;
+
                     case InputType.MOVE:
                         returnVal ^= BitmaskFlags.MOVE;
                         break;
+
                     case InputType.UP:
                         returnVal ^= BitmaskFlags.UP;
                         break;
+
                     case InputType.DOWN:
                         returnVal ^= BitmaskFlags.DOWN;
                         break;
@@ -183,9 +211,11 @@ namespace Ultraleap.ScreenControl.Client
                     case InteractionType.PUSH:
                         returnVal ^= BitmaskFlags.PUSH;
                         break;
+
                     case InteractionType.HOVER:
                         returnVal ^= BitmaskFlags.HOVER;
                         break;
+
                     case InteractionType.GRAB:
                         returnVal ^= BitmaskFlags.GRAB;
                         break;

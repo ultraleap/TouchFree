@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
+    /* Enum: ConnectionType     
+        WEB_SOCKET - Default connection via WebSocket
+        DIRECT_CORE_MODULE - Internal utility for testing connections, DO NOT USE
+    */
     [Serializable]
     enum ConnectionType
     {
@@ -16,8 +18,9 @@ namespace Ultraleap.ScreenControl.Client
     {
         public static ConnectionManager Instance;
 
-        static CoreConnection currentCoreConnection;
         public static event Action OnConnected;
+
+        static CoreConnection currentCoreConnection;
         public static CoreConnection coreConnection {
             get {
                 return currentCoreConnection;
@@ -62,6 +65,7 @@ namespace Ultraleap.ScreenControl.Client
                     // Invoke OnConnected event when connect successfully completes
                     OnConnected?.Invoke();
                     break;
+
                 case ConnectionType.DIRECT_CORE_MODULE:
 #if SCREENCONTROL_CORE
                     currentCoreConnection = new DirectCoreConnection();
@@ -85,7 +89,8 @@ If you wish to use ScreenControl in this manner, please import the Screen Contro
 
         public static void Disconnect()
         {
-            if (currentCoreConnection != null) {
+            if (currentCoreConnection != null)
+            {
                 currentCoreConnection.Disconnect();
                 currentCoreConnection = null;
             }

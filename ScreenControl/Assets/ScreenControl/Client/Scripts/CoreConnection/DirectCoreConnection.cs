@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Ultraleap.ScreenControl.Client.ScreenControlTypes;
+﻿using Ultraleap.ScreenControl.Client.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Client
 {

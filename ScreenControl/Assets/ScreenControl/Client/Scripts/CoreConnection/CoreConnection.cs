@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Ultraleap.ScreenControl.Client
+﻿namespace Ultraleap.ScreenControl.Client
 {
     public abstract class CoreConnection
     {

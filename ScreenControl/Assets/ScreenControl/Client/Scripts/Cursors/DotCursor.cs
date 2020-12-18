@@ -46,6 +46,7 @@ namespace Ultraleap.ScreenControl.Client
         protected override void Update()
         {
             base.Update();
+
             if (growQueued && cursorScalingRoutine == null)
             {
                 growQueued = false;
@@ -60,7 +61,7 @@ namespace Ultraleap.ScreenControl.Client
             if (ringEnabled)
             {
                 //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
-                var dist = Mathf.Clamp01(1f - _progressToClick);
+                float dist = Mathf.Clamp01(1f - _progressToClick);
 
                 if (hidingCursor)
                 {
@@ -68,11 +69,11 @@ namespace Ultraleap.ScreenControl.Client
                 }
                 else
                 {
-                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(ringColor.a, 0f, dist));
-
                     // 0.9f so that the boundary between ring and dot is not visible - small overlap.
                     float minRingScale = 0.9f + ringWidth / ringSpriteScale;
-                    var ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(dist));
+                    float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(dist));
+
+                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(ringColor.a, 0f, dist));
 
                     ringOuter.transform.localScale = Vector3.Lerp(ringOuter.transform.localScale, Vector3.one * ringScale * ringSpriteScale, Time.deltaTime * 15);
 
@@ -95,6 +96,7 @@ namespace Ultraleap.ScreenControl.Client
                 case ScreenControlTypes.InputType.MOVE:
                     UpdateCursor(_inputData.CursorPosition, _inputData.ProgressToClick);
                     break;
+
                 case ScreenControlTypes.InputType.DOWN:
                     growQueued = false;
                     if (cursorScalingRoutine != null)
@@ -103,9 +105,11 @@ namespace Ultraleap.ScreenControl.Client
                     }
                     cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
                     break;
+
                 case ScreenControlTypes.InputType.UP:
                     growQueued = true;
                     break;
+
                 case ScreenControlTypes.InputType.CANCEL:
                     break;
             }
@@ -122,7 +126,7 @@ namespace Ultraleap.ScreenControl.Client
             }
 
             cursorDotSize = cursorSize;
-            var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
+            bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
             cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
             SetCursorLocalScale(cursorDotSize);
@@ -143,6 +147,7 @@ namespace Ultraleap.ScreenControl.Client
         public IEnumerator GrowCursorDot()
         {
             SetCursorLocalScale(cursorDownScale * cursorDotSize);
+
             YieldInstruction yieldInstruction = new YieldInstruction();
             float elapsedTime = 0.0f;
 
@@ -150,6 +155,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
+
                 float scale = Utilities.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
                 SetCursorLocalScale(scale);
             }
@@ -167,6 +173,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
+
                 float scale = Utilities.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
                 SetCursorLocalScale(scale);
             }
@@ -243,7 +250,7 @@ namespace Ultraleap.ScreenControl.Client
             for (int i = 0; i < _duration; i++)
             {
                 yield return null;
-                var a = Mathf.Lerp(_from, _to, i / _duration);
+                float a = Mathf.Lerp(_from, _to, i / _duration);
 
                 cursorBorder.color = new Color()
                 {

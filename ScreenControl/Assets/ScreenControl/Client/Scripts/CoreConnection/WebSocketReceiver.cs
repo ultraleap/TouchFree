@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using UnityEngine;
 
 using Ultraleap.ScreenControl.Client.ScreenControlTypes;
-using System.Collections.Concurrent;
 
 namespace Ultraleap.ScreenControl.Client
 {
@@ -31,16 +31,16 @@ namespace Ultraleap.ScreenControl.Client
         IEnumerator ClearUnresponsiveCallbacks()
         {
             WaitForSeconds waitTime = new WaitForSeconds(callbackClearTimer);
+
             while (true)
             {
                 int lastClearTime = System.DateTime.Now.Millisecond;
-                yield return waitTime;
 
-                Debug.Log(responseCallbacks.Count);
+                yield return waitTime;
 
                 List<string> keys = new List<string>(responseCallbacks.Keys);
 
-                foreach(var key in keys)
+                foreach(string key in keys)
                 {
                     if (responseCallbacks[key].timestamp < lastClearTime)
                     {
@@ -63,6 +63,7 @@ namespace Ultraleap.ScreenControl.Client
         void CheckForResponse()
         {
             WebSocketResponse response;
+
             if (responseQueue.TryPeek(out response))
             {
                 // Parse newly received messages
@@ -73,7 +74,7 @@ namespace Ultraleap.ScreenControl.Client
 
         public void HandleResponse(WebSocketResponse _response)
         {
-            foreach(var callback in responseCallbacks)
+            foreach(KeyValuePair<string, ResponseCallback> callback in responseCallbacks)
             {
                 if(callback.Key == _response.requestID)
                 {

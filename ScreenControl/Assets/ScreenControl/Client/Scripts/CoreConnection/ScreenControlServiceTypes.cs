@@ -2,6 +2,13 @@
 
 namespace Ultraleap.ScreenControl.Client.ScreenControlTypes
 {
+    /* Enum: ActionCodes
+        INPUT_ACTION - Represents standard interaction data
+        CONFIGURATION_STATE - Represents a collection of configurations from the Service
+        CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
+        SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
+        REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
+    */
     internal enum ActionCodes
     {
         INPUT_ACTION,
@@ -11,6 +18,11 @@ namespace Ultraleap.ScreenControl.Client.ScreenControlTypes
         REQUEST_CONFIGURATION_STATE
     }
 
+    /* Enum: ActionCodes
+        COMPATIBLE - The API versions are considered compatible
+        CORE_OUTDATED - The API versions are considered incompatible as Core is older than Client
+        CLIENT_OUTDATED - The API versions are considered incompatible as Client is older than Core
+    */
     internal enum Compatibility
     {
         COMPATIBLE,

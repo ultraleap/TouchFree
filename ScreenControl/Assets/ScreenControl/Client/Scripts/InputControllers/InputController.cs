@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
+﻿using UnityEngine.EventSystems;
 
 namespace Ultraleap.ScreenControl.Client
 {
@@ -66,10 +64,13 @@ namespace Ultraleap.ScreenControl.Client
                 {
                     case ScreenControlTypes.InputType.MOVE:
                         break;
+
                     case ScreenControlTypes.InputType.DOWN:
                         break;
+
                     case ScreenControlTypes.InputType.UP:
                         break;
+
                     case ScreenControlTypes.InputType.CANCEL:
                         break;
                 }

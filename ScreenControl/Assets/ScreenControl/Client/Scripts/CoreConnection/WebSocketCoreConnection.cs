@@ -1,6 +1,8 @@
 ﻿using System;
-using UnityEngine;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using UnityEngine;
+
 using WebSocketSharp;
 
 using Ultraleap.ScreenControl.Client.ScreenControlTypes;
@@ -22,6 +24,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 OnMessage(e);
             };
+
             ws.Connect();
 
             receiverQueue = ConnectionManager.Instance.gameObject.AddComponent<WebSocketReceiver>();
@@ -46,7 +49,7 @@ namespace Ultraleap.ScreenControl.Client
             string rawData = _message.Data;
 
             // Find key areas of the rawData, the "action" and the "content"
-            var match = Regex.Match(rawData, "{\"action\":\"([\\w\\d_]+?)\",\"content\":({.+?})}$");
+            Match match = Regex.Match(rawData, "{\"action\":\"([\\w\\d_]+?)\",\"content\":({.+?})}$");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
             ActionCodes action = (ActionCodes)Enum.Parse(typeof(ActionCodes), match.Groups[1].ToString());
@@ -59,8 +62,10 @@ namespace Ultraleap.ScreenControl.Client
                     ClientInputAction cInput = new ClientInputAction(wsInput);
                     receiverQueue.actionQueue.Enqueue(cInput);
                     break;
+
                 case ActionCodes.CONFIGURATION_STATE:
                     break;
+
                 case ActionCodes.CONFIGURATION_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     receiverQueue.responseQueue.Enqueue(response);
@@ -106,7 +111,6 @@ namespace Ultraleap.ScreenControl.Client
 
             // last element added was final so remove the comma
             jsonContent = jsonContent.Remove(jsonContent.Length - 1);
-
             jsonContent += "}}";
 
             SendMessage(jsonContent, requestID, _callback);
@@ -120,7 +124,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 newContent += "\"interaction\":{";
 
-                foreach (var value in _interaction.configValues)
+                foreach (KeyValuePair<string, object> value in _interaction.configValues)
                 {
                     newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
                     newContent += ",";
@@ -130,7 +134,7 @@ namespace Ultraleap.ScreenControl.Client
                 {
                     newContent += "\"HoverAndHold\":{";
 
-                    foreach (var value in _interaction.HoverAndHold.configValues)
+                    foreach (KeyValuePair<string, object> value in _interaction.HoverAndHold.configValues)
                     {
                         newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
                         newContent += ",";
@@ -143,7 +147,6 @@ namespace Ultraleap.ScreenControl.Client
 
                 // last element added was last in the list so remove the comma
                 newContent = newContent.Remove(newContent.Length - 1);
-
                 newContent += "},";
             }
 
@@ -160,7 +163,7 @@ namespace Ultraleap.ScreenControl.Client
                 {
                     newContent += ",\"physical\":{";
 
-                    foreach (var value in _physical.configValues)
+                    foreach (KeyValuePair<string, object> value in _physical.configValues)
                     {
                         newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
                         newContent += ",";
@@ -193,6 +196,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 receiverQueue.responseCallbacks.Add(_requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
             }
+
             ws.Send(_message);
         }
     }

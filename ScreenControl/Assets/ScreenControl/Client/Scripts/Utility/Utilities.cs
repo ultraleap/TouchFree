@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
@@ -10,6 +8,7 @@ namespace Ultraleap.ScreenControl.Client
         {
             float oldRange = (_oldMax - _oldMin);
             float newValue;
+
             if (oldRange == 0)
             {
                 newValue = _newMin;
@@ -19,17 +18,20 @@ namespace Ultraleap.ScreenControl.Client
                 float newRange = (_newMax - _newMin);
                 newValue = (((_value - _oldMin) * newRange) / oldRange) + _newMin;
             }
+
             return newValue;
         }
 
         public static Color ParseColor(string _hexColor, float _alpha = 1)
         {
             Color defaultColor = Color.white;
+
             if (ColorUtility.TryParseHtmlString(_hexColor, out Color outColor))
             {
                 outColor.a = _alpha;
                 return outColor;
             }
+
             return defaultColor;
         }
     }
