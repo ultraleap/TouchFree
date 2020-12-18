@@ -10,9 +10,10 @@
     "chai": "^4.2.0",
     "cucumber": "^7.0.0-rc.0",
     "cucumber-junit": "^1.7.1",
+    "del": "^5.1.0",
     "gulp": "^4.0.2",
-    "gulp-cucumber": "0.0.24",
     "gulp-util": "^3.0.8",
+    "tail": "^2.0.4",
     "typescript": "^4.1.2",
     "ws": "^7.4.1"
   },

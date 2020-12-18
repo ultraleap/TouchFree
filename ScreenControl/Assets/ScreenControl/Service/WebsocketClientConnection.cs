@@ -62,6 +62,9 @@ namespace Ultraleap.ScreenControl.Service
 
             receiverQueue = gameObject.AddComponent<WebSocketReceiver>();
             receiverQueue.SetWSClientConnection(this);
+
+            // This is here so the test infrastructure has some sign that the app is ready
+            Debug.Log("Service Setup Complete");
         }
 
         void SendInputActionToWebsocket(CoreInputAction _data)
