@@ -1,9 +1,11 @@
+using UnityEngine;
+
+using WebSocketSharp;
+using WebSocketSharp.Server;
+
 using Ultraleap.ScreenControl.Core;
 using Ultraleap.ScreenControl.Core.ScreenControlTypes;
 using Ultraleap.ScreenControl.Service.ScreenControlTypes;
-using UnityEngine;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 
 namespace Ultraleap.ScreenControl.Service
 {

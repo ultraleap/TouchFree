@@ -96,12 +96,12 @@ namespace Ultraleap.ScreenControl.Client
 
             if(_interaction != null)
             {
-                jsonContent += serializeInteractionConfig(_interaction);
+                jsonContent += SerializeInteractionConfig(_interaction);
             }
 
             if (_physical != null)
             {
-                jsonContent += serializePhysicalConfig(_physical);
+                jsonContent += SerializePhysicalConfig(_physical);
             }
 
             // last element added was final so remove the comma
@@ -112,7 +112,7 @@ namespace Ultraleap.ScreenControl.Client
             SendMessage(jsonContent, requestID, _callback);
         } 
 
-        string serializeInteractionConfig(InteractionConfig _interaction)
+        string SerializeInteractionConfig(InteractionConfig _interaction)
         {
             string newContent = "";
 
@@ -150,7 +150,7 @@ namespace Ultraleap.ScreenControl.Client
             return newContent;
         }
 
-        string serializePhysicalConfig(PhysicalConfig _physical)
+        string SerializePhysicalConfig(PhysicalConfig _physical)
         {
             string newContent = "";
 

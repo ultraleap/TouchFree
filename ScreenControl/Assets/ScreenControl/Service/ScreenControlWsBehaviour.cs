@@ -114,8 +114,13 @@ namespace Ultraleap.ScreenControl.Service
                 case ActionCodes.REQUEST_CONFIGURATION_STATE:
                     Debug.LogError("Handling " + action + " is not yet implemented.");
                     break;
+                case ActionCodes.INPUT_ACTION:
+                case ActionCodes.CONFIGURATION_STATE:
+                case ActionCodes.CONFIGURATION_RESPONSE:
+                    Debug.LogError("Received a " + action + " action. This action is not expected on the Service.");
+                    break;
                 default:
-                    Debug.LogError("Received a " + action + " action. This is not a valid request.");
+                    Debug.LogError("Received a " + action + " action. This action is not recognised.");
                     break;
             }
         }
