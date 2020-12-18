@@ -49,6 +49,11 @@ Builds/
 Build/
 AssetDirStat.asset
 
+# =============== #
+#  Documentation  #
+# =============== #
+Documentation/*
+
 # ========= #
 #  Testing  #
 # ========= #
