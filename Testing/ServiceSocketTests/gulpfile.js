@@ -38,25 +38,48 @@ gulp.task('buildServerGrab', function () {
 })
 
 gulp.task('startServer', function (callback) {
-    var serverBinDir = "./PUT_TEST_BUILD_IN_HERE/";
-    var startCommand;
+    var serverBinDir = `./PUT_TEST_BUILD_IN_HERE/`;
+    var logFileName = `log.txt`;
+    var logFileLoc = `${serverBinDir}/${logFileName}`;
 
-
-    if (!fs.existsSync("./PUT_TEST_BUILD_IN_HERE/log.txt"))
-    {
-        fs.writeFileSync("./PUT_TEST_BUILD_IN_HERE/log.txt", ' ');
-    }
+    var startCommand = "./ScreenControlService";
 
     if (process.platform === "win32") {
         serverBinDir = serverBinDir.replace(/\//g, '\\');
-        startCommand = `.\\ScreenControlService.exe`;
+        logFileLoc = logFileLoc.replace(/\//g, '\\');
     } else {
-        startCommand = "./ScreenControlService";
-
+        startCommand = `.\\ScreenControlService.exe`;
         chmodSync(serverBinDir + startCommand, 0o765, (err) => {
             callback("The permissions for the haptic server could not be set!");
         });
     }
+
+    if (!fs.existsSync(logFileLoc)) {
+        fs.writeFileSync(logFileLoc, ' ');
+    }
+
+    function checkLogForReady() {
+        return new Promise(function(resolve, reject) {
+            const fileContent = fs.readFileSync(logFileLoc);
+            console.log("Checking file content");
+
+            if (fileContent.toString().includes("Service Setup Complete")) {
+                console.log("Server ready!");
+                callback();
+                return resolve();
+            }
+
+            console.log("Server not ready");
+
+            return new Promise(() => {
+                setTimeout(() => {
+                    return checkLogForReady();
+                }, 1000);
+            });
+        });
+    }
+
+    checkLogForReady();
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
@@ -64,23 +87,16 @@ gulp.task('startServer', function (callback) {
         [
             '-batchmode',
             '-logfile',
-            'log.txt'
+            `${logFileName}`
         ],
         { 'cwd': serverBinDir });
-    callback();
 
-    serverProcess.on('close', () => {
-        callback('Server process closed')
-    });
+        serverProcess.on('close', () => {
+            callback('Server process closed')
+        });
 });
 
 gulp.task('cucumber', function (callback) {
-    let tags = 'not @Manual and not @Managed and not @SimulatedOutput';
-
-    if (process.platform == "darwin") {
-        tags += ' and not @SimulatedOutput';
-    }
-
     var nodeBinDir = "./node_modules/.bin/";
     var startCommand;
 
