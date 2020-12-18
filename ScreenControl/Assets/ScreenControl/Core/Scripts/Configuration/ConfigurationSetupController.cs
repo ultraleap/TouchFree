@@ -31,40 +31,22 @@ namespace Ultraleap.ScreenControl.Core
         public static ConfigState currentState;
         ConfigState previousState;
 
-        public static bool isActive = false;
-
         public static event Action OnConfigActive;
         public static event Action OnConfigInactive;
 
         public static event Action EnableInteractions;
         public static event Action DisableInteractions;
 
-        public static event Action EnableCursorVisuals;
-        public static event Action DisableCursorVisuals;
-
         private bool setupScreenActive = false;
 
         public GameObject[] stateRoots;
         public GameObject configCanvas;
-        public bool startWithConfig = true;
 
         [HideInInspector] public bool closeConfig = false;
 
         public static MountingType selectedMountType = MountingType.NONE;
 
-        bool isFocussed = false;
-
-        public static void SetCursorVisual(bool _enabled)
-        {
-            if (_enabled)
-            {
-                EnableCursorVisuals?.Invoke();
-            }
-            else
-            {
-                DisableCursorVisuals?.Invoke();
-            }
-        }
+        bool openedOnStart = false;
 
         public void ChangeState(ConfigState _newState)
         {
@@ -91,24 +73,22 @@ namespace Ultraleap.ScreenControl.Core
         private void Start()
         {
             Instance = this;
-            startWithConfig = SettingsConfig.Config.ShowSetupScreenOnStartup;
         }
 
         private void Update()
         {
             if (!setupScreenActive)
             {
-                if (Input.GetKeyDown(KeyCode.C) || startWithConfig)
+                if (Input.GetKeyDown(KeyCode.C) || !openedOnStart)
                 {
                     setupScreenActive = true;
                     DisableInteractions?.Invoke();
                     // display default autoconfig screen
                     configCanvas.SetActive(true);
 
-                    startWithConfig = false;
                     ChangeState(ConfigState.WELCOME);
                     OnConfigActive?.Invoke();
-                    isActive = true;
+                    openedOnStart = true;
                 }
             }
             else
@@ -123,7 +103,6 @@ namespace Ultraleap.ScreenControl.Core
                         configCanvas.SetActive(false);
                         OnConfigInactive?.Invoke();
                         closeConfig = false;
-                        isActive = false;
                     }
                     else
                     {
@@ -142,9 +121,6 @@ namespace Ultraleap.ScreenControl.Core
                     case ConfigState.AUTO_OR_MANUAL:
                         RunAutoOrManual();
                         break;
-                    case ConfigState.AUTO:
-                        RunAutoConfig();
-                        break;
                     case ConfigState.AUTO_COMPLETE:
                         RunAutoConfigComplete();
                         break;
@@ -159,6 +135,8 @@ namespace Ultraleap.ScreenControl.Core
                         break;
                     case ConfigState.TEST_CALIBRATION:
                         RunCalibrationTest();
+                        break;
+                    case ConfigState.AUTO:
                         break;
                 }
             }
@@ -185,13 +163,11 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "SUPPORT")
             {
                 Application.OpenURL("http://rebrand.ly/ul-contact-us");
-                //closeConfig = true;
             }
 
             if (manualConfigKeyEntered == "SETUPGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-camera-setup");
-                //closeConfig = true;
             }
         }
 
@@ -211,7 +187,6 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "SETUPGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-camera-setup");
-                //closeConfig = true;
             }
         }
 
@@ -234,29 +209,28 @@ namespace Ultraleap.ScreenControl.Core
             else if (manualConfigKeyEntered == "M")
             {
                 // immediately use the selecte dmount type for manual setup
-                var setup = PhysicalConfigurable.Config;
-                bool wasBottomMounted = Mathf.Approximately(0, setup.LeapRotationD.z);
+                bool wasBottomMounted = Mathf.Approximately(0, ConfigManager.PhysicalConfig.LeapRotationD.z);
 
                 if (wasBottomMounted && selectedMountType == MountingType.OVERHEAD)
                 {
-                    setup.LeapRotationD = new Vector3(-setup.LeapRotationD.x, setup.LeapRotationD.y, 180f);
-                    PhysicalConfigurable.UpdateConfig(setup);
+                    ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(
+                        -ConfigManager.PhysicalConfig.LeapRotationD.x,
+                        ConfigManager.PhysicalConfig.LeapRotationD.y,
+                        180f);
                 }
                 else if (!wasBottomMounted && selectedMountType == MountingType.BOTTOM)
                 {
-                    setup.LeapRotationD = new Vector3(-setup.LeapRotationD.x, setup.LeapRotationD.y, 0f);
-                    PhysicalConfigurable.UpdateConfig(setup);
+                    ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(
+                        -ConfigManager.PhysicalConfig.LeapRotationD.x,
+                        ConfigManager.PhysicalConfig.LeapRotationD.y, 0f);
                 }
 
-                // dont alloe manual to flip the axes again
+                ConfigManager.PhysicalConfig.ConfigWasUpdated();
+
+                // dont allow manual to flip the axes again
                 selectedMountType = MountingType.NONE;
                 ChangeState(ConfigState.MANUAL);
             }
-        }
-
-        void RunAutoConfig()
-        {
-            // this is handled on the auto config screen object
         }
 
         void RunAutoConfigComplete()
@@ -288,7 +262,6 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "DESIGNGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-design-guidelines");
-                //closeConfig = true;
             }
         }
 
@@ -299,13 +272,11 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "SUPPORT")
             {
                 Application.OpenURL("http://rebrand.ly/ul-contact-us");
-                //closeConfig = true;
             }
 
             if (manualConfigKeyEntered == "SETUPGUIDE")
             {
                 Application.OpenURL("http://rebrand.ly/ul-touchfree-setup");
-                //closeConfig = true;
             }
         }
 

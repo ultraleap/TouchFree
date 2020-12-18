@@ -42,9 +42,9 @@ namespace Ultraleap.ScreenControl.Core
             }
 
             positions = positioningModule.CalculatePositions(hand);
-            Vector2 cursorPositionM = GlobalSettings.virtualScreen.PixelsToMeters(positions.CursorPosition);
+            Vector2 cursorPositionM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(positions.CursorPosition);
             Vector2 hoverPosM = ApplyHoverzone(cursorPositionM);
-            Vector2 hoverPos = GlobalSettings.virtualScreen.MetersToPixels(hoverPosM);
+            Vector2 hoverPos = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(hoverPosM);
 
             HandleInteractions(hoverPos);
         }
@@ -141,8 +141,8 @@ namespace Ultraleap.ScreenControl.Core
         protected override void OnSettingsUpdated()
         {
             base.OnSettingsUpdated();
-            hoverTriggerTime = SettingsConfig.Config.HoverCursorStartTimeS * 1000; // s to ms
-            progressTimer.timeLimit = SettingsConfig.Config.HoverCursorCompleteTimeS * 1000; // s to ms
+            hoverTriggerTime = ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS * 1000; // s to ms
+            progressTimer.timeLimit = ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS * 1000; // s to ms
         }
     }
 }

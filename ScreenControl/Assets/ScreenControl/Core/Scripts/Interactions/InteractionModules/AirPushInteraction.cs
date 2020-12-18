@@ -109,7 +109,7 @@ namespace Ultraleap.ScreenControl.Core
                 float currentVelocity = dz / dt;    // m/s
 
                 Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
-                Vector2 dPerp = GlobalSettings.virtualScreen.PixelsToMeters(dPerpPx);
+                Vector2 dPerp = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(dPerpPx);
 
                 // Update AppliedForce, which is the crux of the AirPush algorithm
                 float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, positions.DistanceFromScreen);
@@ -192,8 +192,8 @@ namespace Ultraleap.ScreenControl.Core
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
+            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
             float distFromStartPos = (startPosM - currentPosM).magnitude;
 
             if (distFromStartPos > dragStartDistanceThresholdM)
@@ -213,8 +213,8 @@ namespace Ultraleap.ScreenControl.Core
 
         private bool CheckForStartDragDeadzoneShrink(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
+            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
             float distFromStartPos = (startPosM - currentPosM).magnitude;
             return (distFromStartPos > dragDeadzoneShrinkDistanceThresholdM);
         }

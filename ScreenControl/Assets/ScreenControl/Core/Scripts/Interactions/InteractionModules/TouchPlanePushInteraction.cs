@@ -11,7 +11,7 @@ namespace Ultraleap.ScreenControl.Core
         public bool InteractionEnabled { get; set; } = true;
 
         // The distance from screen at which the progressToClick is 0
-        private float screenDistanceAtNoProgress = Mathf.Infinity;
+        private float screenDistanceAtNoProgress = 2.0f;
 
         // The distance from screen at which the progressToClick is 1
         private float screenDistanceAtMaxProgress = 0f;
@@ -122,8 +122,8 @@ namespace Ultraleap.ScreenControl.Core
 
         bool CheckForStartDrag(Vector2 startPos, Vector2 currentPos)
         {
-            Vector3 a = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(startPos, 0f);
-            Vector3 b = GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(currentPos, 0f);
+            Vector3 a = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(startPos, 0f);
+            Vector3 b = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(currentPos, 0f);
             float distFromStartPos = (a - b).magnitude;
 
             if (distFromStartPos > dragStartDistanceThresholdM)
@@ -143,7 +143,7 @@ namespace Ultraleap.ScreenControl.Core
         protected override void OnSettingsUpdated()
         {
             base.OnSettingsUpdated();
-            screenDistanceAtNoProgress = SettingsConfig.Config.CursorMaxRingScaleAtDistanceM;
+            screenDistanceAtNoProgress = 2.0f;
         }
     }
 }

@@ -35,22 +35,22 @@ namespace Ultraleap.ScreenControl.Core
 
         public static int ToDisplayUnits(int _value)
         {
-            return (int)(_value * GlobalSettings.ConfigToDisplayMeasurementMultiplier);
+            return (int)(_value * ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier);
         }
 
         public static float ToDisplayUnits(float _value)
         {
-            return _value * GlobalSettings.ConfigToDisplayMeasurementMultiplier;
+            return _value * ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier;
         }
 
         public static int FromDisplayUnits(int _value)
         {
-            return (int)(_value / GlobalSettings.ConfigToDisplayMeasurementMultiplier);
+            return (int)(_value / ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier);
         }
 
         public static float FromDisplayUnits(float _value)
         {
-            return _value / GlobalSettings.ConfigToDisplayMeasurementMultiplier;
+            return _value / ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier;
         }
     }
 }

@@ -41,11 +41,6 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject positioningUtils;
 
         public PositionStabiliser Stabiliser;
-        public bool VerticalOffset = false;
-
-        [Tooltip("How firmly should the cursor snap in SOFT mode. Lower values equate to firmer snapping")]
-        public float cursorSnapSoftness = 0.005f;
-        private float verticalCursorOffset = 0f;
 
         [NonSerialized]
         public bool ApplyDragLerp;
@@ -55,25 +50,12 @@ namespace Ultraleap.ScreenControl.Core
 
         protected void OnEnable()
         {
-            SettingsConfig.OnConfigUpdated += OnConfigUpdated;
-            OnConfigUpdated();
-
             if (positioningUtils != null)
             {
                 Stabiliser = positioningUtils.GetComponent<PositionStabiliser>();
             }
 
             Stabiliser.ResetValues();
-        }
-
-        protected void OnDisable()
-        {
-            SettingsConfig.OnConfigUpdated -= OnConfigUpdated;
-        }
-
-        private void OnConfigUpdated()
-        {
-            verticalCursorOffset = verticalCursorOffset = SettingsConfig.Config.CursorVerticalOffset;
         }
 
         public Positions CalculatePositions(Leap.Hand hand)
@@ -110,17 +92,13 @@ namespace Ultraleap.ScreenControl.Core
             }
             worldPos = Stabiliser.ApplySmoothing(worldPos, velocity, smoothingTime);
 
-            Vector3 screenPos = GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
-            Vector2 screenPosM = GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
+            Vector3 screenPos = ConfigManager.GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
+            Vector2 screenPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
             float distanceFromScreen = screenPos.z;
 
             screenPosM = Stabiliser.ApplyDeadzone(screenPosM);
 
-            Vector2 oneToOnePosition = GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
-            if (VerticalOffset)
-            {
-                oneToOnePosition = ApplyVerticalOffset(oneToOnePosition);
-            }
+            Vector2 oneToOnePosition = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
 
             return new Tuple<Vector2, float>(oneToOnePosition, distanceFromScreen);
         }
@@ -146,13 +124,6 @@ namespace Ultraleap.ScreenControl.Core
             Vector3 trackedJointVector = (bones[0].NextJoint.ToVector3() + bones[1].NextJoint.ToVector3()) / 2;
             trackedJointVector.z += trackedJointDistanceOffset;
             return trackedJointVector;
-        }
-
-        private Vector2 ApplyVerticalOffset(Vector2 screenPos)
-        {
-            var screenPosM = GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
-            screenPosM += Vector2.up * verticalCursorOffset;
-            return GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
         }
     }
 }

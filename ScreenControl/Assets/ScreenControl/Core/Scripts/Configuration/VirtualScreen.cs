@@ -17,7 +17,7 @@ namespace Ultraleap.ScreenControl.Core
         public Plane PhysicalScreenPlane { get; private set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="widthPx"></param>
         /// <param name="heightPx"></param>

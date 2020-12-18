@@ -27,22 +27,10 @@ namespace Ultraleap.ScreenControl.Core
 
         #region Public
 
-        public static TData Config
+        public static event Action OnConfigFileUpdated
         {
-            get
-            {
-                if (Instance._config == null)
-                {
-                    Instance.LoadConfig_Internal();
-                }
-                return Instance._config;
-            }
-        }
-
-        public static event Action OnConfigUpdated
-        {
-            add { Instance._OnConfigUpdated += value; }
-            remove { Instance._OnConfigUpdated -= value; }
+            add { Instance._OnConfigFileUpdated += value; }
+            remove { Instance._OnConfigFileUpdated -= value; }
         }
 
         public static readonly string ConfigFileDirectory = Application.persistentDataPath;
@@ -53,32 +41,17 @@ namespace Ultraleap.ScreenControl.Core
         public static string ConfigFilePath => Instance._ConfigFilePath;
         public static string ConfigFileNameS => Instance.ConfigFileName;
 
-        public static void LoadConfig()
+        public static TData LoadConfig()
         {
-            Instance.LoadConfig_Internal();
+            return Instance.LoadConfig_Internal();
         }
 
         /// <summary>
         /// Write the current values stored in Config to a file. File path will be ConfigFilePath which is a combination of the ConfigFileName and ConfigFileDirectory.
         /// </summary>
-        public static void SaveConfig()
+        public static void SaveConfig(TData _config)
         {
-            Instance.SaveConfig_Internal(Config);
-        }
-
-        /// <summary>
-        /// Call after changing the current Config (pass in null) or pass in a new config object to replace the current config.
-        /// Applies parameter limits and calls OnConfigUpdated event.
-        /// </summary>
-        /// <param name="config">The config object to update over the top of the old one. Passing null is like passing the current config in ConfigFile.Config to this method.</param>
-        public static void UpdateConfig(TData config = null)
-        {
-            Instance.UpdateConfig_Internal(config);
-        }
-
-        public static void SetAllValuesToDefault()
-        {
-            Instance.UpdateConfig_Internal(GetDefaultValues());
+            Instance.SaveConfig_Internal(_config);
         }
 
         public static TData GetDefaultValues()
@@ -96,11 +69,10 @@ namespace Ultraleap.ScreenControl.Core
 
         #region Internal
 
-        private event Action _OnConfigUpdated;
+        private event Action _OnConfigFileUpdated;
         protected virtual string _ConfigFilePath => Path.Combine(ConfigFileDirectory, ConfigFileName);
-        protected TData _config;
 
-        protected void LoadConfig_Internal()
+        protected TData LoadConfig_Internal()
         {
             if (!DoesConfigFileExist())
             {
@@ -115,46 +87,14 @@ namespace Ultraleap.ScreenControl.Core
 
             string data = File.ReadAllText(_ConfigFilePath);
             TData config = JsonUtility.FromJson<TData>(data);
-            ApplyParameterLimits(ref config);
-            _config = config;
+            _OnConfigFileUpdated?.Invoke();
 
-            _OnConfigUpdated?.Invoke();
+            return config;
         }
 
         protected void SaveConfig_Internal(TData config)
         {
-            ApplyParameterLimits(ref config);
             File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(config, true));
-        }
-
-        protected virtual void UpdateConfig_Internal(TData config)
-        {
-            if (config == null)
-            {
-                config = Config;
-            }
-            ApplyParameterLimits(ref config);
-            _config = config;
-            _OnConfigUpdated?.Invoke();
-        }
-
-        /// <summary>
-        /// Limits parameters to particular hard-coded ranges.
-        /// </summary>
-        /// <param name="config"></param>
-        /// <returns></returns>
-        protected virtual void ApplyParameterLimits(ref TData config)
-        {
-
-        }
-
-        protected void ClampValue(ref float value, float min, float max) => value = Mathf.Clamp(value, min, max);
-        protected void ClampValue(ref int value, int min, int max) => value = Mathf.Clamp(value, min, max);
-        protected void ClampValue(ref Vector3 value, Vector3 min, Vector3 max)
-        {
-            ClampValue(ref value.x, min.x, max.x);
-            ClampValue(ref value.y, min.y, max.y);
-            ClampValue(ref value.z, min.z, max.z);
         }
 
         private bool DoesConfigFileExist()

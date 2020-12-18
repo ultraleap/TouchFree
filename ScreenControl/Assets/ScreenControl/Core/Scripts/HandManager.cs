@@ -74,7 +74,7 @@ namespace Ultraleap.ScreenControl.Core
             }
             Instance = this;
 
-            PhysicalConfigurable.OnConfigUpdated += UpdateTrackingTransform;
+            PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
         }
 
         private void Start()
@@ -84,7 +84,7 @@ namespace Ultraleap.ScreenControl.Core
 
         void OnDestroy()
         {
-            PhysicalConfigurable.OnConfigUpdated -= UpdateTrackingTransform;
+            PhysicalConfig.OnConfigUpdated -= UpdateTrackingTransform;
         }
 
         IEnumerator UpdateTrackingAfterLeapInit()
@@ -97,13 +97,14 @@ namespace Ultraleap.ScreenControl.Core
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
             // Therefore, we must convert to the real values before using them.
             // If top mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
-            var isTopMounted = Mathf.Approximately(PhysicalConfigurable.Config.LeapRotationD.z, 180f);
-            float xAngleDegree = isTopMounted ? -PhysicalConfigurable.Config.LeapRotationD.x : PhysicalConfigurable.Config.LeapRotationD.x;
+            var isTopMounted = Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.z, 180f);
+            float xAngleDegree = isTopMounted ? -ConfigManager.PhysicalConfig.LeapRotationD.x : ConfigManager.PhysicalConfig.LeapRotationD.x;
 
             SetLeapTrackingMode();
             TrackingTransform = new LeapTransform(
-                PhysicalConfigurable.Config.LeapPositionRelativeToScreenBottomM.ToVector(),
-                Quaternion.Euler(xAngleDegree, PhysicalConfigurable.Config.LeapRotationD.y, PhysicalConfigurable.Config.LeapRotationD.z).ToLeapQuaternion()
+                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.ToVector(),
+                Quaternion.Euler(xAngleDegree, ConfigManager.PhysicalConfig.LeapRotationD.y,
+                ConfigManager.PhysicalConfig.LeapRotationD.z).ToLeapQuaternion()
             );
         }
 
@@ -114,7 +115,7 @@ namespace Ultraleap.ScreenControl.Core
 
         void SetLeapTrackingMode()
         {
-            if (Mathf.Abs(PhysicalConfigurable.Config.LeapRotationD.z) > 90f)
+            if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {
                 ((LeapServiceProvider)Hands.Provider).GetLeapController().SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
             }

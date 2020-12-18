@@ -5,32 +5,40 @@ using WebSocketSharp.Server;
 
 using Ultraleap.ScreenControl.Core;
 using Ultraleap.ScreenControl.Core.ScreenControlTypes;
+using Ultraleap.ScreenControl.Service.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Service
 {
-    public class WebsocketClientConnection : MonoBehaviour
+    public class WebSocketClientConnection : MonoBehaviour
     {
+        public static WebSocketClientConnection Instance;
+
         private WebSocketServer wsServer = null;
         private ScreenControlWsBehaviour socketBehaviour = null;
+        public WebSocketReceiver receiverQueue;
 
         private bool websocketInitalised = false;
-        private bool restartServer = false;
 
         public short port = 9739;
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         void OnEnable()
         {
             InitialiseServer();
         }
 
-        internal WebsocketClientConnection()
+        internal WebSocketClientConnection()
         {
-            InteractionManager.HandleInputAction += SendDataToWebsocket;
+            InteractionManager.HandleInputAction += SendInputActionToWebsocket;
         }
 
-        ~WebsocketClientConnection()
+        ~WebSocketClientConnection()
         {
-            InteractionManager.HandleInputAction -= SendDataToWebsocket;
+            InteractionManager.HandleInputAction -= SendInputActionToWebsocket;
         }
 
         private void SetupConnection(ScreenControlWsBehaviour behaviour)
@@ -38,6 +46,7 @@ namespace Ultraleap.ScreenControl.Service
             if (behaviour != null)
             {
                 socketBehaviour = behaviour;
+                socketBehaviour.clientConnection = this;
                 Debug.Log("connection set up");
             }
         }
@@ -53,11 +62,14 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.ReuseAddress = true;
             wsServer.Start();
 
+            receiverQueue = gameObject.AddComponent<WebSocketReceiver>();
+            receiverQueue.SetWSClientConnection(this);
+
             // This is here so the test infrastructure has some sign that the app is ready
             Debug.Log("Service Setup Complete");
         }
 
-        void SendDataToWebsocket(CoreInputAction _data)
+        void SendInputActionToWebsocket(CoreInputAction _data)
         {
             // if IsListening stops being true the server
             // has aborted / stopped, so needs remaking
@@ -79,6 +91,11 @@ namespace Ultraleap.ScreenControl.Service
             }
 
             socketBehaviour.SendInputAction(_data);
+        }
+
+        public void SendConfigurationResponse(ConfigResponse _response)
+        {
+            socketBehaviour.SendConfigurationResponse(_response);
         }
     }
 }

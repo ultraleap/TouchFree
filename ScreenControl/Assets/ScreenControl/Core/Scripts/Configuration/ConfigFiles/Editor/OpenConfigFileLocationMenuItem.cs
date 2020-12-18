@@ -8,7 +8,7 @@ namespace Ultraleap.ScreenControl.Core
         [MenuItem("Ultraleap/Reach/Open Config File Location")]
         static void _OpenConfigFileLocation()
         {
-            Process.Start(PhysicalConfigurable.ConfigFileDirectory);
+            Process.Start(PhysicalConfigFile.ConfigFileDirectory);
         }
     }
 }
