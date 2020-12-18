@@ -59,13 +59,14 @@ gulp.task('startServer', function (callback) {
     }
 
     function checkLogForReady() {
-        return new Promise(() => {
+        return new Promise(function(resolve, reject) {
             const fileContent = fs.readFileSync(logFileLoc);
             console.log("Checking file content");
 
             if (fileContent.toString().includes("Service Setup Complete")) {
+                console.log("Server ready!");
                 callback();
-                resolve();
+                return resolve();
             }
 
             console.log("Server not ready");
