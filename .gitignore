@@ -53,6 +53,7 @@ AssetDirStat.asset
 #  Documentation  #
 # =============== #
 Documentation/*
+!Documentation/Info.md
 
 # ========= #
 #  Testing  #
