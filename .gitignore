@@ -54,6 +54,7 @@ AssetDirStat.asset
 # =============== #
 Documentation/*
 !Documentation/Info.md
+NaturalDocs_Config/Working Data/**
 
 # ========= #
 #  Testing  #

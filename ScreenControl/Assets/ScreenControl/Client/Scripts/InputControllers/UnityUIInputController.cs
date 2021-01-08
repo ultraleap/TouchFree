@@ -5,43 +5,31 @@ namespace Ultraleap.ScreenControl.Client
 {
     namespace InputControllers
     {
-        /**
-            Class: UnityUIInputController
-
-            Provides Unity UI Input based on the incoming data from ScreenControl Service via a
-            <WebSocketCoreConnection>
-         */
+        // Class: UnityUIInputController
+        // Provides Unity UI Input based on the incoming data from ScreenControl Service via a
+        // <WebSocketCoreConnection>
         public class UnityUIInputController : InputController
         {
             // Group: Variables
 
-            /**
-                Variable: inputModule
+            // Variable: inputModule
+            // The <StandaloneInputModule: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/script-StandaloneInputModule.html>
+            // that this Input Controller will override.
+            // Will be found from the scene on <Start>
 
-                The <StandaloneInputModule: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/script-StandaloneInputModule.html>
-                that this Input Controller will override.
-
-                Will be found from the scene on <Start>
-             */
             [SerializeField]
             private StandaloneInputModule inputModule;
 
-            /**
-                Variable: eventSystem
-
-                This is the Unity <EventSystem: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/EventSystem.html>
-                in the scene. We use this to dynamically resize the drag threshold to prevent
-                accidental drags instead of clicks.
-             */
+            // Variable: eventSystem
+            // This is the Unity<EventSystem: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/EventSystem.html>
+            // in the scene. We use this to dynamically resize the drag threshold to prevent
+            // accidental drags instead of clicks.
             [SerializeField]
             private EventSystem eventSystem;
 
-            /**
-                Group: Cached Input Information
-
-                These variables are determined whenever <HandleInputAction> is called and are used
-                to inform the inherited values in the section below when queried.
-             */
+            // Group: Cached Input Information
+            // These variables are determined whenever<HandleInputAction> is called and are used
+            // to inform the inherited values in the section below when queried.
             private Vector2 touchPosition;
             private TouchPhase touchPhase = TouchPhase.Ended;
             private TouchPhase previousTouchPhase;
@@ -49,12 +37,9 @@ namespace Ultraleap.ScreenControl.Client
             public bool isHovering = false;
             private bool isTouching = false;
 
-            /**
-                Group: Inherited Values
-
-                The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
-                and are overridden here so their values can be determined from the Screen Control Service.
-             */
+            // Group: Inherited Values
+            // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
+            // and are overridden here so their values can be determined from the Screen Control Service.
             public override Vector2 mousePosition => isHovering ? touchPosition : base.mousePosition;
             public override bool mousePresent => isHovering ? true : base.mousePresent;
             public override bool touchSupported => isTouching ? true : base.touchSupported;
@@ -63,11 +48,8 @@ namespace Ultraleap.ScreenControl.Client
 
             // Group: Methods
 
-            /**
-                Function: Start
-
-                Locates the EventSystem and StandaloneInputModule that need to be overridden
-             */
+            // Function: Start
+            // Locates the EventSystem and StandaloneInputModule that need to be overridden
             protected override void Start()
             {
                 base.Start();
@@ -81,16 +63,11 @@ namespace Ultraleap.ScreenControl.Client
                 inputModule.inputOverride = this;
             }
 
-            /**
-                Function: CheckForTouch
-
-                Used in the override for <GetTouch> to update the current Touch state based on the
-                latest InputActions processed by <HandleInputAction>.
-
-                Parameters:
-
-                    index - The Touch index, passed down from <GetTouch>
-             */
+            // Function: CheckForTouch
+            // Used in the override for <GetTouch> to update the current Touch state based on the
+            // latest InputActions processed by<HandleInputAction>.
+            // Parameters:
+            //     index - The Touch index, passed down from<GetTouch>
             private Touch CheckForTouch(int index)
             {
                 previousTouchPhase = touchPhase;
@@ -109,17 +86,11 @@ namespace Ultraleap.ScreenControl.Client
                 };
             }
 
-            /**
-                Function: HandleInputAction
-
-                Called with each <ClientInputAction> as it comes into the <CoreConnection>.
-
-                Updates the underlying InputModule and EventSystem based on the incoming actions.
-
-                Parameters:
-
-                    _inputData - The latest Action to arrive via the <CoreConnection>.
-             */
+            // Function: HandleInputAction
+            // Called with each<ClientInputAction> as it comes into the <CoreConnection>.
+            // Updates the underlying InputModule and EventSystem based on the incoming actions.
+            // Parameters:
+            //     _inputData - The latest Action to arrive via the<CoreConnection>.
             protected override void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
             {
                 base.HandleInputAction(_inputData);
