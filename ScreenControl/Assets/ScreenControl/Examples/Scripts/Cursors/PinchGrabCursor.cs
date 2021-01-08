@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
-using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Cursors;
 
-public class PinchGrabCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
+public class PinchGrabCursor : TouchlessCursor
 {
     [Header("Graphics")]
     public UnityEngine.UI.Image cursorDot;
     public UnityEngine.UI.Image cursorDotFill;
 
     protected float cursorDotSize;
+    protected bool hidingCursor;
 
     private Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality cursorChirality = Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.RIGHT;
 
@@ -30,7 +31,7 @@ public class PinchGrabCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
         switch (type)
         {
             case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
-                UpdateCursor(cursorPosition, distanceFromScreen);
+                _targetPos = cursorPosition;
                 break;
             case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
                 openHandImage.enabled = false;
@@ -59,7 +60,7 @@ public class PinchGrabCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     public override void ShowCursor()
     {
-        base.ShowCursor();
+        hidingCursor = false;
         cursorDot.enabled = true;
         cursorDotFill.enabled = true;
         openHandImage.enabled = true;
@@ -68,7 +69,7 @@ public class PinchGrabCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     public override void HideCursor()
     {
-        base.HideCursor();
+        hidingCursor = true;
         cursorDot.enabled = false;
         cursorDotFill.enabled = false;
         openHandImage.enabled = false;

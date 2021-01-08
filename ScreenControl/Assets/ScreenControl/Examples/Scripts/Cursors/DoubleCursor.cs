@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Cursors;
 
 public class DoubleCursor : TouchlessCursor
 {
@@ -28,11 +29,12 @@ public class DoubleCursor : TouchlessCursor
     protected float maxRingScale;
     public float screenDistanceAtMaxScaleMeters;
 
+    protected bool hidingCursor;
     protected Color ringColor;
 
     protected bool dotShrunk = false;
 
-    public override void UpdateCursor(Vector2 screenPos, float progressToClick)
+    public void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
         _targetPos = screenPos;
 
@@ -154,7 +156,7 @@ public class DoubleCursor : TouchlessCursor
 
     public override void ShowCursor()
     {
-        base.ShowCursor();
+        hidingCursor = false;
         cursorDot.enabled = true;
         cursorDotFill.enabled = true;
         cursorRing.enabled = true;
@@ -162,7 +164,7 @@ public class DoubleCursor : TouchlessCursor
 
     public override void HideCursor()
     {
-        base.HideCursor();
+        hidingCursor = true;
         cursorDot.enabled = false;
         cursorDotFill.enabled = false;
         cursorRing.enabled = false;

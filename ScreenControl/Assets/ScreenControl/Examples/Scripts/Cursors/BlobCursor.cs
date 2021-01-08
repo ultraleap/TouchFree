@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Linq;
+using Ultraleap.ScreenControl.Client.Cursors;
 
 /**
  * Descriptions of Blob States:
@@ -25,7 +26,7 @@ public enum BlobState
     HIDDEN
 }
 
-public class BlobCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
+public class BlobCursor : TouchlessCursor
 {
     public float cursorLerpSpeed = 15f;
 

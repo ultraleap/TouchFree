@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Cursors;
 
-public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
+public class ProgressCursor : TouchlessCursor
 {
     [Header("Graphics")]
     public Transform cursorDotTransform;
@@ -25,12 +26,13 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
     [Range(0.01f, 2f)] public float cursorDownScale;
 
     protected float cursorDotSize;
+    protected bool hidingCursor;
 
     protected bool shrunk = false;
 
     public AnimationCurve ringFillCurve;
 
-    public override void UpdateCursor(Vector2 screenPos, float progressToClick)
+    public void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
         _targetPos = screenPos;
 
@@ -144,7 +146,7 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     public override void ShowCursor()
     {
-        base.ShowCursor();
+        hidingCursor = false;
         cursorDot.enabled = true;
         cursorDotFill.enabled = true;
         cursorProgressBorder.enabled = true;
@@ -158,7 +160,7 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     public override void HideCursor()
     {
-        base.HideCursor();
+        hidingCursor = true;
         cursorDot.enabled = false;
         cursorDotFill.enabled = false;
         cursorProgressBorder.enabled = false;
