@@ -7,7 +7,7 @@ public class PinchGrabCursor : TouchlessCursor
     public UnityEngine.UI.Image cursorDot;
     public UnityEngine.UI.Image cursorDotFill;
 
-    protected float cursorDotSize;
+    public float cursorDotSize = 0.25f;
     protected bool hidingCursor;
 
     private Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality cursorChirality = Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.RIGHT;
@@ -47,7 +47,6 @@ public class PinchGrabCursor : TouchlessCursor
 
     protected override void InitialiseCursor()
     {
-        cursorDotSize = cursorSize;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
         cursorDot.enabled = !dotSizeIsZero;

@@ -3,31 +3,18 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
-    /* Enum: ConnectionType     
-        WEB_SOCKET - Default connection via WebSocket
-        DIRECT_CORE_MODULE - Internal utility for testing connections, DO NOT USE
-    */
-    [Serializable]
-    enum ConnectionType
-    {
-        WEB_SOCKET,
-        DIRECT_CORE_MODULE
-    }
-
     public class ConnectionManager : MonoBehaviour
     {
         public static ConnectionManager Instance;
 
         public static event Action OnConnected;
 
-        static CoreConnection currentCoreConnection;
-        public static CoreConnection coreConnection {
+        static ServiceConnection currentServiceConnection;
+        public static ServiceConnection serviceConnection {
             get {
-                return currentCoreConnection;
+                return currentServiceConnection;
             }
         }
-
-        [SerializeField] ConnectionType connectionType = ConnectionType.WEB_SOCKET;
 
         [Header("WebSocket connection values")]
         [SerializeField] string iPAddress = "127.0.0.1";
@@ -50,7 +37,7 @@ namespace Ultraleap.ScreenControl.Client
             // Add it to the listener where all members get pinged once connected
             OnConnected += onConnectFunc;
 
-            if (currentCoreConnection != null)
+            if (currentServiceConnection != null)
             {
                 onConnectFunc();
             }
@@ -58,28 +45,9 @@ namespace Ultraleap.ScreenControl.Client
 
         public void Connect()
         {
-            switch (connectionType)
-            {
-                case ConnectionType.WEB_SOCKET:
-                    currentCoreConnection = new WebSocketCoreConnection(iPAddress, port);
-                    // Invoke OnConnected event when connect successfully completes
-                    OnConnected?.Invoke();
-                    break;
-
-                case ConnectionType.DIRECT_CORE_MODULE:
-#if SCREENCONTROL_CORE
-                    currentCoreConnection = new DirectCoreConnection();
-
-                    // Invoke OnConnected event when connect successfully completes
-                    OnConnected?.Invoke();
-#else
-                    var errorMsg = @"Could not initialise a Direct connection to Screen Control Core as it wasn't available!
-If you wish to use ScreenControl in this manner, please import the Screen Control Core module and add
-""SCREENCONTROL_CORE"" to the ""Scripting Define Symbols"" in your Player settings.";
-                    Debug.Log(errorMsg);
-#endif
-                    break;
-            }
+            currentServiceConnection = new ServiceConnection(iPAddress, port);
+            // Invoke OnConnected event when connect successfully completes
+            OnConnected?.Invoke();
         }
 
         private void OnDestroy()
@@ -89,10 +57,10 @@ If you wish to use ScreenControl in this manner, please import the Screen Contro
 
         public static void Disconnect()
         {
-            if (currentCoreConnection != null)
+            if (currentServiceConnection != null)
             {
-                currentCoreConnection.Disconnect();
-                currentCoreConnection = null;
+                currentServiceConnection.Disconnect();
+                currentServiceConnection = null;
             }
         }
     }

@@ -10,7 +10,7 @@ namespace Ultraleap.ScreenControl.Client
     public class WebSocketReceiver : MonoBehaviour
     {
         const int callbackClearTimer = 300; // 5 minutes
-        WebSocketCoreConnection coreConnection;
+        ServiceConnection serviceConnection;
         public int actionCullToCount = 2;
 
         public ConcurrentQueue<ClientInputAction> actionQueue = new ConcurrentQueue<ClientInputAction>();
@@ -18,9 +18,9 @@ namespace Ultraleap.ScreenControl.Client
 
         public Dictionary<string, ResponseCallback> responseCallbacks = new Dictionary<string, ResponseCallback>();
 
-        public void SetWSConnection(WebSocketCoreConnection _connection)
+        public void SetWSConnection(ServiceConnection _connection)
         {
-            coreConnection = _connection;
+            serviceConnection = _connection;
         }
 
         void Start()
@@ -107,7 +107,7 @@ namespace Ultraleap.ScreenControl.Client
             {
                 // Parse newly received messages
                 actionQueue.TryDequeue(out action);
-                coreConnection.HandleInputAction(action);
+                serviceConnection.HandleInputAction(action);
             }
         }
     }

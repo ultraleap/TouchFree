@@ -45,9 +45,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // <WebSocketCoreConnection>
         protected virtual void OnDisable()
         {
-            if (ConnectionManager.coreConnection != null)
+            if (ConnectionManager.serviceConnection != null)
             {
-                ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
+                ConnectionManager.serviceConnection.TransmitInputAction -= HandleInputAction;
             }
         }
 
@@ -58,7 +58,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // <HandleInputAction> as a listener to <ClientInputActions> as they are recieved.
         protected virtual void OnCoreConnection()
         {
-            ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
+            ConnectionManager.serviceConnection.TransmitInputAction += HandleInputAction;
         }
 
         // Function: HandleInputAction

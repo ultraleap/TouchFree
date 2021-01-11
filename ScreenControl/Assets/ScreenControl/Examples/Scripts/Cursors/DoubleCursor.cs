@@ -25,7 +25,7 @@ public class DoubleCursor : TouchlessCursor
     [Range(0.01f, 1f)] public float pulseSeconds;
     [Range(0.01f, 2f)] public float cursorDownScale;
 
-    protected float cursorDotSize;
+    public float cursorDotSize = 0.25f;
     protected float maxRingScale;
     public float screenDistanceAtMaxScaleMeters;
 
@@ -103,7 +103,6 @@ public class DoubleCursor : TouchlessCursor
             ringColor = cursorRing.color;
         }
 
-        cursorDotSize = cursorSize;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
         cursorDot.enabled = !dotSizeIsZero;

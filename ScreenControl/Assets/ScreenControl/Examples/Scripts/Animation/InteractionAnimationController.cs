@@ -47,12 +47,12 @@ namespace Animation
 
         void OnCoreConnection()
         {
-            ConnectionManager.coreConnection.TransmitInputAction += OnHandleInputAction;
+            ConnectionManager.serviceConnection.TransmitInputAction += OnHandleInputAction;
         }
 
         void OnDisable()
         {
-            ConnectionManager.coreConnection.TransmitInputAction -= OnHandleInputAction;
+            ConnectionManager.serviceConnection.TransmitInputAction -= OnHandleInputAction;
         }
 
         // Update is called once per frame

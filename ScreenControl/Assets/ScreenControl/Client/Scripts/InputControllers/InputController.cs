@@ -35,9 +35,9 @@ namespace Ultraleap.ScreenControl.Client
             {
                 base.OnDestroy();
 
-                if (ConnectionManager.coreConnection != null)
+                if (ConnectionManager.serviceConnection != null)
                 {
-                    ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
+                    ConnectionManager.serviceConnection.TransmitInputAction -= HandleInputAction;
                 }
             }
 
@@ -50,7 +50,7 @@ namespace Ultraleap.ScreenControl.Client
             // (in almost all cases, this will be a<WebSocketCoreConnection>)
             protected void OnCoreConnection()
             {
-                ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
+                ConnectionManager.serviceConnection.TransmitInputAction += HandleInputAction;
             }
 
             // Function: HandleInputAction

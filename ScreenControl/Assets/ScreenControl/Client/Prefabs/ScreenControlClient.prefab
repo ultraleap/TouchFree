@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02859137234c81e4d9eec1416b3a085c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectionType: 0
   iPAddress: 127.0.0.1
   port: 9739
 --- !u!114 &2383233282598257216
@@ -187,12 +186,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorTransform: {fileID: 7549733133894564970}
-  cursorSize: 0.25
+  fadeDuration: 45
   cursorBorder: {fileID: 7549733133368736520}
   cursorFill: {fileID: 5464428928977676259}
   ringOuterSprite: {fileID: 8577431237544741958}
   ringEnabled: 1
-  cursorMaxRingSize: 2
+  cursorMaxRingSize: 12
   ringCurve:
     serializedVersion: 2
     m_Curve:
@@ -229,31 +228,6 @@ MonoBehaviour:
   ringOuter: {fileID: 8577431237544741959}
   ringMask: {fileID: 8577431235920990331}
   ringWidth: 3.5
-  ringSpriteScale: 6
-  pulseGrowCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   pulseShrinkCurve:
     serializedVersion: 2
     m_Curve:
@@ -278,9 +252,33 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  pulseGrowCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pulseSeconds: 0.2
   cursorDownScale: 0.5
-  fadeDuration: 45
+  cursorDotSize: 0.25
 --- !u!1 &7549733133368736522
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,7 +371,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7549733133894564970
 RectTransform:
   m_ObjectHideFlags: 0

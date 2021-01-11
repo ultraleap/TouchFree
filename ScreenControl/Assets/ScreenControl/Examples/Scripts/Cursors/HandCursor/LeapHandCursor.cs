@@ -80,7 +80,7 @@ public class LeapHandCursor : TouchlessCursor
     protected override void OnCoreConnection()
     {
         base.OnCoreConnection();
-        ConnectionManager.coreConnection.TransmitInputAction += OnHandlePrimaryAction;
+        ConnectionManager.serviceConnection.TransmitInputAction += OnHandlePrimaryAction;
     }
 
     protected override void OnDisable()
@@ -89,7 +89,7 @@ public class LeapHandCursor : TouchlessCursor
 
         //InteractionManager.HandleInputActionLeftHand -= OnHandleLeftInputAction;
         //InteractionManager.HandleInputActionRightHand -= OnHandleRightInputAction;
-        ConnectionManager.coreConnection.TransmitInputAction -= OnHandlePrimaryAction;
+        ConnectionManager.serviceConnection.TransmitInputAction -= OnHandlePrimaryAction;
     }
 
     // Start is called before the first frame update
