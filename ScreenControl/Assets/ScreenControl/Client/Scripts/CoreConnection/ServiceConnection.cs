@@ -7,7 +7,7 @@ using WebSocketSharp;
 
 using Ultraleap.ScreenControl.Client.ScreenControlTypes;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.ScreenControl.Client.Connection
 {
     public class ServiceConnection
     {

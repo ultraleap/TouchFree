@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using UnityEngine;
 
 using Ultraleap.ScreenControl.Client.ScreenControlTypes;
+using Ultraleap.ScreenControl.Client.Connection;
 
 namespace Ultraleap.ScreenControl.Client
 {
