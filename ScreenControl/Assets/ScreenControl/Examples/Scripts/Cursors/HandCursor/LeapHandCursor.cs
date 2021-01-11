@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Connection;
 using Ultraleap.ScreenControl.Client.Cursors;
-using Ultraleap.ScreenControl.Client.ScreenControlTypes;
 
 public class LeapHandCursor : TouchlessCursor
 {

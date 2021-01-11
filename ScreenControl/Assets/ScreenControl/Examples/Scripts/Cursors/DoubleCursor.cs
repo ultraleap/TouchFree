@@ -6,8 +6,8 @@ using Ultraleap.ScreenControl.Client.Cursors;
 public class DoubleCursor : TouchlessCursor
 {
     [Header("Controls")]
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType moveInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.PUSH;
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType clickInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.GRAB;
+    public InteractionType moveInteraction = InteractionType.PUSH;
+    public InteractionType clickInteraction = InteractionType.GRAB;
 
     [Header("Graphics")]
     public UnityEngine.UI.Image cursorDot;
@@ -56,9 +56,9 @@ public class DoubleCursor : TouchlessCursor
         }
     }
 
-    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ClientInputAction _inputData)
     {
-        if (_inputData.InputType == Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE)
+        if (_inputData.InputType == Ultraleap.ScreenControl.Client.InputType.MOVE)
         {
             if (_inputData.InteractionType == moveInteraction)
             {
@@ -70,7 +70,7 @@ public class DoubleCursor : TouchlessCursor
         {
             switch (_inputData.InputType)
             {
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+                case Ultraleap.ScreenControl.Client.InputType.DOWN:
                     if (!dotShrunk)
                     {
                         if (cursorScalingRoutine != null)
@@ -79,7 +79,7 @@ public class DoubleCursor : TouchlessCursor
                         cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
                     }
                     break;
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
+                case Ultraleap.ScreenControl.Client.InputType.UP:
                     if (dotShrunk)
                     {
                         if (cursorScalingRoutine != null)
@@ -88,8 +88,8 @@ public class DoubleCursor : TouchlessCursor
                         cursorScalingRoutine = StartCoroutine(GrowCursorDot());
                     }
                     break;
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+                case InputType.MOVE:
+                case InputType.CANCEL:
                     break;
             }
         }

@@ -21,18 +21,5 @@ namespace Ultraleap.ScreenControl.Client
 
             return newValue;
         }
-
-        public static Color ParseColor(string _hexColor, float _alpha = 1)
-        {
-            Color defaultColor = Color.white;
-
-            if (ColorUtility.TryParseHtmlString(_hexColor, out Color outColor))
-            {
-                outColor.a = _alpha;
-                return outColor;
-            }
-
-            return defaultColor;
-        }
     }
 }

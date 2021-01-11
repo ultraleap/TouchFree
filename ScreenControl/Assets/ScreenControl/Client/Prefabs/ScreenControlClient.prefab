@@ -187,6 +187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cursorTransform: {fileID: 7549733133894564970}
   fadeDuration: 45
+  cursorDotSize: 0.25
   cursorBorder: {fileID: 7549733133368736520}
   cursorFill: {fileID: 5464428928977676259}
   ringOuterSprite: {fileID: 8577431237544741958}
@@ -227,7 +228,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   ringOuter: {fileID: 8577431237544741959}
   ringMask: {fileID: 8577431235920990331}
-  ringWidth: 3.5
+  ringWidth: 0.58
   pulseShrinkCurve:
     serializedVersion: 2
     m_Curve:
@@ -278,7 +279,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   pulseSeconds: 0.2
   cursorDownScale: 0.5
-  cursorDotSize: 0.25
 --- !u!1 &7549733133368736522
 GameObject:
   m_ObjectHideFlags: 0

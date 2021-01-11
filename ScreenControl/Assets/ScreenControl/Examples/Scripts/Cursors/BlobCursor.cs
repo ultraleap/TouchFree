@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Linq;
+using Ultraleap.ScreenControl.Client;
 using Ultraleap.ScreenControl.Client.Cursors;
 
 /**
@@ -159,15 +160,15 @@ public class BlobCursor : TouchlessCursor
         return cursorState;
     }
 
-    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.InputType;
+        InputType type = _inputData.InputType;
         cursorPosition = _inputData.CursorPosition;
         float _distanceFromScreen = _inputData.ProgressToClick;
 
         switch (type)
         {
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
+            case InputType.MOVE:
                 UpdateBlobCursor();
                 if (_distanceFromScreen > maxScreenDistance)
                 {
@@ -179,17 +180,17 @@ public class BlobCursor : TouchlessCursor
                 }
                 break;
 
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+            case InputType.DOWN:
                 if (_distanceFromScreen <= maxScreenDistance)
                 {
                     ChangeToCursor(BlobState.ACTIVE);
                 }
                 break;
 
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+            case InputType.CANCEL:
                 break;
 
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
+            case InputType.UP:
                 if (cursorState != BlobState.HIDDEN)
                 {
                     ChangeToCursor(BlobState.PASSIVE);

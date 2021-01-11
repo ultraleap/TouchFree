@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.ScreenControl.Client.Connection
 {
     public class ConnectionManager : MonoBehaviour
     {

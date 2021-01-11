@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Ultraleap.ScreenControl.Client;
 using Ultraleap.ScreenControl.Client.Cursors;
 
 public class PinchGrabCursor : TouchlessCursor
@@ -10,15 +11,15 @@ public class PinchGrabCursor : TouchlessCursor
     public float cursorDotSize = 0.25f;
     protected bool hidingCursor;
 
-    private Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality cursorChirality = Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.RIGHT;
+    private HandChirality cursorChirality = HandChirality.RIGHT;
 
     [Header("HandGraphics")]
     public UnityEngine.UI.Image openHandImage;
     public UnityEngine.UI.Image closedHandImage;
 
-    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.InputType;
+        InputType type = _inputData.InputType;
         Vector2 cursorPosition = _inputData.CursorPosition;
         float distanceFromScreen = _inputData.ProgressToClick;
 
@@ -30,15 +31,15 @@ public class PinchGrabCursor : TouchlessCursor
 
         switch (type)
         {
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
+            case InputType.MOVE:
                 _targetPos = cursorPosition;
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+            case InputType.DOWN:
                 openHandImage.enabled = false;
                 closedHandImage.enabled = true;
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+            case InputType.UP:
+            case InputType.CANCEL:
                 openHandImage.enabled = true;
                 closedHandImage.enabled = false;
                 break;

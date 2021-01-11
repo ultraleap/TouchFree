@@ -52,17 +52,17 @@ public class ProgressCursor : TouchlessCursor
         }
     }
 
-    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType _type = _inputData.InputType;
+        InputType _type = _inputData.InputType;
         Vector2 _cursorPosition = _inputData.CursorPosition;
 
         switch (_type)
         {
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
+            case InputType.MOVE:
                 UpdateCursor(_cursorPosition, _inputData.ProgressToClick);
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+            case InputType.DOWN:
                 if (!shrunk)
                 {
                     if (cursorScalingRoutine != null)
@@ -71,7 +71,7 @@ public class ProgressCursor : TouchlessCursor
                     cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
                 }
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
+            case InputType.UP:
                 if (shrunk)
                 {
                     if (cursorScalingRoutine != null)
@@ -80,7 +80,7 @@ public class ProgressCursor : TouchlessCursor
                     cursorScalingRoutine = StartCoroutine(GrowCursorDot());
                 }
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+            case InputType.CANCEL:
                 break;
         }
     }

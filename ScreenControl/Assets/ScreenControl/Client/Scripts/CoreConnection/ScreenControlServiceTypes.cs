@@ -1,6 +1,8 @@
 ﻿using System;
 
-namespace Ultraleap.ScreenControl.Client.ScreenControlTypes
+using Ultraleap.ScreenControl.Client.Configuration;
+
+namespace Ultraleap.ScreenControl.Client.Connection
 {
     /* Enum: ActionCodes
         INPUT_ACTION - Represents standard interaction data
@@ -34,10 +36,10 @@ namespace Ultraleap.ScreenControl.Client.ScreenControlTypes
     public struct ConfigRequest
     {
         public string requestID;
-        public Core.InteractionConfig interaction;
-        public Core.PhysicalConfig physical;
+        public InteractionConfig interaction;
+        public PhysicalConfig physical;
 
-        public ConfigRequest(string _id, Core.InteractionConfig _interaction, Core.PhysicalConfig _physical)
+        public ConfigRequest(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
         {
             requestID = _id;
             interaction = _interaction;

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using UnityEngine;
 
-using Ultraleap.ScreenControl.Client.ScreenControlTypes;
+using Ultraleap.ScreenControl.Client;
 using Ultraleap.ScreenControl.Client.Connection;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.ScreenControl.Client.Connection
 {
     public class WebSocketReceiver : MonoBehaviour
     {

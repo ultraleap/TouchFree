@@ -18,11 +18,15 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // The number of frames over which the cursor should fade when appearing/disappearing
         [Range(0f, 60f)] public float fadeDuration = 30;
 
-        [Header("Graphics")]
+        // Variable: cursorDotSize
+        // The size of the dot when it isn't being shrunk
+        [SerializeField]
+        protected float cursorDotSize = 0.25f;
 
         // Variable: cursorBorder
         // The image of the black border around the dot, this is the parent image in the prefab
         // and is used to do all of the scaling of the images that make up this cursor.
+        [Header("Graphics")]
         public UnityEngine.UI.Image cursorBorder;
 
         // Variable: cursorFill
@@ -36,10 +40,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // The sprite is accessed to fade in/out the ring as it is needed.
         public SpriteRenderer ringOuterSprite;
 
-        [Header("Ring")]
-
         // Variable: ringEnabled
         // Enables/disables the ring cursor around the dot. Here primarily for use in the inspector.
+        [Header("Ring")]
         public bool ringEnabled;
 
         // Variable: cursorMaxRingSize
@@ -67,12 +70,11 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // (i.e. the distance between the inner and outer edges of the ring)
         public float ringWidth;
 
-        [Header("Pulse")]
-
         // Variable: pulseGrowCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
         // shrinking and expanding). This AnimationCurve governs the shrinking that follows a
         // "Down" input.
+        [Header("Pulse")]
         public AnimationCurve pulseShrinkCurve;
 
         // Variable: pulseGrowCurve
@@ -91,10 +93,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         Coroutine cursorScalingRoutine;
         Coroutine fadeRoutine;
 
-        // Variable: cursorDotSize
-        // The size of the dot when it isn't being shrunk
-        [SerializeField]
-        protected float cursorDotSize = 0.25f;
+
         protected float maxRingScale;
         protected Color dotFillColor;
         protected Color dotBorderColor;
@@ -149,15 +148,15 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // This override replaces the basic functionality of the DotCursor, making the cursor's ring
         // scale dynamically with the current ProgressToClick and creating a small "shrink" animation
         // when a "Down" event is recieved, and a "grow" animation when an "Up" is recieved.
-        protected override void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
+        protected override void HandleInputAction(ClientInputAction _inputData)
         {
             switch (_inputData.InputType)
             {
-                case ScreenControlTypes.InputType.MOVE:
+                case InputType.MOVE:
                     UpdateCursor(_inputData.CursorPosition, _inputData.ProgressToClick);
                     break;
 
-                case ScreenControlTypes.InputType.DOWN:
+                case InputType.DOWN:
                     growQueued = false;
                     if (cursorScalingRoutine != null)
                     {
@@ -166,11 +165,11 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
                     break;
 
-                case ScreenControlTypes.InputType.UP:
+                case InputType.UP:
                     growQueued = true;
                     break;
 
-                case ScreenControlTypes.InputType.CANCEL:
+                case InputType.CANCEL:
                     break;
             }
         }
