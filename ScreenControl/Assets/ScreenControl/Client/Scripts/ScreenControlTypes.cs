@@ -67,7 +67,7 @@ namespace Ultraleap.ScreenControl.Client
 
     // Enum: HandChirality
     // LEFT - The left hand
-    // RIGHT - The right hand    
+    // RIGHT - The right hand
     public enum HandChirality
     {
         LEFT,
@@ -87,7 +87,7 @@ namespace Ultraleap.ScreenControl.Client
     // CANCEL - Used to cancel the current input if an issue occurs. Particularly when a DOWN has happened before an UP
     // DOWN - Used to begin a 'Touch' or a 'Drag'
     // MOVE - Used to move a cursor or to perform a 'Drag' after a DOWN
-    // UP - Used to complete a 'Touch' or a 'Drag'    
+    // UP - Used to complete a 'Touch' or a 'Drag'
     public enum InputType
     {
         CANCEL,
@@ -108,8 +108,8 @@ namespace Ultraleap.ScreenControl.Client
     }
 
     // Enum: BitmaskFlags
-    // These flags represent each enum element in the <ClientInputAction> structure.
-    // This is used to request any combination of these flags from the Service at once.
+    // This is used to request any combination of the <HandChiralities>, <HandTypes>, <InputTypes>,
+    // and <InteractionTypes> flags from the Service at once.
     [Flags]
     public enum BitmaskFlags
     {
@@ -228,7 +228,7 @@ namespace Ultraleap.ScreenControl.Client
         }
 
         // Function: GetChiralityFromFlags
-        // Used to find which <HandChirality> <_flags> contains. Favours RIGHT if none or both are found.
+        // Used to find which <HandChirality> _flags contains. Favours RIGHT if none or both are found.
         internal static HandChirality GetChiralityFromFlags(BitmaskFlags _flags)
         {
             HandChirality chirality = HandChirality.RIGHT;
@@ -250,7 +250,7 @@ namespace Ultraleap.ScreenControl.Client
         }
 
         // Function: GetHandTypeFromFlags
-        // Used to find which <HandType> <_flags> contains. Favours PRIMARY if none or both are found.
+        // Used to find which <HandType> _flags contains. Favours PRIMARY if none or both are found.
         internal static HandType GetHandTypeFromFlags(BitmaskFlags _flags)
         {
             HandType handType = HandType.PRIMARY;
@@ -272,7 +272,7 @@ namespace Ultraleap.ScreenControl.Client
         }
 
         // Function: GetInputTypeFromFlags
-        // Used to find which <InputType> <_flags> contains. Favours CANCEL if none are found.
+        // Used to find which <InputType> _flags contains. Favours CANCEL if none are found.
         internal static InputType GetInputTypeFromFlags(BitmaskFlags _flags)
         {
             InputType inputType = InputType.CANCEL;
@@ -302,7 +302,7 @@ namespace Ultraleap.ScreenControl.Client
         }
 
         // Function: GetInteractionTypeFromFlags
-        // Used to find which <InteractionType> <_flags> contains. Favours PUSH if none are found.
+        // Used to find which <InteractionType> _flags contains. Favours PUSH if none are found.
         internal static InteractionType GetInteractionTypeFromFlags(BitmaskFlags _flags)
         {
             InteractionType interactionType = InteractionType.PUSH;

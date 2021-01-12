@@ -5,14 +5,14 @@ using UnityEngine;
 namespace Ultraleap.ScreenControl.Client
 {
     // Class: JsonUtilities
-    // This class is used to manually convert objects to Json strings. It is used 
+    // This class is used to manually convert objects to Json strings. It is used
     // for generating custom configuration files to be sent to the ScreenControl Service.
     public static class JsonUtilities
     {
         // Group: Functions
 
         // Function: ConvertToJson
-        // Takes a variable name (<_name>) and an object (<_obj>), determines the type of the
+        // Takes a variable name _name and an object _obj, determines the type of the
         // object and returns a json string to represent the object.
         public static string ConvertToJson(string _name, object _obj)
         {
@@ -53,7 +53,7 @@ namespace Ultraleap.ScreenControl.Client
         }
 
         // Function: ConvertObjectToJson
-        // Takes an object (<_obj>), determines the type of the
+        // Takes an object _obj, determines the type of the
         // object and returns a json string to represent the object.
         public static string ConvertObjectToJson(object _obj)
         {

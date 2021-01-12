@@ -5,16 +5,16 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 {
     // Class: InteractionConfig
     // This class is a container for all of the settings related to the interactions being processed
-    // by the Screen Control Service. The settings at the root of this object will affect all
+    // by the ScreenControl Service. The settings at the root of this object will affect all
     // sensations. There are also some settings specific to the Hover and Hold interaction which can
-    //  be modified by changing the contained <HoverAndHoldInteractionSettings>
+    //  be modified by changing the contained <HoverAndHoldInteractionSettings>.
     //
     // In order to modify the settings of the service, create an instance of this class, make the
     // changes you wish to see, and then send it to the server using the <ConfigurationManager>.
     //
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
-    // Screen Control Service.
+    // ScreenControl Service.
     public class InteractionConfig
     {
         // Property: UseScrollingOrDragging
@@ -42,7 +42,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             }
         }
 
-        // Property: DeadzoneRadius:
+        // Property: DeadzoneRadius
         // All interactions use a small deadzone to stabilise the position of the cursor, to prevent
         // small user movements from making the cursor shake in place. This setting controls the
         // radius of that deadzone.
@@ -68,7 +68,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         }
 
         // Interaction-specific settings
-        public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
+        public HoverAndHoldInteractionSettings hoverAndHold = new HoverAndHoldInteractionSettings();
 
         // Variable: configValues
         // This dictionary is used to store the edited members only, and is accessed when serializing the data for transfer to the Service.
@@ -82,16 +82,16 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
     // Class: HoverAndHoldInteractionSettings
     // This class is a container for settings that only apply to the Hover and Hold interaction. In
-    // order to modify these settings of the Screen Control Service, create <InteractionSettings>,
+    // order to modify these settings of the ScreenControl Service, create an <InteractionConfig>,
     // which contains an instance of this class, modify it as required, and then pass to the service
     // using the <ConfigurationManager>.
     //
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
-    // Screen Control Service.
+    // ScreenControl Service.
     public class HoverAndHoldInteractionSettings
     {
-        // Variable: HoverStartTimeS
+        // Property: HoverStartTimeS
         // This determines how long (in seconds) the user must hold their hand in place before the
         // interaction will begin. If the hand remains in place until the interaction completes,
         // a click event will be sent.
@@ -116,7 +116,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             }
         }
 
-        // Variable: HoverCompleteTimeS
+        // Property: HoverCompleteTimeS
         // This determines how long (in seconds) the user must hold their hand in place after the
         // interaction has begun before the interaction will complete, and a click event will be
         // sent.
@@ -142,7 +142,8 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         }
 
         // Variable: configValues
-        // This dictionary is used to store the edited members only, and is accessed when serializing the data for transfer to the Service.
+        // This dictionary is used to store the edited members only, and is accessed when
+        // serializing the data for transfer to the Service.
         //
         // *DO NOT MODIFY THIS DICTIONARY MANUALLY*
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
@@ -160,10 +161,10 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     //
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
-    // Screen Control Service.
+    // ScreenControl Service.
     public class PhysicalConfig
     {
-        // Variable: ScreenHeightM
+        // Property: ScreenHeightM
         // The height of the screen in meters. This is needed in order to determine the relationship
         // between hand location in the real world and pixel locations on screen.
         public float ScreenHeightM
@@ -187,7 +188,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             }
         }
 
-        // Variable: LeapPositionrelativeToScreenBottomM
+        // Property: LeapPositionRelativeToScreenBottomM
         // The position (measured in meters) in 3d space of the Leap Motion camera relative to the
         // center of the bottom of the screen.
         public Vector3 LeapPositionRelativeToScreenBottomM
@@ -210,7 +211,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             }
         }
 
-        // Variable: LeapRotationD
+        // Property: LeapRotationD
         // The rotation of the Leap Motion Camera relative to the unity world space, measured in
         // degrees
         public Vector3 LeapRotationD
@@ -233,7 +234,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             }
         }
 
-        // Variable: ScreenRotationD
+        // Property: ScreenRotationD
         // The rotation of the physical screen relative to the unity world space, measured in
         // degrees
         public float ScreenRotationD

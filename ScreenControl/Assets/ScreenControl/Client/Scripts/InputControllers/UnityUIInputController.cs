@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+
 using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Connection;
 
 namespace Ultraleap.ScreenControl.Client.InputControllers
 {
     // Class: UnityUIInputController
     // Provides Unity UI Input based on the incoming data from ScreenControl Service via a
-    // <WebSocketCoreConnection>
+    // <ServiceConnection>
     public class UnityUIInputController : InputController
     {
         // Group: Variables
@@ -20,14 +22,14 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         private StandaloneInputModule inputModule;
 
         // Variable: eventSystem
-        // This is the Unity<EventSystem: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/EventSystem.html>
+        // This is the Unity <EventSystem: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/EventSystem.html>
         // in the scene. We use this to dynamically resize the drag threshold to prevent
         // accidental drags instead of clicks.
         [SerializeField]
         private EventSystem eventSystem;
 
         // Group: Cached Input Information
-        // These variables are determined whenever<HandleInputAction> is called and are used
+        // These variables are determined whenever <HandleInputAction> is called and are used
         // to inform the inherited values in the section below when queried.
         private Vector2 touchPosition;
         private TouchPhase touchPhase = TouchPhase.Ended;
@@ -38,7 +40,7 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
 
         // Group: Inherited Values
         // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
-        // and are overridden here so their values can be determined from the Screen Control Service.
+        // and are overridden here so their values can be determined from the ScreenControl Service.
         public override Vector2 mousePosition => isHovering ? touchPosition : base.mousePosition;
         public override bool mousePresent => isHovering ? true : base.mousePresent;
         public override bool touchSupported => isTouching ? true : base.touchSupported;
@@ -64,9 +66,10 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
 
         // Function: CheckForTouch
         // Used in the override for <GetTouch> to update the current Touch state based on the
-        // latest InputActions processed by<HandleInputAction>.
+        // latest InputActions processed by <HandleInputAction>.
+        //
         // Parameters:
-        //     index - The Touch index, passed down from<GetTouch>
+        //     index - The Touch index, passed down from <GetTouch>
         private Touch CheckForTouch(int index)
         {
             previousTouchPhase = touchPhase;
@@ -86,10 +89,11 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         }
 
         // Function: HandleInputAction
-        // Called with each<ClientInputAction> as it comes into the <CoreConnection>.
-        // Updates the underlying InputModule and EventSystem based on the incoming actions.
+        // Called with each <ClientInputAction> as it comes into the <ServiceConnection>. Updates the
+        // underlying InputModule and EventSystem based on the incoming actions.
+        //
         // Parameters:
-        //     _inputData - The latest Action to arrive via the<CoreConnection>.
+        //     _inputData - The latest Action to arrive via the <ServiceConnection>.
         protected override void HandleInputAction(ClientInputAction _inputData)
         {
             base.HandleInputAction(_inputData);

@@ -15,27 +15,33 @@ namespace Ultraleap.ScreenControl.Client.Connection
         public static ConnectionManager Instance;
 
         // Variable: OnConnected
-        // An event which can be listneed to to know when a connection has been made.
-        // Invoked when <Connect> is called.
+        // An event which is emitted when <Connect> is called.
+        //
+        // Instead of adding listeners to this event, use <AddConnectionListener> to ensure that your
+        // function is invoked if the connection has already been made by the time your class runs.
         public static event Action OnConnected;
 
         // Variable: currentServiceConnection
         // The private reference to the currently managed <ServiceConnection>.
         static ServiceConnection currentServiceConnection;
+
         // Variable: serviceConnection
         // The public get-only reference to the currently managed <ServiceConnection>.
-        public static ServiceConnection serviceConnection {
-            get {
+        public static ServiceConnection serviceConnection
+        {
+            get
+            {
                 return currentServiceConnection;
             }
         }
 
-        // Variable: currentServiceConnection
+        // Variable: iPAddress
         // The IP Address that will be used in the <ServiceConnection> to connect to the target WebSocket.
         // This value is settable in the Inspector.
         [Header("WebSocket connection values")]
         [SerializeField] string iPAddress = "127.0.0.1";
-        // Variable: currentServiceConnection
+
+        // Variable: port
         // The Port that will be used in the <ServiceConnection> to connect to the target WebSocket.
         // This value is settable in the Inspector.
         [SerializeField] string port = "9739";
@@ -47,7 +53,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Also attempts to immediately <Connect> to a WebSocket.
         private void Awake()
         {
-            if(Instance != null && Instance != this)
+            if (Instance != null && Instance != this)
             {
                 return;
             }
@@ -57,8 +63,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: AddConnectionListener
-        // Used to both add the <_onConnectFunc> action to the listeners of <OnConnected>
-        // as well as auto-call the <_onConnectFunc> if a connection is already made.
+        // Used to both add the _onConnectFunc action to the listeners of <OnConnected>
+        // as well as auto-call the _onConnectFunc if a connection is already made.
         public static void AddConnectionListener(Action _onConnectFunc)
         {
             OnConnected += _onConnectFunc;
@@ -79,7 +85,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: OnDestroy
-        // Unitys Destroy function for handling the deconstruction of a MonoBehaviour.
+        // Unity's Destroy function for handling the deconstruction of a MonoBehaviour.
         // Ensures <Disconnect> is called.
         private void OnDestroy()
         {

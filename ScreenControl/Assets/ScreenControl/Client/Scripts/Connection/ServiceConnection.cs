@@ -7,10 +7,10 @@ using WebSocketSharp;
 namespace Ultraleap.ScreenControl.Client.Connection
 {
     // Class: ServiceConnection
-    // This represents a connection to a ScreenControlService. It should be created by a
+    // This represents a connection to a ScreenControl Service. It should be created by a
     // <ConnectionManager> to ensure there is only one active connection at a time. The sending
     // and receiving of data to the client is handled here as well as the creation of a
-    // <WebSocketReceiver> to ensure the data is handled properly.
+    // <MessageReceiver> to ensure the data is handled properly.
     public class ServiceConnection
     {
         // Group: Variables
@@ -18,8 +18,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Delegate: ClientInputActionEvent
         // An Action to distribute a <ClientInputAction> via the <TransmitInputAction> event listener.
         public delegate void ClientInputActionEvent(ClientInputAction _inputData);
+
         // Variable: TransmitInputAction
-        // An event for transmitting <ClientInputAction> that are received via the <webSocket> to be listened to.
+        // An event for transmitting <ClientInputActions> that are received via the <webSocket> to
+        // be listened to.
         public event ClientInputActionEvent TransmitInputAction;
 
         // Variable: webSocket
@@ -27,15 +29,15 @@ namespace Ultraleap.ScreenControl.Client.Connection
         WebSocket webSocket;
 
         // Variable: receiver
-        // A reference to the receiver that handles ordered queueing of data received via the <webSocket>.
+        // A reference to the receiver that handles destribution of data received via the <webSocket>.
         MessageReceiver receiver;
 
         // Group: Functions
 
         // Function: ServiceConnection
-        // The constructor for <ServiceConnection> that can be given a different IP Address and Port to connect to
-        // on construction. This constructor also sets up the <receiver> for future use and the listener for the 
-        // receiving of messages.
+        // The constructor for <ServiceConnection> that can be given a different IP Address and Port
+        // to connect to on construction. This constructor also sets up the <receiver> for future
+        // use and redirects incoming messages to <OnMessage>.
         internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
             webSocket = new WebSocket($"ws://{_ip}:{_port}/connect");
@@ -101,15 +103,17 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: HandleInputAction
-        // Called by the <receiver> to relay a <ClientInputAction> that has ben received to any listeners of <TransmitInputAction>.
+        // Called by the <receiver> to relay a <ClientInputAction> that has ben received to any
+        // listeners of <TransmitInputAction>.
         public void HandleInputAction(ClientInputAction _action)
         {
             TransmitInputAction?.Invoke(_action);
         }
 
         // Function: SendMessage
-        // Used to send or request information from the Service via the <webSocket>. To be given a pre-made <_message> and <_requestID>.
-        // Provides an asynchronous <WebSocketResponse> via the <_callback> parameter.
+        // Used internally to send or request information from the Service via the <webSocket>. To
+        // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
+        // via the _callback parameter.
         internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback)
         {
             if (_requestID == "")

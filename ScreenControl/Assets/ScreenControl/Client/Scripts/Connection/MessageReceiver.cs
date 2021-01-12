@@ -13,7 +13,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Group: Variables
 
         // Variable: callbackClearTimer
-        // A timer in seconds to check <responseCallbacks> for outdated <ResponseCallback>s.
+        // The amount of time between checks of <responseCallbacks> to eliminate expired
+        // <ResponseCallbacks>. Used in <ClearUnresponsiveCallbacks>.
         const int callbackClearTimer = 300; // 5 minutes
 
         // Variable: serviceConnection
@@ -21,20 +22,21 @@ namespace Ultraleap.ScreenControl.Client.Connection
         ServiceConnection serviceConnection;
 
         // Variable: actionCullToCount
-        // How many non-essential <ClientInputAction>s should <actionQueue> be trimmed to per frame.
-        // This is used to ensure the Client can keep up with the Events sent over the sWebSocket.
+        // How many non-essential <ClientInputActions> should the <actionQueue> be trimmed *to* per
+        // frame. This is used to ensure the Client can keep up with the Events sent over the
+        // WebSocket.
         public int actionCullToCount = 2;
 
         // Variable: actionQueue
-        // A queue of <ClientInputAction>s that have been received from the Service.
+        // A queue of <ClientInputActions> that have been received from the Service.
         public ConcurrentQueue<ClientInputAction> actionQueue = new ConcurrentQueue<ClientInputAction>();
 
         // Variable: responseQueue
-        // A queue of <WebSocketResponse>s that have been received from the Service.
+        // A queue of <WebSocketResponses> that have been received from the Service.
         public ConcurrentQueue<WebSocketResponse> responseQueue = new ConcurrentQueue<WebSocketResponse>();
 
         // Variable: responseCallbacks
-        // A dictinary of unique request IDs and <ResponseCallback>s that represent requests that are awaiting response from the Service.
+        // A dictinary of unique request IDs and <ResponseCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ResponseCallback> responseCallbacks = new Dictionary<string, ResponseCallback>();
 
         // Group: Functions
@@ -47,15 +49,14 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: Start
-        // Unitys initialization function. Used to begin the <ClearUnresponsiveCallbacks> coroutine that handles the clearing of
-        // expired elements in <responseCallbacks>.
+        // Unity's initialization function. Used to begin the <ClearUnresponsiveCallbacks> coroutine.
         void Start()
         {
             StartCoroutine(ClearUnresponsiveCallbacks());
         }
 
         // Function: Update
-        // Unitys update function. Checks all queues for messages to handle.
+        // Unity's update function. Checks all queues for messages to handle.
         void Update()
         {
             CheckForResponse();
@@ -81,9 +82,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // match, calls the callback action in the matching <ResponseCallback>.
         void HandleResponse(WebSocketResponse _response)
         {
-            foreach(KeyValuePair<string, ResponseCallback> callback in responseCallbacks)
+            foreach (KeyValuePair<string, ResponseCallback> callback in responseCallbacks)
             {
-                if(callback.Key == _response.requestID)
+                if (callback.Key == _response.requestID)
                 {
                     callback.Value.callback.Invoke(_response);
                     responseCallbacks.Remove(callback.Key);
@@ -93,9 +94,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: CheckForAction
-        // Checks <actionQueue> for valid <ClientInputAction>s. If there are too many in the queue, 
-        // clears out as many non-essential <ClientInputAction>s as required by <actionCullToCount> and
-        // sends the oldest <ClientInputAction> that remains to <serviceConnection> to handle the action.
+        // Checks <actionQueue> for valid <ClientInputActions>. If there are too many in the queue,
+        // clears out non-essential <ClientInputActions> down to the number specified by
+        // <actionCullToCount>. If any remain, sends the oldest <ClientInputAction> to
+        // <serviceConnection> to handle the action.
         void CheckForAction()
         {
             ClientInputAction action;
@@ -125,7 +127,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Group: Coroutine Functions
 
         // Function: ClearUnresponsiveCallbacks
-        // Waits for <callbackClearTimer> seconds and clears all <responseCallbacks> that are expired.
+        // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
+        // expired from <responseCallbacks>.
         IEnumerator ClearUnresponsiveCallbacks()
         {
             WaitForSeconds waitTime = new WaitForSeconds(callbackClearTimer);

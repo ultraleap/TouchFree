@@ -6,21 +6,20 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
 {
     // Class: InputController
     // A layer over Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
-    // that connects the BaseInput to Screen Control's <ClientInputActions> as they are provided.
-    // Provides setup functions allowing inheritors to define only the behaviour.
+    // that connects the BaseInput to ScreenControl's <ClientInputActions> as they are
+    // provided. Contains setup functions allowing inheritors to define only the input behaviour
+    // they wish to see.
     //
-    // Override <HandleInputAction> to react to ClientInputAction as they are recieved.
+    // Override <HandleInputAction> to react to ClientInputActions as they are recieved.
     //
-    // For an example InputController, see <UnityUIInputController>, which translates
-    // ClientInputActions into Unity UI events, allowing ScreenControl to be used with most
-    // Unity UIs.
+    // For an example InputController, see <UnityUIInputController>.
     public abstract class InputController : BaseInput
     {
         // Group: MonoBehaviour Overrides
 
         // Function: Start
-        // Provides<OnCoreConnection> to be triggered once a<CoreConnection> is established.
-        // (in almost all cases, this will be a<WebSocketCoreConnection>)
+        // Adds a listener to <ServiceConnection> to invoke <OnConnection> once a connection has
+        // been made.
         protected override void Start()
         {
             base.Start();
@@ -28,7 +27,7 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         }
 
         // Function: OnDestroy
-        // Deregisters<HandleInputAction> from the active<CoreConnection> so this can go out
+        // Deregisters <HandleInputAction> from the active <ServiceConnection> so this can go out
         // of scope.
         protected override void OnDestroy()
         {
@@ -43,10 +42,8 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         // Functions:
 
         // Function: OnConnection
-        // Registers<HandleInputAction> as a listener to recieve <ClientInputActions> from a
-        // <CoreConnection>.
-        //
-        // (in almost all cases, this will be a<WebSocketCoreConnection>)
+        // Registers <HandleInputAction> as a listener to recieve <ClientInputActions> from a
+        // <ServiceConnection>.
         protected void OnConnection()
         {
             ConnectionManager.serviceConnection.TransmitInputAction += HandleInputAction;
@@ -54,12 +51,12 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
 
         // Function: HandleInputAction
         // This method is the core of the functionality of this class. It will be invoked with
-        // the<ClientInputAction> as they are provided to the Client from the ScreenControl Service.
+        // the <ClientInputAction> as they are provided to the Client from the ScreenControl Service.
         //
         // Override this function to implement any custom input handling functionality you wish to see.
         //
         // Parameters:
-        //     _inputData - The latest input action recieved from Screen Control Service.
+        //     _inputData - The latest input action recieved from ScreenControl Service.
         protected virtual void HandleInputAction(ClientInputAction _inputData)
         {
             switch (_inputData.InputType)

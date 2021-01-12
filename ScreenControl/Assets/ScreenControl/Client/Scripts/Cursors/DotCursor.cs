@@ -6,10 +6,10 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 {
     // Class: DotCursor
     // This is an example Touchless Cursor which positions a dot on the screen at the hand location,
-    // and reacts to the current progress to click of the interaction (what determines this depends
-    // on the currently active interaction)
+    // and reacts to the current ProgressToClick of the action (what determines this depends on the
+    //  currently active interaction).
     //
-    // We recommend using the "RingCursor" Prefab which is set up for use with this class
+    // We recommend using the "RingCursor" Prefab which is set up for use with this class.
     public class DotCursor : TouchlessCursor
     {
         // Group: Variables
@@ -24,8 +24,8 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         protected float cursorDotSize = 0.25f;
 
         // Variable: cursorBorder
-        // The image of the black border around the dot, this is the parent image in the prefab
-        // and is used to do all of the scaling of the images that make up this cursor.
+        // The image of the border around the dot, this is the parent image in the prefab and is
+        //  used to do all of the scaling of the images that make up this cursor.
         [Header("Graphics")]
         public UnityEngine.UI.Image cursorBorder;
 
@@ -35,7 +35,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Variable: ringOuterSprite
         // This refers to the Ring around the central cursor that is used to display the "reactive"
-        // state of the cursor; the closer the ring is to the dot, the closer you are to "clicking"
+        // state of the cursor; the closer the ring is to the dot, the closer you are to "clicking".
         //
         // The sprite is accessed to fade in/out the ring as it is needed.
         public SpriteRenderer ringOuterSprite;
@@ -46,8 +46,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         public bool ringEnabled;
 
         // Variable: cursorMaxRingSize
-        // The maximum size for the ring to be (relative to the size of the dot, e.g. a value of 2
-        // means the ring can be (at largest) twice the scale of the dot. )
+        // The maximum size for the ring to be relative to the size of the dot.
+        //
+        //  e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
         public float cursorMaxRingSize = 2;
 
         // Variable: ringCurve
@@ -65,21 +66,22 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // transparent. It has to be scaled to match the ring itself.
         public RectTransform ringMask;
 
-        // Variable: ringWidth
-        // Used to set the width / thickness of the ring itself
-        // (i.e. the distance between the inner and outer edges of the ring)
-        public float ringWidth;
+        // Variable: ringThickness
+        // Used to set the thickness of the ring itself (i.e. the distance between the inner and
+        // outer edges of the ring)
+        public float ringThickness;
 
-        // Variable: pulseGrowCurve
+        // Variable: pulseShrinkCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
         // shrinking and expanding). This AnimationCurve governs the shrinking that follows a
-        // "Down" input.
+        // "DOWN" input.
         [Header("Pulse")]
         public AnimationCurve pulseShrinkCurve;
 
         // Variable: pulseGrowCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
         // shrinking and expanding). This AnimationCurve governs the growing back to full size
+        // that follows a "UP" input.
         public AnimationCurve pulseGrowCurve;
 
         // Variable: pulseSeconds
@@ -107,8 +109,8 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Group: Functions
 
         // Function: UpdateCursor
-        // Used to update the cursor when recieving a "Move" InputAction. Updates the cursor's
-        // position, as well as the size of the ring based on the current ProgressToClick.
+        // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
+        // cursor's position, as well as the size of the ring based on the current ProgressToClick.
         public void UpdateCursor(Vector2 _screenPos, float _progressToClick)
         {
             _targetPos = _screenPos;
@@ -125,7 +127,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                 else
                 {
                     // 0.9f so that the boundary between ring and dot is not visible - small overlap.
-                    float minRingScale = 0.9f + ringWidth;
+                    float minRingScale = 0.9f + ringThickness;
                     float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(dist));
 
                     ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(ringColor.a, 0f, dist));
@@ -134,8 +136,8 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
                     ringMask.transform.localScale = new Vector3()
                     {
-                        x = Mathf.Max(0, ringOuter.localScale.x - ringWidth),
-                        y = Mathf.Max(0, ringOuter.localScale.y - ringWidth),
+                        x = Mathf.Max(0, ringOuter.localScale.x - ringThickness),
+                        y = Mathf.Max(0, ringOuter.localScale.y - ringThickness),
                         z = ringOuter.localScale.z
                     };
                 }
@@ -145,9 +147,10 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Group: TouchlessCursor Overrides
 
         // Function: HandleInputAction
-        // This override replaces the basic functionality of the <TouchlessCursor>, making the cursor's ring
-        // scale dynamically with the current ProgressToClick and creating a small "shrink" animation
-        // when a "Down" event is recieved, and a "grow" animation when an "Up" is recieved.
+        // This override replaces the basic functionality of the <TouchlessCursor>, making the
+        // cursor's ring scale dynamically with the current ProgressToClick and creating a small
+        // "shrink" animation when a "DOWN" event is recieved, and a "grow" animation when an "UP"
+        // is recieved.
         protected override void HandleInputAction(ClientInputAction _inputData)
         {
             switch (_inputData.InputType)
@@ -175,8 +178,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         }
 
         // Function: Update
-        // This override runs the basic functionality of <TouchlessCursor> and also ensures that is the cursor has a
-        // <growQueued> and has the ability to, it should start the "grow" animation
+        // This override runs the basic functionality of <TouchlessCursor> and also ensures that if
+        // the cursor has a <growQueued> and has the ability to, it should start the "grow"
+        // animation.
         protected override void Update()
         {
             base.Update();
@@ -189,8 +193,8 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         }
 
         // Function: InitialiseCursor
-        // This override ensures that the DotCursor is properly set up with relative scales and sorting orders for the
-        // ring sprites.
+        // This override ensures that the DotCursor is properly set up with relative scales and
+        // sorting orders for the ring sprites.
         protected override void InitialiseCursor()
         {
             dotFillColor = cursorFill.color;

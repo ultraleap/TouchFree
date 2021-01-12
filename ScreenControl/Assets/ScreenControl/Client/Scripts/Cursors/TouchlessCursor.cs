@@ -6,11 +6,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
     // Class: TouchlessCursor
     // This class is a base class for creating custom Touchless cursors for use with ScreenControl.
     //
-    // Override <HandleInputAction> to react to ClientInputAction as they are recieved.
+    // Override <HandleInputAction> to react to <ClientInputActions> as they are recieved.
     //
-    // For an example of a reactive cursor, see <DotCursor>, which positions a cursor at the
-    // provided position and presents a scaling ring around the dot to present to a user how
-    // close to "clicking" they are.
+    // For an example of a reactive cursor, see <DotCursor>.
     public class TouchlessCursor : MonoBehaviour
     {
         // Group: Variables
@@ -24,7 +22,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: Update
         // Runs on Unity's update loop to keep the attached Cursor at the position
-        // of the position last stored in <HandleInputAction>
+        // last stored in <HandleInputAction>
         protected virtual void Update()
         {
             cursorTransform.anchoredPosition = _targetPos;
@@ -32,7 +30,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: OnEnable
         // Initialises & displays the cursor to its default state when the scene is fully loaded.
-        // Also registers the Cursor for updates from the <WebSocketCoreConnection>
+        // Also registers the Cursor for updates from the <ServiceConnection>
         protected virtual void OnEnable()
         {
             ConnectionManager.AddConnectionListener(OnCoreConnection);
@@ -42,7 +40,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: OnDisable
         // Deregisters the Cursor so it no longer recieves updates from the
-        // <WebSocketCoreConnection>
+        // <ServiceConnection>
         protected virtual void OnDisable()
         {
             if (ConnectionManager.serviceConnection != null)
@@ -54,7 +52,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Group: Functions
 
         // Function: OnCoreConnection
-        // Passed to a <WebSocketCoreConnection> to be invoked once a connection is set up. Adds
+        // Passed to a <ServiceConnection> to be invoked once a connection is set up. Adds
         // <HandleInputAction> as a listener to <ClientInputActions> as they are recieved.
         protected virtual void OnCoreConnection()
         {
@@ -66,7 +64,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // they are recieved. Override this function to implement cursor behaviour in response.
         //
         // Parameters:
-        //    _inputData - The latest input action recieved from Screen Control Service.
+        //    _inputData - The latest input action recieved from ScreenControl Service.
         protected virtual void HandleInputAction(ClientInputAction _inputData)
         {
             _targetPos = _inputData.CursorPosition;

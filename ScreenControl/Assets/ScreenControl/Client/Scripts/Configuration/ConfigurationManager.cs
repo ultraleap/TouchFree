@@ -7,7 +7,7 @@ using Ultraleap.ScreenControl.Client.Connection;
 namespace Ultraleap.ScreenControl.Client.Configuration
 {
     // Class: ConfigurationManager
-    // This static class provides async methods for changing the configuration of the Screen Control
+    // This static class provides async methods for changing the configuration of the ScreenControl
     // service. Makes use of the static <ConnectionManager> for communication with the Service.
     public static class ConfigurationManager
     {
@@ -57,14 +57,14 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         }
 
         // Group: Private Serialization Functions
-        // These functions are used to Serialise the configuration objects into a format suitable
+        // These functions are used to serialize the configuration objects into a format suitable
         // for websocket transmission.
 
         private static string SerializeInteractionConfig(InteractionConfig _interaction)
         {
             string newContent = "";
 
-            if (_interaction.configValues.Count > 0 || _interaction.HoverAndHold.configValues.Count > 0)
+            if (_interaction.configValues.Count > 0 || _interaction.hoverAndHold.configValues.Count > 0)
             {
                 newContent += "\"interaction\":{";
 
@@ -74,11 +74,11 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     newContent += ",";
                 }
 
-                if (_interaction.HoverAndHold.configValues.Count > 0)
+                if (_interaction.hoverAndHold.configValues.Count > 0)
                 {
                     newContent += "\"HoverAndHold\":{";
 
-                    foreach (KeyValuePair<string, object> value in _interaction.HoverAndHold.configValues)
+                    foreach (KeyValuePair<string, object> value in _interaction.hoverAndHold.configValues)
                     {
                         newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
                         newContent += ",";
