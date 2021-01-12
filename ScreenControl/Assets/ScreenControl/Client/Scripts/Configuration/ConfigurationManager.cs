@@ -6,18 +6,14 @@ using Ultraleap.ScreenControl.Client.Connection;
 
 namespace Ultraleap.ScreenControl.Client.Configuration
 {
+    // Class: ConfigurationManager
+    // This static class provides async methods for changing the configuration of the Screen Control
+    // service. Makes use of the static <ConnectionManager> for communication with the Service.
     public static class ConfigurationManager
     {
-        public static void SetConfigState(PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
-        {
-            SetConfigState(null, _physical, _callback);
-        }
-
-        public static void SetConfigState(InteractionConfig _interaction, Action<WebSocketResponse> _callback = null)
-        {
-            SetConfigState(_interaction, null, _callback);
-        }
-
+        // Function: SetConfigState
+        // Takes in an <InteractionConfig> and a <PhysicalConfig>, transforms them both into the
+        // appropriate form to go over the websocket, before sending it through the <ConnectionManager>
         public static void SetConfigState(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {
             string action = ActionCodes.SET_CONFIGURATION_STATE.ToString();
@@ -45,6 +41,24 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
             ConnectionManager.serviceConnection.SendMessage(jsonContent, requestID, _callback);
         }
+
+        // Function: SetConfigState
+        // A variant of the above function used to pass only a <PhysicalConfig> to the Service.
+        public static void SetConfigState(PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
+        {
+            SetConfigState(null, _physical, _callback);
+        }
+
+        // Function: SetConfigState
+        // A variant of the above function used to pass only an <InteractionConfig> to the Service.
+        public static void SetConfigState(InteractionConfig _interaction, Action<WebSocketResponse> _callback = null)
+        {
+            SetConfigState(_interaction, null, _callback);
+        }
+
+        // Group: Private Serialization Functions
+        // These functions are used to Serialise the configuration objects into a format suitable
+        // for websocket transmission.
 
         private static string SerializeInteractionConfig(InteractionConfig _interaction)
         {
