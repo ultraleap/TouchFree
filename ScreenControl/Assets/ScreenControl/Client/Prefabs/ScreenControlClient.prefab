@@ -228,7 +228,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   ringOuter: {fileID: 8577431237544741959}
   ringMask: {fileID: 8577431235920990331}
-  ringWidth: 0.58
+  ringWidth: 3
   pulseShrinkCurve:
     serializedVersion: 2
     m_Curve:

@@ -4,13 +4,12 @@ using Ultraleap.ScreenControl.Client.Configuration;
 
 namespace Ultraleap.ScreenControl.Client.Connection
 {
-    /* Enum: ActionCodes
-        INPUT_ACTION - Represents standard interaction data
-        CONFIGURATION_STATE - Represents a collection of configurations from the Service
-        CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
-        SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
-        REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
-    */
+     // Enum: ActionCodes
+     // INPUT_ACTION - Represents standard interaction data
+     // CONFIGURATION_STATE - Represents a collection of configurations from the Service
+     // CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
+     // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
+     // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
     internal enum ActionCodes
     {
         INPUT_ACTION,
@@ -20,18 +19,20 @@ namespace Ultraleap.ScreenControl.Client.Connection
         REQUEST_CONFIGURATION_STATE
     }
 
-    /* Enum: ActionCodes
-        COMPATIBLE - The API versions are considered compatible
-        CORE_OUTDATED - The API versions are considered incompatible as Core is older than Client
-        CLIENT_OUTDATED - The API versions are considered incompatible as Client is older than Core
-    */
+    // Enum: ActionCodes
+    // COMPATIBLE - The API versions are considered compatible
+    // SERVICE_OUTDATED - The API versions are considered incompatible as Service is older than Client
+    // CLIENT_OUTDATED - The API versions are considered incompatible as Client is older than Service
     internal enum Compatibility
     {
         COMPATIBLE,
-        CORE_OUTDATED,
+        SERVICE_OUTDATED,
         CLIENT_OUTDATED
     }
 
+    // Struct: ConfigRequest
+    // This is the structure of data received when requesting the current state of the configuration files
+    // from the Service.
     [Serializable]
     public struct ConfigRequest
     {
@@ -47,6 +48,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
     }
 
+    // Struct: WebSocketResponse
+    // The structure seen when the Service responds to a request. This is to verify whether it was successful
+    // or not and will include the original request if it fails to allow for troubleshooting.
     [Serializable]
     public struct WebSocketResponse
     {
@@ -64,6 +68,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
     }
 
+    // Struct: ResponseCallback
+    // Used by <WebSocketReceiver> to wait for a <WebSocketResponse> from the Service.
+    // Owns an action with a <WebSocketResponse> as a parameter to allow users to deal with failed <WebSocketResponse>s.
+    // Stores a timestamp of its creation so the response has the ability to timeout if not seen within a reasonable timeframe.
     public struct ResponseCallback
     {
         public int timestamp;
@@ -73,18 +81,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
         {
             timestamp = _timestamp;
             callback = _callback;
-        }
-    }
-
-    internal struct CommunicationWrapper<T>
-    {
-        public string action;
-        public T content;
-
-        public CommunicationWrapper(string _actionCode, T _content)
-        {
-            action = _actionCode;
-            content = _content;
         }
     }
 }

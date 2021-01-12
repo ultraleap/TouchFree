@@ -145,7 +145,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Group: TouchlessCursor Overrides
 
         // Function: HandleInputAction
-        // This override replaces the basic functionality of the DotCursor, making the cursor's ring
+        // This override replaces the basic functionality of the <TouchlessCursor>, making the cursor's ring
         // scale dynamically with the current ProgressToClick and creating a small "shrink" animation
         // when a "Down" event is recieved, and a "grow" animation when an "Up" is recieved.
         protected override void HandleInputAction(ClientInputAction _inputData)
@@ -174,6 +174,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
         }
 
+        // Function: Update
+        // This override runs the basic functionality of <TouchlessCursor> and also ensures that is the cursor has a
+        // <growQueued> and has the ability to, it should start the "grow" animation
         protected override void Update()
         {
             base.Update();
@@ -185,6 +188,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
         }
 
+        // Function: InitialiseCursor
+        // This override ensures that the DotCursor is properly set up with relative scales and sorting orders for the
+        // ring sprites.
         protected override void InitialiseCursor()
         {
             dotFillColor = cursorFill.color;
@@ -212,6 +218,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
         }
 
+        // Function: ShowCursor
+        // This override replaces the basic functionality of the <TouchlessCursor> to ensure that the cursor is faded smoothly
+        // when being set to show.
         public override void ShowCursor()
         {
             bool wasShowing = !hidingCursor;
@@ -235,6 +244,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
         }
 
+        // Function: HideCursor
+        // This override replaces the basic functionality of the <TouchlessCursor> to ensure that the cursor is faded smoothly
+        // when being set to hide.
         public override void HideCursor()
         {
             bool wasHiding = hidingCursor;
@@ -256,6 +268,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         }
 
         // Group: Coroutine Functions
+
+        // Function: GrowCursorDot
+        // This coroutine smoothly expands the cursor dots size.
         public IEnumerator GrowCursorDot()
         {
             SetCursorLocalScale(cursorDownScale * cursorDotSize);
@@ -276,6 +291,8 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorScalingRoutine = null;
         }
 
+        // Function: ShrinkCursorDot
+        // This coroutine smoothly contracts the cursor dots size.
         public IEnumerator ShrinkCursorDot()
         {
             YieldInstruction yieldInstruction = new YieldInstruction();
@@ -294,6 +311,8 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorScalingRoutine = null;
         }
 
+        // Function: FadeCursor
+        // This coroutine smoothly fades the cursors colours.
         private IEnumerator FadeCursor(float _from, float _to, float _duration, bool _disableOnEnd = false)
         {
             for (int i = 0; i < _duration; i++)
@@ -334,12 +353,16 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             fadeRoutine = null;
         }
 
+        // Function: SetCursorLocalScale
+        // This function resizes the cursor and its border.
         private void SetCursorLocalScale(float _scale)
         {
             cursorLocalScale = new Vector3(_scale, _scale, _scale);
             cursorBorder.transform.localScale = cursorLocalScale;
         }
 
+        // Function: ResetCursor
+        // This function stops all scaling coroutines and clears their related variables.
         public void ResetCursor()
         {
             StopAllCoroutines();

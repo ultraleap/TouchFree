@@ -28,13 +28,13 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Variable: receiver
         // A reference to the receiver that handles ordered queueing of data received via the <webSocket>.
-        WebSocketReceiver receiver;
+        MessageReceiver receiver;
 
         // Group: Functions
 
         // Function: ServiceConnection
-        // The initializer for <ServiceConnection> that can be given a different IP Address and Port to connect to
-        // on initialization. This initializer also sets up the <receiver> for future use and the listener for the 
+        // The constructor for <ServiceConnection> that can be given a different IP Address and Port to connect to
+        // on construction. This constructor also sets up the <receiver> for future use and the listener for the 
         // receiving of messages.
         internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
@@ -49,7 +49,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
             webSocket.Connect();
 
-            receiver = ConnectionManager.Instance.gameObject.AddComponent<WebSocketReceiver>();
+            receiver = ConnectionManager.Instance.gameObject.AddComponent<MessageReceiver>();
             receiver.SetWSConnection(this);
         }
 
@@ -64,7 +64,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
             if (receiver != null)
             {
-                WebSocketReceiver.Destroy(receiver);
+                MessageReceiver.Destroy(receiver);
             }
         }
 

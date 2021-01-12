@@ -3,12 +3,24 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
+    // Class: VersionInfo
+    // This class is used when comparing the <ApiVersion> of the Client and the Service.
     public static class VersionInfo
     {
+        // Group: Variables
+
+        // Variable: ApiVersion
+        // The current API version of the Client.
         public static readonly Version ApiVersion = new Version("1.0.0");
+
+        // Variable: API_HEADER_NAME
+        // The name of the header we wish the Service to compare our version with.
         public const string API_HEADER_NAME = "ScApiVersion";
     }
 
+    // Struct: ClientInputAction
+    // The clients representation of an InputAction. This is used to pass
+    // key information relating to an action that has happened on the Service.
     public readonly struct ClientInputAction
     {
         public readonly long Timestamp;
@@ -53,32 +65,29 @@ namespace Ultraleap.ScreenControl.Client
         }
     }
 
-    /* Enum: HandChirality
-        LEFT - The left hand
-        RIGHT - The right hand
-    */
+    // Enum: HandChirality
+    // LEFT - The left hand
+    // RIGHT - The right hand    
     public enum HandChirality
     {
         LEFT,
         RIGHT
     }
 
-    /* Enum: HandType
-        PRIMARY - The first hand found
-        SECONDARY - The second hand found
-    */
+    // Enum: HandType
+    // PRIMARY - The first hand found
+    // SECONDARY - The second hand found
     public enum HandType
     {
         PRIMARY,
         SECONDARY,
     }
 
-    /* Enum: InputType
-        CANCEL - Used to cancel the current input if an issue occurs. Particularly when a DOWN has happened before an UP
-        DOWN - Used to begin a 'Touch' or a 'Drag'
-        MOVE - Used to move a cursor or to perform a 'Drag' after a DOWN
-        UP - Used to complete a 'Touch' or a 'Drag'
-    */
+    // Enum: InputType
+    // CANCEL - Used to cancel the current input if an issue occurs. Particularly when a DOWN has happened before an UP
+    // DOWN - Used to begin a 'Touch' or a 'Drag'
+    // MOVE - Used to move a cursor or to perform a 'Drag' after a DOWN
+    // UP - Used to complete a 'Touch' or a 'Drag'    
     public enum InputType
     {
         CANCEL,
@@ -87,11 +96,10 @@ namespace Ultraleap.ScreenControl.Client
         UP,
     }
 
-    /* Enum: InteractionType
-        GRAB - The user must perform a GRAB gesture to 'Touch' by bringing their fingers and thumb together
-        HOVER - The user must perform a HOVER gesture to 'Touch' by holding their hand still for a fixed time
-        PUSH - The user must perform a PUSH gesture to 'Touch' by pushing their hand toward the screen
-    */
+    // Enum: InteractionType
+    // GRAB - The user must perform a GRAB gesture to 'Touch' by bringing their fingers and thumb together
+    // HOVER - The user must perform a HOVER gesture to 'Touch' by holding their hand still for a fixed time
+    // PUSH - The user must perform a PUSH gesture to 'Touch' by pushing their hand toward the screen
     public enum InteractionType
     {
         GRAB,
@@ -99,10 +107,9 @@ namespace Ultraleap.ScreenControl.Client
         PUSH,
     }
 
-    /* Enum: BitmaskFlags
-        These flags represent each enum element in the <ClientInputAction> structure.
-        This is used to request any combination of these flags from the Service at once.
-    */
+    // Enum: BitmaskFlags
+    // These flags represent each enum element in the <ClientInputAction> structure.
+    // This is used to request any combination of these flags from the Service at once.
     [Flags]
     public enum BitmaskFlags
     {
@@ -131,6 +138,9 @@ namespace Ultraleap.ScreenControl.Client
         // least a minor iteration of the API version UNLESS adding them at the end
     }
 
+    // Struct: WebsocketInputAction
+    // The version of an InputAction received via the WebSocket. This must be converted into a
+    // <ClientInputAction> to be used by the client and can be done so via its constructor.
     [Serializable]
     public struct WebsocketInputAction
     {
@@ -139,22 +149,17 @@ namespace Ultraleap.ScreenControl.Client
         public Vector2 CursorPosition;
         public float DistanceFromScreen;
         public float ProgressToClick;
-
-        public WebsocketInputAction(ClientInputAction _data)
-        {
-            Timestamp = _data.Timestamp;
-            InteractionFlags = TypeUtilities.GetInteractionFlags(_data.InteractionType,
-                                                             _data.HandType,
-                                                             _data.Chirality,
-                                                             _data.InputType);
-            CursorPosition = _data.CursorPosition;
-            DistanceFromScreen = _data.DistanceFromScreen;
-            ProgressToClick = _data.ProgressToClick;
-        }
     }
 
+    // Class: TypeUtilities
+    // A collection of Utilities to be used when working with <BitmaskFlags>.
     public static class TypeUtilities
     {
+        // Group: Functions
+
+        // Function: GetInteractionFlags
+        // Used to convert a collection of interaction enums to flags for sending
+        // to the Service.
         internal static BitmaskFlags GetInteractionFlags(
             InteractionType _interactionType,
             HandType _handType,
@@ -222,17 +227,19 @@ namespace Ultraleap.ScreenControl.Client
             return returnVal;
         }
 
+        // Function: GetChiralityFromFlags
+        // Used to find which <HandChirality> <_flags> contains. Favours RIGHT if none or both are found.
         internal static HandChirality GetChiralityFromFlags(BitmaskFlags _flags)
         {
             HandChirality chirality = HandChirality.RIGHT;
 
-            if (_flags.HasFlag(BitmaskFlags.LEFT))
-            {
-                chirality = HandChirality.LEFT;
-            }
-            else if (_flags.HasFlag(BitmaskFlags.RIGHT))
+            if (_flags.HasFlag(BitmaskFlags.RIGHT))
             {
                 chirality = HandChirality.RIGHT;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.LEFT))
+            {
+                chirality = HandChirality.LEFT;
             }
             else
             {
@@ -242,6 +249,8 @@ namespace Ultraleap.ScreenControl.Client
             return chirality;
         }
 
+        // Function: GetHandTypeFromFlags
+        // Used to find which <HandType> <_flags> contains. Favours PRIMARY if none or both are found.
         internal static HandType GetHandTypeFromFlags(BitmaskFlags _flags)
         {
             HandType handType = HandType.PRIMARY;
@@ -262,6 +271,8 @@ namespace Ultraleap.ScreenControl.Client
             return handType;
         }
 
+        // Function: GetInputTypeFromFlags
+        // Used to find which <InputType> <_flags> contains. Favours CANCEL if none are found.
         internal static InputType GetInputTypeFromFlags(BitmaskFlags _flags)
         {
             InputType inputType = InputType.CANCEL;
@@ -269,6 +280,10 @@ namespace Ultraleap.ScreenControl.Client
             if (_flags.HasFlag(BitmaskFlags.CANCEL))
             {
                 inputType = InputType.CANCEL;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.UP))
+            {
+                inputType = InputType.UP;
             }
             else if (_flags.HasFlag(BitmaskFlags.DOWN))
             {
@@ -278,10 +293,6 @@ namespace Ultraleap.ScreenControl.Client
             {
                 inputType = InputType.MOVE;
             }
-            else if (_flags.HasFlag(BitmaskFlags.UP))
-            {
-                inputType = InputType.UP;
-            }
             else
             {
                 Debug.LogError("InputActionData missing: No InputType found. Defaulting to 'CANCEL'");
@@ -290,21 +301,23 @@ namespace Ultraleap.ScreenControl.Client
             return inputType;
         }
 
+        // Function: GetInteractionTypeFromFlags
+        // Used to find which <InteractionType> <_flags> contains. Favours PUSH if none are found.
         internal static InteractionType GetInteractionTypeFromFlags(BitmaskFlags _flags)
         {
             InteractionType interactionType = InteractionType.PUSH;
 
-            if (_flags.HasFlag(BitmaskFlags.GRAB))
+            if (_flags.HasFlag(BitmaskFlags.PUSH))
             {
-                interactionType = InteractionType.GRAB;
+                interactionType = InteractionType.PUSH;
             }
             else if (_flags.HasFlag(BitmaskFlags.HOVER))
             {
                 interactionType = InteractionType.HOVER;
             }
-            else if (_flags.HasFlag(BitmaskFlags.PUSH))
+            else if (_flags.HasFlag(BitmaskFlags.GRAB))
             {
-                interactionType = InteractionType.PUSH;
+                interactionType = InteractionType.GRAB;
             }
             else
             {
