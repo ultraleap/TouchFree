@@ -17,9 +17,9 @@ namespace Ultraleap.ScreenControl.Service
         private ScreenControlWsBehaviour socketBehaviour = null;
         public WebSocketReceiver receiverQueue;
 
-        private bool websocketInitalised = false;
-
         public short port = 9739;
+
+        private bool websocketInitalised = false;
 
         private void Awake()
         {

@@ -45,10 +45,10 @@ gulp.task('startServer', function (callback) {
     var startCommand = "./ScreenControlService";
 
     if (process.platform === "win32") {
+        startCommand = `.\\ScreenControlService.exe`;
         serverBinDir = serverBinDir.replace(/\//g, '\\');
         logFileLoc = logFileLoc.replace(/\//g, '\\');
     } else {
-        startCommand = `.\\ScreenControlService.exe`;
         chmodSync(serverBinDir + startCommand, 0o765, (err) => {
             callback("The permissions for the haptic server could not be set!");
         });
@@ -79,8 +79,6 @@ gulp.task('startServer', function (callback) {
         });
     }
 
-    checkLogForReady();
-
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
     serverProcess = spawn(startCommand,
@@ -94,6 +92,8 @@ gulp.task('startServer', function (callback) {
         serverProcess.on('close', () => {
             callback('Server process closed')
         });
+
+    checkLogForReady();
 });
 
 gulp.task('cucumber', function (callback) {
