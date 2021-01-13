@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Cursors;
 
 public class DoubleCursor : TouchlessCursor
 {
     [Header("Controls")]
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType moveInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.PUSH;
-    public Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType clickInteraction = Ultraleap.ScreenControl.Client.ScreenControlTypes.InteractionType.GRAB;
+    public InteractionType moveInteraction = InteractionType.PUSH;
+    public InteractionType clickInteraction = InteractionType.GRAB;
 
     [Header("Graphics")]
     public UnityEngine.UI.Image cursorDot;
@@ -24,15 +25,16 @@ public class DoubleCursor : TouchlessCursor
     [Range(0.01f, 1f)] public float pulseSeconds;
     [Range(0.01f, 2f)] public float cursorDownScale;
 
-    protected float cursorDotSize;
+    public float cursorDotSize = 0.25f;
     protected float maxRingScale;
     public float screenDistanceAtMaxScaleMeters;
 
+    protected bool hidingCursor;
     protected Color ringColor;
 
     protected bool dotShrunk = false;
 
-    public override void UpdateCursor(Vector2 screenPos, float progressToClick)
+    public void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
         _targetPos = screenPos;
 
@@ -54,9 +56,9 @@ public class DoubleCursor : TouchlessCursor
         }
     }
 
-    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ClientInputAction _inputData)
     {
-        if (_inputData.InputType == Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE)
+        if (_inputData.InputType == Ultraleap.ScreenControl.Client.InputType.MOVE)
         {
             if (_inputData.InteractionType == moveInteraction)
             {
@@ -68,7 +70,7 @@ public class DoubleCursor : TouchlessCursor
         {
             switch (_inputData.InputType)
             {
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+                case Ultraleap.ScreenControl.Client.InputType.DOWN:
                     if (!dotShrunk)
                     {
                         if (cursorScalingRoutine != null)
@@ -77,7 +79,7 @@ public class DoubleCursor : TouchlessCursor
                         cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
                     }
                     break;
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
+                case Ultraleap.ScreenControl.Client.InputType.UP:
                     if (dotShrunk)
                     {
                         if (cursorScalingRoutine != null)
@@ -86,8 +88,8 @@ public class DoubleCursor : TouchlessCursor
                         cursorScalingRoutine = StartCoroutine(GrowCursorDot());
                     }
                     break;
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
-                case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+                case InputType.MOVE:
+                case InputType.CANCEL:
                     break;
             }
         }
@@ -101,7 +103,6 @@ public class DoubleCursor : TouchlessCursor
             ringColor = cursorRing.color;
         }
 
-        cursorDotSize = cursorSize;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
         cursorDot.enabled = !dotSizeIsZero;
@@ -154,7 +155,7 @@ public class DoubleCursor : TouchlessCursor
 
     public override void ShowCursor()
     {
-        base.ShowCursor();
+        hidingCursor = false;
         cursorDot.enabled = true;
         cursorDotFill.enabled = true;
         cursorRing.enabled = true;
@@ -162,7 +163,7 @@ public class DoubleCursor : TouchlessCursor
 
     public override void HideCursor()
     {
-        base.HideCursor();
+        hidingCursor = true;
         cursorDot.enabled = false;
         cursorDotFill.enabled = false;
         cursorRing.enabled = false;

@@ -1,87 +1,96 @@
 ﻿using UnityEngine;
+using Ultraleap.ScreenControl.Client.Connection;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.ScreenControl.Client.Cursors
 {
+    // Class: TouchlessCursor
+    // This class is a base class for creating custom Touchless cursors for use with ScreenControl.
+    //
+    // Override <HandleInputAction> to react to <ClientInputActions> as they are recieved.
+    //
+    // For an example of a reactive cursor, see <DotCursor>.
     public class TouchlessCursor : MonoBehaviour
     {
+        // Group: Variables
+
+        // Variable: cursorTransform
+        // The transform for the image presented by this cursor
         public RectTransform cursorTransform;
-
-        public float cursorSize = 0.25f;
-
         protected Vector2 _targetPos;
 
-        protected bool hidingCursor = false;
+        // Group: MonoBehaviour Overrides
 
+        // Function: Update
+        // Runs on Unity's update loop to keep the attached Cursor at the position
+        // last stored in <HandleInputAction>
+        protected virtual void Update()
+        {
+            cursorTransform.anchoredPosition = _targetPos;
+        }
+
+        // Function: OnEnable
+        // Initialises & displays the cursor to its default state when the scene is fully loaded.
+        // Also registers the Cursor for updates from the <ServiceConnection>
         protected virtual void OnEnable()
         {
             ConnectionManager.AddConnectionListener(OnCoreConnection);
             InitialiseCursor();
-            ResetCursor();
             ShowCursor();
         }
 
-        protected virtual void OnCoreConnection()
-        {
-            ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
-        }
-
+        // Function: OnDisable
+        // Deregisters the Cursor so it no longer recieves updates from the
+        // <ServiceConnection>
         protected virtual void OnDisable()
         {
-            if (ConnectionManager.coreConnection != null) {
-                ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
+            if (ConnectionManager.serviceConnection != null)
+            {
+                ConnectionManager.serviceConnection.TransmitInputAction -= HandleInputAction;
             }
         }
 
-        protected virtual void Update()
+        // Group: Functions
+
+        // Function: OnCoreConnection
+        // Passed to a <ServiceConnection> to be invoked once a connection is set up. Adds
+        // <HandleInputAction> as a listener to <ClientInputActions> as they are recieved.
+        protected virtual void OnCoreConnection()
         {
-            //if (Hands.Provider.CurrentFrame.Hands.Count > 0)
-            //{
-            //    cursorTransform.gameObject.SetActive(true);
-            //    cursorTransform.anchoredPosition = _positionOverride ? _overridePosition : _targetPos;
-
-            //    if (hidingCursor)
-            //    { // Only show the cursor if we are not in the auto setup screen of the configuration
-            //        ShowCursor();
-            //    }
-            //}
-            //else
-            //{
-            //    if (!hidingCursor)
-            //    {
-            //        HideCursor();
-            //    }
-            //}
-
-            //TODO: only set active if we are supposed to show the cursor (if an event has been sent recently)
-            cursorTransform.gameObject.SetActive(true);
-            cursorTransform.anchoredPosition = _targetPos;
+            ConnectionManager.serviceConnection.TransmitInputAction += HandleInputAction;
         }
 
-        public virtual void UpdateCursor(Vector2 _screenPos, float _progressToClick)
+        // Function: HandleInputAction
+        // The core of the logic for Cursors, this is invoked with each <ClientInputAction> as
+        // they are recieved. Override this function to implement cursor behaviour in response.
+        //
+        // Parameters:
+        //    _inputData - The latest input action recieved from ScreenControl Service.
+        protected virtual void HandleInputAction(ClientInputAction _inputData)
         {
-            _targetPos = _screenPos;
+            _targetPos = _inputData.CursorPosition;
         }
 
-        protected virtual void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
-        {
-        }
-
+        // Function: InitialiseCursor
+        // Invoked when the parent GameObject is enabled.
+        // Override this function with any intiialisation steps your cursor needs.
         protected virtual void InitialiseCursor()
         {
         }
 
-        public virtual void ResetCursor()
-        {
-        }
-
+        // Function: ShowCursor
+        // This ensures that all Cursors will have the ability to be shown or hidden. Be sure to
+        // override this function to cover the showing of anything an inheriting cursor uses.
         public virtual void ShowCursor()
         {
-            hidingCursor = false;
+            cursorTransform.gameObject.SetActive(true);
         }
 
+        // Function: HideCursor
+        // This ensures that all Cursors will have the ability to be shown or hidden. Be sure to
+        // override this function to cover the hiding of anything an inheriting cursor uses.
         public virtual void HideCursor()
         {
-            hidingCursor = true;
+            cursorTransform.gameObject.SetActive(false);
         }
     }
 }

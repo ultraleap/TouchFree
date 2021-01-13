@@ -2377,7 +2377,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -674.952, y: 141.5}
+  m_AnchoredPosition: {x: -674.99994, y: 141.5}
   m_SizeDelta: {x: 2600, y: 313.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &953291539
@@ -2891,8 +2891,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1261005067}
   m_HandleRect: {fileID: 1261005066}
   m_Direction: 0
-  m_Value: -0.000038378905
-  m_Size: 0.4788797
+  m_Value: 0
+  m_Size: 0.5192308
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4152,9 +4152,39 @@ PrefabInstance:
       propertyPath: m_Name
       value: ScreenControlClient
       objectReference: {fileID: 0}
+    - target: {fileID: 7549733132823545124, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: ringSpriteScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7549733133368736522, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7549733133894564971, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7828356017238222389, guid: 157025b17471e7c41a7d20e7f28273b5,
         type: 3}
       propertyPath: connectionType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8577431237544741958, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8577431237544741958, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8577431237544741958, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: m_Color.b
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8822492802018686658, guid: 157025b17471e7c41a7d20e7f28273b5,

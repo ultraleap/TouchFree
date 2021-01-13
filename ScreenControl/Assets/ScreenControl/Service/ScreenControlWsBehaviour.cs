@@ -84,12 +84,12 @@ namespace Ultraleap.ScreenControl.Service
             else if (clientVersionParsed.Major > _coreVersion.Major ||
                      clientVersionParsed.Minor > _coreVersion.Minor)
             {
-                return Compatibility.CORE_OUTDATED;
+                return Compatibility.SERVICE_OUTDATED;
             }
 
             if (clientVersionParsed.Build > _coreVersion.Build)
             {
-                return Compatibility.CORE_OUTDATED;
+                return Compatibility.SERVICE_OUTDATED;
             }
 
             return Compatibility.COMPATIBLE;

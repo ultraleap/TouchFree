@@ -49,6 +49,13 @@ Builds/
 Build/
 AssetDirStat.asset
 
+# =============== #
+#  Documentation  #
+# =============== #
+Documentation/*
+!Documentation/Info.md
+NaturalDocs_Config/Working Data/**
+
 # ========= #
 #  Testing  #
 # ========= #

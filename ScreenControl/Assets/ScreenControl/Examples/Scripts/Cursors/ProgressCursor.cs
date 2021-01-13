@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Cursors;
 
-public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
+public class ProgressCursor : TouchlessCursor
 {
     [Header("Graphics")]
     public Transform cursorDotTransform;
@@ -24,13 +25,14 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
     [Range(0.01f, 1f)] public float pulseSeconds;
     [Range(0.01f, 2f)] public float cursorDownScale;
 
-    protected float cursorDotSize;
+    public float cursorDotSize = 0.25f;
+    protected bool hidingCursor;
 
     protected bool shrunk = false;
 
     public AnimationCurve ringFillCurve;
 
-    public override void UpdateCursor(Vector2 screenPos, float progressToClick)
+    public void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
         _targetPos = screenPos;
 
@@ -50,17 +52,17 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
         }
     }
 
-    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType _type = _inputData.InputType;
+        InputType _type = _inputData.InputType;
         Vector2 _cursorPosition = _inputData.CursorPosition;
 
         switch (_type)
         {
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
+            case InputType.MOVE:
                 UpdateCursor(_cursorPosition, _inputData.ProgressToClick);
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+            case InputType.DOWN:
                 if (!shrunk)
                 {
                     if (cursorScalingRoutine != null)
@@ -69,7 +71,7 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
                     cursorScalingRoutine = StartCoroutine(ShrinkCursorDot());
                 }
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
+            case InputType.UP:
                 if (shrunk)
                 {
                     if (cursorScalingRoutine != null)
@@ -78,14 +80,13 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
                     cursorScalingRoutine = StartCoroutine(GrowCursorDot());
                 }
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+            case InputType.CANCEL:
                 break;
         }
     }
 
     protected override void InitialiseCursor()
     {
-        cursorDotSize = cursorSize;
         var dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
 
@@ -144,7 +145,7 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     public override void ShowCursor()
     {
-        base.ShowCursor();
+        hidingCursor = false;
         cursorDot.enabled = true;
         cursorDotFill.enabled = true;
         cursorProgressBorder.enabled = true;
@@ -158,7 +159,7 @@ public class ProgressCursor : Ultraleap.ScreenControl.Client.TouchlessCursor
 
     public override void HideCursor()
     {
-        base.HideCursor();
+        hidingCursor = true;
         cursorDot.enabled = false;
         cursorDotFill.enabled = false;
         cursorProgressBorder.enabled = false;

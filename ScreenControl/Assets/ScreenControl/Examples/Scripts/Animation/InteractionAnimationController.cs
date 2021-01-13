@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+
 using Ultraleap.ScreenControl.Core;
 using CoreTypes = Ultraleap.ScreenControl.Core.ScreenControlTypes;
-using Ultraleap.ScreenControl.Client;
-using ClientTypes = Ultraleap.ScreenControl.Client.ScreenControlTypes;
+
+using Ultraleap.ScreenControl.Client.Connection;
+using ClientTypes = Ultraleap.ScreenControl.Client;
 
 namespace Animation
 {
@@ -47,12 +49,12 @@ namespace Animation
 
         void OnCoreConnection()
         {
-            ConnectionManager.coreConnection.TransmitInputAction += OnHandleInputAction;
+            ConnectionManager.serviceConnection.TransmitInputAction += OnHandleInputAction;
         }
 
         void OnDisable()
         {
-            ConnectionManager.coreConnection.TransmitInputAction -= OnHandleInputAction;
+            ConnectionManager.serviceConnection.TransmitInputAction -= OnHandleInputAction;
         }
 
         // Update is called once per frame

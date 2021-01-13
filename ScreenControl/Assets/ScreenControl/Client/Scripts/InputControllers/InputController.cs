@@ -1,79 +1,79 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
+using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Connection;
 
-
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.ScreenControl.Client.InputControllers
 {
-    namespace InputControllers
+    // Class: InputController
+    // A layer over Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
+    // that connects the BaseInput to ScreenControl's <ClientInputActions> as they are
+    // provided. Contains setup functions allowing inheritors to define only the input behaviour
+    // they wish to see.
+    //
+    // Override <HandleInputAction> to react to ClientInputActions as they are recieved.
+    //
+    // For an example InputController, see <UnityUIInputController>.
+    public abstract class InputController : BaseInput
     {
-        /// <summary>
-        /// A base Input Controller to derive from. This base class handles moving the standard cursor.
-        /// </summary>
-        public abstract class InputController : BaseInput
+        // Group: MonoBehaviour Overrides
+
+        // Function: Start
+        // Adds a listener to <ServiceConnection> to invoke <OnConnection> once a connection has
+        // been made.
+        protected override void Start()
         {
-            int customInputActionListeners = 0;
+            base.Start();
+            ConnectionManager.AddConnectionListener(OnConnection);
+        }
 
-            protected override void Start()
+        // Function: OnDestroy
+        // Deregisters <HandleInputAction> from the active <ServiceConnection> so this can go out
+        // of scope.
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (ConnectionManager.serviceConnection != null)
             {
-                base.Start();
-                ConnectionManager.AddConnectionListener(OnCoreConnection);
+                ConnectionManager.serviceConnection.TransmitInputAction -= HandleInputAction;
             }
+        }
 
-            protected void OnCoreConnection()
+        // Functions:
+
+        // Function: OnConnection
+        // Registers <HandleInputAction> as a listener to recieve <ClientInputActions> from a
+        // <ServiceConnection>.
+        protected void OnConnection()
+        {
+            ConnectionManager.serviceConnection.TransmitInputAction += HandleInputAction;
+        }
+
+        // Function: HandleInputAction
+        // This method is the core of the functionality of this class. It will be invoked with
+        // the <ClientInputAction> as they are provided to the Client from the ScreenControl Service.
+        //
+        // Override this function to implement any custom input handling functionality you wish to see.
+        //
+        // Parameters:
+        //     _inputData - The latest input action recieved from ScreenControl Service.
+        protected virtual void HandleInputAction(ClientInputAction _inputData)
+        {
+            switch (_inputData.InputType)
             {
-                ConnectionManager.coreConnection.TransmitInputAction += HandleInputAction;
-            }
+                case InputType.MOVE:
+                    break;
 
-            /// <summary>
-            /// Used to change the way the input controller receives InputAction events to custom/modified events
-            /// </summary>
-            /// <param name="_customInputActionEvent"></param>
-            public void AddCustomInputActionListener(ref CoreConnection.ClientInputActionEvent _customInputActionEvent)
-            {
-                if (customInputActionListeners == 0)
-                {
-                    ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
-                }
+                case InputType.DOWN:
+                    break;
 
-                customInputActionListeners++;
-                _customInputActionEvent += HandleInputAction;
-            }
+                case InputType.UP:
+                    break;
 
-            public void RemoveCustomInputActionListener(ref CoreConnection.ClientInputActionEvent _customInputActionEvent)
-            {
-                customInputActionListeners--;
-                _customInputActionEvent -= HandleInputAction;
-
-                if(customInputActionListeners == 0)
-                {
-                    OnCoreConnection();
-                }
-            }
-
-            protected override void OnDestroy()
-            {
-                base.OnDestroy();
-
-                if (ConnectionManager.coreConnection != null)
-                {
-                    ConnectionManager.coreConnection.TransmitInputAction -= HandleInputAction;
-                }
-            }
-
-            protected virtual void HandleInputAction(ScreenControlTypes.ClientInputAction _inputData)
-            {
-                switch (_inputData.InputType)
-                {
-                    case ScreenControlTypes.InputType.MOVE:
-                        break;
-                    case ScreenControlTypes.InputType.DOWN:
-                        break;
-                    case ScreenControlTypes.InputType.UP:
-                        break;
-                    case ScreenControlTypes.InputType.CANCEL:
-                        break;
-                }
+                case InputType.CANCEL:
+                    break;
             }
         }
     }
+
 }

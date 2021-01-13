@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
+using Ultraleap.ScreenControl.Client.Cursors;
 
 public class PinchGrabLineCursor : DotCursor
 {
@@ -29,7 +30,7 @@ public class PinchGrabLineCursor : DotCursor
     [Range(0.01f, 1)] public float LineGrowthSeconds;
     public AnimationCurve lineGrowCurve, lineShrinkCurve;
 
-    protected Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality cursorChirality = Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.RIGHT;
+    protected HandChirality cursorChirality = HandChirality.RIGHT;
     protected bool lineShrunk;
     protected float lineWidth;
     protected Coroutine lineScalingRoutine;
@@ -65,9 +66,9 @@ public class PinchGrabLineCursor : DotCursor
         lineRendererOutline.colorGradient = gradient;
     }
 
-    protected override void HandleInputAction(Ultraleap.ScreenControl.Client.ScreenControlTypes.ClientInputAction _inputData)
+    protected override void HandleInputAction(ClientInputAction _inputData)
     {
-        Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType type = _inputData.InputType;
+        InputType type = _inputData.InputType;
         Vector2 cursorPosition = _inputData.CursorPosition;
 
         base.HandleInputAction(_inputData);
@@ -79,11 +80,11 @@ public class PinchGrabLineCursor : DotCursor
 
         switch (type)
         {
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.MOVE:
+            case InputType.MOVE:
                 UpdateLineRenderers(_inputData.ProgressToClick);
                 storedGrabStrengthForGizmos = _inputData.ProgressToClick;
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.DOWN:
+            case InputType.DOWN:
                 if (lineShrunk)
                 {
                     if (lineScalingRoutine != null)
@@ -93,7 +94,7 @@ public class PinchGrabLineCursor : DotCursor
                     lineScalingRoutine = StartCoroutine(GrowLine());
                 }
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.UP:
+            case InputType.UP:
                 if (!lineShrunk)
                 {
                     if (lineScalingRoutine != null)
@@ -103,7 +104,7 @@ public class PinchGrabLineCursor : DotCursor
                     lineScalingRoutine = StartCoroutine(ShrinkLine());
                 }
                 break;
-            case Ultraleap.ScreenControl.Client.ScreenControlTypes.InputType.CANCEL:
+            case InputType.CANCEL:
                 break;
         }
     }
@@ -150,7 +151,7 @@ public class PinchGrabLineCursor : DotCursor
 
     private void UpdateLineRenderers(float _grabStrength)
     {
-        float arcAngle = (cursorChirality == Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
+        float arcAngle = (cursorChirality == HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
 
         List<Vector3> positions = GenerateArcPositions(ArcLengthPercentage, arcAngle, _grabStrength);
         lineRenderer.positionCount = LineRendererPositions;
@@ -226,7 +227,7 @@ public class PinchGrabLineCursor : DotCursor
     {
         if (Application.isEditor && Application.isPlaying && DrawDebugGizmos)
         {
-            float arcAngle = (cursorChirality == Ultraleap.ScreenControl.Client.ScreenControlTypes.HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
+            float arcAngle = (cursorChirality == HandChirality.LEFT) ? ArcAngleLeft : ArcAngleRight;
             float circleCentreOffsetBase = cursorDotSize * CircleCentreOffsetBaseScale;
             float arcMidpointRadius = cursorDotSize * ArcMidpointOffsetScale;
             float currentCircleOffsetRadius = Utilities.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);

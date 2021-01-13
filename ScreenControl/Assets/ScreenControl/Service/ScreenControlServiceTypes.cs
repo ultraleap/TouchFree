@@ -14,7 +14,7 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
     internal enum Compatibility
     {
         COMPATIBLE,
-        CORE_OUTDATED,
+        SERVICE_OUTDATED,
         CLIENT_OUTDATED
     }
 
