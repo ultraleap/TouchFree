@@ -44,7 +44,7 @@
 # Source Code
 # ------------------------------------------------------------------------
 
-Source Folder: ..\ScreenControl\Assets\ScreenControl\Client
+Source Folder: ..\ScreenControl_Unity\Assets\ScreenControl\Client
    Name: Screen Control Client
 
 
