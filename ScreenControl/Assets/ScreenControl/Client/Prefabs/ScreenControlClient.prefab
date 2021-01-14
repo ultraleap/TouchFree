@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2213489624516412114}
   - component: {fileID: 7828356017238222389}
   - component: {fileID: 2383233282598257216}
+  - component: {fileID: 6017491752659792052}
   m_Layer: 0
   m_Name: ScreenControlClient
   m_TagString: Untagged
@@ -62,6 +63,21 @@ MonoBehaviour:
   inputModule: {fileID: 0}
   eventSystem: {fileID: 0}
   isHovering: 0
+--- !u!114 &6017491752659792052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2213489624516412116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55e31c31e5c1e8c42b45ba9a36af71af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneCamera: {fileID: 0}
+  targetCanvasses:
+  - {fileID: 8822492802018686658}
 --- !u!1 &3621950664038563983
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,7 +208,7 @@ MonoBehaviour:
   cursorFill: {fileID: 5464428928977676259}
   ringOuterSprite: {fileID: 8577431237544741958}
   ringEnabled: 1
-  cursorMaxRingSize: 12
+  cursorMaxRingSize: 8
   ringCurve:
     serializedVersion: 2
     m_Curve:
@@ -228,7 +244,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   ringOuter: {fileID: 8577431237544741959}
   ringMask: {fileID: 8577431235920990331}
-  ringWidth: 3
+  ringThickness: 2
   pulseShrinkCurve:
     serializedVersion: 2
     m_Curve:

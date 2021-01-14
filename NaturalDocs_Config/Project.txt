@@ -68,6 +68,9 @@ Source Folder: ..\ScreenControl\Assets\ScreenControl\Client
 # Source Filtering
 # ------------------------------------------------------------------------
 
+Ignore Source Folder Pattern: */Misc/*
+
+
 # If there are any subfolders in the source code that you would like Natural
 # Docs to ignore, they can be specified here.  If you use any of these options
 # on the command line, this entire section is ignored.
