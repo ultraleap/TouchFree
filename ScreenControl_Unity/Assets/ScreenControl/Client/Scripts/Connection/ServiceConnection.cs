@@ -103,7 +103,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: HandleInputAction
-        // Called by the <receiver> to relay a <ClientInputAction> that has ben received to any
+        // Called by the <receiver> to relay a <ClientInputAction> that has been received to any
         // listeners of <TransmitInputAction>.
         public void HandleInputAction(ClientInputAction _action)
         {

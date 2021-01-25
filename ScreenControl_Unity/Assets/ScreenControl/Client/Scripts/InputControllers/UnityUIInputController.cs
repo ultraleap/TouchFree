@@ -35,14 +35,14 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         private TouchPhase touchPhase = TouchPhase.Ended;
         private TouchPhase previousTouchPhase;
         private int baseDragThreshold = 100000;
-        public bool isHovering = false;
+        public bool sendHoverEvents = true;
         private bool isTouching = false;
 
         // Group: Inherited Values
         // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
         // and are overridden here so their values can be determined from the ScreenControl Service.
-        public override Vector2 mousePosition => isHovering ? touchPosition : base.mousePosition;
-        public override bool mousePresent => isHovering ? true : base.mousePresent;
+        public override Vector2 mousePosition => sendHoverEvents ? touchPosition : base.mousePosition;
+        public override bool mousePresent => sendHoverEvents ? true : base.mousePresent;
         public override bool touchSupported => isTouching ? true : base.touchSupported;
         public override int touchCount => isTouching ? 1 : base.touchCount;
         public override Touch GetTouch(int index) => isTouching ? CheckForTouch(index) : base.GetTouch(index);

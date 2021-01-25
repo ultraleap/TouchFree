@@ -62,7 +62,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputModule: {fileID: 0}
   eventSystem: {fileID: 0}
-  isHovering: 0
+  isHovering: 1
 --- !u!114 &6017491752659792052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,32 +213,23 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.00019559264
-      value: -0.0002848094
-      inSlope: 2.256269
-      outSlope: 2.256269
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.08521636
-    - serializedVersion: 3
-      time: 0.5995902
-      value: 0.8080071
-      inSlope: 0.01145742
-      outSlope: 0.01145742
-      tangentMode: 0
+      time: 0
+      value: 0.25
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.2897742
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 1.0026779
-      inSlope: 1.5356914
-      outSlope: 1.5356914
-      tangentMode: 0
+      value: 1
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.20052452
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
