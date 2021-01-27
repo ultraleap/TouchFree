@@ -15,22 +15,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
     {
         // Group: Variables
 
-        // Delegate: ClientInputActionEvent
-        // An Action to distribute a <ClientInputAction> via the <TransmitInputAction> event listener.
-        public delegate void ClientInputActionEvent(ClientInputAction _inputData);
-
-        // Variable: TransmitInputAction
-        // An event for transmitting <ClientInputActions> that are received via the <webSocket> to
-        // be listened to.
-        public event ClientInputActionEvent TransmitInputAction;
-
         // Variable: webSocket
         // A reference to the websocket we are connected to.
         WebSocket webSocket;
-
-        // Variable: receiver
-        // A reference to the receiver that handles destribution of data received via the <webSocket>.
-        MessageReceiver receiver;
 
         // Group: Functions
 
@@ -50,9 +37,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
             };
 
             webSocket.Connect();
-
-            receiver = ConnectionManager.Instance.gameObject.AddComponent<MessageReceiver>();
-            receiver.SetWSConnection(this);
         }
 
         // Function: Disconnect
@@ -62,11 +46,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
             if (webSocket != null)
             {
                 webSocket.Close();
-            }
-
-            if (receiver != null)
-            {
-                MessageReceiver.Destroy(receiver);
             }
         }
 
@@ -89,7 +68,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
                 case ActionCodes.INPUT_ACTION:
                     WebsocketInputAction wsInput = JsonUtility.FromJson<WebsocketInputAction>(content);
                     ClientInputAction cInput = new ClientInputAction(wsInput);
-                    receiver.actionQueue.Enqueue(cInput);
+                    ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
 
                 case ActionCodes.CONFIGURATION_STATE:
@@ -97,17 +76,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
                 case ActionCodes.CONFIGURATION_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
-                    receiver.responseQueue.Enqueue(response);
+                    ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
             }
-        }
-
-        // Function: HandleInputAction
-        // Called by the <receiver> to relay a <ClientInputAction> that has ben received to any
-        // listeners of <TransmitInputAction>.
-        public void HandleInputAction(ClientInputAction _action)
-        {
-            TransmitInputAction?.Invoke(_action);
         }
 
         // Function: SendMessage
@@ -130,7 +101,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
             if (_callback != null)
             {
-                receiver.responseCallbacks.Add(_requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
+                ConnectionManager.messageReceiver.responseCallbacks.Add(_requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
             }
 
             webSocket.Send(_message);

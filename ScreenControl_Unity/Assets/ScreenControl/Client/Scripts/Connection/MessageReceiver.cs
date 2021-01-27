@@ -8,6 +8,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
     // Class: MessageReceiver
     // Handles the receiving of messages from the Service in an ordered manner.
     // Distributes the results of the messages to the respective managers.
+    [DisallowMultipleComponent]
     public class MessageReceiver : MonoBehaviour
     {
         // Group: Variables
@@ -16,10 +17,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // The amount of time between checks of <responseCallbacks> to eliminate expired
         // <ResponseCallbacks>. Used in <ClearUnresponsiveCallbacks>.
         const int callbackClearTimer = 300; // 5 minutes
-
-        // Variable: serviceConnection
-        // A private reference to the <serviceConnection> that created this <MessageReceiver>.
-        ServiceConnection serviceConnection;
 
         // Variable: actionCullToCount
         // How many non-essential <ClientInputActions> should the <actionQueue> be trimmed *to* per
@@ -40,13 +37,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
         public Dictionary<string, ResponseCallback> responseCallbacks = new Dictionary<string, ResponseCallback>();
 
         // Group: Functions
-
-        // Function: SetWSConnection
-        // Used to set the <serviceConnection> reference to the <ServiceConnection> that created this instance.
-        public void SetWSConnection(ServiceConnection _connection)
-        {
-            serviceConnection = _connection;
-        }
 
         // Function: Start
         // Unity's initialization function. Used to begin the <ClearUnresponsiveCallbacks> coroutine.
@@ -120,7 +110,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
             {
                 // Parse newly received messages
                 actionQueue.TryDequeue(out action);
-                serviceConnection.HandleInputAction(action);
+                ConnectionManager.HandleInputAction(action);
             }
         }
 
