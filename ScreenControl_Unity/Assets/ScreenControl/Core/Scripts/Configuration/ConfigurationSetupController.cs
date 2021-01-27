@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Core
@@ -97,12 +98,13 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     if (currentState == ConfigState.WELCOME)
                     {
-                        setupScreenActive = false;
-                        EnableInteractions?.Invoke();
-                        HandManager.Instance.useTrackingTransform = true;
-                        configCanvas.SetActive(false);
-                        OnConfigInactive?.Invoke();
-                        closeConfig = false;
+                        OnMinimizeButtonClick();
+                        //setupScreenActive = false;
+                        //EnableInteractions?.Invoke();
+                        //HandManager.Instance.useTrackingTransform = true;
+                        //configCanvas.SetActive(false);
+                        //OnConfigInactive?.Invoke();
+                        //closeConfig = false;
                     }
                     else
                     {
@@ -308,6 +310,16 @@ namespace Ultraleap.ScreenControl.Core
         {
             OnConfigActive?.Invoke();
             OnConfigInactive?.Invoke();
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetActiveWindow();
+
+        public void OnMinimizeButtonClick()
+        {
+            ShowWindow(GetActiveWindow(), 2);
         }
     }
 }
