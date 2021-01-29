@@ -3,13 +3,13 @@
 //    PhysicalConfig
 //} from '../Configuration/ConfigurationTypes';
 
-// Enum: ActionCodes
+// Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data
 // CONFIGURATION_STATE - Represents a collection of configurations from the Service
 // CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
 // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
 // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
-export enum ActionCodes {
+export enum ActionCode {
     INPUT_ACTION,
     CONFIGURATION_STATE,
     CONFIGURATION_RESPONSE,
@@ -17,7 +17,7 @@ export enum ActionCodes {
     REQUEST_CONFIGURATION_STATE
 }
 
-// Enum: ActionCodes
+// Enum: Compatibility
 // COMPATIBLE - The API versions are considered compatible
 // SERVICE_OUTDATED - The API versions are considered incompatible as Service is older than Client
 // CLIENT_OUTDATED - The API versions are considered incompatible as Client is older than Service
@@ -72,11 +72,24 @@ export class WebSocketResponse
 export class ResponseCallback
 {
     timestamp: number;
-    promise: Promise<WebSocketResponse>;
+    callback: (detail: WebSocketResponse) => void;
 
-    constructor(_timestamp: number, _promise: Promise<WebSocketResponse>)
+    constructor(_timestamp: number, _callback: (detail: WebSocketResponse) => void)
     {
         this.timestamp = _timestamp;
-        this.promise = _promise;
+        this.callback = _callback;
+    }
+}
+
+// Struct: CommunicationWrapper
+// Used by <ServiceConnection> to interpret incoming data to its appropriate subtypes based on the
+// <action> and pass the <content> on to the appropriate handler.
+export class CommunicationWrapper<T> {
+    action: ActionCode;
+    content: T;
+
+    constructor(_actionCode: ActionCode, _content: T) {
+        this.action = _actionCode;
+        this.content = _content;
     }
 }

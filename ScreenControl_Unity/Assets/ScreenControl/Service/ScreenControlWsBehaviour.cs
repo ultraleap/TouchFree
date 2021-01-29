@@ -20,7 +20,7 @@ namespace Ultraleap.ScreenControl.Service
             WebsocketInputAction converted = new WebsocketInputAction(_data);
 
             CommunicationWrapper<WebsocketInputAction> message =
-                new CommunicationWrapper<WebsocketInputAction>(ActionCodes.INPUT_ACTION.ToString(), converted);
+                new CommunicationWrapper<WebsocketInputAction>(ActionCode.INPUT_ACTION.ToString(), converted);
 
             string jsonMessage = JsonUtility.ToJson(message);
 
@@ -30,7 +30,7 @@ namespace Ultraleap.ScreenControl.Service
         public void SendConfigurationResponse(ConfigResponse _response)
         {
             CommunicationWrapper<ConfigResponse> message =
-                new CommunicationWrapper<ConfigResponse>(ActionCodes.CONFIGURATION_RESPONSE.ToString(), _response);
+                new CommunicationWrapper<ConfigResponse>(ActionCode.CONFIGURATION_RESPONSE.ToString(), _response);
 
             string jsonMessage = JsonUtility.ToJson(message);
 
@@ -103,20 +103,20 @@ namespace Ultraleap.ScreenControl.Service
             var match = Regex.Match(rawData, "{\"action\":\"([\\w\\d_]+?)\",\"content\":({.+?})}$");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
-            ActionCodes action = (ActionCodes)Enum.Parse(typeof(ActionCodes), match.Groups[1].ToString());
+            ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());
             string content = match.Groups[2].ToString();
 
             switch (action)
             {
-                case ActionCodes.SET_CONFIGURATION_STATE:
+                case ActionCode.SET_CONFIGURATION_STATE:
                     clientConnection.receiverQueue.setConfigQueue.Enqueue(content);
                     break;
-                case ActionCodes.REQUEST_CONFIGURATION_STATE:
+                case ActionCode.REQUEST_CONFIGURATION_STATE:
                     Debug.LogError("Handling " + action + " is not yet implemented.");
                     break;
-                case ActionCodes.INPUT_ACTION:
-                case ActionCodes.CONFIGURATION_STATE:
-                case ActionCodes.CONFIGURATION_RESPONSE:
+                case ActionCode.INPUT_ACTION:
+                case ActionCode.CONFIGURATION_STATE:
+                case ActionCode.CONFIGURATION_RESPONSE:
                     Debug.LogError("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:

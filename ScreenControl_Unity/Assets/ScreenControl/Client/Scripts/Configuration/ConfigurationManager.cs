@@ -16,7 +16,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // appropriate form to go over the websocket, before sending it through the <ConnectionManager>
         public static void SetConfigState(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {
-            string action = ActionCodes.SET_CONFIGURATION_STATE.ToString();
+            string action = ActionCode.SET_CONFIGURATION_STATE.ToString();
             Guid requestGUID = Guid.NewGuid();
             string requestID = requestGUID.ToString();
 

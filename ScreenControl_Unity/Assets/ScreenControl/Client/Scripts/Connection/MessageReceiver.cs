@@ -33,7 +33,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         public ConcurrentQueue<WebSocketResponse> responseQueue = new ConcurrentQueue<WebSocketResponse>();
 
         // Variable: responseCallbacks
-        // A dictinary of unique request IDs and <ResponseCallbacks> that represent requests that are awaiting response from the Service.
+        // A dictionary of unique request IDs and <ResponseCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ResponseCallback> responseCallbacks = new Dictionary<string, ResponseCallback>();
 
         // Group: Functions

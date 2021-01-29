@@ -51,7 +51,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Function: OnMessage
         // The first point of contact for new messages received, these are sorted into appropriate types based on their
-        // <ActionCodes> and added to queues on the <receiver>.
+        // <ActionCode> and added to queues on the <receiver>.
         public void OnMessage(MessageEventArgs _message)
         {
             string rawData = _message.Data;
@@ -60,21 +60,21 @@ namespace Ultraleap.ScreenControl.Client.Connection
             Match match = Regex.Match(rawData, "{\"action\":\"([\\w\\d_]+?)\",\"content\":({.+?})}$");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
-            ActionCodes action = (ActionCodes)Enum.Parse(typeof(ActionCodes), match.Groups[1].ToString());
+            ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());
             string content = match.Groups[2].ToString();
 
             switch (action)
             {
-                case ActionCodes.INPUT_ACTION:
+                case ActionCode.INPUT_ACTION:
                     WebsocketInputAction wsInput = JsonUtility.FromJson<WebsocketInputAction>(content);
                     ClientInputAction cInput = new ClientInputAction(wsInput);
                     ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
 
-                case ActionCodes.CONFIGURATION_STATE:
+                case ActionCode.CONFIGURATION_STATE:
                     break;
 
-                case ActionCodes.CONFIGURATION_RESPONSE:
+                case ActionCode.CONFIGURATION_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
