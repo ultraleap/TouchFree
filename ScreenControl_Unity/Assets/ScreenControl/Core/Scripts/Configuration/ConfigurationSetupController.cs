@@ -20,9 +20,9 @@ namespace Ultraleap.ScreenControl.Core
     public enum MountingType
     {
         NONE,
-        BOTTOM,
-        TOP_DOWN,
-        OVERHEAD
+        BELOW,
+        ABOVE_FACING_USER,
+        ABOVE_FACING_SCREEN
     }
 
     public class ConfigurationSetupController : MonoBehaviour
@@ -32,22 +32,9 @@ namespace Ultraleap.ScreenControl.Core
         public static ConfigState currentState;
         ConfigState previousState;
 
-        public static event Action OnConfigActive;
-        public static event Action OnConfigInactive;
-
-        public static event Action EnableInteractions;
-        public static event Action DisableInteractions;
-
-        private bool setupScreenActive = false;
-
         public GameObject[] stateRoots;
-        public GameObject configCanvas;
-
-        [HideInInspector] public bool closeConfig = false;
 
         public static MountingType selectedMountType = MountingType.NONE;
-
-        bool openedOnStart = false;
 
         public void ChangeState(ConfigState _newState)
         {
@@ -78,69 +65,47 @@ namespace Ultraleap.ScreenControl.Core
 
         private void Update()
         {
-            if (!setupScreenActive)
+            if (manualConfigKeyEntered == "C" || Input.GetKeyDown(KeyCode.Escape))
             {
-                if (Input.GetKeyDown(KeyCode.C) || !openedOnStart)
+                if (currentState == ConfigState.WELCOME)
                 {
-                    setupScreenActive = true;
-                    DisableInteractions?.Invoke();
-                    // display default autoconfig screen
-                    configCanvas.SetActive(true);
-
+                    OnMinimizeButtonClick();
+                }
+                else
+                {
                     ChangeState(ConfigState.WELCOME);
-                    OnConfigActive?.Invoke();
-                    openedOnStart = true;
+                    HandManager.Instance.UpdateLeapTrackingMode();
                 }
             }
-            else
-            {
-                if (closeConfig || manualConfigKeyEntered == "C" || Input.GetKeyDown(KeyCode.Escape))
-                {
-                    if (currentState == ConfigState.WELCOME)
-                    {
-                        OnMinimizeButtonClick();
-                        //setupScreenActive = false;
-                        //EnableInteractions?.Invoke();
-                        //HandManager.Instance.useTrackingTransform = true;
-                        //configCanvas.SetActive(false);
-                        //OnConfigInactive?.Invoke();
-                        //closeConfig = false;
-                    }
-                    else
-                    {
-                        ChangeState(ConfigState.WELCOME);
-                    }
-                }
 
-                switch (currentState)
-                {
-                    case ConfigState.WELCOME:
-                        RunWelcomeScreen();
-                        break;
-                    case ConfigState.LEAP_MOUNT:
-                        RunLeapMount();
-                        break;
-                    case ConfigState.AUTO_OR_MANUAL:
-                        RunAutoOrManual();
-                        break;
-                    case ConfigState.AUTO_COMPLETE:
-                        RunAutoConfigComplete();
-                        break;
-                    case ConfigState.MANUAL:
-                        RunManualConfig();
-                        break;
-                    case ConfigState.SETTINGS:
-                        RunSettings();
-                        break;
-                    case ConfigState.FILE_SCREEN:
-                        RunFileScreen();
-                        break;
-                    case ConfigState.TEST_CALIBRATION:
-                        RunCalibrationTest();
-                        break;
-                    case ConfigState.AUTO:
-                        break;
-                }
+            switch (currentState)
+            {
+                case ConfigState.WELCOME:
+                    RunWelcomeScreen();
+                    break;
+                case ConfigState.LEAP_MOUNT:
+                    RunLeapMount();
+                    break;
+                case ConfigState.AUTO_OR_MANUAL:
+                    RunAutoOrManual();
+                    break;
+                case ConfigState.AUTO_COMPLETE:
+                    RunAutoConfigComplete();
+                    break;
+                case ConfigState.MANUAL:
+                    RunManualConfig();
+                    break;
+                case ConfigState.SETTINGS:
+                    RunSettings();
+                    break;
+                case ConfigState.FILE_SCREEN:
+                    RunFileScreen();
+                    break;
+                case ConfigState.TEST_CALIBRATION:
+                    RunCalibrationTest();
+                    break;
+                case ConfigState.AUTO:
+                    break;
             }
 
             manualConfigKeyEntered = "";
@@ -175,14 +140,25 @@ namespace Ultraleap.ScreenControl.Core
 
         void RunLeapMount()
         {
-            if (manualConfigKeyEntered == "T")
+            if (manualConfigKeyEntered == "ABOVE_FACING_USER")
             {
-                selectedMountType = MountingType.OVERHEAD;
+                // To help with Auto and manual, we set the tracking mode here. This way the user is in the correct mode for running a Setup
+                selectedMountType = MountingType.ABOVE_FACING_USER;
+                HandManager.Instance.SetLeapTrackingMode(selectedMountType);
                 ChangeState(ConfigState.AUTO_OR_MANUAL);
             }
-            else if (manualConfigKeyEntered == "B")
+            else if (manualConfigKeyEntered == "BELOW")
             {
-                selectedMountType = MountingType.BOTTOM;
+                // To help with Auto and manual, we set the tracking mode here. This way the user is in the correct mode for running a Setup
+                selectedMountType = MountingType.BELOW;
+                HandManager.Instance.SetLeapTrackingMode(selectedMountType);
+                ChangeState(ConfigState.AUTO_OR_MANUAL);
+            }
+            else if (manualConfigKeyEntered == "ABOVE_FACING_SCREEN")
+            {
+                // To help with Auto and manual, we set the tracking mode here. This way the user is in the correct mode for running a Setup
+                selectedMountType = MountingType.ABOVE_FACING_SCREEN;
+                HandManager.Instance.SetLeapTrackingMode(selectedMountType);
                 ChangeState(ConfigState.AUTO_OR_MANUAL);
             }
 
@@ -210,17 +186,17 @@ namespace Ultraleap.ScreenControl.Core
             }
             else if (manualConfigKeyEntered == "M")
             {
-                // immediately use the selecte dmount type for manual setup
+                // immediately use the selected mount type for manual setup
                 bool wasBottomMounted = Mathf.Approximately(0, ConfigManager.PhysicalConfig.LeapRotationD.z);
 
-                if (wasBottomMounted && selectedMountType == MountingType.OVERHEAD)
+                if (wasBottomMounted && (selectedMountType == MountingType.ABOVE_FACING_SCREEN || selectedMountType == MountingType.ABOVE_FACING_USER))
                 {
                     ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(
                         -ConfigManager.PhysicalConfig.LeapRotationD.x,
                         ConfigManager.PhysicalConfig.LeapRotationD.y,
                         180f);
                 }
-                else if (!wasBottomMounted && selectedMountType == MountingType.BOTTOM)
+                else if (!wasBottomMounted && selectedMountType == MountingType.BELOW)
                 {
                     ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(
                         -ConfigManager.PhysicalConfig.LeapRotationD.x,
@@ -255,7 +231,6 @@ namespace Ultraleap.ScreenControl.Core
         void RunSettings()
         {
             // this is handled on the settings config screen object
-
             if (manualConfigKeyEntered == "T")
             {
                 ChangeState(ConfigState.TEST_CALIBRATION);
@@ -270,7 +245,6 @@ namespace Ultraleap.ScreenControl.Core
         void RunFileScreen()
         {
             // this is run on the file screen object
-
             if (manualConfigKeyEntered == "SUPPORT")
             {
                 Application.OpenURL("http://rebrand.ly/ul-contact-us");
@@ -298,18 +272,6 @@ namespace Ultraleap.ScreenControl.Core
         void GoToPreviousState()
         {
             ChangeState(previousState);
-        }
-
-        public void RefreshConfigActive()
-        {
-            OnConfigInactive?.Invoke();
-            OnConfigActive?.Invoke();
-        }
-
-        public void RefreshConfigInactive()
-        {
-            OnConfigActive?.Invoke();
-            OnConfigInactive?.Invoke();
         }
 
         [DllImport("user32.dll")]

@@ -121,7 +121,7 @@ namespace Ultraleap.ScreenControl.Core
 
         public void PlaceLeapTop()
         {
-            ConfigurationSetupController.selectedMountType = MountingType.OVERHEAD;
+            ConfigurationSetupController.selectedMountType = MountingType.ABOVE_FACING_SCREEN;
 
             leap.position = screen.TransformPoint(Random.Range(-0.1f, 0.1f), Random.Range(0.25f, 0.75f), Random.Range(-0.5f, 0));
             leap.rotation = Quaternion.Euler(Random.Range(-30f, 30f), 0, 180);
@@ -129,7 +129,7 @@ namespace Ultraleap.ScreenControl.Core
 
         public void PlaceLeapBottom()
         {
-            ConfigurationSetupController.selectedMountType = MountingType.BOTTOM;
+            ConfigurationSetupController.selectedMountType = MountingType.BELOW;
 
             leap.position = screen.TransformPoint(Random.Range(-0.1f, 0.1f), Random.Range(-0.25f, -0.75f), Random.Range(-0.5f, 0));
             leap.rotation = Quaternion.Euler(Random.Range(-30f, 30f), 0, 0);
@@ -144,7 +144,7 @@ namespace Ultraleap.ScreenControl.Core
             leapOffsetInScreenSpaceT = bottomEdge.InverseTransformPoint(leap.position);
             screenHeightT = Vector3.Distance(bottomEdge.position, topEdge.position);
 
-            if (ConfigurationSetupController.selectedMountType == MountingType.OVERHEAD)
+            if (ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_SCREEN)
             {
                 angleBetweenLeapScreenT = autoConfig.CentreRotationAroundZero(Vector3.SignedAngle(leap.up, -screen.up, Vector3.right));
             }

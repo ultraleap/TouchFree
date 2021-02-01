@@ -67,6 +67,7 @@ namespace Ultraleap.ScreenControl.Core
             CalculateConfigurationValues(bottomPos, topPos);
             ConfigManager.PhysicalConfig.SaveConfig();
 
+            ConfigurationSetupController.selectedMountType = MountingType.NONE;
             ConfigurationSetupController.Instance.ChangeState(ConfigState.AUTO_COMPLETE);
         }
 
@@ -96,7 +97,8 @@ namespace Ultraleap.ScreenControl.Core
             // We want to calculate the Vector from the bottom of the screen to the Leap in this rotated co-ord system.
 
             Vector3 rotationAngles = leapRotation;
-            if (ConfigurationSetupController.selectedMountType == MountingType.OVERHEAD)
+            if (ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
+                    ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_USER)
             {
                 // In overhead mode, the stored 'x' angle is inverted so that positive angles always mean
                 // the camera is pointed towards the screen. Multiply by -1 here so that it can be used
@@ -140,7 +142,8 @@ namespace Ultraleap.ScreenControl.Core
             Vector3 directionBottomToTop = topCentre - bottomCentre;
             Vector3 rotation = Vector3.zero;
 
-            if (ConfigurationSetupController.selectedMountType == MountingType.OVERHEAD)
+            if (ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
+                    ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_USER)
             {
                 rotation.x = -Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.right) + 180;
                 rotation.z = 180;
@@ -151,7 +154,6 @@ namespace Ultraleap.ScreenControl.Core
             }
 
             rotation.x = CentreRotationAroundZero(rotation.x);
-
             return rotation;
         }
 
@@ -180,7 +182,9 @@ namespace Ultraleap.ScreenControl.Core
             trackingLost.SetActive(_display);
 
             if (_display)
+            {
                 StartCoroutine(HideTrackingLostAfterTime());
+            }
         }
 
         IEnumerator HideTrackingLostAfterTime()

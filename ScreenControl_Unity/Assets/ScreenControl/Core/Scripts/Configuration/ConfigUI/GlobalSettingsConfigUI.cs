@@ -102,7 +102,6 @@ namespace Ultraleap.ScreenControl.Core
             ConfigManager.GlobalSettings.ScreenWidth = width;
             ConfigManager.GlobalSettings.ScreenHeight = height;
             ConfigManager.GlobalSettings.ConfigWasUpdated();
-            ConfigurationSetupController.Instance.RefreshConfigActive();
             OnValueChanged();
         }
 
