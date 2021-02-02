@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ultraleap Haptics For Web Examples</title>
+
+    <script name="Connection" type="text/javascript" src="../build/dist/Connection.js"></script>
+</head>
+
+<body>
+
+<div>
+    <h1>Ultraleap Haptics for Web</h1>
+</div>
+
+<div>
+
+</div>
+
+<script>
+    Connection.ConnectionManager.init();
+
+    Connection.ConnectionManager.instance.addEventListener('TransmitInputAction', (event) => {
+        var action = event.detail;
+        console.dir(action);
+    });
+</script>
+
+</body>
+</html>

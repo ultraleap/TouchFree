@@ -39,37 +39,37 @@ namespace Ultraleap.ScreenControl.Service
 
         protected override void OnOpen()
         {
-            var cookies = Context.CookieCollection;
+            // var cookies = Context.CookieCollection;
 
-            if (cookies.Count > 0)
-            {
-                string cookieApiVersion = cookies[0].Value;
+            // if (cookies.Count > 0)
+            // {
+            //     string cookieApiVersion = cookies[0].Value;
 
-                if (cookieApiVersion != null &&
-                        GetVersionCompability(cookieApiVersion, VersionInfo.ApiVersion) == Compatibility.COMPATIBLE)
-                {
-                    Debug.Log("Websocket Connection opened successfully");
-                }
-                else
-                {
-                    if (cookieApiVersion == null)
-                    {
-                        Debug.LogError("No API version header was provided on connect!");
-                    }
-                    else
-                    {
-                        string errorMsg = $"Client API version of {cookieApiVersion} was incompatible with the Service's Core API Version of {VersionInfo.ApiVersion}";
-                        Debug.LogError(errorMsg);
-                        Close(CloseStatusCode.PolicyViolation, errorMsg);
-                    }
-                }
-            }
+            //     if (cookieApiVersion != null &&
+            //             GetVersionCompability(cookieApiVersion, VersionInfo.ApiVersion) == Compatibility.COMPATIBLE)
+            //     {
+                    Debug.LogError("Websocket Connection opened successfully");
+            //     }
+            //     else
+            //     {
+            //         if (cookieApiVersion == null)
+            //         {
+            //             Debug.LogError("No API version header was provided on connect!");
+            //         }
+            //         else
+            //         {
+            //             string errorMsg = $"Client API version of {cookieApiVersion} was incompatible with the Service's Core API Version of {VersionInfo.ApiVersion}";
+            //             Debug.LogError(errorMsg);
+            //             Close(CloseStatusCode.PolicyViolation, errorMsg);
+            //         }
+            //     }
+            // }
             return;
         }
 
         protected override void OnClose(CloseEventArgs eventArgs)
         {
-            Debug.Log("Websocket Connection closed");
+            Debug.LogError("Websocket Connection closed");
         }
 
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)

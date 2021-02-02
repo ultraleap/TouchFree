@@ -4,12 +4,6 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 
-const { stdout } = require('process');
-
-var b = browserify({
-    standalone: "TestModule"
-});
-
 gulp.task('TSC', function () {
     var tsProject = ts.createProject('tsconfig.json');
 
@@ -19,13 +13,17 @@ gulp.task('TSC', function () {
     return tsResult.js.pipe(gulp.dest('build'));
 });
 
-gulp.task('browserify', function () {
-    b.add('./build/src/TestModule.js');
+gulp.task('browserify_connection', function () {
+    var b = browserify({
+        standalone: "Connection"
+    });
+
+    b.add('./build/src/Connection/');
 
     return b.bundle()
         // log errors if they happen
         .on('error', (error) => { console.error(error); })
-        .pipe(source('TestModule.js'))
+        .pipe(source('Connection.js'))
         .pipe(buffer())
         .pipe(gulp.dest('./build/dist/'));
 });
@@ -33,5 +31,5 @@ gulp.task('browserify', function () {
 gulp.task('build',
     gulp.series(
         'TSC',
-        'browserify'
+        'browserify_connection'
     ));

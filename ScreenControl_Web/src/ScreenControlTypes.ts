@@ -31,14 +31,14 @@ export class ClientInputAction {
 
 export function ConvertInputAction(_wsInput: WebsocketInputAction): ClientInputAction {
     return new ClientInputAction(
-        _wsInput.timestamp,
-        FlagUtilities.GetInteractionTypeFromFlags(_wsInput.interactionFlags),
-        FlagUtilities.GetHandTypeFromFlags(_wsInput.interactionFlags),
-        FlagUtilities.GetChiralityFromFlags(_wsInput.interactionFlags),
-        FlagUtilities.GetInputTypeFromFlags(_wsInput.interactionFlags),
-        _wsInput.cursorPosition,
-        _wsInput.distanceFromScreen,
-        _wsInput.progressToClick,
+        _wsInput.Timestamp,
+        FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags),
+        FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags),
+        FlagUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags),
+        FlagUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags),
+        _wsInput.CursorPosition,
+        _wsInput.DistanceFromScreen,
+        _wsInput.ProgressToClick,
     );
 }
 
@@ -113,11 +113,11 @@ export enum BitmaskFlags {
 // The version of an InputAction received via the WebSocket. This must be converted into a
 // <ClientInputAction> to be used by the client and can be done so via its constructor.
 export class WebsocketInputAction {
-    timestamp: Number;
-    interactionFlags: BitmaskFlags;
-    cursorPosition: Array<Number>;
-    distanceFromScreen: Number;
-    progressToClick: Number;
+    Timestamp: Number;
+    InteractionFlags: BitmaskFlags;
+    CursorPosition: Array<Number>;
+    DistanceFromScreen: Number;
+    ProgressToClick: Number;
 
     constructor(
         _timestamp: Number,
@@ -126,11 +126,11 @@ export class WebsocketInputAction {
         _distanceFromScreen: Number,
         _progressToClick: Number,
     ) {
-        this.timestamp = _timestamp;
-        this.interactionFlags = _interactionFlags;
-        this.cursorPosition = _cursorPosition;
-        this.distanceFromScreen = _distanceFromScreen;
-        this.progressToClick = _progressToClick;
+        this.Timestamp = _timestamp;
+        this.InteractionFlags = _interactionFlags;
+        this.CursorPosition = _cursorPosition;
+        this.DistanceFromScreen = _distanceFromScreen;
+        this.ProgressToClick = _progressToClick;
     }
 }
 
@@ -147,7 +147,7 @@ export class FlagUtilities {
         _handType: HandType,
         _chirality: HandChirality,
         _inputType: InputType): BitmaskFlags {
-        var returnVal: BitmaskFlags = BitmaskFlags.NONE;
+        let returnVal: BitmaskFlags = BitmaskFlags.NONE;
 
         switch (_handType) {
             case HandType.PRIMARY:
@@ -207,7 +207,7 @@ export class FlagUtilities {
     // Function: GetChiralityFromFlags
     // Used to find which <HandChirality> _flags contains. Favours RIGHT if none or both are found.
     static GetChiralityFromFlags(_flags: BitmaskFlags): HandChirality {
-        var chirality: HandChirality = HandChirality.RIGHT;
+        let chirality: HandChirality = HandChirality.RIGHT;
 
         if (_flags && BitmaskFlags.RIGHT) {
             chirality = HandChirality.RIGHT;
@@ -225,7 +225,7 @@ export class FlagUtilities {
     // Function: GetHandTypeFromFlags
     // Used to find which <HandType> _flags contains. Favours PRIMARY if none or both are found.
     static GetHandTypeFromFlags(_flags: BitmaskFlags): HandType {
-        var handType: HandType = HandType.PRIMARY;
+        let handType: HandType = HandType.PRIMARY;
 
         if (_flags && BitmaskFlags.PRIMARY) {
             handType = HandType.PRIMARY;
@@ -243,7 +243,7 @@ export class FlagUtilities {
     // Function: GetInputTypeFromFlags
     // Used to find which <InputType> _flags contains. Favours CANCEL if none are found.
     static GetInputTypeFromFlags(_flags: BitmaskFlags): InputType {
-        var inputType: InputType = InputType.CANCEL;
+        let inputType: InputType = InputType.CANCEL;
 
         if (_flags && BitmaskFlags.CANCEL) {
             inputType = InputType.CANCEL;
@@ -267,7 +267,7 @@ export class FlagUtilities {
     // Function: GetInteractionTypeFromFlags
     // Used to find which <InteractionType> _flags contains. Favours PUSH if none are found.
     static GetInteractionTypeFromFlags(_flags: BitmaskFlags): InteractionType {
-        var interactionType: InteractionType = InteractionType.PUSH;
+        let interactionType: InteractionType = InteractionType.PUSH;
 
         if (_flags && BitmaskFlags.PUSH) {
             interactionType = InteractionType.PUSH;

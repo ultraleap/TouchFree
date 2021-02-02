@@ -34,7 +34,7 @@ export class MessageReceiver {
 
     // Variable: responseCallbacks
     // A dictionary of unique request IDs and <ResponseCallbacks> that represent requests that are awaiting response from the Service.
-    responseCallbacks: Record<string, ResponseCallback> = {};
+    responseCallbacks: { [id: string]: ResponseCallback; } = {};
 
     callbackClearInterval: number;
 
@@ -49,8 +49,8 @@ export class MessageReceiver {
             this.callbackClearTimer * 1000);
 
         this.updateInterval = setInterval(
-            this.Update as TimerHandler,
-            60 * 1000);
+            this.Update.bind(this) as TimerHandler,
+            (1 / 60) * 1000);
     }
 
     // Function: Update
@@ -65,9 +65,9 @@ export class MessageReceiver {
     // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to <HandleResponse> if
     // there is one.
     CheckForResponse(): void {
-        var response = this.responseQueue.shift();
+        let response: WebSocketResponse | undefined = this.responseQueue.shift();
 
-        if (response != null) {
+        if (response != undefined) {
             this.HandleResponse(response);
         }
     }
@@ -76,8 +76,14 @@ export class MessageReceiver {
     // Checks the dictionary of <responseCallbacks> for a matching request ID. If there is a
     // match, calls the callback action in the matching <ResponseCallback>.
     HandleResponse(_response: WebSocketResponse): void {
-        if (this.responseQueue.length > 0) {
-            this.CheckForResponse();
+        if (this.responseCallbacks != undefined) {
+            for (let key in this.responseCallbacks) {
+                if (key == _response.requestID) {
+                    this.responseCallbacks[key].callback(_response);
+                    delete this.responseCallbacks[key];
+                    break;
+                }
+            };
         }
     }
 
@@ -87,14 +93,14 @@ export class MessageReceiver {
     // <actionCullToCount>. If any remain, sends the oldest <ClientInputAction> to
     // <serviceConnection> to handle the action.
     CheckForAction(): void {
-        var action: WebsocketInputAction | undefined;
+        let action: WebsocketInputAction | undefined;
 
         while (this.actionQueue.length > this.actionCullToCount) {
             action = this.actionQueue.shift();
 
             if (action != undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
-                if (!(action.interactionFlags && InputType.MOVE)) {
+                if (!(action.InteractionFlags && InputType.MOVE)) {
                     // We don't want to ignore non-move results
                     this.actionQueue.unshift(action);
                     break;
@@ -106,7 +112,7 @@ export class MessageReceiver {
 
         if (action != undefined) {
             // Parse newly received messages & distribute them
-            var converted: ClientInputAction = ConvertInputAction(action);
+            let converted: ClientInputAction = ConvertInputAction(action);
 
             ConnectionManager.HandleInputAction(converted);
         }
@@ -116,18 +122,13 @@ export class MessageReceiver {
     // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
     // expired from <responseCallbacks>.
     ClearUnresponsivePromises(): void {
-        while (true) {
-            var lastClearTime: number = Date.now();
+        let lastClearTime: number = Date.now();
 
-            var keys: Array<keyof typeof Object> = Object.keys(this.responseCallbacks) as Array<keyof typeof Object>;
-
-            for (var i: number = 0; i < keys.length; i++) {
-                var key = keys[i];
-
+        if (this.responseCallbacks != undefined) {
+            for (let key in this.responseCallbacks) {
                 if (this.responseCallbacks[key].timestamp < lastClearTime) {
                     delete this.responseCallbacks[key];
-                }
-                else {
+                } else {
                     break;
                 }
             };

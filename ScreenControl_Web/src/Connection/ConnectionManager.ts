@@ -53,10 +53,14 @@ export class ConnectionManager extends EventTarget {
 
     // Group: Functions
 
+    constructor() {
+        super();
+    }
+
     // Function: init
     // Run by Unity on Initialization. Finds the required <MessageReceiver> component.
     // Also attempts to immediately <Connect> to a WebSocket.
-    init() {
+    public static init() {
         ConnectionManager.messageReceiver = new MessageReceiver();
         ConnectionManager.instance = new ConnectionManager();
         ConnectionManager.Connect();
@@ -88,7 +92,7 @@ export class ConnectionManager extends EventTarget {
     // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
     public static HandleInputAction(_action: ClientInputAction): void {
-        var event: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction> (
+        let event: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction> (
             'TransmitInputAction',
             { detail: _action }
         );

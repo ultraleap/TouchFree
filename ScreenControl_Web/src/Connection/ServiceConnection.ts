@@ -34,12 +34,12 @@ export class ServiceConnection {
     // to connect to on construction. This constructor also sets up the <receiver> for future
     // use and redirects incoming messages to <OnMessage>.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
-        this.webSocket = new WebSocket('ws://${_ip}:${_port}/connect');
+       this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
 
         // Websocket Handshake stuff needs to go here, we need to change
         // service to enable that
 
-        this.webSocket.onmessage = this.OnMessage;
+        this.webSocket.addEventListener('message', this.OnMessage);
     }
 
     // Function: Disconnect
@@ -55,11 +55,11 @@ export class ServiceConnection {
     // The first point of contact for new messages received, these are sorted into appropriate
     // types based on their <ActionCode> and added to queues on the <receiver>.
     OnMessage(_message: MessageEvent): void {
-        var looseData: CommunicationWrapper<any> = _message.data;
+        let looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
 
         switch (looseData.action) {
             case ActionCode.INPUT_ACTION:
-                var wsInput: WebsocketInputAction = looseData.content;
+                let wsInput: WebsocketInputAction = looseData.content;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
                 break;
 
@@ -67,7 +67,7 @@ export class ServiceConnection {
                 break;
 
             case ActionCode.CONFIGURATION_RESPONSE:
-                var response: WebSocketResponse = looseData.content;
+                let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
         }
@@ -77,7 +77,7 @@ export class ServiceConnection {
     // Called by the <receiver> to relay a <ClientInputAction> that has ben received to any
     // listeners of <TransmitInputAction>.
     HandleInputAction(_action: ClientInputAction): void {
-        var event: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction>(
+        let event: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction>(
             'TransmitInputAction',
             { detail: _action });
         ConnectionManager.instance.dispatchEvent(event);
@@ -92,7 +92,7 @@ export class ServiceConnection {
         _callback: (detail: WebSocketResponse) => void): void {
         if (_requestID == "") {
             if (_callback != null) {
-                var response: WebSocketResponse = new WebSocketResponse(
+                let response: WebSocketResponse = new WebSocketResponse(
                     "",
                     "Failure",
                     "Request failed. This is due to a missing or invalid requestID", _message);
