@@ -22,7 +22,8 @@
 
     Connection.ConnectionManager.instance.addEventListener('TransmitInputAction', (event) => {
         var action = event.detail;
-        console.dir(action);
+        // console.dir(action);
+        console.log(`${action.ProgressToClick}, ${action.InputType}`);
     });
 </script>
 

@@ -46,7 +46,7 @@ export class MessageReceiver {
     constructor() {
         this.callbackClearInterval = setInterval(
             this.ClearUnresponsivePromises as TimerHandler,
-            this.callbackClearTimer * 1000);
+            this.callbackClearTimer);
 
         this.updateInterval = setInterval(
             this.Update.bind(this) as TimerHandler,

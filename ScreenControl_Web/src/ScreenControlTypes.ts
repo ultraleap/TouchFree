@@ -1,12 +1,12 @@
 export class ClientInputAction {
-    timestamp: Number;
-    interactionType: InteractionType;
-    handType: HandType;
-    chirality: HandChirality;
-    inputType: InputType;
-    cursorPosition: Array<Number>;
-    distanceFromScreen: Number;
-    progressToClick: Number;
+    Timestamp: Number;
+    InteractionType: InteractionType;
+    HandType: HandType;
+    Chirality: HandChirality;
+    InputType: InputType;
+    CursorPosition: Array<Number>;
+    DistanceFromScreen: Number;
+    ProgressToClick: Number;
 
     constructor(
         _timestamp: Number,
@@ -18,14 +18,14 @@ export class ClientInputAction {
         _distanceFromScreen: Number,
         _progressToClick: Number)
     {
-        this.timestamp = _timestamp;
-        this.interactionType = _interactionType;
-        this.handType = _handType;
-        this.chirality = _handChirality;
-        this.inputType = _inputType;
-        this.cursorPosition = _cursorPosition;
-        this.distanceFromScreen = _distanceFromScreen;
-        this.progressToClick = _progressToClick;
+        this.Timestamp = _timestamp;
+        this.InteractionType = _interactionType;
+        this.HandType = _handType;
+        this.Chirality = _handChirality;
+        this.InputType = _inputType;
+        this.CursorPosition = _cursorPosition;
+        this.DistanceFromScreen = _distanceFromScreen;
+        this.ProgressToClick = _progressToClick;
     }
 }
 
@@ -209,10 +209,10 @@ export class FlagUtilities {
     static GetChiralityFromFlags(_flags: BitmaskFlags): HandChirality {
         let chirality: HandChirality = HandChirality.RIGHT;
 
-        if (_flags && BitmaskFlags.RIGHT) {
+        if (_flags & BitmaskFlags.RIGHT) {
             chirality = HandChirality.RIGHT;
         }
-        else if (_flags && BitmaskFlags.LEFT) {
+        else if (_flags & BitmaskFlags.LEFT) {
             chirality = HandChirality.LEFT;
         }
         else {
@@ -227,10 +227,10 @@ export class FlagUtilities {
     static GetHandTypeFromFlags(_flags: BitmaskFlags): HandType {
         let handType: HandType = HandType.PRIMARY;
 
-        if (_flags && BitmaskFlags.PRIMARY) {
+        if (_flags & BitmaskFlags.PRIMARY) {
             handType = HandType.PRIMARY;
         }
-        else if (_flags && BitmaskFlags.SECONDARY) {
+        else if (_flags & BitmaskFlags.SECONDARY) {
             handType = HandType.SECONDARY;
         }
         else {
@@ -245,16 +245,16 @@ export class FlagUtilities {
     static GetInputTypeFromFlags(_flags: BitmaskFlags): InputType {
         let inputType: InputType = InputType.CANCEL;
 
-        if (_flags && BitmaskFlags.CANCEL) {
+        if (_flags & BitmaskFlags.CANCEL) {
             inputType = InputType.CANCEL;
         }
-        else if (_flags && BitmaskFlags.UP) {
+        else if (_flags & BitmaskFlags.UP) {
             inputType = InputType.UP;
         }
-        else if (_flags && BitmaskFlags.DOWN) {
+        else if (_flags & BitmaskFlags.DOWN) {
             inputType = InputType.DOWN;
         }
-        else if (_flags && BitmaskFlags.MOVE) {
+        else if (_flags & BitmaskFlags.MOVE) {
             inputType = InputType.MOVE;
         }
         else {
@@ -269,13 +269,13 @@ export class FlagUtilities {
     static GetInteractionTypeFromFlags(_flags: BitmaskFlags): InteractionType {
         let interactionType: InteractionType = InteractionType.PUSH;
 
-        if (_flags && BitmaskFlags.PUSH) {
+        if (_flags & BitmaskFlags.PUSH) {
             interactionType = InteractionType.PUSH;
         }
-        else if (_flags && BitmaskFlags.HOVER) {
+        else if (_flags & BitmaskFlags.HOVER) {
             interactionType = InteractionType.HOVER;
         }
-        else if (_flags && BitmaskFlags.GRAB) {
+        else if (_flags & BitmaskFlags.GRAB) {
             interactionType = InteractionType.GRAB;
         }
         else {
