@@ -18,33 +18,24 @@ import { ConnectionManager } from './ConnectionManager';
 export class ServiceConnection {
     // Group: Variables
 
-    // Event: TransmitInputAction
-    // An event for transmitting <ClientInputActions> that are received via the <webSocket> to
-    // be listened to.
-    // 'TransmitInputAction': ClientInputActionEvent;
-
     // Variable: webSocket
     // A reference to the websocket we are connected to.
     webSocket: WebSocket;
 
     // Group: Functions
 
-    // Function: ServiceConnection
+    // Function: constructor
     // The constructor for <ServiceConnection> that can be given a different IP Address and Port
-    // to connect to on construction. This constructor also sets up the <receiver> for future
-    // use and redirects incoming messages to <OnMessage>.
+    // to connect to on construction. This constructor also sets up the redirects of incoming
+    // messages to <OnMessage>.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
        this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
 
-        // Websocket Handshake stuff needs to go here, we need to change
-        // service to enable that
-
-        this.webSocket.addEventListener('message', this.OnMessage);
+       this.webSocket.addEventListener('message', this.OnMessage);
     }
 
     // Function: Disconnect
-    // Can be used to force the connection to the <webSocket> to be closed. Also destroys the
-    // <receiver>.
+    // Can be used to force the connection to the <webSocket> to be closed.
     Disconnect(): void {
         if (this.webSocket != null) {
             this.webSocket.close();
@@ -53,7 +44,8 @@ export class ServiceConnection {
 
     // Function: OnMessage
     // The first point of contact for new messages received, these are sorted into appropriate
-    // types based on their <ActionCode> and added to queues on the <receiver>.
+    // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
+    // <MessageReceiver>.
     OnMessage(_message: MessageEvent): void {
         let looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
 
@@ -71,16 +63,6 @@ export class ServiceConnection {
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
         }
-    }
-
-    // Function: HandleInputAction
-    // Called by the <receiver> to relay a <ClientInputAction> that has ben received to any
-    // listeners of <TransmitInputAction>.
-    HandleInputAction(_action: ClientInputAction): void {
-        let event: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction>(
-            'TransmitInputAction',
-            { detail: _action });
-        ConnectionManager.instance.dispatchEvent(event);
     }
 
     // Function: SendMessage

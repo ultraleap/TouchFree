@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ultraleap Haptics For Web Examples</title>
+    <title>SCCfW Testbed</title>
 
     <script name="Connection" type="text/javascript" src="../build/dist/Connection.js"></script>
 </head>
@@ -10,20 +10,30 @@
 <body>
 
 <div>
-    <h1>Ultraleap Haptics for Web</h1>
+    <h1>Screen Control Client for Web Testbed</h1>
 </div>
+
+<p id=xpos>
+    X Pos:
+</p>
+<p id=ypos>
+    Y Pos:
+</p>
 
 <div>
 
 </div>
 
 <script>
+    var xElem = document.getElementById("xpos");
+    var yElem = document.getElementById("ypos");
+
     Connection.ConnectionManager.init();
 
     Connection.ConnectionManager.instance.addEventListener('TransmitInputAction', (event) => {
         var action = event.detail;
-        // console.dir(action);
-        console.log(`${action.ProgressToClick}, ${action.InputType}`);
+        xElem.textContent = `X pos: ${action.CursorPosition.x}`;
+        yElem.textContent = `Y pos: ${action.CursorPosition.y}`;
     });
 </script>
 

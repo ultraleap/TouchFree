@@ -7,14 +7,20 @@ import { ClientInputAction } from "../ScreenControlTypes";
 // This Class manages the connection to the Service. It provides static variables
 // for ease of use and is a Singleton to allow for easy referencing.
 export class ConnectionManager extends EventTarget {
-    // Group: Variables
 
-    // Variable: OnConnected
+    // Group: Events
+
+    // Event: OnConnected
     // An event which is emitted when <Connect> is called.
     //
     // Instead of adding listeners to this event, use <AddConnectionListener> to ensure that your
     // function is invoked if the connection has already been made by the time your class runs.
-    // public static event Action OnConnected;
+
+    // Event: TransmitInputAction
+    // An event for transmitting <ClientInputActions> that are received via the <messageReceiver> to
+    // be listened to.
+
+    // Group: Variables
 
     // Variable: currentServiceConnection
     // The private reference to the currently managed <ServiceConnection>.
@@ -30,15 +36,8 @@ export class ConnectionManager extends EventTarget {
     // A reference to the receiver that handles destribution of data received via the <currentServiceConnection> if connected.
     public static messageReceiver: MessageReceiver;
 
-    // Delegate: ClientInputActionEvent
-    // An Action to distribute a <ClientInputAction> via the <TransmitInputAction> event listener.
-    // public CustomEvent<ClientInputAction>(_inputData: ClientInputAction ): void;
-
-    // Variable: TransmitInputAction
-    // An event for transmitting <ClientInputActions> that are received via the <messageReceiver> to
-    // be listened to.
-    // public static event ClientInputActionEvent TransmitInputAction;
-
+    // Variable: instance
+    // The instance of the singleton for referencing the events transmitted
     public static instance: ConnectionManager;
 
     // Variable: iPAddress
@@ -52,10 +51,6 @@ export class ConnectionManager extends EventTarget {
     static port: string = "9739";
 
     // Group: Functions
-
-    constructor() {
-        super();
-    }
 
     // Function: init
     // Run by Unity on Initialization. Finds the required <MessageReceiver> component.
@@ -92,12 +87,12 @@ export class ConnectionManager extends EventTarget {
     // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
     public static HandleInputAction(_action: ClientInputAction): void {
-        let event: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction> (
+        let inputActionEvent: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction> (
             'TransmitInputAction',
             { detail: _action }
         );
 
-        ConnectionManager.instance.dispatchEvent(event);
+        ConnectionManager.instance.dispatchEvent(inputActionEvent);
     }
 
     // Function: Disconnect

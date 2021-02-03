@@ -3,7 +3,10 @@ import {
     ResponseCallback
 } from './ScreenControlServiceTypes';
 import {
-    ClientInputAction, ConvertInputAction, InputType, WebsocketInputAction
+    ClientInputAction,
+    ConvertInputAction,
+    InputType,
+    WebsocketInputAction
 } from '../ScreenControlTypes';
 import { ConnectionManager } from './ConnectionManager';
 
@@ -17,6 +20,13 @@ export class MessageReceiver {
     // The amount of time between checks of <responseCallbacks> to eliminate expired
     // <ResponseCallbacks>. Used in <ClearUnresponsiveCallbacks>.
     callbackClearTimer: number = 300;
+
+    // Variable: update Rate
+    // How many times per second to process <WebSocketResponse> & <ClientnputActions>
+    updateRate: number = 60;
+
+    // Calculated on construction for use in setting the update interval
+    private updateDuration: number;
 
     // Variable: actionCullToCount
     // How many non-essential <ClientInputActions> should the <actionQueue> be trimmed *to* per
@@ -36,21 +46,30 @@ export class MessageReceiver {
     // A dictionary of unique request IDs and <ResponseCallbacks> that represent requests that are awaiting response from the Service.
     responseCallbacks: { [id: string]: ResponseCallback; } = {};
 
-    callbackClearInterval: number;
+    // Variable: callbackClearInterval
+    // Stores the reference number for the interal running <ClearUnresponsiveCallbacks>, allowing
+    // it to be cleared.
+    private callbackClearInterval: number;
 
-    updateInterval: number;
+    // Variable: updateInterval
+    // Stores the reference number for the interval running <Update>, allowing it to be cleared.
+    private updateInterval: number;
 
     // Group: Functions
-    // Function: Start
-    // Unity's initialization function. Used to begin the <ClearUnresponsiveCallbacks> coroutine.
+
+    // Function: constructor
+    // Starts the two regular intervals managed for this (running <ClearUnresponsivePromises> on an
+    // interval of <callbackClearTimer> and <Update> on an interval of <updateDuration>
     constructor() {
+        this.updateDuration = (1 / this.updateRate) * 1000;
+
         this.callbackClearInterval = setInterval(
             this.ClearUnresponsivePromises as TimerHandler,
             this.callbackClearTimer);
 
         this.updateInterval = setInterval(
             this.Update.bind(this) as TimerHandler,
-            (1 / 60) * 1000);
+            this.updateDuration);
     }
 
     // Function: Update
@@ -93,22 +112,19 @@ export class MessageReceiver {
     // <actionCullToCount>. If any remain, sends the oldest <ClientInputAction> to
     // <serviceConnection> to handle the action.
     CheckForAction(): void {
-        let action: WebsocketInputAction | undefined;
-
         while (this.actionQueue.length > this.actionCullToCount) {
-            action = this.actionQueue.shift();
-
-            if (action != undefined) {
+            if (this.actionQueue[0] != undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
-                if (!(action.InteractionFlags && InputType.MOVE)) {
-                    // We don't want to ignore non-move results
-                    this.actionQueue.unshift(action);
+                if (this.actionQueue[0].InteractionFlags & InputType.MOVE) {
+                    // We want to ignore non-move results
+                    this.actionQueue.shift();
+                } else {
                     break;
                 }
             }
         }
 
-        action = this.actionQueue.shift();
+        let action: WebsocketInputAction | undefined = this.actionQueue.shift();
 
         if (action != undefined) {
             // Parse newly received messages & distribute them

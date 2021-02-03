@@ -48,7 +48,7 @@ namespace Ultraleap.ScreenControl.Service
             //     if (cookieApiVersion != null &&
             //             GetVersionCompability(cookieApiVersion, VersionInfo.ApiVersion) == Compatibility.COMPATIBLE)
             //     {
-                    Debug.LogError("Websocket Connection opened successfully");
+                    Debug.Log("Websocket Connection opened successfully");
             //     }
             //     else
             //     {
@@ -69,7 +69,7 @@ namespace Ultraleap.ScreenControl.Service
 
         protected override void OnClose(CloseEventArgs eventArgs)
         {
-            Debug.LogError("Websocket Connection closed");
+            Debug.Log("Websocket Connection closed");
         }
 
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)

@@ -1,3 +1,6 @@
+// Class: ClientInputAction
+// A structure representing the Client verison of an InputAction. This is used to pass
+// key information relating to an action that has happened on the Service.
 export class ClientInputAction {
     Timestamp: Number;
     InteractionType: InteractionType;
@@ -29,6 +32,9 @@ export class ClientInputAction {
     }
 }
 
+// Function: ConvertInputAction
+// Used to translate the raw actions that come across the websocket (<WebsocketInputActions>) and
+// convert them into the Client-friendly <ClientInputAction> format.
 export function ConvertInputAction(_wsInput: WebsocketInputAction): ClientInputAction {
     return new ClientInputAction(
         _wsInput.Timestamp,
@@ -111,12 +117,17 @@ export enum BitmaskFlags {
 
 // Class: WebsocketInputAction
 // The version of an InputAction received via the WebSocket. This must be converted into a
-// <ClientInputAction> to be used by the client and can be done so via its constructor.
+// <ClientInputAction> to be used by the client and can be done so via <ConvertInputAction>.
 export class WebsocketInputAction {
+    // Variable: Timestamp
     Timestamp: Number;
+    // Variable: InteractionFlags
     InteractionFlags: BitmaskFlags;
+    // Variable: CursorPosition
     CursorPosition: Array<Number>;
+    // Variable: DistanceFromScreen
     DistanceFromScreen: Number;
+    // Variable: ProgressToClick
     ProgressToClick: Number;
 
     constructor(
