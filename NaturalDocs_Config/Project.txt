@@ -45,7 +45,10 @@
 # ------------------------------------------------------------------------
 
 Source Folder: ..\ScreenControl_Unity\Assets\ScreenControl\Client
-   Name: Screen Control Client
+   Name: Screen Control Client for Unity
+
+Source Folder 2: ..\ScreenControl_Web\src
+   Name: Screen Control Client for Web
 
 
 # This is where you specify what files and folders Natural Docs should be

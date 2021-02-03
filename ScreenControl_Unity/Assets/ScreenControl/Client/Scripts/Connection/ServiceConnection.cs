@@ -15,22 +15,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
     {
         // Group: Variables
 
-        // Delegate: ClientInputActionEvent
-        // An Action to distribute a <ClientInputAction> via the <TransmitInputAction> event listener.
-        public delegate void ClientInputActionEvent(ClientInputAction _inputData);
-
-        // Variable: TransmitInputAction
-        // An event for transmitting <ClientInputActions> that are received via the <webSocket> to
-        // be listened to.
-        public event ClientInputActionEvent TransmitInputAction;
-
         // Variable: webSocket
         // A reference to the websocket we are connected to.
         WebSocket webSocket;
-
-        // Variable: receiver
-        // A reference to the receiver that handles destribution of data received via the <webSocket>.
-        MessageReceiver receiver;
 
         // Group: Functions
 
@@ -50,9 +37,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
             };
 
             webSocket.Connect();
-
-            receiver = ConnectionManager.Instance.gameObject.AddComponent<MessageReceiver>();
-            receiver.SetWSConnection(this);
         }
 
         // Function: Disconnect
@@ -63,16 +47,11 @@ namespace Ultraleap.ScreenControl.Client.Connection
             {
                 webSocket.Close();
             }
-
-            if (receiver != null)
-            {
-                MessageReceiver.Destroy(receiver);
-            }
         }
 
         // Function: OnMessage
         // The first point of contact for new messages received, these are sorted into appropriate types based on their
-        // <ActionCodes> and added to queues on the <receiver>.
+        // <ActionCode> and added to queues on the <receiver>.
         public void OnMessage(MessageEventArgs _message)
         {
             string rawData = _message.Data;
@@ -81,33 +60,25 @@ namespace Ultraleap.ScreenControl.Client.Connection
             Match match = Regex.Match(rawData, "{\"action\":\"([\\w\\d_]+?)\",\"content\":({.+?})}$");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
-            ActionCodes action = (ActionCodes)Enum.Parse(typeof(ActionCodes), match.Groups[1].ToString());
+            ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());
             string content = match.Groups[2].ToString();
 
             switch (action)
             {
-                case ActionCodes.INPUT_ACTION:
+                case ActionCode.INPUT_ACTION:
                     WebsocketInputAction wsInput = JsonUtility.FromJson<WebsocketInputAction>(content);
                     ClientInputAction cInput = new ClientInputAction(wsInput);
-                    receiver.actionQueue.Enqueue(cInput);
+                    ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
 
-                case ActionCodes.CONFIGURATION_STATE:
+                case ActionCode.CONFIGURATION_STATE:
                     break;
 
-                case ActionCodes.CONFIGURATION_RESPONSE:
+                case ActionCode.CONFIGURATION_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
-                    receiver.responseQueue.Enqueue(response);
+                    ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
             }
-        }
-
-        // Function: HandleInputAction
-        // Called by the <receiver> to relay a <ClientInputAction> that has ben received to any
-        // listeners of <TransmitInputAction>.
-        public void HandleInputAction(ClientInputAction _action)
-        {
-            TransmitInputAction?.Invoke(_action);
         }
 
         // Function: SendMessage
@@ -130,7 +101,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
             if (_callback != null)
             {
-                receiver.responseCallbacks.Add(_requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
+                ConnectionManager.messageReceiver.responseCallbacks.Add(_requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
             }
 
             webSocket.Send(_message);

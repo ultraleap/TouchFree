@@ -18,36 +18,23 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         // Group: MonoBehaviour Overrides
 
         // Function: Start
-        // Adds a listener to <ServiceConnection> to invoke <OnConnection> once a connection has
-        // been made.
+        // Adds a listener to <ConnectionManager> to invoke <HandleInputAction> with <ClientInputActions> as they
+        // are received.
         protected override void Start()
         {
             base.Start();
-            ConnectionManager.AddConnectionListener(OnConnection);
+            ConnectionManager.TransmitInputAction += HandleInputAction;
         }
 
         // Function: OnDestroy
-        // Deregisters <HandleInputAction> from the active <ServiceConnection> so this can go out
-        // of scope.
+        // Deregisters <HandleInputAction> from the <ConnectionManager> so this can go out of scope.
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            if (ConnectionManager.serviceConnection != null)
-            {
-                ConnectionManager.serviceConnection.TransmitInputAction -= HandleInputAction;
-            }
+            ConnectionManager.TransmitInputAction -= HandleInputAction;
         }
 
         // Functions:
-
-        // Function: OnConnection
-        // Registers <HandleInputAction> as a listener to recieve <ClientInputActions> from a
-        // <ServiceConnection>.
-        protected void OnConnection()
-        {
-            ConnectionManager.serviceConnection.TransmitInputAction += HandleInputAction;
-        }
 
         // Function: HandleInputAction
         // This method is the core of the functionality of this class. It will be invoked with

@@ -2,7 +2,7 @@ using System;
 
 namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
 {
-    internal enum ActionCodes
+    internal enum ActionCode
     {
         INPUT_ACTION,
         CONFIGURATION_STATE,
