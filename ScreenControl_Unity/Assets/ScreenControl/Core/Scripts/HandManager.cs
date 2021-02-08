@@ -153,16 +153,19 @@ namespace Ultraleap.ScreenControl.Core
             if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {
                 if (screenTopAvailable && ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
-                {   //Screentop
+                {
+                    //Screentop
                     SetLeapTrackingMode(MountingType.ABOVE_FACING_USER);
                 }
                 else
-                {   //HMD
+                {
+                    //HMD
                     SetLeapTrackingMode(MountingType.ABOVE_FACING_SCREEN);
                 }
             }
             else
-            {   //Desktop
+            {
+                //Desktop
                 SetLeapTrackingMode(MountingType.BELOW);
             }
         }
@@ -225,7 +228,8 @@ namespace Ultraleap.ScreenControl.Core
 
         void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, ScreenControlTypes.HandType _handType)
         {
-            Chirality handChirality; // We must use the cached Chirality to ensure persistence
+            // We must use the cached Chirality to ensure persistence
+            Chirality handChirality;
 
             if (_handType == ScreenControlTypes.HandType.PRIMARY)
             {
@@ -236,8 +240,10 @@ namespace Ultraleap.ScreenControl.Core
                 handChirality = secondaryChirality;
             }
 
-            if (_hand == null) // Look for a new hand
+            if (_hand == null)
             {
+                // Look for a new hand
+
                 if (_handType == ScreenControlTypes.HandType.PRIMARY)
                 {
                     AssignNewPrimary(_left, _right);
@@ -247,20 +253,24 @@ namespace Ultraleap.ScreenControl.Core
                     AssignNewSecondary(_left, _right);
                 }
             }
-            else // Check hand is still active
+            else
             {
-                if (handChirality == Chirality.Left && _left != null) // Hand is still left
+                // Check hand is still active
+
+                if (handChirality == Chirality.Left && _left != null)
                 {
+                    // Hand is still left
                     _hand = _left;
                     return;
                 }
-                else if (handChirality == Chirality.Right && _right != null) // Hand is still right
+                else if (handChirality == Chirality.Right && _right != null)
                 {
+                    // Hand is still right
                     _hand = _right;
                     return;
                 }
 
-                // If we are here, the Hand hand has been lost. Assign a new Hand.
+                // If we are here, the Hand has been lost. Assign a new Hand.
                 if (_handType == ScreenControlTypes.HandType.PRIMARY)
                 {
                     AssignNewPrimary(_left, _right);

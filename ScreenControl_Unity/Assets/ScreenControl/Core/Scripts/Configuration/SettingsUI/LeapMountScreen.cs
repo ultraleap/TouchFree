@@ -79,17 +79,20 @@ namespace Ultraleap.ScreenControl.Core
             if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {
                 if (HandManager.Instance.screenTopAvailable && ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
-                {   //Screentop
+                {
+                    //Screentop
                     screenTopMountedCurrent.SetActive(true);
                 }
                 else
-                {   //HMD
+                {
+                    //HMD
                     HMDMountedCurrent.SetActive(true);
                 }
 
             }
             else
-            {   //Desktop
+            {
+                //Desktop
                 bottomMountedCurrent.SetActive(true);
             }
         }
