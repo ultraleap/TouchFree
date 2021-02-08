@@ -74,13 +74,7 @@ public class LeapHandCursor : TouchlessCursor
         //TODO: make these listeners work with core-client setup
         if (cursorCamera == null) cursorCamera = Camera.main;
 
-        ConnectionManager.AddConnectionListener(OnCoreConnection);
-    }
-
-    protected override void OnCoreConnection()
-    {
-        base.OnCoreConnection();
-        ConnectionManager.serviceConnection.TransmitInputAction += OnHandlePrimaryAction;
+        ConnectionManager.TransmitInputAction += OnHandlePrimaryAction;
     }
 
     protected override void OnDisable()
@@ -89,7 +83,7 @@ public class LeapHandCursor : TouchlessCursor
 
         //InteractionManager.HandleInputActionLeftHand -= OnHandleLeftInputAction;
         //InteractionManager.HandleInputActionRightHand -= OnHandleRightInputAction;
-        ConnectionManager.serviceConnection.TransmitInputAction -= OnHandlePrimaryAction;
+        ConnectionManager.TransmitInputAction -= OnHandlePrimaryAction;
     }
 
     // Start is called before the first frame update

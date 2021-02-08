@@ -55,10 +55,10 @@ namespace Ultraleap.ScreenControl.Client
         public ClientInputAction(WebsocketInputAction _wsInput)
         {
             Timestamp = _wsInput.Timestamp;
-            InteractionType = TypeUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags);
-            HandType = TypeUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags);
-            Chirality = TypeUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags);
-            InputType = TypeUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags);
+            InteractionType = FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags);
+            HandType = FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags);
+            Chirality = FlagUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags);
+            InputType = FlagUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags);
             CursorPosition = _wsInput.CursorPosition;
             DistanceFromScreen = _wsInput.DistanceFromScreen;
             ProgressToClick = _wsInput.ProgressToClick;
@@ -151,9 +151,9 @@ namespace Ultraleap.ScreenControl.Client
         public float ProgressToClick;
     }
 
-    // Class: TypeUtilities
+    // Class: FlagUtilities
     // A collection of Utilities to be used when working with <BitmaskFlags>.
-    public static class TypeUtilities
+    public static class FlagUtilities
     {
         // Group: Functions
 

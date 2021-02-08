@@ -44,17 +44,12 @@ namespace Animation
             }
             currentState = "Unknown";
 
-            ConnectionManager.AddConnectionListener(OnCoreConnection);
-        }
-
-        void OnCoreConnection()
-        {
-            ConnectionManager.serviceConnection.TransmitInputAction += OnHandleInputAction;
+            ConnectionManager.TransmitInputAction += OnHandleInputAction;
         }
 
         void OnDisable()
         {
-            ConnectionManager.serviceConnection.TransmitInputAction -= OnHandleInputAction;
+            ConnectionManager.TransmitInputAction -= OnHandleInputAction;
         }
 
         // Update is called once per frame

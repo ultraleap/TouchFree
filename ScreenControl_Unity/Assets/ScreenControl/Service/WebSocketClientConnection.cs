@@ -23,6 +23,8 @@ namespace Ultraleap.ScreenControl.Service
 
         private void Awake()
         {
+            Application.targetFrameRate = 60;
+
             Instance = this;
         }
 
