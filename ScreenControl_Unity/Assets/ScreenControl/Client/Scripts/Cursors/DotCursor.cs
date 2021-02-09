@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics;
 using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client.Cursors
@@ -49,7 +48,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // The maximum size for the ring to be relative to the size of the dot.
         //
         //  e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
-        public float cursorMaxRingSize = 2;
+        public float cursorMaxRingSize = 8;
 
         // Variable: ringCurve
         // This curve is used to determine how the ring's scale changes with the value of the latest
@@ -69,7 +68,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Variable: ringThickness
         // Used to set the thickness of the ring itself (i.e. the distance between the inner and
         // outer edges of the ring)
-        public float ringThickness;
+        public float ringThickness = 2;
 
         // Variable: pulseShrinkCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
@@ -129,10 +128,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     // 0.9f so that the boundary between ring and dot is not visible - small overlap.
                     float minRingScale = 0.9f + ringThickness;
                     float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(dist));
-
                     ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(ringColor.a, 0f, dist));
 
-                    ringOuter.transform.localScale = Vector3.Lerp(ringOuter.transform.localScale, Vector3.one * ringScale, Time.deltaTime * 15);
+                    ringOuter.transform.localScale = Vector3.one * ringScale;
 
                     ringMask.transform.localScale = new Vector3()
                     {

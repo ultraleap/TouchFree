@@ -9,16 +9,29 @@ namespace Ultraleap.ScreenControl.Core
     {
         public GameObject guideWarning;
 
-        public GameObject topMountedCurrent;
+        public GameObject HMDMountedCurrent;
         public GameObject bottomMountedCurrent;
+        public GameObject screenTopMountedCurrent;
+
+        public GameObject screenTopOption;
 
         private void OnEnable()
         {
+            // only show users the screentop option if they have the correct leap service
+            if (HandManager.Instance.screenTopAvailable)
+            {
+                screenTopOption.SetActive(true);
+            }
+            else
+            {
+                screenTopOption.SetActive(false);
+            }
+
+            ShowCurrentMount();
+
             // find the leap config path to look for auto orientation
             string appdatapath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
             string leapConfigPath = Path.Combine(appdatapath, "Leap Motion", "Config.json");
-
-            bool enabling = false;
 
             if (File.Exists(leapConfigPath))
             {
@@ -30,7 +43,7 @@ namespace Ultraleap.ScreenControl.Core
                         if (line.Contains("true"))
                         {
                             StartCoroutine(EnableWarningAfterWait());
-                            enabling = true;
+                            return;
                         }
                         else
                         {
@@ -42,39 +55,45 @@ namespace Ultraleap.ScreenControl.Core
                 }
             }
 
-            if (!enabling)
-            {
-                //Check if the physicalconfig is set to default and guide the users if it is
-                var defaultConfig = PhysicalConfigFile.GetDefaultValues();
+            //Check if the physicalconfig is set to default and guide the users if it is
+            var defaultConfig = PhysicalConfigFile.GetDefaultValues();
 
-                if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
-                    ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
-                {
-                    StartCoroutine(EnableWarningAfterWait());
-                    enabling = true;
-                }
-                else
-                {
-                    guideWarning.SetActive(false);
-                }
+            if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
+                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
+            {
+                StartCoroutine(EnableWarningAfterWait());
             }
-
-            bottomMountedCurrent.SetActive(false);
-            topMountedCurrent.SetActive(false);
-
-            if (!enabling)
+            else
             {
-                // show the user their currently selected mounting mode
-                if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
+                guideWarning.SetActive(false);
+            }
+        }
+
+        void ShowCurrentMount()
+        {
+            bottomMountedCurrent.SetActive(false);
+            HMDMountedCurrent.SetActive(false);
+            screenTopMountedCurrent.SetActive(false);
+
+            // leap is looking down
+            if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
+            {
+                if (HandManager.Instance.screenTopAvailable && ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
                 {
-                    //top
-                    topMountedCurrent.SetActive(true);
+                    //Screentop
+                    screenTopMountedCurrent.SetActive(true);
                 }
                 else
                 {
-                    //bottom
-                    bottomMountedCurrent.SetActive(true);
+                    //HMD
+                    HMDMountedCurrent.SetActive(true);
                 }
+
+            }
+            else
+            {
+                //Desktop
+                bottomMountedCurrent.SetActive(true);
             }
         }
 

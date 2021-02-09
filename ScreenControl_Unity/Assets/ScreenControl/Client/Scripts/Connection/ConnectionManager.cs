@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client.Connection
@@ -6,7 +6,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
     // Class: ConnectionManager
     // This Class manages the connection to the Service. It provides static variables
     // for ease of use and is a Singleton to allow for easy referencing.
-    [RequireComponent(typeof(MessageReceiver)), DisallowMultipleComponent]
+    [RequireComponent(typeof(MessageReceiver)), DisallowMultipleComponent, DefaultExecutionOrder(1)]
     public class ConnectionManager : MonoBehaviour
     {
         // Group: Variables

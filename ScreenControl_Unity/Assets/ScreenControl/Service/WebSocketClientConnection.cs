@@ -31,14 +31,10 @@ namespace Ultraleap.ScreenControl.Service
         void OnEnable()
         {
             InitialiseServer();
-        }
-
-        internal WebSocketClientConnection()
-        {
             InteractionManager.HandleInputAction += SendInputActionToWebsocket;
         }
 
-        ~WebSocketClientConnection()
+        void OnDisable()
         {
             InteractionManager.HandleInputAction -= SendInputActionToWebsocket;
         }
