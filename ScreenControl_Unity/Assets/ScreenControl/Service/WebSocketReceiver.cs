@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Ultraleap.ScreenControl.Service
 {
+    [DisallowMultipleComponent]
     public class WebSocketReceiver : MonoBehaviour
     {
         WebSocketClientConnection clientConnection;
@@ -36,7 +37,7 @@ namespace Ultraleap.ScreenControl.Service
 
         void HandleNewConfigState(string _content)
         {
-            ConfigResponse response = ValidateNewConfigState(_content);
+            ResponseToClient response = ValidateNewConfigState(_content);
 
             if(response.status == "Success")
             {
@@ -51,9 +52,9 @@ namespace Ultraleap.ScreenControl.Service
         /// </summary>
         /// <param name="_content">The whole json content of the request</param>
         /// <returns>Returns a response as to the validity of the _content</returns>
-        ConfigResponse ValidateNewConfigState(string _content)
+        ResponseToClient ValidateNewConfigState(string _content)
         {
-            ConfigResponse response = new ConfigResponse("", "Success", "", _content);
+            ResponseToClient response = new ResponseToClient("", "Success", "", _content);
 
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
@@ -65,7 +66,7 @@ namespace Ultraleap.ScreenControl.Service
                 response.message = "Setting configuration failed. This is due to a missing or invalid requestID";
                 return response;
             }
-            
+
             var configRequestFields = typeof(ConfigRequest).GetFields();
             var interactionFields = typeof(InteractionConfig).GetFields();
             var hoverAndHoldFields = typeof(HoverAndHoldInteractionSettings).GetFields();
@@ -75,7 +76,7 @@ namespace Ultraleap.ScreenControl.Service
             {
                 // first layer of _content should contain only fields that ConfigRequest owns
                 bool validField = IsFieldValid(contentElement, configRequestFields);
-                
+
                 if (!validField)
                 {
                     // Validation has failed because the field is not valid

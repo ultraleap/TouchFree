@@ -19,6 +19,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // A reference to the websocket we are connected to.
         WebSocket webSocket;
 
+        // Variable: handshakeCompleted
+        // Tracks the completed state of
+        private Boolean handshakeCompleted;
+
         // Group: Functions
 
         // Function: ServiceConnection
@@ -27,16 +31,45 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // use and redirects incoming messages to <OnMessage>.
         internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
+            handshakeCompleted = false;
             webSocket = new WebSocket($"ws://{_ip}:{_port}/connect");
-            WebSocketSharp.Net.Cookie cookie = new WebSocketSharp.Net.Cookie(VersionInfo.API_HEADER_NAME, VersionInfo.ApiVersion.ToString());
-            webSocket.SetCookie(cookie);
 
             webSocket.OnMessage += (sender, e) =>
             {
                 OnMessage(e);
             };
 
+            webSocket.OnOpen += (sender, e) =>
+            {
+                // Send a handshake message with the API version of this client
+                string guid = Guid.NewGuid().ToString();
+
+                string handshakeMessage = "{";
+                handshakeMessage += $"\"action\": \"{ActionCode.VERSION_HANDSHAKE.ToString()}\",";
+                handshakeMessage += "\"content\": {";
+                handshakeMessage += $"\"requestID\": \"{guid}\",";
+                handshakeMessage += $"\"{VersionInfo.API_HEADER_NAME}\": \"{VersionInfo.ApiVersion}\"";
+                handshakeMessage += "}}";
+
+                SendMessage(handshakeMessage, guid, ConnectionResultCallback);
+            };
+
             webSocket.Connect();
+        }
+
+        // New method to be a callback for the
+        private void ConnectionResultCallback(WebSocketResponse response)
+        {
+            // if failed, console log
+            // if succeeded, "complete" connecting and allow message sending/recieving
+            if (response.status == "Success")
+            {
+                handshakeCompleted = true;
+            }
+            else
+            {
+                Debug.Log($"Connection to Service failed. Details:\n{response.message}");
+            }
         }
 
         // Function: Disconnect
@@ -57,7 +90,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
             string rawData = _message.Data;
 
             // Find key areas of the rawData, the "action" and the "content"
-            Match match = Regex.Match(rawData, "{\"action\":\"([\\w\\d_]+?)\",\"content\":({.+?})}$");
+            Match match = Regex.Match(rawData, "{\"action\": ?\"([\\w\\d_]+?)\",\"content\": ?({.+?})}$");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
             ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());
@@ -75,6 +108,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     break;
 
                 case ActionCode.CONFIGURATION_RESPONSE:
+                case ActionCode.VERSION_HANDSHAKE_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;

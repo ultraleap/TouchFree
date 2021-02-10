@@ -9,6 +9,7 @@ using Ultraleap.ScreenControl.Service.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Service
 {
+    [RequireComponent(typeof(WebSocketReceiver)), DisallowMultipleComponent]
     public class WebSocketClientConnection : MonoBehaviour
     {
         public static WebSocketClientConnection Instance;
@@ -26,17 +27,16 @@ namespace Ultraleap.ScreenControl.Service
             Application.targetFrameRate = 60;
 
             Instance = this;
+            InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
         }
 
         void OnEnable()
         {
             InitialiseServer();
-            InteractionManager.HandleInputAction += SendInputActionToWebsocket;
         }
-
-        void OnDisable()
+        void Destroy()
         {
-            InteractionManager.HandleInputAction -= SendInputActionToWebsocket;
+            InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }
 
         private void SetupConnection(ScreenControlWsBehaviour behaviour)
@@ -44,7 +44,7 @@ namespace Ultraleap.ScreenControl.Service
             if (behaviour != null)
             {
                 socketBehaviour = behaviour;
-                socketBehaviour.clientConnection = this;
+                socketBehaviour.clientConnection = Instance;
                 Debug.Log("connection set up");
             }
         }
@@ -53,15 +53,15 @@ namespace Ultraleap.ScreenControl.Service
         {
             websocketInitalised = false;
 
+            receiverQueue = GetComponent<WebSocketReceiver>();
+            receiverQueue.SetWSClientConnection(Instance);
+
             wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
             wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
 
             wsServer.AllowForwardedRequest = true;
             wsServer.ReuseAddress = true;
             wsServer.Start();
-
-            receiverQueue = gameObject.AddComponent<WebSocketReceiver>();
-            receiverQueue.SetWSClientConnection(this);
 
             // This is here so the test infrastructure has some sign that the app is ready
             Debug.Log("Service Setup Complete");
@@ -91,7 +91,11 @@ namespace Ultraleap.ScreenControl.Service
             socketBehaviour.SendInputAction(_data);
         }
 
-        public void SendConfigurationResponse(ConfigResponse _response)
+        public void SendHandshakeResponse(ResponseToClient _response) {
+            socketBehaviour.SendConfigurationResponse(_response);
+        }
+
+        public void SendConfigurationResponse(ResponseToClient _response)
         {
             socketBehaviour.SendConfigurationResponse(_response);
         }

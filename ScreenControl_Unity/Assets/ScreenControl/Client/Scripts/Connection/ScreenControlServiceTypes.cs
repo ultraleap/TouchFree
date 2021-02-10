@@ -16,7 +16,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
         CONFIGURATION_STATE,
         CONFIGURATION_RESPONSE,
         SET_CONFIGURATION_STATE,
-        REQUEST_CONFIGURATION_STATE
+        REQUEST_CONFIGURATION_STATE,
+        VERSION_HANDSHAKE,
+        VERSION_HANDSHAKE_RESPONSE
     }
 
     // Enum: Compatibility
