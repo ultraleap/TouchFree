@@ -155,6 +155,7 @@ namespace Ultraleap.ScreenControl.Service
                 // Validation has failed because there is no valid requestID
                 response.status = "Failure";
                 response.message = "Handshaking failed. This is due to a missing or invalid requestID";
+                Debug.LogError("Handshaking failed. This is due to a missing or invalid requestID");
                 SendHandshakeResponse(response);
                 return;
             }
@@ -168,6 +169,7 @@ namespace Ultraleap.ScreenControl.Service
                 // Handshake hasn't been completed so other requests cannot be processed
                 response.status = "Failure";
                 response.message = "Request Rejected: Requests cannot be processed until handshaking is complete.";
+                Debug.LogError("Request Rejected: Requests cannot be processed until handshaking is complete.");
                 SendHandshakeResponse(response);
                 return;
             }
@@ -179,6 +181,7 @@ namespace Ultraleap.ScreenControl.Service
                 // Handshake hasn't been completed so other requests cannot be processed
                 response.status = "Failure";
                 response.message = "Handshaking Failed: No API Version supplied.";
+                Debug.LogError("Handshaking Failed: No API Version supplied.");
                 SendHandshakeResponse(response);
                 return;
             }
@@ -192,16 +195,19 @@ namespace Ultraleap.ScreenControl.Service
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Successful";
+                    Debug.Log("Handshake Successful");
                     SendHandshakeResponse(response);
                     return;
                 case Compatibility.CLIENT_OUTDATED:
                     // Construct and send an error response
 
                     response.message = "Handshake Failed: Client is outdated relative to Service.";
+                    Debug.LogError("Handshake Failed: Client is outdated relative to Service.");
                     break;
                 case Compatibility.SERVICE_OUTDATED:
                     // Construct and send an error response
                     response.message = "Handshake Failed: Service is outdated relative to Client.";
+                    Debug.LogError("Handshake Failed: Service is outdated relative to Client.");
                     break;
             }
 

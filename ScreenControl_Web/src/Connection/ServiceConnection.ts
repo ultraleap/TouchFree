@@ -1,5 +1,6 @@
 import {
     ClientInputAction,
+    VersionInfo,
     WebsocketInputAction
 } from '../ScreenControlTypes';
 import {
@@ -9,6 +10,7 @@ import {
     WebSocketResponse
 } from './ScreenControlServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
+import { v4 as uuidgen } from 'uuid';
 
 // Class: ServiceConnection
 // This represents a connection to a ScreenControl Service. It should be created by a
@@ -22,6 +24,11 @@ export class ServiceConnection {
     // A reference to the websocket we are connected to.
     webSocket: WebSocket;
 
+    // Variable: handshakeCompleted
+    // Used internally in this class to know if the Version compatibility handshake with the
+    // server has successfully completed.
+    private handshakeCompleted: boolean;
+
     // Group: Functions
 
     // Function: constructor
@@ -29,9 +36,30 @@ export class ServiceConnection {
     // to connect to on construction. This constructor also sets up the redirects of incoming
     // messages to <OnMessage>.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
-       this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
+        this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
 
-       this.webSocket.addEventListener('message', this.OnMessage);
+        this.webSocket.addEventListener('message', this.OnMessage);
+
+        this.handshakeCompleted = false;
+
+        this.webSocket.addEventListener('open', (event) => {
+            let guid: string = uuidgen();
+
+            // construct message
+            let handshakeRequest: CommunicationWrapper<any> = {
+                "action": ActionCode.VERSION_HANDSHAKE,
+                "content": {
+                    "requestID": guid
+                }
+            };
+
+            handshakeRequest.content[VersionInfo.API_HEADER_NAME] = VersionInfo.ApiVersion;
+
+            console.log("Trying to send Handshake Request");
+            // send message
+            this.SendMessage(JSON.stringify(handshakeRequest), guid,
+                this.ConnectionResultCallback);
+        });
     }
 
     // Function: Disconnect
@@ -42,6 +70,23 @@ export class ServiceConnection {
         }
     }
 
+    // Function: ConnectionResultCallback
+    // Passed into <SendMessage> as part of connecting to ScreenControl Service, handles the
+    // result of the Version Checking handshake.
+    private ConnectionResultCallback(response: WebSocketResponse): void {
+        console.log("Got a response from connection");
+
+        if (response.status == "Success") {
+            console.log("Successful Connection");
+
+            this.handshakeCompleted = true;
+            ConnectionManager.instance.dispatchEvent(new Event('OnConnected'));
+        }
+        else {
+            console.log(`Connection to Service failed. Details:\n${response.message}`);
+        }
+    }
+
     // Function: OnMessage
     // The first point of contact for new messages received, these are sorted into appropriate
     // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
@@ -49,7 +94,7 @@ export class ServiceConnection {
     OnMessage(_message: MessageEvent): void {
         let looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
 
-        switch (looseData.action) {
+        switch (looseData.action as ActionCode) {
             case ActionCode.INPUT_ACTION:
                 let wsInput: WebsocketInputAction = looseData.content;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
@@ -58,6 +103,7 @@ export class ServiceConnection {
             case ActionCode.CONFIGURATION_STATE:
                 break;
 
+            case ActionCode.VERSION_HANDSHAKE_RESPONSE:
             case ActionCode.CONFIGURATION_RESPONSE:
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);

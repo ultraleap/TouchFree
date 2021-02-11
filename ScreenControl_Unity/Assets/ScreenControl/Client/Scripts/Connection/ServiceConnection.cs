@@ -20,7 +20,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
         WebSocket webSocket;
 
         // Variable: handshakeCompleted
-        // Tracks the completed state of
+        // Used internally in this class to know if the Version compatibility handshake with
+        // the server has successfully completed.
         private Boolean handshakeCompleted;
 
         // Group: Functions
@@ -57,7 +58,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
             webSocket.Connect();
         }
 
-        // New method to be a callback for the
+        // Function: ConnectionResultCallback
+        // Passed into <SendMessage> as part of connecting to ScreenControl Service, handles the
+        // result of the Version Checking handshake.
         private void ConnectionResultCallback(WebSocketResponse response)
         {
             // if failed, console log
