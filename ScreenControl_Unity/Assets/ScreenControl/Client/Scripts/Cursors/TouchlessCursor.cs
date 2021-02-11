@@ -16,7 +16,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Variable: cursorTransform
         // The transform for the image presented by this cursor
         public RectTransform cursorTransform;
-        protected Vector2 _targetPos;
+        protected Vector2 targetPos;
 
         // Group: MonoBehaviour Overrides
 
@@ -25,7 +25,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // last stored in <HandleInputAction>
         protected virtual void Update()
         {
-            cursorTransform.anchoredPosition = _targetPos;
+            cursorTransform.anchoredPosition = targetPos;
         }
 
         // Function: OnEnable
@@ -56,7 +56,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         //    _inputData - The latest input action recieved from ScreenControl Service.
         protected virtual void HandleInputAction(ClientInputAction _inputData)
         {
-            _targetPos = _inputData.CursorPosition;
+            targetPos = _inputData.CursorPosition;
         }
 
         // Function: InitialiseCursor

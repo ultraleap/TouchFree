@@ -32,7 +32,7 @@ public class PinchGrabCursor : TouchlessCursor
         switch (type)
         {
             case InputType.MOVE:
-                _targetPos = cursorPosition;
+                targetPos = cursorPosition;
                 break;
             case InputType.DOWN:
                 openHandImage.enabled = false;

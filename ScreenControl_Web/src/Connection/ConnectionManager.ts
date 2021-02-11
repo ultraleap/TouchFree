@@ -53,7 +53,7 @@ export class ConnectionManager extends EventTarget {
     // Group: Functions
 
     // Function: init
-    // Run by Unity on Initialization. Finds the required <MessageReceiver> component.
+    // Used to begin the connection. Creates the required <MessageReceiver>.
     // Also attempts to immediately <Connect> to a WebSocket.
     public static init() {
         ConnectionManager.messageReceiver = new MessageReceiver();

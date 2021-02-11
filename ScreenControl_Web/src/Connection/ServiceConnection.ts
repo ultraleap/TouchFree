@@ -1,5 +1,4 @@
 import {
-    ClientInputAction,
     WebsocketInputAction
 } from '../ScreenControlTypes';
 import {

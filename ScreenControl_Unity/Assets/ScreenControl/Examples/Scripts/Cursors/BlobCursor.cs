@@ -111,7 +111,7 @@ public class BlobCursor : TouchlessCursor
 
     public void UpdateBlobCursor()
     {
-        _targetPos = cursorPosition;
+        targetPos = cursorPosition;
 
         if (numPoints != basePoints.Count)
         {
@@ -245,7 +245,7 @@ public class BlobCursor : TouchlessCursor
                 y = _worldPosition.y + (basePoints[i].y * 0.5f),
                 z = blobOffset.z
             };
-            point = Vector3.Lerp(point, buttonOutline[i] + wobble, DistanceToCollider(_targetPos, buttonCollider));
+            point = Vector3.Lerp(point, buttonOutline[i] + wobble, DistanceToCollider(targetPos, buttonCollider));
             blobPoints[i] = Vector3.Lerp(blobPoints[i], point, cursorLerpSpeed * Time.deltaTime);
         }
 
@@ -284,7 +284,7 @@ public class BlobCursor : TouchlessCursor
 
         if (buttonCollider != null)
         {
-            wobble = (Camera.main.ScreenToWorldPoint(_targetPos) - buttonCollider.transform.position);
+            wobble = (Camera.main.ScreenToWorldPoint(targetPos) - buttonCollider.transform.position);
             wobble.z = 0;
             wobble = wobble.normalized * wobbleCurve.Evaluate(wobble.magnitude * wobbleAmount);
         }
@@ -295,7 +295,7 @@ public class BlobCursor : TouchlessCursor
     {
         for (int i = 0; i < numPoints; i++)
         {
-            blobPoints[i] = Vector3.Lerp(blobPoints[i], Camera.main.ScreenToWorldPoint(_targetPos), cursorLerpSpeed * Time.deltaTime);
+            blobPoints[i] = Vector3.Lerp(blobPoints[i], Camera.main.ScreenToWorldPoint(targetPos), cursorLerpSpeed * Time.deltaTime);
         }
 
         blobLine.SetPositions(blobPoints.ToArray());
@@ -305,7 +305,7 @@ public class BlobCursor : TouchlessCursor
     {
         for (int i = 0; i < numPoints; i++)
         {
-            blobPoints[i] = (Camera.main.ScreenToWorldPoint(_targetPos));
+            blobPoints[i] = (Camera.main.ScreenToWorldPoint(targetPos));
         }
 
         blobLine.positionCount = 0;
@@ -319,7 +319,7 @@ public class BlobCursor : TouchlessCursor
 
         for (int i = 0; i < numPoints; i++)
         {
-            blobPoints.Add(Camera.main.ScreenToWorldPoint(_targetPos));
+            blobPoints.Add(Camera.main.ScreenToWorldPoint(targetPos));
         }
     }
 

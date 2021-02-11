@@ -34,7 +34,7 @@ public class ProgressCursor : TouchlessCursor
 
     public void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
-        _targetPos = screenPos;
+        targetPos = screenPos;
 
         cursorProgressFill.fillAmount = ringFillCurve.Evaluate(progressToClick);
         cursorProgressBorder.fillAmount = ringFillCurve.Evaluate(progressToClick);
