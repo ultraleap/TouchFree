@@ -2,24 +2,24 @@
 // A structure representing the Client verison of an InputAction. This is used to pass
 // key information relating to an action that has happened on the Service.
 export class ClientInputAction {
-    Timestamp: Number;
+    Timestamp: number;
     InteractionType: InteractionType;
     HandType: HandType;
     Chirality: HandChirality;
     InputType: InputType;
-    CursorPosition: Array<Number>;
-    DistanceFromScreen: Number;
-    ProgressToClick: Number;
+    CursorPosition: Array<number>;
+    DistanceFromScreen: number;
+    ProgressToClick: number;
 
     constructor(
-        _timestamp: Number,
+        _timestamp: number,
         _interactionType: InteractionType,
         _handType: HandType,
         _handChirality: HandChirality,
         _inputType: InputType,
-        _cursorPosition: Array<Number>,
-        _distanceFromScreen: Number,
-        _progressToClick: Number)
+        _cursorPosition: Array<number>,
+        _distanceFromScreen: number,
+        _progressToClick: number)
     {
         this.Timestamp = _timestamp;
         this.InteractionType = _interactionType;
@@ -42,7 +42,7 @@ export function ConvertInputAction(_wsInput: WebsocketInputAction): ClientInputA
         FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags),
-        _wsInput.CursorPosition,
+        [_wsInput.CursorPosition.x, _wsInput.CursorPosition.y],
         _wsInput.DistanceFromScreen,
         _wsInput.ProgressToClick,
     );
@@ -120,22 +120,22 @@ export enum BitmaskFlags {
 // <ClientInputAction> to be used by the client and can be done so via <ConvertInputAction>.
 export class WebsocketInputAction {
     // Variable: Timestamp
-    Timestamp: Number;
+    Timestamp: number;
     // Variable: InteractionFlags
     InteractionFlags: BitmaskFlags;
     // Variable: CursorPosition
-    CursorPosition: Array<Number>;
+    CursorPosition: any;
     // Variable: DistanceFromScreen
-    DistanceFromScreen: Number;
+    DistanceFromScreen: number;
     // Variable: ProgressToClick
-    ProgressToClick: Number;
+    ProgressToClick: number;
 
     constructor(
-        _timestamp: Number,
+        _timestamp: number,
         _interactionFlags: BitmaskFlags,
-        _cursorPosition: Array<Number>,
-        _distanceFromScreen: Number,
-        _progressToClick: Number,
+        _cursorPosition: any,
+        _distanceFromScreen: number,
+        _progressToClick: number,
     ) {
         this.Timestamp = _timestamp;
         this.InteractionFlags = _interactionFlags;

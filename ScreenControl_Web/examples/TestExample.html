@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>SCCfW Testbed</title>
 
-    <script name="Connection" type="text/javascript" src="../build/dist/Connection.js"></script>
+    <script name="ScreenControl" type="text/javascript" src="../build/dist/ScreenControl.js"></script>
 </head>
 
 <body>
@@ -13,28 +13,28 @@
     <h1>Screen Control Client for Web Testbed</h1>
 </div>
 
-<p id=xpos>
-    X Pos:
-</p>
-<p id=ypos>
-    Y Pos:
-</p>
-
-<div>
-
-</div>
-
 <script>
-    var xElem = document.getElementById("xpos");
-    var yElem = document.getElementById("ypos");
+    ScreenControl.Connection.ConnectionManager.init();
 
-    Connection.ConnectionManager.init();
+    var newCursor = document.createElement('img');
+    newCursor.src = "../images/Circle.png";
+    newCursor.style.position = "absolute";
+    newCursor.alt = "na";
+    newCursor.width = 80;
+    newCursor.height = 80;
+    newCursor.style.zIndex = "1000";
+    document.body.appendChild(newCursor);
 
-    Connection.ConnectionManager.instance.addEventListener('TransmitInputAction', (event) => {
-        var action = event.detail;
-        xElem.textContent = `X pos: ${action.CursorPosition.x}`;
-        yElem.textContent = `Y pos: ${action.CursorPosition.y}`;
-    });
+    var newCursor2 = document.createElement('img');
+    newCursor2.src = "../images/Circle2.png";
+    newCursor2.style.position = "absolute";
+    newCursor2.alt = "na";
+    newCursor2.width = 80;
+    newCursor2.height = 80;
+    newCursor2.style.zIndex = "1000";
+    document.body.appendChild(newCursor2);
+
+    var cursor = new ScreenControl.Cursors.DotCursor(newCursor, newCursor2);
 </script>
 
 </body>

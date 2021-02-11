@@ -13,17 +13,15 @@ gulp.task('TSC', function () {
     return tsResult.js.pipe(gulp.dest('build'));
 });
 
-gulp.task('browserify_connection', function () {
+gulp.task('browserify', function () {
     var b = browserify({
-        standalone: "Connection"
+        standalone: "ScreenControl"
     });
-
-    b.add('./build/src/Connection/');
-
+    b.add('./build/src/');
     return b.bundle()
         // log errors if they happen
         .on('error', (error) => { console.error(error); })
-        .pipe(source('Connection.js'))
+        .pipe(source('ScreenControl.js'))
         .pipe(buffer())
         .pipe(gulp.dest('./build/dist/'));
 });
@@ -31,5 +29,5 @@ gulp.task('browserify_connection', function () {
 gulp.task('build',
     gulp.series(
         'TSC',
-        'browserify_connection'
+        'browserify'
     ));
