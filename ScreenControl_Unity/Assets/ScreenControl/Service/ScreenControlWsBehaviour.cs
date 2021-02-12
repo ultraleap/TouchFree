@@ -78,13 +78,20 @@ namespace Ultraleap.ScreenControl.Service
         {
             Version clientVersionParsed = new Version(_clientVersion);
 
-            if (clientVersionParsed.Major < _coreVersion.Major ||
-                clientVersionParsed.Minor < _coreVersion.Minor)
+            if (clientVersionParsed.Major < _coreVersion.Major)
             {
                 return Compatibility.CLIENT_OUTDATED;
             }
-            else if (clientVersionParsed.Major > _coreVersion.Major ||
-                     clientVersionParsed.Minor > _coreVersion.Minor)
+            else if (clientVersionParsed.Major > _coreVersion.Major)
+            {
+                return Compatibility.SERVICE_OUTDATED;
+            }
+
+            else if (clientVersionParsed.Minor < _coreVersion.Minor)
+            {
+                return Compatibility.CLIENT_OUTDATED;
+            }
+            else if (clientVersionParsed.Minor > _coreVersion.Minor)
             {
                 return Compatibility.SERVICE_OUTDATED;
             }
@@ -101,19 +108,12 @@ namespace Ultraleap.ScreenControl.Service
         {
             string rawData = _message.Data;
 
-            Debug.Log($"Server recieved a message:\n{rawData}");
-
             // Find key areas of the rawData, the "action" and the "content"
             var match = Regex.Match(rawData, "{\"action\": ?\"([\\w\\d_]+?)\",\"content\": ?({.+?})}$");
-
-            Debug.Log($"Constructed the following matches@\n{match.Groups[1].ToString()}\n{match.Groups[2].ToString()}");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
             ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());
             string content = match.Groups[2].ToString();
-
-            Debug.Log($"Server parsed action as {action.ToString()}");
-            Debug.Log($"Server parsed content as {content}");
 
             // New case for version Handshake
             // if anything comes in BEFORE version handshake, respond w/ an error
@@ -145,8 +145,6 @@ namespace Ultraleap.ScreenControl.Service
 
         protected void ProcessHandshake(ActionCode action, string requestContent)
         {
-            Debug.Log("Attempting to process handshake on Service side");
-
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(requestContent);
             ResponseToClient response = new ResponseToClient("", "Success", "", requestContent);
 
