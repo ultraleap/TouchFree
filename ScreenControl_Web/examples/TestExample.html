@@ -16,23 +16,23 @@
 <script>
     ScreenControl.Connection.ConnectionManager.init();
 
-    var newCursor = document.createElement('img');
-    newCursor.src = "../images/Circle.png";
-    newCursor.style.position = "absolute";
-    newCursor.alt = "na";
-    newCursor.width = 80;
-    newCursor.height = 80;
-    newCursor.style.zIndex = "1000";
-    document.body.appendChild(newCursor);
-
     var newCursor2 = document.createElement('img');
-    newCursor2.src = "../images/Circle2.png";
+    newCursor2.src = "../images/Ring.png";
     newCursor2.style.position = "absolute";
     newCursor2.alt = "na";
-    newCursor2.width = 80;
-    newCursor2.height = 80;
+    newCursor2.width = 50;
+    newCursor2.height = 50;
     newCursor2.style.zIndex = "1000";
     document.body.appendChild(newCursor2);
+
+    var newCursor = document.createElement('img');
+    newCursor.src = "../images/Dot.png";
+    newCursor.style.position = "absolute";
+    newCursor.alt = "na";
+    newCursor.width = 50;
+    newCursor.height = 50;
+    newCursor.style.zIndex = "1000";
+    document.body.appendChild(newCursor);
 
     var cursor = new ScreenControl.Cursors.DotCursor(newCursor, newCursor2);
 </script>
