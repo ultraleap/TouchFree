@@ -9,6 +9,8 @@
 // CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
 // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
 // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
+// VERSION_HANDSHAKE - Represents an outgoing message from Client to Service, attempting to compare API versions for compatibility
+// REQUEST_CONFIGURATION_STATE - Represents the result coming in from the Service
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
     CONFIGURATION_STATE = "CONFIGURATION_STATE",

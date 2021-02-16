@@ -44,7 +44,6 @@ namespace Ultraleap.ScreenControl.Service
             if (behaviour != null)
             {
                 socketBehaviour = behaviour;
-                socketBehaviour.clientConnection = Instance;
                 Debug.Log("connection set up");
             }
         }
@@ -54,7 +53,6 @@ namespace Ultraleap.ScreenControl.Service
             websocketInitalised = false;
 
             receiverQueue = GetComponent<WebSocketReceiver>();
-            receiverQueue.SetWSClientConnection(Instance);
 
             wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
             wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);

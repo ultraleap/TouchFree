@@ -13,14 +13,7 @@ namespace Ultraleap.ScreenControl.Service
     [DisallowMultipleComponent]
     public class WebSocketReceiver : MonoBehaviour
     {
-        WebSocketClientConnection clientConnection;
-
         public ConcurrentQueue<string> setConfigQueue = new ConcurrentQueue<string>();
-
-        public void SetWSClientConnection(WebSocketClientConnection _connection)
-        {
-            clientConnection = _connection;
-        }
 
         void Update()
         {

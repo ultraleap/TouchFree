@@ -24,9 +24,6 @@ export class ServiceConnection {
     // A reference to the websocket we are connected to.
     webSocket: WebSocket;
 
-    // Variable: handshakeCompleted
-    // Used internally in this class to know if the Version compatibility handshake with the
-    // server has successfully completed.
     private handshakeCompleted: boolean;
 
     // Group: Functions
@@ -34,7 +31,9 @@ export class ServiceConnection {
     // Function: constructor
     // The constructor for <ServiceConnection> that can be given a different IP Address and Port
     // to connect to on construction. This constructor also sets up the redirects of incoming
-    // messages to <OnMessage>.
+    // messages to <OnMessage>. Puts a listener on the websocket so that once it opens, a handshake
+    // request is sent with this Client's API version number. The service will not send data over
+    // an open connection until this handshake is completed succesfully.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
 
@@ -74,8 +73,6 @@ export class ServiceConnection {
     // Passed into <SendMessage> as part of connecting to ScreenControl Service, handles the
     // result of the Version Checking handshake.
     private ConnectionResultCallback(response: WebSocketResponse): void {
-        console.log("Got a response from connection");
-
         if (response.status == "Success") {
             console.log("Successful Connection");
 

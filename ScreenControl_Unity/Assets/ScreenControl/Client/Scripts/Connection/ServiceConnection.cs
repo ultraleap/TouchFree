@@ -29,7 +29,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Function: ServiceConnection
         // The constructor for <ServiceConnection> that can be given a different IP Address and Port
         // to connect to on construction. This constructor also sets up the <receiver> for future
-        // use and redirects incoming messages to <OnMessage>.
+        // use and redirects incoming messages to <OnMessage> Once the websocket connection opens,
+        // a handshake request is sent with this Client's API version number. The service will not
+        // send data over an open connection until this handshake is completed succesfully.
         internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
             handshakeCompleted = false;
