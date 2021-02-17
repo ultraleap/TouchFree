@@ -79,8 +79,6 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.currentServiceConnection = new ServiceConnection(
             ConnectionManager.iPAddress,
             ConnectionManager.port);
-
-        ConnectionManager.instance.dispatchEvent(new Event('OnConnected'));
     }
 
     // Function: HandleInputAction

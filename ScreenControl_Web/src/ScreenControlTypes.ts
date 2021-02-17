@@ -1,3 +1,18 @@
+// Class: VersionInfo
+// This class is used when comparing the <ApiVersion> of the Client and the Service.
+export class VersionInfo
+{
+    // Group: Variables
+
+    // Variable: ApiVersion
+    // The current API version of the Client.
+    public static readonly ApiVersion: string = "1.0.1";
+
+    // Variable: API_HEADER_NAME
+    // The name of the header we wish the Service to compare our version with.
+    public static readonly API_HEADER_NAME: string = "ScApiVersion";
+}
+
 // Class: ClientInputAction
 // A structure representing the Client verison of an InputAction. This is used to pass
 // key information relating to an action that has happened on the Service.

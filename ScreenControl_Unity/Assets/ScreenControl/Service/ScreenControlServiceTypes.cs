@@ -8,7 +8,9 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
         CONFIGURATION_STATE,
         CONFIGURATION_RESPONSE,
         SET_CONFIGURATION_STATE,
-        REQUEST_CONFIGURATION_STATE
+        REQUEST_CONFIGURATION_STATE,
+        VERSION_HANDSHAKE,
+        VERSION_HANDSHAKE_RESPONSE
     }
 
     internal enum Compatibility
@@ -34,14 +36,14 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
     }
 
     [Serializable]
-    public struct ConfigResponse
+    public struct ResponseToClient
     {
         public string requestID;
         public string status;
         public string message;
         public string originalRequest;
 
-        public ConfigResponse(string _id, string _status, string _msg, string _request)
+        public ResponseToClient(string _id, string _status, string _msg, string _request)
         {
             requestID = _id;
             status = _status;
