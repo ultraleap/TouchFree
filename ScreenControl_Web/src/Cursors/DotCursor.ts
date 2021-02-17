@@ -109,31 +109,26 @@ export class DotCursor extends TouchlessCursor{
     // Shrinks the cursor to half of its original size.
     // This is performed over a duration set in the <constructor>.
     ShrinkCursor(): void {
-        let cursorPosX = this.cursor.offsetLeft + (this.cursor.clientWidth / 2);
-        let cursorPosY = this.cursor.offsetTop + (this.cursor.clientHeight / 2);
+        let newWidth = this.cursor.clientWidth;
+        let newHeight = this.cursor.clientHeight;
 
         if (this.cursor.clientWidth > this.cursorStartSize[0] / 2) {
-            let newWidth = this.cursor.clientWidth - this.animationSpeed[0];
-
-            this.cursor.style.width = newWidth + "px";
-            this.cursor.style.left = (cursorPosX - (newWidth / 2)) + "px";
+            newWidth = this.cursor.clientWidth - this.animationSpeed[0];
         }
 
         if (this.cursor.clientHeight > this.cursorStartSize[1] / 2) {
-            let newHeight = this.cursor.clientHeight - this.animationSpeed[1];
-
-            this.cursor.style.height = newHeight + "px";
-            this.cursor.style.top = (cursorPosY - (newHeight / 2)) + "px";
+            newHeight = this.cursor.clientHeight - this.animationSpeed[1];
         }
 
-        if (this.cursor.offsetWidth <= this.cursorStartSize[0] / 2 &&
-            this.cursor.offsetHeight <= this.cursorStartSize[1] / 2) {
+        this.SetCursorSize(newWidth, newHeight, this.cursor);
+
+        if (newWidth <= this.cursorStartSize[0] / 2 && newHeight <= this.cursorStartSize[1] / 2) {
             clearInterval(this.currentAnimationInterval);
 
-            this.cursor.style.width = this.cursorStartSize[0] / 2 + "px";
-            this.cursor.style.left = (cursorPosX - ((this.cursorStartSize[0] / 2) / 2)) + "px";
-            this.cursor.style.height = this.cursorStartSize[1] / 2 + "px";
-            this.cursor.style.top = (cursorPosY - ((this.cursorStartSize[1] / 2) / 2)) + "px";
+            newWidth = this.cursorStartSize[0] / 2;
+            newHeight = this.cursorStartSize[1] / 2;
+
+            this.SetCursorSize(newWidth, newHeight, this.cursor);
 
             if (this.growQueued) {
                 this.growQueued = false;
@@ -150,34 +145,40 @@ export class DotCursor extends TouchlessCursor{
     // Function: GrowCursor
     // Grows the cursor to its original size over time set via the <constructor>.
     GrowCursor(): void {
-        let cursorPosX = this.cursor.offsetLeft + (this.cursor.clientWidth / 2);
-        let cursorPosY = this.cursor.offsetTop + (this.cursor.clientHeight / 2);
+        let newWidth = this.cursor.clientWidth;
+        let newHeight = this.cursor.clientHeight;
 
         if (this.cursor.clientWidth < this.cursorStartSize[0]) {
-            let newWidth = this.cursor.clientWidth + this.animationSpeed[0];
-
-            this.cursor.style.width = newWidth + "px";
-            this.cursor.style.left = (cursorPosX - (newWidth / 2)) + "px";
+            newWidth = this.cursor.clientWidth + this.animationSpeed[0];
         }
 
         if (this.cursor.clientHeight < this.cursorStartSize[1]) {
-            let newHeight = this.cursor.clientHeight + this.animationSpeed[1];
-
-            this.cursor.style.height = newHeight + "px";
-            this.cursor.style.top = (cursorPosY - (newHeight / 2)) + "px";
+            newHeight = this.cursor.clientHeight + this.animationSpeed[1];
         }
 
-        if (this.cursor.offsetWidth >= this.cursorStartSize[0] &&
-            this.cursor.offsetHeight >= this.cursorStartSize[1]) {
+        this.SetCursorSize(newWidth, newHeight, this.cursor);
+
+        if (newWidth >= this.cursorStartSize[0] && newHeight >= this.cursorStartSize[1]) {
             clearInterval(this.currentAnimationInterval);
 
-            this.cursor.style.width = this.cursorStartSize[0] + "px";
-            this.cursor.style.left = (cursorPosX - (this.cursorStartSize[0] / 2)) + "px";
-            this.cursor.style.height = this.cursorStartSize[1] + "px";
-            this.cursor.style.top = (cursorPosY - (this.cursorStartSize[1] / 2)) + "px";
+            newWidth = this.cursorStartSize[0];
+            newHeight = this.cursorStartSize[1];
+
+            this.SetCursorSize(newWidth, newHeight, this.cursor);
 
             this.currentAnimationInterval = -1;
             this.growQueued = false;
         }
+    }
+
+    private SetCursorSize(_newWidth: number, _newHeight: number, _cursorToChange: HTMLElement): void {
+        let cursorPosX = _cursorToChange.offsetLeft + (_cursorToChange.clientWidth / 2);
+        let cursorPosY = _cursorToChange.offsetTop + (_cursorToChange.clientHeight / 2);
+
+        _cursorToChange.style.width = _newWidth + "px";
+        _cursorToChange.style.left = (cursorPosX - (_newWidth / 2)) + "px";
+
+        _cursorToChange.style.height = _newHeight + "px";
+        _cursorToChange.style.top = (cursorPosY - (_newHeight / 2)) + "px";
     }
 }
