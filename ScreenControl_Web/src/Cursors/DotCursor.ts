@@ -10,6 +10,8 @@ import { MapRangeToRange } from '../Utilities';
  //and reacts to the current ProgressToClick of the action (what determines this depends on the
  //currently active interaction).
 export class DotCursor extends TouchlessCursor{
+
+    // Set the update rate of the animation to 30fps.
     readonly animationUpdateDuration: number = (1 / 30) * 1000;
 
     // Group: Variables
@@ -50,21 +52,19 @@ export class DotCursor extends TouchlessCursor{
     // Function: UpdateCursor
     // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
-    UpdateCursor(_inputAction: Array<number> | ClientInputAction): void{
-        let inputAction = _inputAction as ClientInputAction;
-
+    UpdateCursor(_inputAction: ClientInputAction): void{
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
-        let ringScaler = MapRangeToRange(inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
+        let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
-        this.cursorRing.style.opacity = inputAction.ProgressToClick + "";
+        this.cursorRing.style.opacity = _inputAction.ProgressToClick + "";
 
         this.cursorRing.style.width = this.cursor.clientWidth * ringScaler + "px";
         this.cursorRing.style.height = this.cursor.clientHeight * ringScaler + "px";
 
-        this.cursorRing.style.left = (inputAction.CursorPosition[0] - (this.cursorRing.clientWidth / 2)) + "px";
-        this.cursorRing.style.top = (window.innerHeight - (inputAction.CursorPosition[1] + (this.cursorRing.clientHeight / 2))) + "px";
+        this.cursorRing.style.left = (_inputAction.CursorPosition[0] - (this.cursorRing.clientWidth / 2)) + "px";
+        this.cursorRing.style.top = (window.innerHeight - (_inputAction.CursorPosition[1] + (this.cursorRing.clientHeight / 2))) + "px";
 
-        super.UpdateCursor(inputAction.CursorPosition);
+        super.UpdateCursor(_inputAction);
     }
 
     // Function: HandleInputAction
@@ -78,6 +78,8 @@ export class DotCursor extends TouchlessCursor{
                 this.UpdateCursor(_inputData);
                 break;
             case InputType.DOWN:
+                this.SetCursorSize(0, 0, this.cursorRing);
+
                 if (this.currentAnimationInterval != -1) {
                     clearInterval(this.currentAnimationInterval);
                 }
@@ -104,7 +106,8 @@ export class DotCursor extends TouchlessCursor{
     }
 
     // Function: ShrinkCursor
-    // Shrinks the cursor to half of its original size over time set via the <constructor>.
+    // Shrinks the cursor to half of its original size.
+    // This is performed over a duration set in the <constructor>.
     ShrinkCursor(): void {
         let cursorPosX = this.cursor.offsetLeft + (this.cursor.clientWidth / 2);
         let cursorPosY = this.cursor.offsetTop + (this.cursor.clientHeight / 2);

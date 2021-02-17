@@ -9,33 +9,28 @@
 
 <body>
 
-<div>
-    <h1>Screen Control Client for Web Testbed</h1>
-</div>
+    <div>
+        <h1>Screen Control Client for Web Testbed</h1>
+    </div>
 
-<script>
-    ScreenControl.Connection.ConnectionManager.init();
+    <img src="../images/Ring.png" id="cursorRing" style="width:50px;height:50px;position:absolute;z-index:1000;">
 
-    var newCursor2 = document.createElement('img');
-    newCursor2.src = "../images/Ring.png";
-    newCursor2.style.position = "absolute";
-    newCursor2.alt = "na";
-    newCursor2.width = 50;
-    newCursor2.height = 50;
-    newCursor2.style.zIndex = "1000";
-    document.body.appendChild(newCursor2);
+    <script>
+        ScreenControl.Connection.ConnectionManager.init();
 
-    var newCursor = document.createElement('img');
-    newCursor.src = "../images/Dot.png";
-    newCursor.style.position = "absolute";
-    newCursor.alt = "na";
-    newCursor.width = 50;
-    newCursor.height = 50;
-    newCursor.style.zIndex = "1000";
-    document.body.appendChild(newCursor);
+        var cursorRing = document.getElementById('cursorRing');
+        document.body.appendChild(cursorRing);
 
-    var cursor = new ScreenControl.Cursors.DotCursor(newCursor, newCursor2);
-</script>
+        var cursor = document.createElement('img');
+        cursor.src = "../images/Dot.png";
+        cursor.style.position = "absolute";
+        cursor.width = 50;
+        cursor.height = 50;
+        cursor.style.zIndex = "1001";
+        document.body.appendChild(cursor);
+
+        var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
+    </script>
 
 </body>
 </html>

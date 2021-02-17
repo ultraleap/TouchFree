@@ -17,8 +17,7 @@ export abstract class TouchlessCursor {
     // Group: Functions
 
     // Function: constructor
-    // Initialises the cursor at its default state.
-    // Also registers the Cursor for updates from the <ConnectionManager>
+    // Registers the Cursor for updates from the <ConnectionManager>
     constructor(_cursor: HTMLElement) {
         ConnectionManager.instance.addEventListener('TransmitInputAction', ((e: CustomEvent<ClientInputAction>) => {
             this.HandleInputAction(e.detail);
@@ -29,9 +28,9 @@ export abstract class TouchlessCursor {
 
     // Function: UpdateCursor
     // Sets the position of the cursor, should be run after <HandleInputAction>.
-    UpdateCursor(_targetPos: Array<number>): void {
-        this.cursor.style.left = (_targetPos[0] - (this.cursor.clientWidth / 2)) + "px";
-        this.cursor.style.top = (window.innerHeight - (_targetPos[1] + (this.cursor.clientHeight / 2))) + "px";
+    UpdateCursor(_inputAction: ClientInputAction): void {
+        this.cursor.style.left = (_inputAction.CursorPosition[0] - (this.cursor.clientWidth / 2)) + "px";
+        this.cursor.style.top = (window.innerHeight - (_inputAction.CursorPosition[1] + (this.cursor.clientHeight / 2))) + "px";
     }
 
     // Function: HandleInputAction
@@ -39,8 +38,8 @@ export abstract class TouchlessCursor {
     // they are recieved. Override this function to implement cursor behaviour in response.
     //
     // Parameters:
-    //    _inputData - The latest input action recieved from ScreenControl Service.
-    HandleInputAction(_inputData: ClientInputAction): void {
-        this.UpdateCursor(_inputData.CursorPosition);
+    //    _inputAction - The latest input action recieved from ScreenControl Service.
+    HandleInputAction(_inputAction: ClientInputAction): void {
+        this.UpdateCursor(_inputAction);
     }
 }
