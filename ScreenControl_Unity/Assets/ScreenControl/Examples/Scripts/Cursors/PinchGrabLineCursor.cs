@@ -233,7 +233,7 @@ public class PinchGrabLineCursor : DotCursor
             float currentCircleOffsetRadius = Utilities.MapRangeToRange(radiusScale.Evaluate(storedGrabStrengthForGizmos), 1, 0, arcMidpointRadius / 2, circleCentreOffsetBase);
             float finalOffsetRadius = arcMidpointRadius / 2;
 
-            Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(_targetPos);
+            Vector2 anchoredPosition = Camera.main.ScreenToWorldPoint(targetPos);
 
             Vector2 arcOffset = new Vector2()
             {
@@ -279,7 +279,7 @@ public class PinchGrabLineCursor : DotCursor
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(finalCircleCentre, finalOffsetRadius);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(Camera.main.ScreenToWorldPoint(_targetPos), 0.1f);
+            Gizmos.DrawWireSphere(Camera.main.ScreenToWorldPoint(targetPos), 0.1f);
         }
     }
 

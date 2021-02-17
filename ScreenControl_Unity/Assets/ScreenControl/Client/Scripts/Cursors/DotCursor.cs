@@ -112,7 +112,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // cursor's position, as well as the size of the ring based on the current ProgressToClick.
         public void UpdateCursor(Vector2 _screenPos, float _progressToClick)
         {
-            _targetPos = _screenPos;
+            targetPos = _screenPos;
 
             if (ringEnabled)
             {

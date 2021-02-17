@@ -36,7 +36,7 @@ public class DoubleCursor : TouchlessCursor
 
     public void UpdateCursor(Vector2 screenPos, float progressToClick)
     {
-        _targetPos = screenPos;
+        targetPos = screenPos;
 
         var dist = progressToClick;
         dist = Mathf.InverseLerp(0, screenDistanceAtMaxScaleMeters, dist);
