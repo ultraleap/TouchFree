@@ -19,7 +19,7 @@ export abstract class TouchlessCursor {
     // Function: constructor
     // Registers the Cursor for updates from the <ConnectionManager>
     constructor(_cursor: HTMLElement) {
-        ConnectionManager.instance.addEventListener('TransmitInputAction', ((e: CustomEvent<ClientInputAction>) => {
+        ConnectionManager.instance.addEventListener('TransmitInputAction', ((e:
             this.HandleInputAction(e.detail);
         }) as EventListener);
 

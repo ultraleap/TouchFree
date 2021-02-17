@@ -188,6 +188,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ScreenControlClient
       objectReference: {fileID: 0}
+    - target: {fileID: 2213489624516412116, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2383233282598257216, guid: 157025b17471e7c41a7d20e7f28273b5,
         type: 3}
       propertyPath: sendHoverEvents
