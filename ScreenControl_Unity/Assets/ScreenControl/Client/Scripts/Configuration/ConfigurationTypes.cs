@@ -68,7 +68,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         }
 
         // Interaction-specific settings
-        public HoverAndHoldInteractionSettings hoverAndHold = new HoverAndHoldInteractionSettings();
+        public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
 
         // Variable: configValues
         // This dictionary is used to store the edited members only, and is accessed when serializing the data for transfer to the Service.
