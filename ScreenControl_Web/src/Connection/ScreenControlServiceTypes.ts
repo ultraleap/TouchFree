@@ -32,9 +32,11 @@ export enum Compatibility {
 }
 
 // Class: ConfigState
-// This is the structure of data received when requesting the current state of the configuration files
-// from the Service.
-// This is also used when requesting the service sets a configuration. Can be made of partial or complete objects.
+// This data structure is used in both sending and receiving configuration data.
+//
+// When sending a configuration to the Service the structure can comprise of either partial or complete objects.
+//
+// When receiving a configuration from the Service this structure contains ALL configuration data
 export class ConfigState
 {
     // Variable: requestID

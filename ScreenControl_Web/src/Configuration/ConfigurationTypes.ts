@@ -2,7 +2,7 @@
 // This class is a container for all of the settings related to the interactions being processed
 // by the ScreenControl Service. The settings at the root of this object will affect all
 // sensations. There are also some settings specific to the Hover and Hold interaction which can
-//  be modified by changing the contained <HoverAndHoldInteractionSettings>.
+// be modified by changing the contained <HoverAndHoldInteractionSettings>.
 //
 // In order to modify the settings of the service, create an instance of this class, make the
 // changes you wish to see, and then send it to the server using the <ConfigurationManager>.
@@ -68,7 +68,12 @@ export interface PhysicalConfig {
 
     // Property: LeapPositionRelativeToScreenBottomM
     // The position (measured in meters) in 3d space of the Leap Motion camera relative to the
-    // center of the bottom of the screen.
+    // center of the bottom edge of the screen.
+    //
+    // This uses a left handed coordinate system where:
+    // X = left/right (right = positive)
+    // Y = up/down (up = positive)
+    // Z = forward/backward (forward = positive)
     LeapPositionRelativeToScreenBottomM: Array<number>;
 
     // Property: LeapRotationD

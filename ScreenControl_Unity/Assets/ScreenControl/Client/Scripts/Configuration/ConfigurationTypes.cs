@@ -190,7 +190,12 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
         // Property: LeapPositionRelativeToScreenBottomM
         // The position (measured in meters) in 3d space of the Leap Motion camera relative to the
-        // center of the bottom of the screen.
+        // center of the bottom edge of the screen.
+        //
+        // This uses a left handed coordinate system where:
+        // X = left/right (right = positive)
+        // Y = up/down (up = positive)
+        // Z = forward/backward (forward = positive)
         public Vector3 LeapPositionRelativeToScreenBottomM
         {
             get
