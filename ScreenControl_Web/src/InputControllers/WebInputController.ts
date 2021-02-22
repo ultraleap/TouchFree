@@ -10,12 +10,16 @@ import { BaseInputController } from './BaseInputController'
 export class WebInputController extends BaseInputController {
     // Group: Variables
 
+    // Variable: enterLeaveEnabled
+    // Can be used to enable/disable the transmission of "pointerenter"/"pointerleave" events
+    // Disable this for a minor performance boost, at the cost of no longer sending those events
+    // to the UI.
     enterLeaveEnabled: boolean = true;
 
+    private lastHoveredElement: Element | null = null;
     private readonly pointerId: number = 0;
     private readonly baseEventProps: PointerEventInit;
     private readonly activeEventProps: PointerEventInit;
-    private lastHoveredElement: Element | null = null;
 
     // Group: Methods
 
@@ -37,9 +41,15 @@ export class WebInputController extends BaseInputController {
         this.activeEventProps = this.baseEventProps;
     }
 
-    // pointerenter / leave do not bubble (but are not per child)
-    // pointerover / pointerout do bubble (but are per child)
-
+    // Function: HandleMove
+    // Handles the transmission of "pointerout"/"pointerover"/"pointermove" events to appropriate
+    // elements, based on the element being hovered over this frame (_element), and the element
+    // hovered last frame (stored in <lastHoveredElement>)
+    // Will also optionally send "pointerenter"/"pointerleave" events if enabled via
+    // <enterLeaveEnabled>
+    //
+    // Parameters:
+    //     _element - The DOM element under the cursor this frame
     HandleMove(_element: Element | null): void {
         if (_element != this.lastHoveredElement) {
             // Handle sending pointerover/pointerout to the individual elements
@@ -60,7 +70,7 @@ export class WebInputController extends BaseInputController {
             }
         }
 
-        let moveEvent: PointerEvent = new PointerEvent("move", this.activeEventProps);
+        let moveEvent: PointerEvent = new PointerEvent("pointermove", this.activeEventProps);
         _element?.dispatchEvent(moveEvent);
 
         this.lastHoveredElement = _element;
@@ -73,11 +83,10 @@ export class WebInputController extends BaseInputController {
     // Parameters:
     //     _inputData - The latest Action to arrive via the <ServiceConnection>.
     protected HandleInputAction(_inputData: ClientInputAction): void {
+        _inputData.CursorPosition[1] = window.innerHeight - _inputData.CursorPosition[1];
         super.HandleInputAction(_inputData);
 
-        let elementAtPos: Element | null = document.elementFromPoint(
-            _inputData.CursorPosition[0],
-            _inputData.CursorPosition[1]);
+        let elementAtPos: Element | null = this.GetTopNonCursorElement(_inputData.CursorPosition);
 
         this.activeEventProps.clientX = _inputData.CursorPosition[0];
         this.activeEventProps.clientY = _inputData.CursorPosition[1];
@@ -110,6 +119,29 @@ export class WebInputController extends BaseInputController {
                 this.DispatchToTarget(upEvent, elementAtPos);
                 break;
         }
+    }
+
+    // Gets the stack of elements (topmost->bottommost) at this position and return the first non-
+    // cursor element. Depends on all cursor elements being branded with the "cursor" class.
+    private GetTopNonCursorElement(_position: Array<number>): Element | null {
+        let elementsAtPos: Element[] | null = document.elementsFromPoint(
+            _position[0],
+            _position[1]);
+
+        let elementAtPos: Element | null = null;
+
+        if (elementsAtPos !== null)
+        {
+            for (let i = 0; i < elementsAtPos.length; i++) {
+                if (!elementsAtPos[i].classList.contains("cursor"))
+                {
+                    elementAtPos = elementsAtPos[2];
+                    break;
+                }
+            }
+        }
+
+        return elementAtPos;
     }
 
     // Handle sending pointerleave/pointerenter events to the parent stacks
