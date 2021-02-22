@@ -64,7 +64,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         {
             string newContent = "";
 
-            if (_interaction.configValues.Count > 0 || _interaction.hoverAndHold.configValues.Count > 0)
+            if (_interaction.configValues.Count > 0 || _interaction.HoverAndHold.configValues.Count > 0)
             {
                 newContent += "\"interaction\":{";
 
@@ -74,11 +74,11 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     newContent += ",";
                 }
 
-                if (_interaction.hoverAndHold.configValues.Count > 0)
+                if (_interaction.HoverAndHold.configValues.Count > 0)
                 {
                     newContent += "\"HoverAndHold\":{";
 
-                    foreach (KeyValuePair<string, object> value in _interaction.hoverAndHold.configValues)
+                    foreach (KeyValuePair<string, object> value in _interaction.HoverAndHold.configValues)
                     {
                         newContent += JsonUtilities.ConvertToJson(value.Key, value.Value);
                         newContent += ",";

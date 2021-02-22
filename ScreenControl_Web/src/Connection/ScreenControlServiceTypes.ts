@@ -1,7 +1,7 @@
-//import {
-//    InteractionConfig,
-//    PhysicalConfig
-//} from '../Configuration/ConfigurationTypes';
+import {
+    InteractionConfig,
+    PhysicalConfig
+} from '../Configuration/ConfigurationTypes';
 
 // Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data
@@ -31,22 +31,27 @@ export enum Compatibility {
     CLIENT_OUTDATED
 }
 
-// // Class: ConfigStateResponse
-// // This is the structure of data received when requesting the current state of the configuration files
-// // from the Service.
-// export class ConfigStateResponse
-// {
-//    requestID: string;
-//    interaction: InteractionConfig;
-//    physical: PhysicalConfig;
+// Class: ConfigState
+// This data structure is used in both sending and receiving configuration data.
+//
+// When sending a configuration to the Service the structure can comprise of either partial or complete objects.
+//
+// When receiving a configuration from the Service this structure contains ALL configuration data
+export class ConfigState
+{
+    // Variable: requestID
+    requestID: string;
+    // Variable: interaction
+    interaction: Partial<InteractionConfig> | null;
+    // Variable: physical
+    physical: Partial<PhysicalConfig> | null;
 
-//    constructor(_id: string, _interaction: InteractionConfig, _physical: PhysicalConfig)
-//    {
-//        this.requestID = _id;
-//        this.interaction = _interaction;
-//        this.physical = _physical;
-//    }
-// }
+    constructor(_id: string, _interaction: Partial<InteractionConfig> | null, _physical: Partial<PhysicalConfig> | null){
+        this.requestID = _id;
+        this.interaction = _interaction;
+        this.physical = _physical;
+    }
+}
 
 // Class: WebSocketResponse
 // The structure seen when the Service responds to a request. This is to verify whether it was

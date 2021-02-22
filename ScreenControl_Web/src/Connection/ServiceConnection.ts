@@ -112,6 +112,8 @@ export class ServiceConnection {
     // Used internally to send or request information from the Service via the <webSocket>. To
     // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
     // via the _callback parameter.
+    // 
+    // If your _callBack requires context it should be bound to that context via .bind()
     SendMessage(
         _message: string, _requestID: string,
         _callback: (detail: WebSocketResponse) => void): void {

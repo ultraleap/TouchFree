@@ -88,34 +88,40 @@ namespace Ultraleap.ScreenControl.Service
                 {
                     JObject interactionObj = JsonConvert.DeserializeObject<JObject>(contentElement.Value.ToString());
 
-                    foreach (var interactionContent in interactionObj)
+                    if (interactionObj != null)
                     {
-                        // this layer of _content should contain only fields that InteractionConfig owns
-                        bool validInteractionField = IsFieldValid(interactionContent, interactionFields);
-
-                        if (!validInteractionField)
+                        foreach (var interactionContent in interactionObj)
                         {
-                            // Validation has failed because the field is not valid
-                            response.status = "Failure";
-                            response.message = "Setting configuration failed. This is due to an invalid field \"" + interactionContent.Key + "\"";
-                            return response;
-                        }
+                            // this layer of _content should contain only fields that InteractionConfig owns
+                            bool validInteractionField = IsFieldValid(interactionContent, interactionFields);
 
-                        if (interactionContent.Key == "HoverAndHold")
-                        {
-                            JObject hoverAndHoldObj = JsonConvert.DeserializeObject<JObject>(interactionContent.Value.ToString());
-
-                            foreach (var hoverAndHoldContent in hoverAndHoldObj)
+                            if (!validInteractionField)
                             {
-                                // this layer of _content should contain only fields that HoverAndHoldInteractionSettings owns
-                                bool validHoverField = IsFieldValid(hoverAndHoldContent, hoverAndHoldFields);
+                                // Validation has failed because the field is not valid
+                                response.status = "Failure";
+                                response.message = "Setting configuration failed. This is due to an invalid field \"" + interactionContent.Key + "\"";
+                                return response;
+                            }
 
-                                if (!validHoverField)
+                            if (interactionContent.Key == "HoverAndHold")
+                            {
+                                JObject hoverAndHoldObj = JsonConvert.DeserializeObject<JObject>(interactionContent.Value.ToString());
+
+                                if (hoverAndHoldObj != null)
                                 {
-                                    // Validation has failed because the field is not valid
-                                    response.status = "Failure";
-                                    response.message = "Setting configuration failed. This is due to an invalid field \"" + hoverAndHoldContent.Key + "\"";
-                                    return response;
+                                    foreach (var hoverAndHoldContent in hoverAndHoldObj)
+                                    {
+                                        // this layer of _content should contain only fields that HoverAndHoldInteractionSettings owns
+                                        bool validHoverField = IsFieldValid(hoverAndHoldContent, hoverAndHoldFields);
+
+                                        if (!validHoverField)
+                                        {
+                                            // Validation has failed because the field is not valid
+                                            response.status = "Failure";
+                                            response.message = "Setting configuration failed. This is due to an invalid field \"" + hoverAndHoldContent.Key + "\"";
+                                            return response;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -126,17 +132,20 @@ namespace Ultraleap.ScreenControl.Service
                 {
                     JObject physicalObj = JsonConvert.DeserializeObject<JObject>(contentElement.Value.ToString());
 
-                    foreach (var physicalContent in physicalObj)
+                    if (physicalObj != null)
                     {
-                        // this layer of _content should contain only fields that PhysicalConfig owns
-                        bool validInteractionField = IsFieldValid(physicalContent, interactionFields);
-
-                        if (!validInteractionField)
+                        foreach (var physicalContent in physicalObj)
                         {
-                            // Validation has failed because the field is not valid
-                            response.status = "Failure";
-                            response.message = "Setting configuration failed. This is due to an invalid field \"" + physicalContent.Key + "\"";
-                            return response;
+                            // this layer of _content should contain only fields that PhysicalConfig owns
+                            bool validPhysicslField = IsFieldValid(physicalContent, physicalFields);
+
+                            if (!validPhysicslField)
+                            {
+                                // Validation has failed because the field is not valid
+                                response.status = "Failure";
+                                response.message = "Setting configuration failed. This is due to an invalid field \"" + physicalContent.Key + "\"";
+                                return response;
+                            }
                         }
                     }
                 }

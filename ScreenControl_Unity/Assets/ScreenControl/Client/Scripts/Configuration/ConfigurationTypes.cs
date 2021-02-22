@@ -68,7 +68,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         }
 
         // Interaction-specific settings
-        public HoverAndHoldInteractionSettings hoverAndHold = new HoverAndHoldInteractionSettings();
+        public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
 
         // Variable: configValues
         // This dictionary is used to store the edited members only, and is accessed when serializing the data for transfer to the Service.
@@ -190,7 +190,12 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
         // Property: LeapPositionRelativeToScreenBottomM
         // The position (measured in meters) in 3d space of the Leap Motion camera relative to the
-        // center of the bottom of the screen.
+        // center of the bottom edge of the screen.
+        //
+        // This uses a left handed coordinate system where:
+        // X = left/right (right = positive)
+        // Y = up/down (up = positive)
+        // Z = forward/backward (forward = positive)
         public Vector3 LeapPositionRelativeToScreenBottomM
         {
             get
