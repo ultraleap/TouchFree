@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Start Example</title>
+    <script name="ScreenControl" type="text/javascript" src="../build/dist/ScreenControl.js"></script>
+    <style>
+
+        .buttonHorizontal {
+            text-align: center;
+            display: inline-block;
+            width: 25vw;
+            height: 10vw;
+        }
+
+        .buttonVertical {
+            text-align: center;
+            display: block;
+            width: 10vw;
+            height: 10vw;
+        }
+
+        .horizontalScroll {
+            white-space: nowrap;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            width: 80vw;
+            height: 10vw;
+            position: relative;
+            left: 5vw;
+        }
+
+        .verticalScroll {
+            white-space: nowrap;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            display: inline-block;
+            width: 12vw;
+            height: 95vh;
+            position: relative;
+            left: 2.5vw;
+        }
+
+        .topButton {
+            position: absolute;
+            top: 0px;
+            right: 10vw;
+            width: 30vw;
+            height: 20vh;
+        }
+    </style>
+</head>
+
+<body style="overflow:hidden">
+    <div>
+        <div class="verticalScroll">
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 1!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 2!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 3!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 4!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 5!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 6!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 7!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 8!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 9!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 10!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 11!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 12!</button>
+        </div>
+        <div style="display: inline-block; width: 70vw; height: 80vh;">
+            <div class="horizontalScroll">
+                <button class="buttonHorizontal" style="background-color:blue; color:blue" onpointerdown="textColor(this.textContent)">blue</button>
+                <button class="buttonHorizontal" style="background-color:red; color:red" onpointerdown="textColor(this.textContent)">red</button>
+                <button class="buttonHorizontal" style="background-color:yellow; color:yellow" onpointerdown="textColor(this.textContent)">yellow</button>
+                <button class="buttonHorizontal" style="background-color:orange; color:orange" onpointerdown="textColor(this.textContent)">orange</button>
+                <button class="buttonHorizontal" style="background-color:green; color:green" onpointerdown="textColor(this.textContent)">green</button>
+            </div>
+            <button class="topButton" onpointerdown="resetText()">Clear Text</button>
+            <button class="topButton" style="right: 50vw;" onpointerdown="resetTextColor()">Reset Text Color</button>
+            <h1 id="Text to change" style="text-align: center; position: absolute; top: 45vh; left: 35vw; height: 10vh; width: 30vw;"></h1>
+        </div>
+    </div>
+
+    <img src="../images/Ring.png" id="cursorRing" class="screencontrolcursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
+
+    <script>
+        ScreenControl.Connection.ConnectionManager.init();
+
+        var cursorRing = document.getElementById('cursorRing');
+        document.body.appendChild(cursorRing);
+
+        var cursor = document.createElement('img');
+        cursor.src = "../images/Dot.png";
+        cursor.style.position = "absolute";
+        cursor.width = 50;
+        cursor.height = 50;
+        cursor.style.zIndex = "1001";
+
+        // This is a special class used by the WebInputController to identify the html elements that
+        // make up the cursor. This is so it can ignore cursor-related objects when it is looking
+        // for elements to pointerover/pointerout etc. Note that the class is also added to the
+        // <img> tag foudn as "cursorRing" above
+        cursor.classList.add('screencontrolcursor');
+        document.body.appendChild(cursor);
+
+        var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
+        var inputSystem = new ScreenControl.InputControllers.WebInputController();
+
+        var changeText = function (content) {
+            var textToChange = document.getElementById("Text to change");
+            textToChange.textContent = content;
+        };
+
+        var resetText = function () {
+            var textToChange = document.getElementById("Text to change");
+            textToChange.textContent = "";
+        }
+
+        var resetTextColor = function () {
+            var textToChange = document.getElementById("Text to change");
+            textToChange.style.color = "black";
+        }
+
+        var textColor = function (content) {
+            var textToChange = document.getElementById("Text to change");
+            textToChange.style.color = content;
+        }
+    </script>
+
+</body>
+</html>
