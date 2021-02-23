@@ -2,18 +2,17 @@ import { ConnectionManager } from "../Connection/ConnectionManager";
 import { ClientInputAction, InputType } from "../ScreenControlTypes";
 
 // Class: InputController
-// A layer over Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
-// that connects the BaseInput to ScreenControl's <ClientInputActions> as they are
-// provided. Contains setup functions allowing inheritors to define only the input behaviour
-// they wish to see.
+// InputControllers convert <ClientInputActions> as recieved from the service into appropriate
+// inputs for the given environment. This abstract handles connection and should be inherited from
+// to develop any further InputControllers.
 //
 // Override <HandleInputAction> to react to ClientInputActions as they are recieved.
 //
-// For an example InputController, see <UnityUIInputController>.
+// For an example InputController, see <WebInputController>.
 export abstract class BaseInputController {
     // Group: MonoBehaviour Overrides
 
-    // Function: Start
+    // Function: constructor
     // Adds a listener to <ConnectionManager> to invoke <HandleInputAction> with <ClientInputActions> as they
     // are received.
     constructor() {

@@ -6,7 +6,12 @@ import { BaseInputController } from './BaseInputController'
 
 // Class: WebInputController
 // Provides web PointerEvents based on the incoming data from ScreenControl Service via a
-// <ServiceConnection>
+// <ServiceConnection>.
+//
+// If you are using cursors with this InputController, ensure they have the "screencontrolcursor"
+// class. This allows this class to ignore them when determining which elements should recieve
+// new pointer events. If you don't do this, none of the events transmitted here are guaranteed
+// to make it to their intended targets, as they will be captured by the cursor.
 export class WebInputController extends BaseInputController {
     // Group: Variables
 
@@ -23,8 +28,8 @@ export class WebInputController extends BaseInputController {
 
     // Group: Methods
 
-    // Function: Start
-    // Locates the EventSystem and StandaloneInputModule that need to be overridden
+    // Function: constructor
+    // Sets up the basic event properties for all events transmitted from this InputController.
     protected constructor() {
         super();
 
@@ -44,7 +49,7 @@ export class WebInputController extends BaseInputController {
     // Function: HandleMove
     // Handles the transmission of "pointerout"/"pointerover"/"pointermove" events to appropriate
     // elements, based on the element being hovered over this frame (_element), and the element
-    // hovered last frame (stored in <lastHoveredElement>)
+    // hovered last frame.
     // Will also optionally send "pointerenter"/"pointerleave" events if enabled via
     // <enterLeaveEnabled>
     //
@@ -77,8 +82,19 @@ export class WebInputController extends BaseInputController {
     }
 
     // Function: HandleInputAction
-    // Called with each <ClientInputAction> as it comes into the <ServiceConnection>. Updates the
-    // underlying InputModule and EventSystem based on the incoming actions.
+    // Called with each <ClientInputAction> as it comes into the <ServiceConnection>. Emits Pointer
+    // events (e.g. pointermove/pointerdown) to the objects at the location. Which events are
+    // emitted is affected by <enterLeaveEnabled>.
+    //
+    // Sends the following events by default:
+    //
+    //     - pointermove
+    //     - pointerdown
+    //     - pointerup
+    //     - pointerover
+    //     - pointerout
+    //     - pointerenter
+    //     - pointerleave
     //
     // Parameters:
     //     _inputData - The latest Action to arrive via the <ServiceConnection>.
@@ -115,7 +131,7 @@ export class WebInputController extends BaseInputController {
                 break;
 
             case InputType.UP:
-                let upEvent: PointerEvent = new PointerEvent("pointerdown", this.activeEventProps);
+                let upEvent: PointerEvent = new PointerEvent("pointerup", this.activeEventProps);
                 this.DispatchToTarget(upEvent, elementAtPos);
                 break;
         }
@@ -130,11 +146,9 @@ export class WebInputController extends BaseInputController {
 
         let elementAtPos: Element | null = null;
 
-        if (elementsAtPos !== null)
-        {
+        if (elementsAtPos !== null) {
             for (let i = 0; i < elementsAtPos.length; i++) {
-                if (!elementsAtPos[i].classList.contains("cursor"))
-                {
+                if (!elementsAtPos[i].classList.contains("screencontrolcursor")) {
                     elementAtPos = elementsAtPos[2];
                     break;
                 }
@@ -147,7 +161,7 @@ export class WebInputController extends BaseInputController {
     // Handle sending pointerleave/pointerenter events to the parent stacks
     // These events do not bubble, in order to deliver expected behaviour we must consider
     // the entire stack of elements above our current target in the document tree
-    private HandleEnterLeaveBehaviour(_element: Element|null) {
+    private HandleEnterLeaveBehaviour(_element: Element | null) {
         let oldParents: Array<Node | null> = this.GetOrderedParents(this.lastHoveredElement);
         let newParents: Array<Node | null> = this.GetOrderedParents(_element);
 
@@ -178,7 +192,7 @@ export class WebInputController extends BaseInputController {
     // Collects the stack of parent nodes, ordered from highest (document body) to lowest
     // (the node provided)
     private GetOrderedParents(_node: Node | null): Array<Node | null> {
-        var parentStack: Array<Node | null> = [_node];
+        let parentStack: Array<Node | null> = [_node];
 
         for (; _node; _node = _node.parentNode) {
             parentStack.unshift(_node);
@@ -194,7 +208,7 @@ export class WebInputController extends BaseInputController {
             return null;
         }
 
-        for (var i = 0; i < oldParents.length; i++) {
+        for (let i = 0; i < oldParents.length; i++) {
             if (oldParents[i] != newParents[i]) {
                 return i;
             }

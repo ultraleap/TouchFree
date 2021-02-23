@@ -18,6 +18,9 @@ export abstract class TouchlessCursor {
 
     // Function: constructor
     // Registers the Cursor for updates from the <ConnectionManager>
+    //
+    // If you intend to make use of the <WebInputController>, make sure that _cursor has the
+    // "screencontrolcursor" class. This prevents it blocking other elements from recieving events.
     constructor(_cursor: HTMLElement) {
         ConnectionManager.instance.addEventListener('TransmitInputAction', ((e: CustomEvent<ClientInputAction>) => {
             this.HandleInputAction(e.detail);

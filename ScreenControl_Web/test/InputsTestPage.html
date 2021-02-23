@@ -374,7 +374,7 @@
                         </div>
                     </div>
 
-                    <img src="../images/Ring.png" id="cursorRing" class="cursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
+                    <img src="../images/Ring.png" id="cursorRing" class="screencontrolcursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
 
                     <script>
                         ScreenControl.Connection.ConnectionManager.init();
@@ -388,7 +388,13 @@
                         cursor.width = 50;
                         cursor.height = 50;
                         cursor.style.zIndex = "1001";
-                        cursor.classList.add("cursor");
+
+                        // This is a special class used by the WebInputController to identify the html elements that
+                        // make up the cursor. This is so it can ignore cursor-related objects when it is looking
+                        // for elements to pointerover/pointerout etc. Note that the class is also added to the
+                        // <img> tag foudn as "cursorRing" above
+                        cursor.classList.add("screencontrolcursor");
+
                         document.body.appendChild(cursor);
 
                         var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
