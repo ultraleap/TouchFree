@@ -5,10 +5,10 @@ import {
 import { TouchlessCursor } from './TouchlessCursor';
 import { MapRangeToRange } from '../Utilities';
 
- //Class: DotCursor
- //This is an example Touchless Cursor which positions a dot on the screen at the hand location,
- //and reacts to the current ProgressToClick of the action (what determines this depends on the
- //currently active interaction).
+// Class: DotCursor
+// This is an example Touchless Cursor which positions a dot on the screen at the hand location,
+// and reacts to the current ProgressToClick of the action (what determines this depends on the
+// currently active interaction).
 export class DotCursor extends TouchlessCursor{
 
     // Set the update rate of the animation to 30fps.
@@ -37,8 +37,13 @@ export class DotCursor extends TouchlessCursor{
 
     // Function: constructor
     // Constructs a new cursor consisting of a central cursor and a ring.
-    // Optionally provide an _animationDuration to change the time it takes for the 'squeeze' confirmation animation to be performed.
-    // Optionally provide a _ringSizeMultiplier to change the size that the <cursorRing> is relative to the _cursor.
+    // Optionally provide an _animationDuration to change the time it takes for the 'squeeze'
+    // confirmation animation to be performed. Optionally provide a _ringSizeMultiplier to change
+    // the size that the <cursorRing> is relative to the _cursor.
+    //
+    // If you intend to make use of the <WebInputController>, make sure that both _cursor and
+    // _cursorRing have the "screencontrolcursor" class. This prevents them blocking other elements
+    // from recieving events.
     constructor(_cursor: HTMLElement, _cursorRing: HTMLElement, _animationDuration: number = 0.2, _ringSizeMultiplier: number = 2) {
         super(_cursor);
         this.cursorRing = _cursorRing;
