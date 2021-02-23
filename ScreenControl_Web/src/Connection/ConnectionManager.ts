@@ -67,7 +67,7 @@ export class ConnectionManager extends EventTarget {
     public static AddConnectionListener(_onConnectFunc: () => void): void {
         ConnectionManager.instance.addEventListener('OnConnected', _onConnectFunc);
 
-        if (ConnectionManager.currentServiceConnection != null) {
+        if (ConnectionManager.currentServiceConnection !== null) {
             _onConnectFunc();
         }
     }
@@ -97,7 +97,7 @@ export class ConnectionManager extends EventTarget {
     // Disconnects <currentServiceConnection> if it is connected to a WebSocket and
     // sets it to null.
     public static Disconnect(): void {
-        if (ConnectionManager.currentServiceConnection != null) {
+        if (ConnectionManager.currentServiceConnection !== null) {
             ConnectionManager.currentServiceConnection.Disconnect();
             ConnectionManager.currentServiceConnection = null;
         }

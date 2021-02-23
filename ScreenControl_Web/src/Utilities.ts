@@ -6,7 +6,7 @@ export function MapRangeToRange(_value: number, _oldMin: number, _oldMax: number
     let oldRange = (_oldMax - _oldMin);
     let newValue;
 
-    if (oldRange == 0) {
+    if (oldRange === 0) {
         newValue = _newMin;
     }
     else {

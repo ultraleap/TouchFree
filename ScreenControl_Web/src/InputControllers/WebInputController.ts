@@ -56,7 +56,7 @@ export class WebInputController extends BaseInputController {
     // Parameters:
     //     _element - The DOM element under the cursor this frame
     HandleMove(_element: Element | null): void {
-        if (_element != this.lastHoveredElement) {
+        if (_element !== this.lastHoveredElement) {
             // Handle sending pointerover/pointerout to the individual elements
             // These events bubble, so we only have to dispatch them to the element directly under
             // the cursor
@@ -110,11 +110,12 @@ export class WebInputController extends BaseInputController {
         switch (_inputData.InputType) {
             case InputType.CANCEL:
                 let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
-                if (elementAtPos != null) {
+
+                if (elementAtPos !== null) {
                     let parentTree = this.GetOrderedParents(elementAtPos);
 
                     parentTree.forEach((parent: Node | null) => {
-                        if (parent != null) {
+                        if (parent !== null) {
                             parent.dispatchEvent(cancelEvent);
                         }
                     });
@@ -146,10 +147,12 @@ export class WebInputController extends BaseInputController {
 
         let elementAtPos: Element | null = null;
 
+
         if (elementsAtPos !== null) {
             for (let i = 0; i < elementsAtPos.length; i++) {
+
                 if (!elementsAtPos[i].classList.contains("screencontrolcursor")) {
-                    elementAtPos = elementsAtPos[2];
+                    elementAtPos = elementsAtPos[i];
                     break;
                 }
             }
@@ -170,7 +173,7 @@ export class WebInputController extends BaseInputController {
         let leaveEvent = new PointerEvent("pointerleave", this.activeEventProps);
         let enterEvent = new PointerEvent("pointerenter", this.activeEventProps);
 
-        if (highestCommonIndex == null) {
+        if (highestCommonIndex === null) {
             oldParents.forEach((parentNode) => {
                 parentNode?.dispatchEvent(leaveEvent);
             });
@@ -204,12 +207,12 @@ export class WebInputController extends BaseInputController {
     // Takes two ordered arrays of Nodes (as produced by GetOrderedParents) and identifies the
     // lowest common ancestor of the two sets. Used in HandleMove for identifying the events to send
     private GetCommonAncestorIndex(oldParents: Array<Node | null>, newParents: Array<Node | null>): number | null {
-        if (oldParents[0] != newParents[0]) {
+        if (oldParents[0] !== newParents[0]) {
             return null;
         }
 
         for (let i = 0; i < oldParents.length; i++) {
-            if (oldParents[i] != newParents[i]) {
+            if (oldParents[i] !== newParents[i]) {
                 return i;
             }
         }
@@ -220,7 +223,10 @@ export class WebInputController extends BaseInputController {
     // Checks if the target element is null and correctly dispatches the provided event to the
     // element or document body appropriately
     private DispatchToTarget(event: PointerEvent, target: Element | null) {
-        if (target != null) {
+        // console.log(`Target was null? ${target === null}`)
+        // console.log(`Dispatching ${event.type} to ${target?.nodeName}`);
+
+        if (target !== null) {
             target.dispatchEvent(event);
         } else {
             document.dispatchEvent(event);
