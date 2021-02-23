@@ -85,7 +85,7 @@ export class DotCursor extends TouchlessCursor{
             case InputType.DOWN:
                 this.SetCursorSize(0, 0, this.cursorRing);
 
-                if (this.currentAnimationInterval != -1) {
+                if (this.currentAnimationInterval !== -1) {
                     clearInterval(this.currentAnimationInterval);
                 }
 
@@ -94,7 +94,7 @@ export class DotCursor extends TouchlessCursor{
                     this.animationUpdateDuration);
                 break;
             case InputType.UP:
-                if (this.currentAnimationInterval != -1) {
+                if (this.currentAnimationInterval !== -1) {
                     this.growQueued = true;
                 }
                 else {

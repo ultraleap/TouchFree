@@ -86,7 +86,7 @@ export class MessageReceiver {
     CheckForResponse(): void {
         let response: WebSocketResponse | undefined = this.responseQueue.shift();
 
-        if (response != undefined) {
+        if (response !== undefined) {
             this.HandleResponse(response);
         }
     }
@@ -95,9 +95,9 @@ export class MessageReceiver {
     // Checks the dictionary of <responseCallbacks> for a matching request ID. If there is a
     // match, calls the callback action in the matching <ResponseCallback>.
     HandleResponse(_response: WebSocketResponse): void {
-        if (this.responseCallbacks != undefined) {
+        if (this.responseCallbacks !== undefined) {
             for (let key in this.responseCallbacks) {
-                if (key == _response.requestID) {
+                if (key === _response.requestID) {
                     this.responseCallbacks[key].callback(_response);
                     delete this.responseCallbacks[key];
                     break;
@@ -113,7 +113,7 @@ export class MessageReceiver {
     // <serviceConnection> to handle the action.
     CheckForAction(): void {
         while (this.actionQueue.length > this.actionCullToCount) {
-            if (this.actionQueue[0] != undefined) {
+            if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
                 if (this.actionQueue[0].InteractionFlags & InputType.MOVE) {
                     // We want to ignore non-move results
@@ -126,7 +126,7 @@ export class MessageReceiver {
 
         let action: WebsocketInputAction | undefined = this.actionQueue.shift();
 
-        if (action != undefined) {
+        if (action !== undefined) {
             // Parse newly received messages & distribute them
             let converted: ClientInputAction = ConvertInputAction(action);
 
@@ -140,7 +140,7 @@ export class MessageReceiver {
     ClearUnresponsivePromises(): void {
         let lastClearTime: number = Date.now();
 
-        if (this.responseCallbacks != undefined) {
+        if (this.responseCallbacks !== undefined) {
             for (let key in this.responseCallbacks) {
                 if (this.responseCallbacks[key].timestamp < lastClearTime) {
                     delete this.responseCallbacks[key];

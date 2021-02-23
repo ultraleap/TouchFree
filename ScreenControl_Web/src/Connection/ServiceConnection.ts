@@ -64,7 +64,7 @@ export class ServiceConnection {
     // Function: Disconnect
     // Can be used to force the connection to the <webSocket> to be closed.
     Disconnect(): void {
-        if (this.webSocket != null) {
+        if (this.webSocket !== null) {
             this.webSocket.close();
         }
     }
@@ -73,7 +73,7 @@ export class ServiceConnection {
     // Passed into <SendMessage> as part of connecting to ScreenControl Service, handles the
     // result of the Version Checking handshake.
     private ConnectionResultCallback(response: WebSocketResponse): void {
-        if (response.status == "Success") {
+        if (response.status === "Success") {
             console.log("Successful Connection");
 
             this.handshakeCompleted = true;
@@ -112,13 +112,13 @@ export class ServiceConnection {
     // Used internally to send or request information from the Service via the <webSocket>. To
     // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
     // via the _callback parameter.
-    // 
+    //
     // If your _callBack requires context it should be bound to that context via .bind()
     SendMessage(
         _message: string, _requestID: string,
         _callback: (detail: WebSocketResponse) => void): void {
-        if (_requestID == "") {
-            if (_callback != null) {
+        if (_requestID === "") {
+            if (_callback !== null) {
                 let response: WebSocketResponse = new WebSocketResponse(
                     "",
                     "Failure",
