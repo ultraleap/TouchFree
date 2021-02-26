@@ -333,7 +333,7 @@ GameObject:
   - component: {fileID: 76941819}
   - component: {fileID: 76941818}
   m_Layer: 5
-  m_Name: Quote 7 Button
+  m_Name: Button 7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -410,8 +410,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 'I will not say: do not weep; for not all tears are an
-            evil'
+          m_StringArgument: Button VII
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &76941819
@@ -672,7 +671,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: May it be a light to you in dark places, when all other lights go out
+  m_Text: "\u03A9 Button"
 --- !u!222 &228025897
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1051,7 +1050,7 @@ GameObject:
   - component: {fileID: 324365525}
   - component: {fileID: 324365524}
   m_Layer: 5
-  m_Name: Quote 5 Button
+  m_Name: Button 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1128,8 +1127,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: If more of us valued food and cheer and song above hoarded
-            gold, it would be a merrier world
+          m_StringArgument: Button the Fifth
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &324365525
@@ -1238,7 +1236,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not all those who wander are lost
+  m_Text: Button 1
 --- !u!222 &542250423
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1464,7 +1462,7 @@ GameObject:
   - component: {fileID: 611129423}
   - component: {fileID: 611129422}
   m_Layer: 5
-  m_Name: Quote 3 Button
+  m_Name: Button 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1541,7 +1539,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: It's a dangerous business, Frodo, going out your door
+          m_StringArgument: "Button \u25B2"
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &611129423
@@ -1868,7 +1866,7 @@ GameObject:
   - component: {fileID: 870589184}
   - component: {fileID: 870589183}
   m_Layer: 5
-  m_Name: 'Quote 6 Button '
+  m_Name: Button 6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1945,7 +1943,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Courage is found in unlikely places
+          m_StringArgument: Button Button Button Button Button Button
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &870589184
@@ -2054,7 +2052,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Courage is found in unlikely places.
+  m_Text: Button Button Button Button Button Button
 --- !u!222 &896911391
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2076,7 +2074,7 @@ GameObject:
   - component: {fileID: 929031120}
   - component: {fileID: 929031119}
   m_Layer: 5
-  m_Name: Quote 8 Button
+  m_Name: Button 8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2153,8 +2151,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: May it be a light to you in dark places, when all other
-            lights go out
+          m_StringArgument: "\u03A9 Button"
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &929031120
@@ -2377,7 +2374,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -674.99994, y: 141.5}
+  m_AnchoredPosition: {x: -675.00006, y: 141.5}
   m_SizeDelta: {x: 2600, y: 313.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &953291539
@@ -2446,7 +2443,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0, y: 0.00012207031}
   m_SizeDelta: {x: 0, y: 2575}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1069673001
@@ -2579,7 +2576,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: It's a dangerous business, Frodo, going out your door
+  m_Text: "Button \u25B2"
 --- !u!222 &1109559834
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2892,7 +2889,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1261005066}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.5192308
+  m_Size: 0.51922977
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3077,8 +3074,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: If more of us valued food and cheer and song above hoarded gold, it would
-    be a merrier world
+  m_Text: Button the Fifth
 --- !u!222 &1340218971
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3530,7 +3526,7 @@ GameObject:
   - component: {fileID: 1420350907}
   - component: {fileID: 1420350906}
   m_Layer: 5
-  m_Name: 'Quote 2 Button '
+  m_Name: Button 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3607,8 +3603,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: All we have to decide is what to do with the time that
-            is given to us
+          m_StringArgument: Button Button
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1420350907
@@ -3884,7 +3879,7 @@ GameObject:
   - component: {fileID: 1662978628}
   - component: {fileID: 1662978627}
   m_Layer: 5
-  m_Name: Quote 4 Button
+  m_Name: Button 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3961,8 +3956,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Do not meddle in the affairs of wizards, for they are
-            subtle and quick to anger
+          m_StringArgument: "Button\xB2"
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1662978628
@@ -4357,7 +4351,7 @@ GameObject:
   - component: {fileID: 1925374760}
   - component: {fileID: 1925374759}
   m_Layer: 5
-  m_Name: Quote 1 Button
+  m_Name: Button 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4434,7 +4428,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Not all those who wander are lost
+          m_StringArgument: Button 1
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1925374760
@@ -4543,7 +4537,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'I will not say: do not weep; for not all tears are an evil'
+  m_Text: Button VII
 --- !u!222 &2004582337
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4843,8 +4837,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Do not meddle in the affairs of wizards, for they are subtle and quick
-    to anger
+  m_Text: "Button\xB2"
 --- !u!222 &2016216713
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4922,7 +4915,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: All we have to decide is what to do with the time that is given to us
+  m_Text: Button Button
 --- !u!222 &2098377314
 CanvasRenderer:
   m_ObjectHideFlags: 0
