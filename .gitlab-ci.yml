@@ -22,7 +22,8 @@ SC_Client::Unity::build:
   artifacts:
     name: "Screen_Control_Client_for_Unity_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
     paths:
-      - ./UnityClient/**
+      - ./ScreenControl_Client_for_Unity_*.unitypackage
+      - ./Client_for_Unity_package.log
     expire_in: 2 weeks
     when: always
   tags:
