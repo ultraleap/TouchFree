@@ -56,7 +56,7 @@ SC_Client::Web::build:
     - cp ${env:SC_CFW_PATH}/gulpfile.js ./Client_Release/ts/
     - cp ${env:SC_CFW_PATH}/package.json ./Client_Release/ts/
     - cp ${env:SC_CFW_PATH}/tsconfig.json ./Client_Release/ts/
-    - cp -r ${env:SC_CFW_PATH}/dist ./Client_Release/dist
+    - cp -r ${env:SC_CFW_PATH}/build/dist ./Client_Release/dist
     - cp -r ${env:SC_CFW_PATH}/src ./Client_Release/ts/src
   artifacts:
     name: "Screen_Control_Client_for_Web_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
