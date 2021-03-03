@@ -2,7 +2,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   UNITY_EXE_DIR: 'C:/Unity/2019.4.13f1/Editor'
   UNITY_EXE: 'C:/Unity/2019.4.13f1/Editor/Unity.exe'
-  SC_CFW_PATH: './ScreenControl_Web/'
+  SC_CFW_PATH: './ScreenControl_Web'
   SC_CFU_PATH: './ScreenControl_Unity/Assets/ScreenControl/Client'
   SC_CFU_VERSION: '1.0.0-alpha2'
   SC_CFW_VERSION: '1.0.0-alpha2'
