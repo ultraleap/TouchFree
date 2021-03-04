@@ -10,10 +10,18 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject step1;
         public GameObject step2;
         public GameObject trackingLost;
+        public GameObject setupGuideButton;
+
+        [Space]
         public GameObject clientCursor;
+
+        [Space]
+        public int trackingFailsToSetupGuide = 3;
 
         Vector3 bottomPosM;
         Vector3 topPosM;
+
+        int noTrackingAttempts = 0;
 
         private void OnEnable()
         {
@@ -25,6 +33,13 @@ namespace Ultraleap.ScreenControl.Core
             clientCursor.SetActive(false);
             HandManager.Instance.useTrackingTransform = false;
             DisplayTrackingLost(false);
+            setupGuideButton.SetActive(false);
+            noTrackingAttempts = 0;
+        }
+
+        private void OnDisable()
+        {
+            clientCursor.SetActive(true);
         }
 
         private void Update()
@@ -71,8 +86,6 @@ namespace Ultraleap.ScreenControl.Core
 
             ConfigurationSetupController.selectedMountType = MountingType.NONE;
             ConfigurationSetupController.Instance.ChangeState(ConfigState.AUTO_COMPLETE);
-
-            clientCursor.SetActive(true);
         }
 
         public void CalculateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
@@ -188,6 +201,12 @@ namespace Ultraleap.ScreenControl.Core
             if (_display)
             {
                 StartCoroutine(HideTrackingLostAfterTime());
+
+                noTrackingAttempts++;
+                if (noTrackingAttempts >= trackingFailsToSetupGuide)
+                {
+                    setupGuideButton.SetActive(true);
+                }
             }
         }
 
