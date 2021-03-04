@@ -22,9 +22,9 @@
 
         .horizontalScroll {
             white-space: nowrap;
-            overflow-x: scroll;
+            overflow-x: hidden;
             overflow-y: hidden;
-            width: 80vw;
+            width: 75vw;
             height: 10vw;
             position: relative;
             left: 5vw;
@@ -33,7 +33,7 @@
         .verticalScroll {
             white-space: nowrap;
             overflow-x: hidden;
-            overflow-y: scroll;
+            overflow-y: hidden;
             display: inline-block;
             width: 12vw;
             height: 95vh;
@@ -71,9 +71,9 @@
             <div class="horizontalScroll">
                 <button class="buttonHorizontal" style="background-color:blue; color:blue" onpointerdown="textColor(this.textContent)">blue</button>
                 <button class="buttonHorizontal" style="background-color:red; color:red" onpointerdown="textColor(this.textContent)">red</button>
-                <button class="buttonHorizontal" style="background-color:yellow; color:yellow" onpointerdown="textColor(this.textContent)">yellow</button>
-                <button class="buttonHorizontal" style="background-color:orange; color:orange" onpointerdown="textColor(this.textContent)">orange</button>
                 <button class="buttonHorizontal" style="background-color:green; color:green" onpointerdown="textColor(this.textContent)">green</button>
+                <button class="buttonHorizontal" style="background-color:orange; color:orange" onpointerdown="textColor(this.textContent)">orange</button>
+                <button class="buttonHorizontal" style="background-color:yellow; color:yellow" onpointerdown="textColor(this.textContent)">yellow</button>
             </div>
             <button class="topButton" onpointerdown="resetText()">Clear Text</button>
             <button class="topButton" style="right: 50vw;" onpointerdown="resetTextColor()">Reset Text Color</button>
