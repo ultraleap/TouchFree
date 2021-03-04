@@ -71,6 +71,11 @@ SC_Service::build:
     - python ./Scripts/UpdateUnityProjVer.py --path ./ScreenControl_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
     - cd ./Scripts
     - "& ./build_service.bat"
+
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - ls $CI_PROJECT_DIR/Build
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/ScreenControlService.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "Screen_Control_Service_${env:SC_SRV_VERSION}_${env:CI_COMMIT_SHA}"
     paths:
