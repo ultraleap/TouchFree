@@ -50,8 +50,6 @@ SC_Client::Web::build:
     - cd ${env:CI_PROJECT_DIR}
     - mkdir ./Client_Release
     - mkdir ./Client_Release/dist
-    - mkdir ./Client_Release/ts
-    - mkdir ./Client_Release/ts/src
     - cp ${env:SC_CFW_PATH}/Version.txt ./Client_Release
     - cp -r ${env:SC_CFW_PATH}/build/dist ./Client_Release/
   artifacts:
