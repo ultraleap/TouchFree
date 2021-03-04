@@ -10,6 +10,7 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject step1;
         public GameObject step2;
         public GameObject trackingLost;
+        public GameObject clientCursor;
 
         Vector3 bottomPosM;
         Vector3 topPosM;
@@ -21,6 +22,7 @@ namespace Ultraleap.ScreenControl.Core
             topPosM = Vector3.zero;
             step1.SetActive(true);
             step2.SetActive(false);
+            clientCursor.SetActive(false);
             HandManager.Instance.useTrackingTransform = false;
             DisplayTrackingLost(false);
         }
@@ -69,6 +71,8 @@ namespace Ultraleap.ScreenControl.Core
 
             ConfigurationSetupController.selectedMountType = MountingType.NONE;
             ConfigurationSetupController.Instance.ChangeState(ConfigState.AUTO_COMPLETE);
+
+            clientCursor.SetActive(true);
         }
 
         public void CalculateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
