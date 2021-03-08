@@ -4,9 +4,10 @@ variables:
   UNITY_EXE: 'C:/Unity/2019.4.13f1/Editor/Unity.exe'
   SC_CFW_PATH: $CI_PROJECT_DIR/ScreenControl_Web
   SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
-  SC_CFU_VERSION: '1.0.0-alpha2'
-  SC_CFW_VERSION: '1.0.0-alpha2'
-  SC_SRV_VERSION: '1.0.0-alpha2'
+  SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
+  SC_CFU_VERSION: 'alpha3'
+  SC_CFW_VERSION: 'alpha3'
+  SC_SRV_VERSION: 'alpha3'
   SC_API_VERSION: '1.0.1'
 
 stages:
@@ -67,10 +68,20 @@ SC_Service::build:
   stage: build
   when: always
   script:
-    # Update ProjectSettings file with correct version
+    # Update Version.txt with latest information before packaging
+    - python ./Scripts/UpdateVersionFile.py --path ${env:SC_SRV_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHA}
+    - mkdir $CI_PROJECT_DIR/Build
+    - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
+
+    # Update ProjectSettings file with correct version & build service
     - python ./Scripts/UpdateUnityProjVer.py --path ./ScreenControl_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
     - cd ./Scripts
     - "& ./build_service.bat"
+
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - ls $CI_PROJECT_DIR/Build
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/ScreenControlService.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "Screen_Control_Service_${env:SC_SRV_VERSION}_${env:CI_COMMIT_SHA}"
     paths:
