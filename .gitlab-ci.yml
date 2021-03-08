@@ -63,7 +63,20 @@ SC_Client::Web::build:
     - unity
     - win10
 
-# build stage jobs
+SC_Client::Docs::build:
+  stage: build
+  when: always
+  image: registry.ultrahaptics.com/apps/docker-naturaldocs:main
+  script:
+    - mono /opt/Natural Docs/NaturalDocs.exe $CI_PROJECT_DIR/ScreenControl_Unity/NaturalDocs_Config
+    - mono /opt/Natural Docs/NaturalDocs.exe $CI_PROJECT_DIR/ScreenControl_Unity/NaturalDocs_Config
+  artifacts:
+    name: "ScreenControl_Documentation"
+    paths:
+    - ./Documentation/*
+    expire_in: 2 weeks
+    when: always
+
 SC_Service::build:
   stage: build
   when: always
