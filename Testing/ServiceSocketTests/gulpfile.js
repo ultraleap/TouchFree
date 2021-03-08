@@ -38,7 +38,7 @@ gulp.task('buildServerGrab', function () {
 })
 
 gulp.task('startServer', function (callback) {
-    var serverBinDir = `./PUT_TEST_BUILD_IN_HERE/`;
+    var serverBinDir = `./PUT_TEST_BUILD_IN_HERE`;
     var logFileName = `log.txt`;
     var logFileLoc = `${serverBinDir}/${logFileName}`;
 
