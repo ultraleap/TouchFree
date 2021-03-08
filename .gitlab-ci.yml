@@ -76,6 +76,8 @@ SC_Client::Docs::build:
     - ./Documentation/*
     expire_in: 2 weeks
     when: always
+  tags:
+    - docker
 
 SC_Service::build:
   stage: build
