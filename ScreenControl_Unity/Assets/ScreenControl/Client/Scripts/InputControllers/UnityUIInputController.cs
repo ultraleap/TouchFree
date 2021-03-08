@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-using Ultraleap.ScreenControl.Client;
-using Ultraleap.ScreenControl.Client.Connection;
-
 namespace Ultraleap.ScreenControl.Client.InputControllers
 {
     // Class: UnityUIInputController
@@ -17,7 +14,6 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         // The <StandaloneInputModule: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/script-StandaloneInputModule.html>
         // that this Input Controller will override.
         // Will be found from the scene on <Start>
-
         [SerializeField]
         private StandaloneInputModule inputModule;
 
@@ -33,7 +29,6 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         // to inform the inherited values in the section below when queried.
         private Vector2 touchPosition;
         private TouchPhase touchPhase = TouchPhase.Ended;
-        private TouchPhase previousTouchPhase;
         private int baseDragThreshold = 100000;
         public bool sendHoverEvents = true;
         private bool isTouching = false;
@@ -72,8 +67,6 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         //     index - The Touch index, passed down from <GetTouch>
         private Touch CheckForTouch(int index)
         {
-            previousTouchPhase = touchPhase;
-
             if (touchPhase == TouchPhase.Ended || touchPhase == TouchPhase.Canceled)
             {
                 isTouching = false;
@@ -100,7 +93,6 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
 
             InputType type = _inputData.InputType;
             Vector2 cursorPosition = _inputData.CursorPosition;
-            float distanceFromScreen = _inputData.ProgressToClick;
 
             touchPosition = cursorPosition;
 

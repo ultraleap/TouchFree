@@ -40,11 +40,18 @@ namespace Ultraleap.ScreenControl.Core
             interactions.Add(ScreenControlTypes.InteractionType.PUSH, pushInteractionModule);
             interactions.Add(ScreenControlTypes.InteractionType.HOVER, hoverInteractionModule);
             interactions.Add(ScreenControlTypes.InteractionType.GRAB, grabInteractionModule);
+
+            SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
         }
 
         private void OnDestroy()
         {
             InteractionModule.HandleInputAction -= HandleInteractionModuleInputAction;
+        }
+
+        public void SetActiveInteractions(ScreenControlTypes.InteractionType _activateType)
+        {
+            SetActiveInteractions(new ScreenControlTypes.InteractionType[] { _activateType });
         }
 
         // For Config settings and Client Interaction requests
