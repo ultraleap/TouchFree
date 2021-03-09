@@ -13,6 +13,7 @@ variables:
 stages:
   - build
   - test
+  - package
 
 SC_Client::Unity::build:
   stage: build
@@ -27,7 +28,7 @@ SC_Client::Unity::build:
     - cd ./Scripts
     - "& ./package_unity_client.bat"
   artifacts:
-    name: "Screen_Control_Client_for_Unity_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
+    name: "Client_for_Unity_Build_${env:CI_COMMIT_SHA}"
     paths:
       - ./Client_Release/*
       - ./Client_for_Unity_package.log
@@ -54,7 +55,7 @@ SC_Client::Web::build:
     - cp ${env:SC_CFW_PATH}/Version.txt ./Client_Release
     - cp -r ${env:SC_CFW_PATH}/build/dist ./Client_Release/
   artifacts:
-    name: "Screen_Control_Client_for_Web_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
+    name: "Client_for_Web_Build_${env:CI_COMMIT_SHA}"
     paths:
       - ./Client_Release/*
     expire_in: 2 weeks
@@ -130,3 +131,49 @@ SC_Service::test:
   tags:
     - unity
     - win10
+
+SC_Client::Web::package:
+  stage: package
+  image: alpine:3.13
+  dependencies:
+    - SC_Client::Web::build
+    - SC_Client::Docs::build
+  needs: [
+    "SC_Client::Web::build"
+    "SC_Client::Docs::build"
+  ]
+  script:
+    - mkdir ./Client_Package/
+    - cp ./Client_Release/ ./Client_Package/
+    - cp ./Documentation/Client for Web/ ./Client_Package/Documentation/
+  artifacts:
+    name: "Screen_Control_Client_for_Web_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
+    paths:
+      - ./Client_Package/*
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - docker
+
+SC_Client::Unity::package:
+  stage: package
+  image: alpine:3.13
+  dependencies:
+    - SC_Client::Unity::build
+    - SC_Client::Docs::build
+  needs: [
+    "SC_Client::Unity::build"
+    "SC_Client::Docs::build"
+  ]
+  script:
+    - mkdir ./Client_Package/
+    - cp ./Client_Release/ ./Client_Package/
+    - cp ./Documentation/Client for Unity/ ./Client_Package/Documentation/
+  artifacts:
+    name: "Screen_Control_Client_for_Unity_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
+    paths:
+      - ./Client_Package/*
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - docker
