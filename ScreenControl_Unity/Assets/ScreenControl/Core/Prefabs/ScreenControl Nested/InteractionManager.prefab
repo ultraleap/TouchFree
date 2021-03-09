@@ -560,11 +560,11 @@ MonoBehaviour:
   handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 7253266500062961542}
-  millisecondsCooldownOnEntry: 500
-  speedMin: 0.1
-  speedMax: 0.75
-  distAtSpeedMin: 0.05
-  distAtSpeedMax: 0.01
+  millisecondsCooldownOnEntry: 300
+  speedMin: 0.15
+  speedMax: 0.5
+  distAtSpeedMin: 0.03
+  distAtSpeedMax: 0.005
   stiffnessCurve:
     serializedVersion: 2
     m_Curve:
@@ -589,18 +589,16 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  horizontalDecayDist: 0.2
+  horizontalDecayDist: 0.05
   thetaOne: 15
   thetaTwo: 135
-  unclickThreshold: 0.5
+  unclickThreshold: 0.85
   decayForceOnClick: 1
-  decayThreshold: 0.8
   forceDecayTime: 0.1
   useTouchPlaneForce: 1
   distPastTouchPlane: 0.02
-  dragStartDistanceThresholdM: 0.04
-  dragStartTimeDelaySecs: 0.1
+  dragStartDistanceThresholdM: 0.01
   dragDeadzoneShrinkRate: 0.5
-  dragDeadzoneShrinkDistanceThresholdM: 0.001
+  dragDeadzoneShrinkDistanceThresholdM: 0.01
   deadzoneMaxSizeIncrease: 0.02
-  deadzoneShrinkRate: 0.3
+  deadzoneShrinkRate: 0.8

@@ -171,7 +171,13 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     break;
 
                 case InputType.CANCEL:
+                    HideCursor();
                     break;
+            }
+
+            if(hidingCursor && _inputData.InputType != InputType.CANCEL)
+            {
+                ShowCursor();
             }
         }
 
