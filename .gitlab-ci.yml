@@ -69,7 +69,7 @@ SC_Client::Docs::build:
   image: registry.ultrahaptics.com/apps/docker-naturaldocs:main
   script:
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Unity/NaturalDocs_Config
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Unity/NaturalDocs_Config
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Web/NaturalDocs_Config
   artifacts:
     name: "ScreenControl_Documentation"
     paths:
