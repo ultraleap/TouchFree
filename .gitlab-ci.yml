@@ -144,8 +144,8 @@ SC_Client::Web::package:
   ]
   script:
     - mkdir ./Client_Package/
-    - cp ./Client_Release/ ./Client_Package/
-    - cp ./Documentation/Client for Web/ ./Client_Package/Documentation/
+    - cp -r ./Client_Release/ ./Client_Package/
+    - cp -r ./Documentation/Client for Web/ ./Client_Package/Documentation/
   artifacts:
     name: "Screen_Control_Client_for_Web_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
     paths:
@@ -167,8 +167,8 @@ SC_Client::Unity::package:
   ]
   script:
     - mkdir ./Client_Package/
-    - cp ./Client_Release/ ./Client_Package/
-    - cp ./Documentation/Client for Unity/ ./Client_Package/Documentation/
+    - cp -r ./Client_Release/ ./Client_Package/
+    - cp -r ./Documentation/Client for Unity/ ./Client_Package/Documentation/
   artifacts:
     name: "Screen_Control_Client_for_Unity_${env:SC_CFU_VERSION}_${env:CI_COMMIT_SHA}"
     paths:
