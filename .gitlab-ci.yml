@@ -139,7 +139,7 @@ SC_Client::Web::package:
     - SC_Client::Web::build
     - SC_Client::Docs::build
   needs: [
-    "SC_Client::Web::build"
+    "SC_Client::Web::build",
     "SC_Client::Docs::build"
   ]
   script:
@@ -162,7 +162,7 @@ SC_Client::Unity::package:
     - SC_Client::Unity::build
     - SC_Client::Docs::build
   needs: [
-    "SC_Client::Unity::build"
+    "SC_Client::Unity::build",
     "SC_Client::Docs::build"
   ]
   script:
