@@ -76,7 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputModule: {fileID: 0}
   eventSystem: {fileID: 0}
-  sendHoverEvents: 0
+  sendHoverEvents: 1
 --- !u!114 &6017491752659792052
 MonoBehaviour:
   m_ObjectHideFlags: 0
