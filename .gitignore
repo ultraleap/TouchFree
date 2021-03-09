@@ -59,8 +59,8 @@ AssetDirStat.asset
 # =============== #
 #  Documentation  #
 # =============== #
-Documentation/Client for Web*
-Documentation/Client for Unity*
+Documentation/Client for Web/**
+Documentation/Client for Unity/**
 !Documentation/Info.md
 !Documentation/Client for Web/Info.md
 !Documentation/Client for Unity/Info.md
