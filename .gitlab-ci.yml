@@ -147,7 +147,7 @@ SC_Client::Web::package:
     - cp -r ./Client_Release/* ./Client_Package/
     - cp -r "./Documentation/Client for Web/" ./Client_Package/Documentation/
   artifacts:
-    name: Screen_Control_Client_for_Unity_$SC_CFU_VERSION_$CI_COMMIT_SHA
+    name: Screen_Control_Client_for_Web_$SC_CFU_VERSION_$CI_COMMIT_SHA
     paths:
       - ./Client_Package/*
     expire_in: 2 weeks
