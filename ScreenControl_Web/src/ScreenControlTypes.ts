@@ -132,7 +132,7 @@ export enum BitmaskFlags {
 
 // Class: WebsocketInputAction
 // The version of an InputAction received via the WebSocket. This must be converted into a
-// <ClientInputAction> to be used by the client and can be done so via <ConvertInputAction>.
+// <ClientInputAction> to be used by the client and can be done so via ConvertInputAction.
 export class WebsocketInputAction {
     // Variable: Timestamp
     Timestamp: number;

@@ -22,7 +22,7 @@ export class MessageReceiver {
     callbackClearTimer: number = 300;
 
     // Variable: update Rate
-    // How many times per second to process <WebSocketResponse> & <ClientnputActions>
+    // How many times per second to process <WebSocketResponse> & <ClientInputActions>
     updateRate: number = 60;
 
     // Calculated on construction for use in setting the update interval
@@ -58,8 +58,8 @@ export class MessageReceiver {
     // Group: Functions
 
     // Function: constructor
-    // Starts the two regular intervals managed for this (running <ClearUnresponsivePromises> on an
-    // interval of <callbackClearTimer> and <Update> on an interval of <updateDuration>
+    // Starts the two regular intervals managed for this (running <ClearUnresponsiveCallbacks> on an
+    // interval of <callbackClearTimer> and <Update> on an interval of updateDuration
     constructor() {
         this.updateDuration = (1 / this.updateRate) * 1000;
 
