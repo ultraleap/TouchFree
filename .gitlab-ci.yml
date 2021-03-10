@@ -86,6 +86,7 @@ SC_Service::build:
   script:
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_SRV_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHA}
+    - mkdir $CI_PROJECT_DIR/Build
     - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
 
     # Update ProjectSettings file with correct version & build service

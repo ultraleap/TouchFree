@@ -116,19 +116,19 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
             if (ringEnabled)
             {
-                //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
-                float dist = Mathf.Clamp01(1f - _progressToClick);
-
                 if (hidingCursor)
                 {
                     ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, 0);
                 }
                 else
                 {
+                    //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
+                    _progressToClick = Mathf.Clamp01(1f - _progressToClick);
+
                     // 0.9f so that the boundary between ring and dot is not visible - small overlap.
                     float minRingScale = 0.9f + ringThickness;
-                    float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(dist));
-                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(ringColor.a, 0f, dist));
+                    float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(_progressToClick));
+                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
 
                     ringOuter.transform.localScale = Vector3.one * ringScale;
 
