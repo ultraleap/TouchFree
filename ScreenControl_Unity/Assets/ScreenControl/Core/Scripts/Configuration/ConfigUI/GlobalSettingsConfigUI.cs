@@ -206,7 +206,6 @@ namespace Ultraleap.ScreenControl.Core
             switch (ConfigManager.InteractionConfig.InteractionType)
             {
                 case ScreenControlTypes.InteractionType.GRAB:
-
                     grabPreview.SetActive(true);
                     HandleSpecificElements("Grab");
                     break;
@@ -240,7 +239,7 @@ namespace Ultraleap.ScreenControl.Core
                 }
             }
 
-            if(matchingGroup != null)
+            if (matchingGroup != null)
             {
                 foreach (var element in matchingGroup.typeSpecificElements)
                 {
@@ -259,17 +258,14 @@ namespace Ultraleap.ScreenControl.Core
             if (interactionTypeTogglePush.isOn)
             {
                 ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.PUSH;
-                //InteractionManager.Instance.SetActiveInteractions(new ScreenControlTypes.InteractionType[] { ScreenControlTypes.InteractionType.PUSH });
             }
             else if (interactionTypeTogglePinch.isOn)
             {
                 ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.GRAB;
-                //InteractionManager.Instance.SetActiveInteractions(new ScreenControlTypes.InteractionType[] { ScreenControlTypes.InteractionType.GRAB });
             }
             else if (interactionTypeToggleHover.isOn)
             {
                 ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.HOVER;
-                //InteractionManager.Instance.SetActiveInteractions(new ScreenControlTypes.InteractionType[] { ScreenControlTypes.InteractionType.HOVER });
             }
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();

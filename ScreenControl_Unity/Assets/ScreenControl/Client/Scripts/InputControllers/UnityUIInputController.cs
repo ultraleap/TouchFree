@@ -32,7 +32,7 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         private int baseDragThreshold = 100000;
         public bool sendHoverEvents = true;
         private bool isTouching = false;
-        private bool isCancelled = false;
+        private bool isCancelled = true;
 
         // Group: Inherited Values
         // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
