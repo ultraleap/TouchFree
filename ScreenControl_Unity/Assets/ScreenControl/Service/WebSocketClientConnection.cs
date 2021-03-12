@@ -29,14 +29,10 @@ namespace Ultraleap.ScreenControl.Service
 
             Instance = this;
             InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
-        }
-
-        void OnEnable()
-        {
             InitialiseServer();
         }
 
-        void Destroy()
+        void OnDestroy()
         {
             InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }

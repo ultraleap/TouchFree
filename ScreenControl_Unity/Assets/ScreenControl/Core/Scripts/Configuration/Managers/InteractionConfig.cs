@@ -1,4 +1,5 @@
 using System;
+using Ultraleap.ScreenControl.Core.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -15,7 +16,7 @@ namespace Ultraleap.ScreenControl.Core
         public bool UseScrollingOrDragging = false;
         public float DeadzoneRadius = 0.003f;
 
-        // TODO: Store the currently selected interaction here
+        public InteractionType InteractionType = InteractionType.PUSH;
 
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
@@ -28,6 +29,7 @@ namespace Ultraleap.ScreenControl.Core
             DeadzoneRadius = defaults.DeadzoneRadius;
             HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
+            InteractionType = defaults.InteractionType;
         }
 
         public void SaveConfig()

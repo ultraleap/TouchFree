@@ -410,8 +410,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 'I will not say: do not weep; for not all tears are an
-            evil'
+          m_StringArgument: Button7
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &76941819
@@ -672,7 +671,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: May it be a light to you in dark places, when all other lights go out
+  m_Text: Button8
 --- !u!222 &228025897
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1128,8 +1127,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: If more of us valued food and cheer and song above hoarded
-            gold, it would be a merrier world
+          m_StringArgument: Button5
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &324365525
@@ -1238,7 +1236,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not all those who wander are lost
+  m_Text: Button1
 --- !u!222 &542250423
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1541,7 +1539,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: It's a dangerous business, Frodo, going out your door
+          m_StringArgument: Button3
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &611129423
@@ -1945,7 +1943,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Courage is found in unlikely places
+          m_StringArgument: Button6
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &870589184
@@ -2054,7 +2052,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Courage is found in unlikely places.
+  m_Text: Button6
 --- !u!222 &896911391
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2153,8 +2151,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: May it be a light to you in dark places, when all other
-            lights go out
+          m_StringArgument: Button8
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &929031120
@@ -2377,7 +2374,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -674.99994, y: 141.5}
+  m_AnchoredPosition: {x: -674.9996, y: 141.5}
   m_SizeDelta: {x: 2600, y: 313.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &953291539
@@ -2579,7 +2576,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: It's a dangerous business, Frodo, going out your door
+  m_Text: Button3
 --- !u!222 &1109559834
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2891,8 +2888,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1261005067}
   m_HandleRect: {fileID: 1261005066}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.5192308
+  m_Value: -0.000000390625
+  m_Size: 0.51922685
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3077,8 +3074,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: If more of us valued food and cheer and song above hoarded gold, it would
-    be a merrier world
+  m_Text: Button5
 --- !u!222 &1340218971
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3607,8 +3603,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: All we have to decide is what to do with the time that
-            is given to us
+          m_StringArgument: Button2
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1420350907
@@ -3961,8 +3956,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Do not meddle in the affairs of wizards, for they are
-            subtle and quick to anger
+          m_StringArgument: Button4
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1662978628
@@ -4154,130 +4148,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 157025b17471e7c41a7d20e7f28273b5, type: 3}
---- !u!1001 &1836148245
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4992726930522987157, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_Name
-      value: ScreenControlService
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987157, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 310
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 174.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
-        type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: cda6721080db7f3438270f538c555acd, type: 3}
 --- !u!1 &1867213672
 GameObject:
   m_ObjectHideFlags: 0
@@ -4434,7 +4304,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Not all those who wander are lost
+          m_StringArgument: Button1
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1925374760
@@ -4543,7 +4413,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'I will not say: do not weep; for not all tears are an evil'
+  m_Text: Button7
 --- !u!222 &2004582337
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4746,7 +4616,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4843,8 +4713,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Do not meddle in the affairs of wizards, for they are subtle and quick
-    to anger
+  m_Text: Button4
 --- !u!222 &2016216713
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4922,7 +4791,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: All we have to decide is what to do with the time that is given to us
+  m_Text: Button2
 --- !u!222 &2098377314
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4931,82 +4800,3 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2098377311}
   m_CullTransparentMesh: 0
---- !u!1001 &6124859369777298825
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4922710678753565443, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 1807370388}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950279, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_Name
-      value: ScreenControlCore
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898236633881950279, guid: 6abe93132ab8dbc43bb2d1959089597d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 6abe93132ab8dbc43bb2d1959089597d, type: 3}

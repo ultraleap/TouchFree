@@ -92,15 +92,13 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         [Range(0.01f, 2f)] public float cursorDownScale;
 
         Coroutine cursorScalingRoutine;
-        Coroutine fadeRoutine;
-
 
         protected float maxRingScale;
-        protected Color dotFillColor;
-        protected Color dotBorderColor;
-        protected Color ringColor;
+        public Color dotFillColor;
+        public Color dotBorderColor;
+        public Color ringColor;
 
-        protected bool hidingCursor = false;
+        protected bool hidingCursor = true;
         protected bool growQueued = false;
         protected Vector3 cursorLocalScale = Vector3.one;
         protected const int ringSpriteSortingOrder = 32766;
@@ -171,7 +169,13 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     break;
 
                 case InputType.CANCEL:
+                    HideCursor();
                     break;
+            }
+
+            if(hidingCursor && _inputData.InputType != InputType.CANCEL)
+            {
+                ShowCursor();
             }
         }
 
@@ -195,14 +199,6 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // sorting orders for the ring sprites.
         protected override void InitialiseCursor()
         {
-            dotFillColor = cursorFill.color;
-            dotBorderColor = cursorBorder.color;
-
-            if (ringEnabled)
-            {
-                ringColor = ringOuterSprite.color;
-            }
-
             bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
             cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
@@ -234,8 +230,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
 
             ResetCursor();
-
-            fadeRoutine = StartCoroutine(FadeCursor(0, 1, fadeDuration));
+            StartCoroutine(FadeCursor(0, 1, fadeDuration));
             cursorBorder.enabled = true;
             cursorFill.enabled = true;
 
@@ -260,8 +255,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
 
             ResetCursor();
-
-            fadeRoutine = StartCoroutine(FadeCursor(1, 0, fadeDuration, true));
+            StartCoroutine(FadeCursor(1, 0, fadeDuration, true));
 
             if (ringEnabled)
             {
@@ -351,8 +345,6 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     ringOuterSprite.enabled = false;
                 }
             }
-
-            fadeRoutine = null;
         }
 
         // Function: SetCursorLocalScale
@@ -368,7 +360,6 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         public void ResetCursor()
         {
             StopAllCoroutines();
-            fadeRoutine = null;
             cursorScalingRoutine = null;
             growQueued = false;
 

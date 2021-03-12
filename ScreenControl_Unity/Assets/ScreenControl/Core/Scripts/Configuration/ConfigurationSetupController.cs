@@ -105,6 +105,7 @@ namespace Ultraleap.ScreenControl.Core
                     RunCalibrationTest();
                     break;
                 case ConfigState.AUTO:
+                    RunAutoConfig();
                     break;
             }
 
@@ -208,6 +209,14 @@ namespace Ultraleap.ScreenControl.Core
                 // dont allow manual to flip the axes again
                 selectedMountType = MountingType.NONE;
                 ChangeState(ConfigState.MANUAL);
+            }
+        }
+
+        void RunAutoConfig()
+        {
+            if (manualConfigKeyEntered == "SETUPGUIDE")
+            {
+                Application.OpenURL("http://rebrand.ly/ul-camera-setup");
             }
         }
 

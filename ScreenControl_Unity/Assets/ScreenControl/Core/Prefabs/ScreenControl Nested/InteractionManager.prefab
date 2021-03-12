@@ -89,7 +89,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4985490534904435494
 Transform:
   m_ObjectHideFlags: 0
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2738846595225586768}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5f12ce61472896499eed99452844f23, type: 3}
   m_Name: 
@@ -176,7 +176,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5835186274816555738
 Transform:
   m_ObjectHideFlags: 0
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3045357794578251532}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 197404bf835d2b34eb83aff7f7a8e8e1, type: 3}
   m_Name: 
@@ -552,7 +552,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6491336837799979747}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 195c01a09afb90d4fb44a1539453c90b, type: 3}
   m_Name: 
@@ -560,11 +560,11 @@ MonoBehaviour:
   handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 7253266500062961542}
-  millisecondsCooldownOnEntry: 500
-  speedMin: 0.1
-  speedMax: 0.75
-  distAtSpeedMin: 0.05
-  distAtSpeedMax: 0.01
+  millisecondsCooldownOnEntry: 300
+  speedMin: 0.15
+  speedMax: 0.5
+  distAtSpeedMin: 0.03
+  distAtSpeedMax: 0.005
   stiffnessCurve:
     serializedVersion: 2
     m_Curve:
@@ -589,18 +589,16 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  horizontalDecayDist: 0.2
+  horizontalDecayDist: 0.05
   thetaOne: 15
   thetaTwo: 135
-  unclickThreshold: 0.5
+  unclickThreshold: 0.85
   decayForceOnClick: 1
-  decayThreshold: 0.8
   forceDecayTime: 0.1
   useTouchPlaneForce: 1
   distPastTouchPlane: 0.02
-  dragStartDistanceThresholdM: 0.04
-  dragStartTimeDelaySecs: 0.1
+  dragStartDistanceThresholdM: 0.01
   dragDeadzoneShrinkRate: 0.5
-  dragDeadzoneShrinkDistanceThresholdM: 0.001
+  dragDeadzoneShrinkDistanceThresholdM: 0.01
   deadzoneMaxSizeIncrease: 0.02
-  deadzoneShrinkRate: 0.3
+  deadzoneShrinkRate: 0.8
