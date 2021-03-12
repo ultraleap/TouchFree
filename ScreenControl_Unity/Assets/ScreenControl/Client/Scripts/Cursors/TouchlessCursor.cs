@@ -35,7 +35,6 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         {
             ConnectionManager.TransmitInputAction += HandleInputAction;
             InitialiseCursor();
-            ShowCursor();
         }
 
         // Function: OnDisable

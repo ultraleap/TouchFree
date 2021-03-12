@@ -8,22 +8,10 @@
 # Project Information
 # ------------------------------------------------------------------------
 
-# This is where you specify general information about your project.
-#
-# Title: [text]
-#    The name of your project.  (R) and (TM) will be converted to their
-#    respective symbols.
-#
-# Subtitle: [text]
-#    A subtitle for your project.
-#
-# Copyright: [text]
-#    The copyright notice for your project.  (C) will be converted to the
-#    copyright symbol.
-#
-# Timestamp: [text]
-#    Text explaining when the documentation was generated.  The following
-#    substitutions are performed:
+Title: ScreenControl Client for Web
+Subtitle: API Documentation
+
+Timestamp: year mon day
 #    m     - Single digit month, when possible.  January is "1".
 #    mm    - Always double digit month.  January is "01".
 #    mon   - Short month word.  January is "Jan".
@@ -34,6 +22,13 @@
 #    yy    - Double digit year.  2020 is "20".
 #    yyyy  - Four digit year.  2020 is "2020".
 #    year  - Four digit year.  2020 is "2020".
+
+
+# This is where you specify general information about your project.
+#
+# Copyright: [text]
+#    The copyright notice for your project.  (C) will be converted to the
+#    copyright symbol.
 #
 # Style: [style]
 #    The style to apply to the generated documentation.  It can be the name of
@@ -44,10 +39,7 @@
 # Source Code
 # ------------------------------------------------------------------------
 
-Source Folder: ..\ScreenControl_Unity\Assets\ScreenControl\Client
-   Name: Screen Control Client for Unity
-
-Source Folder 2: ..\ScreenControl_Web\src
+Source Folder: ..\src
    Name: Screen Control Client for Web
 
 
@@ -115,7 +107,7 @@ Ignore Source Folder Pattern: */Misc/*
 # Generated Documentation
 # ------------------------------------------------------------------------
 
-HTML Output Folder: ..\Documentation
+HTML Output Folder: ..\..\Documentation\Client for Web
 
 
 # This is where you specify what kind of documentation you want Natural Docs

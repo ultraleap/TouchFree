@@ -8,7 +8,6 @@ namespace Ultraleap.ScreenControl.Core
     public class TouchPlanePushInteraction : InteractionModule
     {
         public override InteractionType InteractionType { get; } = InteractionType.PUSH;
-        public bool InteractionEnabled { get; set; } = true;
 
         // The distance from screen at which the progressToClick is 0
         private float screenDistanceAtNoProgress = 2.0f;
@@ -35,13 +34,13 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (hand == null)
             {
-                SendInputAction(InputType.CANCEL, new Positions(), 0, 0);
-                pressing = false;
-                return;
-            }
+                if (hadHandLastFrame)
+                {
+                    // We lost the hand so cancel anything we may have been doing
+                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, 0);
+                }
 
-            if (!InteractionEnabled)
-            {
+                pressing = false;
                 return;
             }
 

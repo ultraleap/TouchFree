@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -15,7 +16,7 @@ namespace Ultraleap.ScreenControl.Service
         public static WebSocketClientConnection Instance;
 
         private WebSocketServer wsServer = null;
-        private ScreenControlWsBehaviour socketBehaviour = null;
+        private List<ScreenControlWsBehaviour> activeConnections = new List<ScreenControlWsBehaviour>();
         public WebSocketReceiver receiverQueue;
 
         public short port = 9739;
@@ -28,13 +29,10 @@ namespace Ultraleap.ScreenControl.Service
 
             Instance = this;
             InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
-        }
-
-        void OnEnable()
-        {
             InitialiseServer();
         }
-        void Destroy()
+
+        void OnDestroy()
         {
             InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }
@@ -43,8 +41,8 @@ namespace Ultraleap.ScreenControl.Service
         {
             if (behaviour != null)
             {
-                socketBehaviour = behaviour;
-                Debug.Log("connection set up");
+                activeConnections.Add(behaviour);
+                Debug.Log("Connection set up");
             }
         }
 
@@ -80,22 +78,26 @@ namespace Ultraleap.ScreenControl.Service
             }
 
             if (!websocketInitalised ||
-                socketBehaviour == null ||
-                socketBehaviour.ConnectionState != WebSocketState.Open)
+                activeConnections == null ||
+                activeConnections.Count < 1)
             {
                 return;
             }
 
-            socketBehaviour.SendInputAction(_data);
-        }
-
-        public void SendHandshakeResponse(ResponseToClient _response) {
-            socketBehaviour.SendConfigurationResponse(_response);
+            foreach(ScreenControlWsBehaviour behaviour in activeConnections) {
+                if (behaviour.ConnectionState == WebSocketState.Open) {
+                    behaviour.SendInputAction(_data);
+                }
+            }
         }
 
         public void SendConfigurationResponse(ResponseToClient _response)
         {
-            socketBehaviour.SendConfigurationResponse(_response);
+            foreach(ScreenControlWsBehaviour behaviour in activeConnections) {
+                if (behaviour.ConnectionState == WebSocketState.Open) {
+                    behaviour.SendConfigurationResponse(_response);
+                }
+            }
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-using Ultraleap.ScreenControl.Client;
-using Ultraleap.ScreenControl.Client.Connection;
-
 namespace Ultraleap.ScreenControl.Client.InputControllers
 {
     // Class: UnityUIInputController
@@ -17,7 +14,6 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         // The <StandaloneInputModule: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/script-StandaloneInputModule.html>
         // that this Input Controller will override.
         // Will be found from the scene on <Start>
-
         [SerializeField]
         private StandaloneInputModule inputModule;
 
@@ -33,16 +29,16 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         // to inform the inherited values in the section below when queried.
         private Vector2 touchPosition;
         private TouchPhase touchPhase = TouchPhase.Ended;
-        private TouchPhase previousTouchPhase;
         private int baseDragThreshold = 100000;
         public bool sendHoverEvents = true;
         private bool isTouching = false;
+        private bool isCancelled = true;
 
         // Group: Inherited Values
         // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
         // and are overridden here so their values can be determined from the ScreenControl Service.
-        public override Vector2 mousePosition => sendHoverEvents ? touchPosition : base.mousePosition;
-        public override bool mousePresent => sendHoverEvents ? true : base.mousePresent;
+        public override Vector2 mousePosition => (sendHoverEvents && !isCancelled) ? touchPosition : base.mousePosition;
+        public override bool mousePresent => (sendHoverEvents && !isCancelled) ? true : base.mousePresent;
         public override bool touchSupported => isTouching ? true : base.touchSupported;
         public override int touchCount => isTouching ? 1 : base.touchCount;
         public override Touch GetTouch(int index) => isTouching ? CheckForTouch(index) : base.GetTouch(index);
@@ -72,8 +68,6 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         //     index - The Touch index, passed down from <GetTouch>
         private Touch CheckForTouch(int index)
         {
-            previousTouchPhase = touchPhase;
-
             if (touchPhase == TouchPhase.Ended || touchPhase == TouchPhase.Canceled)
             {
                 isTouching = false;
@@ -100,9 +94,9 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
 
             InputType type = _inputData.InputType;
             Vector2 cursorPosition = _inputData.CursorPosition;
-            float distanceFromScreen = _inputData.ProgressToClick;
 
             touchPosition = cursorPosition;
+            isCancelled = false;
 
             switch (type)
             {
@@ -119,6 +113,7 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
                 case InputType.CANCEL:
                     touchPhase = TouchPhase.Canceled;
                     eventSystem.pixelDragThreshold = baseDragThreshold;
+                    isCancelled = true;
                     break;
 
                 case InputType.UP:

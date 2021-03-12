@@ -8,7 +8,6 @@ namespace Ultraleap.ScreenControl.Core
     public class AirPushInteraction : InteractionModule
     {
         public override InteractionType InteractionType { get; } = InteractionType.PUSH;
-        public bool InteractionEnabled { get; set; } = true;
 
         [Header("Hand Entry")]
         public double millisecondsCooldownOnEntry;
@@ -40,7 +39,6 @@ namespace Ultraleap.ScreenControl.Core
         public float unclickThreshold = 0.999f;
         public bool decayForceOnClick;
         [Range(0, 0.999f)]
-        public float decayThreshold;
         public float forceDecayTime;
         bool decayingForce;
 
@@ -57,7 +55,6 @@ namespace Ultraleap.ScreenControl.Core
 
         [Header("Dragging")]
         public float dragStartDistanceThresholdM = 0.04f;
-        public float dragStartTimeDelaySecs = 0.1f;
         public float dragDeadzoneShrinkRate = 0.5f;
         public float dragDeadzoneShrinkDistanceThresholdM = 0.001f;
 
@@ -66,7 +63,6 @@ namespace Ultraleap.ScreenControl.Core
         public float deadzoneShrinkRate;
 
         private bool dragDeadzoneShrinkTriggered = false;
-        private Stopwatch dragStartTimer = new Stopwatch();
         private bool isDragging = false;
 
         protected override void UpdateData(Leap.Hand hand)
@@ -78,11 +74,13 @@ namespace Ultraleap.ScreenControl.Core
                 isDragging = false;
                 // Restarts the hand timer every frame that we have no active hand
                 handAppearedCooldown.Restart();
-                return;
-            }
 
-            if (!InteractionEnabled)
-            {
+                if(hadHandLastFrame)
+                {
+                    // We lost the hand so cancel anything we may have been doing
+                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, appliedForce);
+                }
+
                 return;
             }
 
@@ -173,7 +171,7 @@ namespace Ultraleap.ScreenControl.Core
                     SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, appliedForce);
                 }
 
-                if (decayingForce && (appliedForce <= decayThreshold))
+                if (decayingForce && (appliedForce <= unclickThreshold - 0.1f))
                 {
                     decayingForce = false;
                 }
@@ -198,13 +196,6 @@ namespace Ultraleap.ScreenControl.Core
 
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
-                return true;
-            }
-
-            if (dragStartTimer.ElapsedMilliseconds >= dragStartTimeDelaySecs * 1000f)
-            {
-                //Debug.Log("Drag started: time");
-                dragStartTimer.Stop();
                 return true;
             }
 
@@ -316,7 +307,7 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     if (forceChange <= 0f)
                     {
-                        forceChange -= (1f - decayThreshold) * (_dt / forceDecayTime);
+                        forceChange -= (1f - (unclickThreshold - 0.1f)) * (_dt / forceDecayTime);
                     }
                     else
                     {

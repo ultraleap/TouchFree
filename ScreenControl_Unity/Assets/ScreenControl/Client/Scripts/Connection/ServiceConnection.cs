@@ -9,8 +9,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
     // Class: ServiceConnection
     // This represents a connection to a ScreenControl Service. It should be created by a
     // <ConnectionManager> to ensure there is only one active connection at a time. The sending
-    // and receiving of data to the client is handled here as well as the creation of a
-    // <MessageReceiver> to ensure the data is handled properly.
+    // and receiving of data to the client is handled here.
     public class ServiceConnection
     {
         // Group: Variables
@@ -28,10 +27,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Function: ServiceConnection
         // The constructor for <ServiceConnection> that can be given a different IP Address and Port
-        // to connect to on construction. This constructor also sets up the <receiver> for future
-        // use and redirects incoming messages to <OnMessage> Once the websocket connection opens,
-        // a handshake request is sent with this Client's API version number. The service will not
-        // send data over an open connection until this handshake is completed succesfully.
+        // to connect to on construction. This constructor also redirects incoming messages to
+        // <OnMessage>. Once the websocket connection opens, a handshake request is sent with this
+        // Client's API version number. The service will not send data over an open connection
+        // until this handshake is completed succesfully.
         internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
             handshakeCompleted = false;
@@ -78,7 +77,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: Disconnect
-        // Can be used to force the connection to the <webSocket> to be closed. Also destroys the <receiver>.
+        // Can be used to force the connection to the <webSocket> to be closed.
         public void Disconnect()
         {
             if (webSocket != null)
@@ -88,8 +87,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: OnMessage
-        // The first point of contact for new messages received, these are sorted into appropriate types based on their
-        // <ActionCode> and added to queues on the <receiver>.
+        // The first point of contact for new messages received, these are sorted into appropriate
+        // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
+        // <MessageReceiver>.
         public void OnMessage(MessageEventArgs _message)
         {
             string rawData = _message.Data;

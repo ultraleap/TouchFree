@@ -76,7 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputModule: {fileID: 0}
   eventSystem: {fileID: 0}
-  isHovering: 1
+  sendHoverEvents: 1
 --- !u!114 &6017491752659792052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -300,6 +300,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   pulseSeconds: 0.2
   cursorDownScale: 0.5
+  dotFillColor: {r: 1, g: 1, b: 1, a: 1}
+  dotBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  ringColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &7549733133368736522
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,7 +364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -574,7 +577,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: dc08875b2aaa54a4c9de2b01c0696e46, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

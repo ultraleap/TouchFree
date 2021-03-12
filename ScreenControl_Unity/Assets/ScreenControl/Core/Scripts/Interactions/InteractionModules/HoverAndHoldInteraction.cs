@@ -7,7 +7,6 @@ namespace Ultraleap.ScreenControl.Core
     public class HoverAndHoldInteraction : InteractionModule
     {
         public override InteractionType InteractionType { get; } = InteractionType.HOVER;
-        public bool InteractionEnabled { get; set; } = true;
 
         public ProgressTimer progressTimer;
 
@@ -33,11 +32,12 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (hand == null)
             {
-                return;
-            }
+                if (hadHandLastFrame)
+                {
+                    // We lost the hand so cancel anything we may have been doing
+                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, 0);
+                }
 
-            if (!InteractionEnabled)
-            {
                 return;
             }
 

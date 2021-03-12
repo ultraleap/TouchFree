@@ -19,6 +19,8 @@ namespace Ultraleap.ScreenControl.Core
 
         protected long latestTimestamp;
 
+        protected bool hadHandLastFrame = false;
+
         void Update()
         {
             // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
@@ -43,6 +45,15 @@ namespace Ultraleap.ScreenControl.Core
             }
 
             UpdateData(hand);
+
+            if (hand != null)
+            {
+                hadHandLastFrame = true;
+            }
+            else
+            {
+                hadHandLastFrame = false;
+            }
         }
 
         // This is the main update loop of the interaction module

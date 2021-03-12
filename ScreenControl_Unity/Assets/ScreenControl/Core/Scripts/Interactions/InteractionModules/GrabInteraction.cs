@@ -7,7 +7,7 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class GrabInteraction : InteractionModule
     {
-        public InteractionType InteractionType { get; } = InteractionType.GRAB;
+        public override InteractionType InteractionType { get; } = InteractionType.GRAB;
 
         [Header("positioningModule.Stabiliser Params")]
         public float deadzoneEnlargementDistance;
@@ -17,8 +17,6 @@ namespace Ultraleap.ScreenControl.Core
         [Tooltip("If hand is moving faster than this speed (in m/s), grabs will not be recognised")]
         public float maxHandVelocity = 0.15f;
         public float verticalCursorOffset = 0.1f;
-
-        public bool InteractionEnabled { get; set; } = true;
 
         public bool alwaysHover = false;
 
@@ -53,11 +51,12 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (hand == null)
             {
-                return;
-            }
+                if (hadHandLastFrame)
+                {
+                    // We lost the hand so cancel anything we may have been doing
+                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, 0);
+                }
 
-            if (!InteractionEnabled)
-            {
                 return;
             }
 
