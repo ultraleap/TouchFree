@@ -22,8 +22,10 @@ SC_Client::Unity::build:
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_CFU_PATH}/Version.txt --swVer ${env:SC_CFU_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHA}
     # Copy Version.txt to Client_Release folder
-    - Remove-Item -LiteralPath ./Client_Release -Force -Recurse
-    - Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+    - if (Test-Path -Path "./Client_Release") {
+        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+      }
     - mkdir ./Client_Release
     - cp ${env:CI_PROJECT_DIR}/ScreenControl_Unity/Assets/ScreenControl/Client/Version.txt ./Client_Release
     # Package Client
@@ -52,8 +54,10 @@ SC_Client::Web::build:
     - ./node_modules/.bin/gulp build
     # Clean last build
     - cd ${env:CI_PROJECT_DIR}
-    - Remove-Item -LiteralPath ./Client_Release -Force -Recurse
-    - Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+    - if (Test-Path -Path "./Client_Release") {
+        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+      }
     # Package Client
     - mkdir ./Client_Release
     - mkdir ./Client_Release/dist
