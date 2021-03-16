@@ -21,7 +21,7 @@ gulp.task('browserify', function () {
     return b.bundle()
         // log errors if they happen
         .on('error', (error) => { console.error(error); })
-        .pipe(source('ScreenControl.js'))
+        .pipe(source('ScreenControl_Client.js'))
         .pipe(buffer())
         .pipe(gulp.dest('./build/dist/'));
 });

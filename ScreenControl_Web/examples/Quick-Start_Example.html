@@ -1,11 +1,12 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Quick Start Example</title>
-    <script name="ScreenControl" type="text/javascript" src="../build/dist/ScreenControl.js"></script>
+    <script name="ScreenControl" type="text/javascript" src="../build/dist/ScreenControl_Client.js"></script>
+    <script type="text/javascript" src="./ScreenControl_Quick-Start.js"></script>
     <style>
-
         .buttonHorizontal {
             text-align: center;
             display: inline-block;
@@ -54,18 +55,30 @@
 <body style="overflow:hidden">
     <div>
         <div class="verticalScroll">
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 1!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 2!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 3!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 4!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 5!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 6!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 7!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 8!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 9!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 10!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 11!</button>
-            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">Button 12!</button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Button 1
+            </button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Button Button
+            </button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Button ▲
+            </button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Button²
+            </button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Button the Fifth
+            </button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Button Button Button Button Button Button
+            </button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Button VII
+            </button>
+            <button class="buttonVertical" onpointerdown="changeText(this.textContent)">
+                Ω Button
+            </button>
         </div>
         <div style="display: inline-block; width: 70vw; height: 80vh;">
             <div class="horizontalScroll">
@@ -81,31 +94,7 @@
         </div>
     </div>
 
-    <img src="../images/Ring.png" id="cursorRing" class="screencontrolcursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
-
     <script>
-        ScreenControl.Connection.ConnectionManager.init();
-
-        var cursorRing = document.getElementById('cursorRing');
-        document.body.appendChild(cursorRing);
-
-        var cursor = document.createElement('img');
-        cursor.src = "../images/Dot.png";
-        cursor.style.position = "absolute";
-        cursor.width = 50;
-        cursor.height = 50;
-        cursor.style.zIndex = "1001";
-
-        // This is a special class used by the WebInputController to identify the html elements that
-        // make up the cursor. This is so it can ignore cursor-related objects when it is looking
-        // for elements to pointerover/pointerout etc. Note that the class is also added to the
-        // <img> tag foudn as "cursorRing" above
-        cursor.classList.add('screencontrolcursor');
-        document.body.appendChild(cursor);
-
-        var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
-        var inputSystem = new ScreenControl.InputControllers.WebInputController();
-
         var changeText = function (content) {
             var textToChange = document.getElementById("Text to change");
             textToChange.textContent = content;
@@ -128,4 +117,5 @@
     </script>
 
 </body>
+
 </html>
