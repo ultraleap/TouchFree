@@ -60,10 +60,9 @@ SC_Client::Web::build:
       }
     # Package Client
     - mkdir ./Client_Release
-    - mkdir ./Client_Release/dist
     - cp ${env:SC_CFW_PATH}/Version.txt ./Client_Release
-    - cp -r ${env:SC_CFW_PATH}/build/dist ./Client_Release/
-    - cp -r ${env:SC_CFW_PATH}/examples ./Client_Release/
+    - cp -r ${env:SC_CFW_PATH}/build/dist/ ./Client_Release/dist
+    - cp -r ${env:SC_CFW_PATH}/examples/ ./Client_Release/examples
   artifacts:
     name: "Client_for_Web_Build_${env:CI_COMMIT_SHA}"
     paths:
