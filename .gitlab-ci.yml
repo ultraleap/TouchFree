@@ -187,3 +187,23 @@ SC_Client::Unity::package:
     when: always
   tags:
     - docker
+
+SC_Service::package:
+  stage: package
+  image: alpine:3.13
+  dependencies:
+    - SC_Service::build
+  needs: [
+    "SC_Service::build"
+  ]
+  script:
+    - mkdir ./Service_Package/
+    - cp -r ./Build/* ./Service_Package/
+  artifacts:
+    name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - ./Service_Package/*
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - docker
