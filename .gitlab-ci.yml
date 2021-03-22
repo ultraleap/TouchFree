@@ -1,8 +1,9 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  UNITY_PROJECT_PATH: $CI_PROJECT_DIR/ScreenControl_Unity
   SC_CFW_PATH: $CI_PROJECT_DIR/ScreenControl_Web
-  SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
-  SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
+  SC_CFU_PATH: $UNITY_PROJECT_PATH/Assets/ScreenControl/Client
+  SC_SRV_PATH: $UNITY_PROJECT_PATH/Assets/ScreenControl/Service
   SC_CFU_VERSION: 'alpha4'
   SC_CFW_VERSION: 'alpha4'
   SC_SRV_VERSION: 'alpha4'
@@ -19,7 +20,7 @@ Check_Unity_Installation:
   when: always
   script:
     # Get Unity version and changeset from the project.
-    - $line = Get-Content $PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
     # Check whether the required Unity version is installed. If not, install it.
@@ -38,7 +39,7 @@ SC_Client::Unity::build:
   when: always
   script:
     # Get Unity version from the project.
-    - $line = Get-Content $PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
 
@@ -70,7 +71,7 @@ SC_Client::Web::build:
   when: always
   script:
     # Get Unity version from the project.
-    - $line = Get-Content $PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
 
