@@ -1,9 +1,12 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   UNITY_PROJECT_PATH: $CI_PROJECT_DIR/ScreenControl_Unity
+  UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
+
   SC_CFW_PATH: $CI_PROJECT_DIR/ScreenControl_Web
   SC_CFU_PATH: $UNITY_PROJECT_PATH/Assets/ScreenControl/Client
   SC_SRV_PATH: $UNITY_PROJECT_PATH/Assets/ScreenControl/Service
+
   SC_CFU_VERSION: 'alpha4'
   SC_CFW_VERSION: 'alpha4'
   SC_SRV_VERSION: 'alpha4'
@@ -37,6 +40,7 @@ Check_Unity_Installation:
 SC_Client::Unity::build:
   stage: build
   when: always
+  needs: ["Check_Unity_Installation"]
   script:
     # Get Unity version from the project.
     - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
@@ -69,12 +73,8 @@ SC_Client::Unity::build:
 SC_Client::Web::build:
   stage: build
   when: always
+  needs: []
   script:
-    # Get Unity version from the project.
-    - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
-    - $UNITY_VERSION = $line -Split " " | Select -Index 1
-    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
-
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_CFW_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     # Build Client
@@ -106,6 +106,7 @@ SC_Client::Docs::build:
   stage: build
   when: always
   image: registry.ultrahaptics.com/apps/docker-naturaldocs:main
+  needs: []
   script:
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Unity/NaturalDocs_Config
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Web/NaturalDocs_Config
@@ -121,7 +122,13 @@ SC_Client::Docs::build:
 SC_Service::build:
   stage: build
   when: always
+  needs: ["Check_Unity_Installation"]
   script:
+    # Get Unity version from the project.
+    - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $UNITY_VERSION = $line -Split " " | Select -Index 1
+    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_SRV_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     - mkdir $CI_PROJECT_DIR/Build
