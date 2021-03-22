@@ -1,24 +1,47 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  UNITY_EXE_DIR: 'C:/Unity/2019.4.13f1/Editor'
-  UNITY_EXE: 'C:/Unity/2019.4.13f1/Editor/Unity.exe'
   SC_CFW_PATH: $CI_PROJECT_DIR/ScreenControl_Web
   SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
   SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
-  SC_CFU_VERSION: 'alpha3'
-  SC_CFW_VERSION: 'alpha3'
-  SC_SRV_VERSION: 'alpha3'
+  SC_CFU_VERSION: 'alpha4'
+  SC_CFW_VERSION: 'alpha4'
+  SC_SRV_VERSION: 'alpha4'
   SC_API_VERSION: '1.0.1'
 
 stages:
+  - pre-build
   - build
   - test
   - package
+
+Check_Unity_Installation:
+  stage: pre-build
+  when: always
+  script:
+    # Get Unity version and changeset from the project.
+    - $line = Get-Content $PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $UNITY_VERSION = $line -Split " " | Select -Index 1
+    - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
+    # Check whether the required Unity version is installed. If not, install it.
+    - Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless editors --installed"
+    - Get-Content "tmp.txt"
+    - Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install-path --set C:/Unity"
+    - Get-Content "tmp.txt"
+    - if (-not (Test-Path "C:/Unity/$UNITY_VERSION")) { Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install --version $UNITY_VERSION --changeset $UNITY_CHANGESET" }
+    - Get-Content "tmp.txt"
+  tags:
+    - unity
+    - win10
 
 SC_Client::Unity::build:
   stage: build
   when: always
   script:
+    # Get Unity version from the project.
+    - $line = Get-Content $PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $UNITY_VERSION = $line -Split " " | Select -Index 1
+    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_CFU_PATH}/Version.txt --swVer ${env:SC_CFU_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     # Copy Version.txt to Client_Release folder
@@ -46,6 +69,11 @@ SC_Client::Web::build:
   stage: build
   when: always
   script:
+    # Get Unity version from the project.
+    - $line = Get-Content $PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $UNITY_VERSION = $line -Split " " | Select -Index 1
+    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_CFW_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     # Build Client
