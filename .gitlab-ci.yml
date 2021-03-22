@@ -34,7 +34,7 @@ SC_Client::Unity::build:
     - if (-not (Test-Path "C:/Unity/$UNITY_VERSION")) { Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install --version $UNITY_VERSION --changeset $UNITY_CHANGESET" }
     - Get-Content "tmp.txt"
 
-    - export UNITY_EXE="C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
@@ -48,7 +48,7 @@ SC_Client::Unity::build:
     - cp ${env:CI_PROJECT_DIR}/ScreenControl_Unity/Assets/ScreenControl/Client/Version.txt ./Client_Release
     # Package Client
     - cd ./Scripts
-    - "& ./package_unity_client.bat"
+    - "& ./package_unity_client.bat $UNITY_EXE"
   artifacts:
     name: "Client_for_Unity_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
@@ -123,7 +123,7 @@ SC_Service::build:
     - if (-not (Test-Path "C:/Unity/$UNITY_VERSION")) { Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install --version $UNITY_VERSION --changeset $UNITY_CHANGESET" }
     - Get-Content "tmp.txt"
 
-    - export UNITY_EXE="C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
@@ -134,7 +134,7 @@ SC_Service::build:
     # Update ProjectSettings file with correct version & build service
     - python ./Scripts/UpdateUnityProjVer.py --path ./ScreenControl_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
     - cd ./Scripts
-    - "& ./build_service.bat"
+    - "& ./build_service.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
