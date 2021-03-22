@@ -100,10 +100,11 @@ namespace Ultraleap.ScreenControl.Core
                 resolutionHeight.text = "200";
             }
 
-            ConfigManager.GlobalSettings.ScreenWidth = width;
-            ConfigManager.GlobalSettings.ScreenHeight = height;
-            ConfigManager.GlobalSettings.ConfigWasUpdated();
-            OnValueChanged();
+            ConfigManager.PhysicalConfig.ScreenWidthPX = width;
+            ConfigManager.PhysicalConfig.ScreenHeightPX = height;
+
+            ConfigManager.PhysicalConfig.ConfigWasUpdated();
+            ConfigManager.PhysicalConfig.SaveConfig();
         }
 
         protected override void AddValueChangedListeners()
@@ -138,8 +139,8 @@ namespace Ultraleap.ScreenControl.Core
 
         protected override void LoadConfigValuesIntoFields()
         {
-            resolutionWidth.text = Screen.currentResolution.width.ToString();
-            resolutionHeight.text = Screen.currentResolution.height.ToString();
+            resolutionWidth.text = ConfigManager.PhysicalConfig.ScreenWidthPX.ToString();
+            resolutionHeight.text = ConfigManager.PhysicalConfig.ScreenHeightPX.ToString();
 
             cursorDeadzoneSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.DeadzoneRadius);
 
@@ -270,7 +271,6 @@ namespace Ultraleap.ScreenControl.Core
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();
             ConfigManager.InteractionConfig.SaveConfig();
-            RestartSaveConfigTimer();
             DisplayIntractionPreview();
         }
 

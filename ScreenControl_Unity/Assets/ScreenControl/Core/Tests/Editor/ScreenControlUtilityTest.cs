@@ -79,38 +79,5 @@ namespace Tests
 
             Assert.True(Mathf.Approximately(result, expectedResult));
         }
-
-        [Test]
-        public void ParseColorFromHexNoAlpha()
-        {
-            string textColor = "#00ff00";
-
-            Color result = ScreenControlUtility.ParseColor(textColor);
-
-            Assert.AreEqual(Color.green, result);
-        }
-
-        [Test]
-        public void ParseColorDefaultAlphaOverride()
-        {
-            string textColor = "#00ff0000";
-
-            Color result = ScreenControlUtility.ParseColor(textColor);
-
-            Assert.AreEqual(Color.green, result);
-        }
-
-        [Test]
-        public void ParseColorCustomAlphaOverride()
-        {
-            string textColor = "#00ff007f";
-
-            Color result = ScreenControlUtility.ParseColor(textColor, 0.25f);
-
-            Assert.True(Mathf.Approximately(0.00f, result.r));
-            Assert.True(Mathf.Approximately(1.00f, result.g));
-            Assert.True(Mathf.Approximately(0.00f, result.b));
-            Assert.True(Mathf.Approximately(0.25f, result.a));
-        }
     }
 }

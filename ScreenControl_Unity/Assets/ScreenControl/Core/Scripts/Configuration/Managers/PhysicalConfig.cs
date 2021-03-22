@@ -11,6 +11,9 @@ namespace Ultraleap.ScreenControl.Core
         public Vector3 LeapRotationD = Vector3.zero;
         public float ScreenRotationD = 0f;
 
+        public int ScreenWidthPX = 0;
+        public int ScreenHeightPX = 0;
+
         public void SaveConfig()
         {
             PhysicalConfigFile.SaveConfig(this);
