@@ -33,7 +33,7 @@ SC_Client::Unity::build:
     - if (-not (Test-Path "C:/Unity/$UNITY_VERSION")) { Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install --version $UNITY_VERSION --changeset $UNITY_CHANGESET" }
     - Get-Content "tmp.txt"
 
-    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+    - Set-Variable -Name UNITY_EXE -Value "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
     
     - echo "$UNITY_EXE"
 
@@ -123,12 +123,12 @@ SC_Service::build:
     - if (-not (Test-Path "C:/Unity/$UNITY_VERSION")) { Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install --version $UNITY_VERSION --changeset $UNITY_CHANGESET" }
     - Get-Content "tmp.txt"
 
-    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+    - Set-Variable -Name UNITY_EXE -Value "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
     
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:SC_SRV_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:SC_SRV_PATH}/Version.txt --swVer ${env:SC_SRV_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     - mkdir $CI_PROJECT_DIR/Build
     - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
 
