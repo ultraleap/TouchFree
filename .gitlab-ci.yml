@@ -34,6 +34,8 @@ SC_Client::Unity::build:
     - Get-Content "tmp.txt"
 
     - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+    
+    - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_CFU_PATH}/Version.txt --swVer ${env:SC_CFU_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
@@ -122,6 +124,8 @@ SC_Service::build:
     - Get-Content "tmp.txt"
 
     - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+    
+    - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:SC_SRV_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
