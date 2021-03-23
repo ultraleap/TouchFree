@@ -29,6 +29,7 @@ ExportedObj/
 *.booproj
 .vs/
 .vscode/
+**/.vsconfig
 
 # ================#
 # JetBrains Rider #
@@ -70,7 +71,7 @@ Documentation/Client for Unity/**
 #  Testing  #
 # ========= #
 
-package-lock.json
+**/package-lock.json
 **/usage.txt
 Testing/ServiceSocketTests/results/*
 Testing/ServiceSocketTests/results/**
