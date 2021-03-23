@@ -45,4 +45,16 @@ export abstract class TouchlessCursor {
     HandleInputAction(_inputAction: ClientInputAction): void {
         this.UpdateCursor(_inputAction);
     }
+
+    // Function: ShowCursor
+    // Used to make the cursor visible
+    ShowCursor(): void {
+        this.cursor.style.opacity = "1";
+    }
+
+    // Function: HideCursor
+    // Used to make the cursor invisible
+    HideCursor(): void {
+        this.cursor.style.opacity = "0";
+    }
 }
