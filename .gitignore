@@ -72,6 +72,7 @@ Documentation/Client for Unity/**
 # ========= #
 
 **/package-lock.json
+**/packages-lock.json
 **/usage.txt
 Testing/ServiceSocketTests/results/*
 Testing/ServiceSocketTests/results/**
