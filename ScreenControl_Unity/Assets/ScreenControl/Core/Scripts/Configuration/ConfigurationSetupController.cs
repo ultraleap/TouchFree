@@ -28,10 +28,10 @@ namespace Ultraleap.ScreenControl.Core
     public class ConfigurationSetupController : MonoBehaviour
     {
         public static ConfigurationSetupController Instance;
+
         public static ConfigState currentState;
         ConfigState previousState;
 
-        public GameObject clientObjectReference;
         public GameObject[] stateRoots;
 
         public static MountingType selectedMountType = MountingType.NONE;
@@ -290,7 +290,6 @@ namespace Ultraleap.ScreenControl.Core
 
         public void OnMinimizeButtonClick()
         {
-            clientObjectReference.SetActive(false);
             ShowWindow(GetActiveWindow(), 2);
         }
     }
