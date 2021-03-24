@@ -78,8 +78,11 @@ export class DotCursor extends TouchlessCursor{
     // Function: HandleInputAction
     // This override replaces the basic functionality of the <TouchlessCursor>, making the
     // cursor's ring scale dynamically with the current ProgressToClick and creating a
-    // "shrink" animation when a "DOWN" event is recieved, and a "grow" animation when an "UP"
+    // "shrink" animation when a "DOWN" event is received, and a "grow" animation when an "UP"
     // is recieved.
+    //
+    // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
+    // When any other event is received and the cursor is hidden, the cursor is shown again.
     HandleInputAction(_inputData: ClientInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:
