@@ -33,6 +33,9 @@ export class DotCursor extends TouchlessCursor{
 
     private growQueued: boolean = false;
 
+    private hidingCursor: boolean = true;
+    private currentFadingInterval: number = -1;
+
     // Group: Functions
 
     // Function: constructor
@@ -75,8 +78,11 @@ export class DotCursor extends TouchlessCursor{
     // Function: HandleInputAction
     // This override replaces the basic functionality of the <TouchlessCursor>, making the
     // cursor's ring scale dynamically with the current ProgressToClick and creating a
-    // "shrink" animation when a "DOWN" event is recieved, and a "grow" animation when an "UP"
+    // "shrink" animation when a "DOWN" event is received, and a "grow" animation when an "UP"
     // is recieved.
+    //
+    // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
+    // When any other event is received and the cursor is hidden, the cursor is shown again.
     HandleInputAction(_inputData: ClientInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:
@@ -106,7 +112,12 @@ export class DotCursor extends TouchlessCursor{
                 break;
 
             case InputType.CANCEL:
+                this.HideCursor();
                 break;
+        }
+
+        if (this.hidingCursor && _inputData.InputType !== InputType.CANCEL) {
+            this.ShowCursor();
         }
     }
 
@@ -166,10 +177,7 @@ export class DotCursor extends TouchlessCursor{
         if (newWidth >= this.cursorStartSize[0] && newHeight >= this.cursorStartSize[1]) {
             clearInterval(this.currentAnimationInterval);
 
-            newWidth = this.cursorStartSize[0];
-            newHeight = this.cursorStartSize[1];
-
-            this.SetCursorSize(newWidth, newHeight, this.cursor);
+            this.SetCursorSize(this.cursorStartSize[0], this.cursorStartSize[1], this.cursor);
 
             this.currentAnimationInterval = -1;
             this.growQueued = false;
@@ -185,5 +193,53 @@ export class DotCursor extends TouchlessCursor{
 
         _cursorToChange.style.height = _newHeight + "px";
         _cursorToChange.style.top = (cursorPosY - (_newHeight / 2)) + "px";
+    }
+
+    // Function: ShowCursor
+    // Used to make the cursor visible, fades over time
+    ShowCursor(): void {
+        this.hidingCursor = false;
+        this.currentFadingInterval = setInterval(
+            this.FadeCursorIn.bind(this) as TimerHandler,
+            this.animationUpdateDuration);
+    }
+
+    // Function: HideCursor
+    // Used to make the cursor invisible, fades over time
+    HideCursor(): void {
+        this.hidingCursor = true;
+        this.currentFadingInterval = setInterval(
+            this.FadeCursorOut.bind(this) as TimerHandler,
+            this.animationUpdateDuration);
+    }
+
+    private FadeCursorIn(): void {
+        let currentOpacity = parseFloat(this.cursor.style.opacity);
+        currentOpacity = currentOpacity ? currentOpacity : 0;
+        currentOpacity += 0.05;
+
+        this.cursor.style.opacity = currentOpacity.toString();
+        this.cursorRing.style.opacity = currentOpacity.toString();
+
+        if (currentOpacity >= 1) {
+            clearInterval(this.currentFadingInterval);
+            this.cursor.style.opacity = "1.0";
+            this.currentFadingInterval = -1;
+        }
+    }
+
+    private FadeCursorOut(): void {
+        let currentOpacity = parseFloat(this.cursor.style.opacity);
+        currentOpacity = currentOpacity ? currentOpacity : 1;
+        currentOpacity -= 0.05;
+
+        this.cursor.style.opacity = currentOpacity.toString();
+        this.cursorRing.style.opacity = currentOpacity.toString();
+
+        if (currentOpacity <= 0) {
+            clearInterval(this.currentFadingInterval);
+            this.cursor.style.opacity = "0.0";
+            this.currentFadingInterval = -1;
+        }
     }
 }
