@@ -58,13 +58,12 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Group: Functions
 
-        // Function: Awake
-        // Run by Unity on Initialization. Finds the required <MessageReceiver> component.
-        // Also attempts to immediately <Connect> to a WebSocket.
-        private void Awake()
+        // Function: HandleInputAction
+        // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
+        // listeners of <TransmitInputAction>.
+        public static void HandleInputAction(ClientInputAction _action)
         {
-            messageReceiver = GetComponent<MessageReceiver>();
-            Connect();
+            TransmitInputAction?.Invoke(_action);
         }
 
         // Function: AddConnectionListener
@@ -89,22 +88,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
             OnConnected?.Invoke();
         }
 
-        // Function: HandleInputAction
-        // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
-        // listeners of <TransmitInputAction>.
-        public static void HandleInputAction(ClientInputAction _action)
-        {
-            TransmitInputAction?.Invoke(_action);
-        }
-
-        // Function: OnDestroy
-        // Unity's Destroy function for handling the deconstruction of a MonoBehaviour.
-        // Ensures <Disconnect> is called.
-        private void OnDestroy()
-        {
-            Disconnect();
-        }
-
         // Function: Disconnect
         // Disconnects <currentServiceConnection> if it is connected to a WebSocket and
         // sets it to null.
@@ -115,6 +98,41 @@ namespace Ultraleap.ScreenControl.Client.Connection
                 currentServiceConnection.Disconnect();
                 currentServiceConnection = null;
             }
+        }
+
+        // Group: Unity monoBehaviour overrides
+
+        // Function: Awake
+        // Run by Unity on Initialization. Finds the required <MessageReceiver> component.
+        // Also attempts to immediately <Connect> to a WebSocket.
+        private void Awake()
+        {
+            messageReceiver = GetComponent<MessageReceiver>();
+            Connect();
+        }
+
+        // Function: OnEnable
+        // Unity's OnEnable function for handling when the behaviour is enabled. Connects
+        // to SC Service if not already connected.
+        private void OnEnable() {
+            if (currentServiceConnection == null) {
+                Connect();
+            }
+        }
+
+        // Function: OnDisable
+        // Unity's OnDisable function for handling when the behaviour is disabled. Disconnects
+        // from SC Service to prevent caching any new incoming inputs.
+        private void OnDisable() {
+            Disconnect();
+        }
+
+        // Function: OnDestroy
+        // Unity's Destroy function for handling the deconstruction of a MonoBehaviour.
+        // Ensures <Disconnect> is called.
+        private void OnDestroy()
+        {
+            Disconnect();
         }
     }
 }
