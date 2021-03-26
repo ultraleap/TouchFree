@@ -7,9 +7,9 @@ variables:
   SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
   SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
 
-  SC_CFU_VERSION: 'alpha4'
-  SC_CFW_VERSION: 'alpha4'
-  SC_SRV_VERSION: 'alpha4'
+  SC_CFU_VERSION: 'alpha5'
+  SC_CFW_VERSION: 'alpha5'
+  SC_SRV_VERSION: 'alpha5'
   SC_API_VERSION: '1.0.1'
 
 stages:
@@ -105,6 +105,24 @@ SC_Client::Docs::build:
     when: always
   tags:
     - docker
+
+SC_Service::Wrapper::build:
+  stage: build
+  when: always
+  script:
+    - msbuild .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper
+    # Move the built wrapper to the root directory
+    - mkdir ./SC_Wrapper_Build
+    - cp -r $CI_PROJECT_DIR\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper\bin\Release ./SC_Wrapper_Build
+  artifacts:
+    name: "SC_Service_Wrapper"
+    paths:
+    - ./SC_Wrapper_Build/**
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
 
 SC_Service::build:
   stage: build
@@ -225,13 +243,18 @@ SC_Service::package:
   image: alpine:3.13
   dependencies:
     - SC_Service::build
+    - SC_Service::Wrapper::build
   needs: [
-    "SC_Service::build"
+    "SC_Service::build",
+    "SC_Service::Wrapper::build"
   ]
   script:
     - mkdir ./Service_Package/
     - mkdir ./Service_Package/Licenses/
-    - cp -r ./Build/* ./Service_Package/
+    - mkdir ./Service_Package/Service/
+    - mkdir ./Service_Package/Wrapper/
+    - cp -r ./Build/* ./Service_Package/Service/
+    - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
   artifacts:
     name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"

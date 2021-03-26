@@ -85,3 +85,4 @@ Testing/ServiceSocketTests/results/**
 # =================== #
 
 **/SC_ServiceWrapper/bin
+!/ScreenControl_Service_Utilities/**/*.csproj

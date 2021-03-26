@@ -1,5 +1,5 @@
 # ScreenControl
-Screen Control converts Ultraleap tracking data into a data structure suitable for input systems for touchscreen user interfaces via a client package.
+ScreenControl converts Ultraleap tracking data into a data structure suitable for input systems for touchscreen user interfaces via a client package.
 
 ## WARNINGS
 - This repository has been made available for you to work with, edit and make your own versions.
@@ -14,7 +14,7 @@ If you require assistance whilst working with these repositories we recommend ut
 
 ### ScreenControl Service:
 
-ScreenControl Service must be running in order to make use of any of the screen control Clients.
+ScreenControl Service must be running in order to make use of any of the ScreenControl Clients.
 The ScreenControl Service is built from within the Unity project found at `./ScreenControl_Unity`.
 
 ### ScreenControl Client

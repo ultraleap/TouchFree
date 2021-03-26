@@ -21,7 +21,9 @@ namespace SC_Service
                 serviceConfig.StartAutomatically();
                 serviceConfig.SetServiceName("ScreenControl Service");
                 serviceConfig.SetDisplayName("ScreenControl Service");
-                serviceConfig.SetDescription("A Windows Service to handle ScreenControl");
+                serviceConfig.SetDescription("ScreenControl Service converts Ultraleap tracking" +
+                    " data into a data structure suitable for input systems for touchscreen user" +
+                    " interfaces via a client package.");
             });
         }
     }
@@ -34,7 +36,7 @@ namespace SC_Service
         public void Start()
         {
             _process = new Process();
-            _process.StartInfo.FileName = @"../ScreenControlService/ScreenControlService.exe";
+            _process.StartInfo.FileName = @"../Service/ScreenControlService.exe";
             _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics";
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.CreateNoWindow = true;
