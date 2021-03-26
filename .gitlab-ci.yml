@@ -121,7 +121,7 @@ SC_Service::Wrapper::build:
     expire_in: 2 weeks
     when: always
   tags:
-    - unity
+    - sdk
     - win10
 
 SC_Service::build:
