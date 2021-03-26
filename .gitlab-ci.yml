@@ -110,7 +110,7 @@ SC_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin" .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper
+    - "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe" .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
     - cp -r $CI_PROJECT_DIR\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper\bin\Release ./SC_Wrapper_Build
