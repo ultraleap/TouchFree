@@ -232,7 +232,7 @@ SC_Service::package:
     - mkdir ./Service_Package/
     - mkdir ./Service_Package/Licenses/
     - cp -r ./Build/* ./Service_Package/
-    - cp -r "./Third Party Licenses/*" ./Service_Package/Licenses/
+    - cp -r ./Third_Party_Licenses/*" ./Service_Package/Licenses/
   artifacts:
     name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
