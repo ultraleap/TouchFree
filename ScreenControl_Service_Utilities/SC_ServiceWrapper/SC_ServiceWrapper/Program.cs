@@ -45,7 +45,7 @@ namespace SC_Service
             _process.StartInfo.RedirectStandardInput = true;
             _process.Start();
 
-            _timer.Interval = 1000;
+            _timer.Interval = 10000;
             _timer.Elapsed += TimerElapsed;
             _timer.Start();
         }

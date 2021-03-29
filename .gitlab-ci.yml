@@ -2,7 +2,6 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   UNITY_PROJECT_PATH: $CI_PROJECT_DIR/ScreenControl_Unity
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
-  MSBUILD: "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe"
   SC_CFW_PATH: $CI_PROJECT_DIR/ScreenControl_Web
   SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
   SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
@@ -110,7 +109,7 @@ SC_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - $MSBUILD $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper.sln /p:Configuration=Release
+    - MSBuild.exe $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper.sln /p:Configuration=Release
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
     - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper/bin/Release ./SC_Wrapper_Build
