@@ -110,6 +110,7 @@ SC_Service::Wrapper::build:
   stage: build
   when: always
   script:
+    - echo $MSBUILD
     - $MSBUILD .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper\SC_ServiceWrapper.csproj
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
