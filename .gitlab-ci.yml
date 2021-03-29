@@ -110,7 +110,7 @@ SC_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - $MSBUILD .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper
+    - $MSBUILD .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper\SC_ServiceWrapper.csproj
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
     - cp -r $CI_PROJECT_DIR\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper\bin\Release ./SC_Wrapper_Build
