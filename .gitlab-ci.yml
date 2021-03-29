@@ -110,8 +110,7 @@ SC_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - echo $MSBUILD
-    - $MSBUILD .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper\SC_ServiceWrapper.csproj
+    - $MSBUILD .\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper.sln /p:Configuration=Release
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
     - cp -r $CI_PROJECT_DIR\ScreenControl_Service_Utilities\SC_ServiceWrapper\SC_ServiceWrapper\bin\Release ./SC_Wrapper_Build
@@ -122,7 +121,7 @@ SC_Service::Wrapper::build:
     expire_in: 2 weeks
     when: always
   tags:
-    - sdk
+    - unity
     - win10
 
 SC_Service::build:
