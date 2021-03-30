@@ -501,6 +501,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5898236633881950272, guid: 6abe93132ab8dbc43bb2d1959089597d,
+        type: 3}
+      propertyPath: clientRootObj
+      value: 
+      objectReference: {fileID: 1608535327}
     - target: {fileID: 5898236633881950273, guid: 6abe93132ab8dbc43bb2d1959089597d,
         type: 3}
       propertyPath: m_RootOrder
