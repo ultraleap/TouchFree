@@ -41,12 +41,15 @@ namespace Ultraleap.ScreenControl.Core
             interactions.Add(ScreenControlTypes.InteractionType.HOVER, hoverInteractionModule);
             interactions.Add(ScreenControlTypes.InteractionType.GRAB, grabInteractionModule);
 
+            InteractionConfig.OnConfigUpdated += InteractionConfigUpdated;
+
             SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
         }
 
         private void OnDestroy()
         {
             InteractionModule.HandleInputAction -= HandleInteractionModuleInputAction;
+            InteractionConfig.OnConfigUpdated -= InteractionConfigUpdated;
         }
 
         public void SetActiveInteractions(ScreenControlTypes.InteractionType _activateType)
@@ -65,14 +68,21 @@ namespace Ultraleap.ScreenControl.Core
                     if(interaction.Key == toActivate)
                     {
                         set = true;
-                        interaction.Value.enabled = true;
+
+                        if(!interaction.Value.enabled)
+                        {
+                            interaction.Value.enabled = true;
+                        }
                         break;
                     }
                 }
 
                 if(!set)
                 {
-                    interaction.Value.enabled = false;
+                    if (interaction.Value.enabled)
+                    {
+                        interaction.Value.enabled = false;
+                    }
                 }
             }
         }
@@ -80,6 +90,11 @@ namespace Ultraleap.ScreenControl.Core
         private void HandleInteractionModuleInputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.CoreInputAction _inputData)
         {
             HandleInputAction?.Invoke(_inputData);
+        }
+
+        private void InteractionConfigUpdated()
+        {
+            SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
         }
     }
 }
