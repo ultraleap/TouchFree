@@ -33,13 +33,13 @@ namespace SC_ServiceUITray
             {
                 Icon = Properties.Resources.IconActive,
                 ContextMenu = new ContextMenu(new MenuItem[] {
-                new MenuItem("Settings", Settings),
-                new MenuItem("-"),
-                new MenuItem("Exit", Exit),
+                    new MenuItem("Settings", Settings),
+                    new MenuItem("-"),
+                    new MenuItem("Exit", Exit),
                 }),
                 Visible = true
             };
-            trayIcon.Text = "ScreenControl Service";
+
             CheckForServiceActivity(null, null);
 
             statusCheckTimer.Interval = 5000;
@@ -88,16 +88,18 @@ namespace SC_ServiceUITray
             if (screenControlService == null || (screenControlService != null && screenControlService.Status != ServiceControllerStatus.Running))
             {
                 trayIcon.Icon = Properties.Resources.IconInactive;
+                trayIcon.Text = "ScreenControl Service is not running";
             }
             else
             {
                 trayIcon.Icon = Properties.Resources.IconActive;
+                trayIcon.Text = "ScreenControl Service is running";
             }
         }
 
-        private bool ServiceExists(string _serviceName)
+        private bool ServiceExists(string serviceName)
         {
-            return ServiceController.GetServices().Any(serviceController => serviceController.ServiceName.Equals(_serviceName));
+            return ServiceController.GetServices().Any(serviceController => serviceController.ServiceName.Equals(serviceName));
         }
     }
 }
