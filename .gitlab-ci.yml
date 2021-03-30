@@ -129,12 +129,12 @@ SC_Service::Tray::build:
   script:
     - MSBuild.exe $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray.sln /p:Configuration=Release
     # Move the built tray app to the root directory
-    - mkdir ./SC_Wrapper_Build
+    - mkdir ./SC_Tray_Build
     - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray/bin/Release/* ./SC_Tray_Build
   artifacts:
-    name: "SC_Service_Wrapper"
+    name: "SC_Service_Tray"
     paths:
-    - ./SC_Wrapper_Build/**
+    - ./SC_Tray_Build/**
     expire_in: 2 weeks
     when: always
   tags:
