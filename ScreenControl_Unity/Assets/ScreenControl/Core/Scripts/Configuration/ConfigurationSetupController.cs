@@ -69,9 +69,15 @@ namespace Ultraleap.ScreenControl.Core
             UpdateCursorState();
         }
 
+        public void SetCursorState(bool _state)
+        {
+            clientRootObj.SetActive(_state);
+        }
+
         private void UpdateCursorState()
         {
-            if (defaultConfig == null) {
+            if (defaultConfig == null)
+            {
                 defaultConfig = PhysicalConfigFile.GetDefaultValues();
             }
 
