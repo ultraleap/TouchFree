@@ -113,10 +113,36 @@ SC_Service::Wrapper::build:
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
     - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper/bin/Release/* ./SC_Wrapper_Build
+    
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Wrapper_Build/SC_ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "SC_Service_Wrapper"
     paths:
     - ./SC_Wrapper_Build/**
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
+    
+SC_Service::Tray::build:
+  stage: build
+  when: always
+  script:
+    - MSBuild.exe $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray.sln /p:Configuration=Release
+    # Move the built tray app to the root directory
+    - mkdir ./SC_Tray_Build
+    - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray/bin/Release/* ./SC_Tray_Build
+    
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Tray_Build/SC_ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+  artifacts:
+    name: "SC_Service_Tray"
+    paths:
+    - ./SC_Tray_Build/**
     expire_in: 2 weeks
     when: always
   tags:
@@ -243,17 +269,21 @@ SC_Service::package:
   dependencies:
     - SC_Service::build
     - SC_Service::Wrapper::build
+    - SC_Service::Tray::build
   needs: [
     "SC_Service::build",
-    "SC_Service::Wrapper::build"
+    "SC_Service::Wrapper::build",
+    "SC_Service::Tray::build"
   ]
   script:
     - mkdir ./Service_Package/
     - mkdir ./Service_Package/Licenses/
     - mkdir ./Service_Package/Service/
     - mkdir ./Service_Package/Wrapper/
+    - mkdir ./Service_Package/Tray/
     - cp -r ./Build/* ./Service_Package/Service/
     - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
+    - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
   artifacts:
     name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
