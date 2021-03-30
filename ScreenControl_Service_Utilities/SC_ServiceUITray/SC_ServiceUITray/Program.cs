@@ -47,16 +47,6 @@ namespace SC_ServiceUITray
             statusCheckTimer.Start();
         }
 
-        /// <summary>
-        /// Verify if a service exists
-        /// </summary>
-        /// <param name="_serviceName">Service name</param>
-        /// <returns></returns>
-        public bool ServiceExists(string _serviceName)
-        {
-            return ServiceController.GetServices().Any(serviceController => serviceController.ServiceName.Equals(_serviceName));
-        }
-
         private void Settings(object sender, EventArgs e)
         {
             if (startedProcess != null && !startedProcess.HasExited)
@@ -70,7 +60,7 @@ namespace SC_ServiceUITray
             }
         }
 
-        void Exit(object sender, EventArgs e)
+        private void Exit(object sender, EventArgs e)
         {
             if(startedProcess != null && !startedProcess.HasExited)
             {
@@ -103,6 +93,11 @@ namespace SC_ServiceUITray
             {
                 trayIcon.Icon = Properties.Resources.IconActive;
             }
+        }
+
+        private bool ServiceExists(string _serviceName)
+        {
+            return ServiceController.GetServices().Any(serviceController => serviceController.ServiceName.Equals(_serviceName));
         }
     }
 }

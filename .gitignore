@@ -56,6 +56,7 @@ Thumbs.db
 Builds/
 Build/
 AssetDirStat.asset
+**/bin
 
 # =============== #
 #  Documentation  #
@@ -84,10 +85,5 @@ Testing/ServiceSocketTests/results/**
 #  Service Utilities  #
 # =================== #
 
-**/SC_ServiceWrapper/bin
-!/ScreenControl_Service_Utilities/**/*.csproj
-!/ScreenControl_Service_Utilities/**/*.sln
-
-**/SC_ServiceUITray/bin
 !/ScreenControl_Service_Utilities/**/*.csproj
 !/ScreenControl_Service_Utilities/**/*.sln
