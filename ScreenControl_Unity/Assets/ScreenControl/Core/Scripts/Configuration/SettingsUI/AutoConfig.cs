@@ -13,9 +13,6 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject setupGuideButton;
 
         [Space]
-        public GameObject clientCursor;
-
-        [Space]
         public int trackingFailsToSetupGuide = 3;
 
         Vector3 bottomPosM;
@@ -30,7 +27,7 @@ namespace Ultraleap.ScreenControl.Core
             topPosM = Vector3.zero;
             step1.SetActive(true);
             step2.SetActive(false);
-            clientCursor.SetActive(false);
+            ConfigurationSetupController.Instance.SetCursorState(false);
             HandManager.Instance.useTrackingTransform = false;
             DisplayTrackingLost(false);
             setupGuideButton.SetActive(false);
@@ -39,7 +36,7 @@ namespace Ultraleap.ScreenControl.Core
 
         private void OnDisable()
         {
-            clientCursor.SetActive(true);
+            ConfigurationSetupController.Instance.SetCursorState(true);
         }
 
         private void Update()

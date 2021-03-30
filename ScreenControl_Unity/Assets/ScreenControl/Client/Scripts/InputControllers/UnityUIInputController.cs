@@ -122,5 +122,14 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
                     break;
             }
         }
+
+        protected override void OnDisable()
+        {
+            touchPhase = TouchPhase.Canceled;
+            eventSystem.pixelDragThreshold = baseDragThreshold;
+            isCancelled = true;
+
+            base.OnDisable();
+        }
     }
 }
