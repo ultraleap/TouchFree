@@ -6,6 +6,9 @@ namespace Ultraleap.ScreenControl.Core
 {
     public static class ScreenControlUtility
     {
+        // Store in M, display in CM
+        public static readonly float ConfigToDisplayMeasurementMultiplier = 100;
+
         public static float MapRangeToRange(float _value, float _oldMin, float _oldMax, float _newMin, float _newMax)
         {
             float oldRange = (_oldMax - _oldMin);
@@ -21,36 +24,24 @@ namespace Ultraleap.ScreenControl.Core
             }
             return newValue;
         }
-
-        public static Color ParseColor(string _hexColor, float _alpha = 1)
-        {
-            Color defaultColor = Color.white;
-            if (ColorUtility.TryParseHtmlString(_hexColor, out Color outColor))
-            {
-                outColor.a = _alpha;
-                return outColor;
-            }
-            return defaultColor;
-        }
-
         public static int ToDisplayUnits(int _value)
         {
-            return (int)(_value * ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier);
+            return (int)(_value * ConfigToDisplayMeasurementMultiplier);
         }
 
         public static float ToDisplayUnits(float _value)
         {
-            return _value * ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier;
+            return _value * ConfigToDisplayMeasurementMultiplier;
         }
 
         public static int FromDisplayUnits(int _value)
         {
-            return (int)(_value / ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier);
+            return (int)(_value / ConfigToDisplayMeasurementMultiplier);
         }
 
         public static float FromDisplayUnits(float _value)
         {
-            return _value / ConfigManager.GlobalSettings.ConfigToDisplayMeasurementMultiplier;
+            return _value / ConfigToDisplayMeasurementMultiplier;
         }
     }
 }

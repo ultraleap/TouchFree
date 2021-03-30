@@ -68,19 +68,21 @@ namespace Ultraleap.ScreenControl.Core
         protected virtual void OnEnable()
         {
             InteractionConfig.OnConfigUpdated += OnSettingsUpdated;
+            PhysicalConfig.OnConfigUpdated += OnSettingsUpdated;
             OnSettingsUpdated();
-            ConfigManager.GlobalSettings.CreateVirtualScreen();
-            positioningModule.Stabiliser.ResetValues();
         }
 
         protected virtual void OnDisable()
         {
             InteractionConfig.OnConfigUpdated -= OnSettingsUpdated;
+            PhysicalConfig.OnConfigUpdated -= OnSettingsUpdated;
         }
 
         protected virtual void OnSettingsUpdated()
         {
             ignoreDragging = !ConfigManager.InteractionConfig.UseScrollingOrDragging;
+            ConfigManager.GlobalSettings.CreateVirtualScreen();
+            positioningModule.Stabiliser.ResetValues();
         }
     }
 }

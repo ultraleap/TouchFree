@@ -50,7 +50,9 @@ namespace Ultraleap.ScreenControl.Core
         {
             HandManager.Instance.useTrackingTransform = true;
             foreach (var root in stateRoots)
+            {
                 root.SetActive(false);
+            }
 
             stateRoots[(int)currentState].SetActive(true);
         }

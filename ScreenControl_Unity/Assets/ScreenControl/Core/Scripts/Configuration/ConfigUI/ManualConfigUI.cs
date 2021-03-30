@@ -188,7 +188,6 @@ namespace Ultraleap.ScreenControl.Core
 
             ConfigManager.PhysicalConfig.ConfigWasUpdated();
             ConfigManager.PhysicalConfig.SaveConfig();
-            RestartSaveConfigTimer();
         }
 
         public void ResetToDefaultValues()

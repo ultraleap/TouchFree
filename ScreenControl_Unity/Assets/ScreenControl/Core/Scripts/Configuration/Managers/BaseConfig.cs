@@ -7,7 +7,7 @@ namespace Ultraleap.ScreenControl.Core
         public static event Action OnConfigUpdated;
         public void ConfigWasUpdated()
         {
-            OnConfigUpdated.Invoke();
+            OnConfigUpdated?.Invoke();
         }
 
         public abstract void SetAllValuesToDefault();
