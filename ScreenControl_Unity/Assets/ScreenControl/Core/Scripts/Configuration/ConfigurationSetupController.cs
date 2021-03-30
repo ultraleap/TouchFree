@@ -74,6 +74,18 @@ namespace Ultraleap.ScreenControl.Core
             clientRootObj.SetActive(_state);
         }
 
+        void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                UpdateCursorState();
+            }
+            else
+            {
+                clientRootObj.SetActive(hasFocus);
+            }
+        }
+
         private void UpdateCursorState()
         {
             if (defaultConfig == null)
