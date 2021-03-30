@@ -77,12 +77,10 @@ namespace Ultraleap.ScreenControl.Core
             if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
             {
-                Debug.Log("Config was default");
                 clientRootObj.SetActive(false);
             }
             else
             {
-                Debug.Log("Config was not default");
                 clientRootObj.SetActive(true);
             }
         }
