@@ -113,6 +113,10 @@ SC_Service::Wrapper::build:
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
     - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper/bin/Release/* ./SC_Wrapper_Build
+    
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Wrapper_Build/SC_ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "SC_Service_Wrapper"
     paths:
@@ -131,6 +135,10 @@ SC_Service::Tray::build:
     # Move the built tray app to the root directory
     - mkdir ./SC_Tray_Build
     - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray/bin/Release/* ./SC_Tray_Build
+    
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Tray_Build/SC_ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "SC_Service_Tray"
     paths:
