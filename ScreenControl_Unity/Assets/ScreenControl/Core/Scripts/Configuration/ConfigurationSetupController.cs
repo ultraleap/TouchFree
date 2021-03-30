@@ -36,11 +36,14 @@ namespace Ultraleap.ScreenControl.Core
 
         public static MountingType selectedMountType = MountingType.NONE;
 
+        private PhysicalConfig defaultConfig = null;
+
         public void ChangeState(ConfigState _newState)
         {
             previousState = currentState;
             currentState = _newState;
             EnableCurrentState();
+            UpdateCursorState();
         }
 
         void EnableCurrentState()
@@ -63,6 +66,43 @@ namespace Ultraleap.ScreenControl.Core
         private void Start()
         {
             Instance = this;
+            UpdateCursorState();
+        }
+
+        public void SetCursorState(bool _state)
+        {
+            clientRootObj.SetActive(_state);
+        }
+
+        void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                UpdateCursorState();
+            }
+            else
+            {
+                clientRootObj.SetActive(hasFocus);
+            }
+        }
+
+        private void UpdateCursorState()
+        {
+            if (defaultConfig == null)
+            {
+                defaultConfig = PhysicalConfigFile.GetDefaultValues();
+            }
+
+            //Check if the physicalconfig is set to default and guide the users if it is
+            if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
+                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
+            {
+                clientRootObj.SetActive(false);
+            }
+            else
+            {
+                clientRootObj.SetActive(true);
+            }
         }
 
         private void Update()
