@@ -188,16 +188,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ScreenControlClient
       objectReference: {fileID: 0}
-    - target: {fileID: 6017491752659792052, guid: 157025b17471e7c41a7d20e7f28273b5,
-        type: 3}
-      propertyPath: sceneCamera
-      value: 
-      objectReference: {fileID: 169355409}
-    - target: {fileID: 8822492802018686658, guid: 157025b17471e7c41a7d20e7f28273b5,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 169355409}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 157025b17471e7c41a7d20e7f28273b5, type: 3}
 --- !u!1 &169355408
