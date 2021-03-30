@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Core
@@ -33,8 +35,7 @@ namespace Ultraleap.ScreenControl.Core
             remove { Instance._OnConfigFileUpdated -= value; }
         }
 
-        public static readonly string ConfigFileDirectory = Application.persistentDataPath;
-        public static readonly string CustomDefaultConfigFileDirectory = Path.Combine(Application.streamingAssetsPath + "/SavedSetups/");
+        public static readonly string ConfigFileDirectory = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData), "Ultraleap/ScreenControl/Configuation/");
 
         public abstract string ConfigFileName { get; }
 
@@ -59,12 +60,6 @@ namespace Ultraleap.ScreenControl.Core
             return new TData();
         }
 
-        // Called via reflection in ConfigFileUtils.
-        public static void LoadCustomDefaults(string _customFolderName)
-        {
-            Instance.LoadConfigFromCustomDefault(_customFolderName);
-        }
-
         #endregion
 
         #region Internal
@@ -77,12 +72,6 @@ namespace Ultraleap.ScreenControl.Core
             if (!DoesConfigFileExist())
             {
                 CreateDefaultConfigFile();
-
-                if (DoesCustomDefaultConfigFileExist()) // check if there are ANY custom default files. This will speed up rollout to many machines
-                {
-                    //find the first one and load it
-                    LoadConfigFromCustomDefault(GetFirstCustomDefault());
-                }
             }
 
             string data = File.ReadAllText(_ConfigFilePath);
@@ -112,60 +101,35 @@ namespace Ultraleap.ScreenControl.Core
             return true;
         }
 
-        private bool DoesCustomDefaultConfigFileExist(string _customDefaultName = "")
-        {
-            if (!Directory.Exists(CustomDefaultConfigFileDirectory))
-            {
-                // there is no root
-                return false;
-            }
-            else if (_customDefaultName == "" && Directory.GetDirectories(CustomDefaultConfigFileDirectory).Length == 0)
-            {
-                // there are no custom folders available
-                return false;
-            }
-            else if (_customDefaultName != "" && !Directory.Exists(Path.Combine(CustomDefaultConfigFileDirectory, _customDefaultName)))
-            {
-                // the specified folder does not exist
-                return false;
-            }
-
-            if (_customDefaultName != "" && !File.Exists(Path.Combine(CustomDefaultConfigFileDirectory, _customDefaultName, ConfigFileName)))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private void LoadConfigFromCustomDefault(string _customDefaultName)
-        {
-            if (DoesCustomDefaultConfigFileExist(_customDefaultName) && DoesConfigFileExist())
-            {
-                File.WriteAllText(_ConfigFilePath, File.ReadAllText(Path.Combine(CustomDefaultConfigFileDirectory, _customDefaultName, ConfigFileName)));
-                LoadConfig();
-            }
-        }
-
-        /// <summary>
-        /// Returns the first custom default directory found
-        /// </summary>
-        /// <returns></returns>
-        private string GetFirstCustomDefault()
-        {
-            if (DoesCustomDefaultConfigFileExist())
-            {
-                return Directory.GetDirectories(CustomDefaultConfigFileDirectory)[0].Replace(CustomDefaultConfigFileDirectory, "");
-            }
-
-            return null;
-        }
-
         private void CreateDefaultConfigFile()
         {
             Directory.CreateDirectory(ConfigFileDirectory);
+            RequestConfigFilePermissions();
             File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(new TData(), true));
             Debug.LogWarning($"No {ConfigFileName} file found in {ConfigFileDirectory}. One has been generated for you with default values.");
+        }
+
+        void RequestConfigFilePermissions()
+        {
+            // Create the directory and request permissions to it for all users
+            DirectorySecurity directorySecurity;
+            AccessRule rule;
+            SecurityIdentifier securityIdentifier = new SecurityIdentifier
+                (WellKnownSidType.BuiltinUsersSid, null);
+
+            rule = new FileSystemAccessRule(
+                securityIdentifier,
+                FileSystemRights.Write |
+                FileSystemRights.ReadAndExecute |
+                FileSystemRights.Modify,
+                InheritanceFlags.ContainerInherit |
+                InheritanceFlags.ObjectInherit,
+                PropagationFlags.InheritOnly,
+                AccessControlType.Allow);
+
+            directorySecurity = Directory.GetAccessControl(ConfigFileDirectory);
+            directorySecurity.ModifyAccessRule(AccessControlModification.Add, rule, out _);
+            Directory.SetAccessControl(ConfigFileDirectory, directorySecurity);
         }
 
         #endregion

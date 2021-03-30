@@ -31,22 +31,6 @@ namespace Ultraleap.ScreenControl.Core
         protected abstract void SaveValuesToConfig();
         protected abstract void CommitValuesToFile();
 
-        protected void RestartSaveConfigTimer()
-        {
-            if (saveConfigCoroutine != null)
-            {
-                StopCoroutine(saveConfigCoroutine);
-            }
-            saveConfigCoroutine = StartCoroutine(SaveConfigCoroutine());
-
-            IEnumerator SaveConfigCoroutine()
-            {
-                yield return new WaitForSeconds(3f);
-                CommitValuesToFile();
-                saveConfigCoroutine = null;
-            }
-        }
-
         protected float TryParseNewStringToFloat(ref float _original, string _newText, bool _convertToStorageUnits = false, bool _convertToDisplayUnits = false)
         {
             // Match any character that is not period (.), hypen (-), or numbers 0 to 9, and strip them out.
@@ -75,10 +59,14 @@ namespace Ultraleap.ScreenControl.Core
             _newColourHex = Regex.Replace(_newColourHex, @"[^0-9abcdefABCDEF]+", "");
 
             if (!_newColourHex.StartsWith("#"))
+            {
                 _newColourHex = "#" + _newColourHex; // Add hex denotion # to start of the string.
+            }
 
             if (!ColorUtility.TryParseHtmlString(_newColourHex, out _))
+            {
                 return _original; // string was not compatible!
+            }
 
             return _newColourHex;
         }

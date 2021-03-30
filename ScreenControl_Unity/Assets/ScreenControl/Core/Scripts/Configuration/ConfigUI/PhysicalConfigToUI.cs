@@ -46,12 +46,12 @@ namespace Ultraleap.ScreenControl.Core
                                                     Mathf.Clamp(sideonLeap.localPosition.y, sideonLocalClampMin.y, sideonLocalClampMax.y), 0);
 
             // front-on view
-            var aspectRatio = (float)ConfigManager.GlobalSettings.ScreenWidth / (float)ConfigManager.GlobalSettings.ScreenHeight;
+            var aspectRatio = (float)ConfigManager.PhysicalConfig.ScreenWidthPX / (float)ConfigManager.PhysicalConfig.ScreenHeightPX;
 
             if (aspectRatio > 1)
             {
                 // landscape
-                frontonScreen.sizeDelta = new Vector2(dynamicScreenSizePX, dynamicScreenSizePX * ((float)ConfigManager.GlobalSettings.ScreenHeight / (float)ConfigManager.GlobalSettings.ScreenWidth));
+                frontonScreen.sizeDelta = new Vector2(dynamicScreenSizePX, dynamicScreenSizePX * ((float)ConfigManager.PhysicalConfig.ScreenHeightPX / (float)ConfigManager.PhysicalConfig.ScreenWidthPX));
             }
             else
             {
