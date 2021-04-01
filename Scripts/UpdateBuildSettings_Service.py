@@ -15,15 +15,19 @@ args = parser.parse_args()
 file_path = args.path
 file_content = None
 
-with open(file_path, 'r') as file_raw:
-    file_content = file_raw.readlines()
-    i = 0
-    while i < len(file_content):
-        if file_content[i].__contains__('  - enabled: 1'):
-            file_content[i] = '  - enabled: 0'
-        elif file_content[i].__contains__('  - enabled: 0'):
-            file_content[i] = '  - enabled: 1'
-        i += 1
-
-with open(file_path, 'w') as file_raw:
-    file_raw.writelines(file_content)
+#read input file
+fin = open(file_path, "rt")
+#read file contents to string
+data = fin.read()
+#replace all occurrences of the required string
+data = data.replace('  - enabled: 0', 'TEMPORARY')
+data = data.replace('  - enabled: 1', '  - enabled: 0')
+data = data.replace('MAKETHISONE', '  - enabled: 1')
+#close the input file
+fin.close()
+#open the input file in write mode
+fin = open(file_path, "wt")
+#overrite the input file with the resulting data
+fin.write(data)
+#close the file
+fin.close()
