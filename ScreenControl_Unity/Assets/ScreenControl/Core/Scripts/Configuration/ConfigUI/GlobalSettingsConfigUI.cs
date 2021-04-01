@@ -195,7 +195,6 @@ namespace Ultraleap.ScreenControl.Core
             {
                 ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.HOVER;
             }
-            InteractionManager.Instance.SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
         }
 
         void DisplayIntractionPreview()
