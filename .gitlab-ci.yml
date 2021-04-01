@@ -6,9 +6,6 @@ variables:
   SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
   SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
 
-  SC_SRV_Scene_Path: $SC_SRV_PATH/Scenes/ScreenControlService.unity
-  SC_SRV_UI_Scene_Path: $SC_SRV_PATH/Scenes/ScreenControlServiceUI.unity
-
   SC_CFU_VERSION: 'alpha5'
   SC_CFW_VERSION: 'alpha5'
   SC_SRV_VERSION: 'alpha5'
