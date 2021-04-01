@@ -179,10 +179,10 @@ SC_Service::build:
     - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
     
     # Update ProjectSettings file with correct version & build service
-    - python ./Scripts/UpdateUnityProjVer.py --path ./ScreenControl_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
     - cd ./Scripts
+    - python ./UpdateUnityProjVer.py --path ../ScreenControl_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
     - "& ./build_service.bat $UNITY_EXE"
-    - python ./Scripts/UpdateBuildSettings_Service.py --path ./ScreenControl_Unity/ProjectSettings/EditorBuildSettings.asset
+    - python ./UpdateBuildSettings_Service.py --path ../ScreenControl_Unity/ProjectSettings/EditorBuildSettings.asset
     - "& ./build_serviceUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
@@ -197,6 +197,7 @@ SC_Service::build:
     name: "Screen_Control_Service_${env:SC_SRV_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - Build/**
+    - UIBuild/**
     - ./Unity.log
     expire_in: 2 weeks
     when: always

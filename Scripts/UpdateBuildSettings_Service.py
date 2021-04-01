@@ -16,13 +16,14 @@ file_path = args.path
 file_content = None
 
 with open(file_path, 'r') as file_raw:
-    file_content = file_raw.read()
-    data = f.readlines()
-for line in data:
-    if line.__contains__('  - enabled: 1'):
-        line = '  - enabled: 0'
-    else if line.__contains__('  - enabled: 0'):
-        line = '  - enabled: 1'
+    file_content = file_raw.readlines()
+    i = 0
+    while i < len(file_content):
+        if file_content[i].__contains__('  - enabled: 1'):
+            file_content[i] = '  - enabled: 0'
+        elif file_content[i].__contains__('  - enabled: 0'):
+            file_content[i] = '  - enabled: 1'
+        i += 1
 
 with open(file_path, 'w') as file_raw:
-    file_raw.write(file_content)
+    file_raw.writelines(file_content)
