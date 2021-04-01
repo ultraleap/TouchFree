@@ -20,9 +20,9 @@ fin = open(file_path, "rt")
 #read file contents to string
 data = fin.read()
 #replace all occurrences of the required string
-data = data.replace('  - enabled: 0', 'TEMPORARY')
+data = data.replace('  - enabled: 0', 'TEMPORARY_TO_BECOME_1')
 data = data.replace('  - enabled: 1', '  - enabled: 0')
-data = data.replace('MAKETHISONE', '  - enabled: 1')
+data = data.replace('TEMPORARY_TO_BECOME_1', '  - enabled: 1')
 #close the input file
 fin.close()
 #open the input file in write mode
