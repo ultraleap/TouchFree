@@ -6,11 +6,15 @@ import {
 import {
     ActionCode,
     CommunicationWrapper,
+    ConfigRequest,
+    ConfigState,
+    ConfigStateCallback,
     ResponseCallback,
     WebSocketResponse
 } from './ScreenControlServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
+import { Guid } from 'guid-typescript';
 
 // Class: ServiceConnection
 // This represents a connection to a ScreenControl Service. It should be created by a
@@ -98,6 +102,8 @@ export class ServiceConnection {
                 break;
 
             case ActionCode.CONFIGURATION_STATE:
+                let configState: ConfigState = looseData.content;
+                ConnectionManager.messageReceiver.configStateQueue.push(configState);
                 break;
 
             case ActionCode.VERSION_HANDSHAKE_RESPONSE:
@@ -136,5 +142,27 @@ export class ServiceConnection {
         }
 
         this.webSocket.send(_message);
+    }
+
+    // Function: SendConfigStateRequest
+    // Used to request information from the Service via the <webSocket>. Provides an asynchronous
+    // <ConfigState> via the _callback parameter.
+    //
+    // If your _callBack requires context it should be bound to that context via .bind()
+    SendConfigStateRequest(_callback: (detail: ConfigState) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        let guid: string = uuidgen();
+        let request: ConfigRequest = new ConfigRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        let message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.configStateCallbacks[guid] =
+            new ConfigStateCallback(Date.now(), _callback);
+
+        this.webSocket.send(message);
     }
 }

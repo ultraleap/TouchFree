@@ -1,6 +1,8 @@
 import {
     WebSocketResponse,
-    ResponseCallback
+    ResponseCallback,
+    ConfigState,
+    ConfigStateCallback
 } from './ScreenControlServiceTypes';
 import {
     ClientInputAction,
@@ -46,6 +48,14 @@ export class MessageReceiver {
     // A dictionary of unique request IDs and <ResponseCallbacks> that represent requests that are awaiting response from the Service.
     responseCallbacks: { [id: string]: ResponseCallback; } = {};
 
+    // Variable: configStateQueue
+    // A queue of <ConfigState> that have been received from the Service.
+    configStateQueue: Array<ConfigState> = [];
+
+    // Variable: configStateCallbacks
+    // A dictionary of unique request IDs and <ConfigStateCallback> that represent requests that are awaiting response from the Service.
+    configStateCallbacks: { [id: string]: ConfigStateCallback; } = {};
+
     // Variable: callbackClearInterval
     // Stores the reference number for the interal running <ClearUnresponsiveCallbacks>, allowing
     // it to be cleared.
@@ -77,6 +87,7 @@ export class MessageReceiver {
     // started during the constructor
     Update(): void {
         this.CheckForResponse();
+        this.CheckForConfigState();
         this.CheckForAction();
     }
 
@@ -100,7 +111,37 @@ export class MessageReceiver {
                 if (key === _response.requestID) {
                     this.responseCallbacks[key].callback(_response);
                     delete this.responseCallbacks[key];
-                    break;
+                    return;
+                }
+            };
+        }
+
+        console.log("Received a WebSocketResponse that did not match a callback." +
+            "This is the content of the response: \n Response ID: " + _response.requestID +
+            "\n Original request - " + _response.originalRequest +
+            "\n Status: " + _response.status + "\n Message: " + _response.message);
+    }
+
+    // Function: CheckForConfigState
+    // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleConfigState> if there is one.
+    CheckForConfigState(): void {
+        let configState: ConfigState | undefined = this.configStateQueue.shift();
+
+        if (configState !== undefined) {
+            this.HandleConfigState(configState);
+        }
+    }
+
+    // Function: HandleConfigState
+    // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
+    // match, calls the callback action in the matching <ConfigStateCallback>.
+    HandleConfigState(_configState: ConfigState): void {
+        if (this.configStateCallbacks !== undefined) {
+            for (let key in this.configStateCallbacks) {
+                if (key === _configState.requestID) {
+                    this.configStateCallbacks[key].callback(_configState);
+                    delete this.configStateCallbacks[key];
+                    return;
                 }
             };
         }
@@ -144,6 +185,16 @@ export class MessageReceiver {
             for (let key in this.responseCallbacks) {
                 if (this.responseCallbacks[key].timestamp < lastClearTime) {
                     delete this.responseCallbacks[key];
+                } else {
+                    break;
+                }
+            };
+        }
+
+        if (this.configStateCallbacks !== undefined) {
+            for (let key in this.configStateCallbacks) {
+                if (this.configStateCallbacks[key].timestamp < lastClearTime) {
+                    delete this.configStateCallbacks[key];
                 } else {
                     break;
                 }

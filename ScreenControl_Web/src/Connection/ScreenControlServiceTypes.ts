@@ -53,6 +53,37 @@ export class ConfigState
     }
 }
 
+// class: ConfigRequest
+// Used to request the current state of the configuration on the Service. This is received as
+// a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
+// use of the data received.
+export class ConfigRequest
+{
+    // Variable: requestID
+    requestID: string;
+
+    constructor(_id: string) {
+        this.requestID = _id;
+    }
+}
+
+// Class: ConfigStateCallback
+// Used by <MessageReceiver> to wait for a <ConfigState> from the Service. Owns a callback
+// with a <ConfigState> as a parameter to allow users to make use of the new
+// <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
+// timeout if not seen within a reasonable timeframe.
+export class ConfigStateCallback {
+    // Variable: timestamp
+    timestamp: number;
+    // Variable: callback
+    callback: (detail: ConfigState) => void;
+
+    constructor(_timestamp: number, _callback: (detail: ConfigState) => void) {
+        this.timestamp = _timestamp;
+        this.callback = _callback;
+    }
+}
+
 // Class: WebSocketResponse
 // The structure seen when the Service responds to a request. This is to verify whether it was
 // successful or not and will include the original request if it fails, to allow for

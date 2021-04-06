@@ -162,7 +162,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Function: ClearUnresponsiveCallbacks
         // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
-        // expired from <responseCallbacks>.
+        // expired from <responseCallbacks>. Also clears all <ConfigurationStateCallback> that are
+        // expired from <configStateCallbacks>.
         IEnumerator ClearUnresponsiveCallbacks()
         {
             WaitForSeconds waitTime = new WaitForSeconds(callbackClearTimer);
@@ -180,6 +181,20 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     if (responseCallbacks[key].timestamp < lastClearTime)
                     {
                         responseCallbacks.Remove(key);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                keys = new List<string>(configStateCallbacks.Keys);
+
+                foreach (string key in keys)
+                {
+                    if (configStateCallbacks[key].timestamp < lastClearTime)
+                    {
+                        configStateCallbacks.Remove(key);
                     }
                     else
                     {

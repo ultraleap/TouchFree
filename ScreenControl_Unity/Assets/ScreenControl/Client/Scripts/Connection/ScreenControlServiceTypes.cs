@@ -90,7 +90,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
     // Struct: ConfigurationRequest
     // Used to request the current state of the configuration on the Service. This is received as
-    // a <WebSocketResponse> which should be linked to a <ResponseCallback> via requestID to make
+    // a <ConfigStateResponse> which should be linked to a <ConfigurationStateCallback> via requestID to make
     // use of the data received.
     [Serializable]
     public struct ConfigurationRequest
