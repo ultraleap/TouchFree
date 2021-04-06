@@ -108,10 +108,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     ClientInputAction cInput = new ClientInputAction(wsInput);
                     ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
-
                 case ActionCode.CONFIGURATION_STATE:
+                    ConfigStateResponse configState = JsonUtility.FromJson<ConfigStateResponse>(content);
+                    ConnectionManager.messageReceiver.configStateQueue.Enqueue(configState);
                     break;
-
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
@@ -144,6 +144,40 @@ namespace Ultraleap.ScreenControl.Client.Connection
             }
 
             webSocket.Send(_message);
+        }
+
+        // Function: SendMessage
+        // Used internally to send or request information from the Service via the <webSocket>. To
+        // be given a pre-made _message and _requestID. Provides an asynchronous <ConfigStateResponse>
+        // via the _callback parameter.
+        internal void SendMessage(string _message, string _requestID, Action<ConfigStateResponse> _callback)
+        {
+            if (_requestID == "")
+            {
+                Debug.LogError("Request failed. This is due to a missing or invalid requestID");
+                return;
+            }
+
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.configStateCallbacks.Add(_requestID, new ConfigurationStateCallback(DateTime.Now.Millisecond, _callback));
+            }
+
+            webSocket.Send(_message);
+        }
+
+        public void RequestConfigState(Action<ConfigStateResponse> _callback)
+        {
+            Guid requestGUID = Guid.NewGuid();
+            string requestID = requestGUID.ToString();
+            ConfigurationRequest request = new ConfigurationRequest(requestID);
+
+            CommunicationWrapper<ConfigurationRequest> message =
+                new CommunicationWrapper<ConfigurationRequest>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            SendMessage(JsonUtility.ToJson(message), requestID, _callback);
         }
     }
 }

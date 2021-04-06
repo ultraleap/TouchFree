@@ -15,6 +15,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
     // ScreenControl Service.
+    [System.Serializable]
     public class InteractionConfig
     {
         // Property: UseScrollingOrDragging
@@ -67,6 +68,29 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             }
         }
 
+        // Property: InteractionType
+        // This represents the type of interaction currently selected
+        public InteractionType InteractionType
+        {
+            get
+            {
+                return _InteractionType;
+            }
+            set
+            {
+                if (configValues.ContainsKey("InteractionType"))
+                {
+                    configValues["InteractionType"] = value;
+                }
+                else
+                {
+                    configValues.Add("InteractionType", value);
+                }
+
+                _InteractionType = value;
+            }
+        }
+
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
 
@@ -78,6 +102,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
         private bool _UseScrollingOrDragging;
         private float _DeadzoneRadius;
+        private InteractionType _InteractionType;
     }
 
     // Class: HoverAndHoldInteractionSettings
@@ -89,6 +114,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
     // ScreenControl Service.
+    [System.Serializable]
     public class HoverAndHoldInteractionSettings
     {
         // Property: HoverStartTimeS
@@ -162,6 +188,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
     // ScreenControl Service.
+    [System.Serializable]
     public class PhysicalConfig
     {
         // Property: ScreenHeightM

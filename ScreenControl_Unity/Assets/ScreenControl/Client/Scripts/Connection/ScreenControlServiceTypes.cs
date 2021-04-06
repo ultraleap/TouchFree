@@ -87,4 +87,48 @@ namespace Ultraleap.ScreenControl.Client.Connection
             callback = _callback;
         }
     }
+
+    // Struct: ConfigurationRequest
+    // Used to request the current state of the configuration on the Service. This is received as
+    // a <WebSocketResponse> which should be linked to a <ResponseCallback> via requestID to make
+    // use of the data received.
+    [Serializable]
+    public struct ConfigurationRequest
+    {
+        public string requestID;
+
+        public ConfigurationRequest(string _id)
+        {
+            requestID = _id;
+        }
+    }
+
+    // Struct: ConfigurationStateCallback
+    // Used by <MessageReceiver> to wait for a <ConfigStateResponse> from the Service. Owns an action
+    // with a <ConfigStateResponse> as a parameter to allow users to make use of the new
+    // <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
+    // timeout if not seen within a reasonable timeframe.
+    public struct ConfigurationStateCallback
+    {
+        public int timestamp;
+        public Action<ConfigStateResponse> callback;
+
+        public ConfigurationStateCallback(int _timestamp, Action<ConfigStateResponse> _callback)
+        {
+            timestamp = _timestamp;
+            callback = _callback;
+        }
+    }
+
+    internal struct CommunicationWrapper<T>
+    {
+        public string action;
+        public T content;
+
+        public CommunicationWrapper(string _actionCode, T _content)
+        {
+            action = _actionCode;
+            content = _content;
+        }
+    }
 }

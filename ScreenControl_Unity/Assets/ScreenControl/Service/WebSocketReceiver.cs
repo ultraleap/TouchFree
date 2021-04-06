@@ -14,8 +14,52 @@ namespace Ultraleap.ScreenControl.Service
     public class WebSocketReceiver : MonoBehaviour
     {
         public ConcurrentQueue<string> setConfigQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> configRequestQueue = new ConcurrentQueue<string>();
 
         void Update()
+        {
+            CheckSetConfigQueue();
+            CheckConfigRequestQueue();
+        }
+
+        void CheckConfigRequestQueue()
+        {
+            string content;
+            if (configRequestQueue.TryPeek(out content))
+            {
+                // Parse newly received messages
+                configRequestQueue.TryDequeue(out content);
+                HandleConfigRequest(content);
+            }
+        }
+
+        void HandleConfigRequest(string _content) 
+        {
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+
+            // Explicitly check for requestID because it is the only required key
+            if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
+            {
+                ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
+                response.message = "Configuration request failed. This is due to a missing or invalid requestID";
+
+                // This is a failed request, do not continue with sendingthe configuration,
+                // the Client will have no way to handle the config state
+                WebSocketClientConnection.Instance.SendConfigurationResponse(response);
+                return;
+            }
+
+            ScreenControlConfiguration currentConfig = new ScreenControlConfiguration(
+                contentObj.GetValue("requestID").ToString(),
+                ConfigManager.InteractionConfig,
+                ConfigManager.PhysicalConfig);
+
+            WebSocketClientConnection.Instance.SendCurrentConfigState(currentConfig);
+        }
+
+        #region SetConfigState
+
+        void CheckSetConfigQueue()
         {
             string content;
             if (setConfigQueue.TryPeek(out content))
@@ -25,8 +69,6 @@ namespace Ultraleap.ScreenControl.Service
                 HandleNewConfigState(content);
             }
         }
-
-        #region SetConfigState
 
         void HandleNewConfigState(string _content)
         {
@@ -60,7 +102,7 @@ namespace Ultraleap.ScreenControl.Service
                 return response;
             }
 
-            var configRequestFields = typeof(ConfigRequest).GetFields();
+            var configRequestFields = typeof(ScreenControlConfiguration).GetFields();
             var interactionFields = typeof(InteractionConfig).GetFields();
             var hoverAndHoldFields = typeof(HoverAndHoldInteractionSettings).GetFields();
             var physicalFields = typeof(PhysicalConfig).GetFields();
@@ -178,7 +220,7 @@ namespace Ultraleap.ScreenControl.Service
 
         void SetConfigState(string _content)
         {
-            ConfigRequest combinedData = new ConfigRequest("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
+            ScreenControlConfiguration combinedData = new ScreenControlConfiguration("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
 
             JsonUtility.FromJsonOverwrite(_content, combinedData);
 

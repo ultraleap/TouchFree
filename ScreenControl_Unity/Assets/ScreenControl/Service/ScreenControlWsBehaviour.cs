@@ -60,6 +60,16 @@ namespace Ultraleap.ScreenControl.Service
             Send(jsonMessage);
         }
 
+        public void SendConfigState(ScreenControlConfiguration _configState)
+        {
+            CommunicationWrapper<ScreenControlConfiguration> message =
+                new CommunicationWrapper<ScreenControlConfiguration>(ActionCode.CONFIGURATION_STATE.ToString(), _configState);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            Send(jsonMessage);
+        }
+
         protected override void OnOpen()
         {
             Debug.Log("Websocket Connection opened");
@@ -132,7 +142,7 @@ namespace Ultraleap.ScreenControl.Service
                     clientConnection.receiverQueue.setConfigQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
-                    Debug.LogError("Handling " + action + " is not yet implemented.");
+                    clientConnection.receiverQueue.configRequestQueue.Enqueue(content);
                     break;
                 case ActionCode.INPUT_ACTION:
                 case ActionCode.CONFIGURATION_STATE:

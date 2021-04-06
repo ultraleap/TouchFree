@@ -73,7 +73,8 @@ namespace Ultraleap.ScreenControl.Service
                 InitialiseServer();
             }
 
-            if (wsServer.IsListening) {
+            if (wsServer.IsListening)
+            {
                 websocketInitalised = true;
             }
 
@@ -84,8 +85,10 @@ namespace Ultraleap.ScreenControl.Service
                 return;
             }
 
-            foreach(ScreenControlWsBehaviour behaviour in activeConnections) {
-                if (behaviour.ConnectionState == WebSocketState.Open) {
+            foreach(ScreenControlWsBehaviour behaviour in activeConnections)
+            {
+                if (behaviour.ConnectionState == WebSocketState.Open)
+                {
                     behaviour.SendInputAction(_data);
                 }
             }
@@ -93,9 +96,22 @@ namespace Ultraleap.ScreenControl.Service
 
         public void SendConfigurationResponse(ResponseToClient _response)
         {
-            foreach(ScreenControlWsBehaviour behaviour in activeConnections) {
-                if (behaviour.ConnectionState == WebSocketState.Open) {
+            foreach(ScreenControlWsBehaviour behaviour in activeConnections)
+            {
+                if (behaviour.ConnectionState == WebSocketState.Open)
+                {
                     behaviour.SendConfigurationResponse(_response);
+                }
+            }
+        }
+
+        public void SendCurrentConfigState(ScreenControlConfiguration _config)
+        {
+            foreach (ScreenControlWsBehaviour behaviour in activeConnections)
+            {
+                if (behaviour.ConnectionState == WebSocketState.Open)
+                {
+                    behaviour.SendConfigState(_config);
                 }
             }
         }
