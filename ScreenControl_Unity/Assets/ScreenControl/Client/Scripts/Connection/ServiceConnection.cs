@@ -53,7 +53,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
                 handshakeMessage += $"\"{VersionInfo.API_HEADER_NAME}\": \"{VersionInfo.ApiVersion}\"";
                 handshakeMessage += "}}";
 
-                SendChangeRequest(handshakeMessage, guid, ConnectionResultCallback);
+                SendMessage(handshakeMessage, guid, ConnectionResultCallback);
             };
 
             webSocket.Connect();
@@ -120,11 +120,11 @@ namespace Ultraleap.ScreenControl.Client.Connection
             }
         }
 
-        // Function: SendChangeRequest
+        // Function: SendMessage
         // Used internally to send or request information from the Service via the <webSocket>. To
         // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
         // via the _callback parameter.
-        internal void SendChangeRequest(string _message, string _requestID, Action<WebSocketResponse> _callback)
+        internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback)
         {
             if (_requestID == "")
             {

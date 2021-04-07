@@ -39,7 +39,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             jsonContent = jsonContent.Remove(jsonContent.Length - 1);
             jsonContent += "}}";
 
-            ConnectionManager.serviceConnection.SendChangeRequest(jsonContent, requestID, _callback);
+            ConnectionManager.serviceConnection.SendMessage(jsonContent, requestID, _callback);
         }
 
         // Function: SetConfigState
