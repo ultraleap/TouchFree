@@ -37,12 +37,12 @@ namespace Ultraleap.ScreenControl.Client.Connection
         public Dictionary<string, ResponseCallback> responseCallbacks = new Dictionary<string, ResponseCallback>();
 
         // Variable: configStateQueue
-        // A queue of <ConfigStateResponse> that have been received from the Service.
-        public ConcurrentQueue<ConfigStateResponse> configStateQueue = new ConcurrentQueue<ConfigStateResponse>();
+        // A queue of <ConfigState> that have been received from the Service.
+        public ConcurrentQueue<ConfigState> configStateQueue = new ConcurrentQueue<ConfigState>();
 
         // Variable: configStateCallbacks
-        // A dictionary of unique request IDs and <ConfigurationStateCallbacks> that represent requests that are awaiting response from the Service.
-        public Dictionary<string, ConfigurationStateCallback> configStateCallbacks = new Dictionary<string, ConfigurationStateCallback>();
+        // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
+        public Dictionary<string, ConfigStateCallback> configStateCallbacks = new Dictionary<string, ConfigStateCallback>();
 
         // Group: Functions
 
@@ -93,15 +93,15 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
             Debug.LogWarning("Received a WebSocketResponse that did not match a callback." +
                 "This is the content of the response: \n Response ID: " + _response.requestID +
-                "\n Original request - " + _response.originalRequest +
-                "\n Status: " + _response.status + "\n Message: " + _response.message);
+                "\n Status: " + _response.status + "\n Message: " + _response.message +
+                "\n Original request - " + _response.originalRequest);
         }
 
         // Function: CheckForConfigState
-        // Used to check the <configStateQueue> for a <ConfigStateResponse>. Sends it to <HandleConfigState> if there is one.
+        // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleConfigState> if there is one.
         void CheckForConfigState()
         {
-            ConfigStateResponse configState;
+            ConfigState configState;
 
             if (configStateQueue.TryPeek(out configState))
             {
@@ -113,10 +113,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Function: HandleConfigState
         // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
-        // match, calls the callback action in the matching <ConfigurationStateCallback>.
-        void HandleConfigState(ConfigStateResponse _configState)
+        // match, calls the callback action in the matching <ConfigStateCallback>.
+        void HandleConfigState(ConfigState _configState)
         {
-            foreach (KeyValuePair<string, ConfigurationStateCallback> callback in configStateCallbacks)
+            foreach (KeyValuePair<string, ConfigStateCallback> callback in configStateCallbacks)
             {
                 if (callback.Key == _configState.requestID)
                 {
@@ -162,7 +162,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Function: ClearUnresponsiveCallbacks
         // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
-        // expired from <responseCallbacks>. Also clears all <ConfigurationStateCallback> that are
+        // expired from <responseCallbacks>. Also clears all <ConfigStateCallback> that are
         // expired from <configStateCallbacks>.
         IEnumerator ClearUnresponsiveCallbacks()
         {

@@ -13,27 +13,29 @@ namespace Ultraleap.ScreenControl.Service
     [DisallowMultipleComponent]
     public class WebSocketReceiver : MonoBehaviour
     {
-        public ConcurrentQueue<string> setConfigQueue = new ConcurrentQueue<string>();
-        public ConcurrentQueue<string> configRequestQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
 
         void Update()
         {
-            CheckSetConfigQueue();
-            CheckConfigRequestQueue();
+            CheckConfigChangeQueue();
+            CheckConfigStateRequestQueue();
         }
 
-        void CheckConfigRequestQueue()
+        #region Config State Request
+
+        void CheckConfigStateRequestQueue()
         {
             string content;
-            if (configRequestQueue.TryPeek(out content))
+            if (configStateRequestQueue.TryPeek(out content))
             {
                 // Parse newly received messages
-                configRequestQueue.TryDequeue(out content);
-                HandleConfigRequest(content);
+                configStateRequestQueue.TryDequeue(out content);
+                HandleConfigStateRequest(content);
             }
         }
 
-        void HandleConfigRequest(string _content) 
+        void HandleConfigStateRequest(string _content) 
         {
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
@@ -41,45 +43,46 @@ namespace Ultraleap.ScreenControl.Service
             if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
             {
                 ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
-                response.message = "Configuration request failed. This is due to a missing or invalid requestID";
+                response.message = "Config state request failed. This is due to a missing or invalid requestID";
 
                 // This is a failed request, do not continue with sendingthe configuration,
                 // the Client will have no way to handle the config state
-                WebSocketClientConnection.Instance.SendConfigurationResponse(response);
+                WebSocketClientConnection.Instance.SendConfigChangeResponse(response);
                 return;
             }
 
-            ScreenControlConfiguration currentConfig = new ScreenControlConfiguration(
+            ConfigState currentConfig = new ConfigState(
                 contentObj.GetValue("requestID").ToString(),
                 ConfigManager.InteractionConfig,
                 ConfigManager.PhysicalConfig);
 
-            WebSocketClientConnection.Instance.SendCurrentConfigState(currentConfig);
+            WebSocketClientConnection.Instance.SendConfigState(currentConfig);
         }
+        #endregion
+        
+        #region Config Change
 
-        #region SetConfigState
-
-        void CheckSetConfigQueue()
+        void CheckConfigChangeQueue()
         {
             string content;
-            if (setConfigQueue.TryPeek(out content))
+            if (configChangeQueue.TryPeek(out content))
             {
                 // Parse newly received messages
-                setConfigQueue.TryDequeue(out content);
-                HandleNewConfigState(content);
+                configChangeQueue.TryDequeue(out content);
+                HandleConfigChange(content);
             }
         }
 
-        void HandleNewConfigState(string _content)
+        void HandleConfigChange(string _content)
         {
-            ResponseToClient response = ValidateNewConfigState(_content);
+            ResponseToClient response = ValidateConfigChange(_content);
 
             if(response.status == "Success")
             {
-                SetConfigState(_content);
+                ChangeConfig(_content);
             }
 
-            WebSocketClientConnection.Instance.SendConfigurationResponse(response);
+            WebSocketClientConnection.Instance.SendConfigChangeResponse(response);
         }
 
         /// <summary>
@@ -87,7 +90,7 @@ namespace Ultraleap.ScreenControl.Service
         /// </summary>
         /// <param name="_content">The whole json content of the request</param>
         /// <returns>Returns a response as to the validity of the _content</returns>
-        ResponseToClient ValidateNewConfigState(string _content)
+        ResponseToClient ValidateConfigChange(string _content)
         {
             ResponseToClient response = new ResponseToClient("", "Success", "", _content);
 
@@ -102,7 +105,7 @@ namespace Ultraleap.ScreenControl.Service
                 return response;
             }
 
-            var configRequestFields = typeof(ScreenControlConfiguration).GetFields();
+            var configRequestFields = typeof(ConfigState).GetFields();
             var interactionFields = typeof(InteractionConfig).GetFields();
             var hoverAndHoldFields = typeof(HoverAndHoldInteractionSettings).GetFields();
             var physicalFields = typeof(PhysicalConfig).GetFields();
@@ -218,9 +221,9 @@ namespace Ultraleap.ScreenControl.Service
             return false;
         }
 
-        void SetConfigState(string _content)
+        void ChangeConfig(string _content)
         {
-            ScreenControlConfiguration combinedData = new ScreenControlConfiguration("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
+            ConfigState combinedData = new ConfigState("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
 
             JsonUtility.FromJsonOverwrite(_content, combinedData);
 

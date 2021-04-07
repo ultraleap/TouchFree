@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Core
 {
-    public enum ConfigState
+    public enum ConfigScreenState
     {
         WELCOME,
         LEAP_MOUNT,
@@ -28,8 +28,8 @@ namespace Ultraleap.ScreenControl.Core
     public class ConfigurationSetupController : MonoBehaviour
     {
         public static ConfigurationSetupController Instance;
-        public static ConfigState currentState;
-        ConfigState previousState;
+        public static ConfigScreenState currentState;
+        ConfigScreenState previousState;
 
         public GameObject clientRootObj;
         public GameObject[] stateRoots;
@@ -38,7 +38,7 @@ namespace Ultraleap.ScreenControl.Core
 
         private PhysicalConfig defaultConfig = null;
 
-        public void ChangeState(ConfigState _newState)
+        public void ChangeState(ConfigScreenState _newState)
         {
             previousState = currentState;
             currentState = _newState;
@@ -109,44 +109,44 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (manualConfigKeyEntered == "C" || Input.GetKeyDown(KeyCode.Escape))
             {
-                if (currentState == ConfigState.WELCOME)
+                if (currentState == ConfigScreenState.WELCOME)
                 {
                     OnMinimizeButtonClick();
                 }
                 else
                 {
-                    ChangeState(ConfigState.WELCOME);
+                    ChangeState(ConfigScreenState.WELCOME);
                     HandManager.Instance.UpdateLeapTrackingMode();
                 }
             }
 
             switch (currentState)
             {
-                case ConfigState.WELCOME:
+                case ConfigScreenState.WELCOME:
                     RunWelcomeScreen();
                     break;
-                case ConfigState.LEAP_MOUNT:
+                case ConfigScreenState.LEAP_MOUNT:
                     RunLeapMount();
                     break;
-                case ConfigState.AUTO_OR_MANUAL:
+                case ConfigScreenState.AUTO_OR_MANUAL:
                     RunAutoOrManual();
                     break;
-                case ConfigState.AUTO_COMPLETE:
+                case ConfigScreenState.AUTO_COMPLETE:
                     RunAutoConfigComplete();
                     break;
-                case ConfigState.MANUAL:
+                case ConfigScreenState.MANUAL:
                     RunManualConfig();
                     break;
-                case ConfigState.SETTINGS:
+                case ConfigScreenState.SETTINGS:
                     RunSettings();
                     break;
-                case ConfigState.FILE_SCREEN:
+                case ConfigScreenState.FILE_SCREEN:
                     RunFileScreen();
                     break;
-                case ConfigState.TEST_CALIBRATION:
+                case ConfigScreenState.TEST_CALIBRATION:
                     RunCalibrationTest();
                     break;
-                case ConfigState.AUTO:
+                case ConfigScreenState.AUTO:
                     RunAutoConfig();
                     break;
             }
@@ -158,16 +158,16 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (manualConfigKeyEntered == "S")
             {
-                ChangeState(ConfigState.LEAP_MOUNT);
+                ChangeState(ConfigScreenState.LEAP_MOUNT);
             }
             else if (manualConfigKeyEntered == "U")
             {
-                ChangeState(ConfigState.SETTINGS);
+                ChangeState(ConfigScreenState.SETTINGS);
             }
 
             if (manualConfigKeyEntered == "F")
             {
-                ChangeState(ConfigState.FILE_SCREEN);
+                ChangeState(ConfigScreenState.FILE_SCREEN);
             }
 
             if (manualConfigKeyEntered == "SUPPORT")
@@ -188,21 +188,21 @@ namespace Ultraleap.ScreenControl.Core
                 // To help with Auto and manual, we set the tracking mode here. This way the user is in the correct mode for running a Setup
                 selectedMountType = MountingType.ABOVE_FACING_USER;
                 HandManager.Instance.SetLeapTrackingMode(selectedMountType);
-                ChangeState(ConfigState.AUTO_OR_MANUAL);
+                ChangeState(ConfigScreenState.AUTO_OR_MANUAL);
             }
             else if (manualConfigKeyEntered == "BELOW")
             {
                 // To help with Auto and manual, we set the tracking mode here. This way the user is in the correct mode for running a Setup
                 selectedMountType = MountingType.BELOW;
                 HandManager.Instance.SetLeapTrackingMode(selectedMountType);
-                ChangeState(ConfigState.AUTO_OR_MANUAL);
+                ChangeState(ConfigScreenState.AUTO_OR_MANUAL);
             }
             else if (manualConfigKeyEntered == "ABOVE_FACING_SCREEN")
             {
                 // To help with Auto and manual, we set the tracking mode here. This way the user is in the correct mode for running a Setup
                 selectedMountType = MountingType.ABOVE_FACING_SCREEN;
                 HandManager.Instance.SetLeapTrackingMode(selectedMountType);
-                ChangeState(ConfigState.AUTO_OR_MANUAL);
+                ChangeState(ConfigScreenState.AUTO_OR_MANUAL);
             }
 
             if (manualConfigKeyEntered == "SETUPGUIDE")
@@ -217,7 +217,7 @@ namespace Ultraleap.ScreenControl.Core
 
             if (manualConfigKeyEntered == "T")
             {
-                ChangeState(ConfigState.TEST_CALIBRATION);
+                ChangeState(ConfigScreenState.TEST_CALIBRATION);
             }
         }
 
@@ -225,7 +225,7 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (manualConfigKeyEntered == "A")
             {
-                ChangeState(ConfigState.AUTO);
+                ChangeState(ConfigScreenState.AUTO);
             }
             else if (manualConfigKeyEntered == "M")
             {
@@ -250,7 +250,7 @@ namespace Ultraleap.ScreenControl.Core
 
                 // dont allow manual to flip the axes again
                 selectedMountType = MountingType.NONE;
-                ChangeState(ConfigState.MANUAL);
+                ChangeState(ConfigScreenState.MANUAL);
             }
         }
 
@@ -267,15 +267,15 @@ namespace Ultraleap.ScreenControl.Core
             if (manualConfigKeyEntered == "M")
             {
                 selectedMountType = MountingType.NONE;
-                ChangeState(ConfigState.MANUAL);
+                ChangeState(ConfigScreenState.MANUAL);
             }
             else if (manualConfigKeyEntered == "A")
             {
-                ChangeState(ConfigState.AUTO);
+                ChangeState(ConfigScreenState.AUTO);
             }
             else if (manualConfigKeyEntered == "T")
             {
-                ChangeState(ConfigState.TEST_CALIBRATION);
+                ChangeState(ConfigScreenState.TEST_CALIBRATION);
             }
         }
 
@@ -284,7 +284,7 @@ namespace Ultraleap.ScreenControl.Core
             // this is handled on the settings config screen object
             if (manualConfigKeyEntered == "T")
             {
-                ChangeState(ConfigState.TEST_CALIBRATION);
+                ChangeState(ConfigScreenState.TEST_CALIBRATION);
             }
 
             if (manualConfigKeyEntered == "DESIGNGUIDE")
@@ -316,7 +316,7 @@ namespace Ultraleap.ScreenControl.Core
 
             if (manualConfigKeyEntered == "R")
             {
-                ChangeState(ConfigState.LEAP_MOUNT);
+                ChangeState(ConfigScreenState.LEAP_MOUNT);
             }
         }
 

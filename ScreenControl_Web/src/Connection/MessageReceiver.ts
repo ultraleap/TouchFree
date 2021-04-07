@@ -118,8 +118,8 @@ export class MessageReceiver {
 
         console.log("Received a WebSocketResponse that did not match a callback." +
             "This is the content of the response: \n Response ID: " + _response.requestID +
-            "\n Original request - " + _response.originalRequest +
-            "\n Status: " + _response.status + "\n Message: " + _response.message);
+            "\n Status: " + _response.status + "\n Message: " + _response.message +
+            "\n Original request - " + _response.originalRequest);
     }
 
     // Function: CheckForConfigState

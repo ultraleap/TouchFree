@@ -32,17 +32,17 @@ namespace Ultraleap.ScreenControl.Client.Connection
         CLIENT_OUTDATED
     }
 
-    // Struct: ConfigStateResponse
+    // Struct: ConfigState
     // This is the structure of data received when requesting the current state of the configuration files
     // from the Service.
     [Serializable]
-    public struct ConfigStateResponse
+    public struct ConfigState
     {
         public string requestID;
         public InteractionConfig interaction;
         public PhysicalConfig physical;
 
-        public ConfigStateResponse(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
+        public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
         {
             requestID = _id;
             interaction = _interaction;
@@ -88,32 +88,32 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
     }
 
-    // Struct: ConfigurationRequest
+    // Struct: ConfigChangeRequest
     // Used to request the current state of the configuration on the Service. This is received as
-    // a <ConfigStateResponse> which should be linked to a <ConfigurationStateCallback> via requestID to make
+    // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
     // use of the data received.
     [Serializable]
-    public struct ConfigurationRequest
+    public struct ConfigChangeRequest
     {
         public string requestID;
 
-        public ConfigurationRequest(string _id)
+        public ConfigChangeRequest(string _id)
         {
             requestID = _id;
         }
     }
 
-    // Struct: ConfigurationStateCallback
-    // Used by <MessageReceiver> to wait for a <ConfigStateResponse> from the Service. Owns an action
-    // with a <ConfigStateResponse> as a parameter to allow users to make use of the new
-    // <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
+    // Struct: ConfigStateCallback
+    // Used by <MessageReceiver> to wait for a <ConfigState> from the Service. Owns an action
+    // with a <ConfigState> as a parameter to allow users to make use of the new
+    // <ConfigState>. Stores a timestamp of its creation so the response has the ability to
     // timeout if not seen within a reasonable timeframe.
-    public struct ConfigurationStateCallback
+    public struct ConfigStateCallback
     {
         public int timestamp;
-        public Action<ConfigStateResponse> callback;
+        public Action<ConfigState> callback;
 
-        public ConfigurationStateCallback(int _timestamp, Action<ConfigStateResponse> _callback)
+        public ConfigStateCallback(int _timestamp, Action<ConfigState> _callback)
         {
             timestamp = _timestamp;
             callback = _callback;

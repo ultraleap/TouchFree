@@ -6,7 +6,7 @@ import {
 import {
     ActionCode,
     CommunicationWrapper,
-    ConfigRequest,
+    ConfigChangeRequest,
     ConfigState,
     ConfigStateCallback,
     ResponseCallback,
@@ -156,8 +156,8 @@ export class ServiceConnection {
         }
 
         let guid: string = uuidgen();
-        let request: ConfigRequest = new ConfigRequest(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
         let message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =

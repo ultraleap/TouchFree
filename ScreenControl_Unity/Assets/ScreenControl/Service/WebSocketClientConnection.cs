@@ -94,18 +94,18 @@ namespace Ultraleap.ScreenControl.Service
             }
         }
 
-        public void SendConfigurationResponse(ResponseToClient _response)
+        public void SendConfigChangeResponse(ResponseToClient _response)
         {
             foreach(ScreenControlWsBehaviour behaviour in activeConnections)
             {
                 if (behaviour.ConnectionState == WebSocketState.Open)
                 {
-                    behaviour.SendConfigurationResponse(_response);
+                    behaviour.SendConfigChangeResponse(_response);
                 }
             }
         }
 
-        public void SendCurrentConfigState(ScreenControlConfiguration _config)
+        public void SendConfigState(ConfigState _config)
         {
             foreach (ScreenControlWsBehaviour behaviour in activeConnections)
             {

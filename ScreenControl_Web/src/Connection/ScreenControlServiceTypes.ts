@@ -37,8 +37,7 @@ export enum Compatibility {
 // When sending a configuration to the Service the structure can comprise of either partial or complete objects.
 //
 // When receiving a configuration from the Service this structure contains ALL configuration data
-export class ConfigState
-{
+export class ConfigState {
     // Variable: requestID
     requestID: string;
     // Variable: interaction
@@ -53,12 +52,11 @@ export class ConfigState
     }
 }
 
-// class: ConfigRequest
+// class: ConfigChangeRequest
 // Used to request the current state of the configuration on the Service. This is received as
 // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
 // use of the data received.
-export class ConfigRequest
-{
+export class ConfigChangeRequest {
     // Variable: requestID
     requestID: string;
 

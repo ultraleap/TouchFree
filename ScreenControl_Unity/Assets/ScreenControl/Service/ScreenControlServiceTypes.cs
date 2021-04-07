@@ -21,13 +21,13 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
     }
 
     [Serializable]
-    public struct ScreenControlConfiguration
+    public struct ConfigState
     {
         public string requestID;
         public Core.InteractionConfig interaction;
         public Core.PhysicalConfig physical;
 
-        public ScreenControlConfiguration(string _id, Core.InteractionConfig _interaction, Core.PhysicalConfig _physical)
+        public ConfigState(string _id, Core.InteractionConfig _interaction, Core.PhysicalConfig _physical)
         {
             requestID = _id;
             interaction = _interaction;

@@ -53,7 +53,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
                 handshakeMessage += $"\"{VersionInfo.API_HEADER_NAME}\": \"{VersionInfo.ApiVersion}\"";
                 handshakeMessage += "}}";
 
-                SendMessage(handshakeMessage, guid, ConnectionResultCallback);
+                SendChangeRequest(handshakeMessage, guid, ConnectionResultCallback);
             };
 
             webSocket.Connect();
@@ -109,7 +109,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
                 case ActionCode.CONFIGURATION_STATE:
-                    ConfigStateResponse configState = JsonUtility.FromJson<ConfigStateResponse>(content);
+                    ConfigState configState = JsonUtility.FromJson<ConfigState>(content);
                     ConnectionManager.messageReceiver.configStateQueue.Enqueue(configState);
                     break;
                 case ActionCode.CONFIGURATION_RESPONSE:
@@ -120,11 +120,11 @@ namespace Ultraleap.ScreenControl.Client.Connection
             }
         }
 
-        // Function: SendMessage
+        // Function: SendChangeRequest
         // Used internally to send or request information from the Service via the <webSocket>. To
         // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
         // via the _callback parameter.
-        internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback)
+        internal void SendChangeRequest(string _message, string _requestID, Action<WebSocketResponse> _callback)
         {
             if (_requestID == "")
             {
@@ -146,38 +146,26 @@ namespace Ultraleap.ScreenControl.Client.Connection
             webSocket.Send(_message);
         }
 
-        // Function: SendMessage
-        // Used internally to send or request information from the Service via the <webSocket>. To
-        // be given a pre-made _message and _requestID. Provides an asynchronous <ConfigStateResponse>
-        // via the _callback parameter.
-        internal void SendMessage(string _message, string _requestID, Action<ConfigStateResponse> _callback)
-        {
-            if (_requestID == "")
-            {
-                Debug.LogError("Request failed. This is due to a missing or invalid requestID");
-                return;
-            }
-
-            if (_callback != null)
-            {
-                ConnectionManager.messageReceiver.configStateCallbacks.Add(_requestID, new ConfigurationStateCallback(DateTime.Now.Millisecond, _callback));
-            }
-
-            webSocket.Send(_message);
-        }
-
-        public void RequestConfigState(Action<ConfigStateResponse> _callback)
+        // Function: RequestConfigState
+        // Used to request a <ConfigState> from the Service via the <webSocket>.
+        // Provides an asynchronous <ConfigState> via the _callback parameter.
+        public void RequestConfigState(Action<ConfigState> _callback)
         {
             Guid requestGUID = Guid.NewGuid();
             string requestID = requestGUID.ToString();
-            ConfigurationRequest request = new ConfigurationRequest(requestID);
+            ConfigChangeRequest request = new ConfigChangeRequest(requestID);
 
-            CommunicationWrapper<ConfigurationRequest> message =
-                new CommunicationWrapper<ConfigurationRequest>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
+            CommunicationWrapper<ConfigChangeRequest> message =
+                new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
 
             string jsonMessage = JsonUtility.ToJson(message);
 
-            SendMessage(JsonUtility.ToJson(message), requestID, _callback);
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _callback));
+            }
+
+            webSocket.Send(jsonMessage);
         }
     }
 }
