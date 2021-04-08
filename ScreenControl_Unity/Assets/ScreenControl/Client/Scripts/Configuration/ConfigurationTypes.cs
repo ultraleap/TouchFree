@@ -18,15 +18,15 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     [System.Serializable]
     public class InteractionConfig
     {
-        // Property: UseScrollingOrDragging
+        // Property: useScrollingOrDragging
         // If true, allows interactions to send up/down events seperately, enabling dragging or
         // touchscreen-like scrolling behaviours. If false, up/down events will be sent together,
         // and every down will function like a click of its own.
-        public bool UseScrollingOrDragging
+        public bool useScrollingOrDragging
         {
             get
             {
-                return _UseScrollingOrDragging;
+                return UseScrollingOrDragging;
             }
             set
             {
@@ -39,19 +39,19 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     configValues.Add("UseScrollingOrDragging", value);
                 }
 
-                _UseScrollingOrDragging = value;
+                UseScrollingOrDragging = value;
             }
         }
 
-        // Property: DeadzoneRadius
+        // Property: deadzoneRadius
         // All interactions use a small deadzone to stabilise the position of the cursor, to prevent
         // small user movements from making the cursor shake in place. This setting controls the
         // radius of that deadzone.
-        public float DeadzoneRadius
+        public float deadzoneRadius
         {
             get
             {
-                return _DeadzoneRadius;
+                return DeadzoneRadius;
             }
             set
             {
@@ -64,17 +64,17 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     configValues.Add("DeadzoneRadius", value);
                 }
 
-                _DeadzoneRadius = value;
+                DeadzoneRadius = value;
             }
         }
 
-        // Property: InteractionType
+        // Property: interactionType
         // This represents the type of interaction currently selected
-        public InteractionType InteractionType
+        public InteractionType interactionType
         {
             get
             {
-                return _InteractionType;
+                return InteractionType;
             }
             set
             {
@@ -87,7 +87,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     configValues.Add("InteractionType", value);
                 }
 
-                _InteractionType = value;
+                InteractionType = value;
             }
         }
 
@@ -100,9 +100,9 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // *DO NOT MODIFY THIS DICTIONARY MANUALLY*
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
 
-        private bool _UseScrollingOrDragging;
-        private float _DeadzoneRadius;
-        private InteractionType _InteractionType;
+        [SerializeField] private bool UseScrollingOrDragging;
+        [SerializeField] private float DeadzoneRadius;
+        [SerializeField] private InteractionType InteractionType;
     }
 
     // Class: HoverAndHoldInteractionSettings
@@ -117,15 +117,15 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     [System.Serializable]
     public class HoverAndHoldInteractionSettings
     {
-        // Property: HoverStartTimeS
+        // Property: hoverStartTimeS
         // This determines how long (in seconds) the user must hold their hand in place before the
         // interaction will begin. If the hand remains in place until the interaction completes,
         // a click event will be sent.
-        public float HoverStartTimeS
+        public float hoverStartTimeS
         {
             get
             {
-                return _HoverStartTimeS;
+                return HoverStartTimeS;
             }
             set
             {
@@ -138,19 +138,19 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     configValues.Add("HoverStartTimeS", value);
                 }
 
-                _HoverStartTimeS = value;
+                HoverStartTimeS = value;
             }
         }
 
-        // Property: HoverCompleteTimeS
+        // Property: hoverCompleteTimeS
         // This determines how long (in seconds) the user must hold their hand in place after the
         // interaction has begun before the interaction will complete, and a click event will be
         // sent.
-        public float HoverCompleteTimeS
+        public float hoverCompleteTimeS
         {
             get
             {
-                return _HoverCompleteTimeS;
+                return HoverCompleteTimeS;
             }
             set
             {
@@ -163,7 +163,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     configValues.Add("HoverCompleteTimeS", value);
                 }
 
-                _HoverCompleteTimeS = value;
+                HoverCompleteTimeS = value;
             }
         }
 
@@ -174,11 +174,11 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // *DO NOT MODIFY THIS DICTIONARY MANUALLY*
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
 
-        private float _HoverStartTimeS;
-        private float _HoverCompleteTimeS;
+        [SerializeField] private float HoverStartTimeS;
+        [SerializeField] private float HoverCompleteTimeS;
     }
 
-    // Class: PhysicalConfig
+    // Class: physicalConfig
     // This class is a container for all of the settings related to the physical setup of the
     // hardware, both the tracking camera and the display.
     //
@@ -191,14 +191,14 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     [System.Serializable]
     public class PhysicalConfig
     {
-        // Property: ScreenHeightM
+        // Property: screenHeightM
         // The height of the screen in meters. This is needed in order to determine the relationship
         // between hand location in the real world and pixel locations on screen.
-        public float ScreenHeightM
+        public float screenHeightM
         {
             get
             {
-                return _ScreenHeightM;
+                return ScreenHeightM;
             }
             set
             {
@@ -211,11 +211,11 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                     configValues.Add("ScreenHeightM", value);
                 }
 
-                _ScreenHeightM = value;
+                ScreenHeightM = value;
             }
         }
 
-        // Property: LeapPositionRelativeToScreenBottomM
+        // Property: leapPositionRelativeToScreenBottomM
         // The position (measured in meters) in 3d space of the Leap Motion camera relative to the
         // center of the bottom edge of the screen.
         //
@@ -223,11 +223,11 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // X = left/right (right = positive)
         // Y = up/down (up = positive)
         // Z = forward/backward (forward = positive)
-        public Vector3 LeapPositionRelativeToScreenBottomM
+        public Vector3 leapPositionRelativeToScreenBottomM
         {
             get
             {
-                return _LeapPositionRelativeToScreenBottomM;
+                return LeapPositionRelativeToScreenBottomM;
             }
             set
             {
@@ -239,18 +239,18 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                 {
                     configValues.Add("LeapPositionRelativeToScreenBottomM", value);
                 }
-                _LeapPositionRelativeToScreenBottomM = value;
+                LeapPositionRelativeToScreenBottomM = value;
             }
         }
 
-        // Property: LeapRotationD
+        // Property: leapRotationD
         // The rotation of the Leap Motion Camera relative to the unity world space, measured in
         // degrees
-        public Vector3 LeapRotationD
+        public Vector3 leapRotationD
         {
             get
             {
-                return _LeapRotationD;
+                return LeapRotationD;
             }
             set
             {
@@ -262,18 +262,18 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                 {
                     configValues.Add("LeapRotationD", value);
                 }
-                _LeapRotationD = value;
+                LeapRotationD = value;
             }
         }
 
-        // Property: ScreenRotationD
+        // Property: screenRotationD
         // The rotation of the physical screen relative to the unity world space, measured in
         // degrees
-        public float ScreenRotationD
+        public float screenRotationD
         {
             get
             {
-                return _ScreenRotationD;
+                return ScreenRotationD;
             }
             set
             {
@@ -285,7 +285,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
                 {
                     configValues.Add("ScreenRotationD", value);
                 }
-                _ScreenRotationD = value;
+                ScreenRotationD = value;
             }
         }
 
@@ -295,9 +295,9 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // *DO NOT MODIFY THIS DICTIONARY MANUALLY*
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
 
-        private float _ScreenHeightM = 0.33f;
-        private Vector3 _LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
-        private Vector3 _LeapRotationD = Vector3.zero;
-        private float _ScreenRotationD = 0f;
+        [SerializeField] private float ScreenHeightM = 0.33f;
+        [SerializeField] private Vector3 LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
+        [SerializeField] private Vector3 LeapRotationD = Vector3.zero;
+        [SerializeField] private float ScreenRotationD = 0f;
     }
 }
