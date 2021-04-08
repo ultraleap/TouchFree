@@ -78,8 +78,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\IconInactive.ico" />
-    <None Include="Resources\IconActive.ico" />
+    <Content Include="Resources\IconInactive.ico" />
+    <Content Include="Resources\IconActive.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
