@@ -147,12 +147,11 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: RequestConfigState
-        // Used to request a <ConfigState> from the Service via the <webSocket>.
+        // Used internally to request a <ConfigState> from the Service via the <webSocket>.
         // Provides an asynchronous <ConfigState> via the _callback parameter.
-        public void RequestConfigState(Action<ConfigState> _callback)
+        internal void RequestConfigState(Action<ConfigState> _callback)
         {
-            Guid requestGUID = Guid.NewGuid();
-            string requestID = requestGUID.ToString();
+            string requestID = Guid.NewGuid().ToString();
             ConfigChangeRequest request = new ConfigChangeRequest(requestID);
 
             CommunicationWrapper<ConfigChangeRequest> message =

@@ -144,12 +144,12 @@ export class ServiceConnection {
         this.webSocket.send(_message);
     }
 
-    // Function: SendConfigStateRequest
-    // Used to request information from the Service via the <webSocket>. Provides an asynchronous
-    // <ConfigState> via the _callback parameter.
+    // Function: RequestConfigState
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <ConfigState> via the _callback parameter.
     //
     // If your _callBack requires context it should be bound to that context via .bind()
-    SendConfigStateRequest(_callback: (detail: ConfigState) => void): void {
+    RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
             console.error("Request failed. This is due to a missing callback");
             return;
