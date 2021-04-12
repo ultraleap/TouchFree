@@ -1,5 +1,4 @@
 import {
-    ClientInputAction,
     VersionInfo,
     WebsocketInputAction
 } from '../ScreenControlTypes';
@@ -14,7 +13,6 @@ import {
 } from './ScreenControlServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
-import { Guid } from 'guid-typescript';
 
 // Class: ServiceConnection
 // This represents a connection to a ScreenControl Service. It should be created by a
