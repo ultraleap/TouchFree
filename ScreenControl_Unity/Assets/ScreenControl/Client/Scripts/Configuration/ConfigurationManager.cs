@@ -11,10 +11,20 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     // service. Makes use of the static <ConnectionManager> for communication with the Service.
     public static class ConfigurationManager
     {
-        // Function: SetConfigState
+        // Function: RequestConfigState
+        // Used to request a <ConfigState> from the Service via the <webSocket>.
+        // Provides an asynchronous <ConfigState> via the _callback parameter.
+        public static void RequestConfigState(Action<ConfigState> _callback)
+        {
+            ConnectionManager.serviceConnection.RequestConfigState(_callback);
+        }
+
+        #region Request Config Change
+
+        // Function: RequestConfigChange
         // Takes in an <InteractionConfig> and a <PhysicalConfig>, transforms them both into the
         // appropriate form to go over the websocket, before sending it through the <ConnectionManager>
-        public static void SetConfigState(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
+        public static void RequestConfigChange(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {
             string action = ActionCode.SET_CONFIGURATION_STATE.ToString();
             Guid requestGUID = Guid.NewGuid();
@@ -40,20 +50,6 @@ namespace Ultraleap.ScreenControl.Client.Configuration
             jsonContent += "}}";
 
             ConnectionManager.serviceConnection.SendMessage(jsonContent, requestID, _callback);
-        }
-
-        // Function: SetConfigState
-        // A variant of the above function used to pass only a <PhysicalConfig> to the Service.
-        public static void SetConfigState(PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
-        {
-            SetConfigState(null, _physical, _callback);
-        }
-
-        // Function: SetConfigState
-        // A variant of the above function used to pass only an <InteractionConfig> to the Service.
-        public static void SetConfigState(InteractionConfig _interaction, Action<WebSocketResponse> _callback = null)
-        {
-            SetConfigState(_interaction, null, _callback);
         }
 
         // Group: Private Serialization Functions
@@ -121,5 +117,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
             return newContent;
         }
+
+        #endregion
     }
 }

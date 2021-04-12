@@ -50,10 +50,20 @@ namespace Ultraleap.ScreenControl.Service
             Send(jsonMessage);
         }
 
-        public void SendConfigurationResponse(ResponseToClient _response)
+        public void SendConfigChangeResponse(ResponseToClient _response)
         {
             CommunicationWrapper<ResponseToClient> message =
                 new CommunicationWrapper<ResponseToClient>(ActionCode.CONFIGURATION_RESPONSE.ToString(), _response);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            Send(jsonMessage);
+        }
+
+        public void SendConfigState(ConfigState _configState)
+        {
+            CommunicationWrapper<ConfigState> message =
+                new CommunicationWrapper<ConfigState>(ActionCode.CONFIGURATION_STATE.ToString(), _configState);
 
             string jsonMessage = JsonUtility.ToJson(message);
 
@@ -129,10 +139,10 @@ namespace Ultraleap.ScreenControl.Service
             switch (action)
             {
                 case ActionCode.SET_CONFIGURATION_STATE:
-                    clientConnection.receiverQueue.setConfigQueue.Enqueue(content);
+                    clientConnection.receiverQueue.configChangeQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
-                    Debug.LogError("Handling " + action + " is not yet implemented.");
+                    clientConnection.receiverQueue.configStateRequestQueue.Enqueue(content);
                     break;
                 case ActionCode.INPUT_ACTION:
                 case ActionCode.CONFIGURATION_STATE:

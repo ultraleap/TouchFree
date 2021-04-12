@@ -45,7 +45,7 @@ namespace Ultraleap.ScreenControl.Core
 
         public void SetCursorState(bool _state)
         {
-            //clientRootObj.SetActive(_state);
+            clientRootObj.SetActive(_state);
         }
 
         void OnApplicationFocus(bool hasFocus)
@@ -56,7 +56,7 @@ namespace Ultraleap.ScreenControl.Core
             }
             else
             {
-                //clientRootObj.SetActive(hasFocus);
+                clientRootObj.SetActive(hasFocus);
             }
         }
 
@@ -71,11 +71,11 @@ namespace Ultraleap.ScreenControl.Core
             if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
             {
-                //clientRootObj.SetActive(false);
+                clientRootObj.SetActive(false);
             }
             else
             {
-                //clientRootObj.SetActive(true);
+                clientRootObj.SetActive(true);
             }
         }
 

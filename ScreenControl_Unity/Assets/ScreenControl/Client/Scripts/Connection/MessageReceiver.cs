@@ -36,6 +36,14 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // A dictionary of unique request IDs and <ResponseCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ResponseCallback> responseCallbacks = new Dictionary<string, ResponseCallback>();
 
+        // Variable: configStateQueue
+        // A queue of <ConfigState> that have been received from the Service.
+        public ConcurrentQueue<ConfigState> configStateQueue = new ConcurrentQueue<ConfigState>();
+
+        // Variable: configStateCallbacks
+        // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
+        public Dictionary<string, ConfigStateCallback> configStateCallbacks = new Dictionary<string, ConfigStateCallback>();
+
         // Group: Functions
 
         // Function: Start
@@ -50,6 +58,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         void Update()
         {
             CheckForResponse();
+            CheckForConfigState();
             CheckForAction();
         }
 
@@ -77,6 +86,41 @@ namespace Ultraleap.ScreenControl.Client.Connection
                 if (callback.Key == _response.requestID)
                 {
                     callback.Value.callback.Invoke(_response);
+                    responseCallbacks.Remove(callback.Key);
+                    return;
+                }
+            }
+
+            Debug.LogWarning("Received a WebSocketResponse that did not match a callback." +
+                "This is the content of the response: \n Response ID: " + _response.requestID +
+                "\n Status: " + _response.status + "\n Message: " + _response.message +
+                "\n Original request - " + _response.originalRequest);
+        }
+
+        // Function: CheckForConfigState
+        // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleConfigState> if there is one.
+        void CheckForConfigState()
+        {
+            ConfigState configState;
+
+            if (configStateQueue.TryPeek(out configState))
+            {
+                // Parse newly received messages
+                configStateQueue.TryDequeue(out configState);
+                HandleConfigState(configState);
+            }
+        }
+
+        // Function: HandleConfigState
+        // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
+        // match, calls the callback action in the matching <ConfigStateCallback>.
+        void HandleConfigState(ConfigState _configState)
+        {
+            foreach (KeyValuePair<string, ConfigStateCallback> callback in configStateCallbacks)
+            {
+                if (callback.Key == _configState.requestID)
+                {
+                    callback.Value.callback.Invoke(_configState);
                     responseCallbacks.Remove(callback.Key);
                     break;
                 }
@@ -118,7 +162,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Function: ClearUnresponsiveCallbacks
         // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
-        // expired from <responseCallbacks>.
+        // expired from <responseCallbacks>. Also clears all <ConfigStateCallback> that are
+        // expired from <configStateCallbacks>.
         IEnumerator ClearUnresponsiveCallbacks()
         {
             WaitForSeconds waitTime = new WaitForSeconds(callbackClearTimer);
@@ -136,6 +181,20 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     if (responseCallbacks[key].timestamp < lastClearTime)
                     {
                         responseCallbacks.Remove(key);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                keys = new List<string>(configStateCallbacks.Keys);
+
+                foreach (string key in keys)
+                {
+                    if (configStateCallbacks[key].timestamp < lastClearTime)
+                    {
+                        configStateCallbacks.Remove(key);
                     }
                     else
                     {

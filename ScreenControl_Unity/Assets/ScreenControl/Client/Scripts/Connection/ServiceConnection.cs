@@ -108,10 +108,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     ClientInputAction cInput = new ClientInputAction(wsInput);
                     ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
-
                 case ActionCode.CONFIGURATION_STATE:
+                    ConfigState configState = JsonUtility.FromJson<ConfigState>(content);
+                    ConnectionManager.messageReceiver.configStateQueue.Enqueue(configState);
                     break;
-
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
@@ -144,6 +144,27 @@ namespace Ultraleap.ScreenControl.Client.Connection
             }
 
             webSocket.Send(_message);
+        }
+
+        // Function: RequestConfigState
+        // Used internally to request a <ConfigState> from the Service via the <webSocket>.
+        // Provides an asynchronous <ConfigState> via the _callback parameter.
+        internal void RequestConfigState(Action<ConfigState> _callback)
+        {
+            string requestID = Guid.NewGuid().ToString();
+            ConfigChangeRequest request = new ConfigChangeRequest(requestID);
+
+            CommunicationWrapper<ConfigChangeRequest> message =
+                new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _callback));
+            }
+
+            webSocket.Send(jsonMessage);
         }
     }
 }
