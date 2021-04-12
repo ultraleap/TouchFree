@@ -18,12 +18,12 @@ import { Guid } from "guid-typescript";
 // Service. Makes use of the static <ConnectionManager> for communication with the Service.
 export class ConfigurationManager {
 
-    // Function: SetConfigState
+    // Function: RequestConfigChange
     // Optionally takes in an <InteractionConfig> or a <PhysicalConfig> and sends them through the <ConnectionManager>
     // 
     // Provide a _callBack if you require confirmation that your settings were used correctly.
     // If your _callBack requires context it should be bound to that context via .bind().
-    public static SetConfigState(
+    public static RequestConfigChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
         _callback: (detail: WebSocketResponse) => void): void {
@@ -37,5 +37,19 @@ export class ConfigurationManager {
         let jsonContent = JSON.stringify(request);
 
         ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
+    }
+
+    // Function: RequestConfigState
+    // Used to request information from the Service via the <ConnectionManager>. Provides an asynchronous
+    // <ConfigState> via the _callback parameter.
+    //
+    // If your _callBack requires context it should be bound to that context via .bind()
+    public static RequestConfigState(_callback: (detail: ConfigState) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        ConnectionManager.serviceConnection()?.RequestConfigState(_callback);
     }
 }

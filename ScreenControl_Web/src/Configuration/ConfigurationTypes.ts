@@ -9,6 +9,9 @@
 //
 // Like all of the Settings classes found in this file, all members are optional. If you do
 // not modify a member of this class, its value will not change when the instance is sent to
+
+import { InteractionType } from "../ScreenControlTypes";
+
 // ScreenControl Service.
 export interface InteractionConfig {
     // Property: UseScrollingOrDragging
@@ -22,6 +25,10 @@ export interface InteractionConfig {
     // small user movements from making the cursor shake in place. This setting controls the
     // radius of that deadzone.
     DeadzoneRadius: number;
+
+    // Property: InteractionType
+    // This represents the type of interaction currently selected
+    InteractionType: InteractionType;
 
     // Interaction-specific settings
     HoverAndHold: Partial<HoverAndHoldInteractionSettings>;

@@ -32,17 +32,17 @@ namespace Ultraleap.ScreenControl.Client.Connection
         CLIENT_OUTDATED
     }
 
-    // Struct: ConfigStateResponse
+    // Struct: ConfigState
     // This is the structure of data received when requesting the current state of the configuration files
     // from the Service.
     [Serializable]
-    public struct ConfigStateResponse
+    public struct ConfigState
     {
         public string requestID;
         public InteractionConfig interaction;
         public PhysicalConfig physical;
 
-        public ConfigStateResponse(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
+        public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
         {
             requestID = _id;
             interaction = _interaction;
@@ -85,6 +85,50 @@ namespace Ultraleap.ScreenControl.Client.Connection
         {
             timestamp = _timestamp;
             callback = _callback;
+        }
+    }
+
+    // Struct: ConfigChangeRequest
+    // Used to request the current state of the configuration on the Service. This is received as
+    // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
+    // use of the data received.
+    [Serializable]
+    public struct ConfigChangeRequest
+    {
+        public string requestID;
+
+        public ConfigChangeRequest(string _id)
+        {
+            requestID = _id;
+        }
+    }
+
+    // Struct: ConfigStateCallback
+    // Used by <MessageReceiver> to wait for a <ConfigState> from the Service. Owns an action
+    // with a <ConfigState> as a parameter to allow users to make use of the new
+    // <ConfigState>. Stores a timestamp of its creation so the response has the ability to
+    // timeout if not seen within a reasonable timeframe.
+    public struct ConfigStateCallback
+    {
+        public int timestamp;
+        public Action<ConfigState> callback;
+
+        public ConfigStateCallback(int _timestamp, Action<ConfigState> _callback)
+        {
+            timestamp = _timestamp;
+            callback = _callback;
+        }
+    }
+
+    internal struct CommunicationWrapper<T>
+    {
+        public string action;
+        public T content;
+
+        public CommunicationWrapper(string _actionCode, T _content)
+        {
+            action = _actionCode;
+            content = _content;
         }
     }
 }

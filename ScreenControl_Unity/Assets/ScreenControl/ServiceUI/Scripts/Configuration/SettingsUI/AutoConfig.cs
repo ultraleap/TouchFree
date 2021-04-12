@@ -82,7 +82,7 @@ namespace Ultraleap.ScreenControl.Core
             ConfigManager.PhysicalConfig.SaveConfig();
 
             ConfigurationSetupController.selectedMountType = MountingType.NONE;
-            ConfigurationSetupController.Instance.ChangeState(ConfigState.AUTO_COMPLETE);
+            ConfigurationSetupController.Instance.ChangeState(ConfigScreenState.AUTO_COMPLETE);
         }
 
         public void CalculateConfigurationValues(Vector3 bottomPos, Vector3 topPos)

@@ -6,7 +6,7 @@ export class VersionInfo
 
     // Variable: ApiVersion
     // The current API version of the Client.
-    public static readonly ApiVersion: string = "1.0.1";
+    public static readonly ApiVersion: string = "1.0.2";
 
     // Variable: API_HEADER_NAME
     // The name of the header we wish the Service to compare our version with.

@@ -1,11 +1,13 @@
 import {
-    ClientInputAction,
     VersionInfo,
     WebsocketInputAction
 } from '../ScreenControlTypes';
 import {
     ActionCode,
     CommunicationWrapper,
+    ConfigChangeRequest,
+    ConfigState,
+    ConfigStateCallback,
     ResponseCallback,
     WebSocketResponse
 } from './ScreenControlServiceTypes';
@@ -98,6 +100,8 @@ export class ServiceConnection {
                 break;
 
             case ActionCode.CONFIGURATION_STATE:
+                let configState: ConfigState = looseData.content;
+                ConnectionManager.messageReceiver.configStateQueue.push(configState);
                 break;
 
             case ActionCode.VERSION_HANDSHAKE_RESPONSE:
@@ -136,5 +140,27 @@ export class ServiceConnection {
         }
 
         this.webSocket.send(_message);
+    }
+
+    // Function: RequestConfigState
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <ConfigState> via the _callback parameter.
+    //
+    // If your _callBack requires context it should be bound to that context via .bind()
+    RequestConfigState(_callback: (detail: ConfigState) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        let guid: string = uuidgen();
+        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        let message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.configStateCallbacks[guid] =
+            new ConfigStateCallback(Date.now(), _callback);
+
+        this.webSocket.send(message);
     }
 }

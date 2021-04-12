@@ -13,31 +13,76 @@ namespace Ultraleap.ScreenControl.Service
     [DisallowMultipleComponent]
     public class WebSocketReceiver : MonoBehaviour
     {
-        public ConcurrentQueue<string> setConfigQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
 
         void Update()
         {
+            CheckConfigChangeQueue();
+            CheckConfigStateRequestQueue();
+        }
+
+        #region Config State Request
+
+        void CheckConfigStateRequestQueue()
+        {
             string content;
-            if (setConfigQueue.TryPeek(out content))
+            if (configStateRequestQueue.TryPeek(out content))
             {
                 // Parse newly received messages
-                setConfigQueue.TryDequeue(out content);
-                HandleNewConfigState(content);
+                configStateRequestQueue.TryDequeue(out content);
+                HandleConfigStateRequest(content);
             }
         }
 
-        #region SetConfigState
-
-        void HandleNewConfigState(string _content)
+        void HandleConfigStateRequest(string _content) 
         {
-            ResponseToClient response = ValidateNewConfigState(_content);
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+
+            // Explicitly check for requestID because it is the only required key
+            if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
+            {
+                ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
+                response.message = "Config state request failed. This is due to a missing or invalid requestID";
+
+                // This is a failed request, do not continue with sendingthe configuration,
+                // the Client will have no way to handle the config state
+                WebSocketClientConnection.Instance.SendConfigChangeResponse(response);
+                return;
+            }
+
+            ConfigState currentConfig = new ConfigState(
+                contentObj.GetValue("requestID").ToString(),
+                ConfigManager.InteractionConfig,
+                ConfigManager.PhysicalConfig);
+
+            WebSocketClientConnection.Instance.SendConfigState(currentConfig);
+        }
+        #endregion
+        
+        #region Config Change
+
+        void CheckConfigChangeQueue()
+        {
+            string content;
+            if (configChangeQueue.TryPeek(out content))
+            {
+                // Parse newly received messages
+                configChangeQueue.TryDequeue(out content);
+                HandleConfigChange(content);
+            }
+        }
+
+        void HandleConfigChange(string _content)
+        {
+            ResponseToClient response = ValidateConfigChange(_content);
 
             if(response.status == "Success")
             {
-                SetConfigState(_content);
+                ChangeConfig(_content);
             }
 
-            WebSocketClientConnection.Instance.SendConfigurationResponse(response);
+            WebSocketClientConnection.Instance.SendConfigChangeResponse(response);
         }
 
         /// <summary>
@@ -45,7 +90,7 @@ namespace Ultraleap.ScreenControl.Service
         /// </summary>
         /// <param name="_content">The whole json content of the request</param>
         /// <returns>Returns a response as to the validity of the _content</returns>
-        ResponseToClient ValidateNewConfigState(string _content)
+        ResponseToClient ValidateConfigChange(string _content)
         {
             ResponseToClient response = new ResponseToClient("", "Success", "", _content);
 
@@ -60,7 +105,7 @@ namespace Ultraleap.ScreenControl.Service
                 return response;
             }
 
-            var configRequestFields = typeof(ConfigRequest).GetFields();
+            var configRequestFields = typeof(ConfigState).GetFields();
             var interactionFields = typeof(InteractionConfig).GetFields();
             var hoverAndHoldFields = typeof(HoverAndHoldInteractionSettings).GetFields();
             var physicalFields = typeof(PhysicalConfig).GetFields();
@@ -176,9 +221,9 @@ namespace Ultraleap.ScreenControl.Service
             return false;
         }
 
-        void SetConfigState(string _content)
+        void ChangeConfig(string _content)
         {
-            ConfigRequest combinedData = new ConfigRequest("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
+            ConfigState combinedData = new ConfigState("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
 
             JsonUtility.FromJsonOverwrite(_content, combinedData);
 
