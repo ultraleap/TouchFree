@@ -99,7 +99,7 @@ namespace Ultraleap.ScreenControl.Core
             {
                 clientRootObj.SetActive(false);
             }
-            else if(currentState != ConfigState.AUTO)
+            else if(currentState != ConfigScreenState.AUTO)
             {
                 clientRootObj.SetActive(true);
             }
