@@ -35,7 +35,7 @@ namespace Ultraleap.ScreenControl.Core
             remove { Instance._OnConfigFileUpdated -= value; }
         }
 
-        public static readonly string ConfigFileDirectory = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData), "Ultraleap/ScreenControl/Configuation/");
+        public static readonly string ConfigFileDirectory = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData), "Ultraleap/ScreenControl/Configuration/");
 
         public abstract string ConfigFileName { get; }
 

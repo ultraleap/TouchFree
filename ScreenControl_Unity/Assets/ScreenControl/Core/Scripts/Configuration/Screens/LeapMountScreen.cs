@@ -15,6 +15,9 @@ namespace Ultraleap.ScreenControl.Core
 
         public GameObject screenTopOption;
 
+        [Space]
+        public GameObject quickOrManualScreen;
+
         private void OnEnable()
         {
             // only show users the screentop option if they have the correct leap service
@@ -102,6 +105,30 @@ namespace Ultraleap.ScreenControl.Core
             yield return new WaitForSeconds(_wait);
 
             guideWarning.SetActive(true);
+        }
+
+        public void SetMode_AboveFacingUser()
+        {
+            ScreenManager.Instance.selectedMountType = MountingType.ABOVE_FACING_USER;
+            SetTrackingModeAndContinue();
+        }
+
+        public void SetMode_AboveFacingScreen()
+        {
+            ScreenManager.Instance.selectedMountType = MountingType.ABOVE_FACING_SCREEN;
+            SetTrackingModeAndContinue();
+        }
+
+        public void SetMode_Below()
+        {
+            ScreenManager.Instance.selectedMountType = MountingType.BELOW;
+            SetTrackingModeAndContinue();
+        }
+
+        void SetTrackingModeAndContinue()
+        {
+            HandManager.Instance.SetLeapTrackingMode(ScreenManager.Instance.selectedMountType);
+            ScreenManager.Instance.ChangeScreen(quickOrManualScreen);
         }
     }
 }

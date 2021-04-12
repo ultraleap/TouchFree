@@ -5,7 +5,7 @@ using Leap.Unity;
 
 namespace Ultraleap.ScreenControl.Core
 {
-    public class AutoConfig : MonoBehaviour
+    public class QuickSetupScreen : MonoBehaviour
     {
         public GameObject step1;
         public GameObject step2;
@@ -20,14 +20,16 @@ namespace Ultraleap.ScreenControl.Core
 
         int noTrackingAttempts = 0;
 
+        public GameObject completeScreen;
+
         private void OnEnable()
         {
-            // reset the auto config
+            // reset the quick setup
             bottomPosM = Vector3.zero;
             topPosM = Vector3.zero;
             step1.SetActive(true);
             step2.SetActive(false);
-            ConfigurationSetupController.Instance.SetCursorState(false);
+            ScreenManager.Instance.SetCursorState(false);
             HandManager.Instance.useTrackingTransform = false;
             DisplayTrackingLost(false);
             setupGuideButton.SetActive(false);
@@ -36,7 +38,8 @@ namespace Ultraleap.ScreenControl.Core
 
         private void OnDisable()
         {
-            ConfigurationSetupController.Instance.SetCursorState(true);
+            HandManager.Instance.useTrackingTransform = true;
+            ScreenManager.Instance.SetCursorState(true);
         }
 
         private void Update()
@@ -48,7 +51,7 @@ namespace Ultraleap.ScreenControl.Core
                     if (HandManager.Instance.PrimaryHand != null)
                     {
                         SetBottomPos(HandManager.Instance.PrimaryHand.GetIndex().TipPosition.ToVector3());
-                        // display second autoconfig screen
+                        // display second quick setup screen
                         step1.SetActive(false);
                         step2.SetActive(true);
                     }
@@ -63,7 +66,7 @@ namespace Ultraleap.ScreenControl.Core
                     if (HandManager.Instance.PrimaryHand != null)
                     {
                         SetTopPos(HandManager.Instance.PrimaryHand.GetIndex().TipPosition.ToVector3());
-                        CompleteAutoConfig(bottomPosM, topPosM);
+                        CompleteQuickSetup(bottomPosM, topPosM);
                     }
                     else
                     {
@@ -74,15 +77,14 @@ namespace Ultraleap.ScreenControl.Core
             }
         }
 
-        void CompleteAutoConfig(Vector3 bottomPos, Vector3 topPos)
+        void CompleteQuickSetup(Vector3 bottomPos, Vector3 topPos)
         {
             ConfigManager.PhysicalConfig.SetAllValuesToDefault();
 
             CalculateConfigurationValues(bottomPos, topPos);
             ConfigManager.PhysicalConfig.SaveConfig();
 
-            ConfigurationSetupController.selectedMountType = MountingType.NONE;
-            ConfigurationSetupController.Instance.ChangeState(ConfigState.AUTO_COMPLETE);
+            ScreenManager.Instance.ChangeScreen(completeScreen);
         }
 
         public void CalculateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
@@ -111,8 +113,8 @@ namespace Ultraleap.ScreenControl.Core
             // We want to calculate the Vector from the bottom of the screen to the Leap in this rotated co-ord system.
 
             Vector3 rotationAngles = leapRotation;
-            if (ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
-                    ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_USER)
+            if (ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
+                    ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_USER)
             {
                 // In overhead mode, the stored 'x' angle is inverted so that positive angles always mean
                 // the camera is pointed towards the screen. Multiply by -1 here so that it can be used
@@ -156,8 +158,8 @@ namespace Ultraleap.ScreenControl.Core
             Vector3 directionBottomToTop = topCentre - bottomCentre;
             Vector3 rotation = Vector3.zero;
 
-            if (ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
-                    ConfigurationSetupController.selectedMountType == MountingType.ABOVE_FACING_USER)
+            if (ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
+                    ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_USER)
             {
                 rotation.x = -Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.right) + 180;
                 rotation.z = 180;

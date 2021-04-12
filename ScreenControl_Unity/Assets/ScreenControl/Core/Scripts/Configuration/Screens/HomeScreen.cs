@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Ultraleap.ScreenControl.Core
 {
-    public class WelcomeScreen : MonoBehaviour
+    public class HomeScreen : MonoBehaviour
     {
         public GameObject trackingServiceWarning;
         bool serviceWarningForceClosed = false;
@@ -13,6 +13,11 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject leapDisconnectedNotification;
 
         bool delayingUpdates = false;
+
+        [Space]
+        public GameObject setupCameraScreen;
+        public GameObject interactionSettingsScreen;
+        public GameObject advancedSettingsScreen;
 
         private void OnEnable()
         {
@@ -72,6 +77,21 @@ namespace Ultraleap.ScreenControl.Core
         {
             trackingServiceWarning.SetActive(false);
             serviceWarningForceClosed = true;
+        }
+
+        public void ChangeToSetupCamera()
+        {
+            ScreenManager.Instance.ChangeScreen(setupCameraScreen);
+        }
+
+        public void ChangeToInteractionSettings()
+        {
+            ScreenManager.Instance.ChangeScreen(interactionSettingsScreen);
+        }
+
+        public void ChangeToAdvancedSettings()
+        {
+            ScreenManager.Instance.ChangeScreen(advancedSettingsScreen);
         }
     }
 }

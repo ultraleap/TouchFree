@@ -13,7 +13,7 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject[] typeSpecificElements;
     }
 
-    public class GlobalSettingsConfigUI : ConfigUI
+    public class InteractionSettingsConfigUI : ConfigUI
     {
         #region Bounds
         public const float CursorDeadzone_Min = 0f;
@@ -26,10 +26,6 @@ namespace Ultraleap.ScreenControl.Core
         #endregion
 
         // UI elements
-        [Header("Resolution")]
-        public InputField resolutionWidth;
-        public InputField resolutionHeight;
-
         [Header("Misc")]
         public Toggle scrollingOrDraggingTog;
 
@@ -83,30 +79,6 @@ namespace Ultraleap.ScreenControl.Core
             LoadConfigValuesIntoFields();
         }
 
-        public void SetResolution()
-        {
-            var width = int.Parse(resolutionWidth.text);
-            var height = int.Parse(resolutionHeight.text);
-
-            if (width < 200)
-            {
-                width = 200;
-                resolutionWidth.text = "200";
-            }
-
-            if (height < 200)
-            {
-                height = 200;
-                resolutionHeight.text = "200";
-            }
-
-            ConfigManager.PhysicalConfig.ScreenWidthPX = width;
-            ConfigManager.PhysicalConfig.ScreenHeightPX = height;
-
-            ConfigManager.PhysicalConfig.ConfigWasUpdated();
-            ConfigManager.PhysicalConfig.SaveConfig();
-        }
-
         protected override void AddValueChangedListeners()
         {
             scrollingOrDraggingTog.onValueChanged.AddListener(OnValueChanged);
@@ -139,9 +111,6 @@ namespace Ultraleap.ScreenControl.Core
 
         protected override void LoadConfigValuesIntoFields()
         {
-            resolutionWidth.text = ConfigManager.PhysicalConfig.ScreenWidthPX.ToString();
-            resolutionHeight.text = ConfigManager.PhysicalConfig.ScreenHeightPX.ToString();
-
             cursorDeadzoneSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.DeadzoneRadius);
 
             scrollingOrDraggingTog.SetIsOnWithoutNotify(ConfigManager.InteractionConfig.UseScrollingOrDragging);
