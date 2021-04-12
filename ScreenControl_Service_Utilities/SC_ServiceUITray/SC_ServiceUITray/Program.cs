@@ -52,11 +52,11 @@ namespace SC_ServiceUITray
             if (startedProcess != null && !startedProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                Process.Start(System.IO.Path.GetFullPath("../Service/ScreenControlService.exe"));
+                Process.Start(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
             }
             else
             {
-                startedProcess = Process.Start(System.IO.Path.GetFullPath("../Service/ScreenControlService.exe"));
+                startedProcess = Process.Start(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
             }
         }
 
