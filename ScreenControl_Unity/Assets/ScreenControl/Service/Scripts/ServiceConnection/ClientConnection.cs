@@ -14,10 +14,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Ultraleap.ScreenControl.Service
 {
-    internal class ScreenControlWsBehaviour : WebSocketBehavior
+    internal class ClientConnection : WebSocketBehavior
     {
-        public WebSocketClientConnection clientConnection;
-        private Boolean HandshakeCompleted;
+        private bool HandshakeCompleted;
 
         public void SendInputAction(CoreInputAction _data)
         {
@@ -73,17 +72,14 @@ namespace Ultraleap.ScreenControl.Service
         protected override void OnOpen()
         {
             Debug.Log("Websocket Connection opened");
-
-            this.clientConnection = WebSocketClientConnection.Instance;
-
             HandshakeCompleted = false;
         }
 
         protected override void OnClose(CloseEventArgs eventArgs)
         {
             Debug.Log("Websocket Connection closed");
-
             HandshakeCompleted = false;
+            ClientConnectionManager.Instance.RemoveConnection(this);
         }
 
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)
@@ -139,10 +135,10 @@ namespace Ultraleap.ScreenControl.Service
             switch (action)
             {
                 case ActionCode.SET_CONFIGURATION_STATE:
-                    clientConnection.receiverQueue.configChangeQueue.Enqueue(content);
+                    ClientConnectionManager.Instance.receiverQueue.configChangeQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
-                    clientConnection.receiverQueue.configStateRequestQueue.Enqueue(content);
+                    ClientConnectionManager.Instance.receiverQueue.configStateRequestQueue.Enqueue(content);
                     break;
                 case ActionCode.INPUT_ACTION:
                 case ActionCode.CONFIGURATION_STATE:
