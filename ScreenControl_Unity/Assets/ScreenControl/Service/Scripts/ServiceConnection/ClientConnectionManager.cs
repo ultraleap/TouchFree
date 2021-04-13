@@ -11,12 +11,12 @@ using Ultraleap.ScreenControl.Service.ScreenControlTypes;
 namespace Ultraleap.ScreenControl.Service
 {
     [RequireComponent(typeof(WebSocketReceiver)), DisallowMultipleComponent]
-    public class WebSocketClientConnection : MonoBehaviour
+    public class ClientConnectionManager : MonoBehaviour
     {
-        public static WebSocketClientConnection Instance;
+        public static ClientConnectionManager Instance;
 
         private WebSocketServer wsServer = null;
-        private List<ScreenControlWsBehaviour> activeConnections = new List<ScreenControlWsBehaviour>();
+        private List<ClientConnection> activeConnections = new List<ClientConnection>();
         public WebSocketReceiver receiverQueue;
 
         public short port = 9739;
@@ -37,13 +37,18 @@ namespace Ultraleap.ScreenControl.Service
             InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }
 
-        private void SetupConnection(ScreenControlWsBehaviour behaviour)
+        private void SetupConnection(ClientConnection _connection)
         {
-            if (behaviour != null)
+            if (_connection != null)
             {
-                activeConnections.Add(behaviour);
+                activeConnections.Add(_connection);
                 Debug.Log("Connection set up");
             }
+        }
+
+        internal void RemoveConnection(ClientConnection _connection)
+        {
+            activeConnections.Remove(_connection);
         }
 
         private void InitialiseServer()
@@ -53,7 +58,7 @@ namespace Ultraleap.ScreenControl.Service
             receiverQueue = GetComponent<WebSocketReceiver>();
 
             wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
-            wsServer.AddWebSocketService<ScreenControlWsBehaviour>("/connect", SetupConnection);
+            wsServer.AddWebSocketService<ClientConnection>("/connect", SetupConnection);
 
             wsServer.AllowForwardedRequest = true;
             wsServer.ReuseAddress = true;
@@ -85,33 +90,33 @@ namespace Ultraleap.ScreenControl.Service
                 return;
             }
 
-            foreach(ScreenControlWsBehaviour behaviour in activeConnections)
+            foreach(ClientConnection connection in activeConnections)
             {
-                if (behaviour.ConnectionState == WebSocketState.Open)
+                if (connection.ConnectionState == WebSocketState.Open)
                 {
-                    behaviour.SendInputAction(_data);
+                    connection.SendInputAction(_data);
                 }
             }
         }
 
         public void SendConfigChangeResponse(ResponseToClient _response)
         {
-            foreach(ScreenControlWsBehaviour behaviour in activeConnections)
+            foreach(ClientConnection connection in activeConnections)
             {
-                if (behaviour.ConnectionState == WebSocketState.Open)
+                if (connection.ConnectionState == WebSocketState.Open)
                 {
-                    behaviour.SendConfigChangeResponse(_response);
+                    connection.SendConfigChangeResponse(_response);
                 }
             }
         }
 
         public void SendConfigState(ConfigState _config)
         {
-            foreach (ScreenControlWsBehaviour behaviour in activeConnections)
+            foreach (ClientConnection connection in activeConnections)
             {
-                if (behaviour.ConnectionState == WebSocketState.Open)
+                if (connection.ConnectionState == WebSocketState.Open)
                 {
-                    behaviour.SendConfigState(_config);
+                    connection.SendConfigState(_config);
                 }
             }
         }

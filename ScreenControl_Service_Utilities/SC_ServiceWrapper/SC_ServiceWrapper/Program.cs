@@ -37,7 +37,7 @@ namespace SC_Service
         {
             _process = new Process();
             _process.StartInfo.FileName = @"../Service/ScreenControlService.exe";
-            _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics";
+            _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics -logFile C:\\ProgramData\\Ultraleap\\ScreenControl\\Service.log";
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.CreateNoWindow = true;
             _process.StartInfo.RedirectStandardError = true;
