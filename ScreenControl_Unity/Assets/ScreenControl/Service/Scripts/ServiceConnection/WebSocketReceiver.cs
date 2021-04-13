@@ -47,7 +47,7 @@ namespace Ultraleap.ScreenControl.Service
 
                 // This is a failed request, do not continue with sendingthe configuration,
                 // the Client will have no way to handle the config state
-                WebSocketClientConnection.Instance.SendConfigChangeResponse(response);
+                ClientConnectionManager.Instance.SendConfigChangeResponse(response);
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace Ultraleap.ScreenControl.Service
                 ConfigManager.InteractionConfig,
                 ConfigManager.PhysicalConfig);
 
-            WebSocketClientConnection.Instance.SendConfigState(currentConfig);
+            ClientConnectionManager.Instance.SendConfigState(currentConfig);
         }
         #endregion
         
@@ -82,7 +82,7 @@ namespace Ultraleap.ScreenControl.Service
                 ChangeConfig(_content);
             }
 
-            WebSocketClientConnection.Instance.SendConfigChangeResponse(response);
+            ClientConnectionManager.Instance.SendConfigChangeResponse(response);
         }
 
         /// <summary>
