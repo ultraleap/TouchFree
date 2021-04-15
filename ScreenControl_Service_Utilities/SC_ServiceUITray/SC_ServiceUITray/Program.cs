@@ -24,7 +24,7 @@ namespace SC_ServiceUITray
         private NotifyIcon trayIcon;
         Process startedProcess;
         ServiceController screenControlService = null;
-        
+
         private Timer statusCheckTimer = new Timer();
 
         public SC_ServiceUITray()
@@ -33,7 +33,7 @@ namespace SC_ServiceUITray
             {
                 Icon = Properties.Resources.IconActive,
                 ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Settings", Settings),
+                    new MenuItem("Configure", Configure),
                     new MenuItem("-"),
                     new MenuItem("Exit", Exit),
                 }),
@@ -47,7 +47,7 @@ namespace SC_ServiceUITray
             statusCheckTimer.Start();
         }
 
-        private void Settings(object sender, EventArgs e)
+        private void Configure(object sender, EventArgs e)
         {
             if (startedProcess != null && !startedProcess.HasExited)
             {
@@ -72,7 +72,7 @@ namespace SC_ServiceUITray
 
             // Hide tray icon, otherwise it will remain shown until user mouses over it
             trayIcon.Visible = false;
-            Application.Exit(); 
+            Application.Exit();
             Environment.Exit(0);
         }
 
