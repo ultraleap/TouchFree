@@ -76,7 +76,6 @@ namespace Ultraleap.ScreenControl.Core
             ConfigManager.InteractionConfig.SetAllValuesToDefault();
             ConfigManager.InteractionConfig.ConfigWasUpdated();
             ConfigManager.InteractionConfig.SaveConfig();
-            InteractionManager.Instance.SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
             LoadConfigValuesIntoFields();
         }
 
