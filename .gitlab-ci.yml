@@ -274,7 +274,6 @@ SC_Client::Unity::package:
 
 SC_Service::package:
   stage: package
-  image: alpine:3.13
   dependencies:
     - SC_Service::build
     - SC_Service::Wrapper::build
@@ -304,4 +303,5 @@ SC_Service::package:
     expire_in: 2 weeks
     when: always
   tags:
-    - docker
+    - unity
+    - win10
