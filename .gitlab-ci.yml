@@ -296,7 +296,7 @@ SC_Service::package:
     - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
-    - \"C:/Program Files (x86)/Inno Setup 6/iscc.exe\" ./ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss
+    - \"C:/Program Files \(x86\)/Inno Setup 6/iscc.exe\" ./ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss
   artifacts:
     name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
