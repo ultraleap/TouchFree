@@ -295,7 +295,8 @@ SC_Service::package:
     - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
-    - ./Scripts/compile_installer.bat ./ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss
+    - cd ./Scripts/
+    - "& ./compile_installer.bat ${CI_PROJECT_DIR}/ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss"
   artifacts:
     name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
