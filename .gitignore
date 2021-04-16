@@ -57,6 +57,8 @@ Builds/
 Build/
 AssetDirStat.asset
 **/bin
+Service_Package/
+Installer_Build/
 
 # =============== #
 #  Documentation  #
