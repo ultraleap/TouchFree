@@ -92,7 +92,7 @@ SC_Client::Web::build:
 SC_Client::Docs::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/apps/docker-naturaldocs:main
+  image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
   script:
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Unity/NaturalDocs_Config
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Web/NaturalDocs_Config
@@ -113,7 +113,7 @@ SC_Service::Wrapper::build:
     # Move the built wrapper to the root directory
     - mkdir ./SC_Wrapper_Build
     - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper/bin/Release/* ./SC_Wrapper_Build
-    
+
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Wrapper_Build/SC_ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
@@ -126,7 +126,7 @@ SC_Service::Wrapper::build:
   tags:
     - unity
     - win10
-    
+
 SC_Service::Tray::build:
   stage: build
   when: always
@@ -135,7 +135,7 @@ SC_Service::Tray::build:
     # Move the built tray app to the root directory
     - mkdir ./SC_Tray_Build
     - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray/bin/Release/* ./SC_Tray_Build
-    
+
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Tray_Build/SC_ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
@@ -174,7 +174,7 @@ SC_Service::build:
     - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
     - mkdir $CI_PROJECT_DIR/UIBuild
     - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
-    
+
     # Update ProjectSettings file with correct version & build service
     - cd ./Scripts
     - python ./UpdateUnityProjVer.py --path ../ScreenControl_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
@@ -186,7 +186,7 @@ SC_Service::build:
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - ls $CI_PROJECT_DIR/Build
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/ScreenControlService.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
-    
+
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - ls $CI_PROJECT_DIR/UIBuild
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/ScreenControlServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
@@ -274,7 +274,6 @@ SC_Client::Unity::package:
 
 SC_Service::package:
   stage: package
-  image: alpine:3.13
   dependencies:
     - SC_Service::build
     - SC_Service::Wrapper::build
@@ -296,11 +295,19 @@ SC_Service::package:
     - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
+    - cd ./Scripts/
+    - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss"
+
+    # Sign the installer with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - ls $CI_PROJECT_DIR/Build
+    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/ScreenControl_Service_1.0.0_${SC_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./Service_Package/*
+      - ./Installer_Build/*.exe
     expire_in: 2 weeks
     when: always
   tags:
-    - docker
+    - unity
+    - win10
