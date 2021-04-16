@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 namespace Ultraleap.ScreenControl.Core
 {
-    [ExecuteInEditMode]
     public class SettingsUIScrollElementScaler : MonoBehaviour
     {
         private RectTransform _rectTransform, _parentRectTransform;
