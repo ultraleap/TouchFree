@@ -44,22 +44,22 @@ namespace Ultraleap.ScreenControl.Core
 
         protected override void AddValueChangedListeners()
         {
-            PhysicalScreenTiltAngle.onEndEdit.AddListener(OnInputFieldChanged);
-            ScreenHeight.onEndEdit.AddListener(OnInputFieldChanged);
-            TrackingOriginX.onEndEdit.AddListener(OnInputFieldChanged);
-            TrackingOriginY.onEndEdit.AddListener(OnInputFieldChanged);
-            TrackingOriginZ.onEndEdit.AddListener(OnInputFieldChanged);
-            TrackingRotationX.onEndEdit.AddListener(OnInputFieldChanged);
+            PhysicalScreenTiltAngle.onEndEdit.AddListener(OnValueChanged);
+            ScreenHeight.onEndEdit.AddListener(OnValueChanged);
+            TrackingOriginX.onEndEdit.AddListener(OnValueChanged);
+            TrackingOriginY.onEndEdit.AddListener(OnValueChanged);
+            TrackingOriginZ.onEndEdit.AddListener(OnValueChanged);
+            TrackingRotationX.onEndEdit.AddListener(OnValueChanged);
         }
 
         protected override void RemoveValueChangedListeners()
         {
-            PhysicalScreenTiltAngle.onEndEdit.RemoveListener(OnInputFieldChanged);
-            ScreenHeight.onEndEdit.RemoveListener(OnInputFieldChanged);
-            TrackingOriginX.onEndEdit.RemoveListener(OnInputFieldChanged);
-            TrackingOriginY.onEndEdit.RemoveListener(OnInputFieldChanged);
-            TrackingOriginZ.onEndEdit.RemoveListener(OnInputFieldChanged);
-            TrackingRotationX.onEndEdit.RemoveListener(OnInputFieldChanged);
+            PhysicalScreenTiltAngle.onEndEdit.RemoveListener(OnValueChanged);
+            ScreenHeight.onEndEdit.RemoveListener(OnValueChanged);
+            TrackingOriginX.onEndEdit.RemoveListener(OnValueChanged);
+            TrackingOriginY.onEndEdit.RemoveListener(OnValueChanged);
+            TrackingOriginZ.onEndEdit.RemoveListener(OnValueChanged);
+            TrackingRotationX.onEndEdit.RemoveListener(OnValueChanged);
         }
 
         protected override void LoadConfigValuesIntoFields()
@@ -98,6 +98,33 @@ namespace Ultraleap.ScreenControl.Core
 
         protected override void ValidateValues()
         {
+            PhysicalScreenTiltAngle.SetTextWithoutNotify(
+                TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.ScreenRotationD,
+                PhysicalScreenTiltAngle.text).ToString("##0.0"));
+
+            ScreenHeight.SetTextWithoutNotify(
+                ScreenControlUtility.ToDisplayUnits(
+                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.ScreenHeightM, ScreenHeight.text, true)
+                ).ToString("#0.00#"));
+
+            TrackingOriginX.SetTextWithoutNotify(
+                ScreenControlUtility.ToDisplayUnits(
+                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x, TrackingOriginX.text, true)
+                ).ToString("#0.00#"));
+
+            TrackingOriginY.SetTextWithoutNotify(
+                ScreenControlUtility.ToDisplayUnits(
+                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, TrackingOriginY.text, true)
+                ).ToString("#0.00#"));
+
+            TrackingOriginZ.SetTextWithoutNotify(
+                ScreenControlUtility.ToDisplayUnits(
+                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, TrackingOriginZ.text, true)
+                ).ToString("#0.00#"));
+
+            TrackingRotationX.SetTextWithoutNotify(
+                TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapRotationD.x,
+                TrackingRotationX.text).ToString("##0.0"));
         }
 
         protected override void SaveValuesToConfig()
@@ -125,11 +152,6 @@ namespace Ultraleap.ScreenControl.Core
             ConfigManager.PhysicalConfig.ConfigWasUpdated();
             ConfigManager.PhysicalConfig.SaveConfig();
             LoadConfigValuesIntoFields();
-        }
-
-        private void OnInputFieldChanged(string _)
-        {
-            SaveValuesToConfig();
         }
     }
 }
