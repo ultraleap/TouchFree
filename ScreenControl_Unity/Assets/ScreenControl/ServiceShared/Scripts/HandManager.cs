@@ -79,6 +79,8 @@ namespace Ultraleap.ScreenControl.Core
 
         [HideInInspector] public bool screenTopAvailable = false;
 
+        private int handsLastFrame;
+
         void Awake()
         {
             if (Instance != null)
@@ -87,6 +89,7 @@ namespace Ultraleap.ScreenControl.Core
                 return;
             }
             Instance = this;
+            handsLastFrame = 0;
 
             PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
             CheckLeapVersionForScreentop();
@@ -208,6 +211,18 @@ namespace Ultraleap.ScreenControl.Core
         private void Update()
         {
             var currentFrame = Hands.Provider.CurrentFrame;
+            var handCount = currentFrame.Hands.Count;
+
+            if (handCount == 0 && handsLastFrame > 0)
+            {
+                HandsLost.Invoke();
+            }
+            else if (handCount > 0 && handsLastFrame == 0)
+            {
+                HandFound.Invoke();
+            }
+
+            handsLastFrame = handCount;
 
             if (useTrackingTransform)
             {
@@ -225,15 +240,6 @@ namespace Ultraleap.ScreenControl.Core
                     leftHand = hand;
                 else
                     rightHand = hand;
-            }
-
-            if (currentFrame.Hands.Count == 0 && PrimaryHand != null)
-            {
-                HandsLost?.Invoke();
-            }
-            else if (currentFrame.Hands.Count > 0 && PrimaryHand == null)
-            {
-                HandFound?.Invoke();
             }
 
             UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, ScreenControlTypes.HandType.PRIMARY);

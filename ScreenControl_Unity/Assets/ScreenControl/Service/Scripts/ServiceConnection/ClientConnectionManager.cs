@@ -30,9 +30,6 @@ namespace Ultraleap.ScreenControl.Service
             Instance = this;
             InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
             InitialiseServer();
-
-            HandManager.Instance.HandFound += OnHandFound;
-            HandManager.Instance.HandsLost += OnHandsLost;
         }
 
         private void OnHandFound()
@@ -53,9 +50,9 @@ namespace Ultraleap.ScreenControl.Service
             {
                 if (_connection.ConnectionState == WebSocketState.Open)
                 {
-                    HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
+                    HandPresenceEvent handsLostEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-                    _connection.SendHandPresenceEvent(handFoundEvent);
+                    _connection.SendHandPresenceEvent(handsLostEvent);
                 }
             }
         }
@@ -91,6 +88,9 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.AllowForwardedRequest = true;
             wsServer.ReuseAddress = true;
             wsServer.Start();
+
+            HandManager.Instance.HandFound += OnHandFound;
+            HandManager.Instance.HandsLost += OnHandsLost;
 
             // This is here so the test infrastructure has some sign that the app is ready
             Debug.Log("Service Setup Complete");
