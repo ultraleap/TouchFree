@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System.IO;
+
 namespace Ultraleap.ScreenControl.Core
 {
     public class HomeScreen : MonoBehaviour
@@ -14,6 +17,15 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject setupCameraScreen;
         public GameObject interactionSettingsScreen;
         public GameObject advancedSettingsScreen;
+
+        public Text versionText;
+        string versionPath;
+
+        private void Awake()
+        {
+            versionPath = Path.Combine(Application.dataPath, "../Version.txt");
+            PopulateVersion();
+        }
 
         private void OnEnable()
         {
@@ -44,6 +56,26 @@ namespace Ultraleap.ScreenControl.Core
                     lastFrameServiceConnected = false;
                 }
             }
+        }
+
+        void PopulateVersion()
+        {
+            string version = "N/A";
+
+            Debug.LogError(versionPath);
+            if (File.Exists(versionPath))
+            {
+                var fileLines = File.ReadAllLines(versionPath);
+                foreach (var line in fileLines)
+                {
+                    if (line.Contains("ScreenControl Service Version"))
+                    {
+                        version = line.Replace("ScreenControl Service Version: ", "");
+                        break;
+                    }
+                }
+            }
+            versionText.text = "Version " + version;
         }
 
         public void ChangeToSetupCamera()

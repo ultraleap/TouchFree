@@ -3284,7 +3284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -51.000854}
+  m_AnchoredPosition: {x: 0, y: -51.00061}
   m_SizeDelta: {x: -600, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1050801407411402532
@@ -4116,7 +4116,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.021240234, y: -30.025024}
+  m_AnchoredPosition: {x: -0.021240234, y: -30.025085}
   m_SizeDelta: {x: -0.04260254, y: -298.05017}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1050801407834595109
@@ -26997,11 +26997,11 @@ RectTransform:
   m_Father: {fileID: 8193369548823272539}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -20, y: -130}
   m_SizeDelta: {x: 500, y: 50}
-  m_Pivot: {x: 0.5, y: 0}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &6551572556573745873
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27036,13 +27036,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 3
     m_MaxSize: 50
-    m_Alignment: 4
+    m_Alignment: 2
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Version: VERSION NUMBER HERE'
+  m_Text: Version 1.0.0-beta1
 --- !u!1 &7911522056746076431
 GameObject:
   m_ObjectHideFlags: 0
@@ -28157,6 +28157,7 @@ MonoBehaviour:
   setupCameraScreen: {fileID: 1050801408411297478}
   interactionSettingsScreen: {fileID: 2452466808064137862}
   advancedSettingsScreen: {fileID: 5639361928291904518}
+  versionText: {fileID: 8075789144427232123}
 --- !u!1 &8258727733508276370
 GameObject:
   m_ObjectHideFlags: 0
