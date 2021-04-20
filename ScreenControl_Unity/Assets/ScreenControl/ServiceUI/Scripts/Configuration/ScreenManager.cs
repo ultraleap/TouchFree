@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Core
@@ -18,19 +18,32 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject clientRootObj;
         public GameObject[] stateRoots;
         public GameObject homeScreen;
+        GameObject currentScreen;
+        List<GameObject> previousScreens = new List<GameObject>();
 
         [HideInInspector] public MountingType selectedMountType = MountingType.NONE;
 
         private PhysicalConfig defaultConfig = null;
 
-        public void ChangeScreen(GameObject _newScreenRoot)
+        public void ChangeScreen(GameObject _newScreenRoot, bool _movingBack = false)
         {
+            if (currentScreen == null)
+            {
+                currentScreen = homeScreen;
+            }
+
+            if (!_movingBack)
+            {
+                previousScreens.Add(currentScreen);
+            }
+
             foreach (var root in stateRoots)
             {
                 root.SetActive(false);
             }
 
             _newScreenRoot.SetActive(true);
+            currentScreen = _newScreenRoot;
         }
 
         private void Start()
@@ -113,6 +126,12 @@ namespace Ultraleap.ScreenControl.Core
         {
             ChangeScreen(homeScreen);
             HandManager.Instance.UpdateLeapTrackingMode();
+        }
+
+        public void PreviousScreen()
+        {
+            ChangeScreen(previousScreens[previousScreens.Count-1], true);
+            previousScreens.RemoveAt(previousScreens.Count-1);
         }
 
         public void CloseApplication()
