@@ -145,7 +145,6 @@ namespace Ultraleap.ScreenControl.Core
         /// </summary>
         public Vector3 BottomCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
         {
-
             return Vector3.LerpUnclamped(topTouch, bottomTouch, 1.125f);
         }
 
@@ -161,7 +160,7 @@ namespace Ultraleap.ScreenControl.Core
             if (ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
                     ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_USER)
             {
-                rotation.x = -Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.right) + 180;
+                rotation.x = Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.left) + 180;
                 rotation.z = 180;
             }
             else
@@ -169,28 +168,8 @@ namespace Ultraleap.ScreenControl.Core
                 rotation.x = Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.left);
             }
 
-            rotation.x = CentreRotationAroundZero(rotation.x);
+            rotation.x = ScreenControlUtility.CentreRotationAroundZero(rotation.x);
             return rotation;
-        }
-
-        /// <summary>
-        ///    Ensure the calculated rotations make sense to the UI by avoiding large values.
-        ///    Angles are centred around 0, with the smallest representation of the value
-        /// </summary>
-        public float CentreRotationAroundZero(float angle)
-        {
-            if (angle > 180)
-            {
-                return angle - 360;
-            }
-            else if (angle < -180)
-            {
-                return angle + 360;
-            }
-            else
-            {
-                return angle;
-            }
         }
 
         void DisplayTrackingLost(bool _display = true)
@@ -211,7 +190,7 @@ namespace Ultraleap.ScreenControl.Core
 
         IEnumerator HideTrackingLostAfterTime()
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(2);
             DisplayTrackingLost(false);
         }
 

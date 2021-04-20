@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -87,8 +88,17 @@ namespace Ultraleap.ScreenControl.Core
                     ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z
                 ).ToString("#0.00#"));
 
-            TrackingRotationX.SetTextWithoutNotify(
-                ConfigManager.PhysicalConfig.LeapRotationD.x.ToString("##0.0"));
+
+            // Convert from above screen rotaitons to a readable format
+            if(Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.z, 180))
+            {
+                TrackingRotationX.SetTextWithoutNotify(ScreenControlUtility.CentreRotationAroundZero((-ConfigManager.PhysicalConfig.LeapRotationD.x) -180).ToString("##0.0"));
+            }
+            else
+            {
+                TrackingRotationX.SetTextWithoutNotify(
+                        ConfigManager.PhysicalConfig.LeapRotationD.x.ToString("##0.0"));
+            }
         }
 
         protected override void CommitValuesToFile()
@@ -122,9 +132,17 @@ namespace Ultraleap.ScreenControl.Core
                     TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, TrackingOriginZ.text, true)
                 ).ToString("#0.00#"));
 
-            TrackingRotationX.SetTextWithoutNotify(
-                TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapRotationD.x,
-                TrackingRotationX.text).ToString("##0.0"));
+
+            // Convert from screen rotaitons to a readable format
+            float backupLeapX = ConfigManager.PhysicalConfig.LeapRotationD.x;
+            if (Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.x, 180))
+            {
+                backupLeapX = (-ConfigManager.PhysicalConfig.LeapRotationD.x) - 180;
+            }
+
+            TrackingRotationX.SetTextWithoutNotify(ScreenControlUtility.CentreRotationAroundZero(
+                TryParseNewStringToFloat(ref backupLeapX,
+                TrackingRotationX.text)).ToString("##0.0"));
         }
 
         protected override void SaveValuesToConfig()
@@ -136,10 +154,26 @@ namespace Ultraleap.ScreenControl.Core
                 TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, TrackingOriginY.text, true),
                 -TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, TrackingOriginZ.text, true)
             );
-            ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(
-                TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapRotationD.x, TrackingRotationX.text),
+
+            // Convert from readable format to usable rotations
+            float usableLeapX = TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapRotationD.x, TrackingRotationX.text);
+            float usableLeapZ = ConfigManager.PhysicalConfig.LeapRotationD.z;
+
+            if(Mathf.Abs(usableLeapX) > 90)
+            {
+                // Above
+                usableLeapZ = 180;
+                usableLeapX = ScreenControlUtility.CentreRotationAroundZero((-usableLeapX) + 180);
+            }
+            else
+            {
+                // Below
+                usableLeapZ = 0;
+            }
+
+            ConfigManager.PhysicalConfig.LeapRotationD = new Vector3(usableLeapX,
                 ConfigManager.PhysicalConfig.LeapRotationD.y,
-                ConfigManager.PhysicalConfig.LeapRotationD.z
+                usableLeapZ
             );
 
             ConfigManager.PhysicalConfig.ConfigWasUpdated();

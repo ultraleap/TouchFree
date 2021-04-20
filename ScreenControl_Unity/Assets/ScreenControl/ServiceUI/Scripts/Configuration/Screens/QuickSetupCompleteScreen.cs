@@ -16,7 +16,6 @@ namespace Ultraleap.ScreenControl.Core
 
         public void ChangeToManual()
         {
-            ScreenManager.Instance.selectedMountType = MountingType.NONE;
             ScreenManager.Instance.ChangeScreen(manualSetupScreen);
         }
     }

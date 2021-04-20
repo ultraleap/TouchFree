@@ -7,6 +7,9 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class LeapMountScreen : MonoBehaviour
     {
+        public GameObject trackingServiceWarning;
+
+        [Space]
         public GameObject guideWarning;
 
         [Space]
@@ -18,7 +21,7 @@ namespace Ultraleap.ScreenControl.Core
         public GameObject aboveFacingUserOption;
 
         [Space]
-        public GameObject quickOrManualScreen;
+        public GameObject nextScreen;
 
         private void OnEnable()
         {
@@ -34,33 +37,17 @@ namespace Ultraleap.ScreenControl.Core
 
             ShowCurrentMount();
 
-            // find the leap config path to look for auto orientation
-            string appdatapath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
-            string leapConfigPath = Path.Combine(appdatapath, "Leap Motion", "Config.json");
-
-            if (File.Exists(leapConfigPath))
+            // Check to see if we need to warn that no tracking service is connected
+            if (HandManager.Instance.IsLeapServiceConnected())
             {
-                foreach (var line in File.ReadAllLines(leapConfigPath))
-                {
-                    if (line.Contains("image_processing_auto_flip"))
-                    {
-                        // check if auto orientation is true and warn against it
-                        if (line.Contains("true"))
-                        {
-                            StartCoroutine(EnableWarningAfterWait());
-                            return;
-                        }
-                        else
-                        {
-                            guideWarning.SetActive(false);
-                        }
-
-                        break;
-                    }
-                }
+                trackingServiceWarning.SetActive(false);
+            }
+            else
+            {
+                trackingServiceWarning.SetActive(true);
             }
 
-            //Check if the physicalconfig is set to default and guide the users if it is
+            // Check if the physicalconfig is set to default and guide the users if it is
             var defaultConfig = PhysicalConfigFile.GetDefaultValues();
 
             if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
@@ -93,7 +80,6 @@ namespace Ultraleap.ScreenControl.Core
                     //HMD
                     aboveFacingScreenCurrent.SetActive(true);
                 }
-
             }
             else
             {
@@ -130,7 +116,12 @@ namespace Ultraleap.ScreenControl.Core
         void SetTrackingModeAndContinue()
         {
             HandManager.Instance.SetLeapTrackingMode(ScreenManager.Instance.selectedMountType);
-            ScreenManager.Instance.ChangeScreen(quickOrManualScreen);
+            ScreenManager.Instance.ChangeScreen(nextScreen);
+        }
+
+        public void CloseTrackingWarning()
+        {
+            trackingServiceWarning.SetActive(false);
         }
     }
 }
