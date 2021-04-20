@@ -24,6 +24,7 @@ namespace Ultraleap.ScreenControl.Core
         [HideInInspector] public MountingType selectedMountType = MountingType.NONE;
 
         private PhysicalConfig defaultConfig = null;
+        bool cursorStateOverridden = false;
 
         public void ChangeScreen(GameObject _newScreenRoot, bool _movingBack = false)
         {
@@ -59,6 +60,7 @@ namespace Ultraleap.ScreenControl.Core
         public void SetCursorState(bool _state)
         {
             clientRootObj.SetActive(_state);
+            cursorStateOverridden = !_state;
         }
 
         void OnApplicationFocus(bool hasFocus)
@@ -75,6 +77,11 @@ namespace Ultraleap.ScreenControl.Core
 
         private void UpdateCursorState()
         {
+            if (cursorStateOverridden)
+            {
+                return;
+            }
+
             if (defaultConfig == null)
             {
                 defaultConfig = PhysicalConfigFile.GetDefaultValues();

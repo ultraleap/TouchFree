@@ -62,7 +62,6 @@ namespace Ultraleap.ScreenControl.Core
         {
             string version = "N/A";
 
-            Debug.LogError(versionPath);
             if (File.Exists(versionPath))
             {
                 var fileLines = File.ReadAllLines(versionPath);
