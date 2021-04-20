@@ -1,6 +1,7 @@
 
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
+import { HandPresenceState } from "./ScreenControlServiceTypes";
 import { ClientInputAction } from "../ScreenControlTypes";
 
 // Class: ConnectionManager
@@ -93,7 +94,7 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.instance.dispatchEvent(inputActionEvent);
     }
 
-    public static HandleHandPresenceEvent(HandPresenceState _state): void {
+    public static HandleHandPresenceEvent(_state: HandPresenceState): void {
         let handPresenceEvent: CustomEvent;
 
         if (_state == HandPresenceState.HAND_FOUND) {

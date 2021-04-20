@@ -1,8 +1,9 @@
 import {
-    WebSocketResponse,
-    ResponseCallback,
     ConfigState,
-    ConfigStateCallback
+    ConfigStateCallback,
+    HandPresenceState,
+    ResponseCallback,
+    WebSocketResponse,
 } from './ScreenControlServiceTypes';
 import {
     ClientInputAction,
