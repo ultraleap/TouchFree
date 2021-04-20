@@ -45,6 +45,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // be listened to.
         public static event ClientInputActionEvent TransmitInputAction;
 
+        public delegate void HandPresenceEvent();
+        public static event HandPresenceEvent HandFound;
+        public static event HandPresenceEvent HandsLost;
+
         // Variable: iPAddress
         // The IP Address that will be used in the <ServiceConnection> to connect to the target WebSocket.
         // This value is settable in the Inspector.
@@ -64,6 +68,18 @@ namespace Ultraleap.ScreenControl.Client.Connection
         public static void HandleInputAction(ClientInputAction _action)
         {
             TransmitInputAction?.Invoke(_action);
+        }
+
+        public static void HandleHandPresenceEvent(HandPresenceState _state)
+        {
+            if (_state == HandPresenceState.HAND_FOUND)
+            {
+                HandFound?.Invoke();
+            }
+            else
+            {
+                HandsLost?.Invoke();
+            }
         }
 
         // Function: AddConnectionListener
@@ -114,8 +130,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Function: OnEnable
         // Unity's OnEnable function for handling when the behaviour is enabled. Connects
         // to SC Service if not already connected.
-        private void OnEnable() {
-            if (currentServiceConnection == null) {
+        private void OnEnable()
+        {
+            if (currentServiceConnection == null)
+            {
                 Connect();
             }
         }
@@ -123,7 +141,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Function: OnDisable
         // Unity's OnDisable function for handling when the behaviour is disabled. Disconnects
         // from SC Service to prevent caching any new incoming inputs.
-        private void OnDisable() {
+        private void OnDisable()
+        {
             Disconnect();
         }
 

@@ -27,6 +27,10 @@ namespace Ultraleap.ScreenControl.Core
         public Hand SecondaryHand;
         Chirality secondaryChirality;
 
+        public delegate void HandPresenceEvent();
+        public event HandPresenceEvent HandFound;
+        public event HandPresenceEvent HandsLost;
+
         bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
         bool PrimaryIsRight => PrimaryHand != null && !PrimaryHand.IsLeft;
         bool SecondaryIsLeft => SecondaryHand != null && SecondaryHand.IsLeft;
@@ -203,22 +207,33 @@ namespace Ultraleap.ScreenControl.Core
 
         private void Update()
         {
+            var currentFrame = Hands.Provider.CurrentFrame;
+
             if (useTrackingTransform)
             {
-                Hands.Provider.CurrentFrame.Transform(TrackingTransform);
+                currentFrame.Transform(TrackingTransform);
             }
 
-            Timestamp = Hands.Provider.CurrentFrame.Timestamp;
+            Timestamp = currentFrame.Timestamp;
 
             Hand leftHand = null;
             Hand rightHand = null;
 
-            foreach(Hand hand in Hands.Provider.CurrentFrame.Hands)
+            foreach (Hand hand in currentFrame.Hands)
             {
                 if (hand.IsLeft)
                     leftHand = hand;
                 else
                     rightHand = hand;
+            }
+
+            if (currentFrame.Hands.Count == 0 && PrimaryHand != null)
+            {
+                HandsLost?.Invoke();
+            }
+            else if (currentFrame.Hands.Count > 0 && PrimaryHand == null)
+            {
+                HandFound?.Invoke();
             }
 
             UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, ScreenControlTypes.HandType.PRIMARY);

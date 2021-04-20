@@ -19,6 +19,14 @@ export enum ActionCode {
     REQUEST_CONFIGURATION_STATE = "REQUEST_CONFIGURATION_STATE",
     VERSION_HANDSHAKE = "VERSION_HANDSHAKE",
     VERSION_HANDSHAKE_RESPONSE = "VERSION_HANDSHAKE_RESPONSE",
+    HAND_PRESENCE_EVENT = "HAND_PRESENCE_EVENT",
+}
+
+export enum HandPresenceState
+{
+    HAND_FOUND = "HAND_FOUND",
+    HANDS_LOST = "HANDS_LOST",
+    PROCESSED = "PROCESSED",
 }
 
 // Enum: Compatibility
@@ -29,6 +37,16 @@ export enum Compatibility {
     COMPATIBLE,
     SERVICE_OUTDATED,
     CLIENT_OUTDATED
+}
+
+export class HandPresenceEvent
+{
+    state: HandPresenceState;
+
+    constructor(_state: HandPresenceState)
+    {
+        this.state = _state;
+    }
 }
 
 // Class: ConfigState

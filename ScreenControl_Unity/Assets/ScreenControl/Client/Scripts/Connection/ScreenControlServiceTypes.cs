@@ -18,7 +18,15 @@ namespace Ultraleap.ScreenControl.Client.Connection
         SET_CONFIGURATION_STATE,
         REQUEST_CONFIGURATION_STATE,
         VERSION_HANDSHAKE,
-        VERSION_HANDSHAKE_RESPONSE
+        VERSION_HANDSHAKE_RESPONSE,
+        HAND_PRESENCE_EVENT
+    }
+
+    public enum HandPresenceState
+    {
+        HAND_FOUND,
+        HANDS_LOST,
+        PROCESSED
     }
 
     // Enum: Compatibility
@@ -30,6 +38,17 @@ namespace Ultraleap.ScreenControl.Client.Connection
         COMPATIBLE,
         SERVICE_OUTDATED,
         CLIENT_OUTDATED
+    }
+
+    [Serializable]
+    public struct HandPresenceEvent
+    {
+        public HandPresenceState state;
+
+        public HandPresenceEvent(HandPresenceState _state)
+        {
+            state = _state;
+        }
     }
 
     // Struct: ConfigState

@@ -30,6 +30,34 @@ namespace Ultraleap.ScreenControl.Service
             Instance = this;
             InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
             InitialiseServer();
+
+            HandManager.Instance.HandFound += OnHandFound;
+            HandManager.Instance.HandsLost += OnHandsLost;
+        }
+
+        private void OnHandFound()
+        {
+            foreach (ClientConnection _connection in activeConnections)
+            {
+                if (_connection.ConnectionState == WebSocketState.Open)
+                {
+                    HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HAND_FOUND);
+
+                    _connection.SendHandPresenceEvent(handFoundEvent);
+                }
+            }
+        }
+        private void OnHandsLost()
+        {
+            foreach (ClientConnection _connection in activeConnections)
+            {
+                if (_connection.ConnectionState == WebSocketState.Open)
+                {
+                    HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
+
+                    _connection.SendHandPresenceEvent(handFoundEvent);
+                }
+            }
         }
 
         void OnDestroy()
@@ -90,7 +118,7 @@ namespace Ultraleap.ScreenControl.Service
                 return;
             }
 
-            foreach(ClientConnection connection in activeConnections)
+            foreach (ClientConnection connection in activeConnections)
             {
                 if (connection.ConnectionState == WebSocketState.Open)
                 {
@@ -101,7 +129,7 @@ namespace Ultraleap.ScreenControl.Service
 
         public void SendConfigChangeResponse(ResponseToClient _response)
         {
-            foreach(ClientConnection connection in activeConnections)
+            foreach (ClientConnection connection in activeConnections)
             {
                 if (connection.ConnectionState == WebSocketState.Open)
                 {

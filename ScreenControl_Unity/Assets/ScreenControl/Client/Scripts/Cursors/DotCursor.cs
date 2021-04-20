@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Ultraleap.ScreenControl.Client.Connection;
 
 namespace Ultraleap.ScreenControl.Client.Cursors
 {
@@ -169,13 +170,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     break;
 
                 case InputType.CANCEL:
-                    HideCursor();
                     break;
-            }
-
-            if(hidingCursor && _inputData.InputType != InputType.CANCEL)
-            {
-                ShowCursor();
             }
         }
 
@@ -199,6 +194,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // sorting orders for the ring sprites.
         protected override void InitialiseCursor()
         {
+            ConnectionManager.HandFound += ShowCursor;
+            ConnectionManager.HandsLost += HideCursor;
+
             bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
             cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);

@@ -112,6 +112,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     ConfigState configState = JsonUtility.FromJson<ConfigState>(content);
                     ConnectionManager.messageReceiver.configStateQueue.Enqueue(configState);
                     break;
+                case ActionCode.HAND_PRESENCE_EVENT:
+                    HandPresenceEvent handEvent = JsonUtility.FromJson<HandPresenceEvent>(content);
+                    ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
+                    break;
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);

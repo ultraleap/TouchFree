@@ -85,12 +85,25 @@ export class ConnectionManager extends EventTarget {
     // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
     public static HandleInputAction(_action: ClientInputAction): void {
-        let inputActionEvent: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction> (
+        let inputActionEvent: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction>(
             'TransmitInputAction',
             { detail: _action }
         );
 
         ConnectionManager.instance.dispatchEvent(inputActionEvent);
+    }
+
+    public static HandleHandPresenceEvent(HandPresenceState _state): void {
+        let handPresenceEvent: CustomEvent;
+
+        if (_state == HandPresenceState.HAND_FOUND) {
+            handPresenceEvent = new CustomEvent('HandFound');
+        }
+        else {
+            handPresenceEvent = new CustomEvent('HandsLost');
+        }
+
+        ConnectionManager.instance.dispatchEvent(handPresenceEvent);
     }
 
     // Function: Disconnect
