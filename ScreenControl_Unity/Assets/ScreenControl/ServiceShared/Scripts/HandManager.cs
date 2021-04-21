@@ -215,11 +215,11 @@ namespace Ultraleap.ScreenControl.Core
 
             if (handCount == 0 && handsLastFrame > 0)
             {
-                HandsLost.Invoke();
+                HandsLost?.Invoke();
             }
             else if (handCount > 0 && handsLastFrame == 0)
             {
-                HandFound.Invoke();
+                HandFound?.Invoke();
             }
 
             handsLastFrame = handCount;
