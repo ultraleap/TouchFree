@@ -184,19 +184,19 @@ namespace Ultraleap.ScreenControl.Core
                     }
                     break;
                 case MountingType.ABOVE_FACING_USER:
+                    ((LeapServiceProvider)Hands.Provider).GetLeapController().ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+
                     if (screenTopAvailable)
                     {
                         ((LeapServiceProvider)Hands.Provider).GetLeapController().SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     }
-                    ((LeapServiceProvider)Hands.Provider).GetLeapController().ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
                 case MountingType.ABOVE_FACING_SCREEN:
-                    ((LeapServiceProvider)Hands.Provider).GetLeapController().SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-
                     if (screenTopAvailable)
                     {
                         ((LeapServiceProvider)Hands.Provider).GetLeapController().ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     }
+                    ((LeapServiceProvider)Hands.Provider).GetLeapController().SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
         }
