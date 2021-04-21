@@ -39,7 +39,7 @@ namespace Ultraleap.ScreenControl.Core
             if(fileChanged)
             {
                 fileChanged = false;
-                ConfigManager.InitialiseConfigs();
+                ConfigManager.LoadConfigsFromFiles();
                 ConfigManager.InteractionConfig.ConfigWasUpdated();
                 ConfigManager.PhysicalConfig.ConfigWasUpdated();
                 ConfigManager.GlobalSettings.CreateVirtualScreen();

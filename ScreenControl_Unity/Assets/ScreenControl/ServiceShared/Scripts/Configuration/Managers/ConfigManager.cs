@@ -56,7 +56,7 @@ namespace Ultraleap.ScreenControl.Core
         }
         private static PhysicalConfig _physical;
 
-        public static void InitialiseConfigs()
+        public static void LoadConfigsFromFiles()
         {
             _globals = new GlobalSettings();
             _interactions = InteractionConfigFile.LoadConfig();
