@@ -1,15 +1,16 @@
+import { TouchlessCursor } from './TouchlessCursor';
 import {
     ClientInputAction,
     InputType
 } from '../ScreenControlTypes';
-import { TouchlessCursor } from './TouchlessCursor';
+import { ConnectionManager } from '../Connection/ConnectionManager';
 import { MapRangeToRange } from '../Utilities';
 
 // Class: DotCursor
 // This is an example Touchless Cursor which positions a dot on the screen at the hand location,
 // and reacts to the current ProgressToClick of the action (what determines this depends on the
 // currently active interaction).
-export class DotCursor extends TouchlessCursor{
+export class DotCursor extends TouchlessCursor {
 
     // Set the update rate of the animation to 30fps.
     readonly animationUpdateDuration: number = (1 / 30) * 1000;
@@ -27,7 +28,7 @@ export class DotCursor extends TouchlessCursor{
     ringSizeMultiplier: number;
 
     private cursorStartSize: Array<number>;
-    private animationSpeed: Array<number> = [0,0];
+    private animationSpeed: Array<number> = [0, 0];
 
     private currentAnimationInterval: number = -1;
 
@@ -55,12 +56,15 @@ export class DotCursor extends TouchlessCursor{
 
         this.animationSpeed[0] = (this.cursorStartSize[0] / 2) / (_animationDuration * 30);
         this.animationSpeed[1] = (this.cursorStartSize[1] / 2) / (_animationDuration * 30);
+
+        ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
+        ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
     }
 
     // Function: UpdateCursor
     // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
-    UpdateCursor(_inputAction: ClientInputAction): void{
+    UpdateCursor(_inputAction: ClientInputAction): void {
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
@@ -112,12 +116,7 @@ export class DotCursor extends TouchlessCursor{
                 break;
 
             case InputType.CANCEL:
-                this.HideCursor();
                 break;
-        }
-
-        if (this.hidingCursor && _inputData.InputType !== InputType.CANCEL) {
-            this.ShowCursor();
         }
     }
 

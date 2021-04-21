@@ -97,7 +97,7 @@ export class ConnectionManager extends EventTarget {
     public static HandleHandPresenceEvent(_state: HandPresenceState): void {
         let handPresenceEvent: CustomEvent;
 
-        if (_state == HandPresenceState.HAND_FOUND) {
+        if (_state === HandPresenceState.HAND_FOUND) {
             handPresenceEvent = new CustomEvent('HandFound');
         }
         else {

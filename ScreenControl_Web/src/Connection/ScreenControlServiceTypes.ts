@@ -24,9 +24,9 @@ export enum ActionCode {
 
 export enum HandPresenceState
 {
-    HAND_FOUND = "HAND_FOUND",
-    HANDS_LOST = "HANDS_LOST",
-    PROCESSED = "PROCESSED",
+    HAND_FOUND,
+    HANDS_LOST,
+    PROCESSED,
 }
 
 // Enum: Compatibility
