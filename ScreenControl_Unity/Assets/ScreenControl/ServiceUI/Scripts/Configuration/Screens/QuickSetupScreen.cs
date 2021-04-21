@@ -160,7 +160,7 @@ namespace Ultraleap.ScreenControl.Core
             if (ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_SCREEN ||
                     ScreenManager.Instance.selectedMountType == MountingType.ABOVE_FACING_USER)
             {
-                rotation.x = Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.left) + 180;
+                rotation.x = -Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.right) + 180;
                 rotation.z = 180;
             }
             else

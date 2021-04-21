@@ -128,10 +128,17 @@ namespace Ultraleap.ScreenControl.Core
                 yield return null;
             }
 
+            // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
+            // Therefore, we must convert to the real values before using them.
+            // If top mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
+            var isTopMounted = Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.z, 180f);
+            float xAngleDegree = isTopMounted ? -ConfigManager.PhysicalConfig.LeapRotationD.x : ConfigManager.PhysicalConfig.LeapRotationD.x;
+
             UpdateLeapTrackingMode();
             TrackingTransform = new LeapTransform(
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.ToVector(),
-                Quaternion.Euler(ConfigManager.PhysicalConfig.LeapRotationD).ToLeapQuaternion()
+                Quaternion.Euler(xAngleDegree, ConfigManager.PhysicalConfig.LeapRotationD.y,
+                ConfigManager.PhysicalConfig.LeapRotationD.z).ToLeapQuaternion()
             );
         }
 
@@ -143,7 +150,7 @@ namespace Ultraleap.ScreenControl.Core
         public void UpdateLeapTrackingMode()
         {
             // leap is looking down
-            if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.x) > 90f)
+            if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {
                 if (screenTopAvailable && ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
                 {

@@ -45,6 +45,7 @@ namespace Ultraleap.ScreenControl.Core
 
             _newScreenRoot.SetActive(true);
             currentScreen = _newScreenRoot;
+            HandManager.Instance.UpdateLeapTrackingMode();
         }
 
         private void Start()
@@ -132,7 +133,6 @@ namespace Ultraleap.ScreenControl.Core
         public void ReturnToHome()
         {
             ChangeScreen(homeScreen);
-            HandManager.Instance.UpdateLeapTrackingMode();
         }
 
         public void PreviousScreen()
