@@ -19,6 +19,10 @@ namespace Ultraleap.ScreenControl.Service
         void OnLostAllConnections()
         {
             Core.ConfigManager.LoadConfigsFromFiles();
+            Core.ConfigManager.InteractionConfig.ConfigWasUpdated();
+            Core.ConfigManager.PhysicalConfig.ConfigWasUpdated();
+            Core.ConfigManager.GlobalSettings.CreateVirtualScreen();
+            Debug.Log("lost all");
         }
     }
 }
