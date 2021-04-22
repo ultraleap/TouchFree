@@ -45,6 +45,14 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // be listened to.
         public static event ClientInputActionEvent TransmitInputAction;
 
+        // Variable: HandFound
+        // An event allowing users to react to a hand being found when none has been present for a moment.
+        public static event Action HandFound;
+
+        // Variable: HandsLost
+        // An event allowing users to react to the last hand being lost when one has been present.
+        public static event Action HandsLost;
+
         // Variable: iPAddress
         // The IP Address that will be used in the <ServiceConnection> to connect to the target WebSocket.
         // This value is settable in the Inspector.
@@ -100,6 +108,21 @@ namespace Ultraleap.ScreenControl.Client.Connection
             }
         }
 
+        // Function: HandleHandPresenceEvent
+        // Called by the <MessageReciever> to pass HandPresence events via the <HandFound> and
+        // <HandsLost> events on this class
+        internal static void HandleHandPresenceEvent(HandPresenceState _state)
+        {
+            if (_state == HandPresenceState.HAND_FOUND)
+            {
+                HandFound?.Invoke();
+            }
+            else
+            {
+                HandsLost?.Invoke();
+            }
+        }
+
         // Group: Unity monoBehaviour overrides
 
         // Function: Awake
@@ -114,8 +137,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Function: OnEnable
         // Unity's OnEnable function for handling when the behaviour is enabled. Connects
         // to SC Service if not already connected.
-        private void OnEnable() {
-            if (currentServiceConnection == null) {
+        private void OnEnable()
+        {
+            if (currentServiceConnection == null)
+            {
                 Connect();
             }
         }
@@ -123,7 +148,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Function: OnDisable
         // Unity's OnDisable function for handling when the behaviour is disabled. Disconnects
         // from SC Service to prevent caching any new incoming inputs.
-        private void OnDisable() {
+        private void OnDisable()
+        {
             Disconnect();
         }
 

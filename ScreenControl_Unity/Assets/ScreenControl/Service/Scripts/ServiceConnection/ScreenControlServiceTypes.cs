@@ -10,7 +10,14 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
         SET_CONFIGURATION_STATE,
         REQUEST_CONFIGURATION_STATE,
         VERSION_HANDSHAKE,
-        VERSION_HANDSHAKE_RESPONSE
+        VERSION_HANDSHAKE_RESPONSE,
+        HAND_PRESENCE_EVENT
+    }
+
+    public enum HandPresenceState
+    {
+        HAND_FOUND,
+        HANDS_LOST
     }
 
     internal enum Compatibility
@@ -32,6 +39,17 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
             requestID = _id;
             interaction = _interaction;
             physical = _physical;
+        }
+    }
+
+    [Serializable]
+    public struct HandPresenceEvent
+    {
+        public HandPresenceState state;
+
+        public HandPresenceEvent(HandPresenceState _state)
+        {
+            state = _state;
         }
     }
 

@@ -18,7 +18,20 @@ namespace Ultraleap.ScreenControl.Client.Connection
         SET_CONFIGURATION_STATE,
         REQUEST_CONFIGURATION_STATE,
         VERSION_HANDSHAKE,
-        VERSION_HANDSHAKE_RESPONSE
+        VERSION_HANDSHAKE_RESPONSE,
+        HAND_PRESENCE_EVENT
+    }
+
+    // Enum: HandPresenceState
+    // HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
+    // HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
+    // PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
+    //             use in <MessageReciever> for more details.
+    public enum HandPresenceState
+    {
+        HAND_FOUND,
+        HANDS_LOST,
+        PROCESSED
     }
 
     // Enum: Compatibility
@@ -30,6 +43,20 @@ namespace Ultraleap.ScreenControl.Client.Connection
         COMPATIBLE,
         SERVICE_OUTDATED,
         CLIENT_OUTDATED
+    }
+
+    // Struct HandPresenceEvent
+    // This struct is the format events relating to the presence of hands (a hand being found or all
+    // hands being lost) are passed across in from the Service.
+    [Serializable]
+    public struct HandPresenceEvent
+    {
+        public HandPresenceState state;
+
+        public HandPresenceEvent(HandPresenceState _state)
+        {
+            state = _state;
+        }
     }
 
     // Struct: ConfigState

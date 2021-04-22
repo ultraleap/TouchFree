@@ -23,7 +23,7 @@ gulp.task('browserify', function () {
         .on('error', (error) => { console.error(error); })
         .pipe(source('ScreenControl_Client.js'))
         .pipe(buffer())
-        .pipe(gulp.dest('./build/dist/'));
+        .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('build',

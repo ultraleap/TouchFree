@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Ultraleap.ScreenControl.Client.Connection;
 
 namespace Ultraleap.ScreenControl.Client.Cursors
 {
@@ -169,13 +170,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     break;
 
                 case InputType.CANCEL:
-                    HideCursor();
                     break;
-            }
-
-            if(hidingCursor && _inputData.InputType != InputType.CANCEL)
-            {
-                ShowCursor();
             }
         }
 
@@ -194,11 +189,25 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
         }
 
+        // Function: OnDisable
+        // This override of Unity's OnDisable feature of MonoBehaviour does the teardown of this
+        // Cursor when it is disabled.
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            ConnectionManager.HandFound -= ShowCursor;
+            ConnectionManager.HandsLost -= HideCursor;
+        }
+
         // Function: InitialiseCursor
         // This override ensures that the DotCursor is properly set up with relative scales and
         // sorting orders for the ring sprites.
         protected override void InitialiseCursor()
         {
+            ConnectionManager.HandFound += ShowCursor;
+            ConnectionManager.HandsLost += HideCursor;
+
             bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
             cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);

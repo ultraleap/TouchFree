@@ -8,6 +8,7 @@ import {
     ConfigChangeRequest,
     ConfigState,
     ConfigStateCallback,
+    HandPresenceEvent,
     ResponseCallback,
     WebSocketResponse
 } from './ScreenControlServiceTypes';
@@ -102,6 +103,11 @@ export class ServiceConnection {
             case ActionCode.CONFIGURATION_STATE:
                 let configState: ConfigState = looseData.content;
                 ConnectionManager.messageReceiver.configStateQueue.push(configState);
+                break;
+
+            case ActionCode.HAND_PRESENCE_EVENT:
+                let handEvent: HandPresenceEvent = looseData.content;
+                ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
                 break;
 
             case ActionCode.VERSION_HANDSHAKE_RESPONSE:
