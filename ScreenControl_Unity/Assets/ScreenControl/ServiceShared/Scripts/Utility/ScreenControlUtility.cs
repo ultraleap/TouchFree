@@ -43,5 +43,27 @@ namespace Ultraleap.ScreenControl.Core
         {
             return _value / ConfigToDisplayMeasurementMultiplier;
         }
+
+        /// <summary>
+        ///    Ensure the calculated rotations make sense to the UI by avoiding large values.
+        ///    Angles are centred around 0, with the smallest representation of the value
+        /// </summary>
+        public static float CentreRotationAroundZero(float angle)
+        {
+            angle = angle % 360;
+
+            if (angle > 180)
+            {
+                return angle - 360;
+            }
+            else if (angle < -180)
+            {
+                return angle + 360;
+            }
+            else
+            {
+                return angle;
+            }
+        }
     }
 }

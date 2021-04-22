@@ -178,31 +178,38 @@ namespace Ultraleap.ScreenControl.Core
 
         public void SetLeapTrackingMode(MountingType _mount)
         {
+            Controller leapController = ((LeapServiceProvider)Hands.Provider).GetLeapController();
+
             switch (_mount)
             {
                 case MountingType.NONE:
                 case MountingType.BELOW:
-                    ((LeapServiceProvider)Hands.Provider).GetLeapController().ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
+                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
 
                     if (screenTopAvailable)
                     {
-                        ((LeapServiceProvider)Hands.Provider).GetLeapController().ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                        leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     }
                     break;
                 case MountingType.ABOVE_FACING_USER:
-                    if (screenTopAvailable)
-                    {
-                        ((LeapServiceProvider)Hands.Provider).GetLeapController().SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    }
-                    ((LeapServiceProvider)Hands.Provider).GetLeapController().ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-                    break;
-                case MountingType.ABOVE_FACING_SCREEN:
-                    ((LeapServiceProvider)Hands.Provider).GetLeapController().SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
+                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
 
                     if (screenTopAvailable)
                     {
-                        ((LeapServiceProvider)Hands.Provider).GetLeapController().ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                        leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     }
+                    break;
+                case MountingType.ABOVE_FACING_SCREEN:
+                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
+
+                    if (screenTopAvailable)
+                    {
+                        leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    }
+
+                    leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
         }

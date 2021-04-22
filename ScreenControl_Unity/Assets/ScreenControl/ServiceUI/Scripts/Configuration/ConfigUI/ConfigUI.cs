@@ -53,24 +53,6 @@ namespace Ultraleap.ScreenControl.Core
             return val;
         }
 
-        protected string TryParseHexColour(ref string _original, string _newColourHex)
-        {
-            // Strip out non-hexidecimal characters, including #.
-            _newColourHex = Regex.Replace(_newColourHex, @"[^0-9abcdefABCDEF]+", "");
-
-            if (!_newColourHex.StartsWith("#"))
-            {
-                _newColourHex = "#" + _newColourHex; // Add hex denotion # to start of the string.
-            }
-
-            if (!ColorUtility.TryParseHtmlString(_newColourHex, out _))
-            {
-                return _original; // string was not compatible!
-            }
-
-            return _newColourHex;
-        }
-
         protected void OnValueChanged(string _)
         {
             OnValueChanged();
