@@ -26,14 +26,18 @@ namespace Ultraleap.ScreenControl.Client
 
                 case TypeCode.Decimal:
                 case TypeCode.Double:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
                 case TypeCode.Single:
                 case TypeCode.UInt16:
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
                     json += _obj;
+                    break;
+
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    // explicitly parse to int so ENUMs are handled properly
+                    json += (int)_obj;
                     break;
 
                 case TypeCode.String:

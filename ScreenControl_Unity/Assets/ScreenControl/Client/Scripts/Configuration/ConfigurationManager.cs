@@ -24,6 +24,10 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // Function: RequestConfigChange
         // Takes in an <InteractionConfig> and a <PhysicalConfig>, transforms them both into the
         // appropriate form to go over the websocket, before sending it through the <ConnectionManager>
+        //
+        // WARNING!
+        // If a user changes ANY values via the ScreenControl Service Settings UI,
+        // values set from a client via this function will be discarded.
         public static void RequestConfigChange(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {
             string action = ActionCode.SET_CONFIGURATION_STATE.ToString();

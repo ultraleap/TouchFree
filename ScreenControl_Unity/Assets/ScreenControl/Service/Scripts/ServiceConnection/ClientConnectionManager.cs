@@ -1,3 +1,5 @@
+using System;
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -18,6 +20,8 @@ namespace Ultraleap.ScreenControl.Service
         private WebSocketServer wsServer = null;
         private List<ClientConnection> activeConnections = new List<ClientConnection>();
         public WebSocketReceiver receiverQueue;
+
+        public event Action LostAllConnections;
 
         public short port = 9739;
 
@@ -74,6 +78,12 @@ namespace Ultraleap.ScreenControl.Service
         internal void RemoveConnection(ClientConnection _connection)
         {
             activeConnections.Remove(_connection);
+
+            if(activeConnections.Count < 1)
+            {
+                // there are no connections
+                LostAllConnections?.Invoke();
+            }
         }
 
         private void InitialiseServer()
