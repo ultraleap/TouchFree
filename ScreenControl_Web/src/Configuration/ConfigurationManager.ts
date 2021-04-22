@@ -23,6 +23,10 @@ export class ConfigurationManager {
     // 
     // Provide a _callBack if you require confirmation that your settings were used correctly.
     // If your _callBack requires context it should be bound to that context via .bind().
+    //
+    // WARNING!
+    // If a user changes ANY values via the ScreenControl Service Settings UI,
+    // values set from a client via this function will be discarded.
     public static RequestConfigChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
