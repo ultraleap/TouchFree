@@ -9,7 +9,7 @@ variables:
   SC_CFU_VERSION: 'alpha5'
   SC_CFW_VERSION: 'alpha5'
   SC_SRV_VERSION: 'alpha5'
-  SC_API_VERSION: '1.0.2'
+  SC_API_VERSION: '1.0.3'
 
 stages:
   - build
@@ -77,7 +77,7 @@ SC_Client::Web::build:
     # Package Client
     - mkdir ./Client_Release
     - cp ${env:SC_CFW_PATH}/Version.txt ./Client_Release
-    - cp -r ${env:SC_CFW_PATH}/build/dist ./Client_Release
+    - cp -r ${env:SC_CFW_PATH}/dist ./Client_Release
     - cp -r ${env:SC_CFW_PATH}/examples ./Client_Release
   artifacts:
     name: "Client_for_Web_Build_${env:CI_COMMIT_SHORT_SHA}"

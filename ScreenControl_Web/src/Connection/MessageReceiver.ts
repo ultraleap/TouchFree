@@ -1,8 +1,9 @@
 import {
-    WebSocketResponse,
-    ResponseCallback,
     ConfigState,
-    ConfigStateCallback
+    ConfigStateCallback,
+    HandPresenceState,
+    ResponseCallback,
+    WebSocketResponse,
 } from './ScreenControlServiceTypes';
 import {
     ClientInputAction,
@@ -56,6 +57,8 @@ export class MessageReceiver {
     // A dictionary of unique request IDs and <ConfigStateCallback> that represent requests that are awaiting response from the Service.
     configStateCallbacks: { [id: string]: ConfigStateCallback; } = {};
 
+    lastStateUpdate: HandPresenceState;
+
     // Variable: callbackClearInterval
     // Stores the reference number for the interal running <ClearUnresponsiveCallbacks>, allowing
     // it to be cleared.
@@ -71,6 +74,7 @@ export class MessageReceiver {
     // Starts the two regular intervals managed for this (running <ClearUnresponsiveCallbacks> on an
     // interval of <callbackClearTimer> and <Update> on an interval of updateDuration
     constructor() {
+        this.lastStateUpdate = HandPresenceState.PROCESSED;
         this.updateDuration = (1 / this.updateRate) * 1000;
 
         this.callbackClearInterval = setInterval(
@@ -172,6 +176,11 @@ export class MessageReceiver {
             let converted: ClientInputAction = ConvertInputAction(action);
 
             ConnectionManager.HandleInputAction(converted);
+        }
+
+        if (this.lastStateUpdate != HandPresenceState.PROCESSED) {
+            ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
+            this.lastStateUpdate = HandPresenceState.PROCESSED;
         }
     }
 

@@ -8,7 +8,7 @@ namespace Ultraleap.ScreenControl.Core
     {
         public static class VersionInfo
         {
-            public static readonly Version ApiVersion = new Version("1.0.2");
+            public static readonly Version ApiVersion = new Version("1.0.3");
             public const string API_HEADER_NAME = "ScApiVersion";
         }
 
@@ -22,7 +22,7 @@ namespace Ultraleap.ScreenControl.Core
             public readonly Vector2 CursorPosition;
             public readonly float DistanceFromScreen;
             public readonly float ProgressToClick;
-            public CoreInputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions,float _distanceFromScreen, float _progressToClick)
+            public CoreInputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _distanceFromScreen, float _progressToClick)
             {
                 Timestamp = _timestamp;
                 InteractionType = _interactionType;

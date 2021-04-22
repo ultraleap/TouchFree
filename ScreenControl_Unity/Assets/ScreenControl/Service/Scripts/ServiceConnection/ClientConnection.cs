@@ -37,6 +37,18 @@ namespace Ultraleap.ScreenControl.Service
             Send(jsonMessage);
         }
 
+        public void SendHandPresenceEvent(HandPresenceEvent _response)
+        {
+            CommunicationWrapper<HandPresenceEvent> message =
+                new CommunicationWrapper<HandPresenceEvent>(
+                    ActionCode.HAND_PRESENCE_EVENT.ToString(),
+                    _response);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            Send(jsonMessage);
+        }
+
         public void SendHandshakeResponse(ResponseToClient _response)
         {
             CommunicationWrapper<ResponseToClient> message =

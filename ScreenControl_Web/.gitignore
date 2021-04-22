@@ -6,3 +6,4 @@
 ./src/**.js
 ./test/*.js
 ./test/**/*.js
+dist

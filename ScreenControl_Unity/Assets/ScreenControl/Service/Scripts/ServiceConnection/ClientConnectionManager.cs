@@ -32,6 +32,31 @@ namespace Ultraleap.ScreenControl.Service
             InitialiseServer();
         }
 
+        private void OnHandFound()
+        {
+            foreach (ClientConnection _connection in activeConnections)
+            {
+                if (_connection.ConnectionState == WebSocketState.Open)
+                {
+                    HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HAND_FOUND);
+
+                    _connection.SendHandPresenceEvent(handFoundEvent);
+                }
+            }
+        }
+        private void OnHandsLost()
+        {
+            foreach (ClientConnection _connection in activeConnections)
+            {
+                if (_connection.ConnectionState == WebSocketState.Open)
+                {
+                    HandPresenceEvent handsLostEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
+
+                    _connection.SendHandPresenceEvent(handsLostEvent);
+                }
+            }
+        }
+
         void OnDestroy()
         {
             InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
@@ -64,6 +89,9 @@ namespace Ultraleap.ScreenControl.Service
             wsServer.ReuseAddress = true;
             wsServer.Start();
 
+            HandManager.Instance.HandFound += OnHandFound;
+            HandManager.Instance.HandsLost += OnHandsLost;
+
             // This is here so the test infrastructure has some sign that the app is ready
             Debug.Log("Service Setup Complete");
         }
@@ -90,7 +118,7 @@ namespace Ultraleap.ScreenControl.Service
                 return;
             }
 
-            foreach(ClientConnection connection in activeConnections)
+            foreach (ClientConnection connection in activeConnections)
             {
                 if (connection.ConnectionState == WebSocketState.Open)
                 {
@@ -101,7 +129,7 @@ namespace Ultraleap.ScreenControl.Service
 
         public void SendConfigChangeResponse(ResponseToClient _response)
         {
-            foreach(ClientConnection connection in activeConnections)
+            foreach (ClientConnection connection in activeConnections)
             {
                 if (connection.ConnectionState == WebSocketState.Open)
                 {

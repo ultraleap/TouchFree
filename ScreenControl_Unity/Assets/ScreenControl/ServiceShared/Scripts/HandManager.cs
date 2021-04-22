@@ -27,6 +27,9 @@ namespace Ultraleap.ScreenControl.Core
         public Hand SecondaryHand;
         Chirality secondaryChirality;
 
+        public event Action HandFound;
+        public event Action HandsLost;
+
         bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
         bool PrimaryIsRight => PrimaryHand != null && !PrimaryHand.IsLeft;
         bool SecondaryIsLeft => SecondaryHand != null && SecondaryHand.IsLeft;
@@ -75,6 +78,8 @@ namespace Ultraleap.ScreenControl.Core
 
         [HideInInspector] public bool screenTopAvailable = false;
 
+        private int handsLastFrame;
+
         void Awake()
         {
             if (Instance != null)
@@ -83,6 +88,7 @@ namespace Ultraleap.ScreenControl.Core
                 return;
             }
             Instance = this;
+            handsLastFrame = 0;
 
             PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
             CheckLeapVersionForScreentop();
@@ -210,17 +216,31 @@ namespace Ultraleap.ScreenControl.Core
 
         private void Update()
         {
-            if (useTrackingTransform)
+            var currentFrame = Hands.Provider.CurrentFrame;
+            var handCount = currentFrame.Hands.Count;
+
+            if (handCount == 0 && handsLastFrame > 0)
             {
-                Hands.Provider.CurrentFrame.Transform(TrackingTransform);
+                HandsLost?.Invoke();
+            }
+            else if (handCount > 0 && handsLastFrame == 0)
+            {
+                HandFound?.Invoke();
             }
 
-            Timestamp = Hands.Provider.CurrentFrame.Timestamp;
+            handsLastFrame = handCount;
+
+            if (useTrackingTransform)
+            {
+                currentFrame.Transform(TrackingTransform);
+            }
+
+            Timestamp = currentFrame.Timestamp;
 
             Hand leftHand = null;
             Hand rightHand = null;
 
-            foreach(Hand hand in Hands.Provider.CurrentFrame.Hands)
+            foreach (Hand hand in currentFrame.Hands)
             {
                 if (hand.IsLeft)
                     leftHand = hand;

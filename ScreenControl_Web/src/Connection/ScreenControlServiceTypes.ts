@@ -19,6 +19,19 @@ export enum ActionCode {
     REQUEST_CONFIGURATION_STATE = "REQUEST_CONFIGURATION_STATE",
     VERSION_HANDSHAKE = "VERSION_HANDSHAKE",
     VERSION_HANDSHAKE_RESPONSE = "VERSION_HANDSHAKE_RESPONSE",
+    HAND_PRESENCE_EVENT = "HAND_PRESENCE_EVENT",
+}
+
+// Enum: HandPresenceState
+// HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
+// HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
+// PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
+//             use in <MessageReciever> for more details.
+export enum HandPresenceState
+{
+    HAND_FOUND,
+    HANDS_LOST,
+    PROCESSED,
 }
 
 // Enum: Compatibility
@@ -29,6 +42,16 @@ export enum Compatibility {
     COMPATIBLE,
     SERVICE_OUTDATED,
     CLIENT_OUTDATED
+}
+
+export class HandPresenceEvent
+{
+    state: HandPresenceState;
+
+    constructor(_state: HandPresenceState)
+    {
+        this.state = _state;
+    }
 }
 
 // Class: ConfigState

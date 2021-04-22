@@ -1,6 +1,7 @@
 
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
+import { HandPresenceState } from "./ScreenControlServiceTypes";
 import { ClientInputAction } from "../ScreenControlTypes";
 
 // Class: ConnectionManager
@@ -85,12 +86,28 @@ export class ConnectionManager extends EventTarget {
     // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
     public static HandleInputAction(_action: ClientInputAction): void {
-        let inputActionEvent: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction> (
+        let inputActionEvent: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction>(
             'TransmitInputAction',
             { detail: _action }
         );
 
         ConnectionManager.instance.dispatchEvent(inputActionEvent);
+    }
+
+    // Function: HandleHandPresenceEvent
+    // Called by the <MessageReciever> to pass HandPresence events via the <HandFound> and
+    // <HandsLost> events on this class
+    public static HandleHandPresenceEvent(_state: HandPresenceState): void {
+        let handPresenceEvent: CustomEvent;
+
+        if (_state === HandPresenceState.HAND_FOUND) {
+            handPresenceEvent = new CustomEvent('HandFound');
+        }
+        else {
+            handPresenceEvent = new CustomEvent('HandsLost');
+        }
+
+        ConnectionManager.instance.dispatchEvent(handPresenceEvent);
     }
 
     // Function: Disconnect
