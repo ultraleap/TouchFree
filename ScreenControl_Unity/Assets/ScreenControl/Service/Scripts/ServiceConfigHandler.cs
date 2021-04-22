@@ -21,8 +21,6 @@ namespace Ultraleap.ScreenControl.Service
             Core.ConfigManager.LoadConfigsFromFiles();
             Core.ConfigManager.InteractionConfig.ConfigWasUpdated();
             Core.ConfigManager.PhysicalConfig.ConfigWasUpdated();
-            Core.ConfigManager.GlobalSettings.CreateVirtualScreen();
-            Debug.Log("lost all");
         }
     }
 }
