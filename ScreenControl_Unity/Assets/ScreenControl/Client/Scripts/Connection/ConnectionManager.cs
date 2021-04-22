@@ -109,7 +109,8 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: HandleHandPresenceEvent
-        // Called by the <MessageReciever> to pass HandPresence events via the <HandFound> and <HandsLost> events on this
+        // Called by the <MessageReciever> to pass HandPresence events via the <HandFound> and
+        // <HandsLost> events on this class
         internal static void HandleHandPresenceEvent(HandPresenceState _state)
         {
             if (_state == HandPresenceState.HAND_FOUND)

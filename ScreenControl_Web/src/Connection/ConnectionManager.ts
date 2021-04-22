@@ -94,6 +94,9 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.instance.dispatchEvent(inputActionEvent);
     }
 
+    // Function: HandleHandPresenceEvent
+    // Called by the <MessageReciever> to pass HandPresence events via the <HandFound> and
+    // <HandsLost> events on this class
     public static HandleHandPresenceEvent(_state: HandPresenceState): void {
         let handPresenceEvent: CustomEvent;
 
