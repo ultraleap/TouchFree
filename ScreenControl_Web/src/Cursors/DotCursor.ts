@@ -198,6 +198,7 @@ export class DotCursor extends TouchlessCursor {
     // Used to make the cursor visible, fades over time
     ShowCursor(): void {
         this.hidingCursor = false;
+        clearInterval(this.currentFadingInterval);
         this.currentFadingInterval = setInterval(
             this.FadeCursorIn.bind(this) as TimerHandler,
             this.animationUpdateDuration);
@@ -207,6 +208,7 @@ export class DotCursor extends TouchlessCursor {
     // Used to make the cursor invisible, fades over time
     HideCursor(): void {
         this.hidingCursor = true;
+        clearInterval(this.currentFadingInterval);
         this.currentFadingInterval = setInterval(
             this.FadeCursorOut.bind(this) as TimerHandler,
             this.animationUpdateDuration);
@@ -218,7 +220,6 @@ export class DotCursor extends TouchlessCursor {
         currentOpacity += 0.05;
 
         this.cursor.style.opacity = currentOpacity.toString();
-        this.cursorRing.style.opacity = currentOpacity.toString();
 
         if (currentOpacity >= 1) {
             clearInterval(this.currentFadingInterval);
@@ -233,7 +234,10 @@ export class DotCursor extends TouchlessCursor {
         currentOpacity -= 0.05;
 
         this.cursor.style.opacity = currentOpacity.toString();
-        this.cursorRing.style.opacity = currentOpacity.toString();
+
+        if (parseFloat(this.cursorRing.style.opacity) > 0) {
+            this.cursorRing.style.opacity = currentOpacity.toString();
+        }
 
         if (currentOpacity <= 0) {
             clearInterval(this.currentFadingInterval);

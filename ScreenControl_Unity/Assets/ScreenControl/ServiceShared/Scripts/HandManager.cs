@@ -27,9 +27,8 @@ namespace Ultraleap.ScreenControl.Core
         public Hand SecondaryHand;
         Chirality secondaryChirality;
 
-        public delegate void HandPresenceEvent();
-        public event HandPresenceEvent HandFound;
-        public event HandPresenceEvent HandsLost;
+        public event Action HandFound;
+        public event Action HandsLost;
 
         bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
         bool PrimaryIsRight => PrimaryHand != null && !PrimaryHand.IsLeft;

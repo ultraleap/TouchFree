@@ -1,4 +1,5 @@
 ScreenControl.Connection.ConnectionManager.init();
+addEventListener("keypress", () => { OnLoaded(); });
 
 window.onload = function () {
     var cursorRing = document.createElement('img');
@@ -26,4 +27,29 @@ window.onload = function () {
 
     var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
     var inputSystem = new ScreenControl.InputControllers.WebInputController();
+}
+
+function OnLoaded() {
+    ScreenControl.Configuration.ConfigurationManager.RequestConfigState(OnInitialConfigReciept);
+}
+
+function OnInitialConfigReciept(_state) {
+    console.log("Initial:")
+    console.dir(_state);
+
+    let newIntConfig = {
+        DeadzoneRadius: 0.013
+    };
+
+    ScreenControl.Configuration.ConfigurationManager.RequestConfigChange(newIntConfig, null, OnConfigComplete);
+}
+
+function OnConfigComplete(_response) {
+    console.log("Config completed! Requesting updated state");
+    ScreenControl.Configuration.ConfigurationManager.RequestConfigState(OnConfigReciept);
+}
+
+function OnConfigReciept(_state) {
+    console.log("Updated:")
+    console.dir(_state);
 }

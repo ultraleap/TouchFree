@@ -189,6 +189,17 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
         }
 
+        // Function: OnDisable
+        // This override of Unity's OnDisable feature of MonoBehaviour does the teardown of this
+        // Cursor when it is disabled.
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            ConnectionManager.HandFound -= ShowCursor;
+            ConnectionManager.HandsLost -= HideCursor;
+        }
+
         // Function: InitialiseCursor
         // This override ensures that the DotCursor is properly set up with relative scales and
         // sorting orders for the ring sprites.

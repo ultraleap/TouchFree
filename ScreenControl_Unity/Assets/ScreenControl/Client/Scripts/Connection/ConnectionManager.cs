@@ -45,9 +45,13 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // be listened to.
         public static event ClientInputActionEvent TransmitInputAction;
 
-        public delegate void HandPresenceEvent();
-        public static event HandPresenceEvent HandFound;
-        public static event HandPresenceEvent HandsLost;
+        // Variable: HandFound
+        // An event allowing users to react to a hand being found when none has been present for a moment.
+        public static event Action HandFound;
+
+        // Variable: HandsLost
+        // An event allowing users to react to the last hand being lost when one has been present.
+        public static event Action HandsLost;
 
         // Variable: iPAddress
         // The IP Address that will be used in the <ServiceConnection> to connect to the target WebSocket.
@@ -68,18 +72,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
         public static void HandleInputAction(ClientInputAction _action)
         {
             TransmitInputAction?.Invoke(_action);
-        }
-
-        public static void HandleHandPresenceEvent(HandPresenceState _state)
-        {
-            if (_state == HandPresenceState.HAND_FOUND)
-            {
-                HandFound?.Invoke();
-            }
-            else
-            {
-                HandsLost?.Invoke();
-            }
         }
 
         // Function: AddConnectionListener
@@ -113,6 +105,20 @@ namespace Ultraleap.ScreenControl.Client.Connection
             {
                 currentServiceConnection.Disconnect();
                 currentServiceConnection = null;
+            }
+        }
+
+        // Function: HandleHandPresenceEvent
+        // Called by the <MessageReciever> to pass HandPresence events via the <HandFound> and <HandsLost> events on this
+        internal static void HandleHandPresenceEvent(HandPresenceState _state)
+        {
+            if (_state == HandPresenceState.HAND_FOUND)
+            {
+                HandFound?.Invoke();
+            }
+            else
+            {
+                HandsLost?.Invoke();
             }
         }
 

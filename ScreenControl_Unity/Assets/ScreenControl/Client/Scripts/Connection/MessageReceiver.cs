@@ -44,7 +44,9 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ConfigStateCallback> configStateCallbacks = new Dictionary<string, ConfigStateCallback>();
 
-        internal HandPresenceState lastStateUpdate;
+        // Used to store HandPresenceState changes as they are recieved and emit messages
+        // appropriately. "PROCESSED" when there are no unprocessed changes.
+        internal HandPresenceState handState;
 
         // Group: Functions
 
@@ -52,7 +54,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Unity's initialization function. Used to begin the <ClearUnresponsiveCallbacks> coroutine.
         void Start()
         {
-            lastStateUpdate = HandPresenceState.PROCESSED;
+            handState = HandPresenceState.PROCESSED;
             StartCoroutine(ClearUnresponsiveCallbacks());
         }
 
@@ -160,10 +162,10 @@ namespace Ultraleap.ScreenControl.Client.Connection
                 ConnectionManager.HandleInputAction(action);
             }
 
-            if (lastStateUpdate != HandPresenceState.PROCESSED)
+            if (handState != HandPresenceState.PROCESSED)
             {
-                ConnectionManager.HandleHandPresenceEvent(lastStateUpdate);
-                lastStateUpdate = HandPresenceState.PROCESSED;
+                ConnectionManager.HandleHandPresenceEvent(handState);
+                handState = HandPresenceState.PROCESSED;
             }
         }
 

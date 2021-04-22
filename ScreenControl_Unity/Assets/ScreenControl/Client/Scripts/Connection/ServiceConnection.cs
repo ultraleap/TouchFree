@@ -114,7 +114,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
                     break;
                 case ActionCode.HAND_PRESENCE_EVENT:
                     HandPresenceEvent handEvent = JsonUtility.FromJson<HandPresenceEvent>(content);
-                    ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
+                    ConnectionManager.messageReceiver.handState = handEvent.state;
                     break;
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
