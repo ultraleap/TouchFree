@@ -25,7 +25,7 @@ namespace Ultraleap.ScreenControl.Core
             }
         }
 
-        static readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap/ScreenControl/Configuration/");
+        static readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\ScreenControl\\Configuration\\");
 
         public static void CheckForConfigDirectoryChange()
         {
