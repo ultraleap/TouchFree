@@ -94,6 +94,14 @@ namespace Ultraleap.ScreenControl.Service
             ClientConnectionManager.Instance.RemoveConnection(this);
         }
 
+        private void SendInitialHandState()
+        {
+            if (ClientConnectionManager.Instance.missedHandPresenceEvent.HasValue)
+            {
+                this.SendHandPresenceEvent(ClientConnectionManager.Instance.missedHandPresenceEvent.Value);
+            }
+        }
+
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)
         {
             Version clientVersionParsed = new Version(_clientVersion);
@@ -212,6 +220,7 @@ namespace Ultraleap.ScreenControl.Service
                     response.message = "Handshake Successful";
                     Debug.Log("Handshake Successful");
                     SendHandshakeResponse(response);
+                    SendInitialHandState();
                     return;
                 case Compatibility.CLIENT_OUTDATED:
                     response.message = "Handshake Failed: Client is outdated relative to Service.";
