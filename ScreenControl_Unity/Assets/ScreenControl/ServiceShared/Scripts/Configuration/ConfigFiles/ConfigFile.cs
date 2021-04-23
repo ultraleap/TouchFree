@@ -35,8 +35,6 @@ namespace Ultraleap.ScreenControl.Core
             remove { Instance._OnConfigFileUpdated -= value; }
         }
 
-        public static readonly string ConfigFileDirectory = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData), "Ultraleap/ScreenControl/Configuration/");
-
         public abstract string ConfigFileName { get; }
 
         public static string ConfigFilePath => Instance._ConfigFilePath;
@@ -65,7 +63,7 @@ namespace Ultraleap.ScreenControl.Core
         #region Internal
 
         private event Action _OnConfigFileUpdated;
-        protected virtual string _ConfigFilePath => Path.Combine(ConfigFileDirectory, ConfigFileName);
+        protected virtual string _ConfigFilePath => Path.Combine(ConfigFileUtils.ConfigFileDirectory, ConfigFileName);
 
         protected TData LoadConfig_Internal()
         {
@@ -88,7 +86,7 @@ namespace Ultraleap.ScreenControl.Core
 
         private bool DoesConfigFileExist()
         {
-            if (!Directory.Exists(ConfigFileDirectory))
+            if (!Directory.Exists(ConfigFileUtils.ConfigFileDirectory))
             {
                 return false;
             }
@@ -103,10 +101,10 @@ namespace Ultraleap.ScreenControl.Core
 
         private void CreateDefaultConfigFile()
         {
-            Directory.CreateDirectory(ConfigFileDirectory);
+            Directory.CreateDirectory(ConfigFileUtils.ConfigFileDirectory);
             RequestConfigFilePermissions();
             File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(new TData(), true));
-            Debug.LogWarning($"No {ConfigFileName} file found in {ConfigFileDirectory}. One has been generated for you with default values.");
+            Debug.LogWarning($"No {ConfigFileName} file found in {ConfigFileUtils.ConfigFileDirectory}. One has been generated for you with default values.");
         }
 
         void RequestConfigFilePermissions()
@@ -127,9 +125,9 @@ namespace Ultraleap.ScreenControl.Core
                 PropagationFlags.InheritOnly,
                 AccessControlType.Allow);
 
-            directorySecurity = Directory.GetAccessControl(ConfigFileDirectory);
+            directorySecurity = Directory.GetAccessControl(ConfigFileUtils.ConfigFileDirectory);
             directorySecurity.ModifyAccessRule(AccessControlModification.Add, rule, out _);
-            Directory.SetAccessControl(ConfigFileDirectory, directorySecurity);
+            Directory.SetAccessControl(ConfigFileUtils.ConfigFileDirectory, directorySecurity);
         }
 
         #endregion

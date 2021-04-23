@@ -53,7 +53,14 @@ namespace Ultraleap.ScreenControl.Core
 
             if (paths.Length > 0)
             {
-                fileLocation.text = paths[0];
+                if(ConfigFileUtils.ChangeConfigFileDirectory(paths[0]))
+                {
+                    fileLocation.text = paths[0];
+                }
+                else
+                {
+                    // Path could not be set because it was not valid
+                }
             }
         }
     }
