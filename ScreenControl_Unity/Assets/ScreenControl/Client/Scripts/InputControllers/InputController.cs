@@ -5,7 +5,7 @@ using Ultraleap.ScreenControl.Client.Connection;
 namespace Ultraleap.ScreenControl.Client.InputControllers
 {
     // Class: InputController
-    // A layer over Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
+    // A layer over Unity's <BaseInput> : https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html
     // that connects the BaseInput to ScreenControl's <ClientInputActions> as they are
     // provided. Contains setup functions allowing inheritors to define only the input behaviour
     // they wish to see.

@@ -108,6 +108,7 @@ namespace Ultraleap.ScreenControl.Core
                 file.CopyTo(path, true);
                 file.Delete();
             }
+            dir.Delete();
         }
     }
 }

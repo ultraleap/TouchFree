@@ -21,6 +21,8 @@ namespace Ultraleap.ScreenControl.Core
         {
             resolutionWidth.text = ConfigManager.PhysicalConfig.ScreenWidthPX.ToString();
             resolutionHeight.text = ConfigManager.PhysicalConfig.ScreenHeightPX.ToString();
+
+            fileLocation.text = ConfigFileUtils.ConfigFileDirectory;
         }
 
         public void SetResolution()
