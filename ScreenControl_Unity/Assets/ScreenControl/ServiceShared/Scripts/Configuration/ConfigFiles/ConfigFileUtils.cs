@@ -97,8 +97,17 @@ namespace Ultraleap.ScreenControl.Core
 
             regKey.SetValue("ConfigFileDirectory", _newPath);
             regKey.Close();
-            // copy the files from the current location to the new one
-            Directory.Move(_oldPath, _newPath);
+
+            //// copy the files from the current location to the new one
+            DirectoryInfo dir = new DirectoryInfo(_oldPath);
+            FileInfo[] fileInfos = dir.GetFiles();
+
+            foreach (FileInfo file in fileInfos)
+            {
+                string path = Path.Combine(_newPath, file.Name);
+                file.CopyTo(path, true);
+                file.Delete();
+            }
         }
     }
 }
