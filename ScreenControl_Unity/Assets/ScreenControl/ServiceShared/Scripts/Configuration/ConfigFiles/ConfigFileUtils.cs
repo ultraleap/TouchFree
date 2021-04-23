@@ -109,6 +109,8 @@ namespace Ultraleap.ScreenControl.Core
                 file.Delete();
             }
             dir.Delete();
+
+            GetConfigFileDirectory();
         }
     }
 }
