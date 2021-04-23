@@ -50,6 +50,7 @@ namespace Ultraleap.ScreenControl.Service
                 }
             }
 
+            // Cache handPresenceEvent when no clients are connected
             if (activeConnections.Count == 0)
             {
                 missedHandPresenceEvent = handFoundEvent;
@@ -67,6 +68,7 @@ namespace Ultraleap.ScreenControl.Service
                 }
             }
 
+            // Cache handPresenceEvent when no clients are connected
             if (activeConnections.Count == 0) {
                 missedHandPresenceEvent = handsLostEvent;
             }
@@ -84,6 +86,7 @@ namespace Ultraleap.ScreenControl.Service
                 activeConnections.Add(_connection);
                 Debug.Log("Connection set up");
 
+                // Send cached handPresenceEvent on first connection
                 if (missedHandPresenceEvent.HasValue) {
                     _connection.SendHandPresenceEvent(missedHandPresenceEvent.Value);
                 }
