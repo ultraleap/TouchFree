@@ -48,10 +48,13 @@ namespace Ultraleap.ScreenControl.Core
 
                     if(Directory.Exists(path))
                     {
+                        regKey.Close();
                         configFileDirectory = path;
                         return;
                     }
                 }
+
+                regKey.Close();
             }
 
             // else
@@ -84,16 +87,16 @@ namespace Ultraleap.ScreenControl.Core
         static void MoveConfigDirectory(string _newPath, string _oldPath)
         {
             // set the new directory path in the registry
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings");
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings", true);
 
             if (regKey == null)
             {
                 // make a new one
-                regKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings");
+                regKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings", true);
             }
 
             regKey.SetValue("ConfigFileDirectory", _newPath);
-
+            regKey.Close();
             // copy the files from the current location to the new one
             Directory.Move(_oldPath, _newPath);
         }
