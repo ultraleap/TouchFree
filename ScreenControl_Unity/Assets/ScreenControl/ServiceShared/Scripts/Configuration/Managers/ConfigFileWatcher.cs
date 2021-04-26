@@ -15,29 +15,32 @@ namespace Ultraleap.ScreenControl.Core
         private void Start()
         {
             interactionWatcher = new FileSystemWatcher();
-            interactionWatcher.Path = InteractionConfigFile.ConfigFileDirectory;
+            interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
             interactionWatcher.NotifyFilter = NotifyFilters.LastWrite;
-            interactionWatcher.Filter = InteractionConfigFile.ConfigFileNameS;
+            interactionWatcher.NotifyFilter = NotifyFilters.LastAccess;
+            interactionWatcher.Filter = InteractionConfigFile.ConfigFileName;
             interactionWatcher.Changed += new FileSystemEventHandler(FileUpdated);
-
             interactionWatcher.IncludeSubdirectories = true;
             interactionWatcher.EnableRaisingEvents = true;
 
 
             physicalWatcher = new FileSystemWatcher();
-            physicalWatcher.Path = PhysicalConfigFile.ConfigFileDirectory;
+            physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
             physicalWatcher.NotifyFilter = NotifyFilters.LastWrite;
-            physicalWatcher.Filter = PhysicalConfigFile.ConfigFileNameS;
+            physicalWatcher.NotifyFilter = NotifyFilters.LastAccess;
+            physicalWatcher.Filter = PhysicalConfigFile.ConfigFileName;
             physicalWatcher.Changed += new FileSystemEventHandler(FileUpdated);
-
             physicalWatcher.IncludeSubdirectories = true;
             physicalWatcher.EnableRaisingEvents = true;
         }
 
         private void Update()
         {
-            if(fileChanged)
+            if (fileChanged)
             {
+                ConfigFileUtils.CheckForConfigDirectoryChange();
+                interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                 fileChanged = false;
                 ConfigManager.LoadConfigsFromFiles();
                 ConfigManager.InteractionConfig.ConfigWasUpdated();

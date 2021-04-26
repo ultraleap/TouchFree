@@ -36,6 +36,7 @@ VersionInfoProductName={#ScServiceProdName}
 UpdateUninstallLogAppName=no
 VersionInfoVersion=1.0.0.4
 WizardStyle=modern
+PrivilegesRequired=admin
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -55,7 +56,7 @@ Root: HKA64; Subkey: "Software\Ultraleap\ScreenControl\Service"; Flags: uninsdel
 Root: HKA64; Subkey: "Software\Ultraleap\ScreenControl\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
 
 [Run]
-Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""ScreenControl Service"""; Flags: runhidden

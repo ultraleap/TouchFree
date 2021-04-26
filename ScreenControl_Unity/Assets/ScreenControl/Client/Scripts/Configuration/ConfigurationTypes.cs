@@ -178,7 +178,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         [SerializeField] private float HoverCompleteTimeS;
     }
 
-    // Class: physicalConfig
+    // Class: PhysicalConfig
     // This class is a container for all of the settings related to the physical setup of the
     // hardware, both the tracking camera and the display.
     //
