@@ -35,10 +35,10 @@ namespace Ultraleap.ScreenControl.Core
             remove { Instance._OnConfigFileUpdated -= value; }
         }
 
-        public abstract string ConfigFileName { get; }
+        protected abstract string _ConfigFileName { get; }
 
         public static string ConfigFilePath => Instance._ConfigFilePath;
-        public static string ConfigFileNameS => Instance.ConfigFileName;
+        public static string ConfigFileName => Instance._ConfigFileName;
 
         public static TData LoadConfig()
         {

@@ -106,10 +106,9 @@ namespace Ultraleap.ScreenControl.Core
             {
                 string path = Path.Combine(_newPath, file.Name);
                 file.CopyTo(path, true);
-                file.Delete();
             }
-            dir.Delete();
 
+            ConfigManager.SaveAllConfigs();
             GetConfigFileDirectory();
         }
     }

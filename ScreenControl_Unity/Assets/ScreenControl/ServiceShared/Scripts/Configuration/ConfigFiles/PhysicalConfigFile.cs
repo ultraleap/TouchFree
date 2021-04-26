@@ -4,6 +4,6 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class PhysicalConfigFile : ConfigFile<PhysicalConfig, PhysicalConfigFile>
     {
-        public override string ConfigFileName => "PhysicalConfig.json";
+        protected override string _ConfigFileName => "PhysicalConfig.json";
     }
 }

@@ -2,6 +2,6 @@
 {
     public class InteractionConfigFile : ConfigFile<InteractionConfig, InteractionConfigFile>
     {
-        public override string ConfigFileName => "InteractionConfig.json";
+        protected override string _ConfigFileName => "InteractionConfig.json";
     }
 }
