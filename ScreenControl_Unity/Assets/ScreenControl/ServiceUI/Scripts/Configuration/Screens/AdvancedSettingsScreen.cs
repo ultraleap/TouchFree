@@ -59,10 +59,6 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     fileLocation.text = paths[0];
                 }
-                else
-                {
-                    // Path could not be set because it was not valid
-                }
             }
         }
     }

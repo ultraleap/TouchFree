@@ -65,6 +65,8 @@ Source Folder: ..\Assets\ScreenControl\Client
 
 Ignore Source Folder Pattern: */Misc/*
 
+Ignore Source Folder Pattern: */Examples/*
+
 
 # If there are any subfolders in the source code that you would like Natural
 # Docs to ignore, they can be specified here.  If you use any of these options
