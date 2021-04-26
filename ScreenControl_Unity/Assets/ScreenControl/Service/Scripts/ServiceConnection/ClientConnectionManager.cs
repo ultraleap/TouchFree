@@ -27,6 +27,8 @@ namespace Ultraleap.ScreenControl.Service
 
         private bool websocketInitalised = false;
 
+        internal Nullable<HandPresenceEvent> missedHandPresenceEvent = null;
+
         private void Awake()
         {
             Application.targetFrameRate = 60;
@@ -38,26 +40,38 @@ namespace Ultraleap.ScreenControl.Service
 
         private void OnHandFound()
         {
+            HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HAND_FOUND);
+
             foreach (ClientConnection _connection in activeConnections)
             {
                 if (_connection.ConnectionState == WebSocketState.Open)
                 {
-                    HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HAND_FOUND);
-
                     _connection.SendHandPresenceEvent(handFoundEvent);
                 }
+            }
+
+            // Cache handPresenceEvent when no clients are connected
+            if (activeConnections.Count == 0)
+            {
+                missedHandPresenceEvent = handFoundEvent;
             }
         }
         private void OnHandsLost()
         {
+            HandPresenceEvent handsLostEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
+
             foreach (ClientConnection _connection in activeConnections)
             {
                 if (_connection.ConnectionState == WebSocketState.Open)
                 {
-                    HandPresenceEvent handsLostEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
-
                     _connection.SendHandPresenceEvent(handsLostEvent);
                 }
+            }
+
+            // Cache handPresenceEvent when no clients are connected
+            if (activeConnections.Count == 0)
+            {
+                missedHandPresenceEvent = handsLostEvent;
             }
         }
 
@@ -79,7 +93,7 @@ namespace Ultraleap.ScreenControl.Service
         {
             activeConnections.Remove(_connection);
 
-            if(activeConnections.Count < 1)
+            if (activeConnections.Count < 1)
             {
                 // there are no connections
                 LostAllConnections?.Invoke();
