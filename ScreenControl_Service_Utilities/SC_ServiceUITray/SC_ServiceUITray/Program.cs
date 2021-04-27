@@ -5,14 +5,27 @@ using System.Windows.Forms;
 using System.ServiceProcess;
 using Timer = System.Timers.Timer;
 using System.Timers;
+using System.Threading;
 
 namespace SC_ServiceUITray
 {
     static class Program
     {
+        private static Mutex mutex = null;
+
         [STAThread]
         static void Main()
         {
+            const string appName = "ScreenControl Tray";
+            bool createdNew;
+
+            mutex = new Mutex(true, appName, out createdNew);
+
+            if(!createdNew)
+            {
+                return;
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new SC_ServiceUITray());
