@@ -109,7 +109,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Function: UpdateCursor
         // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
         // cursor's position, as well as the size of the ring based on the current ProgressToClick.
-        public void UpdateCursor(Vector2 _screenPos, float _progressToClick)
+        public virtual void UpdateCursor(Vector2 _screenPos, float _progressToClick)
         {
             targetPos = _screenPos;
 
@@ -276,7 +276,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: GrowCursorDot
         // This coroutine smoothly expands the cursor dots size.
-        public IEnumerator GrowCursorDot()
+        public virtual IEnumerator GrowCursorDot()
         {
             SetCursorLocalScale(cursorDownScale * cursorDotSize);
 
@@ -298,7 +298,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: ShrinkCursorDot
         // This coroutine smoothly contracts the cursor dots size.
-        public IEnumerator ShrinkCursorDot()
+        public virtual IEnumerator ShrinkCursorDot()
         {
             YieldInstruction yieldInstruction = new YieldInstruction();
             float elapsedTime = 0.0f;
@@ -318,7 +318,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: FadeCursor
         // This coroutine smoothly fades the cursors colours.
-        private IEnumerator FadeCursor(float _from, float _to, float _duration, bool _disableOnEnd = false)
+        protected virtual IEnumerator FadeCursor(float _from, float _to, float _duration, bool _disableOnEnd = false)
         {
             for (int i = 0; i < _duration; i++)
             {
@@ -358,7 +358,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: SetCursorLocalScale
         // This function resizes the cursor and its border.
-        private void SetCursorLocalScale(float _scale)
+        protected virtual void SetCursorLocalScale(float _scale)
         {
             cursorLocalScale = new Vector3(_scale, _scale, _scale);
             cursorBorder.transform.localScale = cursorLocalScale;
@@ -366,7 +366,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: ResetCursor
         // This function stops all scaling coroutines and clears their related variables.
-        public void ResetCursor()
+        public virtual void ResetCursor()
         {
             StopAllCoroutines();
             cursorScalingRoutine = null;
