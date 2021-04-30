@@ -1,0 +1,3 @@
+TouchFree Version: {SOFTWARE_VERSION}
+ScreenControl API Version: {API_VERSION}
+Release Reference: {RELEASE_REF}
