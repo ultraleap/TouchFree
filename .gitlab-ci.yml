@@ -246,7 +246,7 @@ TouchFree::build:
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - ls $CI_PROJECT_DIR/Build
+    - ls $CI_PROJECT_DIR/TouchFree_Build
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Build/TouchFree.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
 
   artifacts:
