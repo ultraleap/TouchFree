@@ -1,7 +1,9 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  UNITY_PROJECT_PATH: $CI_PROJECT_DIR/ScreenControl_Unity
+  SC_PROJECT_PATH: $CI_PROJECT_DIR/ScreenControl_Unity
+  TF_PROJECT_PATH: $CI_PROJECT_DIR/TouchFree
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
+
   SC_CFW_PATH: $CI_PROJECT_DIR/ScreenControl_Web
   SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
   SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
@@ -21,7 +23,7 @@ SC_Client::Unity::build:
   when: always
   script:
     # Get Unity version and changeset from the project.
-    - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $SC_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
     # Check whether the required Unity version is installed. If not, install it.
@@ -44,6 +46,7 @@ SC_Client::Unity::build:
       }
     - mkdir ./Client_Release
     - cp ${env:CI_PROJECT_DIR}/ScreenControl_Unity/Assets/ScreenControl/Client/Version.txt ./Client_Release
+
     # Package Client
     - cd ./Scripts
     - "& ./package_unity_client.bat $UNITY_EXE"
@@ -154,7 +157,7 @@ SC_Service::build:
   when: always
   script:
     # Get Unity version and changeset from the project.
-    - $line = Get-Content  $UNITY_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $SC_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
     # Check whether the required Unity version is installed. If not, install it.
@@ -196,6 +199,61 @@ SC_Service::build:
     - Build/**
     - UIBuild/**
     - ./Unity.log
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
+
+TouchFree::build:
+  stage: build
+  when: always
+  script:
+    # Get Unity version and changeset from the project.
+    - $line = Get-Content  $TF_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $UNITY_VERSION = $line -Split " " | Select -Index 1
+    - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
+
+    # Check whether the required Unity version is installed. If not, install it.
+    - Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless editors --installed"
+    - Get-Content "tmp.txt"
+    - Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install-path --set C:/Unity"
+    - Get-Content "tmp.txt"
+    - if (-not (Test-Path "C:/Unity/$UNITY_VERSION")) { Start-Process -Wait -RedirectStandardOutput "tmp.txt" -FilePath "$UNITY_HUB" -ArgumentList "-- --headless install --version $UNITY_VERSION --changeset $UNITY_CHANGESET" }
+    - Get-Content "tmp.txt"
+
+    - $UNITY_EXE = "C:/Unity/$UNITY_VERSION/Editor/Unity.exe"
+    - echo "$UNITY_EXE"
+
+    # Update Version.txt with latest information before packaging
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree/Version.txt --apiVer ${env:SC_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+
+    # Copy Version.txt to Client_Release folder
+    - if (Test-Path -Path "./TouchFree_Build") {
+        Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
+        Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
+      }
+    - mkdir ./TouchFree_Build
+    - cp ${env:CI_PROJECT_DIR}/TouchFree/Assets/TouchFree/Version.txt ./Client_Release
+
+    # Build TouchFree
+    - cd ./Scripts
+    - python ./UpdateUnityProjVer.py --path ../TouchFree/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
+    - "& ./build_touchfree.bat $UNITY_EXE"
+
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - ls $CI_PROJECT_DIR/Build
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/ScreenControlService.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - ls $CI_PROJECT_DIR/UIBuild
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/ScreenControlServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+  artifacts:
+    name: "TouchFree_Build_${env:CI_COMMIT_SHORT_SHA}"
+    paths:
+      - ./Build/*
+      - ./TouchFree_build.log
     expire_in: 2 weeks
     when: always
   tags:
@@ -284,6 +342,7 @@ SC_Service::package:
     "SC_Service::Tray::build"
   ]
   script:
+    # Package ScreenControl up neatly
     - mkdir ./Service_Package/
     - mkdir ./Service_Package/Licenses/
     - mkdir ./Service_Package/Service/
@@ -295,6 +354,24 @@ SC_Service::package:
     - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
+  artifacts:
+    name: "Screen_Control_Service_Package_${CI_COMMIT_SHORT_SHA}"
+    paths:
+      ./ServicePackage/*
+    expire_in: 2 weeks
+    when: always
+
+TouchFree::installer:
+  stage: package
+  dependencies:
+    - SC_Service::package
+    - TouchFree::build
+  needs: [
+    "SC_Service::package",
+    "TouchFree::build"
+  ]
+  script:
+    # Run innosetup
     - cd ./Scripts/
     - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss"
 
@@ -303,7 +380,7 @@ SC_Service::package:
     - ls $CI_PROJECT_DIR/Build
     - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/ScreenControl_Service_1.0.0_${SC_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "Screen_Control_Service_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_${TOUCHFREE_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
       - ./Installer_Build/*.exe
     expire_in: 2 weeks
