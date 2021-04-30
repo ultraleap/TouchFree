@@ -252,7 +252,7 @@ TouchFree::build:
   artifacts:
     name: "TouchFree_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./Build/*
+      - ./TouchFree_Build/*
       - ./TouchFree_build.log
     expire_in: 2 weeks
     when: always
