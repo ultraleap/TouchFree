@@ -247,11 +247,8 @@ TouchFree::build:
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - ls $CI_PROJECT_DIR/Build
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/ScreenControlService.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Build/TouchFree.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
 
-    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - ls $CI_PROJECT_DIR/UIBuild
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/ScreenControlServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
@@ -357,23 +354,7 @@ SC_Service::package:
     - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
-  artifacts:
-    name: "Screen_Control_Service_Package_${CI_COMMIT_SHORT_SHA}"
-    paths:
-      - ./ServicePackage/*
-    expire_in: 2 weeks
-    when: always
 
-TouchFree::installer:
-  stage: installer
-  dependencies:
-    - SC_Service::package
-    - TouchFree::build
-  needs: [
-    "SC_Service::package",
-    "TouchFree::build"
-  ]
-  script:
     # Run innosetup
     - cd ./Scripts/
     - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss"
@@ -383,7 +364,7 @@ TouchFree::installer:
     - ls $CI_PROJECT_DIR/Build
     - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/ScreenControl_Service_1.0.0_${SC_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "TouchFree_${TOUCHFREE_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "ScreenControl_Service_${SC_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
       - ./Installer_Build/*.exe
     expire_in: 2 weeks
