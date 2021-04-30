@@ -17,6 +17,7 @@ stages:
   - build
   - test
   - package
+  - installer
 
 SC_Client::Unity::build:
   stage: build
@@ -357,12 +358,12 @@ SC_Service::package:
   artifacts:
     name: "Screen_Control_Service_Package_${CI_COMMIT_SHORT_SHA}"
     paths:
-      ./ServicePackage/*
+      - ./ServicePackage/*
     expire_in: 2 weeks
     when: always
 
 TouchFree::installer:
-  stage: package
+  stage: installer
   dependencies:
     - SC_Service::package
     - TouchFree::build
