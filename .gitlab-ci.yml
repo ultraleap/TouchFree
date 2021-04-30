@@ -190,11 +190,9 @@ SC_Service::build:
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - ls $CI_PROJECT_DIR/Build
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/ScreenControlService.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
 
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - ls $CI_PROJECT_DIR/UIBuild
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/ScreenControlServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "Screen_Control_Service_${env:SC_SRV_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
@@ -246,7 +244,6 @@ TouchFree::build:
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - ls $CI_PROJECT_DIR/TouchFree_Build
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Build/TouchFree.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
 
   artifacts:
@@ -361,7 +358,6 @@ SC_Service::package:
 
     # Sign the installer with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - ls $CI_PROJECT_DIR/Build
     - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/ScreenControl_Service_1.0.0_${SC_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "ScreenControl_Service_${SC_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
