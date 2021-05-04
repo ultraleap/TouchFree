@@ -21,13 +21,18 @@ namespace Ultraleap.ScreenControl.Client
         // <plugins>
         public static event ClientInputActionEvent TransmitInputAction;
 
+        // Variable: TransmitRawInputAction
+        // An event for transmitting <ClientInputActions> that have NOT been modified via any
+        // <plugins>
+        public static event ClientInputActionEvent TransmitRawInputAction;
+
         public static InputActionManager Instance;
 
         // Variable: plugins
-        // A pre-defined plugin array of <InputActionPlugins> that modify incoming <ClientInputActions>
+        // A pre-defined plugin array of <ToggleablePlugins> that modify incoming <ClientInputActions>
         // based on custom rules.
         [Tooltip("These plugins modify InputActions and are performed in order.")]
-        [SerializeField] InputActionPlugin[] plugins;
+        [SerializeField] ToggleablePlugin[] plugins;
 
         private void Awake()
         {
@@ -40,6 +45,7 @@ namespace Ultraleap.ScreenControl.Client
 
         internal void SendInputAction(ClientInputAction _inputAction)
         {
+            TransmitRawInputAction?.Invoke(_inputAction);
             RunPlugins(ref _inputAction);
             TransmitInputAction?.Invoke(_inputAction);
         }
@@ -48,10 +54,22 @@ namespace Ultraleap.ScreenControl.Client
         {
             // Send the input action through the plugins in order
             // if it is returned null from a plugin, return it to be ignored
-            foreach(var plugin in plugins)
+            foreach (var plugin in plugins)
             {
-                plugin.RunPlugin(ref _inputAction);
+                if (plugin.enabled)
+                {
+                    _inputAction = plugin.plugin.RunPlugin(_inputAction);
+                }
             }
         }
+    }
+
+    // Struct: ToggleablePlugin
+    // A Data structure used to toggle the use of plugins.
+    [System.Serializable]
+    internal struct ToggleablePlugin
+    {
+        public bool enabled;
+        public InputActionPlugin plugin;
     }
 }
