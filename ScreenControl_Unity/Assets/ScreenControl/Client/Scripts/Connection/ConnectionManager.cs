@@ -36,15 +36,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // A reference to the receiver that handles destribution of data received via the <currentServiceConnection> if connected.
         public static MessageReceiver messageReceiver;
 
-        // Delegate: ClientInputActionEvent
-        // An Action to distribute a <ClientInputAction> via the <TransmitInputAction> event listener.
-        public delegate void ClientInputActionEvent(ClientInputAction _inputData);
-
-        // Variable: TransmitInputAction
-        // An event for transmitting <ClientInputActions> that are received via the <messageReceiver> to
-        // be listened to.
-        public static event ClientInputActionEvent TransmitInputAction;
-
         // Variable: HandFound
         // An event allowing users to react to a hand being found when none has been present for a moment.
         public static event Action HandFound;
@@ -67,11 +58,11 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Group: Functions
 
         // Function: HandleInputAction
-        // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
-        // listeners of <TransmitInputAction>.
+        // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received
+        // to the <InputActionManager> for distribution.
         public static void HandleInputAction(ClientInputAction _action)
         {
-            TransmitInputAction?.Invoke(_action);
+            InputActionManager.Instance.SendInputAction(_action);
         }
 
         // Function: AddConnectionListener
