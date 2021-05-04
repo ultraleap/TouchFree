@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
+    // Class: InputActionManager
+    // The manager for all <ClientInputActions> to be handled and distributed. This runs the
+    // received data through any referenced <InputActionPlugins> and finaly distributes the data
+    // via the  <TransmitInputAction> event which should be listened to by any class hoping to make
+    // use of incoming <ClientInputActions>.
     [DefaultExecutionOrder(-1)]
     public class InputActionManager : MonoBehaviour
     {
