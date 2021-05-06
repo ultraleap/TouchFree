@@ -57,14 +57,6 @@ namespace Ultraleap.ScreenControl.Client.Connection
 
         // Group: Functions
 
-        // Function: HandleInputAction
-        // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received
-        // to the <InputActionManager> for distribution.
-        public static void HandleInputAction(ClientInputAction _action)
-        {
-            InputActionManager.Instance.SendInputAction(_action);
-        }
-
         // Function: AddConnectionListener
         // Used to both add the _onConnectFunc action to the listeners of <OnConnected>
         // as well as auto-call the _onConnectFunc if a connection is already made.
