@@ -78,7 +78,7 @@ namespace Ultraleap.ScreenControl.Core
                 if(hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, appliedForce);
+                    SendInputAction(InputType.CANCEL, positions, appliedForce);
                 }
 
                 return;
@@ -128,7 +128,7 @@ namespace Ultraleap.ScreenControl.Core
                         pressing = false;
                         isDragging = false;
                         cursorPressPosition = Vector2.zero;
-                        SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, appliedForce);
+                        SendInputAction(InputType.UP, positions, appliedForce);
                     }
                     else
                     {
@@ -136,18 +136,17 @@ namespace Ultraleap.ScreenControl.Core
                         {
                             if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, positions.CursorPosition))
                             {
-                                positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, dragDeadzoneShrinkRate);
+                                positioningModule.Stabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
                                 dragDeadzoneShrinkTriggered = true;
                             }
 
-                            SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, appliedForce);
+                            SendInputAction(InputType.MOVE, positions, appliedForce);
                         }
                         else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
                             isDragging = true;
                             dragDeadzoneShrinkTriggered = false;
                         }
-
                     }
                 }
                 else if (!decayingForce && appliedForce >= 1f)
@@ -156,7 +155,7 @@ namespace Ultraleap.ScreenControl.Core
                     // when ignoring dragging and moving past the touch-plane.
 
                     pressing = true;
-                    SendInputAction(InputType.DOWN, positions, positions.DistanceFromScreen, appliedForce);
+                    SendInputAction(InputType.DOWN, positions, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
 
                     // If dragging is off, we want to decay the force after a click back to the unclick threshold
@@ -168,7 +167,7 @@ namespace Ultraleap.ScreenControl.Core
                 else if (positions.CursorPosition != previousScreenPos || positions.DistanceFromScreen != previousScreenDistance)
                 {
                     // Send the move event
-                    SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, appliedForce);
+                    SendInputAction(InputType.MOVE, positions, appliedForce);
                 }
 
                 if (decayingForce && (appliedForce <= unclickThreshold - 0.1f))
@@ -179,7 +178,7 @@ namespace Ultraleap.ScreenControl.Core
             else
             {
                 // show them they have been seen but send no major events as we have only just discovered the hand
-                SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, appliedForce);
+                SendInputAction(InputType.MOVE, positions, appliedForce);
             }
 
             // Update stored variables
@@ -216,7 +215,7 @@ namespace Ultraleap.ScreenControl.Core
             if (_df < -1f * Mathf.Epsilon)
             {
                 // Start decreasing deadzone size
-                positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkRate);
+                positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkRate);
             }
             else
             {
@@ -227,9 +226,9 @@ namespace Ultraleap.ScreenControl.Core
                 float deadzoneMinSize = positioningModule.Stabiliser.defaultDeadzoneRadius;
                 float deadzoneMaxSize = deadzoneMinSize + deadzoneMaxSizeIncrease;
 
-                float newDeadzoneSize = positioningModule.Stabiliser.GetCurrentDeadzoneRadius() + deadzoneSizeIncrease;
+                float newDeadzoneSize = positioningModule.Stabiliser.currentDeadzoneRadius + deadzoneSizeIncrease;
                 newDeadzoneSize = Mathf.Clamp(newDeadzoneSize, deadzoneMinSize, deadzoneMaxSize);
-                positioningModule.Stabiliser.SetCurrentDeadzoneRadius(newDeadzoneSize);
+                positioningModule.Stabiliser.currentDeadzoneRadius = newDeadzoneSize;
             }
         }
 

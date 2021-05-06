@@ -22,7 +22,7 @@ namespace Ultraleap.ScreenControl.Core
             public readonly Vector2 CursorPosition;
             public readonly float DistanceFromScreen;
             public readonly float ProgressToClick;
-            public CoreInputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _distanceFromScreen, float _progressToClick)
+            public CoreInputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _progressToClick)
             {
                 Timestamp = _timestamp;
                 InteractionType = _interactionType;
@@ -30,7 +30,7 @@ namespace Ultraleap.ScreenControl.Core
                 Chirality = _chirality;
                 InputType = _inputType;
                 CursorPosition = _positions.CursorPosition;
-                DistanceFromScreen = _distanceFromScreen;
+                DistanceFromScreen = _positions.DistanceFromScreen;
                 ProgressToClick = _progressToClick;
             }
         }

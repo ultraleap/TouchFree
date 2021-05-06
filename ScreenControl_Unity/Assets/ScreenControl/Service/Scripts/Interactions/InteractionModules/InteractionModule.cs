@@ -59,9 +59,9 @@ namespace Ultraleap.ScreenControl.Core
         // This is the main update loop of the interaction module
         protected virtual void UpdateData(Leap.Hand hand) { }
 
-        protected void SendInputAction(ScreenControlTypes.InputType _inputType, Positions _positions, float _distanceFromScreen, float _progressToClick)
+        protected void SendInputAction(ScreenControlTypes.InputType _inputType, Positions _positions, float _progressToClick)
         {
-            ScreenControlTypes.CoreInputAction actionData = new ScreenControlTypes.CoreInputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _distanceFromScreen, _progressToClick);
+            ScreenControlTypes.CoreInputAction actionData = new ScreenControlTypes.CoreInputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
             HandleInputAction?.Invoke(handChirality, handType, actionData);
         }
 
