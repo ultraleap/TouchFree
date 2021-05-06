@@ -97,7 +97,7 @@ namespace Ultraleap.ScreenControl.Core
 
                             float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
                             float deadzoneRadius = Mathf.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
-                            positioningModule.Stabiliser.currentDeadzoneRadius =- deadzoneRadius;
+                            positioningModule.Stabiliser.currentDeadzoneRadius = deadzoneRadius;
                         }
                     }
                     else
