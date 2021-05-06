@@ -93,6 +93,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
+        public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
 
         // Variable: configValues
         // This dictionary is used to store the edited members only, and is accessed when serializing the data for transfer to the Service.
@@ -176,6 +177,77 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
         [SerializeField] private float HoverStartTimeS;
         [SerializeField] private float HoverCompleteTimeS;
+    }
+
+    // Class: TouchPlaneInteractionSettings
+    // This class is a container for settings that only apply to the TouchPlane interaction. In
+    // order to modify these settings of the ScreenControl Service, create an <InteractionConfig>,
+    // which contains an instance of this class, modify it as required, and then pass to the service
+    // using the <ConfigurationManager>.
+    //
+    // Like all of the Settings classes found in this file, all members are optional. If you do
+    // not modify a member of this class, its value will not change when the instance is sent to
+    // ScreenControl Service.
+    [System.Serializable]
+    public class TouchPlaneInteractionSettings
+    {
+        // Property: touchPlaneDistanceCM
+        // This determines how far (in cm) the TouchPlane is from the screen surface. This
+        // represents the plane that the user must pass to begin and end a click event.
+        public float touchPlaneDistanceCM
+        {
+            get
+            {
+                return TouchPlaneDistanceCM;
+            }
+            set
+            {
+                if (configValues.ContainsKey("TouchPlaneDistanceCM"))
+                {
+                    configValues["TouchPlaneDistanceCM"] = value;
+                }
+                else
+                {
+                    configValues.Add("TouchPlaneDistanceCM", value);
+                }
+
+                TouchPlaneDistanceCM = value;
+            }
+        }
+
+        // Property: touchPlaneStartDistanceCM
+        // This determines how far (in cm) from the TouchPlane that the interaction will begin to progress.
+        // The progress can be used to show a cursor that shows users how close they are to the TouchPlane.
+        public float touchPlaneStartDistanceCM
+        {
+            get
+            {
+                return TouchPlaneStartDistanceCM;
+            }
+            set
+            {
+                if (configValues.ContainsKey("TouchPlaneStartDistanceCM"))
+                {
+                    configValues["TouchPlaneStartDistanceCM"] = value;
+                }
+                else
+                {
+                    configValues.Add("TouchPlaneStartDistanceCM", value);
+                }
+
+                TouchPlaneStartDistanceCM = value;
+            }
+        }
+
+        // Variable: configValues
+        // This dictionary is used to store the edited members only, and is accessed when
+        // serializing the data for transfer to the Service.
+        //
+        // *DO NOT MODIFY THIS DICTIONARY MANUALLY*
+        public Dictionary<string, object> configValues = new Dictionary<string, object>();
+
+        [SerializeField] private float TouchPlaneDistanceCM;
+        [SerializeField] private float TouchPlaneStartDistanceCM;
     }
 
     // Class: PhysicalConfig

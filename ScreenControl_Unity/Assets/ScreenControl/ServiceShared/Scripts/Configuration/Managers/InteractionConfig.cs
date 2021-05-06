@@ -11,6 +11,13 @@ namespace Ultraleap.ScreenControl.Core
     }
 
     [Serializable]
+    public class TouchPlaneInteractionSettings
+    {
+        public float TouchPlaneDistanceCM = 5f;
+        public float TouchPlaneStartDistanceCM = 5f;
+    }
+
+    [Serializable]
     public class InteractionConfig : BaseSettings
     {
         public bool UseScrollingOrDragging = false;
@@ -20,6 +27,7 @@ namespace Ultraleap.ScreenControl.Core
 
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
+        public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
 
         public override void SetAllValuesToDefault()
         {
@@ -29,6 +37,8 @@ namespace Ultraleap.ScreenControl.Core
             DeadzoneRadius = defaults.DeadzoneRadius;
             HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
+            TouchPlane.TouchPlaneDistanceCM = defaults.TouchPlane.TouchPlaneDistanceCM;
+            TouchPlane.TouchPlaneStartDistanceCM = defaults.TouchPlane.TouchPlaneStartDistanceCM;
             InteractionType = defaults.InteractionType;
         }
 
