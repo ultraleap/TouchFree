@@ -7,11 +7,11 @@ namespace Ultraleap.ScreenControl.Core
     {
         public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
 
-        // The distance from screen at which the progressToClick is 0
-        private float maxInteractionDistance = 0.05f;
+        // The distance from the touchPlane at which the progressToClick is 0
+        private float touchPlaneZeroProgress = 0.03f;
 
         // The distance from screen at which the progressToClick is 1
-        private float touchPlaneDistance = 0.03f;
+        private float touchPlaneDistance = 0.05f;
 
         private bool pressing = false;
         bool pressComplete = false;
@@ -38,6 +38,8 @@ namespace Ultraleap.ScreenControl.Core
                     cancelled = true;
                 }
 
+                pressComplete = false;
+                isDragging = false;
                 pressing = false;
                 return;
             }
@@ -51,7 +53,7 @@ namespace Ultraleap.ScreenControl.Core
             Vector2 currentCursorPosition = positions.CursorPosition;
             float distanceFromScreen = positions.DistanceFromScreen;
 
-            float progressToClick = 1f - Mathf.InverseLerp(touchPlaneDistance, maxInteractionDistance, distanceFromScreen);
+            float progressToClick = 1f - Mathf.InverseLerp(touchPlaneDistance, touchPlaneDistance + touchPlaneZeroProgress, distanceFromScreen);
 
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
             if (distanceFromScreen < touchPlaneDistance)
@@ -90,7 +92,7 @@ namespace Ultraleap.ScreenControl.Core
                     pressComplete = true;
                 }
             }
-            else if (distanceFromScreen < maxInteractionDistance)
+            else if (distanceFromScreen < touchPlaneDistance + touchPlaneZeroProgress)
             {
                 if (pressing && !pressComplete)
                 {
