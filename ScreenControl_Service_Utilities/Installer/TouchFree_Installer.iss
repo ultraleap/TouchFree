@@ -16,7 +16,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{1CFAE885-39F8-431E-AD0F-C623B39F71E4}
+AppId={{FE678A79-DE6B-4FC4-8160-F2D036CE27D2}
 AppName={#ProductName}
 AppVersion={#ReleaseVersion}
 AppVerName={#ProductName}
@@ -31,7 +31,7 @@ LicenseFile={#SourcePath}..\..\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir="{#SourcePath}..\..\Installer_Build"
-OutputBaseFilename=ScreenControl_Service_1.0.0_alpha5_Installer
+OutputBaseFilename={#ProductName}_{#ReleaseVersion}_Installer
 Compression=lzma
 SolidCompression=yes
 VersionInfoCompany={#Publisher}
