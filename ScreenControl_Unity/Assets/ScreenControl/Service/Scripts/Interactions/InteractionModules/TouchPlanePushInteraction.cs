@@ -148,6 +148,10 @@ namespace Ultraleap.ScreenControl.Core
         protected override void OnSettingsUpdated()
         {
             base.OnSettingsUpdated();
+
+            // Convert from CM to M
+            touchPlaneDistance = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneDistanceCM / 100;
+            touchPlaneZeroProgress = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM / 100;
         }
     }
 }
