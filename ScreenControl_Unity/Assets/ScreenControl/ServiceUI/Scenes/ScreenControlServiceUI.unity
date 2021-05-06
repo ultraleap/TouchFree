@@ -188,31 +188,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ScreenControlClient
       objectReference: {fileID: 0}
-    - target: {fileID: 2213489624516412116, guid: 157025b17471e7c41a7d20e7f28273b5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2383233282598257216, guid: 157025b17471e7c41a7d20e7f28273b5,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2383233282598257216, guid: 157025b17471e7c41a7d20e7f28273b5,
-        type: 3}
-      propertyPath: eventSystem
-      value: 
-      objectReference: {fileID: 2124978202}
-    - target: {fileID: 2383233282598257216, guid: 157025b17471e7c41a7d20e7f28273b5,
-        type: 3}
-      propertyPath: inputModule
-      value: 
-      objectReference: {fileID: 2124978201}
-    - target: {fileID: 2383233282598257216, guid: 157025b17471e7c41a7d20e7f28273b5,
-        type: 3}
-      propertyPath: sendHoverEvents
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 157025b17471e7c41a7d20e7f28273b5, type: 3}
 --- !u!1 &169355408

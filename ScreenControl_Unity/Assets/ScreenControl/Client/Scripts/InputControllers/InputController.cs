@@ -18,20 +18,20 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         // Group: MonoBehaviour Overrides
 
         // Function: Start
-        // Adds a listener to <ConnectionManager> to invoke <HandleInputAction> with <ClientInputActions> as they
+        // Adds a listener to <InputActionManager> to invoke <HandleInputAction> with <ClientInputActions> as they
         // are received.
         protected override void Start()
         {
             base.Start();
-            ConnectionManager.TransmitInputAction += HandleInputAction;
+            InputActionManager.TransmitInputAction += HandleInputAction;
         }
 
         // Function: OnDestroy
-        // Deregisters <HandleInputAction> from the <ConnectionManager> so this can go out of scope.
+        // Deregisters <HandleInputAction> from the <InputActionManager> so this can go out of scope.
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            ConnectionManager.TransmitInputAction -= HandleInputAction;
+            InputActionManager.TransmitInputAction -= HandleInputAction;
         }
 
         // Functions:
