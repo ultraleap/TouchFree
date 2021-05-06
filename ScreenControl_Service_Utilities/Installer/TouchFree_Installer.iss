@@ -44,13 +44,16 @@ PrivilegesRequired=admin
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Components]
+Name: TouchFree_Application; Description: "The TouchFree Application for controlling a computer touchlessly. Seperate from the TouchFree Service";
+
 [Files]
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree\Build"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree\Build"; Components: TouchFree_Application; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}";
+Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Components: TouchFree_Application;
 Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{app}\ServiceUI\{#ServiceUIExeName}";
 Name: "{autostartup}\{#TrayAppName}"; Filename: "{app}\Tray\{#TrayAppExeName}";
 
