@@ -45,32 +45,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultDeadzoneRadius: 0.003
   smoothingRate: 10
-  characteristicVelocity: 0.4
   internalShrinkFactor: 2
-  deadzoneDistanceScaling:
+  deadzoneProgressScaling:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
-      inSlope: 0.11026442
-      outSlope: 0.11026442
+      value: 0
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.09752045
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.0021362305
-      inSlope: -1.386103
-      outSlope: -1.386103
-      tangentMode: 5
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.07603401
+      inWeight: 0.33333334
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  currentDeadzoneRadius: 0
+  isShrinking: 0
 --- !u!1 &2738846595225586768
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,6 +434,7 @@ MonoBehaviour:
   pushInteractionModule: {fileID: 5753121179731557265}
   hoverInteractionModule: {fileID: 748880895319561291}
   grabInteractionModule: {fileID: 331447746348606392}
+  touchPlaneInteractionModule: {fileID: 5911777843642849155}
 --- !u!1 &5911777843642849153
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,7 +452,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5911777843642849154
 Transform:
   m_ObjectHideFlags: 0
@@ -472,7 +474,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5911777843642849153}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a5a1385cb462ca44a2fa1747f83a105, type: 3}
   m_Name: 
@@ -481,8 +483,8 @@ MonoBehaviour:
   ignoreDragging: 0
   positioningModule: {fileID: 3899536540166993890}
   dragStartDistanceThresholdM: 0.04
-  dragStartTimeDelaySecs: 0.6
-  dragLerpSpeed: 10
+  dragDeadzoneShrinkRate: 0.5
+  dragDeadzoneShrinkDistanceThresholdM: 0.01
 --- !u!114 &3899536540166993890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,7 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9d82368268df34fbac87c03007e578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackedPosition: 0
+  trackedPosition: 1
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
 --- !u!1 &6491336837799979747

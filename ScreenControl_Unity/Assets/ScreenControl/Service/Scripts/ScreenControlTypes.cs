@@ -8,7 +8,7 @@ namespace Ultraleap.ScreenControl.Core
     {
         public static class VersionInfo
         {
-            public static readonly Version ApiVersion = new Version("1.0.3");
+            public static readonly Version ApiVersion = new Version("1.0.4");
             public const string API_HEADER_NAME = "ScApiVersion";
         }
 
@@ -60,6 +60,7 @@ namespace Ultraleap.ScreenControl.Core
             GRAB,
             HOVER,
             PUSH,
+            TOUCHPLANE,
         }
 
         [Flags]
@@ -85,6 +86,7 @@ namespace Ultraleap.ScreenControl.Core
             GRAB = 256,
             HOVER = 512,
             PUSH = 1024,
+            TOUCHPLANE = 2048,
 
             // Adding elements to this list is a breaking change, and should cause at
             // least a minor iteration of the API version UNLESS adding them at the end
@@ -168,6 +170,9 @@ namespace Ultraleap.ScreenControl.Core
                         break;
                     case InteractionType.GRAB:
                         returnVal ^= BitmaskFlags.GRAB;
+                        break;
+                    case InteractionType.TOUCHPLANE:
+                        returnVal ^= BitmaskFlags.TOUCHPLANE;
                         break;
                 }
 
