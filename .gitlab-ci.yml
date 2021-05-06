@@ -374,7 +374,7 @@ TouchFree::installer:
   script:
     # Run innosetup
     - cd ./Scripts/
-    - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss"
+    - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/TouchFree_Installer.iss"
 
     # Sign the installer with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
