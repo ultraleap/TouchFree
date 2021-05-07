@@ -23,6 +23,13 @@ public class UIManager : MonoBehaviour
         {
             Destroy(this);
         }
+
+        Application.focusChanged += Application_focusChanged;
+    }
+
+    private void OnDestroy()
+    {
+        Application.focusChanged -= Application_focusChanged;
     }
 
     private void Update()
@@ -30,6 +37,14 @@ public class UIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             SetUIActive(!isActive);
+        }
+    }
+
+    private void Application_focusChanged(bool _focussed)
+    {
+        if (_focussed)
+        {
+            SetUIActive(true);
         }
     }
 

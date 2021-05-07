@@ -154,7 +154,7 @@ public class TransparentWindow : MonoBehaviour
                     Mathf.RoundToInt(position.y),
                     TouchFreeMain.CursorWindowSize,
                     TouchFreeMain.CursorWindowSize,
-                    32 | 64);
+                    32 | 64 | 16);
             }
 		}
 #endif
