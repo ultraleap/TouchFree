@@ -150,8 +150,8 @@ namespace Ultraleap.ScreenControl.Core
             HoverCompleteTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS.ToString("#0.00#"));
             HoverCompleteTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS);
 
-            TouchPlaneDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneDistanceCM.ToString("#0.00#"));
-            TouchPlaneDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneDistanceCM);
+            TouchPlaneDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM.ToString("#0.00#"));
+            TouchPlaneDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM);
             TouchPlaneStartDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM.ToString("#0.00#"));
             TouchPlaneStartDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM);
 
@@ -257,7 +257,7 @@ namespace Ultraleap.ScreenControl.Core
             ConfigManager.InteractionConfig.UseScrollingOrDragging = scrollingOrDraggingTog.isOn;
             ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = HoverStartTimeSlider.value;
             ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = HoverCompleteTimeSlider.value;
-            ConfigManager.InteractionConfig.TouchPlane.TouchPlaneDistanceCM = TouchPlaneDistanceSlider.value;
+            ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM = TouchPlaneDistanceSlider.value;
             ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM = TouchPlaneStartDistanceSlider.value;
 
             if (interactionTypeTogglePush.isOn)

@@ -68,10 +68,10 @@ export interface HoverAndHoldInteractionSettings {
 // not modify a member of this class, its value will not change when the instance is sent to
 // ScreenControl Service.
 export interface TouchPlaneInteractionSettings {
-    // Property: TouchPlaneDistanceCM
+    // Property: TouchPlaneActivationDistanceCM
     // This determines how far (in cm) the TouchPlane is from the screen surface. This
     // represents the plane that the user must pass to begin and end a click event.
-    TouchPlaneDistanceCM: number;
+    TouchPlaneActivationDistanceCM: number;
 
     // Property: TouchPlaneStartDistanceCM
     // This determines how far (in cm) from the TouchPlane that the interaction will begin to progress.
