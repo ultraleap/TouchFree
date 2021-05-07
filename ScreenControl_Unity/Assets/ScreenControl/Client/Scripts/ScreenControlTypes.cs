@@ -21,16 +21,16 @@ namespace Ultraleap.ScreenControl.Client
     // Struct: ClientInputAction
     // The clients representation of an InputAction. This is used to pass
     // key information relating to an action that has happened on the Service.
-    public readonly struct ClientInputAction
+    public struct ClientInputAction
     {
-        public readonly long Timestamp;
-        public readonly InteractionType InteractionType;
-        public readonly HandType HandType;
-        public readonly HandChirality Chirality;
-        public readonly InputType InputType;
-        public readonly Vector2 CursorPosition;
-        public readonly float DistanceFromScreen;
-        public readonly float ProgressToClick;
+        public long Timestamp;
+        public InteractionType InteractionType;
+        public HandType HandType;
+        public HandChirality Chirality;
+        public InputType InputType;
+        public Vector2 CursorPosition;
+        public float DistanceFromScreen;
+        public float ProgressToClick;
 
         public ClientInputAction(
             long _timestamp,
