@@ -352,13 +352,33 @@ SC_Service::package:
     - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
 
+  artifacts:
+    name: "ScreenControl_Service_Package_${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - ./Service_Package
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
+
+TouchFree::installer:
+  stage: installer
+  dependencies:
+    - SC_Service::package
+    - TouchFree::build
+  needs: [
+    "SC_Service::package",
+    "TouchFree::build"
+  ]
+  script:
     # Run innosetup
     - cd ./Scripts/
-    - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/SC_Service_Installer.iss"
+    - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/TouchFree_Installer.iss"
 
     # Sign the installer with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/ScreenControl_Service_1.0.0_${SC_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_1.0.0-${SC_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "ScreenControl_Service_${SC_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
