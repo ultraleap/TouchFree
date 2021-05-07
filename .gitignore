@@ -58,6 +58,7 @@ Build/
 AssetDirStat.asset
 **/bin
 Service_Package/
+TouchFree_Build/
 Installer_Build/
 
 # =============== #
