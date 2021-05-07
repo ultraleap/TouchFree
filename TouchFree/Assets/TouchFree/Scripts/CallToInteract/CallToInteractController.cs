@@ -154,7 +154,7 @@ public class CallToInteractController : MonoBehaviour
     {
         if (loadedType != CTIType.None)
         {
-            if (!IsShowing && showTimer.Elapsed.TotalSeconds > ShowTimeAfterNoHandPresent && !UIManager.Instance.isActive)
+            if (!IsShowing && showTimer.Elapsed.TotalSeconds > ShowTimeAfterNoHandPresent && !ScreenManager.Instance.isActive)
             {
                 showTimer.Reset();
                 ShowCTI();
@@ -175,7 +175,7 @@ public class CallToInteractController : MonoBehaviour
                     HideCTI();
                 }
 
-                if(UIManager.Instance.isActive)
+                if(ScreenManager.Instance.isActive)
                 {
                     HideCTI();
                     OnAllHandsExit();

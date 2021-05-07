@@ -8,15 +8,8 @@ namespace Ultraleap.ScreenControl.Core
 {
     public class HomeScreen : MonoBehaviour
     {
-        bool lastFrameServiceConnected = true;
-
-        public GameObject leapConnectedNotification;
-        public GameObject leapDisconnectedNotification;
-
         [Space]
-        public GameObject setupCameraScreen;
-        public GameObject interactionSettingsScreen;
-        public GameObject advancedSettingsScreen;
+        public GameObject userInterfaceSettingsScreen;
 
         public Text versionText;
         string versionPath;
@@ -25,37 +18,6 @@ namespace Ultraleap.ScreenControl.Core
         {
             versionPath = Path.Combine(Application.dataPath, "../Version.txt");
             PopulateVersion();
-        }
-
-        private void OnEnable()
-        {
-            lastFrameServiceConnected = true;
-
-            leapConnectedNotification.SetActive(true);
-            leapDisconnectedNotification.SetActive(false);
-        }
-
-        private void Update()
-        {
-        //    if (HandManager.Instance.IsLeapServiceConnected())
-        //    {
-        //        // show service is connected
-        //        if (!lastFrameServiceConnected)
-        //        {
-        //            leapConnectedNotification.SetActive(true);
-        //            leapDisconnectedNotification.SetActive(false);
-        //            lastFrameServiceConnected = true;
-        //        }
-        //    }
-        //    else
-            {
-                if (lastFrameServiceConnected)
-                {
-                    leapConnectedNotification.SetActive(false);
-                    leapDisconnectedNotification.SetActive(true);
-                    lastFrameServiceConnected = false;
-                }
-            }
         }
 
         void PopulateVersion()
@@ -79,17 +41,12 @@ namespace Ultraleap.ScreenControl.Core
 
         public void ChangeToSetupCamera()
         {
-            ScreenManager.Instance.ChangeScreen(setupCameraScreen);
+            Debug.Log("Need to launch Service UI here");
         }
 
-        public void ChangeToInteractionSettings()
+        public void ChangeToUserInterfaceSettings()
         {
-            ScreenManager.Instance.ChangeScreen(interactionSettingsScreen);
-        }
-
-        public void ChangeToAdvancedSettings()
-        {
-            ScreenManager.Instance.ChangeScreen(advancedSettingsScreen);
+            ScreenManager.Instance.ChangeScreen(userInterfaceSettingsScreen);
         }
     }
 }

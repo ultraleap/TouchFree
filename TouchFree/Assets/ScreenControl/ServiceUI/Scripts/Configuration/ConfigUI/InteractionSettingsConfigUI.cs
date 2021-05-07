@@ -14,8 +14,6 @@ namespace Ultraleap.ScreenControl.Core
 
         public const float HoverCursorStartTime_Min = 0.1f;
         public const float HoverCursorStartTime_Max = 2f;
-        public const float HoverCursorCompleteTime_Min = 0.1f;
-        public const float HoverCursorCompleteTime_Max = 2f;
         #endregion
 
         // UI elements
@@ -26,17 +24,13 @@ namespace Ultraleap.ScreenControl.Core
 
         public InputField HoverStartTime;
         public Slider HoverStartTimeSlider;
-        public InputField HoverCompleteTime;
-        public Slider HoverCompleteTimeSlider;
 
         [Header("Interaction Type")]
         public Toggle interactionTypeTogglePush;
-        public Toggle interactionTypeTogglePinch;
         public Toggle interactionTypeToggleHover;
 
         [Header("Interaction Preview")]
         public GameObject pushPreview;
-        public GameObject grabPreview;
         public GameObject hoverPreview;
 
         [Space]
@@ -57,8 +51,6 @@ namespace Ultraleap.ScreenControl.Core
 
             HoverStartTimeSlider.minValue = HoverCursorStartTime_Min;
             HoverStartTimeSlider.maxValue = HoverCursorStartTime_Max;
-            HoverCompleteTimeSlider.minValue = HoverCursorCompleteTime_Min;
-            HoverCompleteTimeSlider.maxValue = HoverCursorCompleteTime_Max;
         }
 
         public void ResetToDefaultValues()
@@ -76,11 +68,8 @@ namespace Ultraleap.ScreenControl.Core
 
             HoverStartTime.onEndEdit.AddListener(OnValueChanged);
             HoverStartTimeSlider.onValueChanged.AddListener(OnValueChanged);
-            HoverCompleteTime.onEndEdit.AddListener(OnValueChanged);
-            HoverCompleteTimeSlider.onValueChanged.AddListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.AddListener(OnValueChanged);
-            interactionTypeTogglePinch.onValueChanged.AddListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.AddListener(OnValueChanged);
         }
 
@@ -91,11 +80,8 @@ namespace Ultraleap.ScreenControl.Core
 
             HoverStartTime.onEndEdit.RemoveListener(OnValueChanged);
             HoverStartTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
-            HoverCompleteTime.onEndEdit.RemoveListener(OnValueChanged);
-            HoverCompleteTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.RemoveListener(OnValueChanged);
-            interactionTypeTogglePinch.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.RemoveListener(OnValueChanged);
         }
 
@@ -107,17 +93,11 @@ namespace Ultraleap.ScreenControl.Core
 
             //HoverStartTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS.ToString("#0.00#"));
             //HoverStartTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS);
-            //HoverCompleteTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS.ToString("#0.00#"));
-            //HoverCompleteTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS);
 
             interactionTypeTogglePush.SetIsOnWithoutNotify(false);
-            interactionTypeTogglePinch.SetIsOnWithoutNotify(false);
             interactionTypeToggleHover.SetIsOnWithoutNotify(false);
             //switch (ConfigManager.InteractionConfig.InteractionType)
             //{
-            //    case ScreenControlTypes.InteractionType.GRAB:
-            //        interactionTypeTogglePinch.SetIsOnWithoutNotify(true);
-            //        break;
             //    case ScreenControlTypes.InteractionType.HOVER:
             //        interactionTypeToggleHover.SetIsOnWithoutNotify(true);
             //        break;
@@ -138,17 +118,9 @@ namespace Ultraleap.ScreenControl.Core
             HoverStartTime.SetTextWithoutNotify(hoverStartTime.ToString("#0.00#"));
             HoverStartTimeSlider.SetValueWithoutNotify(hoverStartTime);
 
-            var hoverCompleteTime = Mathf.Clamp(HoverCompleteTimeSlider.value, HoverCursorCompleteTime_Min, HoverCursorCompleteTime_Max);
-            HoverCompleteTime.SetTextWithoutNotify(hoverCompleteTime.ToString("#0.00#"));
-            HoverCompleteTimeSlider.SetValueWithoutNotify(hoverCompleteTime);
-
             //if (interactionTypeTogglePush.isOn)
             //{
             //    ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.PUSH;
-            //}
-            //else if (interactionTypeTogglePinch.isOn)
-            //{
-            //    ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.GRAB;
             //}
             //else if (interactionTypeToggleHover.isOn)
             //{
@@ -159,14 +131,10 @@ namespace Ultraleap.ScreenControl.Core
         void DisplayIntractionPreview()
         {
             pushPreview.SetActive(false);
-            grabPreview.SetActive(false);
             hoverPreview.SetActive(false);
 
             //switch (ConfigManager.InteractionConfig.InteractionType)
             //{
-            //    case ScreenControlTypes.InteractionType.GRAB:
-            //        grabPreview.SetActive(true);
-            //        break;
             //    case ScreenControlTypes.InteractionType.HOVER:
             //        hoverPreview.SetActive(true);
             //        break;
@@ -211,15 +179,10 @@ namespace Ultraleap.ScreenControl.Core
             //ConfigManager.InteractionConfig.DeadzoneRadius = cursorDeadzoneSlider.value;
             //ConfigManager.InteractionConfig.UseScrollingOrDragging = scrollingOrDraggingTog.isOn;
             //ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = HoverStartTimeSlider.value;
-            //ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = HoverCompleteTimeSlider.value;
 
             //if (interactionTypeTogglePush.isOn)
             //{
             //    ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.PUSH;
-            //}
-            //else if (interactionTypeTogglePinch.isOn)
-            //{
-            //    ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.GRAB;
             //}
             //else if (interactionTypeToggleHover.isOn)
             //{

@@ -1,150 +1,117 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-namespace Ultraleap.ScreenControl.Core
+[DefaultExecutionOrder(-1)]
+public class ScreenManager : MonoBehaviour
 {
-    public enum MountingType
+    public static ScreenManager Instance;
+
+    public event Action UIActivated;
+    public event Action UIDeactivated;
+
+    public bool isActive;
+
+    public GameObject[] stateRoots;
+    public GameObject homeScreen;
+    GameObject currentScreen;
+    List<GameObject> previousScreens = new List<GameObject>();
+
+    private void Start()
     {
-        NONE,
-        BELOW,
-        ABOVE_FACING_USER,
-        ABOVE_FACING_SCREEN
+        Instance = this;
     }
 
-    public class ScreenManager : MonoBehaviour
+    private void Update()
     {
-        public static ScreenManager Instance;
-
-        public GameObject clientRootObj;
-        public GameObject[] stateRoots;
-        public GameObject homeScreen;
-        GameObject currentScreen;
-        List<GameObject> previousScreens = new List<GameObject>();
-
-        [HideInInspector] public MountingType selectedMountType = MountingType.NONE;
-
-       // private PhysicalConfig defaultConfig = null;
-        bool cursorStateOverridden = false;
-
-        public void ChangeScreen(GameObject _newScreenRoot, bool _movingBack = false)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (currentScreen == null)
+            if (homeScreen.activeSelf)
             {
-                currentScreen = homeScreen;
-            }
-
-            if (!_movingBack)
-            {
-                previousScreens.Add(currentScreen);
-            }
-
-            foreach (var root in stateRoots)
-            {
-                root.SetActive(false);
-            }
-
-            _newScreenRoot.SetActive(true);
-            currentScreen = _newScreenRoot;
-        }
-
-        private void Start()
-        {
-            Instance = this;
-            UpdateCursorState();
-
-            // Never use TrackingTransform in UI scene, tracking is only used for
-            // Quick Setup here
-            //HandManager.Instance.useTrackingTransform = false;
-        }
-
-        public void SetCursorState(bool _state)
-        {
-            clientRootObj.SetActive(_state);
-            cursorStateOverridden = !_state;
-        }
-
-        void OnApplicationFocus(bool hasFocus)
-        {
-            if (hasFocus)
-            {
-                UpdateCursorState();
+                CloseApplication();
             }
             else
             {
-                clientRootObj.SetActive(hasFocus);
+                ReturnToHome();
             }
         }
 
-        private void UpdateCursorState()
+        if (Input.GetKeyDown(KeyCode.C))
         {
-            if (cursorStateOverridden)
-            {
-                return;
-            }
+            SetUIActive(!isActive);
+        }
+    }
 
-            //if (defaultConfig == null)
-            //{
-            //    defaultConfig = PhysicalConfigFile.GetDefaultValues();
-            //}
+    public void SupportPressed()
+    {
+        Application.OpenURL("http://rebrand.ly/ul-contact-us");
+    }
 
-            ////Check if the physicalconfig is set to default and guide the users if it is
-            //if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
-            //    ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
-            //{
-            //    clientRootObj.SetActive(false);
-            //}
-            //else
-            //{
-            //    clientRootObj.SetActive(true);
-            //}
+    public void DesignGuidePressed()
+    {
+        Application.OpenURL("http://rebrand.ly/ul-design-guidelines");
+    }
+
+    public void SetupGuidePressed()
+    {
+        Application.OpenURL("http://rebrand.ly/ul-camera-setup");
+    }
+
+    public void ChangeScreen(GameObject _newScreenRoot, bool _movingBack = false)
+    {
+        if (currentScreen == null)
+        {
+            currentScreen = homeScreen;
         }
 
-        private void Update()
+        if (!_movingBack)
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (homeScreen.activeSelf)
-                {
-                    CloseApplication();
-                }
-                else
-                {
-                    ReturnToHome();
-                }
-            }
+            previousScreens.Add(currentScreen);
         }
 
-        public void SupportPressed()
-        {
-            Application.OpenURL("http://rebrand.ly/ul-contact-us");
-        }
+        CloseAllScreens();
 
-        public void DesignGuidePressed()
-        {
-            Application.OpenURL("http://rebrand.ly/ul-design-guidelines");
-        }
+        _newScreenRoot.SetActive(true);
+        currentScreen = _newScreenRoot;
+    }
 
-        public void SetupGuidePressed()
+    void CloseAllScreens()
+    {
+        foreach (var root in stateRoots)
         {
-            Application.OpenURL("http://rebrand.ly/ul-camera-setup");
+            root.SetActive(false);
         }
+    }
 
-        public void ReturnToHome()
+    public void ReturnToHome()
+    {
+        ChangeScreen(homeScreen);
+    }
+
+    public void PreviousScreen()
+    {
+        ChangeScreen(previousScreens[previousScreens.Count - 1], true);
+        previousScreens.RemoveAt(previousScreens.Count - 1);
+    }
+
+    private void SetUIActive(bool _setTo = true)
+    {
+        isActive = _setTo;
+
+        if (isActive)
         {
-            ChangeScreen(homeScreen);
+            ReturnToHome();
+            UIActivated?.Invoke();
         }
-
-        public void PreviousScreen()
+        else
         {
-            ChangeScreen(previousScreens[previousScreens.Count-1], true);
-            previousScreens.RemoveAt(previousScreens.Count-1);
-
-            //HandManager.Instance.UpdateLeapTrackingMode();
+            CloseAllScreens();
+            UIDeactivated?.Invoke();
         }
+    }
 
-        public void CloseApplication()
-        {
-            Application.Quit();
-        }
+    public void CloseApplication()
+    {
+        SetUIActive(false);
     }
 }
