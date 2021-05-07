@@ -482,9 +482,7 @@ MonoBehaviour:
   handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 3899536540166993890}
-  dragStartDistanceThresholdM: 0.01
-  dragDeadzoneShrinkRate: 0.5
-  dragDeadzoneShrinkDistanceThresholdM: 0.01
+  dragStartDistanceThresholdM: 0.03
 --- !u!114 &3899536540166993890
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -22,9 +22,6 @@ namespace Ultraleap.ScreenControl.Core
 
         [Header("Dragging")]
         public float dragStartDistanceThresholdM = 0.01f;
-        public float dragDeadzoneShrinkRate = 0.5f;
-        public float dragDeadzoneShrinkDistanceThresholdM = 0.01f;
-        private bool dragDeadzoneShrinkTriggered = false;
         bool isDragging = false;
 
         protected override void UpdateData(Leap.Hand hand)
@@ -70,18 +67,11 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     if (isDragging)
                     {
-                        if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(downPos, positions.CursorPosition))
-                        {
-                            positioningModule.Stabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
-                            dragDeadzoneShrinkTriggered = true;
-                        }
-
                         SendInputAction(InputType.MOVE, positions, progressToClick);
                     }
                     else if (CheckForStartDrag(downPos, positions.CursorPosition))
                     {
                         isDragging = true;
-                        dragDeadzoneShrinkTriggered = false;
                     }
                 }
                 else if (!pressComplete)
@@ -135,14 +125,6 @@ namespace Ultraleap.ScreenControl.Core
             }
 
             return false;
-        }
-
-        private bool CheckForStartDragDeadzoneShrink(Vector2 _startPos, Vector2 _currentPos)
-        {
-            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).magnitude;
-            return (distFromStartPos > dragDeadzoneShrinkDistanceThresholdM);
         }
 
         protected override void OnSettingsUpdated()
