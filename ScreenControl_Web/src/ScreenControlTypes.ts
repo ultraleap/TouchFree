@@ -6,7 +6,7 @@ export class VersionInfo
 
     // Variable: ApiVersion
     // The current API version of the Client.
-    public static readonly ApiVersion: string = "1.0.3";
+    public static readonly ApiVersion: string = "1.0.4";
 
     // Variable: API_HEADER_NAME
     // The name of the header we wish the Service to compare our version with.
@@ -99,6 +99,7 @@ export enum InteractionType {
     GRAB,
     HOVER,
     PUSH,
+    TOUCHPLANE,
 }
 
 // Enum: BitmaskFlags
@@ -125,6 +126,7 @@ export enum BitmaskFlags {
     GRAB = 256,
     HOVER = 512,
     PUSH = 1024,
+    TOUCHPLANE = 2048,
 
     // Adding elements to this list is a breaking change, and should cause at
     // least a minor iteration of the API version UNLESS adding them at the end
@@ -225,6 +227,10 @@ export class FlagUtilities {
             case InteractionType.GRAB:
                 returnVal ^= BitmaskFlags.GRAB;
                 break;
+
+            case InteractionType.TOUCHPLANE:
+                returnVal ^= BitmaskFlags.TOUCHPLANE;
+                break;
         }
 
         return returnVal;
@@ -303,6 +309,9 @@ export class FlagUtilities {
         }
         else if (_flags & BitmaskFlags.GRAB) {
             interactionType = InteractionType.GRAB;
+        }
+        else if (_flags & BitmaskFlags.TOUCHPLANE) {
+            interactionType = InteractionType.TOUCHPLANE;
         }
         else {
             console.error("InputActionData missing: No InteractionType found. Defaulting to 'PUSH'");

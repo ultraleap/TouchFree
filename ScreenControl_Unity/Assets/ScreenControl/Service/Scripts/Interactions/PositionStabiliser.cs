@@ -4,40 +4,32 @@ using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Core
 {
-    public enum ShrinkType
-    {
-        NONE,
-        TIME_BASED,
-        MOTION_BASED,
-    }
-
     public class PositionStabiliser : MonoBehaviour
     {
-        public float defaultDeadzoneRadius;
+        [HideInInspector] public float defaultDeadzoneRadius;
         public float smoothingRate;
-        public float characteristicVelocity;
         public float internalShrinkFactor = 2f;
 
-        [Header("Distance based scaling")]
-        public AnimationCurve deadzoneDistanceScaling;
+        [Header("Progress based scaling")]
+        public AnimationCurve deadzoneProgressScaling;
 
         // This is the radius that actually gets applied
-        private float currentDeadzoneRadius;
+        [HideInInspector] public float currentDeadzoneRadius;
 
         // Shrinking Params
-        private ShrinkType shrinkingType = ShrinkType.NONE;
+        [HideInInspector] public bool isShrinking = false;
         private float shrinkingSpeed;
 
         private bool havePreviousPositionSmoothing;
         private Vector3 previousPositionSmoothing;
 
         private bool havePreviousPositionDeadzone;
-        private Vector2 previousPositionDeadzoneUnconstrained;
         private Vector2 previousPositionDeadzoneDefaultSize;
         private Vector2 previousPositionDeadzoneCurrentSize;
 
         private void OnEnable()
         {
+            ResetValues();
             InteractionConfig.OnConfigUpdated += OnSettingsUpdated;
             OnSettingsUpdated();
         }
@@ -47,21 +39,14 @@ namespace Ultraleap.ScreenControl.Core
             InteractionConfig.OnConfigUpdated -= OnSettingsUpdated;
         }
 
-        // Change the current Deadzone Radius. Does not affect the default.
-        public void SetCurrentDeadzoneRadius(float radius)
-        {
-            currentDeadzoneRadius = radius;
-        }
-
-        // Get the current Deadzone Radius.
-        public float GetCurrentDeadzoneRadius()
-        {
-            return currentDeadzoneRadius;
-        }
-
         // Apply smoothing
         public Vector3 ApplySmoothing(Vector3 position, float currentVelocity, float deltaTime)
         {
+            if(defaultDeadzoneRadius == 0)
+            {
+                return position;
+            }
+
             Vector3 smoothedPosition;
 
             if (!havePreviousPositionSmoothing)
@@ -80,8 +65,13 @@ namespace Ultraleap.ScreenControl.Core
             return smoothedPosition;
         }
 
-        public Vector2 ApplyDeadzone(Vector2 position, float deltaTime = 0f)
+        public Vector2 ApplyDeadzone(Vector2 position)
         {
+            if (defaultDeadzoneRadius == 0)
+            {
+                return position;
+            }
+
             Vector2 constrainedPositionDefault;
             Vector2 constrainedPositionCurrent;
 
@@ -96,50 +86,15 @@ namespace Ultraleap.ScreenControl.Core
                 // Calculate default deadzone
                 constrainedPositionDefault = ApplyDeadzoneSized(previousPositionDeadzoneDefaultSize, position, defaultDeadzoneRadius);
 
-                if (shrinkingType == ShrinkType.MOTION_BASED)
+                if (isShrinking)
                 {
-                    Vector2 defaultPositionChange = (constrainedPositionDefault - previousPositionDeadzoneDefaultSize);
-                    Vector2 previousConstraintVector = (previousPositionDeadzoneDefaultSize - previousPositionDeadzoneCurrentSize);
-
-                    float internalConstraintVariable = previousConstraintVector.magnitude + internalShrinkFactor * defaultDeadzoneRadius;
-
-                    if (internalConstraintVariable < currentDeadzoneRadius)
-                    {
-
-                        currentDeadzoneRadius = internalConstraintVariable;
-                    }
-                    else if (previousConstraintVector != Vector2.zero)
-                    {
-                        float distanceAwayFromConstraint = Vector2.Dot(defaultPositionChange, previousConstraintVector) / previousConstraintVector.magnitude;
-                        distanceAwayFromConstraint = Mathf.Max(0, distanceAwayFromConstraint);
-
-                        float shrinkDistance = distanceAwayFromConstraint * shrinkingSpeed;
-                        float velocityFactor = 1f;
-
-                        if ((deltaTime != 0f) && (characteristicVelocity != 0f))
-                        {
-                            // Calculate a velocity-dependent factor
-                            float calcVel = defaultPositionChange.magnitude / deltaTime;
-                            float calcFactor = calcVel / characteristicVelocity;
-                            velocityFactor = Mathf.Min(calcFactor, 1f);
-                        }
-
-                        shrinkDistance *= velocityFactor;
-                        currentDeadzoneRadius -= shrinkDistance;
-
-                        if (currentDeadzoneRadius < defaultDeadzoneRadius)
-                        {
-                            currentDeadzoneRadius = defaultDeadzoneRadius;
-                            StopShrinkingDeadzone();
-                        }
-                    }
+                    ShrinkDeadzone(constrainedPositionDefault);
                 }
 
                 // Calculate current deadzone
                 constrainedPositionCurrent = ApplyDeadzoneSized(previousPositionDeadzoneCurrentSize, position, currentDeadzoneRadius);
-
             }
-            previousPositionDeadzoneUnconstrained = position;
+
             previousPositionDeadzoneCurrentSize = constrainedPositionCurrent;
             previousPositionDeadzoneDefaultSize = constrainedPositionDefault;
             return constrainedPositionCurrent;
@@ -158,28 +113,19 @@ namespace Ultraleap.ScreenControl.Core
             {
                 constrainedPosition = previous;
             }
-            return constrainedPosition;
-        }
 
-        public void Start()
-        {
-            ResetValues();
+            return constrainedPosition;
         }
 
         public void ResetValues()
         {
             havePreviousPositionDeadzone = false;
             shrinkingSpeed = 0;
-            shrinkingType = ShrinkType.NONE;
+            isShrinking = false;
             currentDeadzoneRadius = defaultDeadzoneRadius;
         }
 
-        public bool IsShrinkingDeadzone()
-        {
-            return (shrinkingType != ShrinkType.NONE);
-        }
-
-        public void StartShrinkingDeadzone(ShrinkType setting, float speed)
+        public void StartShrinkingDeadzone(float speed)
         {
             if (currentDeadzoneRadius == defaultDeadzoneRadius)
             {
@@ -187,50 +133,49 @@ namespace Ultraleap.ScreenControl.Core
                 return;
             }
             shrinkingSpeed = speed;
-            shrinkingType = setting;
-
-            if (setting == ShrinkType.TIME_BASED)
-            {
-                // Immediately shrink the deadzone size to a smaller size, if we're using a time-based approach
-                // This is so that we don't waste time shrinking with no effect
-                float enforcedDeadzoneRadius = (previousPositionDeadzoneUnconstrained - previousPositionDeadzoneCurrentSize).magnitude;
-                currentDeadzoneRadius = Mathf.Max(defaultDeadzoneRadius, enforcedDeadzoneRadius);
-            }
+            isShrinking = true;
         }
 
         public void StopShrinkingDeadzone()
         {
             shrinkingSpeed = 0;
-            shrinkingType = ShrinkType.NONE;
+            isShrinking = false;
         }
 
-        public void ScaleDeadzoneByDistance(float screenDistance)
+        void ShrinkDeadzone(Vector2 constrainedPositionDefault)
         {
-            // Assumes deadZoneDistanceScaling runs from 1.0 to 0.0.
-            // If screenDistance = DistanceBetweenHoverStartToButtonPressM then normalisedDistance = 0.0.
-            // If screenDistance = 0.0 (at touch plane) then normalisedDistance = 1.0.
-            // Therefore deadZoneRadius increases in size the closer to the screen it gets, starting to grow at 0.1f.
-            var normalisedDistance = deadzoneDistanceScaling.Evaluate(screenDistance / 0.1f);
-            var deadZoneRadius = defaultDeadzoneRadius * normalisedDistance;
+            Vector2 defaultPositionChange = (constrainedPositionDefault - previousPositionDeadzoneDefaultSize);
+            Vector2 previousConstraintVector = (previousPositionDeadzoneDefaultSize - previousPositionDeadzoneCurrentSize);
 
-            SetCurrentDeadzoneRadius(deadZoneRadius);
-        }
+            float internalConstraintVariable = previousConstraintVector.magnitude + internalShrinkFactor * defaultDeadzoneRadius;
 
-        private void Update()
-        {
-            if (shrinkingType == ShrinkType.TIME_BASED)
+            if (internalConstraintVariable < currentDeadzoneRadius)
             {
-                float newDeadzoneRadius = currentDeadzoneRadius - shrinkingSpeed * Time.deltaTime;
-                if (newDeadzoneRadius < defaultDeadzoneRadius || shrinkingSpeed == 0)
+                currentDeadzoneRadius = internalConstraintVariable;
+            }
+            else if (previousConstraintVector != Vector2.zero)
+            {
+                float distanceAwayFromConstraint = Vector2.Dot(defaultPositionChange, previousConstraintVector) / previousConstraintVector.magnitude;
+                distanceAwayFromConstraint = Mathf.Max(0, distanceAwayFromConstraint);
+
+                float shrinkDistance = distanceAwayFromConstraint * shrinkingSpeed;
+                currentDeadzoneRadius -= shrinkDistance;
+
+                if (currentDeadzoneRadius < defaultDeadzoneRadius)
                 {
                     currentDeadzoneRadius = defaultDeadzoneRadius;
                     StopShrinkingDeadzone();
                 }
-                else
-                {
-                    currentDeadzoneRadius = newDeadzoneRadius;
-                }
             }
+        }
+
+        public void ScaleDeadzoneByProgress(float _progressToClick)
+        {
+            // Assumes deadzoneProgressScaling runs from 0.0 to 1.0.
+            var scaledValue = deadzoneProgressScaling.Evaluate(_progressToClick);
+            var deadZoneRadius = defaultDeadzoneRadius * scaledValue;
+
+            currentDeadzoneRadius = deadZoneRadius;
         }
 
         void OnSettingsUpdated()

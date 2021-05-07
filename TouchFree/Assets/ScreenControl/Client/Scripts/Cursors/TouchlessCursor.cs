@@ -30,19 +30,19 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: OnEnable
         // Initialises & displays the cursor to its default state when the scene is fully loaded.
-        // Also registers the Cursor for updates from the <ConnectionManager>
+        // Also registers the Cursor for updates from the <InputActionManager>
         protected virtual void OnEnable()
         {
-            ConnectionManager.TransmitInputAction += HandleInputAction;
+            InputActionManager.TransmitInputAction += HandleInputAction;
             InitialiseCursor();
         }
 
         // Function: OnDisable
         // Deregisters the Cursor so it no longer recieves updates from the
-        // <ConnectionManager>
+        // <InputActionManager>
         protected virtual void OnDisable()
         {
-            ConnectionManager.TransmitInputAction -= HandleInputAction;
+            InputActionManager.TransmitInputAction -= HandleInputAction;
         }
 
         // Group: Functions

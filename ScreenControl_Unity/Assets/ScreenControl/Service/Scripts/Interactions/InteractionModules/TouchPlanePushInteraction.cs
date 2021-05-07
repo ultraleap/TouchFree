@@ -1,34 +1,28 @@
 ﻿using UnityEngine;
-using Leap.Unity;
-using Stopwatch = System.Diagnostics.Stopwatch;
 using Ultraleap.ScreenControl.Core.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Core
 {
     public class TouchPlanePushInteraction : InteractionModule
     {
-        public override InteractionType InteractionType { get; } = InteractionType.PUSH;
+        public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
 
-        // The distance from screen at which the progressToClick is 0
-        private float screenDistanceAtNoProgress = 2.0f;
+        // The distance from the touchPlane at which the progressToClick is 0
+        private float touchPlaneZeroProgress = 0.03f;
 
         // The distance from screen at which the progressToClick is 1
-        private float screenDistanceAtMaxProgress = 0f;
-
-        [Header("Drag Params")]
-        public float dragStartDistanceThresholdM = 0.04f;
-        public float dragStartTimeDelaySecs = 0.6f;
-        public float dragLerpSpeed = 10f;
+        private float touchPlaneDistance = 0.05f;
 
         private bool pressing = false;
-        private bool performInstantClick = false;
-        private bool instantClickHoldFrame = false;
+        bool pressComplete = false;
 
-        // Dragging
-        private Vector2 posLastFrame;
         private Vector2 downPos;
-        private bool isDragging;
-        private Stopwatch dragStartTimer = new Stopwatch();
+
+        bool cancelled = false;
+
+        [Header("Dragging")]
+        public float dragStartDistanceThresholdM = 0.01f;
+        bool isDragging = false;
 
         protected override void UpdateData(Leap.Hand hand)
         {
@@ -37,15 +31,17 @@ namespace Ultraleap.ScreenControl.Core
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, 0);
+                    SendInputAction(InputType.CANCEL, positions, 0);
+                    cancelled = true;
                 }
 
+                pressComplete = false;
+                isDragging = false;
                 pressing = false;
                 return;
             }
 
             positions = positioningModule.CalculatePositions(hand);
-            positioningModule.Stabiliser.ScaleDeadzoneByDistance(positions.DistanceFromScreen);
             HandleInteractions();
         }
 
@@ -54,85 +50,77 @@ namespace Ultraleap.ScreenControl.Core
             Vector2 currentCursorPosition = positions.CursorPosition;
             float distanceFromScreen = positions.DistanceFromScreen;
 
-            float progressToClick = 1f - Mathf.InverseLerp(screenDistanceAtMaxProgress, screenDistanceAtNoProgress, distanceFromScreen);
-
-            SendInputAction(InputType.MOVE, positions, distanceFromScreen, progressToClick);
+            float progressToClick = 1f - Mathf.InverseLerp(touchPlaneDistance, touchPlaneDistance + touchPlaneZeroProgress, distanceFromScreen);
 
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
-            if (distanceFromScreen < 0f)
+            if (distanceFromScreen < touchPlaneDistance)
             {
+                cancelled = false;
                 // we are touching the screen
                 if (!pressing)
                 {
-                    SendInputAction(InputType.DOWN, positions, distanceFromScreen, progressToClick);
-
+                    SendInputAction(InputType.DOWN, positions, progressToClick);
                     downPos = currentCursorPosition;
-                    posLastFrame = currentCursorPosition;
-                    dragStartTimer.Restart();
                     pressing = true;
-                    performInstantClick = true;
-                    instantClickHoldFrame = true;
                 }
-                else
+                else if(!ignoreDragging)
                 {
                     if (isDragging)
                     {
-                        // Lerp the drag position. This ensures the screen content doesn't JUMP to currentPos from the downPos
-                        // after entering the drag state.
-                        Vector2 pos = Vector2.Lerp(posLastFrame, currentCursorPosition, 10f * Time.deltaTime);
-                        posLastFrame = pos;
+                        SendInputAction(InputType.MOVE, positions, progressToClick);
                     }
-                    else
+                    else if (CheckForStartDrag(downPos, positions.CursorPosition))
                     {
-                        Positions downPositions = new Positions(downPos, distanceFromScreen);
-                        // Do an instant touch up to select a button instantly.
-                        if (ignoreDragging && performInstantClick)
-                        {
-                            if (instantClickHoldFrame)
-                            {
-                                instantClickHoldFrame = false;
-                            }
-                            else
-                            {
-                                SendInputAction(InputType.UP, downPositions, distanceFromScreen, progressToClick);
-                                performInstantClick = false;
-                            }
-                        }
+                        isDragging = true;
                     }
                 }
-            }
-            else
-            {
-                // we are hovering
-                if (pressing)
+                else if (!pressComplete)
                 {
-                    if (!ignoreDragging)
-                    {
-                        SendInputAction(InputType.UP, positions, distanceFromScreen, progressToClick);
-                    }
+                    Positions downPositions = new Positions(downPos, distanceFromScreen);
+                    SendInputAction(InputType.UP, downPositions, progressToClick);
 
-                    pressing = false;
+                    pressComplete = true;
+                }
+            }
+            else if (distanceFromScreen < touchPlaneDistance + touchPlaneZeroProgress)
+            {
+                if (pressing && !pressComplete)
+                {
+                    Positions downPositions = new Positions(downPos, distanceFromScreen);
+                    SendInputAction(InputType.UP, downPositions, progressToClick);
                 }
 
+                pressComplete = false;
+                pressing = false;
                 isDragging = false;
+
+                SendInputAction(InputType.MOVE, positions, progressToClick);
+                cancelled = false;
             }
-            positioningModule.ApplyDragLerp = isDragging;
+            else if (!cancelled)
+            {
+                if (pressing && !pressComplete)
+                {
+                    Positions downPositions = new Positions(downPos, distanceFromScreen);
+                    SendInputAction(InputType.UP, downPositions, progressToClick);
+                }
+
+                pressComplete = false;
+                pressing = false;
+
+                SendInputAction(InputType.CANCEL, positions, 0);
+                cancelled = true;
+            }
         }
 
-        bool CheckForStartDrag(Vector2 startPos, Vector2 currentPos)
+        private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector3 a = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(startPos, 0f);
-            Vector3 b = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(currentPos, 0f);
-            float distFromStartPos = (a - b).magnitude;
+            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
+            float distFromStartPos = (startPosM - currentPosM).magnitude;
 
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
-                return true;
-            }
-
-            if (dragStartTimer.ElapsedMilliseconds >= dragStartTimeDelaySecs * 1000f)
-            {
-                dragStartTimer.Stop();
                 return true;
             }
 
@@ -142,7 +130,10 @@ namespace Ultraleap.ScreenControl.Core
         protected override void OnSettingsUpdated()
         {
             base.OnSettingsUpdated();
-            screenDistanceAtNoProgress = 2.0f;
+
+            // Convert from CM to M
+            touchPlaneDistance = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM / 100;
+            touchPlaneZeroProgress = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM / 100;
         }
     }
 }

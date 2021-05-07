@@ -11,7 +11,7 @@ namespace Ultraleap.ScreenControl.Client
 
         // Variable: ApiVersion
         // The current API version of the Client.
-        public static readonly Version ApiVersion = new Version("1.0.3");
+        public static readonly Version ApiVersion = new Version("1.0.4");
 
         // Variable: API_HEADER_NAME
         // The name of the header we wish the Service to compare our version with.
@@ -105,6 +105,7 @@ namespace Ultraleap.ScreenControl.Client
         GRAB,
         HOVER,
         PUSH,
+        TOUCHPLANE,
     }
 
     // Enum: BitmaskFlags
@@ -133,6 +134,7 @@ namespace Ultraleap.ScreenControl.Client
         GRAB = 256,
         HOVER = 512,
         PUSH = 1024,
+        TOUCHPLANE = 2048,
 
         // Adding elements to this list is a breaking change, and should cause at
         // least a minor iteration of the API version UNLESS adding them at the end
@@ -221,6 +223,10 @@ namespace Ultraleap.ScreenControl.Client
 
                 case InteractionType.GRAB:
                     returnVal ^= BitmaskFlags.GRAB;
+                    break;
+
+                case InteractionType.TOUCHPLANE:
+                    returnVal ^= BitmaskFlags.TOUCHPLANE;
                     break;
             }
 
@@ -318,6 +324,10 @@ namespace Ultraleap.ScreenControl.Client
             else if (_flags.HasFlag(BitmaskFlags.GRAB))
             {
                 interactionType = InteractionType.GRAB;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.TOUCHPLANE))
+            {
+                interactionType = InteractionType.TOUCHPLANE;
             }
             else
             {

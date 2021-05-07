@@ -445,6 +445,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 0.78039217}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -475,6 +476,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -490,6 +496,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -502,16 +513,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
         type: 3}
@@ -532,6 +533,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CallToInteract
+      objectReference: {fileID: 0}
+    - target: {fileID: 7171615015226793760, guid: 1287b01b288ed67459e06e84b05eb05e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1287b01b288ed67459e06e84b05eb05e, type: 3}
@@ -626,6 +632,7 @@ GameObject:
   - component: {fileID: 1885739627111523827}
   - component: {fileID: 3528134228377515045}
   - component: {fileID: 4784773018261898961}
+  - component: {fileID: 1104336824340231346}
   m_Layer: 0
   m_Name: ScreenControlClient
   m_TagString: Untagged
@@ -633,6 +640,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1104336824340231346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104336824340231345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f03477b0170fb642a2d679846763e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  plugins: []
 --- !u!4 &1104336824340231351
 Transform:
   m_ObjectHideFlags: 0
@@ -754,6 +774,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1100,6 +1121,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

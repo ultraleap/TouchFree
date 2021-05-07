@@ -35,7 +35,7 @@ namespace Ultraleap.ScreenControl.Core
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, 0);
+                    SendInputAction(InputType.CANCEL, positions, 0);
                 }
 
                 return;
@@ -68,7 +68,7 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     hoverTriggered = true;
                     hoverTriggerTimer.Stop();
-                    hoverTriggeredDeadzoneRadius = positioningModule.Stabiliser.GetCurrentDeadzoneRadius();
+                    hoverTriggeredDeadzoneRadius = positioningModule.Stabiliser.currentDeadzoneRadius;
                     previousScreenPos = positions.CursorPosition; // To prevent instant-abandonment of hover
                 }
             }
@@ -85,26 +85,26 @@ namespace Ultraleap.ScreenControl.Core
                         }
                         else if (progressTimer.IsRunning && progressTimer.Progress == 1f)
                         {
-                            positioningModule.Stabiliser.SetCurrentDeadzoneRadius(timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius);
+                            positioningModule.Stabiliser.currentDeadzoneRadius = (timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius);
                             progressTimer.StopTimer();
                             clickHeld = true;
                             clickingTimer.Restart();
-                            SendInputAction(InputType.DOWN, positions, positions.DistanceFromScreen, 0f);
+                            SendInputAction(InputType.DOWN, positions, 0f);
                         }
                         else
                         {
-                            SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, progressTimer.Progress);
+                            SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
 
                             float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
                             float deadzoneRadius = Mathf.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
-                            positioningModule.Stabiliser.SetCurrentDeadzoneRadius(deadzoneRadius);
+                            positioningModule.Stabiliser.currentDeadzoneRadius = deadzoneRadius;
                         }
                     }
                     else
                     {
                         if (!clickAlreadySent && clickingTimer.ElapsedMilliseconds > clickHoldTime)
                         {
-                            SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, progressTimer.Progress);
+                            SendInputAction(InputType.UP, positions, progressTimer.Progress);
                             clickAlreadySent = true;
                         }
                     }
@@ -114,7 +114,7 @@ namespace Ultraleap.ScreenControl.Core
                     if (clickHeld && !clickAlreadySent)
                     {
                         // Handle unclick if move before timer's up
-                        SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, progressTimer.Progress);
+                        SendInputAction(InputType.UP, positions, progressTimer.Progress);
                     }
 
                     progressTimer.ResetTimer();
@@ -126,12 +126,12 @@ namespace Ultraleap.ScreenControl.Core
                     clickAlreadySent = false;
                     clickingTimer.Stop();
 
-                    positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
+                    positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                 }
             }
             else
             {
-                SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, progressTimer.Progress);
+                SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
             }
 
             previousHoverPosScreen = _hoverPosition;
