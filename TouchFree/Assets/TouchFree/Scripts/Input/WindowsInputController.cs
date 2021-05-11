@@ -10,7 +10,7 @@ public class WindowsInputController : InputController
 
     protected override void Start()
     {
-        base.Start();
+        InputActionManager.TransmitRawInputAction += HandleInputAction;
         TouchInjection.Initialize(10, TouchFeedback.NONE);
 
         touches = new PointerTouchInfo[1];
@@ -18,6 +18,11 @@ public class WindowsInputController : InputController
         touches[0].TouchFlags = TouchFlags.NONE;
         touches[0].TouchMasks = TouchMask.NONE;
         touches[0].PointerInfo.PointerId = 1;
+    }
+
+    protected override void OnDestroy()
+    {
+        InputActionManager.TransmitRawInputAction -= HandleInputAction;
     }
 
     protected override void HandleInputAction(ClientInputAction _inputData)
