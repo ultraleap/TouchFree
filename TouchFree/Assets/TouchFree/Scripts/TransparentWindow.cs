@@ -53,14 +53,15 @@ public class TransparentWindow : MonoBehaviour
 
     private Vector2 position;
 
-    public bool clickThroughEnabled = false;
+    [HideInInspector] public bool clickThroughEnabled = false;
 
     void Start()
 	{
 #if !UNITY_EDITOR // You really don't want to enable this in the editor..
 		hwnd = GetActiveWindow();
 #endif
-        SetCursorWindow(true);
+        clickThroughEnabled = false;
+        SetConfigWindow(true);
     }
 
     public void DisableClickThrough()
