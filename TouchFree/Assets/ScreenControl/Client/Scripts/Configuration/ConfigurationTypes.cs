@@ -191,27 +191,27 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     [System.Serializable]
     public class TouchPlaneInteractionSettings
     {
-        // Property: touchPlaneDistanceCM
+        // Property: touchPlaneActivationDistanceCM
         // This determines how far (in cm) the TouchPlane is from the screen surface. This
         // represents the plane that the user must pass to begin and end a click event.
-        public float touchPlaneDistanceCM
+        public float touchPlaneActivationDistanceCM
         {
             get
             {
-                return TouchPlaneDistanceCM;
+                return TouchPlaneActivationDistanceCM;
             }
             set
             {
-                if (configValues.ContainsKey("TouchPlaneDistanceCM"))
+                if (configValues.ContainsKey("TouchPlaneActivationDistanceCM"))
                 {
-                    configValues["TouchPlaneDistanceCM"] = value;
+                    configValues["TouchPlaneActivationDistanceCM"] = value;
                 }
                 else
                 {
-                    configValues.Add("TouchPlaneDistanceCM", value);
+                    configValues.Add("TouchPlaneActivationDistanceCM", value);
                 }
 
-                TouchPlaneDistanceCM = value;
+                TouchPlaneActivationDistanceCM = value;
             }
         }
 
@@ -246,7 +246,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // *DO NOT MODIFY THIS DICTIONARY MANUALLY*
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
 
-        [SerializeField] private float TouchPlaneDistanceCM;
+        [SerializeField] private float TouchPlaneActivationDistanceCM;
         [SerializeField] private float TouchPlaneStartDistanceCM;
     }
 

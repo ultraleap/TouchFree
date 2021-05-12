@@ -1,14 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ultraleap.ScreenControl.Client;
 
-public class LockCursor : MonoBehaviour
+public class LockCursor : InputActionPlugin
 {
-    public RectTransform cursorCanvas;
-    
     public TransparentWindow window;
-
-    private TouchFreeRingCursor cursor;
     private Vector2 screenMiddle;
 
     void Start()
@@ -16,22 +13,14 @@ public class LockCursor : MonoBehaviour
         screenMiddle = new Vector2(TouchFreeMain.CursorWindowSize / 2, TouchFreeMain.CursorWindowSize / 2);
     }
 
-    void LateUpdate()
+    protected override ClientInputAction ModifyInputAction(ClientInputAction _inputAction)
     {
-        if (cursor == null)
-        {
-            cursor = cursorCanvas.GetComponentInChildren<TouchFreeRingCursor>();
-        }
-
         if (window.clickThroughEnabled)
         {
-            cursor.overriding = true;
-            cursor.OverridePosition(screenMiddle);
-            window.SetPosition(cursor.GetWindowPos());
+            window.SetPosition(new Vector2(_inputAction.CursorPosition.x, _inputAction.CursorPosition.y));
+            _inputAction.CursorPosition = screenMiddle;
         }
-        else
-        {
-            cursor.overriding = false;
-        }
+
+        return _inputAction;
     }
 }

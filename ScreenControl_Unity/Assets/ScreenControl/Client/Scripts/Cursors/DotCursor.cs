@@ -166,26 +166,19 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     break;
 
                 case InputType.UP:
-                    growQueued = true;
+                    if (cursorScalingRoutine != null)
+                    {
+                        growQueued = true;
+                    }
+                    else
+                    {
+                        growQueued = false;
+                        cursorScalingRoutine = StartCoroutine(GrowCursorDot());
+                    }
                     break;
 
                 case InputType.CANCEL:
                     break;
-            }
-        }
-
-        // Function: Update
-        // This override runs the basic functionality of <TouchlessCursor> and also ensures that if
-        // the cursor has a <growQueued> and has the ability to, it should start the "grow"
-        // animation.
-        protected override void Update()
-        {
-            base.Update();
-
-            if (growQueued && cursorScalingRoutine == null)
-            {
-                growQueued = false;
-                cursorScalingRoutine = StartCoroutine(GrowCursorDot());
             }
         }
 
@@ -213,8 +206,12 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
             SetCursorLocalScale(cursorDotSize);
 
+            cursorBorder.color = dotBorderColor;
+            cursorFill.color = dotFillColor;
+
             if (ringEnabled)
             {
+                ringOuterSprite.color = ringColor;
                 maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
 
                 // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
@@ -314,6 +311,12 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
             SetCursorLocalScale(cursorDownScale * cursorDotSize);
             cursorScalingRoutine = null;
+
+            if (growQueued)
+            {
+                growQueued = false;
+                cursorScalingRoutine = StartCoroutine(GrowCursorDot());
+            }
         }
 
         // Function: FadeCursor

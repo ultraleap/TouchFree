@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: dc08875b2aaa54a4c9de2b01c0696e46, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -263,7 +263,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2292088166589006933
 RectTransform:
   m_ObjectHideFlags: 0
@@ -334,75 +334,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorTransform: {fileID: 2292088166589006933}
-  cursorSize: 0.25
-  _positionOverride: 0
+  fadeDuration: 45
+  cursorDotSize: 0.25
   cursorBorder: {fileID: 2292088166042207031}
   cursorFill: {fileID: 4385562017838604252}
   ringOuterSprite: {fileID: 915649657}
   ringEnabled: 1
-  cursorMaxRingSize: 2
+  cursorMaxRingSize: 8
   ringCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.00019559264
-      value: -0.0002848094
-      inSlope: 2.256269
-      outSlope: 2.256269
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.08521636
-    - serializedVersion: 3
-      time: 0.5995902
-      value: 0.8080071
-      inSlope: 0.01145742
-      outSlope: 0.01145742
-      tangentMode: 0
+      time: 0
+      value: 0.25
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.2897742
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 1.0026779
-      inSlope: 1.5356914
-      outSlope: 1.5356914
-      tangentMode: 0
+      value: 1
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.20052452
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   ringOuter: {fileID: 915649656}
   ringMask: {fileID: 1472931908}
-  ringWidth: 3.5
-  ringSpriteScale: 6
-  ringAnimationStyle: 0
-  pulseGrowCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  ringThickness: 2
   pulseShrinkCurve:
     serializedVersion: 2
     m_Curve:
@@ -427,9 +392,35 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  pulseGrowCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pulseSeconds: 0.2
   cursorDownScale: 0.5
-  fadeDuration: 45
+  dotFillColor: {r: 1, g: 1, b: 1, a: 1}
+  dotBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  ringColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &4993058995571816624
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,7 +479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
