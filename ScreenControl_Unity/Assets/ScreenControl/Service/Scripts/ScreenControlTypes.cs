@@ -8,7 +8,7 @@ namespace Ultraleap.ScreenControl.Core
     {
         public static class VersionInfo
         {
-            public static readonly Version ApiVersion = new Version("1.0.4");
+            public static readonly Version ApiVersion = new Version("1.0.5");
             public const string API_HEADER_NAME = "ScApiVersion";
         }
 
@@ -49,6 +49,7 @@ namespace Ultraleap.ScreenControl.Core
 
         public enum InputType
         {
+            NONE,
             CANCEL,
             DOWN,
             MOVE,
@@ -77,16 +78,17 @@ namespace Ultraleap.ScreenControl.Core
             SECONDARY = 8,
 
             // Input Types
-            CANCEL = 16,
-            DOWN = 32,
-            MOVE = 64,
-            UP = 128,
+            NONE_INPUT = 16,
+            CANCEL = 32,
+            DOWN = 64,
+            MOVE = 128,
+            UP = 256,
 
             // Interaction Types
-            GRAB = 256,
-            HOVER = 512,
-            PUSH = 1024,
-            TOUCHPLANE = 2048,
+            GRAB = 512,
+            HOVER = 1024,
+            PUSH = 2048,
+            TOUCHPLANE = 4096,
 
             // Adding elements to this list is a breaking change, and should cause at
             // least a minor iteration of the API version UNLESS adding them at the end
@@ -146,6 +148,9 @@ namespace Ultraleap.ScreenControl.Core
 
                 switch (_inputType)
                 {
+                    case InputType.NONE:
+                        returnVal ^= BitmaskFlags.NONE_INPUT;
+                        break;
                     case InputType.CANCEL:
                         returnVal ^= BitmaskFlags.CANCEL;
                         break;

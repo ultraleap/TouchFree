@@ -6,7 +6,7 @@ export class VersionInfo
 
     // Variable: ApiVersion
     // The current API version of the Client.
-    public static readonly ApiVersion: string = "1.0.4";
+    public static readonly ApiVersion: string = "1.0.5";
 
     // Variable: API_HEADER_NAME
     // The name of the header we wish the Service to compare our version with.
@@ -80,11 +80,13 @@ export enum HandType {
 }
 
 // Enum: InputType
+// NONE - Used to be ignored by the input system but to still receive information such as distance to screen
 // CANCEL - Used to cancel the current input if an issue occurs. Particularly when a DOWN has happened before an UP
 // DOWN - Used to begin a 'Touch' or a 'Drag'
 // MOVE - Used to move a cursor or to perform a 'Drag' after a DOWN
 // UP - Used to complete a 'Touch' or a 'Drag'
 export enum InputType {
+    NONE,
     CANCEL,
     DOWN,
     MOVE,
@@ -117,16 +119,17 @@ export enum BitmaskFlags {
     SECONDARY = 8,
 
     // Input Types
-    CANCEL = 16,
-    DOWN = 32,
-    MOVE = 64,
-    UP = 128,
+    NONE_INPUT = 16,
+    CANCEL = 32,
+    DOWN = 64,
+    MOVE = 128,
+    UP = 256,
 
     // Interaction Types
-    GRAB = 256,
-    HOVER = 512,
-    PUSH = 1024,
-    TOUCHPLANE = 2048,
+    GRAB = 512,
+    HOVER = 1024,
+    PUSH = 2048,
+    TOUCHPLANE = 4096,
 
     // Adding elements to this list is a breaking change, and should cause at
     // least a minor iteration of the API version UNLESS adding them at the end
@@ -198,6 +201,10 @@ export class FlagUtilities {
         }
 
         switch (_inputType) {
+            case InputType.NONE:
+                returnVal ^= BitmaskFlags.NONE_INPUT;
+                break;
+
             case InputType.CANCEL:
                 returnVal ^= BitmaskFlags.CANCEL;
                 break;
@@ -273,11 +280,14 @@ export class FlagUtilities {
     }
 
     // Function: GetInputTypeFromFlags
-    // Used to find which <InputType> _flags contains. Favours CANCEL if none are found.
+    // Used to find which <InputType> _flags contains. Favours NONE if none are found.
     static GetInputTypeFromFlags(_flags: BitmaskFlags): InputType {
-        let inputType: InputType = InputType.CANCEL;
+        let inputType: InputType = InputType.NONE;
 
-        if (_flags & BitmaskFlags.CANCEL) {
+        if (_flags & BitmaskFlags.NONE_INPUT) {
+            inputType = InputType.NONE;
+        }
+        else if (_flags & BitmaskFlags.CANCEL) {
             inputType = InputType.CANCEL;
         }
         else if (_flags & BitmaskFlags.UP) {
@@ -290,7 +300,7 @@ export class FlagUtilities {
             inputType = InputType.MOVE;
         }
         else {
-            console.error("InputActionData missing: No InputType found. Defaulting to 'CANCEL'");
+            console.error("InputActionData missing: No InputType found. Defaulting to 'NONE'");
         }
 
         return inputType;
