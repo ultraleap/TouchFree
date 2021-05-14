@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using Microsoft.Win32;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -13,6 +13,9 @@ namespace Ultraleap.ScreenControl.Core
 
         public Text versionText;
         string versionPath;
+
+        private string configFileDirectory = null;
+        private readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\ScreenControl\\Configuration\\");
 
         private void Awake()
         {
@@ -38,6 +41,36 @@ namespace Ultraleap.ScreenControl.Core
             }
             versionText.text = "Version " + version;
         }
+
+        static void GetConfigFileDirectory()
+        {
+            // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\ScreenControl\Service\Settings
+            // Check registry for override to default directory
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings");
+
+            if(regKey != null)
+            {
+                var pathObj = regKey.GetValue("ConfigFileDirectory");
+
+                if(pathObj != null)
+                {
+                    string path = pathObj.ToString();
+
+                    if(Directory.Exists(path))
+                    {
+                        regKey.Close();
+                        configFileDirectory = path;
+                        return;
+                    }
+                }
+
+                regKey.Close();
+            }
+
+            // else
+            configFileDirectory = DefaultConfigDirectory;
+        }
+
 
         public void ChangeToSetupCamera()
         {
