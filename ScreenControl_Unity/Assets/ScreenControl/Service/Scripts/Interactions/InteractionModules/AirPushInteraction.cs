@@ -146,6 +146,12 @@ namespace Ultraleap.ScreenControl.Core
                         {
                             isDragging = true;
                             dragDeadzoneShrinkTriggered = false;
+                            SendInputAction(InputType.MOVE, positions, appliedForce);
+                        }
+                        else
+                        {
+                            // NONE causes the client to react to data without using Input.
+                            SendInputAction(InputType.NONE, positions, appliedForce);
                         }
                     }
                 }

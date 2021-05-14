@@ -18,8 +18,6 @@ namespace Ultraleap.ScreenControl.Core
 
         private Vector2 downPos;
 
-        bool cancelled = false;
-
         [Header("Dragging")]
         public float dragStartDistanceThresholdM = 0.01f;
         bool isDragging = false;
@@ -32,7 +30,6 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     // We lost the hand so cancel anything we may have been doing
                     SendInputAction(InputType.CANCEL, positions, 0);
-                    cancelled = true;
                 }
 
                 pressComplete = false;
@@ -55,7 +52,6 @@ namespace Ultraleap.ScreenControl.Core
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
             if (distanceFromScreen < touchPlaneDistance)
             {
-                cancelled = false;
                 // we are touching the screen
                 if (!pressing)
                 {
@@ -65,13 +61,19 @@ namespace Ultraleap.ScreenControl.Core
                 }
                 else if(!ignoreDragging)
                 {
+                    if (!isDragging && CheckForStartDrag(downPos, positions.CursorPosition))
+                    {
+                        isDragging = true;
+                    }
+
                     if (isDragging)
                     {
                         SendInputAction(InputType.MOVE, positions, progressToClick);
                     }
-                    else if (CheckForStartDrag(downPos, positions.CursorPosition))
+                    else
                     {
-                        isDragging = true;
+                        // NONE causes the client to react to data without using Input.
+                        SendInputAction(InputType.NONE, positions, progressToClick);
                     }
                 }
                 else if (!pressComplete)
@@ -95,21 +97,22 @@ namespace Ultraleap.ScreenControl.Core
                 isDragging = false;
 
                 SendInputAction(InputType.MOVE, positions, progressToClick);
-                cancelled = false;
             }
-            else if (!cancelled)
+            else
             {
                 if (pressing && !pressComplete)
                 {
                     Positions downPositions = new Positions(downPos, distanceFromScreen);
                     SendInputAction(InputType.UP, downPositions, progressToClick);
                 }
+                else
+                {
+                    // NONE causes the client to react to data without using Input.
+                    SendInputAction(InputType.NONE, positions, progressToClick);
+                }
 
                 pressComplete = false;
                 pressing = false;
-
-                SendInputAction(InputType.CANCEL, positions, 0);
-                cancelled = true;
             }
         }
 
