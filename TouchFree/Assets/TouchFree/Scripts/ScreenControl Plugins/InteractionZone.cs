@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
 using System;
+using Ultraleap.TouchFree;
 
 public class InteractionZone : InputActionPlugin
 {
     public static event InputActionManager.ClientInputActionEvent InputOverrideInputAction;
 
-    public float minInteractionDistance = 0.02f;
-    public float maxInteractionDistance = 0.2f;
-
-    public bool useInteractionZone = true;
-
     protected override Nullable<ClientInputAction> ModifyInputAction(ClientInputAction _inputAction)
     {
-        if (useInteractionZone)
+        if (ConfigManager.Config.interactionZoneEnabled)
         {
             ClientInputAction overrideInputAction = HandleDelayedDownAndUp(_inputAction);
             InputOverrideInputAction?.Invoke(overrideInputAction);
@@ -75,8 +71,8 @@ public class InteractionZone : InputActionPlugin
             }
         }
 
-        if (_inputAction.DistanceFromScreen < minInteractionDistance ||
-                _inputAction.DistanceFromScreen > maxInteractionDistance)
+        if (_inputAction.DistanceFromScreen < (ConfigManager.Config.interactionMinDistanceCm / 100) ||
+                _inputAction.DistanceFromScreen > (ConfigManager.Config.interactionMaxDistanceCm / 100))
         {
             delayedDown = false;
 
