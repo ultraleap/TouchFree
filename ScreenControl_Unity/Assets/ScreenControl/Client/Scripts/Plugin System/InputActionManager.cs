@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,21 +47,35 @@ namespace Ultraleap.ScreenControl.Client
         internal void SendInputAction(ClientInputAction _inputAction)
         {
             TransmitRawInputAction?.Invoke(_inputAction);
-            RunPlugins(ref _inputAction);
-            TransmitInputAction?.Invoke(_inputAction);
+
+            Nullable<ClientInputAction> modifiedInputAction = RunPlugins(_inputAction);
+
+            if (modifiedInputAction.HasValue)
+            {
+                TransmitInputAction?.Invoke(modifiedInputAction.Value);
+            }
         }
 
-        void RunPlugins(ref ClientInputAction _inputAction)
+        Nullable<ClientInputAction> RunPlugins(ClientInputAction _inputAction)
         {
+            Nullable<ClientInputAction> modifiedInputAction = _inputAction;
+
             // Send the input action through the plugins in order
             // if it is returned null from a plugin, return it to be ignored
             foreach (var plugin in plugins)
             {
                 if (plugin.enabled)
                 {
-                    _inputAction = plugin.plugin.RunPlugin(_inputAction);
+                    modifiedInputAction = plugin.plugin.RunPlugin(_inputAction);
+
+                    if (!modifiedInputAction.HasValue)
+                    {
+                        break;
+                    }
                 }
             }
+
+            return modifiedInputAction;
         }
     }
 

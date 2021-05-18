@@ -166,26 +166,19 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     break;
 
                 case InputType.UP:
-                    growQueued = true;
+                    if (cursorScalingRoutine != null)
+                    {
+                        growQueued = true;
+                    }
+                    else
+                    {
+                        growQueued = false;
+                        cursorScalingRoutine = StartCoroutine(GrowCursorDot());
+                    }
                     break;
 
                 case InputType.CANCEL:
                     break;
-            }
-        }
-
-        // Function: Update
-        // This override runs the basic functionality of <TouchlessCursor> and also ensures that if
-        // the cursor has a <growQueued> and has the ability to, it should start the "grow"
-        // animation.
-        protected override void Update()
-        {
-            base.Update();
-
-            if (growQueued && cursorScalingRoutine == null)
-            {
-                growQueued = false;
-                cursorScalingRoutine = StartCoroutine(GrowCursorDot());
             }
         }
 
@@ -213,8 +206,12 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
             SetCursorLocalScale(cursorDotSize);
 
+            cursorBorder.color = dotBorderColor;
+            cursorFill.color = dotFillColor;
+
             if (ringEnabled)
             {
+                ringOuterSprite.color = ringColor;
                 maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
 
                 // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
@@ -276,7 +273,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: GrowCursorDot
         // This coroutine smoothly expands the cursor dots size.
-        public IEnumerator GrowCursorDot()
+        public virtual IEnumerator GrowCursorDot()
         {
             SetCursorLocalScale(cursorDownScale * cursorDotSize);
 
@@ -298,7 +295,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: ShrinkCursorDot
         // This coroutine smoothly contracts the cursor dots size.
-        public IEnumerator ShrinkCursorDot()
+        public virtual IEnumerator ShrinkCursorDot()
         {
             YieldInstruction yieldInstruction = new YieldInstruction();
             float elapsedTime = 0.0f;
@@ -314,11 +311,17 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
             SetCursorLocalScale(cursorDownScale * cursorDotSize);
             cursorScalingRoutine = null;
+
+            if (growQueued)
+            {
+                growQueued = false;
+                cursorScalingRoutine = StartCoroutine(GrowCursorDot());
+            }
         }
 
         // Function: FadeCursor
         // This coroutine smoothly fades the cursors colours.
-        private IEnumerator FadeCursor(float _from, float _to, float _duration, bool _disableOnEnd = false)
+        protected virtual IEnumerator FadeCursor(float _from, float _to, float _duration, bool _disableOnEnd = false)
         {
             for (int i = 0; i < _duration; i++)
             {
@@ -358,7 +361,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: SetCursorLocalScale
         // This function resizes the cursor and its border.
-        private void SetCursorLocalScale(float _scale)
+        protected virtual void SetCursorLocalScale(float _scale)
         {
             cursorLocalScale = new Vector3(_scale, _scale, _scale);
             cursorBorder.transform.localScale = cursorLocalScale;
@@ -366,7 +369,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         // Function: ResetCursor
         // This function stops all scaling coroutines and clears their related variables.
-        public void ResetCursor()
+        public virtual void ResetCursor()
         {
             StopAllCoroutines();
             cursorScalingRoutine = null;

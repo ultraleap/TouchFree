@@ -40,21 +40,28 @@ public class TransparentWindow : MonoBehaviour
 	const uint WS_VISIBLE = 0x10000000;
 	const int HWND_TOPMOST = -1;
 
-    public const uint WS_EX_LAYERED = 0x00080000;
-    public const uint WS_EX_TRANSPARENT = 0x00000020;
+    const uint WS_EX_LAYERED = 0x00080000;
+    const uint WS_EX_TRANSPARENT = 0x00000020;
+
+    const int SWP_NOACTIVATE = 16;
+    const int SWP_FRAMECHANGED = 32;
+    const int SWP_SHOWWINDOW = 64;
+
+    const int LWA_ALPHA = 2;
 
     public IntPtr hwnd;
 
     private Vector2 position;
 
-    public bool clickThroughEnabled = false;
+    [HideInInspector] public bool clickThroughEnabled = false;
 
     void Start()
 	{
 #if !UNITY_EDITOR // You really don't want to enable this in the editor..
 		hwnd = GetActiveWindow();
 #endif
-        SetCursorWindow(true);
+        clickThroughEnabled = false;
+        SetConfigWindow(true);
     }
 
     public void DisableClickThrough()
@@ -105,12 +112,14 @@ public class TransparentWindow : MonoBehaviour
         }
 
         SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-        SetLayeredWindowAttributes(hwnd, 0, 255, 2);// Transparency=51=20%, LWA_ALPHA=2
-        SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y), TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, 32 | 64);//SWP_FRAMECHANGED = 0x0020 (32); //SWP_SHOWWINDOW = 0x0040 (64)s
+        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);// Transparency=51=20%
+        SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y),
+            TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 
         var margins = new MARGINS() { cxLeftWidth = -1 };
         SetWindowLong(hwnd, -20, WS_EX_LAYERED | WS_EX_TRANSPARENT);
-        SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y), TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, 32 | 64);//SWP_FRAMECHANGED = 0x0020 (32); //SWP_SHOWWINDOW = 0x0040 (64)s
+        SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y),
+            TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 
         DwmExtendFrameIntoClientArea(hwnd, ref margins);
     }
@@ -123,8 +132,8 @@ public class TransparentWindow : MonoBehaviour
         }
 
         SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-        SetLayeredWindowAttributes(hwnd, 0, 255, 2);// Transparency=51=20%, LWA_ALPHA=2
-        SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, 32 | 64);//SWP_FRAMECHANGED = 0x0020 (32); //SWP_SHOWWINDOW = 0x0040 (64)
+        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+        SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 
         var margins = new MARGINS();
 
@@ -134,8 +143,8 @@ public class TransparentWindow : MonoBehaviour
         style &= ~WS_EX_LAYERED;
 
         SetWindowLong(hwnd, -20, style);
-        SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, 32 | 64);//SWP_FRAMECHANGED = 0x0020 (32); //SWP_SHOWWINDOW = 0x0040 (64)
-
+        SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+        
         DwmExtendFrameIntoClientArea(hwnd, ref margins);
     }
 
@@ -154,7 +163,7 @@ public class TransparentWindow : MonoBehaviour
                     Mathf.RoundToInt(position.y),
                     TouchFreeMain.CursorWindowSize,
                     TouchFreeMain.CursorWindowSize,
-                    32 | 64);
+                    SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
             }
 		}
 #endif
@@ -164,8 +173,8 @@ public class TransparentWindow : MonoBehaviour
     {
         position = value;
 
-        position.x = position.x - (TouchFreeMain.CursorWindowSize/2);
-        position.y = Display.main.systemHeight - position.y - (TouchFreeMain.CursorWindowSize/2);
+        position.x = position.x - (TouchFreeMain.CursorWindowSize / 2);
+        position.y = Display.main.systemHeight - position.y - (TouchFreeMain.CursorWindowSize / 2);
     }
     
     void CTIActivated()
