@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Ultraleap.TouchFree
@@ -42,7 +43,7 @@ namespace Ultraleap.TouchFree
 
         public void SetAllValuesToDefault()
         {
-            var defaults = new ConfigManager();
+            var defaults = new ConfigurationState();
 
             cursorEnabled = defaults.cursorEnabled;
             cursorSizeCm = defaults.cursorSizeCm;
