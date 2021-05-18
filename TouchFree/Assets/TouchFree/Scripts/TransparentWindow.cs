@@ -78,7 +78,7 @@ public class TransparentWindow : MonoBehaviour
     public void EnableClickThrough()
     {
 #if !UNITY_EDITOR
-        if (clickThroughEnabled || CallToInteractController.isShowing)
+        if (clickThroughEnabled || ctiActive)
         {            return;
         }
         clickThroughEnabled = true;
@@ -176,10 +176,13 @@ public class TransparentWindow : MonoBehaviour
         position.x = position.x - (TouchFreeMain.CursorWindowSize / 2);
         position.y = Display.main.systemHeight - position.y - (TouchFreeMain.CursorWindowSize / 2);
     }
-    
+
+
+    bool ctiActive = false;
     void CTIActivated()
     {
         DisableClickThrough();
+        ctiActive = true;
     }
 
     void CTIDeactivated()
@@ -188,6 +191,8 @@ public class TransparentWindow : MonoBehaviour
         {
             EnableClickThrough();
         }
+
+        ctiActive = false;
     }
 
     private void OnApplicationQuit()
