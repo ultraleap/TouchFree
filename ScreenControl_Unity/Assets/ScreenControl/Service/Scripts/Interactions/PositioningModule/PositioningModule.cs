@@ -31,11 +31,12 @@ namespace Ultraleap.ScreenControl.Core
     {
         public enum TRACKED_POSITION
         {
-            FINGER,
+            INDEX_STABLE,
+            INDEX_TIP,
             WRIST
         }
 
-        public TRACKED_POSITION trackedPosition = TRACKED_POSITION.FINGER;
+        public TRACKED_POSITION trackedPosition = TRACKED_POSITION.INDEX_STABLE;
 
         [Tooltip("If assigned, the cursor snapper and stabiliser will be accessed from the utils object.")]
         public GameObject positioningUtils;
@@ -109,7 +110,9 @@ namespace Ultraleap.ScreenControl.Core
             {
                 case TRACKED_POSITION.WRIST:
                     return hand.WristPosition.ToVector3();
-                case TRACKED_POSITION.FINGER:
+                case TRACKED_POSITION.INDEX_TIP:
+                    return hand.GetIndex().TipPosition.ToVector3();
+                case TRACKED_POSITION.INDEX_STABLE:
                 default:
                     return GetTrackedPointingJoint(hand);
             }

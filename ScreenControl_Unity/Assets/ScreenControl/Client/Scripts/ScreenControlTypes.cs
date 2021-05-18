@@ -11,7 +11,7 @@ namespace Ultraleap.ScreenControl.Client
 
         // Variable: ApiVersion
         // The current API version of the Client.
-        public static readonly Version ApiVersion = new Version("1.0.3");
+        public static readonly Version ApiVersion = new Version("1.0.5");
 
         // Variable: API_HEADER_NAME
         // The name of the header we wish the Service to compare our version with.
@@ -21,16 +21,16 @@ namespace Ultraleap.ScreenControl.Client
     // Struct: ClientInputAction
     // The clients representation of an InputAction. This is used to pass
     // key information relating to an action that has happened on the Service.
-    public readonly struct ClientInputAction
+    public struct ClientInputAction
     {
-        public readonly long Timestamp;
-        public readonly InteractionType InteractionType;
-        public readonly HandType HandType;
-        public readonly HandChirality Chirality;
-        public readonly InputType InputType;
-        public readonly Vector2 CursorPosition;
-        public readonly float DistanceFromScreen;
-        public readonly float ProgressToClick;
+        public long Timestamp;
+        public InteractionType InteractionType;
+        public HandType HandType;
+        public HandChirality Chirality;
+        public InputType InputType;
+        public Vector2 CursorPosition;
+        public float DistanceFromScreen;
+        public float ProgressToClick;
 
         public ClientInputAction(
             long _timestamp,
@@ -84,12 +84,14 @@ namespace Ultraleap.ScreenControl.Client
     }
 
     // Enum: InputType
+    // NONE - Used to be ignored by the input system but to still receive information such as distance to screen
     // CANCEL - Used to cancel the current input if an issue occurs. Particularly when a DOWN has happened before an UP
     // DOWN - Used to begin a 'Touch' or a 'Drag'
     // MOVE - Used to move a cursor or to perform a 'Drag' after a DOWN
     // UP - Used to complete a 'Touch' or a 'Drag'
     public enum InputType
     {
+        NONE,
         CANCEL,
         DOWN,
         MOVE,
@@ -105,6 +107,7 @@ namespace Ultraleap.ScreenControl.Client
         GRAB,
         HOVER,
         PUSH,
+        TOUCHPLANE,
     }
 
     // Enum: BitmaskFlags
@@ -124,15 +127,17 @@ namespace Ultraleap.ScreenControl.Client
         SECONDARY = 8,
 
         // Input Types
-        CANCEL = 16,
-        DOWN = 32,
-        MOVE = 64,
-        UP = 128,
+        NONE_INPUT = 16,
+        CANCEL = 32,
+        DOWN = 64,
+        MOVE = 128,
+        UP = 256,
 
         // Interaction Types
-        GRAB = 256,
-        HOVER = 512,
-        PUSH = 1024,
+        GRAB = 512,
+        HOVER = 1024,
+        PUSH = 2048,
+        TOUCHPLANE = 4096,
 
         // Adding elements to this list is a breaking change, and should cause at
         // least a minor iteration of the API version UNLESS adding them at the end
@@ -192,6 +197,10 @@ namespace Ultraleap.ScreenControl.Client
 
             switch (_inputType)
             {
+                case InputType.NONE:
+                    returnVal ^= BitmaskFlags.NONE_INPUT;
+                    break;
+
                 case InputType.CANCEL:
                     returnVal ^= BitmaskFlags.CANCEL;
                     break;
@@ -221,6 +230,10 @@ namespace Ultraleap.ScreenControl.Client
 
                 case InteractionType.GRAB:
                     returnVal ^= BitmaskFlags.GRAB;
+                    break;
+
+                case InteractionType.TOUCHPLANE:
+                    returnVal ^= BitmaskFlags.TOUCHPLANE;
                     break;
             }
 
@@ -272,12 +285,16 @@ namespace Ultraleap.ScreenControl.Client
         }
 
         // Function: GetInputTypeFromFlags
-        // Used to find which <InputType> _flags contains. Favours CANCEL if none are found.
+        // Used to find which <InputType> _flags contains. Favours NONE if none are found.
         internal static InputType GetInputTypeFromFlags(BitmaskFlags _flags)
         {
-            InputType inputType = InputType.CANCEL;
+            InputType inputType = InputType.NONE;
 
-            if (_flags.HasFlag(BitmaskFlags.CANCEL))
+            if (_flags.HasFlag(BitmaskFlags.NONE_INPUT))
+            {
+                inputType = InputType.NONE;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.CANCEL))
             {
                 inputType = InputType.CANCEL;
             }
@@ -295,7 +312,7 @@ namespace Ultraleap.ScreenControl.Client
             }
             else
             {
-                Debug.LogError("InputActionData missing: No InputType found. Defaulting to 'CANCEL'");
+                Debug.LogError("InputActionData missing: No InputType found. Defaulting to 'NONE'");
             }
 
             return inputType;
@@ -318,6 +335,10 @@ namespace Ultraleap.ScreenControl.Client
             else if (_flags.HasFlag(BitmaskFlags.GRAB))
             {
                 interactionType = InteractionType.GRAB;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.TOUCHPLANE))
+            {
+                interactionType = InteractionType.TOUCHPLANE;
             }
             else
             {

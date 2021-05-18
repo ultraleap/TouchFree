@@ -25,6 +25,7 @@ namespace Ultraleap.ScreenControl.Core
         public InteractionModule pushInteractionModule;
         public InteractionModule hoverInteractionModule;
         public InteractionModule grabInteractionModule;
+        public InteractionModule touchPlaneInteractionModule;
 
         private void Awake()
         {
@@ -40,6 +41,7 @@ namespace Ultraleap.ScreenControl.Core
             interactions.Add(ScreenControlTypes.InteractionType.PUSH, pushInteractionModule);
             interactions.Add(ScreenControlTypes.InteractionType.HOVER, hoverInteractionModule);
             interactions.Add(ScreenControlTypes.InteractionType.GRAB, grabInteractionModule);
+            interactions.Add(ScreenControlTypes.InteractionType.TOUCHPLANE, touchPlaneInteractionModule);
 
             InteractionConfig.OnConfigUpdated += InteractionConfigUpdated;
 

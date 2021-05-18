@@ -32,6 +32,7 @@ export interface InteractionConfig {
 
     // Interaction-specific settings
     HoverAndHold: Partial<HoverAndHoldInteractionSettings>;
+    TouchPlane: Partial<TouchPlaneInteractionSettings>;
 }
 
 // Class: HoverAndHoldInteractionSettings
@@ -55,6 +56,27 @@ export interface HoverAndHoldInteractionSettings {
     // interaction has begun before the interaction will complete, and a click event will be
     // sent.
     HoverCompleteTimeS: number;
+}
+
+// Class: TouchPlaneInteractionSettings
+// This class is a container for settings that only apply to the TouchPlane interaction. In
+// order to modify these settings of the ScreenControl Service, create an <InteractionConfig>,
+// which contains an instance of this class, modify it as required, and then pass to the service
+// using the <ConfigurationManager>.
+//
+// Like all of the Settings classes found in this file, all members are optional. If you do
+// not modify a member of this class, its value will not change when the instance is sent to
+// ScreenControl Service.
+export interface TouchPlaneInteractionSettings {
+    // Property: TouchPlaneActivationDistanceCM
+    // This determines how far (in cm) the TouchPlane is from the screen surface. This
+    // represents the plane that the user must pass to begin and end a click event.
+    TouchPlaneActivationDistanceCM: number;
+
+    // Property: TouchPlaneStartDistanceCM
+    // This determines how far (in cm) from the TouchPlane that the interaction will begin to progress.
+    // The progress can be used to show a cursor that shows users how close they are to the TouchPlane.
+    TouchPlaneStartDistanceCM: number;
 }
 
 // Class: PhysicalConfig
