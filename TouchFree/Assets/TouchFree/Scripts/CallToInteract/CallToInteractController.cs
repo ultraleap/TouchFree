@@ -9,6 +9,7 @@ using System;
 using Ultraleap.ScreenControl.Client.Connection;
 using Ultraleap.ScreenControl.Client;
 using System.Collections;
+using Ultraleap.TouchFree;
 
 public class CallToInteractController : MonoBehaviour
 {
@@ -46,8 +47,9 @@ public class CallToInteractController : MonoBehaviour
     {
         ConnectionManager.HandFound += OnHandEnter;
         ConnectionManager.HandsLost += OnAllHandsExit;
-        ConnectionManager.TransmitInputAction += HandleInputAction;
+        InputActionManager.TransmitRawInputAction += HandleInputAction;
         ScreenManager.Instance.UIActivated += UIAcitvated;
+        ConfigManager.Config.OnConfigUpdated += UpdateCTISettings;
 
         isShowing = false;
         SetupCTI(true);
@@ -57,8 +59,9 @@ public class CallToInteractController : MonoBehaviour
     {
         ConnectionManager.HandFound -= OnHandEnter;
         ConnectionManager.HandsLost -= OnAllHandsExit;
-        ConnectionManager.TransmitInputAction -= HandleInputAction;
+        InputActionManager.TransmitRawInputAction -= HandleInputAction;
         ScreenManager.Instance.UIActivated -= UIAcitvated;
+        ConfigManager.Config.OnConfigUpdated -= UpdateCTISettings;
 
         if (videoRenderTexture != null)
         {
@@ -83,7 +86,7 @@ public class CallToInteractController : MonoBehaviour
     void SetupCTI(bool _immediate = false)
     {
         // If the CTI isn't enabled in the config, disable ourselves and exit out.
-        if (!CallToInteractConfig.Config.Enabled)
+        if (!ConfigManager.Config.ctiEnabled)
         {
             loadedType = CTIType.NONE;
             return;
@@ -125,7 +128,7 @@ public class CallToInteractController : MonoBehaviour
 
     void OnHandEnter()
     {
-        if (isShowing && CallToInteractConfig.Config.hideType == HideRequirement.PRESENT)
+        if (isShowing && ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.PRESENCE)
         {
             HideCTI();
         }
@@ -143,7 +146,7 @@ public class CallToInteractController : MonoBehaviour
     {
         if (_inputAction.InputType == InputType.UP)
         {
-            if (isShowing && CallToInteractConfig.Config.hideType == HideRequirement.INTERACTION)
+            if (isShowing && ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.INTERACTION)
             {
                 HideCTI();
             }
@@ -153,7 +156,7 @@ public class CallToInteractController : MonoBehaviour
     Coroutine showAfterHandsLostCoroutine;
     IEnumerator ShowAfterHandsLost()
     {
-        yield return new WaitForSeconds(CallToInteractConfig.Config.ShowTimeAfterNoHandPresent);
+        yield return new WaitForSeconds(ConfigManager.Config.ctiShowAfterTimer);
         ShowCTI();
         showAfterHandsLostCoroutine = null;
     }
@@ -263,13 +266,13 @@ public class CallToInteractController : MonoBehaviour
     {
         loadedType = CTIType.NONE;
 
-        if (File.Exists(CallToInteractConfig.Config.CurrentFileName))
+        if (File.Exists(ConfigManager.Config.ctiFilePath))
         {
             CTIType ctiType = CTIType.NONE;
 
             foreach (var extension in VIDEO_EXTENSIONS)
             {
-                if (CallToInteractConfig.Config.CurrentFileName.Contains(extension))
+                if (ConfigManager.Config.ctiFilePath.Contains(extension))
                 {
                     ctiType = CTIType.VIDEO;
                     break;
@@ -280,7 +283,7 @@ public class CallToInteractController : MonoBehaviour
             {
                 foreach (var extension in IMAGE_EXTENSIONS)
                 {
-                    if (CallToInteractConfig.Config.CurrentFileName.Contains(extension))
+                    if (ConfigManager.Config.ctiFilePath.Contains(extension))
                     {
                         ctiType = CTIType.IMAGE;
                         break;
@@ -293,7 +296,7 @@ public class CallToInteractController : MonoBehaviour
                 // image time
                 CTIImage.enabled = false;
 
-                byte[] pngBytes = File.ReadAllBytes(CallToInteractConfig.Config.CurrentFileName);
+                byte[] pngBytes = File.ReadAllBytes(ConfigManager.Config.ctiFilePath);
                 Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
                 tex.LoadImage(pngBytes);
                 tex.Apply(false, true);
@@ -306,7 +309,7 @@ public class CallToInteractController : MonoBehaviour
                 CTIVideoImage.enabled = false;
 
                 VideoPlayer.source = VideoSource.Url;
-                VideoPlayer.url = CallToInteractConfig.Config.CurrentFileName;
+                VideoPlayer.url = ConfigManager.Config.ctiFilePath;
                 VideoPlayer.Prepare();
                 loadedType = CTIType.VIDEO;
             }
