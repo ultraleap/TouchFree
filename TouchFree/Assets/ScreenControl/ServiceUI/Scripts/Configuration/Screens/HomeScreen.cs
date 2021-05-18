@@ -42,7 +42,7 @@ namespace Ultraleap.ScreenControl.Core
             versionText.text = "Version " + version;
         }
 
-        static void GetConfigFileDirectory()
+        void GetConfigFileDirectory()
         {
             // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\ScreenControl\Service\Settings
             // Check registry for override to default directory
