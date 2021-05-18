@@ -30,7 +30,7 @@ public class CallToInteractController : MonoBehaviour
     CTIType loadedType;
     RenderTexture videoRenderTexture;
 
-    bool isShowing;
+    public bool isShowing;
 
     private static readonly string CTI_PATH = Path.Combine(Application.streamingAssetsPath, "CallToInteract");
 
