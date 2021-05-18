@@ -78,7 +78,7 @@ public class TransparentWindow : MonoBehaviour
     public void EnableClickThrough()
     {
 #if !UNITY_EDITOR
-        if (clickThroughEnabled || CallToInteractController.IsShowing)
+        if (clickThroughEnabled || CallToInteractController.isShowing)
         {            return;
         }
         clickThroughEnabled = true;
