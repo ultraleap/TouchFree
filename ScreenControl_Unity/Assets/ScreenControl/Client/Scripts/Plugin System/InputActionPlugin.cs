@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Ultraleap.ScreenControl.Client
 {
@@ -17,18 +18,23 @@ namespace Ultraleap.ScreenControl.Client
         // Called from <InputActionManager> and provided a <ClientInputAction> as a parameter.
         // This function is a wrapper that guarantees that the results of <ModifyInputAction> are both
         // returned to the <InputActionManager> and transmitted via <TransmitInputAction>.
-        public ClientInputAction RunPlugin(ClientInputAction _inputAction)
+        public Nullable<ClientInputAction> RunPlugin(ClientInputAction _inputAction)
         {
-            _inputAction = ModifyInputAction(_inputAction);
-            TransmitInputAction(_inputAction);
-            return _inputAction;
+            Nullable<ClientInputAction> modifiedInputAction = ModifyInputAction(_inputAction);
+
+            if (modifiedInputAction.HasValue)
+            {
+                TransmitInputAction(modifiedInputAction.Value);
+            }
+
+            return modifiedInputAction;
         }
 
         // Function: ModifyInputAction
         // Called from <RunPlugin> and provided a <ClientInputAction> as a parameter.
         // This function is used to manipulate the incoming <ClientInputAction>
         // data. Returns a <ClientInputAction> which is then distributed via the <InputActionManager>.
-        protected abstract ClientInputAction ModifyInputAction(ClientInputAction _inputAction);
+        protected abstract Nullable<ClientInputAction> ModifyInputAction(ClientInputAction _inputAction);
 
         // Function: TransmitInputAction
         // To be used to Invoke the <InputActionOutput> event from any child class of this base.

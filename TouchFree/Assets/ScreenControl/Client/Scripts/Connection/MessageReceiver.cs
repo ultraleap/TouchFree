@@ -136,7 +136,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         // Checks <actionQueue> for valid <ClientInputActions>. If there are too many in the queue,
         // clears out non-essential <ClientInputActions> down to the number specified by
         // <actionCullToCount>. If any remain, sends the oldest <ClientInputAction> to
-        // <serviceConnection> to handle the action.
+        // <InputActionManager> to distribute the action.
         void CheckForAction()
         {
             ClientInputAction action;
@@ -159,7 +159,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
             {
                 // Parse newly received messages
                 actionQueue.TryDequeue(out action);
-                ConnectionManager.HandleInputAction(action);
+                InputActionManager.Instance.SendInputAction(action);
             }
 
             if (handState != HandPresenceState.PROCESSED)

@@ -23,6 +23,11 @@ namespace Ultraleap.ScreenControl.Core
         public const float HoverCursorStartTime_Max = 2f;
         public const float HoverCursorCompleteTime_Min = 0.1f;
         public const float HoverCursorCompleteTime_Max = 2f;
+
+        public const float TouchPlaneDistance_Min = 0f;
+        public const float TouchPlaneDistance_Max = 20f;
+        public const float TouchPlaneStartDistance_Min = 0f;
+        public const float TouchPlaneStartDistance_Max = 20f;
         #endregion
 
         // UI elements
@@ -31,15 +36,23 @@ namespace Ultraleap.ScreenControl.Core
 
         public Slider cursorDeadzoneSlider;
 
+        [Header("Hover&Hold")]
         public InputField HoverStartTime;
         public Slider HoverStartTimeSlider;
         public InputField HoverCompleteTime;
         public Slider HoverCompleteTimeSlider;
 
+        [Header("TouchPlane")]
+        public InputField TouchPlaneDistance;
+        public Slider TouchPlaneDistanceSlider;
+        public InputField TouchPlaneStartDistance;
+        public Slider TouchPlaneStartDistanceSlider;
+
         [Header("Interaction Type")]
         public Toggle interactionTypeTogglePush;
         public Toggle interactionTypeTogglePinch;
         public Toggle interactionTypeToggleHover;
+        public Toggle interactionTypeToggleTouchPlane;
 
         [Header("Interaction Preview")]
         public GameObject pushPreview;
@@ -49,7 +62,7 @@ namespace Ultraleap.ScreenControl.Core
         [Space]
         public GameObject resetToDefaultWarning;
 
-        [Space, Tooltip("List all Settings elements that relate to the interactionType. Names: 'Push', 'Grab', 'Hover'")]
+        [Space, Tooltip("List all Settings elements that relate to the interactionType.")]
         public InteractionTypeElements[] interactionTypeElements;
 
         private void Awake()
@@ -69,6 +82,11 @@ namespace Ultraleap.ScreenControl.Core
             HoverStartTimeSlider.maxValue = HoverCursorStartTime_Max;
             HoverCompleteTimeSlider.minValue = HoverCursorCompleteTime_Min;
             HoverCompleteTimeSlider.maxValue = HoverCursorCompleteTime_Max;
+
+            TouchPlaneDistanceSlider.minValue = TouchPlaneDistance_Min;
+            TouchPlaneDistanceSlider.maxValue = TouchPlaneDistance_Max;
+            TouchPlaneStartDistanceSlider.minValue = TouchPlaneStartDistance_Min;
+            TouchPlaneStartDistanceSlider.maxValue = TouchPlaneStartDistance_Max;
         }
 
         public void ResetToDefaultValues()
@@ -89,9 +107,15 @@ namespace Ultraleap.ScreenControl.Core
             HoverCompleteTime.onEndEdit.AddListener(OnValueChanged);
             HoverCompleteTimeSlider.onValueChanged.AddListener(OnValueChanged);
 
+            TouchPlaneDistance.onEndEdit.AddListener(OnValueChanged);
+            TouchPlaneDistanceSlider.onValueChanged.AddListener(OnValueChanged);
+            TouchPlaneStartDistance.onEndEdit.AddListener(OnValueChanged);
+            TouchPlaneStartDistanceSlider.onValueChanged.AddListener(OnValueChanged);
+
             interactionTypeTogglePush.onValueChanged.AddListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.AddListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.AddListener(OnValueChanged);
+            interactionTypeToggleTouchPlane.onValueChanged.AddListener(OnValueChanged);
         }
 
         protected override void RemoveValueChangedListeners()
@@ -104,9 +128,15 @@ namespace Ultraleap.ScreenControl.Core
             HoverCompleteTime.onEndEdit.RemoveListener(OnValueChanged);
             HoverCompleteTimeSlider.onValueChanged.RemoveListener(OnValueChanged);
 
+            TouchPlaneDistance.onEndEdit.RemoveListener(OnValueChanged);
+            TouchPlaneDistanceSlider.onValueChanged.RemoveListener(OnValueChanged);
+            TouchPlaneStartDistance.onEndEdit.RemoveListener(OnValueChanged);
+            TouchPlaneStartDistanceSlider.onValueChanged.RemoveListener(OnValueChanged);
+
             interactionTypeTogglePush.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.RemoveListener(OnValueChanged);
+            interactionTypeToggleTouchPlane.onValueChanged.RemoveListener(OnValueChanged);
         }
 
         protected override void LoadConfigValuesIntoFields()
@@ -120,9 +150,15 @@ namespace Ultraleap.ScreenControl.Core
             HoverCompleteTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS.ToString("#0.00#"));
             HoverCompleteTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS);
 
+            TouchPlaneDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM.ToString("#0.00#"));
+            TouchPlaneDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM);
+            TouchPlaneStartDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM.ToString("#0.00#"));
+            TouchPlaneStartDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM);
+
             interactionTypeTogglePush.SetIsOnWithoutNotify(false);
             interactionTypeTogglePinch.SetIsOnWithoutNotify(false);
             interactionTypeToggleHover.SetIsOnWithoutNotify(false);
+            interactionTypeToggleTouchPlane.SetIsOnWithoutNotify(false);
             switch (ConfigManager.InteractionConfig.InteractionType)
             {
                 case ScreenControlTypes.InteractionType.GRAB:
@@ -133,6 +169,9 @@ namespace Ultraleap.ScreenControl.Core
                     break;
                 case ScreenControlTypes.InteractionType.PUSH:
                     interactionTypeTogglePush.SetIsOnWithoutNotify(true);
+                    break;
+                case ScreenControlTypes.InteractionType.TOUCHPLANE:
+                    interactionTypeToggleTouchPlane.SetIsOnWithoutNotify(true);
                     break;
             }
 
@@ -152,18 +191,13 @@ namespace Ultraleap.ScreenControl.Core
             HoverCompleteTime.SetTextWithoutNotify(hoverCompleteTime.ToString("#0.00#"));
             HoverCompleteTimeSlider.SetValueWithoutNotify(hoverCompleteTime);
 
-            if (interactionTypeTogglePush.isOn)
-            {
-                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.PUSH;
-            }
-            else if (interactionTypeTogglePinch.isOn)
-            {
-                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.GRAB;
-            }
-            else if (interactionTypeToggleHover.isOn)
-            {
-                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.HOVER;
-            }
+            var touchPlaneDistance = Mathf.Clamp(TouchPlaneDistanceSlider.value, TouchPlaneDistance_Min, TouchPlaneDistance_Max);
+            TouchPlaneDistance.SetTextWithoutNotify(touchPlaneDistance.ToString("#0.00#"));
+            TouchPlaneDistanceSlider.SetValueWithoutNotify(touchPlaneDistance);
+
+            var touchPlaneStartDistance = Mathf.Clamp(TouchPlaneStartDistanceSlider.value, TouchPlaneStartDistance_Min, TouchPlaneStartDistance_Max);
+            TouchPlaneStartDistance.SetTextWithoutNotify(touchPlaneStartDistance.ToString("#0.00#"));
+            TouchPlaneStartDistanceSlider.SetValueWithoutNotify(touchPlaneStartDistance);
         }
 
         void DisplayIntractionPreview()
@@ -181,6 +215,7 @@ namespace Ultraleap.ScreenControl.Core
                     hoverPreview.SetActive(true);
                     break;
                 case ScreenControlTypes.InteractionType.PUSH:
+                case ScreenControlTypes.InteractionType.TOUCHPLANE:
                     pushPreview.SetActive(true);
                     break;
             }
@@ -222,6 +257,8 @@ namespace Ultraleap.ScreenControl.Core
             ConfigManager.InteractionConfig.UseScrollingOrDragging = scrollingOrDraggingTog.isOn;
             ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = HoverStartTimeSlider.value;
             ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = HoverCompleteTimeSlider.value;
+            ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM = TouchPlaneDistanceSlider.value;
+            ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM = TouchPlaneStartDistanceSlider.value;
 
             if (interactionTypeTogglePush.isOn)
             {
@@ -234,6 +271,10 @@ namespace Ultraleap.ScreenControl.Core
             else if (interactionTypeToggleHover.isOn)
             {
                 ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.HOVER;
+            }
+            else if (interactionTypeToggleTouchPlane.isOn)
+            {
+                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.TOUCHPLANE;
             }
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();

@@ -54,7 +54,7 @@ namespace Ultraleap.ScreenControl.Core
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, positions.DistanceFromScreen, 0);
+                    SendInputAction(InputType.CANCEL, positions, 0);
                 }
 
                 return;
@@ -81,7 +81,7 @@ namespace Ultraleap.ScreenControl.Core
 
         private void HandleInteractions(Leap.Hand hand, float _velocity)
         {
-            SendInputAction(InputType.MOVE, positions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
+            SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             // If already pressing, continue regardless of velocity
             if (grabDetector.IsGrabbing(latestTimestamp, hand, _velocity) && (pressing || _velocity < maxHandVelocity))
             {
@@ -109,7 +109,7 @@ namespace Ultraleap.ScreenControl.Core
 
         private void HandlePress()
         {
-            SendInputAction(InputType.DOWN, positions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
+            SendInputAction(InputType.DOWN, positions, grabDetector.GeneralisedGrabStrength);
             dragStartTimer.Restart();
             pressing = true;
             if (instantUnclick && ignoreDragging)
@@ -122,7 +122,7 @@ namespace Ultraleap.ScreenControl.Core
             // Adjust deadzone
             positioningModule.Stabiliser.StopShrinkingDeadzone();
             float newDeadzoneRadius = deadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
-            positioningModule.Stabiliser.SetCurrentDeadzoneRadius(newDeadzoneRadius);
+            positioningModule.Stabiliser.currentDeadzoneRadius = newDeadzoneRadius;
         }
 
         private void HandlePressHold()
@@ -150,8 +150,8 @@ namespace Ultraleap.ScreenControl.Core
                     }
                     else if (requireClick)
                     {
-                        SendInputAction(InputType.UP, downPositions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
-                        positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
+                        SendInputAction(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
+                        positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                         requireClick = false;
                     }
                 }
@@ -161,7 +161,7 @@ namespace Ultraleap.ScreenControl.Core
                     if (CheckForStartDrag(cursorDownPos, positions.CursorPosition) && !ignoreDragging)
                     {
                         isDragging = true;
-                        positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
+                        positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                     }
                 }
             }
@@ -176,9 +176,9 @@ namespace Ultraleap.ScreenControl.Core
                 {
                     if (!requireHold && !requireClick)
                     {
-                        SendInputAction(InputType.UP, positions, positions.DistanceFromScreen, grabDetector.GeneralisedGrabStrength);
+                        SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
                     }
-                    positioningModule.Stabiliser.StartShrinkingDeadzone(ShrinkType.MOTION_BASED, deadzoneShrinkSpeed);
+                    positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                 }
 
                 pressing = false;
