@@ -39,7 +39,6 @@ public class CallToInteractController : MonoBehaviour
 
     public void UpdateCTISettings()
     {
-        // TODO: this should bhe replaced by an event listener to the config system
         SetupCTI();
     }
 
@@ -78,9 +77,6 @@ public class CallToInteractController : MonoBehaviour
         showAfterHandsLostCoroutine = null;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     /// <param name="_immediate">Force the Setup. Otherwise it is provided on a cooldown to
     /// prevent the loading of video assets on every update of values</param>
     void SetupCTI(bool _immediate = false)
@@ -136,7 +132,7 @@ public class CallToInteractController : MonoBehaviour
 
     void OnAllHandsExit()
     {
-        if (!isShowing && showAfterHandsLostCoroutine != null)
+        if (!isShowing && showAfterHandsLostCoroutine == null)
         {
             showAfterHandsLostCoroutine = StartCoroutine(ShowAfterHandsLost());
         }
