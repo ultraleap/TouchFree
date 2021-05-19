@@ -46,7 +46,7 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound += OnHandEnter;
         ConnectionManager.HandsLost += OnAllHandsExit;
         InputActionManager.TransmitRawInputAction += HandleInputAction;
-        ScreenManager.UIActivated += UIAcitvated;
+        ScreenManager.UIActivated += UIActivated;
         ScreenManager.UIDeactivated += UIDeactivated;
         ConfigManager.Config.OnConfigUpdated += UpdateCTISettings;
 
@@ -59,7 +59,7 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound -= OnHandEnter;
         ConnectionManager.HandsLost -= OnAllHandsExit;
         InputActionManager.TransmitRawInputAction -= HandleInputAction;
-        ScreenManager.UIActivated -= UIAcitvated;
+        ScreenManager.UIActivated -= UIActivated;
         ScreenManager.UIDeactivated -= UIDeactivated;
         ConfigManager.Config.OnConfigUpdated -= UpdateCTISettings;
 
@@ -115,7 +115,7 @@ public class CallToInteractController : MonoBehaviour
         delayedSetupCoroutine = null;
     }
 
-    void UIAcitvated()
+    void UIActivated()
     {
         if(isShowing)
         {
