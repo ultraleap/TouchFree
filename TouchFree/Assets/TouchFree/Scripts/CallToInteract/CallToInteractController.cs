@@ -7,92 +7,61 @@ using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
 using System;
 using Ultraleap.ScreenControl.Client.Connection;
+using Ultraleap.ScreenControl.Client;
+using System.Collections;
+using Ultraleap.TouchFree;
 
 public class CallToInteractController : MonoBehaviour
 {
     public enum CTIType
     {
-        None,
-        Image,
-        Video
+        NONE,
+        IMAGE,
+        VIDEO
     }
 
     public static event Action OnCTIActive;
     public static event Action OnCTIInactive;
 
-    public static bool IsShowing { get; private set; }
-
     public RawImage CTIImage;
     public RawImage CTIVideoImage;
     public VideoPlayer VideoPlayer;
-    public float ShowTimeAfterNoHandPresent = 10f;
-    public float HideTimeAfterHandPresent = 0.5f;
 
-    public string currentCTIfileName = "";
-
-    public CTIType loadedType;
+    CTIType loadedType;
     RenderTexture videoRenderTexture;
-    Stopwatch showTimer = new Stopwatch();
-    Stopwatch hideTimer = new Stopwatch();
 
-    HideRequirement hideRequirement = HideRequirement.PRESENT;
-    bool interactionHappened = false;
+    bool isShowing;
+    bool handsPresent = false;
 
-    private static readonly string CTI_PATH = Path.Combine(Application.streamingAssetsPath, "CallToInteract");
+    private readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
+    private readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
 
-    private static readonly string[] CTI_EXTENSIONS = new string[] { ".webm", ".mp4", ".png" };
-    private static readonly string[] CTI_VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
-    private static readonly string[] CTI_IMAGE_EXTENSIONS = new string[] { ".png" };
-
-    public void UpdateCTISettings(bool _enable, float _showTime, float _hideTime, string _filePath, HideRequirement _hideType)
+    public void UpdateCTISettings()
     {
-        _filePath = Path.Combine(CTI_PATH, _filePath);
-
-        ShowTimeAfterNoHandPresent = _showTime;
-        HideTimeAfterHandPresent = _hideTime;
-        currentCTIfileName = _filePath;            
-
-        HideCTI();
         SetupCTI();
-
-        hideTimer.Reset();
-        showTimer.Reset();
-
-        hideRequirement = _hideType;
-    }
-
-    public void InteractionHappened()
-    {
-        interactionHappened = true;
-    }
-
-    public void RecreateVideoTexture()
-    {
-        if (!CallToInteractConfig.Config.Enabled)
-        {
-            return;
-        }
-
-        if (videoRenderTexture != null)
-        {
-            ReleaseRenderTexture();
-        }
-        InitVideoPlayer();
     }
 
     void OnEnable()
     {
         ConnectionManager.HandFound += OnHandEnter;
         ConnectionManager.HandsLost += OnAllHandsExit;
+        InputActionManager.TransmitRawInputAction += HandleInputAction;
+        ScreenManager.UIActivated += UIActivated;
+        ScreenManager.UIDeactivated += UIDeactivated;
+        ConfigManager.Config.OnConfigUpdated += UpdateCTISettings;
 
-        IsShowing = false;
-        SetupCTI();
+        isShowing = false;
+        SetupCTI(true);
     }
 
     void OnDisable()
     {
         ConnectionManager.HandFound -= OnHandEnter;
         ConnectionManager.HandsLost -= OnAllHandsExit;
+        InputActionManager.TransmitRawInputAction -= HandleInputAction;
+        ScreenManager.UIActivated -= UIActivated;
+        ScreenManager.UIDeactivated -= UIDeactivated;
+        ConfigManager.Config.OnConfigUpdated -= UpdateCTISettings;
 
         if (videoRenderTexture != null)
         {
@@ -103,121 +72,118 @@ public class CallToInteractController : MonoBehaviour
             Destroy(CTIImage.texture);
             CTIImage.texture = null;
         }
+
+        StopAllCoroutines();
+        delayedSetupCoroutine = null;
+        showAfterHandsLostCoroutine = null;
     }
 
-    float setupCooldown = 0.5f;
-    /// <summary>
-    /// This is provided on a cooldown to prevent the loading of video assets on every update of settings values
-    /// </summary>
-    /// <param name="_afterCooldown"></param>
-    void SetupCTI(bool _afterCooldown = false)
+    /// <param name="_immediate">Force the Setup. Otherwise it is provided on a cooldown to
+    /// prevent the loading of video assets on every update of values</param>
+    void SetupCTI(bool _immediate = false)
     {
         // If the CTI isn't enabled in the config, disable ourselves and exit out.
-        if (!CallToInteractConfig.Config.Enabled)
+        if (!ConfigManager.Config.ctiEnabled)
         {
-            loadedType = CTIType.None;
+            loadedType = CTIType.NONE;
             return;
         }
 
-        if(!_afterCooldown)
+        if(!_immediate)
         {
-            setupCooldown = 0.5f;
+            if (delayedSetupCoroutine == null)
+            {
+                delayedSetupCoroutine = StartCoroutine(DelayedSetup());
+            }
             return;
         }
 
+        HideCTI();
         PrepareCTIAsset();
 
-        if (loadedType == CTIType.Video)
+        if (loadedType == CTIType.VIDEO)
         {
             InitVideoPlayer();
         }
-
-        OnAllHandsExit();
     }
 
-    void Update()
+    Coroutine delayedSetupCoroutine = null;
+    IEnumerator DelayedSetup()
     {
-        UpdateCTI();
+        yield return new WaitForSeconds(0.5f);
+        SetupCTI(true);
+        delayedSetupCoroutine = null;
+    }
 
-        if(setupCooldown > 0)
+    void UIActivated()
+    {
+        if(isShowing)
         {
-            setupCooldown -= Time.deltaTime;
-
-            if(setupCooldown <= 0)
-            {
-                SetupCTI(true);
-            }
+            HideCTI();
         }
     }
 
-    void UpdateCTI()
+    void UIDeactivated()
     {
-        if (loadedType != CTIType.None)
+        if(!handsPresent)
         {
-            if (!IsShowing && showTimer.Elapsed.TotalSeconds > ShowTimeAfterNoHandPresent && !ScreenManager.Instance.isActive)
-            {
-                showTimer.Reset();
-                ShowCTI();
-            }
-            else if (IsShowing)
-            {
-                if(hideRequirement == HideRequirement.INTERACTION)
-                {
-                    if(interactionHappened)
-                    {
-                        HideCTI();
-                    }
-                }
-                
-                if (hideRequirement == HideRequirement.PRESENT && hideTimer.Elapsed.TotalSeconds > HideTimeAfterHandPresent)
-                {
-                    hideTimer.Reset();
-                    HideCTI();
-                }
-
-                if(ScreenManager.Instance.isActive)
-                {
-                    HideCTI();
-                    OnAllHandsExit();
-                }
-            }
-        }
-        else if (showTimer.IsRunning)
-        {
-            showTimer.Reset();
+            OnAllHandsExit();
         }
     }
 
     void OnHandEnter()
     {
-        showTimer.Reset();
+        handsPresent = true;
 
-        if (IsShowing && !hideTimer.IsRunning)
+        if (isShowing && ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.PRESENCE)
         {
-            hideTimer.Restart();
+            HideCTI();
         }
     }
 
     void OnAllHandsExit()
     {
-        interactionHappened = false;
-        hideTimer.Reset();
+        handsPresent = false;
 
-        if (!IsShowing && !showTimer.IsRunning)
+        if (!isShowing && showAfterHandsLostCoroutine == null)
         {
-            showTimer.Restart();
+            showAfterHandsLostCoroutine = StartCoroutine(ShowAfterHandsLost());
         }
+    }
+
+    void HandleInputAction(ClientInputAction _inputAction)
+    {
+        if (_inputAction.InputType == InputType.UP)
+        {
+            if (isShowing && ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.INTERACTION)
+            {
+                HideCTI();
+            }
+        }
+    }
+
+    Coroutine showAfterHandsLostCoroutine;
+    IEnumerator ShowAfterHandsLost()
+    {
+        yield return new WaitForSeconds(ConfigManager.Config.ctiShowAfterTimer);
+        ShowCTI();
+        showAfterHandsLostCoroutine = null;
     }
 
     void ShowCTI()
     {
-        IsShowing = true;
+        if(ScreenManager.Instance.isActive || loadedType == CTIType.NONE)
+        {
+            return;
+        }
 
-        if (loadedType == CTIType.Image)
+        isShowing = true;
+
+        if (loadedType == CTIType.IMAGE)
         {
             CTIImage.enabled = true;
         }
-        else if (loadedType == CTIType.Video)
+        else if (loadedType == CTIType.VIDEO)
         {
             if (VideoPlayer.isPrepared)
             {
@@ -236,13 +202,13 @@ public class CallToInteractController : MonoBehaviour
 
     void HideCTI()
     {
-        IsShowing = false;
+        isShowing = false;
 
-        if (loadedType == CTIType.Image)
+        if (loadedType == CTIType.IMAGE)
         {
             CTIImage.enabled = false;
         }
-        else if (loadedType == CTIType.Video)
+        else if (loadedType == CTIType.VIDEO)
         {
             CTIVideoImage.enabled = false;
             VideoPlayer.Stop();
@@ -250,6 +216,8 @@ public class CallToInteractController : MonoBehaviour
 
         OnCTIInactive?.Invoke();
     }
+
+    #region Asset Preparation
 
     void VideoPlayer_prepareCompleted(VideoPlayer source)
     {
@@ -264,7 +232,7 @@ public class CallToInteractController : MonoBehaviour
     {
         VideoPlayer.sendFrameReadyEvents = false;
         VideoPlayer.frameReady -= VideoPlayer_frameReady;
-        // Finally show the video image now that the strutter frames are gone!
+        // Finally show the video image now that the stutter frames are gone!
         CTIVideoImage.enabled = true;
     }
 
@@ -305,98 +273,61 @@ public class CallToInteractController : MonoBehaviour
 
     void PrepareCTIAsset()
     {
-        loadedType = CTIType.None;
+        loadedType = CTIType.NONE;
 
-        if (Directory.Exists(CTI_PATH))
+        if (File.Exists(ConfigManager.Config.ctiFilePath))
         {
-            if(!File.Exists(currentCTIfileName))
+            CTIType ctiType = CTIType.NONE;
+
+            foreach (var extension in VIDEO_EXTENSIONS)
             {
-                // if the file does not exist, see if there is a usable one and use that
-                var fileNames = GetCTIFileNames();
-                if(fileNames != null &&  fileNames.Length > 0)
+                if (ConfigManager.Config.ctiFilePath.Contains(extension))
                 {
-                    currentCTIfileName = Path.Combine(CTI_PATH, fileNames[0]);
+                    ctiType = CTIType.VIDEO;
+                    break;
                 }
             }
 
-            if (File.Exists(currentCTIfileName))
+            if (ctiType == CTIType.NONE)
             {
-                CTIType ctiType = CTIType.None;
-
-                foreach (var extension in CTI_VIDEO_EXTENSIONS)
+                foreach (var extension in IMAGE_EXTENSIONS)
                 {
-                    if (currentCTIfileName.Contains(extension))
+                    if (ConfigManager.Config.ctiFilePath.Contains(extension))
                     {
-                        ctiType = CTIType.Video;
-                        break;
-                    }
-                }
-
-                if (ctiType == CTIType.None)
-                {
-                    foreach (var extension in CTI_IMAGE_EXTENSIONS)
-                    {
-                        if (currentCTIfileName.Contains(extension))
-                        {
-                            ctiType = CTIType.Image;
-                            break;
-                        }
-                    }
-                }
-
-                if (ctiType == CTIType.Image)
-                {
-                    // image time
-                    CTIImage.enabled = false;
-
-                    byte[] pngBytes = File.ReadAllBytes(currentCTIfileName);
-                    Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    tex.LoadImage(pngBytes);
-                    tex.Apply(false, true);
-                    CTIImage.texture = tex;
-                    loadedType = CTIType.Image;
-                }
-                else if (ctiType == CTIType.Video)
-                {
-                    // video time
-                    CTIVideoImage.enabled = false;
-
-                    VideoPlayer.source = VideoSource.Url;
-                    VideoPlayer.url = currentCTIfileName;
-                    VideoPlayer.Prepare();
-                    loadedType = CTIType.Video;
-                }
-            }
-        }
-
-        if (loadedType == CTIType.None)
-        {
-            Debug.Log($"Could not find any CTI assets to load at {CTI_PATH}");
-        }
-    }
-
-    public static string[] GetCTIFileNames()
-    {
-        if (Directory.Exists(CTI_PATH))
-        {
-            string[] files = Directory.GetFiles(CTI_PATH);
-            List<string> filesWithExtension = new List<string>();
-
-            foreach (var file in files)
-            {
-                foreach (var ext in CTI_EXTENSIONS)
-                {
-                    if (file.Contains(ext) && !file.Contains(".meta"))
-                    {
-                        filesWithExtension.Add(file.Replace(CTI_PATH, "").Replace("\\", ""));
+                        ctiType = CTIType.IMAGE;
                         break;
                     }
                 }
             }
 
-            return filesWithExtension.ToArray();
+            if (ctiType == CTIType.IMAGE)
+            {
+                // image time
+                CTIImage.enabled = false;
+
+                byte[] pngBytes = File.ReadAllBytes(ConfigManager.Config.ctiFilePath);
+                Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                tex.LoadImage(pngBytes);
+                tex.Apply(false, true);
+                CTIImage.texture = tex;
+                loadedType = CTIType.IMAGE;
+            }
+            else if (ctiType == CTIType.VIDEO)
+            {
+                // video time
+                CTIVideoImage.enabled = false;
+
+                VideoPlayer.source = VideoSource.Url;
+                VideoPlayer.url = ConfigManager.Config.ctiFilePath;
+                VideoPlayer.Prepare();
+                loadedType = CTIType.VIDEO;
+            }
         }
 
-        return null;
+        if (loadedType == CTIType.NONE)
+        {
+            Debug.Log($"Could not find any CTI assets to load at {ConfigManager.Config.ctiFilePath}");
+        }
     }
+    #endregion
 }

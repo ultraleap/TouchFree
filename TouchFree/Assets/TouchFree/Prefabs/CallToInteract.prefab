@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1583922761665443115}
   - component: {fileID: 1119690855739334702}
-  - component: {fileID: 1986433304}
   - component: {fileID: 5339068242634914112}
   m_Layer: 0
   m_Name: CallToInteract
@@ -49,23 +48,6 @@ MonoBehaviour:
   CTIImage: {fileID: 8268390540577861395}
   CTIVideoImage: {fileID: 2115633741217142012}
   VideoPlayer: {fileID: 5339068242634914112}
-  ShowTimeAfterNoHandPresent: 10
-  HideTimeAfterHandPresent: 0.5
-  currentCTIfileName: 
-  loadedType: 0
---- !u!114 &1986433304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7171615015226793760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2751d690f8c6c374da8acb0d00e908eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 1119690855739334702}
 --- !u!328 &5339068242634914112
 VideoPlayer:
   m_ObjectHideFlags: 0
@@ -160,6 +142,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -230,6 +213,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
