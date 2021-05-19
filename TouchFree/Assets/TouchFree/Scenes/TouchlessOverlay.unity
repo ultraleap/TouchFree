@@ -2248,10 +2248,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionCursors:
   - interaction: 2
+    cursorType: 1
     cursor: {fileID: 1247933501}
   - interaction: 1
+    cursorType: 0
     cursor: {fileID: 776031316}
   - interaction: 3
+    cursorType: 1
     cursor: {fileID: 1247933501}
   defaultCursor: {fileID: 1247933501}
   currentCursor: {fileID: 0}

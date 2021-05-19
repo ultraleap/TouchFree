@@ -32,12 +32,12 @@ public class CursorManager : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         InputActionManager.TransmitInputAction += HandleInputAction;
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         InputActionManager.TransmitInputAction -= HandleInputAction;
     }

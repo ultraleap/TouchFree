@@ -5,14 +5,16 @@ using Ultraleap.TouchFree;
 
 public class TouchFreeCursorManager : CursorManager
 {
-    private void OnEnable()
+    protected override void OnEnable()
     {
         ConfigManager.Config.OnConfigUpdated += ConfigUpdated;
+        base.OnEnable();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
         ConfigManager.Config.OnConfigUpdated -= ConfigUpdated;
+        base.OnDisable();
     }
 
     void ConfigUpdated()
