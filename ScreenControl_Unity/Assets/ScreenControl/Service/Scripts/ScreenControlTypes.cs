@@ -8,7 +8,7 @@ namespace Ultraleap.ScreenControl.Core
     {
         public static class VersionInfo
         {
-            public static readonly Version ApiVersion = new Version("1.0.5");
+            public static readonly Version ApiVersion = new Version("1.1.0");
             public const string API_HEADER_NAME = "ScApiVersion";
         }
 
