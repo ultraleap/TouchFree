@@ -1,3 +1,3 @@
 ScreenControl Client for Unity Version: alpha5
-ScreenControl API Version: 1.0.4
-Release Reference: 00ae851c
+ScreenControl API Version: 1.0.5
+Release Reference: de22f7ba
