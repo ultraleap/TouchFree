@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
 using Ultraleap.ScreenControl.Client.Cursors;
+using System;
 
 public class CursorManager : MonoBehaviour
 {
     public static CursorManager Instance;
+
+    public static event Action<CursorType> CursorChanged;
 
     public InteractionCursor[] interactionCursors;
     public GameObject defaultCursor;
@@ -69,6 +72,8 @@ public class CursorManager : MonoBehaviour
                 currentCursor = enabledCursor;
                 currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
                 cursorSet = true;
+
+                CursorChanged?.Invoke(interactionCursor.cursorType);
             }
         }
 
@@ -89,6 +94,13 @@ public class CursorManager : MonoBehaviour
     public struct InteractionCursor
     {
         public InteractionType interaction;
+        public CursorType cursorType;
         public GameObject cursor;
+    }
+
+    public enum CursorType
+    {
+        FILL,
+        RING,
     }
 }
