@@ -2225,8 +2225,8 @@ GameObject:
   - component: {fileID: 7749370175400263844}
   - component: {fileID: 7749370175400263847}
   - component: {fileID: 7749370175400263846}
-  - component: {fileID: 7749370175400263841}
   - component: {fileID: 7749370175400263842}
+  - component: {fileID: 7749370175400263841}
   m_Layer: 5
   m_Name: CursorCanvas
   m_TagString: Untagged
@@ -2243,16 +2243,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 7749370175400263840}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 869e9c40943d5634ab28897d36d6ccce, type: 3}
+  m_Script: {fileID: 11500000, guid: f4738b1297376e546aa1120f128b71cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   interactionCursors:
   - interaction: 2
-    cursor: {fileID: 1247933501}
-  - interaction: 3
+    cursorType: 1
     cursor: {fileID: 1247933501}
   - interaction: 1
+    cursorType: 0
     cursor: {fileID: 776031316}
+  - interaction: 3
+    cursorType: 1
+    cursor: {fileID: 1247933501}
   defaultCursor: {fileID: 1247933501}
   currentCursor: {fileID: 0}
 --- !u!114 &7749370175400263842
