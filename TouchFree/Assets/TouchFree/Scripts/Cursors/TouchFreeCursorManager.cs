@@ -9,6 +9,7 @@ public class TouchFreeCursorManager : CursorManager
     {
         ConfigManager.Config.OnConfigUpdated += ConfigUpdated;
         base.OnEnable();
+        ConfigUpdated();
     }
 
     protected override void OnDisable()
