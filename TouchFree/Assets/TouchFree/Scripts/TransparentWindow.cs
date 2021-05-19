@@ -88,8 +88,8 @@ public class TransparentWindow : MonoBehaviour
 
     private void OnEnable()
     {
-        ScreenManager.Instance.UIActivated += DisableClickThrough;
-        ScreenManager.Instance.UIDeactivated += EnableClickThrough;
+        ScreenManager.UIActivated += DisableClickThrough;
+        ScreenManager.UIDeactivated += EnableClickThrough;
 
         CallToInteractController.OnCTIActive += CTIActivated;
         CallToInteractController.OnCTIInactive += CTIDeactivated;
@@ -97,8 +97,8 @@ public class TransparentWindow : MonoBehaviour
 
     private void OnDisable()
     {
-        ScreenManager.Instance.UIActivated -= DisableClickThrough;
-        ScreenManager.Instance.UIDeactivated -= EnableClickThrough;
+        ScreenManager.UIActivated -= DisableClickThrough;
+        ScreenManager.UIDeactivated -= EnableClickThrough;
 
         CallToInteractController.OnCTIActive -= CTIActivated;
         CallToInteractController.OnCTIInactive -= CTIDeactivated;
@@ -181,18 +181,17 @@ public class TransparentWindow : MonoBehaviour
     bool ctiActive = false;
     void CTIActivated()
     {
-        DisableClickThrough();
         ctiActive = true;
+        DisableClickThrough();
     }
 
     void CTIDeactivated()
     {
-        if (!ScreenManager.Instance.isActive)
+        ctiActive = false;
+        if (ScreenManager.Instance != null && !ScreenManager.Instance.isActive)
         {
             EnableClickThrough();
         }
-
-        ctiActive = false;
     }
 
     private void OnApplicationQuit()
