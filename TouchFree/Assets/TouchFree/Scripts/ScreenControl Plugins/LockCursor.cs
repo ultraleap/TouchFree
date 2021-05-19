@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
-using System;
 
 public class LockCursor : InputActionPlugin
 {
@@ -14,7 +13,7 @@ public class LockCursor : InputActionPlugin
         screenMiddle = new Vector2(TouchFreeMain.CursorWindowSize / 2, TouchFreeMain.CursorWindowSize / 2);
     }
 
-    protected override Nullable<ClientInputAction> ModifyInputAction(ClientInputAction _inputAction)
+    protected override ClientInputAction? ModifyInputAction(ClientInputAction _inputAction)
     {
         if (window.clickThroughEnabled)
         {

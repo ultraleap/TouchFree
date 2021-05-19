@@ -31,15 +31,13 @@ public class CallToInteractController : MonoBehaviour
     RenderTexture videoRenderTexture;
 
     bool isShowing;
-
-    private static readonly string CTI_PATH = Path.Combine(Application.streamingAssetsPath, "CallToInteract");
+    bool handsPresent = false;
 
     private readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
     private readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
 
     public void UpdateCTISettings()
     {
-        // TODO: this should bhe replaced by an event listener to the config system
         SetupCTI();
     }
 
@@ -48,7 +46,8 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound += OnHandEnter;
         ConnectionManager.HandsLost += OnAllHandsExit;
         InputActionManager.TransmitRawInputAction += HandleInputAction;
-        ScreenManager.Instance.UIActivated += UIAcitvated;
+        ScreenManager.UIActivated += UIActivated;
+        ScreenManager.UIDeactivated += UIDeactivated;
         ConfigManager.Config.OnConfigUpdated += UpdateCTISettings;
 
         isShowing = false;
@@ -60,7 +59,8 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound -= OnHandEnter;
         ConnectionManager.HandsLost -= OnAllHandsExit;
         InputActionManager.TransmitRawInputAction -= HandleInputAction;
-        ScreenManager.Instance.UIActivated -= UIAcitvated;
+        ScreenManager.UIActivated -= UIActivated;
+        ScreenManager.UIDeactivated -= UIDeactivated;
         ConfigManager.Config.OnConfigUpdated -= UpdateCTISettings;
 
         if (videoRenderTexture != null)
@@ -78,9 +78,6 @@ public class CallToInteractController : MonoBehaviour
         showAfterHandsLostCoroutine = null;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     /// <param name="_immediate">Force the Setup. Otherwise it is provided on a cooldown to
     /// prevent the loading of video assets on every update of values</param>
     void SetupCTI(bool _immediate = false)
@@ -118,7 +115,7 @@ public class CallToInteractController : MonoBehaviour
         delayedSetupCoroutine = null;
     }
 
-    void UIAcitvated()
+    void UIActivated()
     {
         if(isShowing)
         {
@@ -126,8 +123,18 @@ public class CallToInteractController : MonoBehaviour
         }
     }
 
+    void UIDeactivated()
+    {
+        if(!handsPresent)
+        {
+            OnAllHandsExit();
+        }
+    }
+
     void OnHandEnter()
     {
+        handsPresent = true;
+
         if (isShowing && ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.PRESENCE)
         {
             HideCTI();
@@ -136,7 +143,9 @@ public class CallToInteractController : MonoBehaviour
 
     void OnAllHandsExit()
     {
-        if (!isShowing && showAfterHandsLostCoroutine != null)
+        handsPresent = false;
+
+        if (!isShowing && showAfterHandsLostCoroutine == null)
         {
             showAfterHandsLostCoroutine = StartCoroutine(ShowAfterHandsLost());
         }
@@ -317,7 +326,7 @@ public class CallToInteractController : MonoBehaviour
 
         if (loadedType == CTIType.NONE)
         {
-            Debug.Log($"Could not find any CTI assets to load at {CTI_PATH}");
+            Debug.Log($"Could not find any CTI assets to load at {ConfigManager.Config.ctiFilePath}");
         }
     }
     #endregion

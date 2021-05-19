@@ -7,8 +7,8 @@ public class ScreenManager : MonoBehaviour
 {
     public static ScreenManager Instance;
 
-    public event Action UIActivated;
-    public event Action UIDeactivated;
+    public static event Action UIActivated;
+    public static event Action UIDeactivated;
 
     public bool isActive;
 
