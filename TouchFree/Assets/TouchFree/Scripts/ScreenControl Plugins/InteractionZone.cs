@@ -9,15 +9,28 @@ public class InteractionZone : InputActionPlugin
 {
     public static event InputActionManager.ClientInputActionEvent InputOverrideInputAction;
 
+    // function: ModifyInputAction
+    // Used to produce a modified <ClientInputAction> which, in this case, is specificly used
+    // for input and not for cursors. This is achieved by invoking the <InputOverrideInputAction>.
+    // 
+    // One exception to this rule is if a <ClientInputAction> has been 'cancelled' which should
+    // be passed back to the <InputActionManager>.
     protected override Nullable<ClientInputAction> ModifyInputAction(ClientInputAction _inputAction)
     {
         if (ConfigManager.Config.interactionZoneEnabled)
         {
             ClientInputAction? overrideInputAction = HandleDelayedDownAndUp(_inputAction);
 
-            if (overrideInputAction != null)
+            if (overrideInputAction.HasValue)
             {
-                InputOverrideInputAction?.Invoke((ClientInputAction)overrideInputAction);
+                InputOverrideInputAction?.Invoke(overrideInputAction.Value);
+
+                if(overrideInputAction.Value.InputType == InputType.CANCEL)
+                {
+                    // Only return modified inputactions if they have been cancelled as
+                    // this relates to both input and cursors.
+                    return overrideInputAction.Value;
+                }
             }
             else
             {
@@ -91,12 +104,24 @@ public class InteractionZone : InputActionPlugin
                 _inputAction.CursorPosition = upPos;
                 delayedUp = false;
             }
+            else if (!cancelledInput)
+            {
+                // change to a cancel event as we have just exited the interaction zone
+                _inputAction.InputType = InputType.CANCEL;
+                cancelledInput = true;
+            }
             else
             {
                 return null;
             }
         }
+        else
+        {
+            cancelledInput = false;
+        }
 
         return _inputAction;
     }
+
+    bool cancelledInput = false;
 }
