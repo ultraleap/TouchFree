@@ -13,8 +13,16 @@ public class InteractionZone : InputActionPlugin
     {
         if (ConfigManager.Config.interactionZoneEnabled)
         {
-            ClientInputAction overrideInputAction = HandleDelayedDownAndUp(_inputAction);
-            InputOverrideInputAction?.Invoke(overrideInputAction);
+            ClientInputAction? overrideInputAction = HandleDelayedDownAndUp(_inputAction);
+
+            if (overrideInputAction != null)
+            {
+                InputOverrideInputAction?.Invoke((ClientInputAction)overrideInputAction);
+            }
+            else
+            {
+                return null;
+            }
         }
         else
         {
@@ -31,7 +39,7 @@ public class InteractionZone : InputActionPlugin
     bool delayedDown = false;
     bool delayedUp = false;
 
-    ClientInputAction HandleDelayedDownAndUp(ClientInputAction _inputAction)
+    ClientInputAction? HandleDelayedDownAndUp(ClientInputAction _inputAction)
     {
         if(!delayedDown)
         {
@@ -82,6 +90,10 @@ public class InteractionZone : InputActionPlugin
                 _inputAction.InputType = InputType.UP;
                 _inputAction.CursorPosition = upPos;
                 delayedUp = false;
+            }
+            else
+            {
+                return null;
             }
         }
 
