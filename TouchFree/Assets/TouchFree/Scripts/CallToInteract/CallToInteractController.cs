@@ -160,6 +160,12 @@ public class CallToInteractController : MonoBehaviour
                 HideCTI();
             }
         }
+
+        if(ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.PRESENCE &&
+            (isShowing || showAfterHandsLostCoroutine != null))
+        {
+            HideCTI();
+        }
     }
 
     Coroutine showAfterHandsLostCoroutine;
@@ -202,6 +208,12 @@ public class CallToInteractController : MonoBehaviour
 
     void HideCTI()
     {
+        if(showAfterHandsLostCoroutine != null)
+        {
+            StopCoroutine(showAfterHandsLostCoroutine);
+            showAfterHandsLostCoroutine = null;
+        }
+
         isShowing = false;
 
         if (loadedType == CTIType.IMAGE)
