@@ -35,7 +35,34 @@ public class TransparentWindow : MonoBehaviour
 	[DllImport("Dwmapi.dll")]
 	private static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS margins);
 
-	const int GWL_STYLE = -16;
+    [DllImport("user32.dll")]
+    static extern bool ShowWindowAsync(int hWnd, int nCmdShow);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    internal static extern bool SetProcessDpiAwarenessContext(int dpiFlag);
+
+    [DllImport("SHCore.dll", SetLastError = true)]
+    internal static extern bool SetProcessDpiAwareness(PROCESS_DPI_AWARENESS awareness);
+
+    [DllImport("user32.dll")]
+    internal static extern bool SetProcessDPIAware();
+
+    internal enum PROCESS_DPI_AWARENESS
+    {
+        Process_DPI_Unaware = 0,
+        Process_System_DPI_Aware = 1,
+        Process_Per_Monitor_DPI_Aware = 2
+    }
+
+    internal enum DPI_AWARENESS_CONTEXT
+    {
+        DPI_AWARENESS_CONTEXT_UNAWARE = 16,
+        DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = 17,
+        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18,
+        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34
+    }
+
+    const int GWL_STYLE = -16;
 	const uint WS_POPUP = 0x80000000;
 	const uint WS_VISIBLE = 0x10000000;
 	const int HWND_TOPMOST = -1;
@@ -59,9 +86,29 @@ public class TransparentWindow : MonoBehaviour
 	{
 #if !UNITY_EDITOR // You really don't want to enable this in the editor..
 		hwnd = GetActiveWindow();
+        HandleDPIAwareness();
 #endif
         clickThroughEnabled = false;
         SetConfigWindow(true);
+    }
+
+    void HandleDPIAwareness()
+    {
+        if (Environment.OSVersion.Version >= new Version(6, 3, 0)) // win 8.1 added support for per monitor dpi
+        {
+            if (Environment.OSVersion.Version >= new Version(10, 0, 15063)) // win 10 creators update added support for per monitor v2
+            {
+                SetProcessDpiAwarenessContext((int)DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+            }
+            else
+            {
+                SetProcessDpiAwareness(PROCESS_DPI_AWARENESS.Process_Per_Monitor_DPI_Aware);
+            }
+        }
+        else
+        {
+            SetProcessDPIAware();
+        }
     }
 
     public void DisableClickThrough()
