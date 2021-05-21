@@ -87,7 +87,10 @@ public class CursorManager : MonoBehaviour
 
     public void SetCursorVisibility(bool _setTo)
     {
-        currentCursor.SetActive(_setTo);
+        if (currentCursor != null)
+        {
+            currentCursor.SetActive(_setTo);
+        }
     }
 
     [System.Serializable]
