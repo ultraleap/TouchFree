@@ -117,6 +117,15 @@ public class FillCursor : TouchlessCursor
                     cursorScalingRoutine = StartCoroutine(GrowCursorDot());
                 }
                 break;
+
+            case InputType.CANCEL:
+                HideCursor();
+                break;
+        }
+
+        if (hidingCursor && _inputData.InputType != InputType.CANCEL)
+        {
+            ShowCursor();
         }
     }
 

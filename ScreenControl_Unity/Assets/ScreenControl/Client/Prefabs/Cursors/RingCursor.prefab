@@ -334,7 +334,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorTransform: {fileID: 2292088166589006933}
-  fadeDuration: 45
+  fadeDuration: 35
   cursorDotSize: 0.25
   cursorBorder: {fileID: 2292088166042207031}
   cursorFill: {fileID: 4385562017838604252}
@@ -367,7 +367,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   ringOuter: {fileID: 915649656}
   ringMask: {fileID: 1472931908}
-  ringThickness: 2
+  ringThickness: 1.5
   pulseShrinkCurve:
     serializedVersion: 2
     m_Curve:

@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorTransform: {fileID: 3441215942321882143}
-  fadeDuration: 45
+  fadeDuration: 35
   cursorBorder: {fileID: 3441215942837224317}
   cursorFill: {fileID: 923836927857975190}
   fillRingImage: {fileID: 5666728353102373138}
@@ -248,7 +248,7 @@ RectTransform:
   m_GameObject: {fileID: 3821118518806598974}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_Children: []
   m_Father: {fileID: 3441215942837224316}
   m_RootOrder: 1
@@ -290,7 +290,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
-  m_FillAmount: 0
+  m_FillAmount: 0.755
   m_FillClockwise: 1
   m_FillOrigin: 2
   m_UseSpriteMesh: 0

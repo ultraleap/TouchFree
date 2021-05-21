@@ -124,21 +124,26 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
                     _progressToClick = Mathf.Clamp01(1f - _progressToClick);
 
-                    // 0.9f so that the boundary between ring and dot is not visible - small overlap.
-                    float minRingScale = 0.9f + ringThickness;
-                    float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(_progressToClick));
-                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
-
-                    ringOuter.transform.localScale = Vector3.one * ringScale;
-
-                    ringMask.transform.localScale = new Vector3()
-                    {
-                        x = Mathf.Max(0, ringOuter.localScale.x - ringThickness),
-                        y = Mathf.Max(0, ringOuter.localScale.y - ringThickness),
-                        z = ringOuter.localScale.z
-                    };
+                    ScaleRing(_progressToClick);
                 }
             }
+        }
+
+        void ScaleRing(float _progressToClick)
+        {
+            // 0.8f so that the boundary between ring and dot is not visible.
+            float minRingScale = 0.8f;
+            float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(_progressToClick));
+            ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
+
+            ringOuter.transform.localScale = Vector3.one * ringScale;
+
+            ringMask.transform.localScale = new Vector3()
+            {
+                x = Mathf.Max(0, ringOuter.localScale.x - ringThickness),
+                y = Mathf.Max(0, ringOuter.localScale.y - ringThickness),
+                z = ringOuter.localScale.z
+            };
         }
 
         // Group: TouchlessCursor Overrides
@@ -178,7 +183,13 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     break;
 
                 case InputType.CANCEL:
+                    HideCursor();
                     break;
+            }
+
+            if (hidingCursor && _inputData.InputType != InputType.CANCEL)
+            {
+                ShowCursor();
             }
         }
 
@@ -297,6 +308,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // This coroutine smoothly contracts the cursor dots size.
         public virtual IEnumerator ShrinkCursorDot()
         {
+            ScaleRing(1);
             YieldInstruction yieldInstruction = new YieldInstruction();
             float elapsedTime = 0.0f;
 
