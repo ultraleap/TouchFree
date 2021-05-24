@@ -41,6 +41,7 @@ namespace Ultraleap.ScreenControl.Core
                     }
                 }
             }
+
             versionText.text = "Version " + version;
         }
 

@@ -189,11 +189,11 @@ namespace Ultraleap.TouchFree
             // }
 
             RingCursorPreviewCenter.color = PrimaryColor;
-            // FillCursorPreviewCenter.color = PrimaryColor;
+            FillCursorPreviewCenter.color = PrimaryColor;
             RingCursorPreviewRing.color = SecondaryColor;
-            // FillCursorPreviewRing.color = SecondaryColor;
+            FillCursorPreviewRing.color = SecondaryColor;
             RingCursorPreviewBorder.color = TertiaryColor;
-            // FillCursorPreviewBorder.color = TertiaryColor;
+            FillCursorPreviewBorder.color = TertiaryColor;
         }
 
         private void SetCustomColorControlVisibility(bool _)
