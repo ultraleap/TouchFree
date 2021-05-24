@@ -50,10 +50,6 @@ public class FillCursor : TouchlessCursor
     // The scale of the cursor's dot at its smallest size (between the shrink and the grow )
     [Range(0.01f, 2f)] public float cursorDownScale;
 
-    public Color dotFillColor;
-    public Color dotBorderColor;
-    public Color ringColor;
-
     Coroutine cursorScalingRoutine;
 
     protected bool hidingCursor = true;
@@ -79,9 +75,9 @@ public class FillCursor : TouchlessCursor
         ConnectionManager.HandFound += ShowCursor;
         ConnectionManager.HandsLost += HideCursor;
 
-        cursorBorder.color = dotBorderColor;
-        cursorFill.color = dotFillColor;
-        fillRingImage.color = ringColor;
+        cursorFill.color = primaryColor;
+        fillRingImage.color = secondaryColor;
+        cursorBorder.color = tertiaryColor;
 
         bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
@@ -127,6 +123,20 @@ public class FillCursor : TouchlessCursor
         {
             ShowCursor();
         }
+    }
+
+    // Function: SetColors
+    // This override ensures the correct cursor UI elemets are coloured correctly when new
+    // colours are set.
+    public override void SetColors(Color _primary, Color _secondary, Color _tertiary)
+    {
+        _primaryColor = _primary;
+        _secondaryColor = _secondary;
+        _tertiaryColor = _tertiary;
+
+        cursorFill.color = new Color(primaryColor.r, primaryColor.g, primaryColor.b, cursorFill.color.a);
+        fillRingImage.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, fillRingImage.color.a);
+        cursorBorder.color = new Color(tertiaryColor.r, tertiaryColor.g, tertiaryColor.b, cursorBorder.color.a);
     }
 
     // Function: ShowCursor
@@ -230,7 +240,7 @@ public class FillCursor : TouchlessCursor
                 r = cursorBorder.color.r,
                 g = cursorBorder.color.g,
                 b = cursorBorder.color.b,
-                a = a * dotBorderColor.a
+                a = a * tertiaryColor.a
             };
 
             cursorFill.color = new Color()
@@ -238,7 +248,7 @@ public class FillCursor : TouchlessCursor
                 r = cursorFill.color.r,
                 g = cursorFill.color.g,
                 b = cursorFill.color.b,
-                a = a * dotFillColor.a
+                a = a * primaryColor.a
             };
 
             fillRingImage.color = new Color()
@@ -246,7 +256,7 @@ public class FillCursor : TouchlessCursor
                 r = fillRingImage.color.r,
                 g = fillRingImage.color.g,
                 b = fillRingImage.color.b,
-                a = a * ringColor.a
+                a = a * secondaryColor.a
             };
         };
 

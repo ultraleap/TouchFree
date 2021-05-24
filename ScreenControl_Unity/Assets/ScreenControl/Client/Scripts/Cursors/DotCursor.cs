@@ -195,9 +195,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // colours are set.
         public override void SetColors(Color _primary, Color _secondary, Color _tertiary)
         {
-            primaryColor = _primary;
-            secondaryColor = _secondary;
-            tertiaryColor = _tertiary;
+            _primaryColor = _primary;
+            _secondaryColor = _secondary;
+            _tertiaryColor = _tertiary;
 
             cursorFill.color = new Color(primaryColor.r, primaryColor.g, primaryColor.b, cursorFill.color.a);
             ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, ringOuterSprite.color.a);

@@ -20,19 +20,21 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
         public Color primaryColor
         { 
-            get { return primaryColor; }
-            protected set { primaryColor = value; }
+            get { return _primaryColor; }
         }
+        protected Color _primaryColor;
+
         public Color secondaryColor
         { 
-            get { return secondaryColor; } 
-            protected set { secondaryColor = value; }
+            get { return _secondaryColor; } 
         }
+        protected Color _secondaryColor;
+
         public Color tertiaryColor
         { 
-            get { return tertiaryColor; } 
-            protected set { tertiaryColor = value; }
+            get { return _tertiaryColor; } 
         }
+        protected Color _tertiaryColor;
 
         // Group: MonoBehaviour Overrides
 
@@ -102,9 +104,9 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // UI elements that the colors relate to.
         public virtual void SetColors(Color _primary, Color _secondary, Color _tertiary)
         {
-            primaryColor = _primary;
-            secondaryColor = _secondary;
-            tertiaryColor = _tertiary;
+            _primaryColor = _primary;
+            _secondaryColor = _secondary;
+            _tertiaryColor = _tertiary;
         }
     }
 }
