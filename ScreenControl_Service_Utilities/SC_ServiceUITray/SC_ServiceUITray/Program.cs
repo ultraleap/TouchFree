@@ -65,11 +65,11 @@ namespace SC_ServiceUITray
             if (startedProcess != null && !startedProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                Process.Start(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
+                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
             }
             else
             {
-                startedProcess = Process.Start(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
+                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
             }
         }
 
@@ -113,6 +113,17 @@ namespace SC_ServiceUITray
         private bool ServiceExists(string serviceName)
         {
             return ServiceController.GetServices().Any(serviceController => serviceController.ServiceName.Equals(serviceName));
+        }
+
+        public Process ExecuteAsAdmin(string fileName)
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = fileName;
+            proc.StartInfo.UseShellExecute = true;
+            proc.StartInfo.Verb = "runas";
+            proc.Start();
+
+            return proc;
         }
     }
 }
