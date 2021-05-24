@@ -45,12 +45,6 @@ namespace Ultraleap.TouchFree
 
         [Header("Cursors")]
         public TouchlessCursor[] cursors;
-        // public Image RingCursorCenter;
-        // public SpriteRenderer RingCursorRing;
-        // public Image RingCursorBorder;
-        // public Image FillCursorCenter;
-        // public Image FillCursorRing;
-        // public Image FillCursorBorder;
 
         // [Header("InteractionZone")]
         // public Toggle InteractionZoneToggle;
@@ -184,9 +178,9 @@ namespace Ultraleap.TouchFree
 
         private void UpdateCursorColors()
         {
-            // foreach(TouchlessCursor cursor in cursors) {
-            //     cursor.SetColors(PrimaryColor, SecondaryColor, TertiaryColor);
-            // }
+            foreach(TouchlessCursor cursor in cursors) {
+                cursor.SetColors(PrimaryColor, SecondaryColor, TertiaryColor);
+            }
 
             RingCursorPreviewCenter.color = PrimaryColor;
             FillCursorPreviewCenter.color = PrimaryColor;
