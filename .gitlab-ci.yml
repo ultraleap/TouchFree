@@ -13,7 +13,7 @@ variables:
   SC_SRV_VERSION: 'alpha5'
   TOUCHFREE_VERSION: 'alpha5'
 
-  SC_API_VERSION: '1.0.5'
+  SC_API_VERSION: '1.1.0'
 
 stages:
   - build

@@ -48,7 +48,7 @@ namespace Ultraleap.ScreenControl.Client
         {
             TransmitRawInputAction?.Invoke(_inputAction);
 
-            Nullable<ClientInputAction> modifiedInputAction = RunPlugins(_inputAction);
+            ClientInputAction? modifiedInputAction = RunPlugins(_inputAction);
 
             if (modifiedInputAction.HasValue)
             {
@@ -56,9 +56,9 @@ namespace Ultraleap.ScreenControl.Client
             }
         }
 
-        Nullable<ClientInputAction> RunPlugins(ClientInputAction _inputAction)
+        ClientInputAction? RunPlugins(ClientInputAction _inputAction)
         {
-            Nullable<ClientInputAction> modifiedInputAction = _inputAction;
+            ClientInputAction? modifiedInputAction = _inputAction;
 
             // Send the input action through the plugins in order
             // if it is returned null from a plugin, return it to be ignored
@@ -66,7 +66,10 @@ namespace Ultraleap.ScreenControl.Client
             {
                 if (plugin.enabled)
                 {
-                    modifiedInputAction = plugin.plugin.RunPlugin(_inputAction);
+                    if (modifiedInputAction.HasValue)
+                    {
+                        modifiedInputAction = plugin.plugin.RunPlugin(modifiedInputAction.Value);
+                    }
 
                     if (!modifiedInputAction.HasValue)
                     {

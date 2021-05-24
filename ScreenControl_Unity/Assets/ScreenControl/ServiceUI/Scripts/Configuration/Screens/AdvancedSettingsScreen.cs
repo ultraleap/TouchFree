@@ -58,6 +58,7 @@ namespace Ultraleap.ScreenControl.Core
                 if(ConfigFileUtils.ChangeConfigFileDirectory(paths[0]))
                 {
                     fileLocation.text = paths[0];
+                    ConfigManager.LoadConfigsFromFiles();
                 }
             }
         }
