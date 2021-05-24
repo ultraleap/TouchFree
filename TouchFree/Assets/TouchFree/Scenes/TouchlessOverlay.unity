@@ -923,6 +923,7 @@ GameObject:
   - component: {fileID: 3528134228377515045}
   - component: {fileID: 4784773018261898961}
   - component: {fileID: 1104336824340231346}
+  - component: {fileID: 1104336824340231347}
   m_Layer: 0
   m_Name: ScreenControlClient
   m_TagString: Untagged
@@ -945,6 +946,18 @@ MonoBehaviour:
   plugins:
   - enabled: 1
     plugin: {fileID: 7749370175400263842}
+--- !u!114 &1104336824340231347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104336824340231345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dab60cb5fa845524d82f911bf1e3124d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1104336824340231351
 Transform:
   m_ObjectHideFlags: 0

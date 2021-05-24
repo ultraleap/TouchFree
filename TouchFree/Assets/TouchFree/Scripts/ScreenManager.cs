@@ -20,6 +20,20 @@ public class ScreenManager : MonoBehaviour
     private void Start()
     {
         Instance = this;
+        Application.focusChanged += Application_focusChanged;
+    }
+
+    private void OnDestroy()
+    {
+        Application.focusChanged -= Application_focusChanged;
+    }
+
+    private void Application_focusChanged(bool _focussed)
+    {
+        if (_focussed)
+        {
+            SetUIActive(true);
+        }
     }
 
     private void Update()
@@ -28,7 +42,7 @@ public class ScreenManager : MonoBehaviour
         {
             if (homeScreen.activeSelf)
             {
-                CloseApplication();
+                SetUIActive(false);
             }
             else
             {
