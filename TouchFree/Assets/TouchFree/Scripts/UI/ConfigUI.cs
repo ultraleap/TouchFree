@@ -65,63 +65,28 @@ namespace Ultraleap.TouchFree
             AddValueChangedListeners();
         }
 
-        private void LoadConfigValuesIntoFields()
+        private void SetPresetTogglesBasedOnColors(CursorColorPreset _activePreset)
         {
-            // Cursor settings
-            EnableCursorToggle.isOn = ConfigManager.Config.cursorEnabled;
-            CursorSizeInputSlider.Value = ConfigManager.Config.cursorSizeCm;
-            PrimaryColor = ConfigManager.Config.primaryCursorColor;
-            SecondaryColor = ConfigManager.Config.secondaryCursorColor;
-            TertiaryColor = ConfigManager.Config.tertiaryCursorColor;
-            SetPresetTogglesBasedOnColors();
-            UpdateCursorColors();
-
-            // CTI settings
-            EnableCTIToggle.isOn = ConfigManager.Config.ctiEnabled;
-            CTIFilePath = ConfigManager.Config.ctiFilePath;
-            CTIShowDelayField.text = ConfigManager.Config.ctiShowAfterTimer.ToString();
-
-            switch (ConfigManager.Config.ctiHideTrigger)
+            switch (_activePreset)
             {
-                case CtiHideTrigger.PRESENCE:
-                    CTIHideOnInteractionToggle.isOn = false;
-                    CTIHideOnPresenceToggle.isOn = true;
+                case CursorColorPreset.LIGHT:
+                    LightColorPresetToggle.isOn = true;
+                    DarkColorPresetToggle.isOn = false;
+                    CustomColorPresetToggle.isOn = false;
+                    CustomColorControlContainer.SetActive(false);
                     break;
-                case CtiHideTrigger.INTERACTION:
-                    CTIHideOnInteractionToggle.isOn = true;
-                    CTIHideOnPresenceToggle.isOn = false;
+                case CursorColorPreset.DARK:
+                    LightColorPresetToggle.isOn = false;
+                    DarkColorPresetToggle.isOn = true;
+                    CustomColorPresetToggle.isOn = false;
+                    CustomColorControlContainer.SetActive(false);
                     break;
-                default:
+                case CursorColorPreset.CUSTOM:
+                    LightColorPresetToggle.isOn = false;
+                    DarkColorPresetToggle.isOn = false;
+                    CustomColorPresetToggle.isOn = true;
+                    CustomColorControlContainer.SetActive(true);
                     break;
-            }
-        }
-
-        private void SetPresetTogglesBasedOnColors()
-        {
-            if (PrimaryColor == Color.white &&
-                SecondaryColor == Color.white &&
-                TertiaryColor == Color.black)
-            {
-                LightColorPresetToggle.isOn = true;
-                DarkColorPresetToggle.isOn = false;
-                CustomColorPresetToggle.isOn = false;
-                CustomColorControlContainer.SetActive(false);
-            }
-            else if (PrimaryColor == Color.black &&
-                SecondaryColor == Color.black &&
-                TertiaryColor == Color.white)
-            {
-                LightColorPresetToggle.isOn = false;
-                DarkColorPresetToggle.isOn = true;
-                CustomColorPresetToggle.isOn = false;
-                CustomColorControlContainer.SetActive(false);
-            }
-            else
-            {
-                LightColorPresetToggle.isOn = false;
-                DarkColorPresetToggle.isOn = false;
-                CustomColorPresetToggle.isOn = true;
-                CustomColorControlContainer.SetActive(true);
             }
         }
 
@@ -151,6 +116,37 @@ namespace Ultraleap.TouchFree
             TouchFreeCursorManager.CursorChanged += SetCurrentlyActiveCursor;
         }
 
+        public void SetFileLocation()
+        {
+            var extensions = new string[
+                CallToInteractController.VIDEO_EXTENSIONS.Length +
+                CallToInteractController.IMAGE_EXTENSIONS.Length];
+            CallToInteractController.VIDEO_EXTENSIONS.CopyTo(extensions, 0);
+            CallToInteractController.IMAGE_EXTENSIONS.CopyTo(extensions, CallToInteractController.VIDEO_EXTENSIONS.Length);
+
+            for (int i = 0; i < extensions.Length; i++)
+            {
+                extensions[i] = extensions[i].Replace(".", "");
+            }
+
+            var extFilter = new ExtensionFilter[] { new ExtensionFilter("CTIFileExtensions", extensions) };
+            string[] paths = StandaloneFileBrowser.OpenFilePanel("", CTIFilePath, extFilter, false);
+
+            if (paths.Length > 0)
+            {
+                CTIFilePath = paths[0];
+                CurrentCTIFilepath.text = CTIFilePath;
+            }
+
+            SaveValuesToConfig();
+        }
+
+        private void ValidateValues()
+        {
+            // CursorSizeInputSlider is validated by the SliderInputCombiner
+        }
+
+        #region Color Picker/Toggles methods
         private void SetColorsToCorrectPreset(bool _)
         {
             if (LightColorPresetToggle.isOn)
@@ -178,7 +174,8 @@ namespace Ultraleap.TouchFree
 
         private void UpdateCursorColors()
         {
-            foreach(TouchlessCursor cursor in cursors) {
+            foreach (TouchlessCursor cursor in cursors)
+            {
                 cursor.SetColors(PrimaryColor, SecondaryColor, TertiaryColor);
             }
 
@@ -221,8 +218,10 @@ namespace Ultraleap.TouchFree
             SaveValuesToConfig();
         }
 
-        private void SetCurrentlyActiveCursor(CursorManager.CursorType _type) {
-            switch (_type) {
+        private void SetCurrentlyActiveCursor(CursorManager.CursorType _type)
+        {
+            switch (_type)
+            {
                 case CursorManager.CursorType.FILL:
                     FillCursorContainer.SetActive(true);
                     RingCursorContainer.SetActive(false);
@@ -249,47 +248,47 @@ namespace Ultraleap.TouchFree
                 ColorPicker.CurrentColor = TertiaryColor;
             }
         }
+        #endregion
 
-        public void SetFileLocation()
+        #region ConfigFile Methods
+        private void LoadConfigValuesIntoFields()
         {
-            var extensions = new string[
-                CallToInteractController.VIDEO_EXTENSIONS.Length +
-                CallToInteractController.IMAGE_EXTENSIONS.Length];
-            CallToInteractController.VIDEO_EXTENSIONS.CopyTo(extensions, 0);
-            CallToInteractController.IMAGE_EXTENSIONS.CopyTo(extensions, CallToInteractController.VIDEO_EXTENSIONS.Length);
+            // Cursor settings
+            EnableCursorToggle.isOn = ConfigManager.Config.cursorEnabled;
+            CursorSizeInputSlider.Value = ConfigManager.Config.cursorSizeCm;
+            CustomPrimaryColor = ConfigManager.Config.primaryCustomColor;
+            CustomSecondaryColor = ConfigManager.Config.secondaryCustomColor;
+            CustomTertiaryColor = ConfigManager.Config.tertiaryCustomColor;
+            SetPresetTogglesBasedOnColors(ConfigManager.Config.activeCursorPreset);
+            SetColorsToCorrectPreset(false);
+            UpdateCursorColors();
 
-            for (int i = 0; i < extensions.Length; i++)
+            // CTI settings
+            EnableCTIToggle.isOn = ConfigManager.Config.ctiEnabled;
+            CTIFilePath = ConfigManager.Config.ctiFilePath;
+            CTIShowDelayField.text = ConfigManager.Config.ctiShowAfterTimer.ToString();
+
+            switch (ConfigManager.Config.ctiHideTrigger)
             {
-                extensions[i] = extensions[i].Replace(".", "");
+                case CtiHideTrigger.PRESENCE:
+                    CTIHideOnInteractionToggle.isOn = false;
+                    CTIHideOnPresenceToggle.isOn = true;
+                    break;
+                case CtiHideTrigger.INTERACTION:
+                    CTIHideOnInteractionToggle.isOn = true;
+                    CTIHideOnPresenceToggle.isOn = false;
+                    break;
+                default:
+                    break;
             }
-
-            var extFilter = new ExtensionFilter[] { new ExtensionFilter("CTIFileExtensions", extensions) };
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("", CTIFilePath, extFilter, false);
-
-            if (paths.Length > 0)
-            {
-                CTIFilePath = paths[0];
-                CurrentCTIFilepath.text = CTIFilePath;
-            }
-
-            SaveValuesToConfig();
-        }
-
-        private void ValidateValues()
-        {
-            // CursorSizeInputSlider is validated by the SliderInputCombiner
-            CTIShowDelayField.SetTextWithoutNotify(
-                ConfigDataUtilities.TryParseNewStringToFloat(
-                    ConfigManager.Config.ctiShowAfterTimer,
-                    CTIShowDelayField.text).ToString("#0.#"));
         }
 
         private void SaveValuesToConfig()
         {
             // Local Values
-            ConfigManager.Config.primaryCursorColor = PrimaryColor;
-            ConfigManager.Config.secondaryCursorColor = SecondaryColor;
-            ConfigManager.Config.tertiaryCursorColor = TertiaryColor;
+            ConfigManager.Config.primaryCustomColor = CustomPrimaryColor;
+            ConfigManager.Config.secondaryCustomColor = CustomSecondaryColor;
+            ConfigManager.Config.tertiaryCustomColor = CustomTertiaryColor;
             ConfigManager.Config.ctiFilePath = CTIFilePath;
 
             // Values pulled from UI elements
@@ -303,6 +302,21 @@ namespace Ultraleap.TouchFree
                     ConfigManager.Config.ctiShowAfterTimer,
                     CTIShowDelayField.text);
 
+
+            // Toggles
+            if (LightColorPresetToggle.isOn)
+            {
+                ConfigManager.Config.activeCursorPreset = CursorColorPreset.LIGHT;
+            }
+            else if (DarkColorPresetToggle.isOn)
+            {
+                ConfigManager.Config.activeCursorPreset = CursorColorPreset.DARK;
+            }
+            else
+            {
+                ConfigManager.Config.activeCursorPreset = CursorColorPreset.CUSTOM;
+            }
+
             if (CTIHideOnInteractionToggle.isOn)
             {
                 ConfigManager.Config.ctiHideTrigger = CtiHideTrigger.INTERACTION;
@@ -313,7 +327,9 @@ namespace Ultraleap.TouchFree
             }
 
             ConfigManager.Config.ConfigWasUpdated();
+            ConfigManager.Config.SaveConfig();
         }
+        #endregion
 
         #region OnValueChanged Overrides
         protected void OnValueChanged(string _)

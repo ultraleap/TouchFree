@@ -203,10 +203,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 1104336824340231351}
     m_Modifications:
     - target: {fileID: 1023997157, guid: 200b3d0c93f3942428da323f490b02ec, type: 3}
-      propertyPath: cursors.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023997157, guid: 200b3d0c93f3942428da323f490b02ec, type: 3}
       propertyPath: cursors.Array.data[0]
       value: 
       objectReference: {fileID: 1247933503}
@@ -230,6 +226,21 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 355497211551651473, guid: 200b3d0c93f3942428da323f490b02ec,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2137575146038361487, guid: 200b3d0c93f3942428da323f490b02ec,
+        type: 3}
+      propertyPath: versionText
+      value: 
+      objectReference: {fileID: 1621296416}
+    - target: {fileID: 4497781884767839952, guid: 200b3d0c93f3942428da323f490b02ec,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4497781884767839952, guid: 200b3d0c93f3942428da323f490b02ec,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
@@ -734,59 +745,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickThroughEnabled: 1
---- !u!1 &1757175037
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1757175038}
-  - component: {fileID: 1757175039}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1757175038
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1757175037}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1757175039
+--- !u!114 &1621296416 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 8820651664467757005, guid: 200b3d0c93f3942428da323f490b02ec,
+    type: 3}
+  m_PrefabInstance: {fileID: 661162795}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1757175037}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09503c4b0f460cc41ab9db11211e1a6d, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cursorEnabled: 1
-  cursorSizeCm: 0.8
-  primaryCursorColor: {r: 1, g: 1, b: 1, a: 1}
-  secondaryCursorColor: {r: 1, g: 1, b: 1, a: 1}
-  tertiaryCursorColor: {r: 0, g: 0, b: 0, a: 1}
-  ctiEnabled: 1
-  ctiFilePath: C:/Users/NatGreenwood/Documents/Workspace/TouchFree/TouchFree/Assets/StreamingAssets\CallTointeract\1
-    Push in mid-air to start.mp4
-  ctiHideTrigger: 0
-  ctiShowAfterTimer: 10
 --- !u!1001 &1938642276
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -655,7 +655,9 @@ MonoBehaviour:
   FillCursorPreviewCenter: {fileID: 755417834364992996}
   FillCursorPreviewRing: {fileID: 755417834746433184}
   FillCursorPreviewBorder: {fileID: 755417835580210838}
-  cursors: []
+  cursors:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &755417833961462142
 GameObject:
   m_ObjectHideFlags: 0
@@ -12433,11 +12435,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 0cddfc96f9d57754d8d1d5e18b680b61, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 62.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 0cddfc96f9d57754d8d1d5e18b680b61, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 62.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224930228632997228, guid: 0cddfc96f9d57754d8d1d5e18b680b61,
         type: 3}
