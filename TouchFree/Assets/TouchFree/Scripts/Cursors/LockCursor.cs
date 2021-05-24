@@ -13,7 +13,7 @@ public class LockCursor : InputActionPlugin
         screenMiddle = new Vector2(TouchFreeMain.CursorWindowSize / 2, TouchFreeMain.CursorWindowSize / 2);
     }
 
-    protected override ClientInputAction ModifyInputAction(ClientInputAction _inputAction)
+    protected override ClientInputAction? ModifyInputAction(ClientInputAction _inputAction)
     {
         if (window.clickThroughEnabled)
         {
