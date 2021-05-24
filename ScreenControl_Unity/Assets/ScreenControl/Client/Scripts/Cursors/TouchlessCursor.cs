@@ -18,6 +18,22 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         public RectTransform cursorTransform;
         protected Vector2 targetPos;
 
+        public Color primaryColor
+        { 
+            get { return primaryColor; }
+            protected set { primaryColor = value; }
+        }
+        public Color secondaryColor
+        { 
+            get { return secondaryColor; } 
+            protected set { secondaryColor = value; }
+        }
+        public Color tertiaryColor
+        { 
+            get { return tertiaryColor; } 
+            protected set { tertiaryColor = value; }
+        }
+
         // Group: MonoBehaviour Overrides
 
         // Function: Update
@@ -79,6 +95,16 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         public virtual void HideCursor()
         {
             cursorTransform.gameObject.SetActive(false);
+        }
+
+        // Function: SetColors
+        // Used to change the colors of the cursor at runtime. Override it to update the specific
+        // UI elements that the colors relate to.
+        public virtual void SetColors(Color _primary, Color _secondary, Color _tertiary)
+        {
+            primaryColor = _primary;
+            secondaryColor = _secondary;
+            tertiaryColor = _tertiary;
         }
     }
 }

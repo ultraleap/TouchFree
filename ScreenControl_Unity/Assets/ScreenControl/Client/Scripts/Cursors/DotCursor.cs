@@ -95,9 +95,6 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         Coroutine cursorScalingRoutine;
 
         protected float maxRingScale;
-        public Color dotFillColor;
-        public Color dotBorderColor;
-        public Color ringColor;
 
         protected bool hidingCursor = true;
         protected bool growQueued = false;
@@ -117,7 +114,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             {
                 if (hidingCursor)
                 {
-                    ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, 0);
+                    ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
                 }
                 else
                 {
@@ -134,7 +131,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             // 0.8f so that the boundary between ring and dot is not visible.
             float minRingScale = 0.8f;
             float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(_progressToClick));
-            ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
+            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
 
             ringOuter.transform.localScale = Vector3.one * ringScale;
 
@@ -193,6 +190,20 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             }
         }
 
+        // Function: SetColors
+        // This override ensures the correct cursor UI elemets are coloured correctly when new
+        // colours are set.
+        public override void SetColors(Color _primary, Color _secondary, Color _tertiary)
+        {
+            primaryColor = _primary;
+            secondaryColor = _secondary;
+            tertiaryColor = _tertiary;
+
+            cursorFill.color = new Color(primaryColor.r, primaryColor.g, primaryColor.b, cursorFill.color.a);
+            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, ringOuterSprite.color.a);
+            cursorBorder.color = new Color(tertiaryColor.r, tertiaryColor.g, tertiaryColor.b, cursorBorder.color.a);
+        }
+
         // Function: OnDisable
         // This override of Unity's OnDisable feature of MonoBehaviour does the teardown of this
         // Cursor when it is disabled.
@@ -217,12 +228,12 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
             SetCursorLocalScale(cursorDotSize);
 
-            cursorBorder.color = dotBorderColor;
-            cursorFill.color = dotFillColor;
+            cursorFill.color = primaryColor;
+            cursorBorder.color = tertiaryColor;
 
             if (ringEnabled)
             {
-                ringOuterSprite.color = ringColor;
+                ringOuterSprite.color = secondaryColor;
                 maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
 
                 // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
@@ -254,7 +265,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             if (ringEnabled)
             {
                 ringOuterSprite.enabled = true;
-                ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, 0);
+                ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
             }
         }
 
@@ -276,7 +287,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
             if (ringEnabled)
             {
-                ringOuterSprite.color = new Color(ringColor.r, ringColor.g, ringColor.b, 0);
+                ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
             }
         }
 
@@ -345,7 +356,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     r = cursorBorder.color.r,
                     g = cursorBorder.color.g,
                     b = cursorBorder.color.b,
-                    a = a * dotBorderColor.a
+                    a = a * tertiaryColor.a
                 };
 
                 cursorFill.color = new Color()
@@ -353,7 +364,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                     r = cursorFill.color.r,
                     g = cursorFill.color.g,
                     b = cursorFill.color.b,
-                    a = a * dotFillColor.a
+                    a = a * primaryColor.a
                 };
             };
 
