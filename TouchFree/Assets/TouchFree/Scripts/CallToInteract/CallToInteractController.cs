@@ -33,8 +33,8 @@ public class CallToInteractController : MonoBehaviour
     bool isShowing;
     bool handsPresent = false;
 
-    private readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
-    private readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
+    public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
+    public static readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
 
     public void UpdateCTISettings()
     {

@@ -14,8 +14,17 @@ namespace Ultraleap.TouchFree
     {
         public static ConfigurationState Config
         {
-            get { return new ConfigurationState(); }
+            get {
+                if (_config == null) {
+                    // ToDo: replace this with loading from file
+                    _config = new ConfigurationState();
+                }
+
+                return _config;
+            }
         }
+
+        private static ConfigurationState _config = null;
     }
 
     public class ConfigurationState
@@ -25,11 +34,11 @@ namespace Ultraleap.TouchFree
         public float cursorSizeCm = 0.8f;
         public Color primaryCursorColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         public Color secondaryCursorColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-        public Color tertiaryCursorColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        public Color tertiaryCursorColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
 
         // CTI Settings
         public bool ctiEnabled = true;
-        public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallTointeract", "1 Push in mid-air to start.mp4");
+        public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallTointeract/1 Push in mid-air to start.mp4");
         public CtiHideTrigger ctiHideTrigger = CtiHideTrigger.PRESENCE;
         public float ctiShowAfterTimer = 10.0f;
 
@@ -53,6 +62,7 @@ namespace Ultraleap.TouchFree
             cursorSizeCm = defaults.cursorSizeCm;
             primaryCursorColor = defaults.primaryCursorColor;
             secondaryCursorColor = defaults.secondaryCursorColor;
+            tertiaryCursorColor = defaults.tertiaryCursorColor;
 
             ctiEnabled = defaults.ctiEnabled;
             ctiFilePath = defaults.ctiFilePath;

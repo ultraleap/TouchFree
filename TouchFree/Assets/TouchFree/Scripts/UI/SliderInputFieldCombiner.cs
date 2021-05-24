@@ -1,15 +1,27 @@
 ﻿using System.Globalization;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree
 {
-    [DefaultExecutionOrder(-1)]
-    public class SliderAndInputFieldMirrorValues : MonoBehaviour
+    // [DefaultExecutionOrder(-1)]
+    public class SliderInputFieldCombiner : MonoBehaviour
     {
         public Slider Slider;
         public InputField InputField;
         public string InputFieldValueFormat = "#0.00#";
+        public OnChangeEvent onValueChanged = new OnChangeEvent();
+
+        public float Value
+        {
+            get { return Slider.value; }
+            set
+            {
+                Slider.value = value;
+                OnSliderValueChanged(value);
+            }
+        }
 
         private void Awake()
         {
@@ -27,13 +39,18 @@ namespace Ultraleap.ScreenControl.Core
         {
             if (float.TryParse(val, NumberStyles.Number, CultureInfo.CurrentCulture, out float result))
             {
+                Mathf.Clamp(result, Slider.minValue, Slider.maxValue);
                 Slider.SetValueWithoutNotify(result);
+                onValueChanged?.Invoke(result);
             }
         }
 
         void OnSliderValueChanged(float val)
         {
             InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
+            onValueChanged?.Invoke(val);
         }
+
+        public class OnChangeEvent : UnityEvent<float> { }
     }
 }
