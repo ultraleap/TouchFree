@@ -1,25 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Ultraleap.TouchFree;
+﻿using UnityEngine;
+using Ultraleap.ScreenControl.Client.Cursors;
 
-public class TouchFreeCursorManager : CursorManager
+namespace Ultraleap.TouchFree
 {
-    protected override void OnEnable()
+    public class TouchFreeCursorManager : CursorManager
     {
-        ConfigManager.Config.OnConfigUpdated += ConfigUpdated;
-        base.OnEnable();
-        ConfigUpdated();
-    }
+        protected override void OnEnable()
+        {
+            ConfigManager.Config.OnConfigUpdated += ConfigUpdated;
+            base.OnEnable();
+            ConfigUpdated();
+        }
 
-    protected override void OnDisable()
-    {
-        ConfigManager.Config.OnConfigUpdated -= ConfigUpdated;
-        base.OnDisable();
-    }
+        protected override void OnDisable()
+        {
+            ConfigManager.Config.OnConfigUpdated -= ConfigUpdated;
+            base.OnDisable();
+        }
 
-    void ConfigUpdated()
-    {
-        SetCursorVisibility(ConfigManager.Config.cursorEnabled);
+        void Start()
+        {
+            Color Primary = defaultCursor.primaryColor;
+            Color Secondary = defaultCursor.secondaryColor;
+            Color Tertiary = defaultCursor.tertiaryColor;
+
+            ConfigManager.Config.GetCurrentColors(ref Primary, ref Secondary, ref Tertiary);
+
+            foreach (InteractionCursor cursor in interactionCursors)
+            {
+                cursor.cursor.SetColors(Primary, Secondary, Tertiary);
+            }
+        }
+
+        void ConfigUpdated()
+        {
+            SetCursorVisibility(ConfigManager.Config.cursorEnabled);
+        }
     }
 }

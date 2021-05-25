@@ -97,9 +97,6 @@ namespace Ultraleap.TouchFree
             EnableCursorToggle.onValueChanged.AddListener(SetCustomColorControlVisibility);
             CustomColorPresetToggle.onValueChanged.AddListener(SetCustomColorControlVisibility);
 
-            LightColorPresetToggle.onValueChanged.AddListener(SetColorsToCorrectPreset);
-            DarkColorPresetToggle.onValueChanged.AddListener(SetColorsToCorrectPreset);
-            CustomColorPresetToggle.onValueChanged.AddListener(SetColorsToCorrectPreset);
             LightColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
             DarkColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
             CustomColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
@@ -145,27 +142,12 @@ namespace Ultraleap.TouchFree
         }
 
         #region Color Picker/Toggles methods
-        private void SetColorsToCorrectPreset(bool _)
+        private void SetColorsToCorrectPreset()
         {
-            if (LightColorPresetToggle.isOn)
-            {
-                PrimaryColor = Color.white;
-                SecondaryColor = Color.white;
-                TertiaryColor = Color.black;
-            }
-            else if (DarkColorPresetToggle.isOn)
-            {
-                PrimaryColor = Color.black;
-                SecondaryColor = Color.black;
-                TertiaryColor = Color.white;
-            }
-            else
-            {
-                PrimaryColor = CustomPrimaryColor;
-                SecondaryColor = CustomSecondaryColor;
-                TertiaryColor = CustomTertiaryColor;
-            }
-
+            ConfigManager.Config.GetCurrentColors(
+                ref PrimaryColor,
+                ref SecondaryColor,
+                ref TertiaryColor);
             UpdateCursorColors();
         }
 
@@ -208,7 +190,7 @@ namespace Ultraleap.TouchFree
 
             if (CustomColorPresetToggle.isOn)
             {
-                SetColorsToCorrectPreset(true);
+                SetColorsToCorrectPreset();
                 UpdateCursorColors();
             }
 
@@ -257,7 +239,7 @@ namespace Ultraleap.TouchFree
             CustomSecondaryColor = ConfigManager.Config.secondaryCustomColor;
             CustomTertiaryColor = ConfigManager.Config.tertiaryCustomColor;
             SetPresetTogglesBasedOnColors(ConfigManager.Config.activeCursorPreset);
-            SetColorsToCorrectPreset(false);
+            SetColorsToCorrectPreset();
             UpdateCursorColors();
 
             // CTI settings
@@ -298,7 +280,6 @@ namespace Ultraleap.TouchFree
                 ConfigDataUtilities.TryParseNewStringToFloat(
                     ConfigManager.Config.ctiShowAfterTimer,
                     CTIShowDelayField.text);
-
 
             // Toggles
             if (LightColorPresetToggle.isOn)
@@ -352,6 +333,7 @@ namespace Ultraleap.TouchFree
         protected void OnValueChanged()
         {
             SaveValuesToConfig();
+            SetColorsToCorrectPreset();
         }
         #endregion
     }

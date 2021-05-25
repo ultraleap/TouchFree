@@ -67,6 +67,27 @@ namespace Ultraleap.TouchFree
             OnConfigUpdated?.Invoke();
         }
 
+        public void GetCurrentColors(ref Color Primary, ref Color Secondary, ref Color Tertiary) {
+            switch (activeCursorPreset)
+            {
+                case CursorColorPreset.LIGHT:
+                    Primary = Color.white;
+                    Secondary = Color.white;
+                    Tertiary = Color.black;
+                    break;
+                case CursorColorPreset.DARK:
+                    Primary = Color.black;
+                    Secondary = Color.black;
+                    Tertiary = Color.white;
+                    break;
+                case CursorColorPreset.CUSTOM:
+                    Primary = primaryCustomColor;
+                    Secondary = secondaryCustomColor;
+                    Tertiary = tertiaryCustomColor;
+                    break;
+            }
+        }
+
         public void SetAllValuesToDefault()
         {
             var defaults = new ConfigurationState();

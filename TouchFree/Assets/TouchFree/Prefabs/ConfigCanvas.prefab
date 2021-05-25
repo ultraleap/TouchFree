@@ -10766,7 +10766,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e64b8450ee166424ab6c783165a2ff97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  isActive: 0
   stateRoots:
   - {fileID: 8921484305752416494}
   - {fileID: 755417833956217949}
@@ -12017,7 +12017,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   userInterfaceSettingsScreen: {fileID: 755417833956217949}
-  versionText: {fileID: 0}
+  versionText: {fileID: 8820651664467757005}
 --- !u!1001 &4497781884781164264
 PrefabInstance:
   m_ObjectHideFlags: 0

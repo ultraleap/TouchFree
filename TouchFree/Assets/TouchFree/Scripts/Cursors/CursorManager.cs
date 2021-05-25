@@ -12,9 +12,9 @@ public class CursorManager : MonoBehaviour
     public static event Action<CursorType> CursorChanged;
 
     public InteractionCursor[] interactionCursors;
-    public GameObject defaultCursor;
+    public TouchlessCursor defaultCursor;
 
-    [HideInInspector] public GameObject currentCursor;
+    [HideInInspector] public TouchlessCursor currentCursor;
     InteractionType currentInteractionType = InteractionType.GRAB;
     bool setOnce = false;
 
@@ -56,18 +56,18 @@ public class CursorManager : MonoBehaviour
     {
         bool cursorSet = false;
 
-        GameObject enabledCursor = null;
+        TouchlessCursor enabledCursor = null;
 
         foreach(var interactionCursor in interactionCursors)
         {
             if (interactionCursor.interaction != _interaction &&
                 enabledCursor != interactionCursor.cursor)
             {
-                interactionCursor.cursor.SetActive(false);
+                interactionCursor.cursor.gameObject.SetActive(false);
             }
             else
             {
-                interactionCursor.cursor.SetActive(true);
+                interactionCursor.cursor.gameObject.SetActive(true);
                 enabledCursor = interactionCursor.cursor;
                 currentCursor = enabledCursor;
                 currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
@@ -79,7 +79,7 @@ public class CursorManager : MonoBehaviour
 
         if(!cursorSet)
         {
-            defaultCursor.SetActive(true);
+            defaultCursor.gameObject.SetActive(true);
             currentCursor = defaultCursor;
             currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
         }
@@ -89,7 +89,7 @@ public class CursorManager : MonoBehaviour
     {
         if (currentCursor != null)
         {
-            currentCursor.SetActive(_setTo);
+            currentCursor.gameObject.SetActive(_setTo);
         }
     }
 
@@ -98,7 +98,7 @@ public class CursorManager : MonoBehaviour
     {
         public InteractionType interaction;
         public CursorType cursorType;
-        public GameObject cursor;
+        public TouchlessCursor cursor;
     }
 
     public enum CursorType

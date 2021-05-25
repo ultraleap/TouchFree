@@ -14,16 +14,7 @@ namespace Ultraleap.TouchFree
 
         private void Start()
         {
-            touchfreeWatcher = new FileSystemWatcher();
-            touchfreeWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            touchfreeWatcher.NotifyFilter = NotifyFilters.LastWrite;
-            touchfreeWatcher.NotifyFilter = NotifyFilters.LastAccess;
-            touchfreeWatcher.Filter = TouchFreeConfigFile.ConfigFileName;
-            touchfreeWatcher.Changed += new FileSystemEventHandler(FileUpdated);
-            touchfreeWatcher.IncludeSubdirectories = true;
-            touchfreeWatcher.EnableRaisingEvents = true;
-
-            // We watch for changes in the Service's physical config too, in case the files
+            // We watch for changes in the Service's physical config, in case the files
             // are relocated via the Service
             serviceWatcher = new FileSystemWatcher();
             serviceWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
@@ -39,12 +30,15 @@ namespace Ultraleap.TouchFree
         {
             if (fileChanged)
             {
+                var previousPath = ConfigFileUtils.ConfigFileDirectory;
                 ConfigFileUtils.CheckForConfigDirectoryChange();
-                touchfreeWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                serviceWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                 fileChanged = false;
 
-                ConfigManager.Config = TouchFreeConfigFile.LoadConfig();
+                if (previousPath != ConfigFileUtils.ConfigFileDirectory)
+                {
+                    serviceWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                    ConfigManager.Config = TouchFreeConfigFile.LoadConfig();
+                }
             }
         }
 
