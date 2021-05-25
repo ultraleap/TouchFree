@@ -70,21 +70,21 @@ namespace Ultraleap.TouchFree
             switch (_activePreset)
             {
                 case CursorColorPreset.LIGHT:
-                    LightColorPresetToggle.isOn = true;
-                    DarkColorPresetToggle.isOn = false;
-                    CustomColorPresetToggle.isOn = false;
+                    LightColorPresetToggle.SetIsOnWithoutNotify(true);
+                    DarkColorPresetToggle.SetIsOnWithoutNotify(false);
+                    CustomColorPresetToggle.SetIsOnWithoutNotify(false);
                     CustomColorControlContainer.SetActive(false);
                     break;
                 case CursorColorPreset.DARK:
-                    LightColorPresetToggle.isOn = false;
-                    DarkColorPresetToggle.isOn = true;
-                    CustomColorPresetToggle.isOn = false;
+                    LightColorPresetToggle.SetIsOnWithoutNotify(false);
+                    DarkColorPresetToggle.SetIsOnWithoutNotify(true);
+                    CustomColorPresetToggle.SetIsOnWithoutNotify(false);
                     CustomColorControlContainer.SetActive(false);
                     break;
                 case CursorColorPreset.CUSTOM:
-                    LightColorPresetToggle.isOn = false;
-                    DarkColorPresetToggle.isOn = false;
-                    CustomColorPresetToggle.isOn = true;
+                    LightColorPresetToggle.SetIsOnWithoutNotify(false);
+                    DarkColorPresetToggle.SetIsOnWithoutNotify(false);
+                    CustomColorPresetToggle.SetIsOnWithoutNotify(true);
                     CustomColorControlContainer.SetActive(true);
                     break;
             }
@@ -135,7 +135,7 @@ namespace Ultraleap.TouchFree
             if (paths.Length > 0)
             {
                 CTIFilePath = paths[0];
-                CurrentCTIFilepath.text = CTIFilePath;
+                CurrentCTIFilepath.SetTextWithoutNotify(CTIFilePath);
             }
 
             SaveValuesToConfig();
@@ -254,8 +254,8 @@ namespace Ultraleap.TouchFree
         private void LoadConfigValuesIntoFields()
         {
             // Cursor settings
-            EnableCursorToggle.isOn = ConfigManager.Config.cursorEnabled;
-            CursorSizeInputSlider.Value = ConfigManager.Config.cursorSizeCm;
+            EnableCursorToggle.SetIsOnWithoutNotify(ConfigManager.Config.cursorEnabled);
+            CursorSizeInputSlider.SetValueWithoutNotify(ConfigManager.Config.cursorSizeCm);
             CustomPrimaryColor = ConfigManager.Config.primaryCustomColor;
             CustomSecondaryColor = ConfigManager.Config.secondaryCustomColor;
             CustomTertiaryColor = ConfigManager.Config.tertiaryCustomColor;
@@ -264,19 +264,19 @@ namespace Ultraleap.TouchFree
             UpdateCursorColors();
 
             // CTI settings
-            EnableCTIToggle.isOn = ConfigManager.Config.ctiEnabled;
+            EnableCTIToggle.SetIsOnWithoutNotify(ConfigManager.Config.ctiEnabled);
             CTIFilePath = ConfigManager.Config.ctiFilePath;
-            CTIShowDelayField.text = ConfigManager.Config.ctiShowAfterTimer.ToString();
+            CTIShowDelayField.SetTextWithoutNotify(ConfigManager.Config.ctiShowAfterTimer.ToString());
 
             switch (ConfigManager.Config.ctiHideTrigger)
             {
                 case CtiHideTrigger.PRESENCE:
-                    CTIHideOnInteractionToggle.isOn = false;
-                    CTIHideOnPresenceToggle.isOn = true;
+                    CTIHideOnInteractionToggle.SetIsOnWithoutNotify(false);
+                    CTIHideOnPresenceToggle.SetIsOnWithoutNotify(true);
                     break;
                 case CtiHideTrigger.INTERACTION:
-                    CTIHideOnInteractionToggle.isOn = true;
-                    CTIHideOnPresenceToggle.isOn = false;
+                    CTIHideOnInteractionToggle.SetIsOnWithoutNotify(true);
+                    CTIHideOnPresenceToggle.SetIsOnWithoutNotify(false);
                     break;
                 default:
                     break;

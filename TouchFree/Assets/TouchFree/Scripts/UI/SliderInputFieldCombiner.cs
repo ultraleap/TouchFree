@@ -51,6 +51,12 @@ namespace Ultraleap.TouchFree
             onValueChanged?.Invoke(val);
         }
 
+        public void SetValueWithoutNotify(float val)
+        {
+            Slider.SetValueWithoutNotify(val);
+            OnSliderValueChanged(val);
+        }
+
         public class OnChangeEvent : UnityEvent<float> { }
     }
 }
