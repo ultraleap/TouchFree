@@ -21,6 +21,7 @@ public class CursorManager : MonoBehaviour
     private void Start()
     {
         currentCursor = defaultCursor;
+        SetCursorVisibility(Ultraleap.TouchFree.ConfigManager.Config.cursorEnabled);
 
         if (Instance == null)
         {
@@ -83,6 +84,8 @@ public class CursorManager : MonoBehaviour
             currentCursor = defaultCursor;
             currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
         }
+
+        SetCursorVisibility(Ultraleap.TouchFree.ConfigManager.Config.cursorEnabled);
     }
 
     public void SetCursorVisibility(bool _setTo)
