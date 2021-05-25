@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 
-[DefaultExecutionOrder(-1)]
-public class TouchFreeMain : MonoBehaviour
+namespace Ultraleap.TouchFree
 {
-    public static int CursorWindowSize = 256;
-
-    void Awake()
+    [DefaultExecutionOrder(-1)]
+    public class TouchFreeMain : MonoBehaviour
     {
-        Application.targetFrameRate = 60;
+        public static int CursorWindowSize = 256;
+
+        void Awake()
+        {
+            Application.targetFrameRate = 60;
+        }
     }
 }

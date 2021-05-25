@@ -141,11 +141,6 @@ namespace Ultraleap.TouchFree
             SaveValuesToConfig();
         }
 
-        private void ValidateValues()
-        {
-            // CursorSizeInputSlider is validated by the SliderInputCombiner
-        }
-
         #region Color Picker/Toggles methods
         private void SetColorsToCorrectPreset(bool _)
         {

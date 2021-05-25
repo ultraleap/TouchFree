@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 namespace Ultraleap.TouchFree
 {
-    // [DefaultExecutionOrder(-1)]
     public class SliderInputFieldCombiner : MonoBehaviour
     {
         public Slider Slider;

@@ -25,7 +25,6 @@ namespace Ultraleap.TouchFree
             {
                 if (_config == null)
                 {
-                    // ToDo: replace this with loading from file
                     _config = TouchFreeConfigFile.LoadConfig();
                 }
 

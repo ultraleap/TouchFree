@@ -5,11 +5,10 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree
 {
     public class HomeScreen : MonoBehaviour
     {
-        [Space]
         public GameObject userInterfaceSettingsScreen;
 
         public Text versionText;
@@ -34,9 +33,9 @@ namespace Ultraleap.ScreenControl.Core
                 var fileLines = File.ReadAllLines(versionPath);
                 foreach (var line in fileLines)
                 {
-                    if (line.Contains("ScreenControl Service Version"))
+                    if (line.Contains("TouchFree Version"))
                     {
-                        version = line.Replace("ScreenControl Service Version: ", "");
+                        version = line.Replace("TouchFree Version: ", "");
                         break;
                     }
                 }
