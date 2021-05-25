@@ -100,6 +100,9 @@ namespace Ultraleap.TouchFree
             LightColorPresetToggle.onValueChanged.AddListener(SetColorsToCorrectPreset);
             DarkColorPresetToggle.onValueChanged.AddListener(SetColorsToCorrectPreset);
             CustomColorPresetToggle.onValueChanged.AddListener(SetColorsToCorrectPreset);
+            LightColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
+            DarkColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
+            CustomColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
 
             PrimaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
             SecondaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
@@ -164,7 +167,6 @@ namespace Ultraleap.TouchFree
             }
 
             UpdateCursorColors();
-            OnValueChanged();
         }
 
         private void UpdateCursorColors()
@@ -349,7 +351,6 @@ namespace Ultraleap.TouchFree
 
         protected void OnValueChanged()
         {
-            ValidateValues();
             SaveValuesToConfig();
         }
         #endregion
