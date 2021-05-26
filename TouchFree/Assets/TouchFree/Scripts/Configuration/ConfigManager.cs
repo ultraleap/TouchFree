@@ -59,6 +59,7 @@ namespace Ultraleap.TouchFree
         public bool interactionZoneEnabled = false;
         public float interactionMinDistanceCm = 0.0f;
         public float interactionMaxDistanceCm = 25.0f;
+        public bool StartupUIShown = false;
 
         public event Action OnConfigUpdated;
 

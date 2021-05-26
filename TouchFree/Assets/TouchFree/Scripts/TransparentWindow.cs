@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Ultraleap.TouchFree
 {
+    [DefaultExecutionOrder(-10)]
     public class TransparentWindow : MonoBehaviour
     {
         private struct MARGINS
@@ -63,7 +64,7 @@ namespace Ultraleap.TouchFree
 		hwnd = GetActiveWindow();
 #endif
             clickThroughEnabled = false;
-            SetConfigWindow(true);
+            EnableClickThrough();
         }
 
         public void DisableClickThrough()

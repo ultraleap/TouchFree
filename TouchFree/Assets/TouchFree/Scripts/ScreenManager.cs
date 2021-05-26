@@ -23,6 +23,17 @@ namespace Ultraleap.TouchFree
         {
             Instance = this;
             Application.focusChanged += Application_focusChanged;
+
+            if(!ConfigManager.Config.StartupUIShown)
+            {
+                SetUIActive(true);
+                ConfigManager.Config.StartupUIShown = true;
+                ConfigManager.Config.SaveConfig();
+            }
+            else
+            {
+                SetUIActive(false);
+            }
         }
 
         private void OnDestroy()
