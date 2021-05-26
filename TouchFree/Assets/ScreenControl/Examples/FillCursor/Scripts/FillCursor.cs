@@ -24,11 +24,6 @@ public class FillCursor : TouchlessCursor
 
     public Image fillRingImage;
 
-    // Variable: cursorDotSize
-    // The size of the dot when it isn't being shrunk
-    [SerializeField]
-    protected float cursorDotSize = 0.25f;
-
     // Variable: pulseShrinkCurve
     // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
     // shrinking and expanding). This AnimationCurve governs the shrinking that follows a

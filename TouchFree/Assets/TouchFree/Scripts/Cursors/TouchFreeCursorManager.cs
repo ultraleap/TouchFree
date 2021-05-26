@@ -5,6 +5,10 @@ namespace Ultraleap.TouchFree
 {
     public class TouchFreeCursorManager : CursorManager
     {
+        protected Color Primary;
+        protected Color Secondary;
+        protected Color Tertiary;
+
         protected override void OnEnable()
         {
             ConfigManager.Config.OnConfigUpdated += ConfigUpdated;
@@ -20,21 +24,25 @@ namespace Ultraleap.TouchFree
 
         void Start()
         {
-            Color Primary = defaultCursor.primaryColor;
-            Color Secondary = defaultCursor.secondaryColor;
-            Color Tertiary = defaultCursor.tertiaryColor;
-
-            ConfigManager.Config.GetCurrentColors(ref Primary, ref Secondary, ref Tertiary);
-
-            foreach (InteractionCursor cursor in interactionCursors)
-            {
-                cursor.cursor.SetColors(Primary, Secondary, Tertiary);
-            }
+            Primary = defaultCursor.primaryColor;
+            Secondary = defaultCursor.secondaryColor;
+            Tertiary = defaultCursor.tertiaryColor;
         }
 
         void ConfigUpdated()
         {
+            // Set cursorSize based on the slider
+
             SetCursorVisibility(ConfigManager.Config.cursorEnabled);
+
+            var cursorSize = ConfigManager.Config.cursorSizeCm;
+            ConfigManager.Config.GetCurrentColors(ref Primary, ref Secondary, ref Tertiary);
+
+            foreach (InteractionCursor cursor in interactionCursors)
+            {
+                cursor.cursor.cursorDotSize = cursorSize;
+                cursor.cursor.SetColors(Primary, Secondary, Tertiary);
+            }
         }
     }
 }

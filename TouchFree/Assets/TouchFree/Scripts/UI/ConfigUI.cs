@@ -148,16 +148,11 @@ namespace Ultraleap.TouchFree
                 ref PrimaryColor,
                 ref SecondaryColor,
                 ref TertiaryColor);
-            UpdateCursorColors();
+            UpdatePreviewCursorColors();
         }
 
-        private void UpdateCursorColors()
+        private void UpdatePreviewCursorColors()
         {
-            foreach (TouchlessCursor cursor in cursors)
-            {
-                cursor.SetColors(PrimaryColor, SecondaryColor, TertiaryColor);
-            }
-
             RingCursorPreviewCenter.color = PrimaryColor;
             FillCursorPreviewCenter.color = PrimaryColor;
             RingCursorPreviewRing.color = SecondaryColor;
@@ -191,7 +186,7 @@ namespace Ultraleap.TouchFree
             if (CustomColorPresetToggle.isOn)
             {
                 SetColorsToCorrectPreset();
-                UpdateCursorColors();
+                UpdatePreviewCursorColors();
             }
 
             SaveValuesToConfig();
@@ -236,11 +231,12 @@ namespace Ultraleap.TouchFree
             EnableCursorToggle.SetIsOnWithoutNotify(ConfigManager.Config.cursorEnabled);
             CursorSizeInputSlider.SetValueWithoutNotify(ConfigManager.Config.cursorSizeCm);
             CustomPrimaryColor = ConfigManager.Config.primaryCustomColor;
+            ColorPicker.CurrentColor = ConfigManager.Config.primaryCustomColor;
             CustomSecondaryColor = ConfigManager.Config.secondaryCustomColor;
             CustomTertiaryColor = ConfigManager.Config.tertiaryCustomColor;
             SetPresetTogglesBasedOnColors(ConfigManager.Config.activeCursorPreset);
             SetColorsToCorrectPreset();
-            UpdateCursorColors();
+            UpdatePreviewCursorColors();
 
             // CTI settings
             EnableCTIToggle.SetIsOnWithoutNotify(ConfigManager.Config.ctiEnabled);

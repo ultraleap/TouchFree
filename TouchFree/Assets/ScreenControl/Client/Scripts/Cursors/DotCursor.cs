@@ -18,11 +18,6 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // The number of frames over which the cursor should fade when appearing/disappearing
         [Range(0f, 60f)] public float fadeDuration = 30;
 
-        // Variable: cursorDotSize
-        // The size of the dot when it isn't being shrunk
-        [SerializeField]
-        protected float cursorDotSize = 0.25f;
-
         // Variable: cursorBorder
         // The image of the border around the dot, this is the parent image in the prefab and is
         //  used to do all of the scaling of the images that make up this cursor.

@@ -18,23 +18,28 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         public RectTransform cursorTransform;
         protected Vector2 targetPos;
 
+        // Variable: cursorDotSize
+        // The size of the dot when it isn't being shrunk
+        [SerializeField]
+        public float cursorDotSize = 0.25f;
+
         public Color primaryColor
-        { 
+        {
             get { return _primaryColor; }
         }
-        [SerializeField] protected Color _primaryColor = new Color(1,1,1,1);
+        [SerializeField] protected Color _primaryColor = new Color(1, 1, 1, 1);
 
         public Color secondaryColor
-        { 
-            get { return _secondaryColor; } 
+        {
+            get { return _secondaryColor; }
         }
-        [SerializeField] protected Color _secondaryColor = new Color(1,1,1,1);
+        [SerializeField] protected Color _secondaryColor = new Color(1, 1, 1, 1);
 
         public Color tertiaryColor
-        { 
-            get { return _tertiaryColor; } 
+        {
+            get { return _tertiaryColor; }
         }
-        [SerializeField] protected Color _tertiaryColor = new Color(0,0,0,1);
+        [SerializeField] protected Color _tertiaryColor = new Color(0, 0, 0, 1);
 
         // Group: MonoBehaviour Overrides
 
