@@ -21,7 +21,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Variable: cursorDotSize
         // The size of the dot when it isn't being shrunk
         [SerializeField]
-        public float cursorDotSize = 0.25f;
+        public float cursorSize = 0.25f;
 
         public Color primaryColor
         {

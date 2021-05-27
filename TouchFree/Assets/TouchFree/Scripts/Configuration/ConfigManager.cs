@@ -51,7 +51,7 @@ namespace Ultraleap.TouchFree
 
         // CTI Settings
         public bool ctiEnabled = true;
-        public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallTointeract/1 Push in mid-air to start.mp4");
+        public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallTointeract", "1 Push in mid-air to start.mp4");
         public CtiHideTrigger ctiHideTrigger = CtiHideTrigger.INTERACTION;
         public float ctiShowAfterTimer = 10.0f;
 

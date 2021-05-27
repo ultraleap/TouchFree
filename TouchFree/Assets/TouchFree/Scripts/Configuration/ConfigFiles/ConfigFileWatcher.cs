@@ -7,7 +7,6 @@ namespace Ultraleap.TouchFree
 {
     public class ConfigFileWatcher : MonoBehaviour
     {
-        private FileSystemWatcher touchfreeWatcher;
         private FileSystemWatcher serviceWatcher;
 
         bool fileChanged = false;
@@ -44,7 +43,6 @@ namespace Ultraleap.TouchFree
 
         private void FileUpdated(object source, FileSystemEventArgs e)
         {
-            Debug.Log("observed a file change in: " + e.Name);
             // save that it changed, this is on a thread so needs the reaction to be thread safe
             fileChanged = true;
         }
