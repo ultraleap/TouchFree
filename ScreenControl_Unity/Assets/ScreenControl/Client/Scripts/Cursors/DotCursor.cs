@@ -221,17 +221,13 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
             SetColors(primaryColor, secondaryColor, tertiaryColor);
 
-            if (ringEnabled)
-            {
-                ringOuterSprite.color = secondaryColor;
-                maxRingScale = (1f / cursorSize) * cursorMaxRingSize;
+            maxRingScale = (1f / cursorSize) * cursorMaxRingSize;
 
-                // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
-                ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
-                ringMask.GetComponent<SpriteMask>().isCustomRangeActive = true;
-                ringMask.GetComponent<SpriteMask>().frontSortingOrder = ringSpriteSortingOrder + 1;
-                ringMask.GetComponent<SpriteMask>().backSortingOrder = ringSpriteSortingOrder - 1;
-            }
+            // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
+            ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
+            ringMask.GetComponent<SpriteMask>().isCustomRangeActive = true;
+            ringMask.GetComponent<SpriteMask>().frontSortingOrder = ringSpriteSortingOrder + 1;
+            ringMask.GetComponent<SpriteMask>().backSortingOrder = ringSpriteSortingOrder - 1;
         }
 
         // Function: ShowCursor
