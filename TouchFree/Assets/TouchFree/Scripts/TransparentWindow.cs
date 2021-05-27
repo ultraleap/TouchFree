@@ -117,12 +117,12 @@ namespace Ultraleap.TouchFree
             SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
             SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);// Transparency=51=20%
             SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y),
-                TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+                TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
             var margins = new MARGINS() { cxLeftWidth = -1 };
             SetWindowLong(hwnd, -20, WS_EX_LAYERED | WS_EX_TRANSPARENT);
             SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y),
-                TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+                TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
             DwmExtendFrameIntoClientArea(hwnd, ref margins);
         }
@@ -136,7 +136,7 @@ namespace Ultraleap.TouchFree
 
             SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
             SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
-            SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
             var margins = new MARGINS();
 
@@ -146,7 +146,7 @@ namespace Ultraleap.TouchFree
             style &= ~WS_EX_LAYERED;
 
             SetWindowLong(hwnd, -20, style);
-            SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
             DwmExtendFrameIntoClientArea(hwnd, ref margins);
         }

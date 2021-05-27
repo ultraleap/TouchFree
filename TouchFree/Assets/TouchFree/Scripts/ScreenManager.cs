@@ -43,7 +43,7 @@ namespace Ultraleap.TouchFree
 
         private void Application_focusChanged(bool _focussed)
         {
-            if (_focussed)
+            if (_focussed && !CallToInteractController.isShowing)
             {
                 SetUIActive(true);
             }
@@ -116,20 +116,20 @@ namespace Ultraleap.TouchFree
             previousScreens.RemoveAt(previousScreens.Count - 1);
         }
 
-        private void SetUIActive(bool _setTo = true)
+        private void SetUIActive(bool _setToActive = true)
         {
-            isActive = _setTo;
-
-            if (isActive)
+            if (_setToActive && !isActive)
             {
                 ReturnToHome();
                 UIActivated?.Invoke();
             }
-            else
+            else if(!_setToActive)
             {
                 CloseAllScreens();
                 UIDeactivated?.Invoke();
             }
+
+            isActive = _setToActive;
         }
 
         public void CloseApplication()
