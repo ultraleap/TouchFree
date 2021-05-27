@@ -18,6 +18,7 @@ namespace Ultraleap.TouchFree
         public Toggle LightColorPresetToggle;
         public Toggle DarkColorPresetToggle;
         public Toggle CustomColorPresetToggle;
+        public GameObject[] CursorSettingsToHide;
 
         [Header("CustomColorPicker")]
         public GameObject CustomColorControlContainer;
@@ -32,6 +33,7 @@ namespace Ultraleap.TouchFree
         public Toggle CTIHideOnInteractionToggle;
         public Toggle CTIHideOnPresenceToggle;
         public InputField CTIShowDelayField;
+        public GameObject[] CTISettingsToHide;
 
         [Header("CursorPreview")]
         public GameObject RingCursorContainer;
@@ -42,9 +44,6 @@ namespace Ultraleap.TouchFree
         public Image FillCursorPreviewCenter;
         public Image FillCursorPreviewRing;
         public Image FillCursorPreviewBorder;
-
-        [Header("Cursors")]
-        public TouchlessCursor[] cursors;
 
         // [Header("InteractionZone")]
         // public Toggle InteractionZoneToggle;
@@ -63,6 +62,11 @@ namespace Ultraleap.TouchFree
         {
             LoadConfigValuesIntoFields();
             AddValueChangedListeners();
+        }
+
+        protected virtual void OnDisable()
+        {
+            RemoveValueChangedListeners();
         }
 
         private void SetPresetTogglesBasedOnColors(CursorColorPreset _activePreset)
@@ -92,9 +96,12 @@ namespace Ultraleap.TouchFree
 
         private void AddValueChangedListeners()
         {
+            // Cursor Events
             ColorPicker.onValueChanged.AddListener(UpdateAppropriateColor);
 
+            EnableCursorToggle.onValueChanged.AddListener(OnValueChanged);
             EnableCursorToggle.onValueChanged.AddListener(SetCustomColorControlVisibility);
+            EnableCursorToggle.onValueChanged.AddListener(ShowHideCursorControls);
             CustomColorPresetToggle.onValueChanged.AddListener(SetCustomColorControlVisibility);
 
             LightColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
@@ -105,15 +112,46 @@ namespace Ultraleap.TouchFree
             SecondaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
             TertiaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
 
-            EnableCursorToggle.onValueChanged.AddListener(OnValueChanged);
             CursorSizeInputSlider.onValueChanged.AddListener(OnValueChanged);
 
+            // CTI Events
             EnableCTIToggle.onValueChanged.AddListener(OnValueChanged);
+            EnableCTIToggle.onValueChanged.AddListener(ShowHideCtiControls);
             CTIHideOnInteractionToggle.onValueChanged.AddListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.AddListener(OnValueChanged);
             CTIShowDelayField.onValueChanged.AddListener(OnValueChanged);
 
             TouchFreeCursorManager.CursorChanged += SetCurrentlyActiveCursor;
+        }
+
+        private void RemoveValueChangedListeners()
+        {
+            // Cursor Events
+            ColorPicker.onValueChanged.RemoveListener(UpdateAppropriateColor);
+
+            EnableCursorToggle.onValueChanged.RemoveListener(OnValueChanged);
+            EnableCursorToggle.onValueChanged.RemoveListener(SetCustomColorControlVisibility);
+            EnableCursorToggle.onValueChanged.RemoveListener(ShowHideCursorControls);
+            CustomColorPresetToggle.onValueChanged.RemoveListener(SetCustomColorControlVisibility);
+
+            LightColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
+            DarkColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
+            CustomColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
+
+            PrimaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
+            SecondaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
+            TertiaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
+
+            CursorSizeInputSlider.onValueChanged.RemoveListener(OnValueChanged);
+
+            // CTI Events
+            EnableCTIToggle.onValueChanged.RemoveListener(OnValueChanged);
+            EnableCTIToggle.onValueChanged.RemoveListener(ShowHideCtiControls);
+            CTIHideOnInteractionToggle.onValueChanged.RemoveListener(OnValueChanged);
+            CTIHideOnPresenceToggle.onValueChanged.RemoveListener(OnValueChanged);
+            CTIShowDelayField.onValueChanged.RemoveListener(OnValueChanged);
+
+            TouchFreeCursorManager.CursorChanged -= SetCurrentlyActiveCursor;
         }
 
         public void SetFileLocation()
@@ -140,6 +178,24 @@ namespace Ultraleap.TouchFree
 
             SaveValuesToConfig();
         }
+
+        #region ShowHideRegionsBasedOnToggles
+        protected void ShowHideCtiControls(bool _state)
+        {
+            foreach (GameObject control in CTISettingsToHide)
+            {
+                control.SetActive(_state);
+            }
+        }
+
+        protected void ShowHideCursorControls(bool _state)
+        {
+            foreach (GameObject control in CursorSettingsToHide)
+            {
+                control.SetActive(_state);
+            }
+        }
+        #endregion
 
         #region Color Picker/Toggles methods
         private void SetColorsToCorrectPreset()
@@ -237,6 +293,7 @@ namespace Ultraleap.TouchFree
             SetPresetTogglesBasedOnColors(ConfigManager.Config.activeCursorPreset);
             SetColorsToCorrectPreset();
             UpdatePreviewCursorColors();
+            SetCustomColorControlVisibility(false);
 
             // CTI settings
             EnableCTIToggle.SetIsOnWithoutNotify(ConfigManager.Config.ctiEnabled);
