@@ -72,10 +72,10 @@ public class FillCursor : TouchlessCursor
 
         SetColors(primaryColor, secondaryColor, tertiaryColor);
 
-        bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
-        cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
-        cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
-        SetCursorLocalScale(cursorDotSize);
+        bool dotSizeIsZero = Mathf.Approximately(cursorSize, 0f);
+        cursorSize = dotSizeIsZero ? 1f : cursorSize;
+        cursorBorder.transform.localScale = new Vector3(cursorSize, cursorSize, cursorSize);
+        SetCursorLocalScale(cursorSize);
     }
 
     protected override void HandleInputAction(ClientInputAction _inputData)
@@ -175,7 +175,7 @@ public class FillCursor : TouchlessCursor
     // This coroutine smoothly expands the cursor dots size.
     public virtual IEnumerator GrowCursorDot()
     {
-        SetCursorLocalScale(cursorDownScale * cursorDotSize);
+        SetCursorLocalScale(cursorDownScale * cursorSize);
 
         YieldInstruction yieldInstruction = new YieldInstruction();
         float elapsedTime = 0.0f;
@@ -185,11 +185,11 @@ public class FillCursor : TouchlessCursor
             yield return yieldInstruction;
             elapsedTime += Time.deltaTime;
 
-            float scale = Utilities.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+            float scale = Utilities.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorSize, cursorSize);
             SetCursorLocalScale(scale);
         }
 
-        SetCursorLocalScale(cursorDotSize);
+        SetCursorLocalScale(cursorSize);
         cursorScalingRoutine = null;
     }
 
@@ -205,11 +205,11 @@ public class FillCursor : TouchlessCursor
             yield return yieldInstruction;
             elapsedTime += Time.deltaTime;
 
-            float scale = Utilities.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+            float scale = Utilities.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorSize, cursorSize);
             SetCursorLocalScale(scale);
         }
 
-        SetCursorLocalScale(cursorDownScale * cursorDotSize);
+        SetCursorLocalScale(cursorDownScale * cursorSize);
         cursorScalingRoutine = null;
 
         if (growQueued)
@@ -255,7 +255,7 @@ public class FillCursor : TouchlessCursor
 
         if (_disableOnEnd)
         {
-            SetCursorLocalScale(cursorDotSize);
+            SetCursorLocalScale(cursorSize);
 
             cursorBorder.enabled = false;
             cursorFill.enabled = false;
@@ -279,6 +279,6 @@ public class FillCursor : TouchlessCursor
         cursorScalingRoutine = null;
         growQueued = false;
 
-        SetCursorLocalScale(cursorDotSize);
+        SetCursorLocalScale(cursorSize);
     }
 }

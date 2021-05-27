@@ -31,8 +31,7 @@ namespace Ultraleap.TouchFree
 
         void ConfigUpdated()
         {
-            // Set cursorSize based on the slider
-
+            // Update size, colors, & visibility based on current Config
             SetCursorVisibility(ConfigManager.Config.cursorEnabled);
 
             var cursorSize = ConfigManager.Config.cursorSizeCm;
@@ -40,7 +39,7 @@ namespace Ultraleap.TouchFree
 
             foreach (InteractionCursor cursor in interactionCursors)
             {
-                cursor.cursor.cursorDotSize = cursorSize;
+                cursor.cursor.cursorSize = cursorSize;
                 cursor.cursor.SetColors(Primary, Secondary, Tertiary);
             }
         }

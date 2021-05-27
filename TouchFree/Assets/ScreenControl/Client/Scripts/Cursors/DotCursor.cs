@@ -214,14 +214,14 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             ConnectionManager.HandFound += ShowCursor;
             ConnectionManager.HandsLost += HideCursor;
 
-            bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
-            cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;
-            cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
-            SetCursorLocalScale(cursorDotSize);
+            bool dotSizeIsZero = Mathf.Approximately(cursorSize, 0f);
+            cursorSize = dotSizeIsZero ? 1f : cursorSize;
+            cursorBorder.transform.localScale = new Vector3(cursorSize, cursorSize, cursorSize);
+            SetCursorLocalScale(cursorSize);
 
             SetColors(primaryColor, secondaryColor, tertiaryColor);
 
-            maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
+            maxRingScale = (1f / cursorSize) * cursorMaxRingSize;
 
             // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
             ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
@@ -277,7 +277,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // This coroutine smoothly expands the cursor dots size.
         public virtual IEnumerator GrowCursorDot()
         {
-            SetCursorLocalScale(cursorDownScale * cursorDotSize);
+            SetCursorLocalScale(cursorDownScale * cursorSize);
 
             YieldInstruction yieldInstruction = new YieldInstruction();
             float elapsedTime = 0.0f;
@@ -287,11 +287,11 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
 
-                float scale = Utilities.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                float scale = Utilities.MapRangeToRange(pulseGrowCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorSize, cursorSize);
                 SetCursorLocalScale(scale);
             }
 
-            SetCursorLocalScale(cursorDotSize);
+            SetCursorLocalScale(cursorSize);
             cursorScalingRoutine = null;
         }
 
@@ -308,11 +308,11 @@ namespace Ultraleap.ScreenControl.Client.Cursors
                 yield return yieldInstruction;
                 elapsedTime += Time.deltaTime;
 
-                float scale = Utilities.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorDotSize, cursorDotSize);
+                float scale = Utilities.MapRangeToRange(pulseShrinkCurve.Evaluate(elapsedTime / pulseSeconds), 0, 1, cursorDownScale * cursorSize, cursorSize);
                 SetCursorLocalScale(scale);
             }
 
-            SetCursorLocalScale(cursorDownScale * cursorDotSize);
+            SetCursorLocalScale(cursorDownScale * cursorSize);
             cursorScalingRoutine = null;
 
             if (growQueued)
@@ -350,7 +350,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
             if (_disableOnEnd)
             {
-                SetCursorLocalScale(cursorDotSize);
+                SetCursorLocalScale(cursorSize);
 
                 cursorBorder.enabled = false;
                 cursorFill.enabled = false;
@@ -374,7 +374,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorScalingRoutine = null;
             growQueued = false;
 
-            SetCursorLocalScale(cursorDotSize);
+            SetCursorLocalScale(cursorSize);
         }
     }
 }
