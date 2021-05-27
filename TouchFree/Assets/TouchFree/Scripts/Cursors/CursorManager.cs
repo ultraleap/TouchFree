@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.ScreenControl.Client;
 using Ultraleap.ScreenControl.Client.Cursors;
+using System;
 
 public class CursorManager : MonoBehaviour
 {
     public static CursorManager Instance;
 
-    public InteractionCursor[] interactionCursors;
-    public GameObject defaultCursor;
+    public static event Action<CursorType> CursorChanged;
 
-    [HideInInspector] public GameObject currentCursor;
-    InteractionType currentInteractionType = InteractionType.GRAB;
+    public InteractionCursor[] interactionCursors;
+    public TouchlessCursor defaultCursor;
+
+    [HideInInspector] public TouchlessCursor currentCursor;
+    InteractionType currentInteractionType;
     bool setOnce = false;
 
     private void Start()
     {
-        currentCursor = defaultCursor;
-
         if (Instance == null)
         {
             Instance = this;
@@ -29,12 +30,12 @@ public class CursorManager : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         InputActionManager.TransmitInputAction += HandleInputAction;
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         InputActionManager.TransmitInputAction -= HandleInputAction;
     }
@@ -53,30 +54,40 @@ public class CursorManager : MonoBehaviour
     {
         bool cursorSet = false;
 
-        GameObject enabledCursor = null;
+        TouchlessCursor enabledCursor = null;
 
         foreach(var interactionCursor in interactionCursors)
         {
             if (interactionCursor.interaction != _interaction &&
                 enabledCursor != interactionCursor.cursor)
             {
-                interactionCursor.cursor.SetActive(false);
+                interactionCursor.cursor.gameObject.SetActive(false);
             }
             else
             {
-                interactionCursor.cursor.SetActive(true);
+                interactionCursor.cursor.gameObject.SetActive(true);
                 enabledCursor = interactionCursor.cursor;
                 currentCursor = enabledCursor;
-                currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
                 cursorSet = true;
+
+                CursorChanged?.Invoke(interactionCursor.cursorType);
             }
         }
 
         if(!cursorSet)
         {
-            defaultCursor.SetActive(true);
+            defaultCursor.gameObject.SetActive(true);
             currentCursor = defaultCursor;
-            currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
+        }
+
+        SetCursorVisibility(Ultraleap.TouchFree.ConfigManager.Config.cursorEnabled);
+    }
+
+    public void SetCursorVisibility(bool _setTo)
+    {
+        if (currentCursor != null)
+        {
+            currentCursor.gameObject.SetActive(_setTo);
         }
     }
 
@@ -84,6 +95,13 @@ public class CursorManager : MonoBehaviour
     public struct InteractionCursor
     {
         public InteractionType interaction;
-        public GameObject cursor;
+        public CursorType cursorType;
+        public TouchlessCursor cursor;
+    }
+
+    public enum CursorType
+    {
+        FILL,
+        RING,
     }
 }
