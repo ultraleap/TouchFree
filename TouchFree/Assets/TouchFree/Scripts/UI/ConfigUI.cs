@@ -300,6 +300,9 @@ namespace Ultraleap.TouchFree
             CTIFilePath = ConfigManager.Config.ctiFilePath;
             CTIShowDelayField.SetTextWithoutNotify(ConfigManager.Config.ctiShowAfterTimer.ToString());
 
+            ShowHideCursorControls(ConfigManager.Config.cursorEnabled);
+            ShowHideCtiControls(ConfigManager.Config.ctiEnabled);
+
             switch (ConfigManager.Config.ctiHideTrigger)
             {
                 case CtiHideTrigger.PRESENCE:
