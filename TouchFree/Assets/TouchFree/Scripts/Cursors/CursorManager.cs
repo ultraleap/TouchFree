@@ -15,14 +15,11 @@ public class CursorManager : MonoBehaviour
     public TouchlessCursor defaultCursor;
 
     [HideInInspector] public TouchlessCursor currentCursor;
-    InteractionType currentInteractionType = InteractionType.GRAB;
+    InteractionType currentInteractionType;
     bool setOnce = false;
 
     private void Start()
     {
-        currentCursor = defaultCursor;
-        SetCursorVisibility(Ultraleap.TouchFree.ConfigManager.Config.cursorEnabled);
-
         if (Instance == null)
         {
             Instance = this;
@@ -71,7 +68,6 @@ public class CursorManager : MonoBehaviour
                 interactionCursor.cursor.gameObject.SetActive(true);
                 enabledCursor = interactionCursor.cursor;
                 currentCursor = enabledCursor;
-                currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
                 cursorSet = true;
 
                 CursorChanged?.Invoke(interactionCursor.cursorType);
@@ -82,7 +78,6 @@ public class CursorManager : MonoBehaviour
         {
             defaultCursor.gameObject.SetActive(true);
             currentCursor = defaultCursor;
-            currentCursor.GetComponent<TouchlessCursor>().ShowCursor();
         }
 
         SetCursorVisibility(Ultraleap.TouchFree.ConfigManager.Config.cursorEnabled);

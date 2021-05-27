@@ -70,9 +70,7 @@ public class FillCursor : TouchlessCursor
         ConnectionManager.HandFound += ShowCursor;
         ConnectionManager.HandsLost += HideCursor;
 
-        cursorFill.color = primaryColor;
-        fillRingImage.color = secondaryColor;
-        cursorBorder.color = tertiaryColor;
+        SetColors(primaryColor, secondaryColor, tertiaryColor);
 
         bool dotSizeIsZero = Mathf.Approximately(cursorDotSize, 0f);
         cursorDotSize = dotSizeIsZero ? 1f : cursorDotSize;

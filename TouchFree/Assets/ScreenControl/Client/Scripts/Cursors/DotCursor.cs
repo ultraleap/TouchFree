@@ -38,7 +38,6 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Variable: ringEnabled
         // Enables/disables the ring cursor around the dot. Here primarily for use in the inspector.
         [Header("Ring")]
-        public bool ringEnabled;
 
         // Variable: cursorMaxRingSize
         // The maximum size for the ring to be relative to the size of the dot.
@@ -105,19 +104,16 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         {
             targetPos = _screenPos;
 
-            if (ringEnabled)
+            if (hidingCursor)
             {
-                if (hidingCursor)
-                {
-                    ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
-                }
-                else
-                {
-                    //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
-                    _progressToClick = Mathf.Clamp01(1f - _progressToClick);
+                ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
+            }
+            else
+            {
+                //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
+                _progressToClick = Mathf.Clamp01(1f - _progressToClick);
 
-                    ScaleRing(_progressToClick);
-                }
+                ScaleRing(_progressToClick);
             }
         }
 
@@ -223,20 +219,15 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorBorder.transform.localScale = new Vector3(cursorDotSize, cursorDotSize, cursorDotSize);
             SetCursorLocalScale(cursorDotSize);
 
-            cursorFill.color = primaryColor;
-            cursorBorder.color = tertiaryColor;
+            SetColors(primaryColor, secondaryColor, tertiaryColor);
 
-            if (ringEnabled)
-            {
-                ringOuterSprite.color = secondaryColor;
-                maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
+            maxRingScale = (1f / cursorDotSize) * cursorMaxRingSize;
 
-                // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
-                ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
-                ringMask.GetComponent<SpriteMask>().isCustomRangeActive = true;
-                ringMask.GetComponent<SpriteMask>().frontSortingOrder = ringSpriteSortingOrder + 1;
-                ringMask.GetComponent<SpriteMask>().backSortingOrder = ringSpriteSortingOrder - 1;
-            }
+            // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
+            ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
+            ringMask.GetComponent<SpriteMask>().isCustomRangeActive = true;
+            ringMask.GetComponent<SpriteMask>().frontSortingOrder = ringSpriteSortingOrder + 1;
+            ringMask.GetComponent<SpriteMask>().backSortingOrder = ringSpriteSortingOrder - 1;
         }
 
         // Function: ShowCursor
@@ -257,11 +248,8 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             cursorBorder.enabled = true;
             cursorFill.enabled = true;
 
-            if (ringEnabled)
-            {
-                ringOuterSprite.enabled = true;
-                ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
-            }
+            ringOuterSprite.enabled = true;
+            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
         }
 
         // Function: HideCursor
@@ -280,10 +268,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
             ResetCursor();
             StartCoroutine(FadeCursor(1, 0, fadeDuration, true));
 
-            if (ringEnabled)
-            {
-                ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
-            }
+            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0);
         }
 
         // Group: Coroutine Functions
@@ -369,11 +354,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
 
                 cursorBorder.enabled = false;
                 cursorFill.enabled = false;
-
-                if (ringEnabled)
-                {
-                    ringOuterSprite.enabled = false;
-                }
+                ringOuterSprite.enabled = false;
             }
         }
 
