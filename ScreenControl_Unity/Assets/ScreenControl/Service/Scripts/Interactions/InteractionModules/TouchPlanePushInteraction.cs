@@ -47,7 +47,7 @@ namespace Ultraleap.ScreenControl.Core
             Vector2 currentCursorPosition = positions.CursorPosition;
             float distanceFromScreen = positions.DistanceFromScreen;
 
-            float progressToClick = 1f - Mathf.InverseLerp(touchPlaneDistance, touchPlaneDistance + touchPlaneZeroProgress, distanceFromScreen);
+            float progressToClick = Mathf.Clamp(1f - Mathf.InverseLerp(touchPlaneDistance, touchPlaneDistance + touchPlaneZeroProgress, distanceFromScreen), 0f, 1f);
 
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
             if (distanceFromScreen < touchPlaneDistance)
@@ -84,20 +84,6 @@ namespace Ultraleap.ScreenControl.Core
                     pressComplete = true;
                 }
             }
-            else if (distanceFromScreen < touchPlaneDistance + touchPlaneZeroProgress)
-            {
-                if (pressing && !pressComplete)
-                {
-                    Positions downPositions = new Positions(downPos, distanceFromScreen);
-                    SendInputAction(InputType.UP, downPositions, progressToClick);
-                }
-
-                pressComplete = false;
-                pressing = false;
-                isDragging = false;
-
-                SendInputAction(InputType.MOVE, positions, progressToClick);
-            }
             else
             {
                 if (pressing && !pressComplete)
@@ -107,12 +93,12 @@ namespace Ultraleap.ScreenControl.Core
                 }
                 else
                 {
-                    // NONE causes the client to react to data without using Input.
-                    SendInputAction(InputType.NONE, positions, progressToClick);
+                    SendInputAction(InputType.MOVE, positions, progressToClick);
                 }
 
                 pressComplete = false;
                 pressing = false;
+                isDragging = false;
             }
         }
 
