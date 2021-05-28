@@ -27,6 +27,8 @@ export class DotCursor extends TouchlessCursor {
     // e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
     ringSizeMultiplier: number;
 
+    distanceSnap: number;
+
     private cursorStartSize: Array<number>;
     private animationSpeed: Array<number> = [0, 0];
 
@@ -48,11 +50,13 @@ export class DotCursor extends TouchlessCursor {
     // If you intend to make use of the <WebInputController>, make sure that both _cursor and
     // _cursorRing have the "screencontrolcursor" class. This prevents them blocking other elements
     // from recieving events.
-    constructor(_cursor: HTMLElement, _cursorRing: HTMLElement, _animationDuration: number = 0.2, _ringSizeMultiplier: number = 2) {
+    constructor(_cursor: HTMLElement, _cursorRing: HTMLElement, _animationDuration: number = 0.2, _ringSizeMultiplier: number = 2, _distanceSnap: number = 50) {
         super(_cursor);
         this.cursorRing = _cursorRing;
         this.ringSizeMultiplier = _ringSizeMultiplier;
         this.cursorStartSize = [_cursor.clientWidth.valueOf(), _cursor.clientHeight.valueOf()];
+
+        this.distanceSnap = _distanceSnap;
 
         this.animationSpeed[0] = (this.cursorStartSize[0] / 2) / (_animationDuration * 30);
         this.animationSpeed[1] = (this.cursorStartSize[1] / 2) / (_animationDuration * 30);
@@ -72,6 +76,33 @@ export class DotCursor extends TouchlessCursor {
 
         this.cursorRing.style.width = this.cursor.clientWidth * ringScaler + "px";
         this.cursorRing.style.height = this.cursor.clientHeight * ringScaler + "px";
+
+        const snaps : HTMLCollectionOf<Element> = document.getElementsByClassName("snappable");
+        let closest_distance : number = Infinity;
+        let closest : any;
+        const coords : {x : number, y : number} = {x: 0, y: 0};
+        Array.from(snaps).forEach(snap => {
+            const rect : DOMRect = snap.getBoundingClientRect();
+            const center : {x : number, y : number} = {
+                x: rect.x + (rect.width / 2),
+                y: rect.y + (rect.height / 2)
+            };
+            const distance : number = Math.sqrt(
+                Math.pow(_inputAction.CursorPosition[0] - center.x, 2) +
+                Math.pow((window.innerHeight - _inputAction.CursorPosition[1]) - center.y, 2)
+            );
+            if (distance < closest_distance) {
+                closest_distance = distance;
+                closest = snap;
+                coords.x = center.x;
+                coords.y = center.y;
+            }
+        })
+
+        if (closest_distance < this.distanceSnap && closest !== null) {
+            _inputAction.CursorPosition[0] = coords.x;
+            _inputAction.CursorPosition[1] = (window.innerHeight - coords.y);
+        }
 
         this.cursorRing.style.left = (_inputAction.CursorPosition[0] - (this.cursorRing.clientWidth / 2)) + "px";
         this.cursorRing.style.top = (window.innerHeight - (_inputAction.CursorPosition[1] + (this.cursorRing.clientHeight / 2))) + "px";

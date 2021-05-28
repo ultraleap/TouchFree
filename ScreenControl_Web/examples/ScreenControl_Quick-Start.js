@@ -25,5 +25,7 @@ window.onload = function () {
     document.body.appendChild(cursorRing);
 
     var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
+    dotCursor.distanceSnap = 100;
     var inputSystem = new ScreenControl.InputControllers.WebInputController();
+    inputSystem.distanceSnap = 100;
 }
