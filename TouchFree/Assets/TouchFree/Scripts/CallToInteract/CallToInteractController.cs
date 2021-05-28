@@ -30,7 +30,7 @@ public class CallToInteractController : MonoBehaviour
     CTIType loadedType;
     RenderTexture videoRenderTexture;
 
-    bool isShowing;
+    public static bool isShowing;
     bool handsPresent = false;
 
     public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
