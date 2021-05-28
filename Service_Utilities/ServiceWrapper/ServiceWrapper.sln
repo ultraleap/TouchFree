@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SC_ServiceWrapper", "SC_ServiceWrapper\SC_ServiceWrapper.csproj", "{44DF2B7D-FB12-47BB-96B9-6ACB50281314}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceWrapper", "ServiceWrapper\ServiceWrapper.csproj", "{44DF2B7D-FB12-47BB-96B9-6ACB50281314}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F6DAD1C8-E137-480D-94AE-F05969574CCD}
+		SolutionGuid = {AC3413BB-2518-4DDA-9F4D-F36EE3080923}
 	EndGlobalSection
 EndGlobal
