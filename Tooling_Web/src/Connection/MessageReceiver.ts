@@ -4,13 +4,13 @@ import {
     HandPresenceState,
     ResponseCallback,
     WebSocketResponse,
-} from './ScreenControlServiceTypes';
+} from './TouchFreeServiceTypes';
 import {
-    ClientInputAction,
+    TouchFreeInputAction,
     ConvertInputAction,
     InputType,
     WebsocketInputAction
-} from '../ScreenControlTypes';
+} from '../TouchFreeToolingTypes';
 import { ConnectionManager } from './ConnectionManager';
 
 // Class: MessageReceiver
@@ -25,20 +25,20 @@ export class MessageReceiver {
     callbackClearTimer: number = 300;
 
     // Variable: update Rate
-    // How many times per second to process <WebSocketResponse> & <ClientInputActions>
+    // How many times per second to process <WebSocketResponse> & <TouchFreeInputActions>
     updateRate: number = 60;
 
     // Calculated on construction for use in setting the update interval
     private updateDuration: number;
 
     // Variable: actionCullToCount
-    // How many non-essential <ClientInputActions> should the <actionQueue> be trimmed *to* per
-    // frame. This is used to ensure the Client can keep up with the Events sent over the
+    // How many non-essential <TouchFreeInputActions> should the <actionQueue> be trimmed *to* per
+    // frame. This is used to ensure the Tooling can keep up with the Events sent over the
     // WebSocket.
     actionCullToCount: number = 2;
 
     // Variable: actionQueue
-    // A queue of <ClientInputActions> that have been received from the Service.
+    // A queue of <TouchFreeInputActions> that have been received from the Service.
     actionQueue: Array<WebsocketInputAction> = [];
 
     // Variable: responseQueue
@@ -152,9 +152,9 @@ export class MessageReceiver {
     }
 
     // Function: CheckForAction
-    // Checks <actionQueue> for valid <ClientInputActions>. If there are too many in the queue,
-    // clears out non-essential <ClientInputActions> down to the number specified by
-    // <actionCullToCount>. If any remain, sends the oldest <ClientInputAction> to
+    // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
+    // clears out non-essential <TouchFreeInputActions> down to the number specified by
+    // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
     // <serviceConnection> to handle the action.
     CheckForAction(): void {
         while (this.actionQueue.length > this.actionCullToCount) {
@@ -173,7 +173,7 @@ export class MessageReceiver {
 
         if (action !== undefined) {
             // Parse newly received messages & distribute them
-            let converted: ClientInputAction = ConvertInputAction(action);
+            let converted: TouchFreeInputAction = ConvertInputAction(action);
 
             ConnectionManager.HandleInputAction(converted);
         }

@@ -1,22 +1,22 @@
 // Class: VersionInfo
-// This class is used when comparing the <ApiVersion> of the Client and the Service.
+// This class is used when comparing the <ApiVersion> of the Tooling and the Service.
 export class VersionInfo
 {
     // Group: Variables
 
     // Variable: ApiVersion
-    // The current API version of the Client.
+    // The current API version of the Tooling.
     public static readonly ApiVersion: string = "1.1.0";
 
     // Variable: API_HEADER_NAME
     // The name of the header we wish the Service to compare our version with.
-    public static readonly API_HEADER_NAME: string = "ScApiVersion";
+    public static readonly API_HEADER_NAME: string = "TFToolingApiVersion";
 }
 
-// Class: ClientInputAction
-// A structure representing the Client verison of an InputAction. This is used to pass
+// Class: TouchFreeInputAction
+// A structure representing the Tooling verison of an InputAction. This is used to pass
 // key information relating to an action that has happened on the Service.
-export class ClientInputAction {
+export class TouchFreeInputAction {
     Timestamp: number;
     InteractionType: InteractionType;
     HandType: HandType;
@@ -49,9 +49,9 @@ export class ClientInputAction {
 
 // Function: ConvertInputAction
 // Used to translate the raw actions that come across the websocket (<WebsocketInputActions>) and
-// convert them into the Client-friendly <ClientInputAction> format.
-export function ConvertInputAction(_wsInput: WebsocketInputAction): ClientInputAction {
-    return new ClientInputAction(
+// convert them into the Tooling-friendly <TouchFreeInputAction> format.
+export function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInputAction {
+    return new TouchFreeInputAction(
         _wsInput.Timestamp,
         FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags),
@@ -137,7 +137,7 @@ export enum BitmaskFlags {
 
 // Class: WebsocketInputAction
 // The version of an InputAction received via the WebSocket. This must be converted into a
-// <ClientInputAction> to be used by the client and can be done so via ConvertInputAction.
+// <TouchFreeInputAction> to be used by the Tooling and can be done so via ConvertInputAction.
 export class WebsocketInputAction {
     // Variable: Timestamp
     Timestamp: number;

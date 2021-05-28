@@ -1,4 +1,4 @@
-ScreenControl.Connection.ConnectionManager.init();
+TouchFree.Tooling.Connection.ConnectionManager.init();
 
 window.onload = function () {
     var cursorRing = document.createElement('img');
@@ -18,12 +18,12 @@ window.onload = function () {
     // This is a special class used by the WebInputController to identify the html elements that
     // make up the cursor. This is so it can ignore cursor-related objects when it is looking
     // for elements to pointerover/pointerout etc.
-    cursor.classList.add('screencontrolcursor');
-    cursorRing.classList.add('screencontrolcursor');
+    cursor.classList.add('touchfreecursor');
+    cursorRing.classList.add('touchfreecursor');
 
     document.body.appendChild(cursor);
     document.body.appendChild(cursorRing);
 
-    var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
-    var inputSystem = new ScreenControl.InputControllers.WebInputController();
+    var dotCursor = new TouchFree.Tooling.Cursors.DotCursor(cursor, cursorRing);
+    var inputSystem = new TouchFree.Tooling.InputControllers.WebInputController();
 }

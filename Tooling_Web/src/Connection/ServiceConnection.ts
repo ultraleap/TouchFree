@@ -1,7 +1,7 @@
 import {
     VersionInfo,
     WebsocketInputAction
-} from '../ScreenControlTypes';
+} from '../TouchFreeToolingTypes';
 import {
     ActionCode,
     CommunicationWrapper,
@@ -11,14 +11,14 @@ import {
     HandPresenceEvent,
     ResponseCallback,
     WebSocketResponse
-} from './ScreenControlServiceTypes';
+} from './TouchFreeServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
 
 // Class: ServiceConnection
-// This represents a connection to a ScreenControl Service. It should be created by a
+// This represents a connection to a TouchFree Service. It should be created by a
 // <ConnectionManager> to ensure there is only one active connection at a time. The sending
-// and receiving of data to the client is handled here as well as the creation of a
+// and receiving of data to the Tooling is handled here as well as the creation of a
 // <MessageReceiver> to ensure the data is handled properly.
 export class ServiceConnection {
     // Group: Variables
@@ -35,7 +35,7 @@ export class ServiceConnection {
     // The constructor for <ServiceConnection> that can be given a different IP Address and Port
     // to connect to on construction. This constructor also sets up the redirects of incoming
     // messages to <OnMessage>. Puts a listener on the websocket so that once it opens, a handshake
-    // request is sent with this Client's API version number. The service will not send data over
+    // request is sent with this Tooling's API version number. The service will not send data over
     // an open connection until this handshake is completed succesfully.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
@@ -73,7 +73,7 @@ export class ServiceConnection {
     }
 
     // Function: ConnectionResultCallback
-    // Passed into <SendMessage> as part of connecting to ScreenControl Service, handles the
+    // Passed into <SendMessage> as part of connecting to TouchFree Service, handles the
     // result of the Version Checking handshake.
     private ConnectionResultCallback(response: WebSocketResponse): void {
         if (response.status === "Success") {

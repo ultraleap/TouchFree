@@ -9,12 +9,12 @@ import {
     ConfigState,
     ResponseCallback,
     WebSocketResponse
-} from '../Connection/ScreenControlServiceTypes';
+} from '../Connection/TouchFreeServiceTypes';
 import { ConnectionManager } from '../Connection/ConnectionManager';
 import { Guid } from "guid-typescript";
 
 // Class: ConfigurationManager
-// This class provides a method for changing the configuration of the ScreenControl
+// This class provides a method for changing the configuration of the TouchFree
 // Service. Makes use of the static <ConnectionManager> for communication with the Service.
 export class ConfigurationManager {
 
@@ -25,8 +25,8 @@ export class ConfigurationManager {
     // If your _callBack requires context it should be bound to that context via .bind().
     //
     // WARNING!
-    // If a user changes ANY values via the ScreenControl Service Settings UI,
-    // values set from a client via this function will be discarded.
+    // If a user changes ANY values via the TouchFree Service Settings UI,
+    // values set from the Tooling via this function will be discarded.
     public static RequestConfigChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,

@@ -1,14 +1,14 @@
 import {
-    ClientInputAction,
+    TouchFreeInputAction,
     InputType
-} from '../ScreenControlTypes';
+} from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController'
 
 // Class: WebInputController
-// Provides web PointerEvents based on the incoming data from ScreenControl Service via a
+// Provides web PointerEvents based on the incoming data from TouchFree Service via a
 // <ServiceConnection>.
 //
-// If you are using cursors with this InputController, ensure they have the "screencontrolcursor"
+// If you are using cursors with this InputController, ensure they have the "touchfreecursor"
 // class. This allows this class to ignore them when determining which elements should recieve
 // new pointer events. If you don't do this, none of the events transmitted here are guaranteed
 // to make it to their intended targets, as they will be captured by the cursor.
@@ -82,7 +82,7 @@ export class WebInputController extends BaseInputController {
     }
 
     // Function: HandleInputAction
-    // Called with each <ClientInputAction> as it comes into the <ServiceConnection>. Emits Pointer
+    // Called with each <TouchFreeInputAction> as it comes into the <ServiceConnection>. Emits Pointer
     // events (e.g. pointermove/pointerdown) to the objects at the location. Which events are
     // emitted is affected by <enterLeaveEnabled>.
     //
@@ -98,7 +98,7 @@ export class WebInputController extends BaseInputController {
     //
     // Parameters:
     //     _inputData - The latest Action to arrive via the <ServiceConnection>.
-    protected HandleInputAction(_inputData: ClientInputAction): void {
+    protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         _inputData.CursorPosition[1] = window.innerHeight - _inputData.CursorPosition[1];
         super.HandleInputAction(_inputData);
 
@@ -151,7 +151,7 @@ export class WebInputController extends BaseInputController {
         if (elementsAtPos !== null) {
             for (let i = 0; i < elementsAtPos.length; i++) {
 
-                if (!elementsAtPos[i].classList.contains("screencontrolcursor")) {
+                if (!elementsAtPos[i].classList.contains("touchfreecursor")) {
                     elementAtPos = elementsAtPos[i];
                     break;
                 }

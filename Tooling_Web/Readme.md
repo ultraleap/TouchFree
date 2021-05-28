@@ -1,10 +1,10 @@
-# ScreenControl Client for Web
+# TouchFree Tooling for Web
 
 ## Developer Guide
 
 ### Setup
 
-In order to work on ScreenControl for web, you will need to do the following:
+In order to work on TouchFree Tooling for web, you will need to do the following:
 
 * Install the LTS of [Node.js](https://nodejs.org/en/download/)
 * Open this directory in a terminal and run `npm i` to install dependencies

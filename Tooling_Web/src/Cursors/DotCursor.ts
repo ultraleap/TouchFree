@@ -1,8 +1,8 @@
 import { TouchlessCursor } from './TouchlessCursor';
 import {
-    ClientInputAction,
+    TouchFreeInputAction,
     InputType
-} from '../ScreenControlTypes';
+} from '../TouchFreeToolingTypes';
 import { ConnectionManager } from '../Connection/ConnectionManager';
 import { MapRangeToRange } from '../Utilities';
 
@@ -46,7 +46,7 @@ export class DotCursor extends TouchlessCursor {
     // the size that the <cursorRing> is relative to the _cursor.
     //
     // If you intend to make use of the <WebInputController>, make sure that both _cursor and
-    // _cursorRing have the "screencontrolcursor" class. This prevents them blocking other elements
+    // _cursorRing have the "touchfreecursor" class. This prevents them blocking other elements
     // from recieving events.
     constructor(_cursor: HTMLElement, _cursorRing: HTMLElement, _animationDuration: number = 0.2, _ringSizeMultiplier: number = 2) {
         super(_cursor);
@@ -64,7 +64,7 @@ export class DotCursor extends TouchlessCursor {
     // Function: UpdateCursor
     // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
-    UpdateCursor(_inputAction: ClientInputAction): void {
+    UpdateCursor(_inputAction: TouchFreeInputAction): void {
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
@@ -87,7 +87,7 @@ export class DotCursor extends TouchlessCursor {
     //
     // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
     // When any other event is received and the cursor is hidden, the cursor is shown again.
-    HandleInputAction(_inputData: ClientInputAction): void {
+    HandleInputAction(_inputData: TouchFreeInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:
                 this.UpdateCursor(_inputData);

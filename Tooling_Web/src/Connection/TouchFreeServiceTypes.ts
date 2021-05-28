@@ -9,7 +9,7 @@ import {
 // CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
 // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
 // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
-// VERSION_HANDSHAKE - Represents an outgoing message from Client to Service, attempting to compare API versions for compatibility
+// VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service, attempting to compare API versions for compatibility
 // REQUEST_CONFIGURATION_STATE - Represents the result coming in from the Service
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
@@ -36,12 +36,12 @@ export enum HandPresenceState
 
 // Enum: Compatibility
 // COMPATIBLE - The API versions are considered compatible
-// SERVICE_OUTDATED - The API versions are considered incompatible as Service is older than Client
-// CLIENT_OUTDATED - The API versions are considered incompatible as Client is older than Service
+// SERVICE_OUTDATED - The API versions are considered incompatible as Service is older than Tooling
+// TOOLING_OUTDATED - The API versions are considered incompatible as Tooling is older than Service
 export enum Compatibility {
     COMPATIBLE,
     SERVICE_OUTDATED,
-    CLIENT_OUTDATED
+    TOOLING_OUTDATED
 }
 
 export class HandPresenceEvent

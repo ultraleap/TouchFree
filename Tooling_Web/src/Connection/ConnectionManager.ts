@@ -1,8 +1,8 @@
 
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
-import { HandPresenceState } from "./ScreenControlServiceTypes";
-import { ClientInputAction } from "../ScreenControlTypes";
+import { HandPresenceState } from "./TouchFreeServiceTypes";
+import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -18,7 +18,7 @@ export class ConnectionManager extends EventTarget {
     // function is invoked if the connection has already been made by the time your class runs.
 
     // Event: TransmitInputAction
-    // An event for transmitting <ClientInputActions> that are received via the <messageReceiver> to
+    // An event for transmitting <TouchFreeInputActions> that are received via the <messageReceiver> to
     // be listened to.
 
     // Group: Variables
@@ -83,10 +83,10 @@ export class ConnectionManager extends EventTarget {
     }
 
     // Function: HandleInputAction
-    // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
+    // Called by the <messageReceiver> to relay a <TouchFreeInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
-    public static HandleInputAction(_action: ClientInputAction): void {
-        let inputActionEvent: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction>(
+    public static HandleInputAction(_action: TouchFreeInputAction): void {
+        let inputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
             'TransmitInputAction',
             { detail: _action }
         );
