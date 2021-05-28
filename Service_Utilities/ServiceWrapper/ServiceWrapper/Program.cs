@@ -2,7 +2,7 @@
 using System.Timers;
 using Topshelf;
 
-namespace SC_Service
+namespace TouchFreeService
 {
     class Program
     {
@@ -19,9 +19,9 @@ namespace SC_Service
                 });
                 serviceConfig.RunAsLocalSystem();
                 serviceConfig.StartAutomatically();
-                serviceConfig.SetServiceName("ScreenControl Service");
-                serviceConfig.SetDisplayName("ScreenControl Service");
-                serviceConfig.SetDescription("ScreenControl Service converts Ultraleap tracking" +
+                serviceConfig.SetServiceName("TouchFree Service");
+                serviceConfig.SetDisplayName("TouchFree Service");
+                serviceConfig.SetDescription("TouchFree Service converts Ultraleap tracking" +
                     " data into a data structure suitable for input systems for touchscreen user" +
                     " interfaces via a client package.");
             });
@@ -36,8 +36,8 @@ namespace SC_Service
         public void Start()
         {
             _process = new Process();
-            _process.StartInfo.FileName = @"../Service/ScreenControlService.exe";
-            _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics -logFile C:\\ProgramData\\Ultraleap\\ScreenControl\\Service.log";
+            _process.StartInfo.FileName = @"../Service/TouchFreeService.exe";
+            _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics -logFile C:\\ProgramData\\Ultraleap\\TouchFree\\Service.log";
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.CreateNoWindow = true;
             _process.StartInfo.RedirectStandardError = true;

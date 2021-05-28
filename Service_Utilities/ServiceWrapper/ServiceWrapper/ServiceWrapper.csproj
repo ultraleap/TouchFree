@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{44DF2B7D-FB12-47BB-96B9-6ACB50281314}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SC_ServiceWrapper</RootNamespace>
-    <AssemblyName>SC_ServiceWrapper</AssemblyName>
+    <RootNamespace>ServiceWrapper</RootNamespace>
+    <AssemblyName>ServiceWrapper</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

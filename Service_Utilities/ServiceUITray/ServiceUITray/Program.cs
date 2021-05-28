@@ -7,7 +7,7 @@ using Timer = System.Timers.Timer;
 using System.Timers;
 using System.Threading;
 
-namespace SC_ServiceUITray
+namespace ServiceUITray
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace SC_ServiceUITray
         [STAThread]
         static void Main()
         {
-            const string appName = "ScreenControl Tray";
+            const string appName = "TouchFree Service Tray";
             bool createdNew;
 
             mutex = new Mutex(true, appName, out createdNew);
@@ -28,25 +28,25 @@ namespace SC_ServiceUITray
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SC_ServiceUITray());
+            Application.Run(new ServiceUITray());
         }
     }
 
-    public class SC_ServiceUITray : ApplicationContext
+    public class ServiceUITray : ApplicationContext
     {
         private NotifyIcon trayIcon;
         Process startedProcess;
-        ServiceController screenControlService = null;
+        ServiceController touchFreeService = null;
 
         private Timer statusCheckTimer = new Timer();
 
-        public SC_ServiceUITray()
+        public ServiceUITray()
         {
             trayIcon = new NotifyIcon()
             {
                 Icon = Properties.Resources.IconActive,
                 ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Configure", Configure),
+                    new MenuItem("Settings", Settings),
                     new MenuItem("-"),
                     new MenuItem("Exit", Exit),
                 }),
@@ -60,16 +60,16 @@ namespace SC_ServiceUITray
             statusCheckTimer.Start();
         }
 
-        private void Configure(object sender, EventArgs e)
+        private void Settings(object sender, EventArgs e)
         {
             if (startedProcess != null && !startedProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
+                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
             else
             {
-                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
+                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
         }
 
@@ -91,22 +91,22 @@ namespace SC_ServiceUITray
 
         private void CheckForServiceActivity(object sender, ElapsedEventArgs e)
         {
-            screenControlService = null;
+            touchFreeService = null;
 
-            if (ServiceExists("ScreenControl Service"))
+            if (ServiceExists("TouchFree Service"))
             {
-                screenControlService = new ServiceController("ScreenControl Service");
+                touchFreeService = new ServiceController("TouchFree Service");
             }
 
-            if (screenControlService == null || (screenControlService != null && screenControlService.Status != ServiceControllerStatus.Running))
+            if (touchFreeService == null || (touchFreeService != null && touchFreeService.Status != ServiceControllerStatus.Running))
             {
                 trayIcon.Icon = Properties.Resources.IconInactive;
-                trayIcon.Text = "ScreenControl Service is not running";
+                trayIcon.Text = "TouchFree Service is not running";
             }
             else
             {
                 trayIcon.Icon = Properties.Resources.IconActive;
-                trayIcon.Text = "ScreenControl Service is running";
+                trayIcon.Text = "TouchFree Service is running";
             }
         }
 

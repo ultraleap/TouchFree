@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SC_ServiceUITray", "SC_ServiceUITray\SC_ServiceUITray.csproj", "{5DFDB459-D341-45B2-AFF5-E878806EC2F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceUITray", "ServiceUITray\ServiceUITray.csproj", "{5DFDB459-D341-45B2-AFF5-E878806EC2F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8EC02948-3DAE-420E-B6E7-A8EF27CD2744}
+		SolutionGuid = {026D6752-B67E-42B4-829D-A0E38D18D520}
 	EndGlobalSection
 EndGlobal

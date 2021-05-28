@@ -5,13 +5,13 @@
 #define ProductName "TouchFree"
 #define Publisher "Ultraleap Inc."
 #define ReleaseVersion "1.0.0-alpha5"
-#define ServiceUIExeName "ScreenControlServiceUI.exe"
+#define ServiceUIExeName "TouchFreeServiceUI.exe"
 #define ServiceUIName "TouchFree Service Configuration"
 #define TouchFreeAppExeName "TouchFree.exe"
 #define TouchFreeAppName "TouchFree Application"
-#define TrayAppExeName "SC_ServiceUITray.exe"
+#define TrayAppExeName "ServiceUITray.exe"
 #define TrayAppName "TouchFree Service Control Panel"
-#define WrapperExeName "SC_ServiceWrapper.exe"
+#define WrapperExeName "ServiceWrapper.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -59,20 +59,20 @@ Name: "{autostartup}\{#TrayAppName}"; Filename: "{app}\Tray\{#TrayAppExeName}";
 
 [Registry]
 Root: HKA64; Subkey: "Software\Ultraleap"; Flags: uninsdeletekeyifempty
-Root: HKA64; Subkey: "Software\Ultraleap\ScreenControl"; Flags: uninsdeletekeyifempty
-Root: HKA64; Subkey: "Software\Ultraleap\ScreenControl\Service"; Flags: uninsdeletekey
-Root: HKA64; Subkey: "Software\Ultraleap\ScreenControl\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
+Root: HKA64; Subkey: "Software\Ultraleap\TouchFree"; Flags: uninsdeletekeyifempty
+Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletekey
+Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
 
 [Run]
 Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
-Filename: "net.exe"; Parameters: "start ""ScreenControl Service"""; Flags: runhidden
+Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
 
 [UninstallRun]
-Filename: "{cmd}"; Parameters: "/C taskkill /im SC_ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
-Filename: "net.exe"; Parameters: "stop ""ScreenControl Service"""; RunOnceId: "StopService"; Flags: runhidden
+Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
+Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopService"; Flags: runhidden
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
 
 [Code]
@@ -82,7 +82,7 @@ var
   wrapperRegistryPath: String;
 begin
   Result := '';
-  wrapperRegistryPath := ExpandConstant('Software\Ultraleap\ScreenControl\Service\Settings');
+  wrapperRegistryPath := ExpandConstant('Software\Ultraleap\TouchFree\Service\Settings');
   wrapperExePath := '';
   if not RegQueryStringValue(HKLM64, wrapperRegistryPath, 'WrapperExePath', wrapperExePath) then
     RegQueryStringValue(HKCU64, wrapperRegistryPath, 'WrapperExePath', wrapperExePath);
@@ -100,8 +100,8 @@ begin
 
   if CompareText(WrapperPath, '') > 0 then
   begin
-    Exec('cmd', '/C taskkill /im SC_ServiceUITray.exe /f /t', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec('net', 'stop "ScreenControl Service"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('cmd', '/C taskkill /im ServiceUITray.exe /f /t', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('net', 'stop "TouchFree Service"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec(ExpandConstant(WrapperPath), 'uninstall', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
 

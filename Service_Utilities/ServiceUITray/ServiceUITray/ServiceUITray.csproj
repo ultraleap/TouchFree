@@ -7,8 +7,8 @@
     <ProjectGuid>{5DFDB459-D341-45B2-AFF5-E878806EC2F1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SC_ServiceUITray</RootNamespace>
-    <AssemblyName>SC_ServiceUITray</AssemblyName>
+    <RootNamespace>ServiceUITray</RootNamespace>
+    <AssemblyName>ServiceUITray</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
