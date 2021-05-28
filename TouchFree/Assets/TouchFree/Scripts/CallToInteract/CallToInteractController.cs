@@ -33,8 +33,8 @@ public class CallToInteractController : MonoBehaviour
     bool isShowing;
     bool handsPresent = false;
 
-    private readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
-    private readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
+    public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
+    public static readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
 
     public void UpdateCTISettings()
     {
@@ -160,6 +160,12 @@ public class CallToInteractController : MonoBehaviour
                 HideCTI();
             }
         }
+
+        if(ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.PRESENCE &&
+            (isShowing || showAfterHandsLostCoroutine != null))
+        {
+            HideCTI();
+        }
     }
 
     Coroutine showAfterHandsLostCoroutine;
@@ -202,6 +208,12 @@ public class CallToInteractController : MonoBehaviour
 
     void HideCTI()
     {
+        if(showAfterHandsLostCoroutine != null)
+        {
+            StopCoroutine(showAfterHandsLostCoroutine);
+            showAfterHandsLostCoroutine = null;
+        }
+
         isShowing = false;
 
         if (loadedType == CTIType.IMAGE)

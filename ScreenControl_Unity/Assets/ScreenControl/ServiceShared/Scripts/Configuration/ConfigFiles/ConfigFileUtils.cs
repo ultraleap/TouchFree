@@ -105,7 +105,11 @@ namespace Ultraleap.ScreenControl.Core
             foreach (FileInfo file in fileInfos)
             {
                 string path = Path.Combine(_newPath, file.Name);
-                file.CopyTo(path, true);
+
+                if (!File.Exists(path))
+                {
+                    file.CopyTo(path);
+                }
             }
 
             ConfigManager.SaveAllConfigs();

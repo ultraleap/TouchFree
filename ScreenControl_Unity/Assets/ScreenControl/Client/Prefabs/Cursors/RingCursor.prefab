@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: dc08875b2aaa54a4c9de2b01c0696e46, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -334,7 +334,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorTransform: {fileID: 2292088166589006933}
-  fadeDuration: 45
+  _primaryColor: {r: 1, g: 1, b: 1, a: 1}
+  _secondaryColor: {r: 1, g: 1, b: 1, a: 1}
+  _tertiaryColor: {r: 0, g: 0, b: 0, a: 1}
+  fadeDuration: 35
   cursorDotSize: 0.25
   cursorBorder: {fileID: 2292088166042207031}
   cursorFill: {fileID: 4385562017838604252}
@@ -367,7 +370,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   ringOuter: {fileID: 915649656}
   ringMask: {fileID: 1472931908}
-  ringThickness: 2
+  ringThickness: 1.5
   pulseShrinkCurve:
     serializedVersion: 2
     m_Curve:
@@ -418,9 +421,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   pulseSeconds: 0.2
   cursorDownScale: 0.5
-  dotFillColor: {r: 1, g: 1, b: 1, a: 1}
-  dotBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  ringColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &4993058995571816624
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,7 +479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: d49e2da44fccf644d98c013a79306095, type: 2}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
