@@ -14,7 +14,7 @@ namespace Ultraleap.ScreenControl.Core
     public class TouchPlaneInteractionSettings
     {
         public float TouchPlaneActivationDistanceCM = 5f;
-        public float TouchPlaneStartDistanceCM = 5f;
+        public float TouchPlaneStartDistanceCM = 20f;
     }
 
     [Serializable]
