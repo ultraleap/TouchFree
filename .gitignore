@@ -90,3 +90,6 @@ Testing/ServiceSocketTests/results/**
 
 !/ScreenControl_Service_Utilities/**/*.csproj
 !/ScreenControl_Service_Utilities/**/*.sln
+
+!/Service_Utilities/**/*.csproj
+!/Service_Utilities/**/*.sln
