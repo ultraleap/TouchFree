@@ -1,4 +1,4 @@
-﻿namespace Ultraleap.ScreenControl.Core
+﻿namespace Ultraleap.TouchFree.ServiceShared
 {
     public class InteractionConfigFile : ConfigFile<InteractionConfig, InteractionConfigFile>
     {

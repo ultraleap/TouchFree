@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -43,11 +44,11 @@ namespace Ultraleap.ScreenControl.Core
 
             if (_convertToDisplayUnits)
             {
-                val = ScreenControlUtility.ToDisplayUnits(val);
+                val = ServiceUtility.ToDisplayUnits(val);
             }
             else if (_convertToStorageUnits)
             {
-                val = ScreenControlUtility.FromDisplayUnits(val);
+                val = ServiceUtility.FromDisplayUnits(val);
             }
 
             return val;

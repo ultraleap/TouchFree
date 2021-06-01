@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     [DefaultExecutionOrder(-1000)]
     public class ScreenSizeInitializer : MonoBehaviour

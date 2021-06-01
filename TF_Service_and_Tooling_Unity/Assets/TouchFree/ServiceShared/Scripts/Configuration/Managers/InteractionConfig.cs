@@ -1,7 +1,6 @@
 using System;
-using Ultraleap.ScreenControl.Core.ScreenControlTypes;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     [Serializable]
     public class HoverAndHoldInteractionSettings

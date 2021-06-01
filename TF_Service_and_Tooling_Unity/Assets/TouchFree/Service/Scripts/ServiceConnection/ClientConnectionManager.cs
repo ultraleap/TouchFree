@@ -7,7 +7,7 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 using Ultraleap.ScreenControl.Core;
-using Ultraleap.ScreenControl.Core.ScreenControlTypes;
+using Ultraleap.TouchFree.ServiceShared;
 using Ultraleap.ScreenControl.Service.ScreenControlTypes;
 
 namespace Ultraleap.ScreenControl.Service
@@ -120,7 +120,7 @@ namespace Ultraleap.ScreenControl.Service
             Debug.Log("Service Setup Complete");
         }
 
-        void SendInputActionToWebsocket(CoreInputAction _data)
+        void SendInputActionToWebsocket(InputAction _data)
         {
             // if IsListening stops being true the server
             // has aborted / stopped, so needs remaking

@@ -6,6 +6,9 @@ using System.IO;
 using System;
 using SFB;
 
+using Ultraleap.TouchFree.ServiceShared;
+
+
 namespace Ultraleap.ScreenControl.Core
 {
     public class AdvancedSettingsScreen : MonoBehaviour

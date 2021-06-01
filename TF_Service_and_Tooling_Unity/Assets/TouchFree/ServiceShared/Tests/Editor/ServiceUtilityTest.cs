@@ -4,11 +4,11 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-using Ultraleap.ScreenControl.Core;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Tests
 {
-    public class ScreenControlUtilityTest
+    public class ServiceUtilityTest
     {
         // A Test behaves as an ordinary method
         [Test]
@@ -24,7 +24,7 @@ namespace Tests
 
             float expectedResult = newMin;
 
-            float result = ScreenControlUtility.MapRangeToRange(
+            float result = ServiceUtility.MapRangeToRange(
                 initial,
                 initialMin,
                 initialMax,
@@ -47,7 +47,7 @@ namespace Tests
 
             float expectedResult = newMax;
 
-            float result = ScreenControlUtility.MapRangeToRange(
+            float result = ServiceUtility.MapRangeToRange(
                 initial,
                 initialMin,
                 initialMax,
@@ -70,7 +70,7 @@ namespace Tests
 
             float expectedResult = initial;
 
-            float result = ScreenControlUtility.MapRangeToRange(
+            float result = ServiceUtility.MapRangeToRange(
                 initial,
                 initialMin,
                 initialMax,

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -69,22 +70,22 @@ namespace Ultraleap.ScreenControl.Core
                 ConfigManager.PhysicalConfig.ScreenRotationD.ToString("##0.0"));
 
             ScreenHeight.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(
+                ServiceUtility.ToDisplayUnits(
                     ConfigManager.PhysicalConfig.ScreenHeightM
                 ).ToString("#0.00#"));
 
             TrackingOriginX.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(
+                ServiceUtility.ToDisplayUnits(
                     ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x
                 ).ToString("#0.00#"));
 
             TrackingOriginY.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(
+                ServiceUtility.ToDisplayUnits(
                     ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y
                 ).ToString("#0.00#"));
 
             TrackingOriginZ.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(-
+                ServiceUtility.ToDisplayUnits(-
                     ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z
                 ).ToString("#0.00#"));
 
@@ -92,7 +93,7 @@ namespace Ultraleap.ScreenControl.Core
             // Convert from above screen rotaitons to a readable format
             if(Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.z, 180))
             {
-                TrackingRotationX.SetTextWithoutNotify(ScreenControlUtility.CentreRotationAroundZero((-ConfigManager.PhysicalConfig.LeapRotationD.x) -180).ToString("##0.0"));
+                TrackingRotationX.SetTextWithoutNotify(ServiceUtility.CentreRotationAroundZero((-ConfigManager.PhysicalConfig.LeapRotationD.x) -180).ToString("##0.0"));
             }
             else
             {
@@ -113,22 +114,22 @@ namespace Ultraleap.ScreenControl.Core
                 PhysicalScreenTiltAngle.text).ToString("##0.0"));
 
             ScreenHeight.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(
+                ServiceUtility.ToDisplayUnits(
                     TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.ScreenHeightM, ScreenHeight.text, true)
                 ).ToString("#0.00#"));
 
             TrackingOriginX.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(
+                ServiceUtility.ToDisplayUnits(
                     TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x, TrackingOriginX.text, true)
                 ).ToString("#0.00#"));
 
             TrackingOriginY.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(
+                ServiceUtility.ToDisplayUnits(
                     TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, TrackingOriginY.text, true)
                 ).ToString("#0.00#"));
 
             TrackingOriginZ.SetTextWithoutNotify(
-                ScreenControlUtility.ToDisplayUnits(
+                ServiceUtility.ToDisplayUnits(
                     TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, TrackingOriginZ.text, true)
                 ).ToString("#0.00#"));
 
@@ -140,7 +141,7 @@ namespace Ultraleap.ScreenControl.Core
                 backupLeapX = (-ConfigManager.PhysicalConfig.LeapRotationD.x) - 180;
             }
 
-            TrackingRotationX.SetTextWithoutNotify(ScreenControlUtility.CentreRotationAroundZero(
+            TrackingRotationX.SetTextWithoutNotify(ServiceUtility.CentreRotationAroundZero(
                 TryParseNewStringToFloat(ref backupLeapX,
                 TrackingRotationX.text)).ToString("##0.0"));
         }
@@ -163,7 +164,7 @@ namespace Ultraleap.ScreenControl.Core
             {
                 // Above
                 usableLeapZ = 180;
-                usableLeapX = ScreenControlUtility.CentreRotationAroundZero((-usableLeapX) + 180);
+                usableLeapX = ServiceUtility.CentreRotationAroundZero((-usableLeapX) + 180);
             }
             else
             {

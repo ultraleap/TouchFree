@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Service
 {
@@ -18,9 +19,9 @@ namespace Ultraleap.ScreenControl.Service
 
         void OnLostAllConnections()
         {
-            Core.ConfigManager.LoadConfigsFromFiles();
-            Core.ConfigManager.InteractionConfig.ConfigWasUpdated();
-            Core.ConfigManager.PhysicalConfig.ConfigWasUpdated();
+            ConfigManager.LoadConfigsFromFiles();
+            ConfigManager.InteractionConfig.ConfigWasUpdated();
+            ConfigManager.PhysicalConfig.ConfigWasUpdated();
         }
     }
 }

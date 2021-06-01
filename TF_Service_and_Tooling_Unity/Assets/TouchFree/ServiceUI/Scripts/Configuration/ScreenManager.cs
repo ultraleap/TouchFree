@@ -1,16 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
-    public enum MountingType
-    {
-        NONE,
-        BELOW,
-        ABOVE_FACING_USER,
-        ABOVE_FACING_SCREEN
-    }
-
     public class ScreenManager : MonoBehaviour
     {
         public static ScreenManager Instance;

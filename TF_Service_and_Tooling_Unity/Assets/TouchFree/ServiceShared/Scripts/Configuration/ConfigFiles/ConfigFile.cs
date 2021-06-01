@@ -4,7 +4,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     public abstract class ConfigFile<TData, UThisClass>
     where TData : class, new()

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -28,11 +29,11 @@ namespace Ultraleap.ScreenControl.Core
         private void Update()
         {
             // side-on view
-            float sideLeapPosX = ScreenControlUtility.MapRangeToRange(
+            float sideLeapPosX = ServiceUtility.MapRangeToRange(
                 -ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, 0,
                 ConfigManager.PhysicalConfig.ScreenHeightM, 0,
                 sideonScreen.sizeDelta.y);
-            float sideLeapPosY = ScreenControlUtility.MapRangeToRange(
+            float sideLeapPosY = ServiceUtility.MapRangeToRange(
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, 0,
                 ConfigManager.PhysicalConfig.ScreenHeightM, 0,
                 sideonScreen.sizeDelta.y);
@@ -59,11 +60,11 @@ namespace Ultraleap.ScreenControl.Core
                 frontonScreen.sizeDelta = new Vector2(dynamicScreenSizePX * aspectRatio, dynamicScreenSizePX);
             }
 
-            float frontLeapPosX = ScreenControlUtility.MapRangeToRange(
+            float frontLeapPosX = ServiceUtility.MapRangeToRange(
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x, 0,
                 ConfigManager.PhysicalConfig.ScreenHeightM, 0,
                 frontonScreen.sizeDelta.y);
-            float frontLeapPosY = ScreenControlUtility.MapRangeToRange(
+            float frontLeapPosY = ServiceUtility.MapRangeToRange(
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, 0,
                 ConfigManager.PhysicalConfig.ScreenHeightM, 0,
                 frontonScreen.sizeDelta.y);

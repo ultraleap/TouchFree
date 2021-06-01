@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Stopwatch = System.Diagnostics.Stopwatch;
-using Ultraleap.ScreenControl.Core.ScreenControlTypes;
-
+using Ultraleap.TouchFree.ServiceShared;
 namespace Ultraleap.ScreenControl.Core
 {
     public class HoverAndHoldInteraction : InteractionModule

@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
     public abstract class InteractionModule : MonoBehaviour
     {
-        public virtual ScreenControlTypes.InteractionType InteractionType { get; } = ScreenControlTypes.InteractionType.PUSH;
+        public virtual InteractionType InteractionType { get; } = InteractionType.PUSH;
 
-        private ScreenControlTypes.HandChirality handChirality;
-        public ScreenControlTypes.HandType handType;
+        private HandChirality handChirality;
+        public HandType handType;
 
         public bool ignoreDragging;
         public PositioningModule positioningModule;
 
-        public delegate void InputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.CoreInputAction _inputData);
-        public static event InputAction HandleInputAction;
+        public delegate void InteractionInputAction(HandChirality _chirality, HandType _handType, InputAction _inputData);
+        public static event InteractionInputAction HandleInputAction;
 
         protected Positions positions;
 
@@ -30,18 +31,18 @@ namespace Ultraleap.ScreenControl.Core
 
             switch (handType)
             {
-                case ScreenControlTypes.HandType.PRIMARY:
+                case HandType.PRIMARY:
 
                     hand = HandManager.Instance.PrimaryHand;
                     break;
-                case ScreenControlTypes.HandType.SECONDARY:
+                case HandType.SECONDARY:
                     hand = HandManager.Instance.SecondaryHand;
                     break;
             }
 
             if (hand != null)
             {
-                handChirality = hand.IsLeft ? ScreenControlTypes.HandChirality.LEFT : ScreenControlTypes.HandChirality.RIGHT;
+                handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
             }
 
             UpdateData(hand);
@@ -59,9 +60,9 @@ namespace Ultraleap.ScreenControl.Core
         // This is the main update loop of the interaction module
         protected virtual void UpdateData(Leap.Hand hand) { }
 
-        protected void SendInputAction(ScreenControlTypes.InputType _inputType, Positions _positions, float _progressToClick)
+        protected void SendInputAction(InputType _inputType, Positions _positions, float _progressToClick)
         {
-            ScreenControlTypes.CoreInputAction actionData = new ScreenControlTypes.CoreInputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
+            InputAction actionData = new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
             HandleInputAction?.Invoke(handChirality, handType, actionData);
         }
 

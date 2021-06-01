@@ -3,13 +3,14 @@ using System.Globalization;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
     [System.Serializable]
     public class InteractionTypeElements
     {
-        public ScreenControlTypes.InteractionType interactionType;
+        public InteractionType interactionType;
         public GameObject[] typeSpecificElements;
     }
 
@@ -161,16 +162,16 @@ namespace Ultraleap.ScreenControl.Core
             interactionTypeToggleTouchPlane.SetIsOnWithoutNotify(false);
             switch (ConfigManager.InteractionConfig.InteractionType)
             {
-                case ScreenControlTypes.InteractionType.GRAB:
+                case InteractionType.GRAB:
                     interactionTypeTogglePinch.SetIsOnWithoutNotify(true);
                     break;
-                case ScreenControlTypes.InteractionType.HOVER:
+                case InteractionType.HOVER:
                     interactionTypeToggleHover.SetIsOnWithoutNotify(true);
                     break;
-                case ScreenControlTypes.InteractionType.PUSH:
+                case InteractionType.PUSH:
                     interactionTypeTogglePush.SetIsOnWithoutNotify(true);
                     break;
-                case ScreenControlTypes.InteractionType.TOUCHPLANE:
+                case InteractionType.TOUCHPLANE:
                     interactionTypeToggleTouchPlane.SetIsOnWithoutNotify(true);
                     break;
             }
@@ -208,14 +209,14 @@ namespace Ultraleap.ScreenControl.Core
 
             switch (ConfigManager.InteractionConfig.InteractionType)
             {
-                case ScreenControlTypes.InteractionType.GRAB:
+                case InteractionType.GRAB:
                     grabPreview.SetActive(true);
                     break;
-                case ScreenControlTypes.InteractionType.HOVER:
+                case InteractionType.HOVER:
                     hoverPreview.SetActive(true);
                     break;
-                case ScreenControlTypes.InteractionType.PUSH:
-                case ScreenControlTypes.InteractionType.TOUCHPLANE:
+                case InteractionType.PUSH:
+                case InteractionType.TOUCHPLANE:
                     pushPreview.SetActive(true);
                     break;
             }
@@ -223,7 +224,7 @@ namespace Ultraleap.ScreenControl.Core
             HandleSpecificElements(ConfigManager.InteractionConfig.InteractionType);
         }
 
-        void HandleSpecificElements(ScreenControlTypes.InteractionType _interactionType)
+        void HandleSpecificElements(InteractionType _interactionType)
         {
             InteractionTypeElements matchingGroup = null;
 
@@ -262,19 +263,19 @@ namespace Ultraleap.ScreenControl.Core
 
             if (interactionTypeTogglePush.isOn)
             {
-                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.PUSH;
+                ConfigManager.InteractionConfig.InteractionType = InteractionType.PUSH;
             }
             else if (interactionTypeTogglePinch.isOn)
             {
-                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.GRAB;
+                ConfigManager.InteractionConfig.InteractionType = InteractionType.GRAB;
             }
             else if (interactionTypeToggleHover.isOn)
             {
-                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.HOVER;
+                ConfigManager.InteractionConfig.InteractionType = InteractionType.HOVER;
             }
             else if (interactionTypeToggleTouchPlane.isOn)
             {
-                ConfigManager.InteractionConfig.InteractionType = ScreenControlTypes.InteractionType.TOUCHPLANE;
+                ConfigManager.InteractionConfig.InteractionType = InteractionType.TOUCHPLANE;
             }
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();

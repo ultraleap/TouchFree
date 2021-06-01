@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Ultraleap.ScreenControl.Core.ScreenControlTypes;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {

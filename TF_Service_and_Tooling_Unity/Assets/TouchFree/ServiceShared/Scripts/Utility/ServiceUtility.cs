@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Ultraleap.ScreenControl.Core
+﻿namespace Ultraleap.TouchFree.ServiceShared
 {
-    public static class ScreenControlUtility
+    public static class ServiceUtility
     {
         // Store in M, display in CM
         public static readonly float ConfigToDisplayMeasurementMultiplier = 100;

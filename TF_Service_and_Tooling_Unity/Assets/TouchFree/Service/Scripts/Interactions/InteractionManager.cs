@@ -2,16 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
+
 namespace Ultraleap.ScreenControl.Core
 {
     [DefaultExecutionOrder(-100)]
     public class InteractionManager : MonoBehaviour
     {
-        public delegate void InputAction(ScreenControlTypes.CoreInputAction _inputData);
-        public static event InputAction HandleInputAction;
+        public delegate void InteractionInputAction(InputAction _inputData);
+        public static event InteractionInputAction HandleInputAction;
 
-        public static Dictionary<ScreenControlTypes.InteractionType, InteractionModule> interactions =
-                  new Dictionary<ScreenControlTypes.InteractionType, InteractionModule>();
+        public static Dictionary<InteractionType, InteractionModule> interactions =
+                  new Dictionary<InteractionType, InteractionModule>();
 
         private static InteractionManager instance = null;
         public static InteractionManager Instance
@@ -38,10 +40,10 @@ namespace Ultraleap.ScreenControl.Core
 
             InteractionModule.HandleInputAction += HandleInteractionModuleInputAction;
 
-            interactions.Add(ScreenControlTypes.InteractionType.PUSH, pushInteractionModule);
-            interactions.Add(ScreenControlTypes.InteractionType.HOVER, hoverInteractionModule);
-            interactions.Add(ScreenControlTypes.InteractionType.GRAB, grabInteractionModule);
-            interactions.Add(ScreenControlTypes.InteractionType.TOUCHPLANE, touchPlaneInteractionModule);
+            interactions.Add(InteractionType.PUSH, pushInteractionModule);
+            interactions.Add(InteractionType.HOVER, hoverInteractionModule);
+            interactions.Add(InteractionType.GRAB, grabInteractionModule);
+            interactions.Add(InteractionType.TOUCHPLANE, touchPlaneInteractionModule);
 
             InteractionConfig.OnConfigUpdated += InteractionConfigUpdated;
 
@@ -54,13 +56,13 @@ namespace Ultraleap.ScreenControl.Core
             InteractionConfig.OnConfigUpdated -= InteractionConfigUpdated;
         }
 
-        public void SetActiveInteractions(ScreenControlTypes.InteractionType _activateType)
+        public void SetActiveInteractions(InteractionType _activateType)
         {
-            SetActiveInteractions(new ScreenControlTypes.InteractionType[] { _activateType });
+            SetActiveInteractions(new InteractionType[] { _activateType });
         }
 
         // For Config settings and Client Interaction requests
-        public void SetActiveInteractions(ScreenControlTypes.InteractionType[] _activateTypes)
+        public void SetActiveInteractions(InteractionType[] _activateTypes)
         {
             foreach(var interaction in interactions)
             {
@@ -89,7 +91,7 @@ namespace Ultraleap.ScreenControl.Core
             }
         }
 
-        private void HandleInteractionModuleInputAction(ScreenControlTypes.HandChirality _chirality, ScreenControlTypes.HandType _handType, ScreenControlTypes.CoreInputAction _inputData)
+        private void HandleInteractionModuleInputAction(HandChirality _chirality, HandType _handType, InputAction _inputData)
         {
             HandleInputAction?.Invoke(_inputData);
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Concurrent;
 using Ultraleap.ScreenControl.Service.ScreenControlTypes;
-using Ultraleap.ScreenControl.Core;
+using Ultraleap.TouchFree.ServiceShared;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

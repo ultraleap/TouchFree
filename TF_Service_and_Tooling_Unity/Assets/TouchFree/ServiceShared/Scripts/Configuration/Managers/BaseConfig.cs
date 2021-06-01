@@ -1,6 +1,6 @@
 using System;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     public abstract class BaseSettings
     {

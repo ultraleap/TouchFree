@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -25,7 +26,7 @@ namespace Ultraleap.ScreenControl.Core
                     return 1;
                 }
 
-                float duckPinchStrength = ScreenControlUtility.MapRangeToRange(metric, pinchActivateDistance, strengthZeroDistance, 1, 0);
+                float duckPinchStrength = ServiceUtility.MapRangeToRange(metric, pinchActivateDistance, strengthZeroDistance, 1, 0);
                 duckPinchStrength = Mathf.Clamp(duckPinchStrength, 0, 1);
                 return duckPinchStrength;
             }

@@ -1,7 +1,6 @@
-﻿using Leap.Unity.Swizzle;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     public class VirtualScreen
     {

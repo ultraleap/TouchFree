@@ -3,7 +3,7 @@ using System.IO;
 using System;
 using Microsoft.Win32;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     public static class ConfigFileUtils
     {
@@ -25,7 +25,7 @@ namespace Ultraleap.ScreenControl.Core
             }
         }
 
-        static readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\ScreenControl\\Configuration\\");
+        static readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\TouchFree\\Configuration\\");
 
         public static void CheckForConfigDirectoryChange()
         {
@@ -34,9 +34,9 @@ namespace Ultraleap.ScreenControl.Core
 
         static void GetConfigFileDirectory()
         {
-            // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\ScreenControl\Service\Settings
+            // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\TouchFree\Service\Settings
             // Check registry for override to default directory
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings");
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\TouchFree\Service\Settings");
 
             if(regKey != null)
             {
@@ -87,12 +87,12 @@ namespace Ultraleap.ScreenControl.Core
         static void MoveConfigDirectory(string _newPath, string _oldPath)
         {
             // set the new directory path in the registry
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings", true);
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\TouchFree\Service\Settings", true);
 
             if (regKey == null)
             {
                 // make a new one
-                regKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings", true);
+                regKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Ultraleap\TouchFree\Service\Settings", true);
             }
 
             regKey.SetValue("ConfigFileDirectory", _newPath);

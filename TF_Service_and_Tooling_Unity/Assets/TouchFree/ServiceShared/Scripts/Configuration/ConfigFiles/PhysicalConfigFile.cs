@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Ultraleap.ScreenControl.Core
+﻿namespace Ultraleap.TouchFree.ServiceShared
 {
     public class PhysicalConfigFile : ConfigFile<PhysicalConfig, PhysicalConfigFile>
     {

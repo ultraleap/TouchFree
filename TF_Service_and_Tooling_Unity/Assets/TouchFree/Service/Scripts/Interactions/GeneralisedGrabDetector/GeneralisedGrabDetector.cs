@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using Leap.Unity;
 using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -157,12 +158,12 @@ namespace Ultraleap.ScreenControl.Core
             if (grabbing)
             {
                 grabbing = (pinchStrength >= unpinchThreshold);
-                GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, unpinchThreshold), 0, unpinchThreshold, 0, 1);
+                GeneralisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, unpinchThreshold), 0, unpinchThreshold, 0, 1);
             }
             else
             {
                 grabbing = (pinchStrength >= pinchThreshold);
-                GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
+                GeneralisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
             }
         }
 
@@ -172,12 +173,12 @@ namespace Ultraleap.ScreenControl.Core
             if (grabbing)
             {
                 grabbing = (grabStrength >= ungrabThreshold);
-                GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, ungrabThreshold), 0, ungrabThreshold, 0, 1);
+                GeneralisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, ungrabThreshold), 0, ungrabThreshold, 0, 1);
             }
             else
             {
                 grabbing = (grabStrength >= grabThreshold);
-                GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
+                GeneralisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
             }
         }
 
@@ -205,8 +206,8 @@ namespace Ultraleap.ScreenControl.Core
             }
             else
             {
-                float normalisedPinchStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
-                float normalisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
+                float normalisedPinchStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
+                float normalisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
 
                 GeneralisedGrabStrength = Mathf.Max(normalisedPinchStrength, normalisedGrabStrength);
             }
@@ -220,14 +221,14 @@ namespace Ultraleap.ScreenControl.Core
             if (grabbing)
             {
                 grabbing = combinedStrength >= combinedUngrabThreshold;
-                GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(combinedStrength, 0, combinedUngrabThreshold), 0, combinedUngrabThreshold, 0, 1);
+                GeneralisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(combinedStrength, 0, combinedUngrabThreshold), 0, combinedUngrabThreshold, 0, 1);
             }
             else
             {
                 grabbing = (pinchStrength == pinchThreshold) && (combinedStrength >= combinedGrabThreshold);
                 float clampedCombinedStrength = Mathf.Clamp(combinedStrength, 0, combinedGrabThreshold);
 
-                GeneralisedGrabStrength = ScreenControlUtility.MapRangeToRange(Mathf.Clamp(clampedCombinedStrength + pinchStrength, 0, combinedGrabThreshold + pinchThreshold), 0, clampedCombinedStrength + pinchThreshold, 0, 1);
+                GeneralisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(clampedCombinedStrength + pinchStrength, 0, combinedGrabThreshold + pinchThreshold), 0, clampedCombinedStrength + pinchThreshold, 0, 1);
             }
         }
 

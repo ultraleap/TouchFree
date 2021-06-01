@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     public static class EnumExtensions
     {

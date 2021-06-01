@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Stopwatch = System.Diagnostics.Stopwatch;
 using System.Collections.Generic;
-using Ultraleap.ScreenControl.Core.ScreenControlTypes;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {

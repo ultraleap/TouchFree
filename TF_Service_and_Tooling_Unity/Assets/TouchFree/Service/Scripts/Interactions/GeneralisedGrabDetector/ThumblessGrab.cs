@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity;
+using Ultraleap.TouchFree.ServiceShared;
+
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -77,7 +79,7 @@ namespace Ultraleap.ScreenControl.Core
         {
             float handAngle = GetAngle(hand);
             float clampedHandAngle = Mathf.Clamp(handAngle, clickAngle, 180);
-            GrabStrength = ScreenControlUtility.MapRangeToRange(clampedHandAngle, clickAngle, 180, 1, 0);
+            GrabStrength = ServiceUtility.MapRangeToRange(clampedHandAngle, clickAngle, 180, 1, 0);
 
             return handAngle < clickAngle;
         }

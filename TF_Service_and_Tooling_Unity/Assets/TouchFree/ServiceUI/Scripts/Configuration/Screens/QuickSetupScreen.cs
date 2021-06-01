@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
@@ -168,7 +169,7 @@ namespace Ultraleap.ScreenControl.Core
                 rotation.x = Vector3.SignedAngle(Vector3.up, directionBottomToTop, Vector3.left);
             }
 
-            rotation.x = ScreenControlUtility.CentreRotationAroundZero(rotation.x);
+            rotation.x = ServiceUtility.CentreRotationAroundZero(rotation.x);
             return rotation;
         }
 

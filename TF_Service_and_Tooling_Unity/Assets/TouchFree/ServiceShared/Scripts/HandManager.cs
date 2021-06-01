@@ -9,7 +9,7 @@ using Leap;
 using Leap.Unity;
 using System.Linq;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     [DefaultExecutionOrder(-1)]
     public class HandManager : MonoBehaviour
@@ -248,17 +248,17 @@ namespace Ultraleap.ScreenControl.Core
                     rightHand = hand;
             }
 
-            UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, ScreenControlTypes.HandType.PRIMARY);
+            UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
 
-            UpdateHandStatus(ref SecondaryHand, leftHand, rightHand, ScreenControlTypes.HandType.SECONDARY);
+            UpdateHandStatus(ref SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
         }
 
-        void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, ScreenControlTypes.HandType _handType)
+        void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, HandType _handType)
         {
             // We must use the cached Chirality to ensure persistence
             Chirality handChirality;
 
-            if (_handType == ScreenControlTypes.HandType.PRIMARY)
+            if (_handType == HandType.PRIMARY)
             {
                 handChirality = primaryChirality;
             }
@@ -271,7 +271,7 @@ namespace Ultraleap.ScreenControl.Core
             {
                 // Look for a new hand
 
-                if (_handType == ScreenControlTypes.HandType.PRIMARY)
+                if (_handType == HandType.PRIMARY)
                 {
                     AssignNewPrimary(_left, _right);
                 }
@@ -298,7 +298,7 @@ namespace Ultraleap.ScreenControl.Core
                 }
 
                 // If we are here, the Hand has been lost. Assign a new Hand.
-                if (_handType == ScreenControlTypes.HandType.PRIMARY)
+                if (_handType == HandType.PRIMARY)
                 {
                     AssignNewPrimary(_left, _right);
                 }
@@ -347,5 +347,13 @@ namespace Ultraleap.ScreenControl.Core
         {
             return ((LeapServiceProvider)Hands.Provider).IsConnected();
         }
+    }
+
+    public enum MountingType
+    {
+        NONE,
+        BELOW,
+        ABOVE_FACING_USER,
+        ABOVE_FACING_SCREEN
     }
 }

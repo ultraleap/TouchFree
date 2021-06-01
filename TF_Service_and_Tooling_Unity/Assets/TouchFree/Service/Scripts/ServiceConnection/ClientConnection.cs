@@ -6,7 +6,7 @@ using WebSocketSharp;
 using System.Text.RegularExpressions;
 using WebSocketSharp.Server;
 
-using Ultraleap.ScreenControl.Core.ScreenControlTypes;
+using Ultraleap.TouchFree.ServiceShared;
 using Ultraleap.ScreenControl.Service.ScreenControlTypes;
 
 using Newtonsoft.Json;
@@ -18,7 +18,7 @@ namespace Ultraleap.ScreenControl.Service
     {
         private bool HandshakeCompleted;
 
-        public void SendInputAction(CoreInputAction _data)
+        public void SendInputAction(InputAction _data)
         {
             if (!HandshakeCompleted)
             {

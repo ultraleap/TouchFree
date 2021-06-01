@@ -1,4 +1,5 @@
 using System;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
 {
@@ -31,10 +32,10 @@ namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
     public struct ConfigState
     {
         public string requestID;
-        public Core.InteractionConfig interaction;
-        public Core.PhysicalConfig physical;
+        public InteractionConfig interaction;
+        public PhysicalConfig physical;
 
-        public ConfigState(string _id, Core.InteractionConfig _interaction, Core.PhysicalConfig _physical)
+        public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
         {
             requestID = _id;
             interaction = _interaction;

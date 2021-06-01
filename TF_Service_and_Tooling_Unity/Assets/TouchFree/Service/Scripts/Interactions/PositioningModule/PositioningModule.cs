@@ -3,30 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Leap.Unity;
 using UnityEngine;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.ScreenControl.Core
 {
-    public struct Positions
-    {
-        /**
-         * Cursor position is used to guide the position of the cursor representation.
-         * It is calculated in Screen Space
-         */
-        public Vector2 CursorPosition;
-
-        /**
-         * Distance from screen is the physical distance of the hand from the screen.
-         * It is calculated in meters.
-         */
-        public float DistanceFromScreen;
-
-        public Positions(Vector2 _cursorPosition, float _distanceFromScreen)
-        {
-            CursorPosition = _cursorPosition;
-            DistanceFromScreen = _distanceFromScreen;
-        }
-    }
-
     public class PositioningModule : MonoBehaviour
     {
         public enum TRACKED_POSITION

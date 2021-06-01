@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceShared
 {
     [Serializable]
     public class PhysicalConfig : BaseSettings
