@@ -1,12 +1,12 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  TF_SERVICE_PROJECT_PATH: $CI_PROJECT_DIR/Service_Unity
-  TF_PROJECT_PATH: $CI_PROJECT_DIR/TouchFree
+  TF_SERVICE_PROJECT_PATH: $CI_PROJECT_DIR/TF_Service_&_Tooling_Unity
+  TF_PROJECT_PATH: $CI_PROJECT_DIR/TF_Application
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
 
-  TF_TFW_PATH: $CI_PROJECT_DIR/Tooling_Web
-  TF_TFU_PATH: $CI_PROJECT_DIR/Service_Unity/Assets/TouchFree_Tooling
-  TF_SRV_PATH: $CI_PROJECT_DIR/Service_Unity/Assets/TouchFree_Service/Service
+  TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
+  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Service_&_Tooling_Unity/Assets/TouchFree_Tooling
+  TF_SRV_PATH: $CI_PROJECT_DIR/TF_Service_&_Tooling_Unity/Assets/TouchFree_Service/Service
 
   TF_TFU_VERSION: 'alpha5'
   TF_TFW_VERSION: 'alpha5'
@@ -48,7 +48,7 @@ TF_Tooling::Unity::build:
         Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
     - mkdir ./Tooling_Release
-    - cp ${env:CI_PROJECT_DIR}/Service_Unity/Assets/TouchFree_Tooling/Version.txt ./Tooling_Release
+    - cp ${env:CI_PROJECT_DIR}/TF_Service_&_Tooling_Unity/Assets/TouchFree_Tooling/Version.txt ./Tooling_Release
 
     # Package Tooling
     - cd ./Scripts
@@ -100,8 +100,8 @@ TF_Tooling::Docs::build:
   when: always
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
   script:
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/Service_Unity/NaturalDocs_Config
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/Tooling_Web/NaturalDocs_Config
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Service_&_Tooling_Unity/NaturalDocs_Config
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Tooling_Web/NaturalDocs_Config
   artifacts:
     name: "TouchFree_Tooling_Documentation"
     paths:
@@ -115,14 +115,14 @@ TF_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/TouchFree_Service_Utilities/TouchFree_ServiceWrapper/TouchFree_ServiceWrapper.sln /p:Configuration=Release
+    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper.sln /p:Configuration=Release
     # Move the built wrapper to the root directory
     - mkdir ./TouchFree_Service_Wrapper_Build
-    - cp -r $CI_PROJECT_DIR/TouchFree_Service_Utilities/TouchFree_ServiceWrapper/TouchFree_ServiceWrapper/bin/Release/* ./TouchFree_Service_Wrapper_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/* ./TouchFree_Service_Wrapper_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Service_Wrapper_Build/TouchFree_ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Service_Wrapper_Build/ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Service_Wrapper"
     paths:
@@ -137,14 +137,14 @@ TF_Service::Tray::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/TouchFree_Service_Utilities/TouchFree_ServiceUITray/TouchFree_ServiceUITray.sln /p:Configuration=Release
+    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release
     # Move the built tray app to the root directory
     - mkdir ./TouchFree_Tray_Build
-    - cp -r $CI_PROJECT_DIR/TouchFree_Service_Utilities/TouchFree_ServiceUITray/TouchFree_ServiceUITray/bin/Release/* ./TouchFree_Tray_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/Release/* ./TouchFree_Tray_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Tray_Build/TouchFree_ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Tray_Build/ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Service_Tray"
     paths:
@@ -183,9 +183,9 @@ TF_Service::build:
 
     # Update ProjectSettings file with correct version & build service
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../Service_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Service_&_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
     - "& ./build_service.bat $UNITY_EXE"
-    - python ./UpdateBuildSettings_Service.py --path ../Service_Unity/ProjectSettings/EditorBuildSettings.asset
+    - python ./UpdateBuildSettings_Service.py --path ../TF_Service_&_Tooling_Unity/ProjectSettings/EditorBuildSettings.asset
     - "& ./build_serviceUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
@@ -227,7 +227,7 @@ TouchFree::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TF_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
 
     # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
@@ -235,11 +235,11 @@ TouchFree::build:
         Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
       }
     - mkdir ./TouchFree_Build
-    - cp ${env:CI_PROJECT_DIR}/TouchFree/Assets/TouchFree/Version.txt ./TouchFree_Build
+    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TF_Application/Version.txt ./TouchFree_Build
 
     # Build TouchFree
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../TouchFree/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Application/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
     - "& ./build_touchfree.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
@@ -334,9 +334,9 @@ TF_Service::package:
     - TF_Service::Wrapper::build
     - TF_Service::Tray::build
   needs: [
-    "TouchFree_Service::build",
-    "TouchFree_Service::Wrapper::build",
-    "TouchFree_Service::Tray::build"
+    "TF_Service::build",
+    "TF_Service::Wrapper::build",
+    "TF_Service::Tray::build"
   ]
   script:
     # Package Service up neatly
@@ -374,13 +374,13 @@ TouchFree::installer:
   script:
     # Run innosetup
     - cd ./Scripts/
-    - "& ./compile_installer.bat $CI_PROJECT_DIR/TouchFree_Service_Utilities/Installer/TouchFree_Installer.iss"
+    - "& ./compile_installer.bat $CI_PROJECT_DIR/TF_Service_Utilities/Installer/TouchFree_Installer.iss"
 
     # Sign the installer with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_1.0.0-${TF_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "TouchFree_Service_${TF_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Installer_${TF_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
       - ./Installer_Build/*.exe
     expire_in: 2 weeks
