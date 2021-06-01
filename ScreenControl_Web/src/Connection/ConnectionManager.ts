@@ -2,7 +2,6 @@
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
 import { HandPresenceState } from "./ScreenControlServiceTypes";
-import { ClientInputAction } from "../ScreenControlTypes";
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -16,10 +15,6 @@ export class ConnectionManager extends EventTarget {
     //
     // Instead of adding listeners to this event, use <AddConnectionListener> to ensure that your
     // function is invoked if the connection has already been made by the time your class runs.
-
-    // Event: TransmitInputAction
-    // An event for transmitting <ClientInputActions> that are received via the <messageReceiver> to
-    // be listened to.
 
     // Group: Variables
 
@@ -80,18 +75,6 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.currentServiceConnection = new ServiceConnection(
             ConnectionManager.iPAddress,
             ConnectionManager.port);
-    }
-
-    // Function: HandleInputAction
-    // Called by the <messageReceiver> to relay a <ClientInputAction> that has been received to any
-    // listeners of <TransmitInputAction>.
-    public static HandleInputAction(_action: ClientInputAction): void {
-        let inputActionEvent: CustomEvent<ClientInputAction> = new CustomEvent<ClientInputAction>(
-            'TransmitInputAction',
-            { detail: _action }
-        );
-
-        ConnectionManager.instance.dispatchEvent(inputActionEvent);
     }
 
     // Function: HandleHandPresenceEvent

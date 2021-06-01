@@ -11,6 +11,7 @@ import {
     InputType,
     WebsocketInputAction
 } from '../ScreenControlTypes';
+import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
 
 // Class: MessageReceiver
@@ -175,7 +176,7 @@ export class MessageReceiver {
             // Parse newly received messages & distribute them
             let converted: ClientInputAction = ConvertInputAction(action);
 
-            ConnectionManager.HandleInputAction(converted);
+            InputActionManager.HandleInputAction(converted);
         }
 
         if (this.lastStateUpdate != HandPresenceState.PROCESSED) {

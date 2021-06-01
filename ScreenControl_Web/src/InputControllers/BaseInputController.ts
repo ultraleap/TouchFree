@@ -1,5 +1,5 @@
-import { ConnectionManager } from "../Connection/ConnectionManager";
 import { ClientInputAction, InputType } from "../ScreenControlTypes";
+import { InputActionManager } from '../Plugins/InputActionManager';
 
 // Class: InputController
 // InputControllers convert <ClientInputActions> as recieved from the service into appropriate
@@ -16,7 +16,7 @@ export abstract class BaseInputController {
     // Adds a listener to <ConnectionManager> to invoke <HandleInputAction> with <ClientInputActions> as they
     // are received.
     constructor() {
-        ConnectionManager.instance.addEventListener('TransmitInputAction',
+        InputActionManager.instance.addEventListener('TransmitInputAction',
             ((e: CustomEvent<ClientInputAction>) => {
                 this.HandleInputAction(e.detail);
             }) as EventListener);
