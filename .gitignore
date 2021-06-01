@@ -88,8 +88,7 @@ Testing/ServiceSocketTests/results/**
 #  Service Utilities  #
 # =================== #
 
-!/ScreenControl_Service_Utilities/**/*.csproj
-!/ScreenControl_Service_Utilities/**/*.sln
+!/TF_Service_Utilities/**/*.csproj
+!/TF_Service_Utilities/**/*.sln
 
-!/Service_Utilities/**/*.csproj
-!/Service_Utilities/**/*.sln
+
