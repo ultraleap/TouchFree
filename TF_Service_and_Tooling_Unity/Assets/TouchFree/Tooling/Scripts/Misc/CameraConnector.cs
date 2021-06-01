@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.TouchFree.Tooling
 {
     /// <summary>
-    /// CameraConnector is used to ensure all canvasses used by ScreenControl Client reference the correct camera
+    /// CameraConnector is used to ensure all canvasses used by TouchFree Tooling reference the correct camera
     /// for rendering.
     /// e.g. The sprites used for the ring in the RingCursor prefab will not render if the camera is not directly referenced
     /// on the CursorCanvas

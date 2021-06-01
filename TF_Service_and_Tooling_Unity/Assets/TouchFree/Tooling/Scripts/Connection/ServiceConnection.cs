@@ -4,10 +4,10 @@ using UnityEngine;
 
 using WebSocketSharp;
 
-namespace Ultraleap.ScreenControl.Client.Connection
+namespace Ultraleap.TouchFree.Tooling.Connection
 {
     // Class: ServiceConnection
-    // This represents a connection to a ScreenControl Service. It should be created by a
+    // This represents a connection to a TouchFree Service. It should be created by a
     // <ConnectionManager> to ensure there is only one active connection at a time. The sending
     // and receiving of data to the client is handled here.
     public class ServiceConnection
@@ -60,7 +60,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: ConnectionResultCallback
-        // Passed into <SendMessage> as part of connecting to ScreenControl Service, handles the
+        // Passed into <SendMessage> as part of connecting to TouchFree Service, handles the
         // result of the Version Checking handshake.
         private void ConnectionResultCallback(WebSocketResponse response)
         {
@@ -105,7 +105,7 @@ namespace Ultraleap.ScreenControl.Client.Connection
             {
                 case ActionCode.INPUT_ACTION:
                     WebsocketInputAction wsInput = JsonUtility.FromJson<WebsocketInputAction>(content);
-                    ClientInputAction cInput = new ClientInputAction(wsInput);
+                    InputAction cInput = new InputAction(wsInput);
                     ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
                 case ActionCode.CONFIGURATION_STATE:

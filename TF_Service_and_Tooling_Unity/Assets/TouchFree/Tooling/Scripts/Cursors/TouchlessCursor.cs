@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
-using Ultraleap.ScreenControl.Client.Connection;
+using Ultraleap.TouchFree.Tooling.Connection;
 
-namespace Ultraleap.ScreenControl.Client.Cursors
+namespace Ultraleap.TouchFree.Tooling.Cursors
 {
     // Class: TouchlessCursor
-    // This class is a base class for creating custom Touchless cursors for use with ScreenControl.
+    // This class is a base class for creating custom Touchless cursors for use with
+    // TouchFree Tooling.
     //
-    // Override <HandleInputAction> to react to <ClientInputActions> as they are recieved.
+    // Override <HandleInputAction> to react to <InputActions> as they are recieved.
     //
     // For an example of a reactive cursor, see <DotCursor>.
     public class TouchlessCursor : MonoBehaviour
@@ -71,12 +72,12 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Group: Functions
 
         // Function: HandleInputAction
-        // The core of the logic for Cursors, this is invoked with each <ClientInputAction> as
+        // The core of the logic for Cursors, this is invoked with each <InputAction> as
         // they are recieved. Override this function to implement cursor behaviour in response.
         //
         // Parameters:
-        //    _inputData - The latest input action recieved from ScreenControl Service.
-        protected virtual void HandleInputAction(ClientInputAction _inputData)
+        //    _inputData - The latest input action recieved from TouchFree Service.
+        protected virtual void HandleInputAction(InputAction _inputData)
         {
             targetPos = _inputData.CursorPosition;
         }

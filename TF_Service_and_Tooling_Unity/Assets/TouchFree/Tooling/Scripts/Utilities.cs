@@ -1,7 +1,7 @@
-﻿namespace Ultraleap.ScreenControl.Client
+﻿namespace Ultraleap.TouchFree.Tooling
 {
     // Class: Utilities
-    // This class contains any utility functions that ScreenControl uses.
+    // This class contains any utility functions that TouchFree Tooling uses.
     public static class Utilities
     {
         // Group: Functions

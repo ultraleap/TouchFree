@@ -1,27 +1,27 @@
 using System;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.TouchFree.Tooling
 {
     // Class: VersionInfo
-    // This class is used when comparing the <ApiVersion> of the Client and the Service.
+    // This class is used when comparing the <ApiVersion> of the Tooling and the Service.
     public static class VersionInfo
     {
         // Group: Variables
 
         // Variable: ApiVersion
-        // The current API version of the Client.
+        // The current API version of the Tooling.
         public static readonly Version ApiVersion = new Version("1.1.0");
 
         // Variable: API_HEADER_NAME
         // The name of the header we wish the Service to compare our version with.
-        public const string API_HEADER_NAME = "ScApiVersion";
+        public const string API_HEADER_NAME = "TfApiVersion";
     }
 
-    // Struct: ClientInputAction
-    // The clients representation of an InputAction. This is used to pass
+    // Struct: InputAction
+    // The Tooling representation of an InputAction. This is used to pass
     // key information relating to an action that has happened on the Service.
-    public struct ClientInputAction
+    public struct InputAction
     {
         public long Timestamp;
         public InteractionType InteractionType;
@@ -32,7 +32,7 @@ namespace Ultraleap.ScreenControl.Client
         public float DistanceFromScreen;
         public float ProgressToClick;
 
-        public ClientInputAction(
+        public InputAction(
             long _timestamp,
             InteractionType _interactionType,
             HandType _handType,
@@ -52,7 +52,7 @@ namespace Ultraleap.ScreenControl.Client
             ProgressToClick = _progressToClick;
         }
 
-        public ClientInputAction(WebsocketInputAction _wsInput)
+        public InputAction(WebsocketInputAction _wsInput)
         {
             Timestamp = _wsInput.Timestamp;
             InteractionType = FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags);
@@ -145,7 +145,7 @@ namespace Ultraleap.ScreenControl.Client
 
     // Struct: WebsocketInputAction
     // The version of an InputAction received via the WebSocket. This must be converted into a
-    // <ClientInputAction> to be used by the client and can be done so via its constructor.
+    // <InputAction> to be used by the Tooling and can be done so via its constructor.
     [Serializable]
     public struct WebsocketInputAction
     {

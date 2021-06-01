@@ -1,36 +1,33 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.TouchFree.Tooling
 {
     // Class: InputActionManager
-    // The manager for all <ClientInputActions> to be handled and distributed. This runs the
+    // The manager for all <InputActions> to be handled and distributed. This runs the
     // received data through any referenced <InputActionPlugins> and finaly distributes the data
     // via the  <TransmitInputAction> event which should be listened to by any class hoping to make
-    // use of incoming <ClientInputActions>.
+    // use of incoming <InputActions>.
     [DefaultExecutionOrder(-1)]
     public class InputActionManager : MonoBehaviour
     {
-        // Delegate: ClientInputActionEvent
-        // An Action to distribute a <ClientInputAction> via the <TransmitInputAction> event listener.
-        public delegate void ClientInputActionEvent(ClientInputAction _inputData);
+        // Delegate: InputActionEvent
+        // An Action to distribute a <InputAction> via the <TransmitInputAction> event listener.
+        public delegate void InputActionEvent(InputAction _inputData);
 
         // Variable: TransmitInputAction
-        // An event for transmitting <ClientInputActions> that have been modified via the active
+        // An event for transmitting <InputActions> that have been modified via the active
         // <plugins>
-        public static event ClientInputActionEvent TransmitInputAction;
+        public static event InputActionEvent TransmitInputAction;
 
         // Variable: TransmitRawInputAction
-        // An event for transmitting <ClientInputActions> that have NOT been modified via any
+        // An event for transmitting <InputActions> that have NOT been modified via any
         // <plugins>
-        public static event ClientInputActionEvent TransmitRawInputAction;
+        public static event InputActionEvent TransmitRawInputAction;
 
         public static InputActionManager Instance;
 
         // Variable: plugins
-        // A pre-defined plugin array of <ToggleablePlugins> that modify incoming <ClientInputActions>
+        // A pre-defined plugin array of <ToggleablePlugins> that modify incoming <InputActions>
         // based on custom rules.
         [Tooltip("These plugins modify InputActions and are performed in order.")]
         [SerializeField] ToggleablePlugin[] plugins;
@@ -44,11 +41,11 @@ namespace Ultraleap.ScreenControl.Client
             Instance = this;
         }
 
-        internal void SendInputAction(ClientInputAction _inputAction)
+        internal void SendInputAction(InputAction _inputAction)
         {
             TransmitRawInputAction?.Invoke(_inputAction);
 
-            ClientInputAction? modifiedInputAction = RunPlugins(_inputAction);
+            InputAction? modifiedInputAction = RunPlugins(_inputAction);
 
             if (modifiedInputAction.HasValue)
             {
@@ -56,9 +53,9 @@ namespace Ultraleap.ScreenControl.Client
             }
         }
 
-        ClientInputAction? RunPlugins(ClientInputAction _inputAction)
+        InputAction? RunPlugins(InputAction _inputAction)
         {
-            ClientInputAction? modifiedInputAction = _inputAction;
+            InputAction? modifiedInputAction = _inputAction;
 
             // Send the input action through the plugins in order
             // if it is returned null from a plugin, return it to be ignored

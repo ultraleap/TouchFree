@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-using Ultraleap.ScreenControl.Client.Connection;
+using Ultraleap.TouchFree.Tooling.Connection;
 
-namespace Ultraleap.ScreenControl.Client.Configuration
+namespace Ultraleap.TouchFree.Tooling.Configuration
 {
     // Class: ConfigurationManager
-    // This static class provides async methods for changing the configuration of the ScreenControl
+    // This static class provides async methods for changing the configuration of the TouchFree
     // service. Makes use of the static <ConnectionManager> for communication with the Service.
     public static class ConfigurationManager
     {
@@ -26,7 +25,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
         // appropriate form to go over the websocket, before sending it through the <ConnectionManager>
         //
         // WARNING!
-        // If a user changes ANY values via the ScreenControl Service Settings UI,
+        // If a user changes ANY values via the TouchFree Service Settings UI,
         // values set from a client via this function will be discarded.
         public static void RequestConfigChange(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {

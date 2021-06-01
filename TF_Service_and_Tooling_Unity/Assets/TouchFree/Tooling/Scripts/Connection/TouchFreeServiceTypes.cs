@@ -1,8 +1,8 @@
 ﻿using System;
 
-using Ultraleap.ScreenControl.Client.Configuration;
+using Ultraleap.TouchFree.Tooling.Configuration;
 
-namespace Ultraleap.ScreenControl.Client.Connection
+namespace Ultraleap.TouchFree.Tooling.Connection
 {
     // Enum: ActionCode
     // INPUT_ACTION - Represents standard interaction data

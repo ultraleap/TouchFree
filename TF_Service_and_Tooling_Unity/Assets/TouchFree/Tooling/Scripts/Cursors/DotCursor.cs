@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
-using Ultraleap.ScreenControl.Client.Connection;
+using Ultraleap.TouchFree.Tooling.Connection;
 
-namespace Ultraleap.ScreenControl.Client.Cursors
+namespace Ultraleap.TouchFree.Tooling.Cursors
 {
     // Class: DotCursor
     // This is an example Touchless Cursor which positions a dot on the screen at the hand location,
@@ -98,7 +98,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // Group: Functions
 
         // Function: UpdateCursor
-        // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
+        // Used to update the cursor when recieving a "MOVE" <InputAction>. Updates the
         // cursor's position, as well as the size of the ring based on the current ProgressToClick.
         public virtual void UpdateCursor(Vector2 _screenPos, float _progressToClick)
         {
@@ -141,7 +141,7 @@ namespace Ultraleap.ScreenControl.Client.Cursors
         // cursor's ring scale dynamically with the current ProgressToClick and creating a small
         // "shrink" animation when a "DOWN" event is recieved, and a "grow" animation when an "UP"
         // is recieved.
-        protected override void HandleInputAction(ClientInputAction _inputData)
+        protected override void HandleInputAction(InputAction _inputData)
         {
             switch (_inputData.InputType)
             {

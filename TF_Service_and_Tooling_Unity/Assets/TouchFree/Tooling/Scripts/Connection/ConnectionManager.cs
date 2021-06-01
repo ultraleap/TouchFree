@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client.Connection
+namespace Ultraleap.TouchFree.Tooling.Connection
 {
     // Class: ConnectionManager
     // This Class manages the connection to the Service. It provides static variables

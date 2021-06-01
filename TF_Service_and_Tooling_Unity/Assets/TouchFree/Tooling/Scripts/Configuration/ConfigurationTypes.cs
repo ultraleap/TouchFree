@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client.Configuration
+namespace Ultraleap.TouchFree.Tooling.Configuration
 {
     // Class: InteractionConfig
     // This class is a container for all of the settings related to the interactions being processed
-    // by the ScreenControl Service. The settings at the root of this object will affect all
+    // by the TouchFree Service. The settings at the root of this object will affect all
     // sensations. There are also some settings specific to the Hover and Hold interaction which can
     //  be modified by changing the contained <HoverAndHoldInteractionSettings>.
     //
@@ -14,7 +14,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     //
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
-    // ScreenControl Service.
+    // TouchFree Service.
     [System.Serializable]
     public class InteractionConfig
     {
@@ -108,13 +108,13 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
     // Class: HoverAndHoldInteractionSettings
     // This class is a container for settings that only apply to the Hover and Hold interaction. In
-    // order to modify these settings of the ScreenControl Service, create an <InteractionConfig>,
+    // order to modify these settings of the TouchFree Service, create an <InteractionConfig>,
     // which contains an instance of this class, modify it as required, and then pass to the service
     // using the <ConfigurationManager>.
     //
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
-    // ScreenControl Service.
+    // TouchFree Service.
     [System.Serializable]
     public class HoverAndHoldInteractionSettings
     {
@@ -181,13 +181,13 @@ namespace Ultraleap.ScreenControl.Client.Configuration
 
     // Class: TouchPlaneInteractionSettings
     // This class is a container for settings that only apply to the TouchPlane interaction. In
-    // order to modify these settings of the ScreenControl Service, create an <InteractionConfig>,
+    // order to modify these settings of the TouchFree Service, create an <InteractionConfig>,
     // which contains an instance of this class, modify it as required, and then pass to the service
     // using the <ConfigurationManager>.
     //
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
-    // ScreenControl Service.
+    // TouchFree Service.
     [System.Serializable]
     public class TouchPlaneInteractionSettings
     {
@@ -259,7 +259,7 @@ namespace Ultraleap.ScreenControl.Client.Configuration
     //
     // Like all of the Settings classes found in this file, all members are optional. If you do
     // not modify a member of this class, its value will not change when the instance is sent to
-    // ScreenControl Service.
+    // TouchFree Service.
     [System.Serializable]
     public class PhysicalConfig
     {

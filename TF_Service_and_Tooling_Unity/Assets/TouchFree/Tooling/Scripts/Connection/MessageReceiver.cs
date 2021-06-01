@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client.Connection
+namespace Ultraleap.TouchFree.Tooling.Connection
 {
     // Class: MessageReceiver
     // Handles the receiving of messages from the Service in an ordered manner.
@@ -19,14 +19,14 @@ namespace Ultraleap.ScreenControl.Client.Connection
         const int callbackClearTimer = 300; // 5 minutes
 
         // Variable: actionCullToCount
-        // How many non-essential <ClientInputActions> should the <actionQueue> be trimmed *to* per
+        // How many non-essential <InputActions> should the <actionQueue> be trimmed *to* per
         // frame. This is used to ensure the Client can keep up with the Events sent over the
         // WebSocket.
         public int actionCullToCount = 2;
 
         // Variable: actionQueue
-        // A queue of <ClientInputActions> that have been received from the Service.
-        public ConcurrentQueue<ClientInputAction> actionQueue = new ConcurrentQueue<ClientInputAction>();
+        // A queue of <InputActions> that have been received from the Service.
+        public ConcurrentQueue<InputAction> actionQueue = new ConcurrentQueue<InputAction>();
 
         // Variable: responseQueue
         // A queue of <WebSocketResponses> that have been received from the Service.
@@ -133,13 +133,13 @@ namespace Ultraleap.ScreenControl.Client.Connection
         }
 
         // Function: CheckForAction
-        // Checks <actionQueue> for valid <ClientInputActions>. If there are too many in the queue,
-        // clears out non-essential <ClientInputActions> down to the number specified by
-        // <actionCullToCount>. If any remain, sends the oldest <ClientInputAction> to
+        // Checks <actionQueue> for valid <InputActions>. If there are too many in the queue,
+        // clears out non-essential <InputActions> down to the number specified by
+        // <actionCullToCount>. If any remain, sends the oldest <InputAction> to
         // <InputActionManager> to distribute the action.
         void CheckForAction()
         {
-            ClientInputAction action;
+            InputAction action;
             while (actionQueue.Count > actionCullToCount)
             {
                 if (actionQueue.TryPeek(out action))

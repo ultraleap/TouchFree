@@ -2,11 +2,11 @@
 
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Client
+namespace Ultraleap.TouchFree.Tooling
 {
     // Class: JsonUtilities
     // This class is used to manually convert objects to Json strings. It is used
-    // for generating custom configuration files to be sent to the ScreenControl Service.
+    // for generating custom configuration files to be sent to the TouchFree Service.
     public static class JsonUtilities
     {
         // Group: Functions

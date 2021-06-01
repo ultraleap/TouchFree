@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Ultraleap.ScreenControl.Client.InputControllers
+namespace Ultraleap.TouchFree.Tooling.InputControllers
 {
     // Class: UnityUIInputController
-    // Provides Unity UI Input based on the incoming data from ScreenControl Service via a
+    // Provides Unity UI Input based on the incoming data from TouchFree Service via a
     // <ServiceConnection>
     public class UnityUIInputController : InputController
     {
@@ -36,7 +36,7 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
 
         // Group: Inherited Values
         // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
-        // and are overridden here so their values can be determined from the ScreenControl Service.
+        // and are overridden here so their values can be determined from the TouchFree Service.
         public override Vector2 mousePosition => (sendHoverEvents && !isCancelled) ? touchPosition : base.mousePosition;
         public override bool mousePresent => (sendHoverEvents && !isCancelled) ? true : base.mousePresent;
         public override bool touchSupported => isTouching ? true : base.touchSupported;
@@ -83,12 +83,12 @@ namespace Ultraleap.ScreenControl.Client.InputControllers
         }
 
         // Function: HandleInputAction
-        // Called with each <ClientInputAction> as it comes into the <ServiceConnection>. Updates the
+        // Called with each <InputAction> as it comes into the <ServiceConnection>. Updates the
         // underlying InputModule and EventSystem based on the incoming actions.
         //
         // Parameters:
         //     _inputData - The latest Action to arrive via the <ServiceConnection>.
-        protected override void HandleInputAction(ClientInputAction _inputData)
+        protected override void HandleInputAction(InputAction _inputData)
         {
             base.HandleInputAction(_inputData);
 
