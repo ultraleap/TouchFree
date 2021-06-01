@@ -298,8 +298,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -317,8 +317,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
@@ -351,8 +351,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89703144fdf3fd1459574ac692f8b7af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!114 &336221991037597419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,8 +363,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e4f2413d4b7ead40a8a971be0ed94fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   orthographicCamera: {fileID: 0}
   targetCanvasses:
   - {fileID: 5846096576921452455}
@@ -1078,7 +1078,7 @@ PrefabInstance:
     - target: {fileID: 4541549585632794220, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: clientRootObj
-      value: 
+      value:
       objectReference: {fileID: 25156774}
     - target: {fileID: 4722344451572564877, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
@@ -1245,6 +1245,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -50
       objectReference: {fileID: 0}
+    - target: {fileID: 4953606663205393950, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_Sprite
+      value:
+      objectReference: {fileID: 21300000, guid: 0580a093d2eb7ce44b35d8eb493a3d30,
+        type: 3}
     - target: {fileID: 5067000976981771824, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1445,6 +1451,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5639361928291904518, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5824723833249916939, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1563,7 +1574,7 @@ PrefabInstance:
     - target: {fileID: 7096001461862988646, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_Text
-      value: 
+      value:
       objectReference: {fileID: 0}
     - target: {fileID: 7280351135722216694, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
@@ -1823,6 +1834,21 @@ PrefabInstance:
     - target: {fileID: 8780420782419932791, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8935188519608292550, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_ContentType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8935188519608292550, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8935188519608292550, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_CharacterValidation
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
