@@ -17,28 +17,28 @@ namespace HSVPicker
 			BottomToTop,
 			TopToBottom,
 		}
-		
+
 		[Serializable]
 		public class BoxSliderEvent : UnityEvent<float, float> { }
 
 		[SerializeField]
 		private RectTransform m_HandleRect;
 		public RectTransform handleRect { get { return m_HandleRect; } set { if (SetClass(ref m_HandleRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
-		
+
 		[Space(6)]
 
 		[SerializeField]
 		private float m_MinValue = 0;
 		public float minValue { get { return m_MinValue; } set { if (SetStruct(ref m_MinValue, value)) { Set(m_Value); SetY (m_ValueY); UpdateVisuals(); } } }
-		
+
 		[SerializeField]
 		private float m_MaxValue = 1;
 		public float maxValue { get { return m_MaxValue; } set { if (SetStruct(ref m_MaxValue, value)) { Set(m_Value); SetY (m_ValueY); UpdateVisuals(); } } }
-		
+
 		[SerializeField]
 		private bool m_WholeNumbers = false;
 		public bool wholeNumbers { get { return m_WholeNumbers; } set { if (SetStruct(ref m_WholeNumbers, value)) { Set(m_Value); SetY (m_ValueY); UpdateVisuals(); } } }
-		
+
 		[SerializeField]
 		private float m_Value = 1f;
 		public float value
@@ -54,7 +54,7 @@ namespace HSVPicker
 				Set(value);
 			}
 		}
-		
+
 		public float normalizedValue
 		{
 			get
@@ -84,7 +84,7 @@ namespace HSVPicker
 				SetY(value);
 			}
 		}
-		
+
 		public float normalizedValueY
 		{
 			get
@@ -98,38 +98,38 @@ namespace HSVPicker
 				this.valueY = Mathf.Lerp(minValue, maxValue, value);
 			}
 		}
-		
+
 		[Space(6)]
-		
+
 		// Allow for delegate-based subscriptions for faster events than 'eventReceiver', and allowing for multiple receivers.
 		[SerializeField]
 		private BoxSliderEvent m_OnValueChanged = new BoxSliderEvent();
 		public BoxSliderEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
-		
+
 		// Private fields
-		
+
         //private Image m_FillImage;
         //private Transform m_FillTransform;
         //private RectTransform m_FillContainerRect;
 		private Transform m_HandleTransform;
 		private RectTransform m_HandleContainerRect;
-		
+
 		// The offset from handle position to mouse down position
 		private Vector2 m_Offset = Vector2.zero;
-		
+
 		private DrivenRectTransformTracker m_Tracker;
-		
+
 		// Size of each step.
 		float stepSize { get { return wholeNumbers ? 1 : (maxValue - minValue) * 0.1f; } }
-		
+
 		protected BoxSlider()
 		{ }
-		
+
 		#if UNITY_EDITOR
 		protected override void OnValidate()
 		{
 			base.OnValidate();
-			
+
 			if (wholeNumbers)
 			{
 				m_MinValue = Mathf.Round(m_MinValue);
@@ -159,7 +159,7 @@ namespace HSVPicker
             #endif
 		}
 		#endif // if UNITY_EDITOR
-		
+
 		public virtual void Rebuild(CanvasUpdate executing)
 		{
 			#if UNITY_EDITOR
@@ -170,7 +170,7 @@ namespace HSVPicker
 
 	    public void LayoutComplete()
 	    {
-	        
+
 	    }
 
 	    public void GraphicUpdateComplete()
@@ -182,7 +182,7 @@ namespace HSVPicker
 		{
 			if ((currentValue == null && newValue == null) || (currentValue != null && currentValue.Equals(newValue)))
 				return false;
-			
+
 			currentValue = newValue;
 			return true;
 		}
@@ -191,11 +191,11 @@ namespace HSVPicker
 		{
 			if (currentValue.Equals(newValue))
 			return false;
-			
+
 			currentValue = newValue;
 			return true;
 		}
-		
+
 		protected override void OnEnable()
 		{
 			base.OnEnable();
@@ -205,16 +205,16 @@ namespace HSVPicker
 			// Update rects since they need to be initialized correctly.
 			UpdateVisuals();
 		}
-		
+
 		protected override void OnDisable()
 		{
 			m_Tracker.Clear();
 			base.OnDisable();
 		}
-		
+
 		void UpdateCachedReferences()
 		{
-			
+
 			if (m_HandleRect)
 			{
 				m_HandleTransform = m_HandleRect.transform;
@@ -226,24 +226,24 @@ namespace HSVPicker
 				m_HandleContainerRect = null;
 			}
 		}
-		
+
 		// Set the valueUpdate the visible Image.
 		void Set(float input)
 		{
 			Set(input, true);
 		}
-		
+
 		void Set(float input, bool sendCallback)
 		{
 			// Clamp the input
 			float newValue = Mathf.Clamp(input, minValue, maxValue);
 			if (wholeNumbers)
 				newValue = Mathf.Round(newValue);
-			
+
 			// If the stepped value doesn't match the last one, it's time to update
             if (m_Value.Equals(newValue))
 				return;
-			
+
 			m_Value = newValue;
 			UpdateVisuals();
 			if (sendCallback)
@@ -254,48 +254,49 @@ namespace HSVPicker
 		{
 			SetY(input, true);
 		}
-		
+
 		void SetY(float input, bool sendCallback)
 		{
 			// Clamp the input
 			float newValue = Mathf.Clamp(input, minValue, maxValue);
 			if (wholeNumbers)
 				newValue = Mathf.Round(newValue);
-			
+
 			// If the stepped value doesn't match the last one, it's time to update
             if (m_ValueY.Equals(newValue))
 				return;
-			
+
 			m_ValueY = newValue;
 			UpdateVisuals();
 			if (sendCallback)
 				m_OnValueChanged.Invoke(value, newValue);
 		}
 
-		
+
 		protected override void OnRectTransformDimensionsChange()
 		{
 			base.OnRectTransformDimensionsChange();
 			UpdateVisuals();
 		}
-		
+
 		enum Axis
 		{
 			Horizontal = 0,
 			Vertical = 1
 		}
 
-		
+
 		// Force-update the slider. Useful if you've changed the properties and want it to update visually.
 		private void UpdateVisuals()
 		{
 			#if UNITY_EDITOR
 			if (!Application.isPlaying)
+				return;
 				UpdateCachedReferences();
 			#endif
-			
+
 			m_Tracker.Clear();
-			
+
 
 			//to business!
 			if (m_HandleContainerRect != null)
@@ -310,7 +311,7 @@ namespace HSVPicker
 				m_HandleRect.anchorMax = anchorMax;
 			}
 		}
-		
+
 		// Update the slider's position based on the mouse.
 		void UpdateDrag(PointerEventData eventData, Camera cam)
 		{
@@ -321,7 +322,7 @@ namespace HSVPicker
 				if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(clickRect, eventData.position, cam, out localCursor))
 					return;
 				localCursor -= clickRect.rect.position;
-				
+
 				float val = Mathf.Clamp01((localCursor - m_Offset)[0] / clickRect.rect.size[0]);
 				normalizedValue = (val);
 
@@ -330,19 +331,19 @@ namespace HSVPicker
 
 			}
 		}
-		
+
 		private bool MayDrag(PointerEventData eventData)
 		{
 			return IsActive() && IsInteractable() && eventData.button == PointerEventData.InputButton.Left;
 		}
-		
+
 		public override void OnPointerDown(PointerEventData eventData)
 		{
 			if (!MayDrag(eventData))
 				return;
-			
+
 			base.OnPointerDown(eventData);
-			
+
 			m_Offset = Vector2.zero;
 			if (m_HandleContainerRect != null && RectTransformUtility.RectangleContainsScreenPoint(m_HandleRect, eventData.position, eventData.enterEventCamera))
 			{
@@ -357,15 +358,15 @@ namespace HSVPicker
 				UpdateDrag(eventData, eventData.pressEventCamera);
 			}
 		}
-		
+
 		public virtual void OnDrag(PointerEventData eventData)
 		{
 			if (!MayDrag(eventData))
 				return;
-			
+
 			UpdateDrag(eventData, eventData.pressEventCamera);
 		}
-		
+
         //public override void OnMove(AxisEventData eventData)
         //{
         //    if (!IsActive() || !IsInteractable())
@@ -373,7 +374,7 @@ namespace HSVPicker
         //        base.OnMove(eventData);
         //        return;
         //    }
-			
+
         //    switch (eventData.moveDir)
         //    {
         //    case MoveDirection.Left:
@@ -410,35 +411,35 @@ namespace HSVPicker
         //        break;
         //    }
         //}
-		
+
         //public override Selectable FindSelectableOnLeft()
         //{
         //    if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Horizontal)
         //        return null;
         //    return base.FindSelectableOnLeft();
         //}
-		
+
         //public override Selectable FindSelectableOnRight()
         //{
         //    if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Horizontal)
         //        return null;
         //    return base.FindSelectableOnRight();
         //}
-		
+
         //public override Selectable FindSelectableOnUp()
         //{
         //    if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Vertical)
         //        return null;
         //    return base.FindSelectableOnUp();
         //}
-		
+
         //public override Selectable FindSelectableOnDown()
         //{
         //    if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Vertical)
         //        return null;
         //    return base.FindSelectableOnDown();
         //}
-		
+
 		public virtual void OnInitializePotentialDrag(PointerEventData eventData)
 		{
 			eventData.useDragThreshold = false;

@@ -15,7 +15,7 @@ namespace Ultraleap.ScreenControl.Core
         public InputField resolutionHeight;
 
         [Header("File Location")]
-        public Text fileLocation;
+        public InputField fileLocation;
 
         private void OnEnable()
         {
@@ -23,6 +23,11 @@ namespace Ultraleap.ScreenControl.Core
             resolutionHeight.text = ConfigManager.PhysicalConfig.ScreenHeightPX.ToString();
 
             fileLocation.text = ConfigFileUtils.ConfigFileDirectory;
+
+            // This combination allows users to highlight the text (to copy if desired) without
+            // being able to edit
+            fileLocation.interactable = true;
+            fileLocation.readOnly = true;
         }
 
         public void SetResolution()
@@ -55,7 +60,7 @@ namespace Ultraleap.ScreenControl.Core
 
             if (paths.Length > 0)
             {
-                if(ConfigFileUtils.ChangeConfigFileDirectory(paths[0]))
+                if (ConfigFileUtils.ChangeConfigFileDirectory(paths[0]))
                 {
                     fileLocation.text = paths[0];
                     ConfigManager.LoadConfigsFromFiles();

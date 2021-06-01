@@ -12287,7 +12287,7 @@ MonoBehaviour:
   m_Text: ./Assets/StreamingAssets/CallToInteract/1 Push in mid-air to start.mp4
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 4
-  m_ReadOnly: 0
+  m_ReadOnly: 1
   m_ShouldActivateOnSelect: 1
 --- !u!1 &6080665781070234335
 GameObject:
@@ -13805,11 +13805,19 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 0cddfc96f9d57754d8d1d5e18b680b61, type: 3}
-      propertyPath: m_AnchoredPosition.x
+      propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 0cddfc96f9d57754d8d1d5e18b680b61, type: 3}
-      propertyPath: m_AnchoredPosition.y
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22499384, guid: 0cddfc96f9d57754d8d1d5e18b680b61, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22499384, guid: 0cddfc96f9d57754d8d1d5e18b680b61, type: 3}
+      propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
