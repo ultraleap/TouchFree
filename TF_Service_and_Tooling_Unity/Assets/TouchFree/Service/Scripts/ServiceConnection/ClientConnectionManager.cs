@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-using Ultraleap.ScreenControl.Core;
 using Ultraleap.TouchFree.ServiceShared;
-using Ultraleap.ScreenControl.Service.ScreenControlTypes;
+using Ultraleap.TouchFree.Service.ServiceTypes;
 
-namespace Ultraleap.ScreenControl.Service
+namespace Ultraleap.TouchFree.Service
 {
     [RequireComponent(typeof(WebSocketReceiver)), DisallowMultipleComponent]
     public class ClientConnectionManager : MonoBehaviour

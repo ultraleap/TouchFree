@@ -3,7 +3,7 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 using System;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.Service
 {
     public class GrabInteraction : InteractionModule
     {

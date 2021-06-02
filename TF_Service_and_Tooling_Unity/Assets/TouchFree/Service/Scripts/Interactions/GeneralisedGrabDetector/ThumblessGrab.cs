@@ -5,7 +5,7 @@ using Leap.Unity;
 using Ultraleap.TouchFree.ServiceShared;
 
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.Service
 {
     public class ThumblessGrab : MonoBehaviour
     {

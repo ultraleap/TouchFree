@@ -131,7 +131,7 @@ PrefabInstance:
     - target: {fileID: 4992726930522987157, guid: cda6721080db7f3438270f538c555acd,
         type: 3}
       propertyPath: m_Name
-      value: ScreenControlService
+      value: Service
       objectReference: {fileID: 0}
     - target: {fileID: 4992726930522987158, guid: cda6721080db7f3438270f538c555acd,
         type: 3}
@@ -305,7 +305,7 @@ PrefabInstance:
     - target: {fileID: 518956833299686221, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: m_Name
-      value: ScreenControl
+      value: ServiceSystems
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}

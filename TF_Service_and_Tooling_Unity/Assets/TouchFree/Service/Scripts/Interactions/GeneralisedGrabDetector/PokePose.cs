@@ -4,7 +4,7 @@ using UnityEngine;
 using Leap;
 using Leap.Unity;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.Service
 {
     public class PokePose : MonoBehaviour
     {

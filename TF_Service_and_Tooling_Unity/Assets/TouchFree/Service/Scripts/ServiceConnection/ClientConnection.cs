@@ -7,12 +7,12 @@ using System.Text.RegularExpressions;
 using WebSocketSharp.Server;
 
 using Ultraleap.TouchFree.ServiceShared;
-using Ultraleap.ScreenControl.Service.ScreenControlTypes;
+using Ultraleap.TouchFree.Service.ServiceTypes;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Ultraleap.ScreenControl.Service
+namespace Ultraleap.TouchFree.Service
 {
     internal class ClientConnection : WebSocketBehavior
     {

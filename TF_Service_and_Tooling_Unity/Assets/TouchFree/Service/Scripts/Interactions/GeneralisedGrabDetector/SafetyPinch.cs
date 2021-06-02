@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Leap.Unity;
 using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.Service
 {
     public class SafetyPinch : MonoBehaviour
     {

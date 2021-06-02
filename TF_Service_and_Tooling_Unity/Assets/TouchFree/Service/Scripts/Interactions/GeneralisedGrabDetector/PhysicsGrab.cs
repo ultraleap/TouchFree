@@ -4,7 +4,7 @@ using UnityEngine;
 using Leap.Unity;
 using Leap;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.Service
 {
     public class PhysicsGrab : MonoBehaviour
     {

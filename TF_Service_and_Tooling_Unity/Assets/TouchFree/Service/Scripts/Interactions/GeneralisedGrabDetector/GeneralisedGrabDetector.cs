@@ -5,7 +5,7 @@ using Leap.Unity;
 using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.Service
 {
     // Generalised-Grab Algorithms
     public enum GrabAlgorithm

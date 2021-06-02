@@ -1,7 +1,7 @@
 using System;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Service.ScreenControlTypes
+namespace Ultraleap.TouchFree.Service.ServiceTypes
 {
     internal enum ActionCode
     {

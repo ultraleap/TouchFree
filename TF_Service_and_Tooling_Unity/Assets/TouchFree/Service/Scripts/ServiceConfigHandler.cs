@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Service
+namespace Ultraleap.TouchFree.Service
 {
     public class ServiceConfigHandler : MonoBehaviour
     {
