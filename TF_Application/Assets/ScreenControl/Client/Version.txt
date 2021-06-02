@@ -1,3 +1,0 @@
-TouchFree Tooling for Unity Version: {SOFTWARE_VERSION}
-TouchFree Tooling API Version: {API_VERSION}
-Release Reference: {RELEASE_REF}
