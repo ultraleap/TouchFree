@@ -117,16 +117,16 @@ TF_Service::Wrapper::build:
   script:
     - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper.sln /p:Configuration=Release
     # Move the built wrapper to the root directory
-    - mkdir ./TouchFree_Service_Wrapper_Build
-    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/* ./TouchFree_Service_Wrapper_Build
+    - mkdir ./Service_Wrapper_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/* ./Service_Wrapper_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Service_Wrapper_Build/ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Service_Wrapper_Build/ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Service_Wrapper"
     paths:
-    - ./TouchFree_Service_Wrapper_Build/**
+    - ./Service_Wrapper_Build/**
     expire_in: 2 weeks
     when: always
   tags:
@@ -139,16 +139,16 @@ TF_Service::Tray::build:
   script:
     - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release
     # Move the built tray app to the root directory
-    - mkdir ./TouchFree_Tray_Build
-    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/Release/* ./TouchFree_Tray_Build
+    - mkdir ./Service_Tray_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/Release/* ./Service_Tray_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Tray_Build/ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Service_Tray_Build/ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Service_Tray"
     paths:
-    - ./TouchFree_Tray_Build/**
+    - ./Service_Tray_Build/**
     expire_in: 2 weeks
     when: always
   tags:
@@ -349,8 +349,8 @@ TF_Service::package:
     - mkdir ./Service_Package/Tray/
     - cp -r ./Build/* ./Service_Package/Service/
     - cp -r ./UIBuild/* ./Service_Package/ServiceUI/
-    - cp -r ./TouchFree_Service_Wrapper_Build/* ./Service_Package/Wrapper/
-    - cp -r ./TouchFree_Service_Tray_Build/* ./Service_Package/Tray/
+    - cp -r ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
+    - cp -r ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
 
   artifacts:
