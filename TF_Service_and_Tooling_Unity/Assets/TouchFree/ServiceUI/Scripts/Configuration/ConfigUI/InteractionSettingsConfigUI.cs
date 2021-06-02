@@ -1,11 +1,10 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     [System.Serializable]
     public class InteractionTypeElements

@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Video;
+﻿using UnityEngine;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     [DefaultExecutionOrder(-100)]
     public class CameraConnector : MonoBehaviour

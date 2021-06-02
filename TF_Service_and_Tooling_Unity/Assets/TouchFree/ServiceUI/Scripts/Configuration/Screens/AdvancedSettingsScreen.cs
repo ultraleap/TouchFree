@@ -1,15 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
-using System;
 using SFB;
 
 using Ultraleap.TouchFree.ServiceShared;
 
-
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     public class AdvancedSettingsScreen : MonoBehaviour
     {

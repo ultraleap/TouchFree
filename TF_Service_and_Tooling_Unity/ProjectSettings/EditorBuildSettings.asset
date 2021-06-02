@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/ScreenControl/Service/Scenes/ScreenControlService.unity
     guid: b88c1aa821ba9944abd920c2e9c1956f
   - enabled: 0
-    path: Assets/ScreenControl/ServiceUI/Scenes/ScreenControlServiceUI.unity
+    path: Assets/TouchFree/ServiceUI/Scenes/ServiceUI.unity
     guid: 0bdcf645dd528a9429817c3a47891e82
   m_configObjects: {}

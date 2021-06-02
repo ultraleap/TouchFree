@@ -2,7 +2,7 @@
 using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     public class ScreenManager : MonoBehaviour
     {

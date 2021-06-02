@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     [DefaultExecutionOrder(-1)]
     public class SliderAndInputFieldMirrorValues : MonoBehaviour

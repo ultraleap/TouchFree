@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     public class ManualConfigUI : ConfigUI
     {
@@ -97,8 +96,7 @@ namespace Ultraleap.ScreenControl.Core
             }
             else
             {
-                TrackingRotationX.SetTextWithoutNotify(
-                        ConfigManager.PhysicalConfig.LeapRotationD.x.ToString("##0.0"));
+                TrackingRotationX.SetTextWithoutNotify(ConfigManager.PhysicalConfig.LeapRotationD.x.ToString("##0.0"));
             }
         }
 

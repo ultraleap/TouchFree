@@ -4,12 +4,10 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     public abstract class ConfigUI : MonoBehaviour
     {
-        Coroutine saveConfigCoroutine;
-
         protected virtual void OnEnable()
         {
             LoadConfigValuesIntoFields();
@@ -19,10 +17,7 @@ namespace Ultraleap.ScreenControl.Core
         protected virtual void OnDisable()
         {
             RemoveValueChangedListeners();
-            if (saveConfigCoroutine != null)
-            {
-                CommitValuesToFile();
-            }
+            CommitValuesToFile();
         }
 
         protected abstract void AddValueChangedListeners();

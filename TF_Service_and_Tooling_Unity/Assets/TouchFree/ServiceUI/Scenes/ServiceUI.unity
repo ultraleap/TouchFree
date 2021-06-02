@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -186,8 +186,23 @@ PrefabInstance:
     - target: {fileID: 2213489624516412116, guid: 157025b17471e7c41a7d20e7f28273b5,
         type: 3}
       propertyPath: m_Name
-      value: ScreenControlClient
+      value: TouchFree Client
       objectReference: {fileID: 0}
+    - target: {fileID: 2383233282598257216, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: eventSystem
+      value: 
+      objectReference: {fileID: 2124978202}
+    - target: {fileID: 2383233282598257216, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: inputModule
+      value: 
+      objectReference: {fileID: 2124978201}
+    - target: {fileID: 6017491752659792052, guid: 157025b17471e7c41a7d20e7f28273b5,
+        type: 3}
+      propertyPath: sceneCamera
+      value: 
+      objectReference: {fileID: 169355409}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 157025b17471e7c41a7d20e7f28273b5, type: 3}
 --- !u!1 &25156774 stripped
@@ -677,7 +692,7 @@ GameObject:
   - component: {fileID: 260536532076600767}
   - component: {fileID: 336221991037597419}
   m_Layer: 0
-  m_Name: ScreenControlUI
+  m_Name: ServiceUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

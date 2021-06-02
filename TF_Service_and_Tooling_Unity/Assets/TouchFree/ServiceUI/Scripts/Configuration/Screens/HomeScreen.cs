@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using Ultraleap.TouchFree.ServiceShared;
 
-namespace Ultraleap.ScreenControl.Core
+namespace Ultraleap.TouchFree.ServiceUI
 {
     public class HomeScreen : MonoBehaviour
     {
@@ -68,9 +66,9 @@ namespace Ultraleap.ScreenControl.Core
                 var fileLines = File.ReadAllLines(versionPath);
                 foreach (var line in fileLines)
                 {
-                    if (line.Contains("ScreenControl Service Version"))
+                    if (line.Contains("TouchFree Service Version"))
                     {
-                        version = line.Replace("ScreenControl Service Version: ", "");
+                        version = line.Replace("TouchFree Service Version: ", "");
                         break;
                     }
                 }
