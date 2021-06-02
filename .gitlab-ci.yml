@@ -1,12 +1,12 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TF_SERVICE_PROJECT_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity
-  TF_PROJECT_PATH: $CI_PROJECT_DIR/TF_Application
+  TF_PROJECT_PATH: $CI_PROJECT_DIR/TouchFree
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
 
   TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
-  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree_Tooling
-  TF_SRV_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree_Service/Service
+  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling
+  TF_SRV_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Service
 
   TF_TFU_VERSION: 'alpha5'
   TF_TFW_VERSION: 'alpha5'
@@ -48,7 +48,7 @@ TF_Tooling::Unity::build:
         Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
     - mkdir ./Tooling_Release
-    - cp ${env:CI_PROJECT_DIR}/TF_Service_and_Tooling_Unity/Assets/TouchFree_Tooling/Version.txt ./Tooling_Release
+    - cp ${env:CI_PROJECT_DIR}/TF_Service_and_Tooling_Unity/Assets/TouchFree/Version.txt ./Tooling_Release
 
     # Package Tooling
     - cd ./Scripts
@@ -227,7 +227,7 @@ TouchFree::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TF_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
 
     # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
