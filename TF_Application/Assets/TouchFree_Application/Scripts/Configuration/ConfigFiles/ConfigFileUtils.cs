@@ -25,7 +25,7 @@ namespace Ultraleap.TouchFree
             }
         }
 
-        static readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\ScreenControl\\Configuration\\");
+        static readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\TouchFree\\Configuration\\");
 
         public static void CheckForConfigDirectoryChange()
         {
@@ -34,9 +34,8 @@ namespace Ultraleap.TouchFree
 
         static void GetConfigFileDirectory()
         {
-            // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\ScreenControl\Service\Settings
             // Check registry for override to default directory
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings");
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\TouchFree\Service\Settings");
 
             if(regKey != null)
             {

@@ -16,7 +16,7 @@ namespace Ultraleap.TouchFree
         Process startedProcess;
 
         private string configFileDirectory = null;
-        private readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\ScreenControl\\Configuration\\");
+        private readonly string DefaultConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\TouchFree\\Configuration\\");
 
         private void Awake()
         {
@@ -49,11 +49,11 @@ namespace Ultraleap.TouchFree
             if (startedProcess != null && !startedProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
+                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
             else
             {
-                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/ScreenControlServiceUI.exe"));
+                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
         }
 
@@ -70,9 +70,9 @@ namespace Ultraleap.TouchFree
 
         void GetConfigFileDirectory()
         {
-            // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\ScreenControl\Service\Settings
+            // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\TouchFree\Service\Settings
             // Check registry for override to default directory
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\ScreenControl\Service\Settings");
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\TouchFree\Service\Settings");
 
             if (regKey != null)
             {
