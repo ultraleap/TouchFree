@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 518956833299686219}
   - component: {fileID: 518956833299686218}
   m_Layer: 0
-  m_Name: ScreenControl
+  m_Name: TouchFree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,8 +43,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89703144fdf3fd1459574ac692f8b7af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1001 &300806797613628120
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@
 # Project Information
 # ------------------------------------------------------------------------
 
-Title: ScreenControl Client for Unity
+Title: TouchFree Tooling for Unity
 Subtitle: API Documentation
 
 Timestamp: year mon day
@@ -39,8 +39,8 @@ Timestamp: year mon day
 # Source Code
 # ------------------------------------------------------------------------
 
-Source Folder: ..\Assets\ScreenControl\Client
-   Name: Screen Control Client for Unity
+Source Folder: ..\Assets\TouchFree\Tooling
+   Name: TouchFree Tooling for Unity
 
 
 # This is where you specify what files and folders Natural Docs should be
@@ -109,7 +109,7 @@ Ignore Source Folder Pattern: */Examples/*
 # Generated Documentation
 # ------------------------------------------------------------------------
 
-HTML Output Folder: ..\..\Documentation\Client for Unity
+HTML Output Folder: ..\..\Documentation\Tooling for Unity
 
 
 # This is where you specify what kind of documentation you want Natural Docs

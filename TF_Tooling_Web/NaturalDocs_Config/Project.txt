@@ -8,7 +8,7 @@
 # Project Information
 # ------------------------------------------------------------------------
 
-Title: ScreenControl Client for Web
+Title: TouchFree Tooling for Web
 Subtitle: API Documentation
 
 Timestamp: year mon day
@@ -40,7 +40,7 @@ Timestamp: year mon day
 # ------------------------------------------------------------------------
 
 Source Folder: ..\src
-   Name: Screen Control Client for Web
+   Name: TouchFree Tooling for Web
 
 
 # This is where you specify what files and folders Natural Docs should be
@@ -107,7 +107,7 @@ Ignore Source Folder Pattern: */Misc/*
 # Generated Documentation
 # ------------------------------------------------------------------------
 
-HTML Output Folder: ..\..\Documentation\Client for Web
+HTML Output Folder: ..\..\Documentation\Tooling for Web
 
 
 # This is where you specify what kind of documentation you want Natural Docs

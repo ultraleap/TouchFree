@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2383233282598257216}
   - component: {fileID: 6017491752659792052}
   m_Layer: 0
-  m_Name: ScreenControlClient
+  m_Name: TouchFreeClient
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,8 +46,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02859137234c81e4d9eec1416b3a085c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   iPAddress: 127.0.0.1
   port: 9739
 --- !u!114 &851179622054941590
@@ -60,8 +60,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50ea4784fa0c6d04386843da3f77972e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   actionCullToCount: 2
 --- !u!114 &899413377191845470
 MonoBehaviour:
@@ -73,8 +73,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f03477b0170fb642a2d679846763e78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   plugins: []
 --- !u!114 &2383233282598257216
 MonoBehaviour:
@@ -86,8 +86,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ac30281ed369894eb051bfa7bc79163, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   inputModule: {fileID: 0}
   eventSystem: {fileID: 0}
   sendHoverEvents: 1
@@ -101,8 +101,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55e31c31e5c1e8c42b45ba9a36af71af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   sceneCamera: {fileID: 0}
   targetCanvasses:
   - {fileID: 8822492802018686658}
@@ -175,8 +175,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1

@@ -1,5 +1,7 @@
 # TouchFree
-TouchFree includes an Application, a Windows Service and a series of Tooling in order to convert Ultraleap tracking data into a data structure suitable for input systems for touchscreen user interfaces.
+TouchFree includes an Application, a Windows Service and a series of Tooling package in order to
+convert Ultraleap tracking data into a data structure suitable for input systems for touchscreen
+user interfaces.
 
 ## WARNINGS
 - This repository has been made available for you to work with, edit and make your own versions.

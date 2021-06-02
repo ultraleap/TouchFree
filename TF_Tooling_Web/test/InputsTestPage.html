@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>SCCfW Testbed</title>
 
-    <script name="ScreenControl" type="text/javascript" src="../build/dist/ScreenControl.js"></script>
+    <script name="TouchFree" type="text/javascript" src="../build/dist/TouchFree.js"></script>
 
     <style>
         .overout {
@@ -25,34 +25,34 @@
 <body>
 
     <div>
-        <h1>Screen Control Client for Web Testbed</h1>
+        <h1>TouchFree Tooling for Web Testbed</h1>
     </div>
 
     <p>
         To test the performance of the pointerenter / pointerleave event transmission in
-        ScreenControl Client for Web, please do the following <strong> in a Chrome browser</strong>:
+        TouchFree Tooling for Web, please do the following <strong> in a Chrome browser</strong>:
     </p>
 
     <ol>
         <li>
-            Ensure that the Screen Control Service is running
+            Ensure that the TouchFree Service is running
         </li>
         <li>
-            Ensure that this page is the <strong>active</strong> client of ScreenControl service.
+            Ensure that this page is the <strong>active</strong> client of TouchFree service.
             <ol>
                 <li>
                     To do this, simply refresh the page. This will reconnect the page to the
-                    ScreenControl Service.
+                    TouchFree Service.
                 </li>
                 <li>
-                    Make sure not to open another ScreenControl Client during the test, such as the
-                    Service's UI or another web page that uses ScreenControl Client.
+                    Make sure not to open another TouchFree Client during the test, such as the
+                    Service's UI or another web page that uses TouchFree Tooling.
                 </li>
             </ol>
         </li>
         <li>
             Check the expected visual behaviour by moving the mouse from top to bottom of screen and
-            vice versa. The visuals when using the Screen Control Cursor should mirror mouse
+            vice versa. The visuals when using the TouchFree Cursor should mirror mouse
             behaviour.
         </li>
         <li>
@@ -378,10 +378,10 @@
         </div>
     </div>
 
-    <img src="../images/Ring.png" id="cursorRing" class="screencontrolcursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
+    <img src="../images/Ring.png" id="cursorRing" class="TouchFreecursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
 
     <script>
-        ScreenControl.Connection.ConnectionManager.init();
+        TouchFree.Connection.ConnectionManager.init();
 
         var cursorRing = document.getElementById('cursorRing');
         document.body.appendChild(cursorRing);
@@ -397,12 +397,12 @@
         // make up the cursor. This is so it can ignore cursor-related objects when it is looking
         // for elements to pointerover/pointerout etc. Note that the class is also added to the
         // <img> tag foudn as "cursorRing" above
-        cursor.classList.add("screencontrolcursor");
+        cursor.classList.add("TouchFreecursor");
 
         document.body.appendChild(cursor);
 
-        var dotCursor = new ScreenControl.Cursors.DotCursor(cursor, cursorRing);
-        var inputSystem = new ScreenControl.InputControllers.WebInputController();
+        var dotCursor = new TouchFree.Cursors.DotCursor(cursor, cursorRing);
+        var inputSystem = new TouchFree.InputControllers.WebInputController();
 
         var overOuts = document.getElementsByClassName("overout");
 

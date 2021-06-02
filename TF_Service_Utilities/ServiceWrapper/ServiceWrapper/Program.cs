@@ -23,7 +23,7 @@ namespace TouchFreeService
                 serviceConfig.SetDisplayName("TouchFree Service");
                 serviceConfig.SetDescription("TouchFree Service converts Ultraleap tracking" +
                     " data into a data structure suitable for input systems for touchscreen user" +
-                    " interfaces via a client package.");
+                    " interfaces via a tooling package.");
             });
         }
     }
