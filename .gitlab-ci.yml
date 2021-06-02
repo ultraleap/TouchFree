@@ -1,7 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TF_SERVICE_PROJECT_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity
-  TF_PROJECT_PATH: $CI_PROJECT_DIR/TouchFree
+  TF_PROJECT_PATH: $CI_PROJECT_DIR/TF_Application
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
 
   TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
@@ -48,7 +48,7 @@ TF_Tooling::Unity::build:
         Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
     - mkdir ./Tooling_Release
-    - cp ${env:CI_PROJECT_DIR}/TF_Service_and_Tooling_Unity/Assets/TouchFree/Version.txt ./Tooling_Release
+    - cp ${env:CI_PROJECT_DIR}/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling/Version.txt ./Tooling_Release
 
     # Package Tooling
     - cd ./Scripts
@@ -199,7 +199,8 @@ TF_Service::build:
     paths:
     - Build/**
     - UIBuild/**
-    - ./Unity.log
+    - ./Service_build.log
+    - ./ServiceUI_build.log
     expire_in: 2 weeks
     when: always
   tags:
