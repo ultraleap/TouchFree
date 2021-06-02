@@ -236,7 +236,7 @@ TouchFree::build:
         Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
       }
     - mkdir ./TouchFree_Build
-    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TF_Application/Version.txt ./TouchFree_Build
+    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree/Version.txt ./TouchFree_Build
 
     # Build TouchFree
     - cd ./Scripts
