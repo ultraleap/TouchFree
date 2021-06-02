@@ -1,1 +1,1 @@
-%1 -batchMode -logFile %CI_PROJECT_DIR%\Tooling_for_Unity_package.log -projectPath %CI_PROJECT_DIR%\TF_Service_and_Tooling_Unity -exportPackage Assets/TouchFree/Tooling %CI_PROJECT_DIR%/Tooling_Release/TouchFree_Tooling_for_Unity_%SC_CFW_VERSION%.unitypackage -quit
+%1 -batchMode -logFile %CI_PROJECT_DIR%\Tooling_for_Unity_package.log -projectPath %CI_PROJECT_DIR%\TF_Service_and_Tooling_Unity -exportPackage Assets/TouchFree/Tooling %CI_PROJECT_DIR%/Tooling_Release/TouchFree_Tooling_for_Unity_%TF_TFU_VERSION%.unitypackage -quit

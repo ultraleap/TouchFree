@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SC_ServiceWrapper")]
+[assembly: AssemblyTitle("TF_ServiceWrapper")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SC_ServiceWrapper")]
+[assembly: AssemblyProduct("TF_ServiceWrapper")]
 [assembly: AssemblyCopyright("Copyright © Ultraleap, Inc. 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
