@@ -21,8 +21,6 @@ export class WebInputController extends BaseInputController {
     // to the UI.
     enterLeaveEnabled: boolean = true;
 
-    distanceSnap : number = 50;
-
     private lastHoveredElement: Element | null = null;
     private readonly pointerId: number = 0;
     private readonly baseEventProps: PointerEventInit;
@@ -102,34 +100,6 @@ export class WebInputController extends BaseInputController {
     //     _inputData - The latest Action to arrive via the <ServiceConnection>.
     protected HandleInputAction(_inputData: ClientInputAction): void {
         _inputData.CursorPosition[1] = window.innerHeight - _inputData.CursorPosition[1];
-
-        const snaps : HTMLCollectionOf<Element> = document.getElementsByClassName("snappable");
-        let closest_distance : number = Infinity;
-        let closest : any;
-        const coords : {x : number, y : number} = {x: 0, y: 0};
-        Array.from(snaps).forEach(snap => {
-            const rect : DOMRect = snap.getBoundingClientRect();
-            const center : {x : number, y : number} = {
-                x: rect.x + (rect.width / 2),
-                y: rect.y + (rect.height / 2)
-            };
-            const distance : number = Math.sqrt(
-                Math.pow(_inputData.CursorPosition[0] - center.x, 2) +
-                Math.pow((window.innerHeight - _inputData.CursorPosition[1]) - center.y, 2)
-            );
-            if (distance < closest_distance) {
-                closest_distance = distance;
-                closest = snap;
-                coords.x = center.x;
-                coords.y = center.y;
-            }
-        })
-
-        if (closest_distance < this.distanceSnap && closest !== null) {
-            _inputData.CursorPosition[0] = coords.x;
-            _inputData.CursorPosition[1] = (window.innerHeight - coords.y);
-        }
-
         super.HandleInputAction(_inputData);
 
         let elementAtPos: Element | null = this.GetTopNonCursorElement(_inputData.CursorPosition);
