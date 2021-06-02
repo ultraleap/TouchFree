@@ -36,7 +36,7 @@ namespace TouchFreeService
         public void Start()
         {
             _process = new Process();
-            _process.StartInfo.FileName = @"../Service/TouchFreeService.exe";
+            _process.StartInfo.FileName = @"../Service/TouchFree_Service.exe";
             _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics -logFile C:\\ProgramData\\Ultraleap\\TouchFree\\Service.log";
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.CreateNoWindow = true;

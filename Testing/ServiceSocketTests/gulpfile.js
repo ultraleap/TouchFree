@@ -45,7 +45,7 @@ gulp.task('startServer', function (callback) {
     var startCommand = "./ScreenControlService";
 
     if (process.platform === "win32") {
-        startCommand = `.\\ScreenControlService.exe`;
+        startCommand = `.\\TouchFree_Service.exe`;
         serverBinDir = serverBinDir.replace(/\//g, '\\');
         logFileLoc = logFileLoc.replace(/\//g, '\\');
     } else {
