@@ -58,7 +58,7 @@ export class InputActionManager extends EventTarget {
                 }
                 else {
                     if (!this.hasSnappableUnder([cursorPos.x, cursorPos.y])) {
-                        closest_center = this.raycast(cursorPos, this.getElementCenter(elements[0].element));
+                        closest_center = this.raycast(cursorPos, this.getElementCenter(elements[0].element), elements[0].element);
 
                         _action.CursorPosition[0] = closest_center.x;
                         _action.CursorPosition[1] = (window.innerHeight - closest_center.y);
@@ -78,10 +78,7 @@ export class InputActionManager extends EventTarget {
     private static getDistance(element: Element, cursorPos: {x: number, y: number}): number {
         let center : {x: number, y: number} = this.getElementCenter(element);
 
-        // UNCOMMENT THIS LINE IF YOU WANT TO TRY OUT PERFECT SNAPPING BASED ON
-        // DISTANCE FROM THE EXACT BORDER OF THE OBJECT
-        // VERY CPU INTENSIVE, MUST BE IMPROVED
-        //center = this.raycast({x: cursorPos.x, y: cursorPos.y}, center);
+        center = this.raycast({x: cursorPos.x, y: cursorPos.y}, center, element);
 
         return Math.sqrt(
             Math.pow(cursorPos.x - center.x, 2) +
@@ -116,28 +113,157 @@ export class InputActionManager extends EventTarget {
         return this.getTopSnappableElement(_position) !== null;
     }
 
-    private static raycast(start: {x: number, y: number}, end: {x: number, y: number}): {x: number, y: number} {
+    private static hasSnappableUnderIs(_position: Array<number>, element: Element): boolean {
+        return this.getTopSnappableElement(_position) === element;
+    }
+
+    private static raycast(
+            start: {x: number, y: number},
+            end: {x: number, y: number},
+            element: Element
+    ): {x: number, y: number} {
+        const pos: {x: number, y: number} = {
+            x: start.x,
+            y: start.y
+        }
+
+        let hasSnap: boolean = this.hasSnappableUnderIs([pos.x, pos.y], element);
+        let hadSnap: boolean = hasSnap;
+
+        // If we already have snappable under us, it means we already are in a button
+        if (hasSnap) {
+            return pos;
+        }
+
+        // Store the current segment
         const vector: {x: number, y: number} = {
             x: end.x - start.x,
             y: end.y - start.y
         };
 
-        const length: number = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
+        // Store the previous evaluated pos
+        const prevPos: {x: number, y: number} = {
+            x: pos.x,
+            y: pos.y
+        }
 
-        let distance: number = length;
-        let pos: {x: number, y: number} = {
+        // Store the next end point of the vector
+        const nextEnd: {x: number, y: number} = {
+            x: end.x,
+            y: end.y
+        }
+
+        // Store the length of the vector
+        let distance: number = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
+
+        // We already checked the starting pos, let's step in the first step
+        pos.x = pos.x + (vector.x / 2);
+        pos.y = pos.y + (vector.y / 2);
+
+        while (distance > 1) {
+            hasSnap = this.hasSnappableUnderIs([pos.x, pos.y], element);
+
+            // If we changed state, we reverse the direction
+            if ((hasSnap && !hadSnap) || (!hasSnap && hadSnap)) {
+                nextEnd.x = prevPos.x;
+                nextEnd.y = prevPos.y;
+            }
+
+            // We get the new vector along we're moving
+            vector.x = nextEnd.x - pos.x;
+            vector.y = nextEnd.y - pos.y;
+
+            // We get the new vector length
+            distance = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
+
+            // We store the previous position
+            prevPos.x = pos.x;
+            prevPos.y = pos.y;
+
+            // We get the next position
+            pos.x = pos.x + (vector.x / 2);
+            pos.y = pos.y + (vector.y / 2);
+
+            hadSnap = hasSnap;
+        }
+
+        return pos;
+    }
+
+    private static bisect_raycast(
+            start: {x: number, y: number},
+            end: {x: number, y: number},
+            element: Element
+    ): {x: number, y: number} {
+        const pos: {x: number, y: number} = {
             x: start.x,
             y: start.y
         }
 
-        // THIS HERE IS VERY CPU CONSUMING, INCREASING THE FACTOR MAKES IT GO
-        // FASTER BUT ALSO MAKES IT JITTERY WHEN SNAPPING
-        // TODO: Make it faster
-        while (!this.hasSnappableUnder([pos.x, pos.y]) && distance > 10) {
-            pos.x += (vector.x / length) * 1;
-            pos.y += (vector.y / length) * 1;
+        let hasSnap: boolean = this.hasSnappableUnderIs([pos.x, pos.y], element);
+        let hadSnap: boolean = hasSnap;
 
-            distance = Math.sqrt(Math.pow(end.x - pos.x, 2) + Math.pow(end.y - pos.y, 2));
+        // If we already have snappable under us, it means we already are in a button
+        // Ideally we should check if the button is the one we're checking
+        if (hasSnap) {
+            return pos;
+        }
+
+        // Store the current segment
+        const vector: {x: number, y: number} = {
+            x: end.x - start.x,
+            y: end.y - start.y
+        };
+
+        // Store the previous evaluated pos
+        const prevPos: {x: number, y: number} = {
+            x: pos.x,
+            y: pos.y
+        }
+
+        // Store the next end point of the vector
+        const nextEnd: {x: number, y: number} = {
+            x: end.x,
+            y: end.y
+        }
+
+        // Store the current segment
+        const step: {x: number, y: number} = {
+            x: vector.x / 2,
+            y: vector.y / 2
+        };
+
+        // We already checked the starting pos, let's step in the first step
+        pos.x = pos.x + step.x;
+        pos.y = pos.y + step.y;
+
+        let step_length: number = Math.sqrt(Math.pow(step.x, 2) + Math.pow(step.y, 2));
+
+        while (step_length > 1) {
+            hasSnap = this.hasSnappableUnderIs([pos.x, pos.y], element);
+
+            if (hasSnap) {
+                step.x /= 2;
+                step.y /= 2;
+                pos.x = prevPos.x;
+                pos.y = prevPos.y;
+
+                step_length = Math.sqrt(Math.pow(step.x, 2) + Math.pow(step.y, 2));
+            }
+
+            // We get the new vector along we're moving
+            vector.x = nextEnd.x - pos.x;
+            vector.y = nextEnd.y - pos.y;
+
+            // We store the previous position
+            prevPos.x = pos.x;
+            prevPos.y = pos.y;
+
+            // We get the next position
+            pos.x = pos.x + step.x;
+            pos.y = pos.y + step.y;
+
+            hadSnap = hasSnap;
         }
 
         return pos;
