@@ -33,9 +33,9 @@ namespace Ultraleap.TouchFree
                 var fileLines = File.ReadAllLines(versionPath);
                 foreach (var line in fileLines)
                 {
-                    if (line.Contains("TouchFree Version"))
+                    if (line.Contains("TouchFree Application Version"))
                     {
-                        version = line.Replace("TouchFree Version: ", "");
+                        version = line.Replace("TouchFree Application Version: ", "");
                         break;
                     }
                 }
