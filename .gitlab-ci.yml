@@ -228,7 +228,7 @@ TouchFree::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
 
     # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
@@ -236,7 +236,7 @@ TouchFree::build:
         Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
       }
     - mkdir ./TouchFree_Build
-    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree/Version.txt ./TouchFree_Build
+    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree_Application/Version.txt ./TouchFree_Build
 
     # Build TouchFree
     - cd ./Scripts
