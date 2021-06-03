@@ -23,20 +23,22 @@ The TouchFree Application requires the TouchFree Service to run properly.
 
 ### TouchFree Service:
 
-The TouchFree Service must be running in order to make use of TouchFree Application or any Client built with the TouchFree Tooling.
+The TouchFree Service must be running in order to make use of the TouchFree Application or any Client built with the TouchFree Tooling.
 The TouchFree Service is built from within the Unity project found at `./TF_Service_and_Tooling_Unity`.
 
 ### TouchFree Tooling
 
 The TouchFree Tooling provides a Client connection to the TouchFree Service where it receives positional and interaction data relevant to touchless interaction.
-Additionally, TouchFree Tooling provides extendable Cursors and Input Systems to allow TouchFree Service's data to be used in different environments. It requires
+Additionally, TouchFree Tooling provides extendable Cursors and Input Systems to allow the TouchFree Service's data to be used in different environments. It requires
 both the Ultraleap Tracking service installed to provide data from a camera, and the TouchFree Service
 (as above).
 
-TouchFree Tooling is available for two integration environments at the moment:
+The TouchFree Tooling is available for two integration environments at the moment:
 
 * Unity
-  * The Unity version of TouchFree Tooling can be found in the project found at ./TF_Service_and_Tooling_Unity`. Builds can be found on the releases page linked above.
+  * The Unity version of TouchFree Tooling can be found in the project found at 
+  `./TF_Service_and_Tooling_Unity`. Builds can be found on the releases page linked above.
 
 * Web (JavaScript)
-  * The JavaScript version of TouchFree Tooling can be found at `./TF_Tooling_Web`. Built in TypeScript, it available in JavaScript form.
+  * The JavaScript version of TouchFree Tooling can be found at
+  `./TF_Tooling_Web`. Built in TypeScript, it available in JavaScript form.
