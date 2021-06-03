@@ -7,7 +7,7 @@
 #define ReleaseVersion "1.0.0-alpha5"
 #define ServiceUIExeName "TouchFreeServiceUI.exe"
 #define ServiceUIName "TouchFree Service Configuration"
-#define TouchFreeAppExeName "TouchFree.exe"
+#define TouchFreeAppExeName "TouchFree_Application.exe"
 #define TouchFreeAppName "TouchFree Application"
 #define TrayAppExeName "ServiceUITray.exe"
 #define TrayAppName "TouchFree Service Control Panel"

@@ -1,5 +1,5 @@
 # TouchFree
-TouchFree includes an Application, a Windows Service and a series of Tooling package in order to
+TouchFree includes an Application, a Windows Service and a series of Tooling packages in order to
 convert Ultraleap tracking data into a data structure suitable for input systems for touchscreen
 user interfaces.
 
@@ -16,27 +16,29 @@ If you require assistance whilst working with these repositories we recommend ut
 
 ### TouchFree Application
 
-TouchFree Application requires the TouchFree Service to run and allows for a retrofit solution. This application provides
-a transparent overlay application that enables you to use TouchFree interactions with any existing touch-supported application
+The TouchFree Application allows for a retrofit solution. This application provides
+a transparent overlay that enables you to use TouchFree interactions with any existing touch-supported application.
+
+The TouchFree Application requires the TouchFree Service to run properly.
 
 ### TouchFree Service:
 
-TouchFree Service must be running in order to make use of TouchFree Application or any of the TouchFree Tooling Clients.
-The TouchFree Service is built from within the Unity project found at `./Service_Unity`.
+The TouchFree Service must be running in order to make use of the TouchFree Application or any Client built with the TouchFree Tooling.
+The TouchFree Service is built from within the Unity project found at `./TF_Service_and_Tooling_Unity`.
 
-### TouchFree Tooling Client
+### TouchFree Tooling
 
-The TouchFree Client provides access to positional and interaction data, and extensible Cursors
-and Input Systems to allow TouchFree Service's data to control those environments. It requires
-both the Ultraleap Tracking service installed to provide data from a camera, and a TouchFree Service
+The TouchFree Tooling provides a Client connection to the TouchFree Service where it receives positional and interaction data relevant to touchless interaction.
+Additionally, TouchFree Tooling provides extendable Cursors and Input Systems to allow the TouchFree Service's data to be used in different environments. It requires
+both the Ultraleap Tracking service installed to provide data from a camera, and the TouchFree Service
 (as above).
 
-Two integration environments are available for TouchFree Tooling at the moment:
+The TouchFree Tooling is available for two integration environments at the moment:
 
 * Unity
-  * The Unity version of TouchFree Tooling can be found in the TouchFree Service project found at
-`./Service_Unity`. Builds can be found on the releases page linked above.
+  * The Unity version of TouchFree Tooling can be found in the project found at 
+  `./TF_Service_and_Tooling_Unity`. Builds can be found on the releases page linked above.
 
 * Web (JavaScript)
-  * The JavaScript version of TouchFree Tooling can be found at `./Tooling_Web`. Built in TypeScript,
-it available in JavaScript form.
+  * The JavaScript version of TouchFree Tooling can be found at
+  `./TF_Tooling_Web`. Built in TypeScript, it available in JavaScript form.
