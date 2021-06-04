@@ -10,7 +10,7 @@ export class VersionInfo
 
     // Variable: API_HEADER_NAME
     // The name of the header we wish the Service to compare our version with.
-    public static readonly API_HEADER_NAME: string = "TFToolingApiVersion";
+    public static readonly API_HEADER_NAME: string = "TfApiVersion";
 }
 
 // Class: TouchFreeInputAction
