@@ -4,7 +4,7 @@ import os
 parser = argparse.ArgumentParser(usage="-p <targetFile> -s <softwareVersion> -a <apiVersion> -r <reference>")
 parser.add_argument('-p', '--path', help="The target Version.txt to be updated")
 parser.add_argument('-s', '--swVer', help="The version of this piece of software")
-parser.add_argument('-a', '--apiVer', help="The version of the ScreenControl API used in this piece of software")
+parser.add_argument('-a', '--apiVer', help="The version of the TouchFree Tooling API used in this piece of software")
 parser.add_argument('-r', '--ref', help="The reference for this release (usually a commit SHA)")
 
 args = parser.parse_args()

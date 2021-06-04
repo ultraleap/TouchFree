@@ -42,10 +42,10 @@ gulp.task('startServer', function (callback) {
     var logFileName = `log.txt`;
     var logFileLoc = `${serverBinDir}/${logFileName}`;
 
-    var startCommand = "./ScreenControlService";
+    var startCommand = "./TouchFree_Service";
 
     if (process.platform === "win32") {
-        startCommand = `.\\ScreenControlService.exe`;
+        startCommand = `.\\TouchFree_Service.exe`;
         serverBinDir = serverBinDir.replace(/\//g, '\\');
         logFileLoc = logFileLoc.replace(/\//g, '\\');
     } else {
