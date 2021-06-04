@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using SFB;
 
 using Ultraleap.TouchFree.ServiceShared;
+using System.IO;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -54,7 +55,7 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public void SetFileLocation()
         {
-            string[] paths = StandaloneFileBrowser.OpenFolderPanel("", "", false);
+            string[] paths = StandaloneFileBrowser.OpenFolderPanel("", Path.GetDirectoryName(fileLocation.text), false);
 
             if (paths.Length > 0)
             {

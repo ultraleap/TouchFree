@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 using HSVPicker;
 using SFB;
@@ -179,7 +180,7 @@ namespace Ultraleap.TouchFree
             }
 
             var extFilter = new ExtensionFilter[] { new ExtensionFilter("CTIFileExtensions", extensions) };
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("", CTIFilePath, extFilter, false);
+            string[] paths = StandaloneFileBrowser.OpenFilePanel("", Path.GetDirectoryName(CTIFilePath), extFilter, false);
 
             if (paths.Length > 0)
             {
