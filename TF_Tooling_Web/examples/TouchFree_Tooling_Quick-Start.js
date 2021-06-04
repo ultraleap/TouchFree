@@ -1,4 +1,5 @@
 TouchFree.Connection.ConnectionManager.init();
+TouchFree.Plugins.InputActionManager.SetPlugins();
 
 window.onload = function () {
     var cursorRing = document.createElement('img');
