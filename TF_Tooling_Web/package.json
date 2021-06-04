@@ -1,0 +1,28 @@
+{
+  "name": "touchfree_tooling_for_web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN ROOT OF REPO",
+  "dependencies": {
+    "@types/uuid": "^8.3.0",
+    "browserify": "^17.0.0",
+    "eslint": "^7.17.0",
+    "guid-typescript": "^1.0.9",
+    "typescript": "^4.1.3",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.20",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  }
+}

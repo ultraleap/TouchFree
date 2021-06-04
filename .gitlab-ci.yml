@@ -1,19 +1,19 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  SC_PROJECT_PATH: $CI_PROJECT_DIR/ScreenControl_Unity
-  TF_PROJECT_PATH: $CI_PROJECT_DIR/TouchFree
+  TF_SERVICE_PROJECT_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity
+  TF_PROJECT_PATH: $CI_PROJECT_DIR/TF_Application
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
 
-  SC_CFW_PATH: $CI_PROJECT_DIR/ScreenControl_Web
-  SC_CFU_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Client
-  SC_SRV_PATH: $CI_PROJECT_DIR/ScreenControl_Unity/Assets/ScreenControl/Service
+  TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
+  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling
+  TF_SRV_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Service
 
-  SC_CFU_VERSION: 'alpha5'
-  SC_CFW_VERSION: 'alpha5'
-  SC_SRV_VERSION: 'alpha5'
+  TF_TFU_VERSION: 'alpha5'
+  TF_TFW_VERSION: 'alpha5'
+  TF_SRV_VERSION: 'alpha5'
   TOUCHFREE_VERSION: 'alpha5'
 
-  SC_API_VERSION: '1.1.0'
+  TF_TOOLING_API_VERSION: '1.1.0'
 
 stages:
   - build
@@ -21,12 +21,12 @@ stages:
   - package
   - installer
 
-SC_Client::Unity::build:
+TF_Tooling::Unity::build:
   stage: build
   when: always
   script:
     # Get Unity version and changeset from the project.
-    - $line = Get-Content  $SC_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $TF_SERVICE_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
     # Check whether the required Unity version is installed. If not, install it.
@@ -41,69 +41,69 @@ SC_Client::Unity::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:SC_CFU_PATH}/Version.txt --swVer ${env:SC_CFU_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
-    # Copy Version.txt to Client_Release folder
-    - if (Test-Path -Path "./Client_Release") {
-        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
-        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFU_PATH}/Version.txt --swVer ${env:TF_TFU_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    # Copy Version.txt to Tooling_Release folder
+    - if (Test-Path -Path "./Tooling_Release") {
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
-    - mkdir ./Client_Release
-    - cp ${env:CI_PROJECT_DIR}/ScreenControl_Unity/Assets/ScreenControl/Client/Version.txt ./Client_Release
+    - mkdir ./Tooling_Release
+    - cp ${env:CI_PROJECT_DIR}/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling/Version.txt ./Tooling_Release
 
-    # Package Client
+    # Package Tooling
     - cd ./Scripts
-    - "& ./package_unity_client.bat $UNITY_EXE"
+    - "& ./package_unity_Tooling.bat $UNITY_EXE"
   artifacts:
-    name: "Client_for_Unity_Build_${env:CI_COMMIT_SHORT_SHA}"
+    name: "Tooling_for_Unity_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./Client_Release/*
-      - ./Client_for_Unity_package.log
+      - ./Tooling_Release/*
+      - ./Tooling_for_Unity_package.log
     expire_in: 2 weeks
     when: always
   tags:
     - unity
     - win10
 
-SC_Client::Web::build:
+TF_Tooling::Web::build:
   stage: build
   when: always
   script:
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:SC_CFW_PATH}/Version.txt --swVer ${env:SC_CFW_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
-    # Build Client
-    - cd ${env:SC_CFW_PATH}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFW_PATH}/Version.txt --swVer ${env:TF_TFW_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    # Build Tooling
+    - cd ${env:TF_TFW_PATH}
     - npm i
     - ./node_modules/.bin/gulp build
     # Clean last build
     - cd ${env:CI_PROJECT_DIR}
-    - if (Test-Path -Path "./Client_Release") {
-        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
-        Remove-Item -LiteralPath ./Client_Release -Force -Recurse
+    - if (Test-Path -Path "./Tooling_Release") {
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
-    # Package Client
-    - mkdir ./Client_Release
-    - cp ${env:SC_CFW_PATH}/Version.txt ./Client_Release
-    - cp -r ${env:SC_CFW_PATH}/dist ./Client_Release
-    - cp -r ${env:SC_CFW_PATH}/examples ./Client_Release
+    # Package Tooling
+    - mkdir ./Tooling_Release
+    - cp ${env:TF_TFW_PATH}/Version.txt ./Tooling_Release
+    - cp -r ${env:TF_TFW_PATH}/dist ./Tooling_Release
+    - cp -r ${env:TF_TFW_PATH}/examples ./Tooling_Release
   artifacts:
-    name: "Client_for_Web_Build_${env:CI_COMMIT_SHORT_SHA}"
+    name: "Tooling_for_Web_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./Client_Release/*
+      - ./Tooling_Release/*
     expire_in: 2 weeks
     when: always
   tags:
     - unity
     - win10
 
-SC_Client::Docs::build:
+TF_Tooling::Docs::build:
   stage: build
   when: always
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
   script:
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Unity/NaturalDocs_Config
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/ScreenControl_Web/NaturalDocs_Config
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/NaturalDocs_Config
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Tooling_Web/NaturalDocs_Config
   artifacts:
-    name: "ScreenControl_Documentation"
+    name: "TouchFree_Tooling_Documentation"
     paths:
     - ./Documentation/*
     expire_in: 2 weeks
@@ -111,56 +111,56 @@ SC_Client::Docs::build:
   tags:
     - docker
 
-SC_Service::Wrapper::build:
+TF_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper.sln /p:Configuration=Release
+    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper.sln /p:Configuration=Release
     # Move the built wrapper to the root directory
-    - mkdir ./SC_Wrapper_Build
-    - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceWrapper/SC_ServiceWrapper/bin/Release/* ./SC_Wrapper_Build
+    - mkdir ./Service_Wrapper_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/* ./Service_Wrapper_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Wrapper_Build/SC_ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Service_Wrapper_Build/ServiceWrapper.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "SC_Service_Wrapper"
+    name: "TouchFree_Service_Wrapper"
     paths:
-    - ./SC_Wrapper_Build/**
+    - ./Service_Wrapper_Build/**
     expire_in: 2 weeks
     when: always
   tags:
     - unity
     - win10
 
-SC_Service::Tray::build:
+TF_Service::Tray::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray.sln /p:Configuration=Release
+    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release
     # Move the built tray app to the root directory
-    - mkdir ./SC_Tray_Build
-    - cp -r $CI_PROJECT_DIR/ScreenControl_Service_Utilities/SC_ServiceUITray/SC_ServiceUITray/bin/Release/* ./SC_Tray_Build
+    - mkdir ./Service_Tray_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/Release/* ./Service_Tray_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/SC_Tray_Build/SC_ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Service_Tray_Build/ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "SC_Service_Tray"
+    name: "TouchFree_Service_Tray"
     paths:
-    - ./SC_Tray_Build/**
+    - ./Service_Tray_Build/**
     expire_in: 2 weeks
     when: always
   tags:
     - unity
     - win10
 
-SC_Service::build:
+TF_Service::build:
   stage: build
   when: always
   script:
     # Get Unity version and changeset from the project.
-    - $line = Get-Content  $SC_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $TF_SERVICE_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
     # Check whether the required Unity version is installed. If not, install it.
@@ -175,31 +175,32 @@ SC_Service::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:SC_SRV_PATH}/Version.txt --swVer ${env:SC_SRV_VERSION} --apiVer ${env:SC_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SRV_PATH}/Version.txt --swVer ${env:TF_SRV_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     - mkdir $CI_PROJECT_DIR/Build
-    - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
+    - cp ${env:TF_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
     - mkdir $CI_PROJECT_DIR/UIBuild
-    - cp ${env:SC_SRV_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
+    - cp ${env:TF_SRV_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
 
     # Update ProjectSettings file with correct version & build service
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../ScreenControl_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
     - "& ./build_service.bat $UNITY_EXE"
-    - python ./UpdateBuildSettings_Service.py --path ../ScreenControl_Unity/ProjectSettings/EditorBuildSettings.asset
+    - python ./UpdateBuildSettings_Service.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/EditorBuildSettings.asset
     - "& ./build_serviceUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/ScreenControlService.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/TouchFree_Service.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
 
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/ScreenControlServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/TouchFreeServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "Screen_Control_Service_${env:SC_SRV_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Service_${env:TF_SRV_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - Build/**
     - UIBuild/**
-    - ./Unity.log
+    - ./Service_build.log
+    - ./ServiceUI_build.log
     expire_in: 2 weeks
     when: always
   tags:
@@ -227,24 +228,24 @@ TouchFree::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree/Version.txt --apiVer ${env:SC_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
 
-    # Copy Version.txt to Client_Release folder
+    # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
         Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
         Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
       }
     - mkdir ./TouchFree_Build
-    - cp ${env:CI_PROJECT_DIR}/TouchFree/Assets/TouchFree/Version.txt ./Client_Release
+    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree_Application/Version.txt ./TouchFree_Build
 
     # Build TouchFree
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../TouchFree/ProjectSettings/ProjectSettings.asset --ver ${env:SC_SRV_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Application/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
     - "& ./build_touchfree.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Build/TouchFree.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Build/TouchFree_Application.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
 
   artifacts:
     name: "TouchFree_Build_${env:CI_COMMIT_SHORT_SHA}"
@@ -257,12 +258,12 @@ TouchFree::build:
     - unity
     - win10
 
-SC_Service::test:
+TF_Service::test:
   stage: test
 
   dependencies:
-    - SC_Service::build
-  needs: ["SC_Service::build"]
+    - TF_Service::build
+  needs: ["TF_Service::build"]
 
   script:
     - cd ./Testing/ServiceSocketTests/
@@ -281,65 +282,65 @@ SC_Service::test:
     - unity
     - win10
 
-SC_Client::Web::package:
+TF_Tooling::Web::package:
   stage: package
   image: alpine:3.13
   dependencies:
-    - SC_Client::Web::build
-    - SC_Client::Docs::build
+    - TF_Tooling::Web::build
+    - TF_Tooling::Docs::build
   needs: [
-    "SC_Client::Web::build",
-    "SC_Client::Docs::build"
+    "TF_Tooling::Web::build",
+    "TF_Tooling::Docs::build"
   ]
   script:
-    - mkdir ./Client_Package/
-    - cp -r ./Client_Release/* ./Client_Package/
-    - cp -r "./Documentation/Client for Web/" ./Client_Package/Documentation/
+    - mkdir ./Tooling_Package/
+    - cp -r ./Tooling_Release/* ./Tooling_Package/
+    - cp -r "./Documentation/Tooling for Web/" ./Tooling_Package/Documentation/
   artifacts:
-    name: "Screen_Control_Client_for_Web_${SC_CFW_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Tooling_for_Web_${TF_TFW_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./Client_Package/*
+      - ./Tooling_Package/*
     expire_in: 2 weeks
     when: always
   tags:
     - docker
 
-SC_Client::Unity::package:
+TF_Tooling::Unity::package:
   stage: package
   image: alpine:3.13
   dependencies:
-    - SC_Client::Unity::build
-    - SC_Client::Docs::build
+    - TF_Tooling::Unity::build
+    - TF_Tooling::Docs::build
   needs: [
-    "SC_Client::Unity::build",
-    "SC_Client::Docs::build"
+    "TF_Tooling::Unity::build",
+    "TF_Tooling::Docs::build"
   ]
   script:
-    - mkdir ./Client_Package/
-    - cp -r ./Client_Release/* ./Client_Package/
-    - cp -r "./Documentation/Client for Unity/" ./Client_Package/Documentation/
+    - mkdir ./Tooling_Package/
+    - cp -r ./Tooling_Release/* ./Tooling_Package/
+    - cp -r "./Documentation/Tooling for Unity/" ./Tooling_Package/Documentation/
   artifacts:
-    name: "Screen_Control_Client_for_Unity_${SC_CFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Tooling_for_Unity_${TF_TFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./Client_Package/*
+      - ./Tooling_Package/*
     expire_in: 2 weeks
     when: always
   tags:
     - docker
 
-SC_Service::package:
+TF_Service::package:
   stage: package
   dependencies:
-    - SC_Service::build
-    - SC_Service::Wrapper::build
-    - SC_Service::Tray::build
+    - TF_Service::build
+    - TF_Service::Wrapper::build
+    - TF_Service::Tray::build
   needs: [
-    "SC_Service::build",
-    "SC_Service::Wrapper::build",
-    "SC_Service::Tray::build"
+    "TF_Service::build",
+    "TF_Service::Wrapper::build",
+    "TF_Service::Tray::build"
   ]
   script:
-    # Package ScreenControl up neatly
+    # Package Service up neatly
     - mkdir ./Service_Package/
     - mkdir ./Service_Package/Licenses/
     - mkdir ./Service_Package/Service/
@@ -348,12 +349,12 @@ SC_Service::package:
     - mkdir ./Service_Package/Tray/
     - cp -r ./Build/* ./Service_Package/Service/
     - cp -r ./UIBuild/* ./Service_Package/ServiceUI/
-    - cp -r ./SC_Wrapper_Build/* ./Service_Package/Wrapper/
-    - cp -r ./SC_Tray_Build/* ./Service_Package/Tray/
+    - cp -r ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
+    - cp -r ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
 
   artifacts:
-    name: "ScreenControl_Service_Package_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
     paths:
       - ./Service_Package
     expire_in: 2 weeks
@@ -365,22 +366,22 @@ SC_Service::package:
 TouchFree::installer:
   stage: installer
   dependencies:
-    - SC_Service::package
+    - TF_Service::package
     - TouchFree::build
   needs: [
-    "SC_Service::package",
+    "TF_Service::package",
     "TouchFree::build"
   ]
   script:
     # Run innosetup
     - cd ./Scripts/
-    - "& ./compile_installer.bat $CI_PROJECT_DIR/ScreenControl_Service_Utilities/Installer/TouchFree_Installer.iss"
+    - "& ./compile_installer.bat $CI_PROJECT_DIR/TF_Service_Utilities/Installer/TouchFree_Installer.iss"
 
     # Sign the installer with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_1.0.0-${SC_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_1.0.0-${TF_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "ScreenControl_Service_${SC_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Installer_${TF_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
       - ./Installer_Build/*.exe
     expire_in: 2 weeks
