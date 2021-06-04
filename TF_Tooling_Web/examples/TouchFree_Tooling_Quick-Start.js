@@ -1,4 +1,4 @@
-TouchFree.Tooling.Connection.ConnectionManager.init();
+TouchFree.Connection.ConnectionManager.init();
 
 window.onload = function () {
     var cursorRing = document.createElement('img');
@@ -24,6 +24,6 @@ window.onload = function () {
     document.body.appendChild(cursor);
     document.body.appendChild(cursorRing);
 
-    var dotCursor = new TouchFree.Tooling.Cursors.DotCursor(cursor, cursorRing);
-    var inputSystem = new TouchFree.Tooling.InputControllers.WebInputController();
+    var dotCursor = new TouchFree.Cursors.DotCursor(cursor, cursorRing);
+    var inputSystem = new TouchFree.InputControllers.WebInputController();
 }
