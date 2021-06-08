@@ -30,16 +30,8 @@ namespace Ultraleap.TouchFree.Service
 
         private void Awake()
         {
-            if (ConfigManager.InteractionConfig.FrameRate > 0)
-            {
-                QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = Mathf.Clamp(ConfigManager.InteractionConfig.FrameRate, 1, 100);
-            }
-            else
-            {
-                Application.targetFrameRate = 60;
-                QualitySettings.vSyncCount = 1;
-            }
+            UpdateApplicationFrameRate();
+            InteractionConfig.OnConfigUpdated += UpdateApplicationFrameRate;
 
             Instance = this;
             InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
@@ -86,6 +78,7 @@ namespace Ultraleap.TouchFree.Service
         void OnDestroy()
         {
             InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
+            InteractionConfig.OnConfigUpdated -= UpdateApplicationFrameRate;
         }
 
         private void SetupConnection(ClientConnection _connection)
@@ -178,6 +171,20 @@ namespace Ultraleap.TouchFree.Service
                 {
                     connection.SendConfigState(_config);
                 }
+            }
+        }
+
+        public void UpdateApplicationFrameRate()
+        {
+            if (ConfigManager.InteractionConfig.FrameRate > 0)
+            {
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = Mathf.Clamp(ConfigManager.InteractionConfig.FrameRate, 1, 100);
+            }
+            else
+            {
+                Application.targetFrameRate = 60;
+                QualitySettings.vSyncCount = 1;
             }
         }
     }
