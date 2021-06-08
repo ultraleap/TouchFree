@@ -138,15 +138,20 @@ class Vector2 {
     }
 }
 
+export enum SnapMode {
+    Magnet,
+    Center
+}
+
 export class SnappingPlugin extends InputActionPlugin {
 
-    public _snapDistance: number = 25;
-    public _snapToCenter: boolean = false;
+    private snapDistance: number = 25;
+    private snapMode: SnapMode = SnapMode.Magnet;
 
     public static MAX_SOFTNESS: number = 1;
     public static MIN_SOFTNESS: number = 0;
 
-    public snapSoftness: number = 0.3;
+    private snapSoftness: number = 0.3;
 
     ModifyInputAction(_inputAction: TouchFreeInputAction): TouchFreeInputAction | null {
 
@@ -167,8 +172,8 @@ export class SnappingPlugin extends InputActionPlugin {
 
         // Let's snap if there is snappable elements
         if (elements.length > 0) {
-            if (elements[0].distance < this._snapDistance) {
-                if (this._snapToCenter) {
+            if (elements[0].distance < this.snapDistance) {
+                if (this.snapMode === SnapMode.Center) {
                     // If snapForce = 1, cursor position inside the shape is the same
                     // If snapForce = 0, cursor position is snapped in the middle
                     let snapForce: number = Number.parseFloat(elements[0].element.getAttribute("data-snapforce") ?? this.snapSoftness.toString());
@@ -201,5 +206,21 @@ export class SnappingPlugin extends InputActionPlugin {
 
     private lerp(x: number, y: number, a: number): number {
         return x * (1 - a) + y * a;
+    }
+
+    public SetSnapModeToMagnet() {
+        this.snapMode = SnapMode.Magnet;
+    }
+
+    public SetSnapModeToCenter() {
+        this.snapMode = SnapMode.Center;
+    }
+
+    public SetSnapDistance(value: number) {
+        this.snapDistance = value;
+    }
+
+    public SetSnapSoftness(value: number) {
+        this.snapSoftness = value;
     }
 }

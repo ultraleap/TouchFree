@@ -27,4 +27,8 @@ window.onload = function () {
 
     var dotCursor = new TouchFree.Cursors.DotCursor(cursor, cursorRing);
     var inputSystem = new TouchFree.InputControllers.WebInputController();
+
+    TouchFree.Plugins.InputActionManager.plugins[0].SetSnapModeToCenter();
+    TouchFree.Plugins.InputActionManager.plugins[0].SetSnapDistance(1);
+    TouchFree.Plugins.InputActionManager.plugins[0].SetSnapDistance(0.3);
 }
