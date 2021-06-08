@@ -85,11 +85,5 @@ namespace Leap.Unity{
       ResetRender ();
       ResetPhysics ();
     }
-
-    public void SetRenderRate(float rate)
-    {
-      targetRenderRate = (int)rate;
-      Application.targetFrameRate = targetRenderRate;
-    }
   }
 }

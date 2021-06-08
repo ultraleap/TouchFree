@@ -30,7 +30,7 @@ namespace Ultraleap.TouchFree.Service
 
         private void Awake()
         {
-            // Application.targetFrameRate = ConfigManager.InteractionConfig.FrameRate;
+            Application.targetFrameRate = ConfigManager.InteractionConfig.FrameRate;
 
             Instance = this;
             InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
