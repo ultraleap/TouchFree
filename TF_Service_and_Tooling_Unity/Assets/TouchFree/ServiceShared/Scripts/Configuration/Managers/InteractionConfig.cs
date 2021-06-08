@@ -28,8 +28,8 @@ namespace Ultraleap.TouchFree.ServiceShared
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
         public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
 
-        public int FrameRate = 60;
-        
+        public int FrameRate = 0;
+
         public override void SetAllValuesToDefault()
         {
             var defaults = new InteractionConfig();

@@ -30,7 +30,16 @@ namespace Ultraleap.TouchFree.Service
 
         private void Awake()
         {
-            Application.targetFrameRate = ConfigManager.InteractionConfig.FrameRate;
+            if (ConfigManager.InteractionConfig.FrameRate > 0)
+            {
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = Mathf.Clamp(ConfigManager.InteractionConfig.FrameRate, 1, 100);
+            }
+            else
+            {
+                Application.targetFrameRate = 60;
+                QualitySettings.vSyncCount = 1;
+            }
 
             Instance = this;
             InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
