@@ -3,8 +3,13 @@ import { TouchFreeInputAction } from "./TouchFreeToolingTypes";
 
 export class SnappingPlugin extends InputActionPlugin {
 
-    public _snapDistance: number = 50;
-    public _snapToCenter: boolean = false;
+    public _snapDistance: number = 1;
+    public _snapToCenter: boolean = true;
+
+    public static MAX_SOFTNESS: number = 1;
+    public static MIN_SOFTNESS: number = 0;
+
+    public snapSoftness: number = 0.3;
 
     ModifyInputAction(_inputAction: TouchFreeInputAction): TouchFreeInputAction | null {
 
@@ -36,8 +41,26 @@ export class SnappingPlugin extends InputActionPlugin {
 
             if (closest_distance < this._snapDistance) {
                 if (this._snapToCenter) {
-                    _inputAction.CursorPosition[0] = closest_center.x;
-                    _inputAction.CursorPosition[1] = (window.innerHeight - closest_center.y);
+
+                    // If snapForce = 1, cursor position inside the shape is the same
+                    // If snapForce = 0, cursor position is snapped in the middle
+
+                    let snapForce: number = Number.parseFloat(elements[0].element.getAttribute("data-snapforce") ?? this.snapSoftness.toString());
+
+                    const center_distance: number = this.getDistanceBetween(closest_center, cursorPos);
+                    let softSnapT: number = (center_distance / 50) * this.lerp(
+                        SnappingPlugin.MIN_SOFTNESS,
+                        SnappingPlugin.MAX_SOFTNESS,
+                        snapForce);
+
+                    softSnapT = Math.max(Math.min(softSnapT, 1), 0);
+
+                    const finalPos: {x: number, y: number} = {x: 0, y: 0};
+                    finalPos.x = this.lerp(closest_center.x, cursorPos.x, softSnapT);
+                    finalPos.y = this.lerp(closest_center.y, cursorPos.y, softSnapT);
+
+                    _inputAction.CursorPosition[0] = finalPos.x;
+                    _inputAction.CursorPosition[1] = (window.innerHeight - finalPos.y);
                 }
                 else {
                     if (!this.hasSnappableUnder([cursorPos.x, cursorPos.y])) {
@@ -61,6 +84,13 @@ export class SnappingPlugin extends InputActionPlugin {
         return Math.sqrt(
             Math.pow(cursorPos.x - center.x, 2) +
             Math.pow(cursorPos.y - center.y, 2)
+        );
+    }
+
+    private getDistanceBetween(elementPos: {x: number, y: number}, cursorPos: {x: number, y: number}): number {
+        return Math.sqrt(
+            Math.pow(cursorPos.x - elementPos.x, 2) +
+            Math.pow(cursorPos.y - elementPos.y, 2)
         );
     }
 
@@ -166,5 +196,9 @@ export class SnappingPlugin extends InputActionPlugin {
         }
 
         return pos;
+    }
+
+    private lerp(x: number, y: number, a: number): number {
+        return x * (1 - a) + y * a;
     }
 }
