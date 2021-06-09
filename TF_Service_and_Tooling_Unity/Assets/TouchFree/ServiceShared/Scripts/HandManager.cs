@@ -15,6 +15,7 @@ namespace Ultraleap.TouchFree.ServiceShared
     public class HandManager : MonoBehaviour
     {
         public static HandManager Instance;
+        public TouchfreeLeapServiceProvider leapServiceProvider;
 
         public long Timestamp { get; private set; }
 
@@ -90,6 +91,8 @@ namespace Ultraleap.TouchFree.ServiceShared
             Instance = this;
             handsLastFrame = 0;
 
+            if (leapServiceProvider == null) leapServiceProvider = FindObjectOfType<TouchfreeLeapServiceProvider>();
+
             PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
             CheckLeapVersionForScreentop();
             UpdateTrackingTransform();
@@ -129,7 +132,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         IEnumerator UpdateTrackingAfterLeapInit()
         {
-            while (((TouchfreeLeapServiceProvider)Hands.Provider).GetLeapController() == null)
+            while (leapServiceProvider.GetLeapController() == null)
             {
                 yield return null;
             }
@@ -178,7 +181,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public void SetLeapTrackingMode(MountingType _mount)
         {
-            Controller leapController = ((TouchfreeLeapServiceProvider)Hands.Provider).GetLeapController();
+            Controller leapController = leapServiceProvider.GetLeapController();
 
             switch (_mount)
             {
@@ -216,7 +219,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         private void Update()
         {
-            var currentFrame = Hands.Provider.CurrentFrame;
+            var currentFrame = leapServiceProvider.CurrentFrame;
             var handCount = currentFrame.Hands.Count;
 
             if (handCount == 0 && handsLastFrame > 0)
@@ -345,7 +348,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public bool IsLeapServiceConnected()
         {
-            return ((TouchfreeLeapServiceProvider)Hands.Provider).IsConnected();
+            return leapServiceProvider.IsConnected();
         }
     }
 

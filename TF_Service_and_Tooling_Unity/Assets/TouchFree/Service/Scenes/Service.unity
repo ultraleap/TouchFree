@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -121,6 +121,31 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &110766435 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 150542585345147749, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 6157711595471703630}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &110766438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110766435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a6f4e545b56722408a4b380a1e47f5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  editTimePose: 2
+  _interactionVolumeVisualization: 1
+  _frameOptimization: 0
+  _physicsExtrapolation: 0
+  _physicsExtrapolationTime: 0.011111111
+  _workerThreadProfiling: 0
+  targetFrameRate: 0
 --- !u!1001 &1868409418
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -247,6 +272,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 150542586591463898, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: leapServiceProvider
+      value: 
+      objectReference: {fileID: 110766438}
     - target: {fileID: 518956833299686219, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: m_RootOrder
@@ -307,5 +337,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ServiceSystems
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 150542585356482155, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}

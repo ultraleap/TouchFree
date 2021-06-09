@@ -265,6 +265,7 @@ namespace Leap.Unity {
       _fixedOffset.delay = 0.4f;
       _smoothedTrackingLatency.SetBlend(0.99f, 0.0111f);
       InteractionConfig.OnConfigUpdated += UpdateTargetFrameRate;
+      UpdateTargetFrameRate();
     }
 
     protected virtual void Start() {
