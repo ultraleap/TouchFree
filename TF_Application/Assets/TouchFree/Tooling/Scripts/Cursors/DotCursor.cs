@@ -88,6 +88,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         Coroutine cursorScalingRoutine;
 
+        [SerializeField]
         protected float maxRingScale;
 
         protected bool hidingCursor = true;
@@ -220,8 +221,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
             SetCursorLocalScale(cursorSize);
 
             SetColors(primaryColor, secondaryColor, tertiaryColor);
-
-            maxRingScale = (1f / cursorSize) * cursorMaxRingSize;
 
             // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
             ringOuterSprite.sortingOrder = ringSpriteSortingOrder;
@@ -364,6 +363,8 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         {
             cursorLocalScale = new Vector3(_scale, _scale, _scale);
             cursorBorder.transform.localScale = cursorLocalScale;
+
+            maxRingScale = cursorMaxRingSize;
         }
 
         // Function: ResetCursor

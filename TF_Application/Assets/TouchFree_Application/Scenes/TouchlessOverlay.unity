@@ -233,6 +233,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1104336824340231351}
     m_Modifications:
+    - target: {fileID: 755417834523215253, guid: 200b3d0c93f3942428da323f490b02ec,
+        type: 3}
+      propertyPath: m_MaxValue
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 755417834815473483, guid: 200b3d0c93f3942428da323f490b02ec,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -8.000732
+      objectReference: {fileID: 0}
     - target: {fileID: 5272967576829999082, guid: 200b3d0c93f3942428da323f490b02ec,
         type: 3}
       propertyPath: m_Name
@@ -679,6 +689,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: fadeDuration
+      value: 9.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: ringThickness
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: cursorMaxRingSize
+      value: 32
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c15b107f78ad6249bf6530f797a4326, type: 3}
 --- !u!224 &1247933502 stripped
@@ -1120,7 +1145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
