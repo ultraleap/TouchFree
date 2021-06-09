@@ -701,8 +701,98 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
         type: 3}
+      propertyPath: cursorDownScale
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
       propertyPath: cursorMaxRingSize
       value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[1].time
+      value: 0.111521095
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[2].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[1].value
+      value: 0.26954037
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[0].inSlope
+      value: -11.326567
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[1].inSlope
+      value: -1.0306426
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[2].inSlope
+      value: -0.00963703
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[0].outSlope
+      value: -11.326567
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[1].inWeight
+      value: 0.13855745
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[1].outSlope
+      value: -1.0306426
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[2].inWeight
+      value: 0.21544331
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[2].outSlope
+      value: -0.00963703
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[0].outWeight
+      value: 0.050673094
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[1].outWeight
+      value: 0.040204804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[0].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305115, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: pulseShrinkCurve.m_Curve.Array.data[1].tangentMode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c15b107f78ad6249bf6530f797a4326, type: 3}
@@ -1145,7 +1235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 1
+  m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}

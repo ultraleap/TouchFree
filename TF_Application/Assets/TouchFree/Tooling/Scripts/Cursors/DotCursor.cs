@@ -88,7 +88,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         Coroutine cursorScalingRoutine;
 
-        [SerializeField]
         protected float maxRingScale;
 
         protected bool hidingCursor = true;
