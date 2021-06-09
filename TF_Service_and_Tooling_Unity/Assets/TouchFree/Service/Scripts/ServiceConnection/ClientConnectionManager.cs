@@ -176,10 +176,10 @@ namespace Ultraleap.TouchFree.Service
 
         public void UpdateApplicationFrameRate()
         {
-            if (ConfigManager.InteractionConfig.FrameRate > 0)
+            if (ConfigManager.InteractionConfig.ServiceUpdateRate > 0)
             {
                 QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = Mathf.Clamp(ConfigManager.InteractionConfig.FrameRate, 1, 100);
+                Application.targetFrameRate = Mathf.Clamp(ConfigManager.InteractionConfig.ServiceUpdateRate, 1, 100);
             }
             else
             {

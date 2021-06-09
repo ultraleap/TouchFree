@@ -129,7 +129,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         IEnumerator UpdateTrackingAfterLeapInit()
         {
-            while (((LeapServiceProvider)Hands.Provider).GetLeapController() == null)
+            while (((TouchfreeLeapServiceProvider)Hands.Provider).GetLeapController() == null)
             {
                 yield return null;
             }
@@ -178,7 +178,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public void SetLeapTrackingMode(MountingType _mount)
         {
-            Controller leapController = ((LeapServiceProvider)Hands.Provider).GetLeapController();
+            Controller leapController = ((TouchfreeLeapServiceProvider)Hands.Provider).GetLeapController();
 
             switch (_mount)
             {
@@ -345,7 +345,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public bool IsLeapServiceConnected()
         {
-            return ((LeapServiceProvider)Hands.Provider).IsConnected();
+            return ((TouchfreeLeapServiceProvider)Hands.Provider).IsConnected();
         }
     }
 
