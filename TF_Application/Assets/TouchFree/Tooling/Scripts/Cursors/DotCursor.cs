@@ -16,7 +16,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         // Variable: fadeDuration
         // The number of frames over which the cursor should fade when appearing/disappearing
-        [Range(0f, 60f)] public float fadeDuration = 30;
+        [Range(0f, 60f)] public float fadeDuration = 35;
 
         // Variable: cursorBorder
         // The image of the border around the dot, this is the parent image in the prefab and is
@@ -43,7 +43,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // The maximum size for the ring to be relative to the size of the dot.
         //
         //  e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
-        public float cursorMaxRingSize = 8;
+        public float cursorMaxRingSize = 32;
 
         // Variable: ringCurve
         // This curve is used to determine how the ring's scale changes with the value of the latest
@@ -63,7 +63,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // Variable: ringThickness
         // Used to set the thickness of the ring itself (i.e. the distance between the inner and
         // outer edges of the ring)
-        public float ringThickness = 2;
+        public float ringThickness = 1.5f;
 
         // Variable: pulseShrinkCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
@@ -87,8 +87,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         [Range(0.01f, 2f)] public float cursorDownScale;
 
         Coroutine cursorScalingRoutine;
-
-        protected float maxRingScale;
 
         protected bool hidingCursor = true;
         protected bool growQueued = false;
@@ -121,7 +119,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         {
             // 0.8f so that the boundary between ring and dot is not visible.
             float minRingScale = 0.8f;
-            float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(_progressToClick));
+            float ringScale = Mathf.Lerp(minRingScale, cursorMaxRingSize, ringCurve.Evaluate(_progressToClick));
             ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
 
             ringOuter.transform.localScale = Vector3.one * ringScale;
@@ -362,8 +360,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         {
             cursorLocalScale = new Vector3(_scale, _scale, _scale);
             cursorBorder.transform.localScale = cursorLocalScale;
-
-            maxRingScale = cursorMaxRingSize;
         }
 
         // Function: ResetCursor
