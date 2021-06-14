@@ -113,6 +113,7 @@ namespace Ultraleap.TouchFree.Service
         }
 
         Leap.Finger.FingerType lastUsedFingerType = Leap.Finger.FingerType.TYPE_UNKNOWN;
+        Leap.Bone.BoneType lastUsedBoneType = Leap.Bone.BoneType.TYPE_INVALID;
         Vector3 lastUsedJointPos = Vector3.zero;
 
         Vector3 GetNearestBoneToScreen(Leap.Hand hand)
@@ -120,7 +121,7 @@ namespace Ultraleap.TouchFree.Service
             float nearestDistance = Mathf.Infinity;
             Vector3 nearestJointPos = Vector3.zero;
             Leap.Finger.FingerType fingerType = Leap.Finger.FingerType.TYPE_UNKNOWN;
-
+            Leap.Bone.BoneType boneType = Leap.Bone.BoneType.TYPE_INVALID;
 
             // check the last used finger hasn't changed position by a lot. If it hasn't, use it
             // by default with a bias
@@ -128,42 +129,48 @@ namespace Ultraleap.TouchFree.Service
             {
                 if (finger.Type == lastUsedFingerType)
                 {
-                    Vector3 jointPos = finger.TipPosition.ToVector3();
-
-                    if (Vector3.Distance(lastUsedJointPos, jointPos) < 0.05f)
+                    foreach(var bone in finger.bones)
                     {
-                        nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - 0.03f; // add a bias to the previous finger tip position
+                        if(bone.Type == lastUsedBoneType)
+                        {
+                            Vector3 jointPos = bone.NextJoint.ToVector3();
 
-                        nearestJointPos = jointPos;
-                        fingerType = finger.Type;
+                            if (Vector3.Distance(lastUsedJointPos, jointPos) < 0.05f)
+                            {
+                                nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - 0.02f; // add a bias to the previous finger tip position
+
+                                nearestJointPos = jointPos;
+                                fingerType = finger.Type;
+                                boneType = bone.Type;
+                            }
+
+                            break;
+                        }
                     }
-
-                    break;
                 }
             }
 
             // Loop through all other fingers
             foreach (var finger in hand.Fingers)
             {
-                if (finger.Type == fingerType)
+                foreach (var bone in finger.bones)
                 {
-                    // skip if we are the current chosen finger
-                    continue;
-                }
+                    Vector3 jointPos = bone.NextJoint.ToVector3();
+                    float screenDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos);
 
-                Vector3 jointPos = finger.TipPosition.ToVector3();
-                float screenDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos);
-
-                if (nearestDistance > screenDistance)
-                {
-                    // We are the nearest joint
-                    nearestDistance = screenDistance;
-                    nearestJointPos = jointPos;
-                    fingerType = finger.Type;
+                    if (nearestDistance > screenDistance)
+                    {
+                        // We are the nearest joint
+                        nearestDistance = screenDistance;
+                        nearestJointPos = jointPos;
+                        fingerType = finger.Type;
+                        boneType = bone.Type;
+                    }
                 }
             }
 
             lastUsedFingerType = fingerType;
+            lastUsedBoneType = boneType;
             lastUsedJointPos = nearestJointPos;
             return nearestJointPos;
         }
