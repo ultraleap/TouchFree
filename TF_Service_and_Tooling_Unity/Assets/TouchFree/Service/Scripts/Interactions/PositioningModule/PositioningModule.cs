@@ -115,10 +115,14 @@ namespace Ultraleap.TouchFree.Service
 
         Vector3 GetNearestBoneToScreen(Leap.Hand hand)
         {
-            Vector3 returnVal = Vector3.positiveInfinity;
-            float nearestDistance = Mathf.Infinity;
+            // default to index tip and give it a small buffer. Other joints must be significanlty closer to be used
+            Vector3 indexTipPos = hand.GetIndex().TipPosition.ToVector3();
+            float screenDistanceIndexTip = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(indexTipPos);
 
-            foreach(var finger in hand.Fingers)
+            float nearestDistance = screenDistanceIndexTip - 0.02f;
+            Vector3 nearestJointPos = indexTipPos;
+
+            foreach (var finger in hand.Fingers)
             {
                 foreach (var bone in finger.bones)
                 {
@@ -129,12 +133,12 @@ namespace Ultraleap.TouchFree.Service
                     {
                         // We are the nearest joint
                         nearestDistance = screenDistance;
-                        returnVal = jointPos;
+                        nearestJointPos = jointPos;
                     }
                 }
             }
 
-            return returnVal;
+            return nearestJointPos;
         }
     }
 }
