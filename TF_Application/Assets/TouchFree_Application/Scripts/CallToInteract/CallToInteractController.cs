@@ -139,6 +139,12 @@ public class CallToInteractController : MonoBehaviour
         {
             HideCTI();
         }
+
+        if (showAfterHandsLostCoroutine != null)
+        {
+            StopCoroutine(showAfterHandsLostCoroutine);
+            showAfterHandsLostCoroutine = null;
+        }
     }
 
     void OnAllHandsExit()
