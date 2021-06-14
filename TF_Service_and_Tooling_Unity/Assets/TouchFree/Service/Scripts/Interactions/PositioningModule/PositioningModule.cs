@@ -112,14 +112,45 @@ namespace Ultraleap.TouchFree.Service
             return trackedJointVector;
         }
 
+        Leap.Finger.FingerType lastUsedFingerType = Leap.Finger.FingerType.TYPE_UNKNOWN;
+        Vector3 lastUsedJointPos = Vector3.zero;
 
         Vector3 GetNearestBoneToScreen(Leap.Hand hand)
         {
             float nearestDistance = Mathf.Infinity;
             Vector3 nearestJointPos = Vector3.zero;
+            Leap.Finger.FingerType fingerType = Leap.Finger.FingerType.TYPE_UNKNOWN;
 
+
+            // check the last used finger hasn't changed position by a lot. If it hasn't, use it
+            // by default with a bias
             foreach (var finger in hand.Fingers)
             {
+                if (finger.Type == lastUsedFingerType)
+                {
+                    Vector3 jointPos = finger.TipPosition.ToVector3();
+
+                    if (Vector3.Distance(lastUsedJointPos, jointPos) < 0.05f)
+                    {
+                        nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - 0.03f; // add a bias to the previous finger tip position
+
+                        nearestJointPos = jointPos;
+                        fingerType = finger.Type;
+                    }
+
+                    break;
+                }
+            }
+
+            // Loop through all other fingers
+            foreach (var finger in hand.Fingers)
+            {
+                if (finger.Type == fingerType)
+                {
+                    // skip if we are the current chosen finger
+                    continue;
+                }
+
                 Vector3 jointPos = finger.TipPosition.ToVector3();
                 float screenDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos);
 
@@ -128,9 +159,12 @@ namespace Ultraleap.TouchFree.Service
                     // We are the nearest joint
                     nearestDistance = screenDistance;
                     nearestJointPos = jointPos;
+                    fingerType = finger.Type;
                 }
             }
 
+            lastUsedFingerType = fingerType;
+            lastUsedJointPos = nearestJointPos;
             return nearestJointPos;
         }
     }
