@@ -13,7 +13,8 @@ namespace Ultraleap.TouchFree.Service
         {
             INDEX_STABLE,
             INDEX_TIP,
-            WRIST
+            WRIST,
+            NEAREST
         }
 
         public TRACKED_POSITION trackedPosition = TRACKED_POSITION.INDEX_STABLE;
@@ -92,6 +93,8 @@ namespace Ultraleap.TouchFree.Service
                     return hand.WristPosition.ToVector3();
                 case TRACKED_POSITION.INDEX_TIP:
                     return hand.GetIndex().TipPosition.ToVector3();
+                case TRACKED_POSITION.NEAREST:
+                    return GetNearestBoneToScreen(hand);
                 case TRACKED_POSITION.INDEX_STABLE:
                 default:
                     return GetTrackedPointingJoint(hand);
@@ -107,6 +110,31 @@ namespace Ultraleap.TouchFree.Service
             Vector3 trackedJointVector = (bones[0].NextJoint.ToVector3() + bones[1].NextJoint.ToVector3()) / 2;
             trackedJointVector.z += trackedJointDistanceOffset;
             return trackedJointVector;
+        }
+
+
+        Vector3 GetNearestBoneToScreen(Leap.Hand hand)
+        {
+            Vector3 returnVal = Vector3.positiveInfinity;
+            float nearestDistance = Mathf.Infinity;
+
+            foreach(var finger in hand.Fingers)
+            {
+                foreach (var bone in finger.bones)
+                {
+                    Vector3 jointPos = bone.NextJoint.ToVector3();
+                    float screenDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos);
+
+                    if(nearestDistance > screenDistance)
+                    {
+                        // We are the nearest joint
+                        nearestDistance = screenDistance;
+                        returnVal = jointPos;
+                    }
+                }
+            }
+
+            return returnVal;
         }
     }
 }
