@@ -564,6 +564,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RingCursor
       objectReference: {fileID: 0}
+    - target: {fileID: 2292088167661305113, guid: 6c15b107f78ad6249bf6530f797a4326,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2292088167661305114, guid: 6c15b107f78ad6249bf6530f797a4326,
         type: 3}
       propertyPath: m_Pivot.x
