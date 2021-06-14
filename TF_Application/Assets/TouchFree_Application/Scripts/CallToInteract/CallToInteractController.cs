@@ -33,6 +33,8 @@ public class CallToInteractController : MonoBehaviour
     public static bool isShowing;
     bool handsPresent = false;
 
+    const float hideDelay = 0.2f;
+
     public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
     public static readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
 
@@ -76,6 +78,14 @@ public class CallToInteractController : MonoBehaviour
         StopAllCoroutines();
         delayedSetupCoroutine = null;
         showAfterHandsLostCoroutine = null;
+    }
+
+    private void Update()
+    {
+        if(Input.anyKeyDown && isShowing)
+        {
+            HideCTI();
+        }
     }
 
     /// <param name="_immediate">Force the Setup. Otherwise it is provided on a cooldown to
@@ -163,7 +173,7 @@ public class CallToInteractController : MonoBehaviour
         {
             if (isShowing && ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.INTERACTION)
             {
-                HideCTI();
+                StartCoroutine(HideAfterDelay());
             }
         }
 
@@ -210,6 +220,12 @@ public class CallToInteractController : MonoBehaviour
         }
 
         OnCTIActive?.Invoke();
+    }
+
+    IEnumerator HideAfterDelay()
+    {
+        yield return new WaitForSeconds(hideDelay);
+        HideCTI();
     }
 
     void HideCTI()
