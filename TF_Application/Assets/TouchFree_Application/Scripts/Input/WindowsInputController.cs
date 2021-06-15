@@ -27,6 +27,12 @@ public class WindowsInputController : InputController
 
     protected override void HandleInputAction(InputAction _inputData)
     {
+        // CTI can block input as we do not require input while CTI is active
+        if(CallToInteractController.isShowing)
+        {
+            return;
+        }
+
         var x = (int)_inputData.CursorPosition.x;
         var y = Display.main.systemHeight - (int)_inputData.CursorPosition.y;
 
