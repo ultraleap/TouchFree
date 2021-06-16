@@ -115,7 +115,6 @@ namespace Ultraleap.TouchFree.Service
 
         Leap.Finger.FingerType lastUsedFingerType = Leap.Finger.FingerType.TYPE_UNKNOWN;
         Leap.Bone.BoneType lastUsedBoneType = Leap.Bone.BoneType.TYPE_INVALID;
-        Vector3 lastUsedJointPos = Vector3.zero;
 
         Vector3 GetNearestBoneToScreen(Leap.Hand hand)
         {
@@ -136,14 +135,11 @@ namespace Ultraleap.TouchFree.Service
                         {
                             Vector3 jointPos = bone.NextJoint.ToVector3();
 
-                            if (Vector3.Distance(lastUsedJointPos, jointPos) < 0.05f)
-                            {
-                                nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - lastBoneBias; // add a bias to the previous finger tip position
+                            nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - lastBoneBias; // add a bias to the previous finger tip position
 
-                                nearestJointPos = jointPos;
-                                fingerType = finger.Type;
-                                boneType = bone.Type;
-                            }
+                            nearestJointPos = jointPos;
+                            fingerType = finger.Type;
+                            boneType = bone.Type;
 
                             break;
                         }
@@ -172,7 +168,6 @@ namespace Ultraleap.TouchFree.Service
 
             lastUsedFingerType = fingerType;
             lastUsedBoneType = boneType;
-            lastUsedJointPos = nearestJointPos;
             return nearestJointPos;
         }
 
