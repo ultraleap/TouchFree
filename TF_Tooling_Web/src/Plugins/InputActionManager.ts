@@ -13,7 +13,7 @@ export class InputActionManager extends EventTarget {
 
     // Event: TransmitInputActionRaw
     // An event for immediately transmitting <TouchFreeInputActions> that are received via the
-    // <messageReceiver>to be listened to.
+    // <messageReceiver> to be listened to. This is transmitted before any Plugins are executed.
 
     // Variable: instance
     // The instance of the singleton for referencing the events transmitted
@@ -22,7 +22,7 @@ export class InputActionManager extends EventTarget {
     static plugins: Array<InputActionPlugin>;
 
     public static get instance() {
-        if (InputActionManager._instance == null) {
+        if (InputActionManager._instance === null) {
             InputActionManager._instance = new InputActionManager();
         }
 
@@ -49,14 +49,13 @@ export class InputActionManager extends EventTarget {
 
         let action = _action;
 
-        if (this.plugins != null) {
+        if (this.plugins !== null) {
             for (var i = 0; i < this.plugins.length; i++) {
                 let modifiedAction = this.plugins[i].RunPlugin(action);
 
-                if (modifiedAction != null) {
+                if (modifiedAction !== null) {
                     action = modifiedAction;
-                }
-                else {
+                } else {
                     // The plugin has cancelled the InputAction entirely
                     return;
                 }

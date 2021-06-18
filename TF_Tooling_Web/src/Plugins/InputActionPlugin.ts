@@ -1,6 +1,6 @@
 import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
 
-export class InputActionPlugin extends EventTarget{
+export abstract class InputActionPlugin extends EventTarget{
     // Event: InputActionOutput
     // An event for transmitting <TouchFreeInputActions> as they pass through this plugin.
     // This can be used to access the data as it is used by a specific plugin, as to intercept
