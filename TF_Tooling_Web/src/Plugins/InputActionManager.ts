@@ -22,7 +22,7 @@ export class InputActionManager extends EventTarget {
     static plugins: Array<InputActionPlugin>;
 
     public static get instance() {
-        if (InputActionManager._instance === null) {
+        if (InputActionManager._instance == null) {
             InputActionManager._instance = new InputActionManager();
         }
 
@@ -49,11 +49,11 @@ export class InputActionManager extends EventTarget {
 
         let action = _action;
 
-        if (this.plugins !== null) {
+        if (this.plugins != null) {
             for (var i = 0; i < this.plugins.length; i++) {
                 let modifiedAction = this.plugins[i].RunPlugin(action);
 
-                if (modifiedAction !== null) {
+                if (modifiedAction != null) {
                     action = modifiedAction;
                 } else {
                     // The plugin has cancelled the InputAction entirely
