@@ -7,7 +7,7 @@ class SnappableElement {
     public closest_point: Vector2;
     public center: Vector2;
     public center_distance: number;
-    public hovered: boolean
+    public hovered: boolean;
 
     constructor(
             element: Element,
@@ -34,12 +34,16 @@ class SnappableElement {
         );
 
         const closest_point: Vector2 = Ray.Cast(distant_point, center, element);
-        const distance: number = Math.sqrt(
+        let distance: number = Math.sqrt(
             Math.pow(distant_point.x - closest_point.x, 2) +
             Math.pow(distant_point.y - closest_point.y, 2)
         );
 
-        const hovered: boolean = closest_point === distant_point;
+        //const hovered: boolean = closest_point === distant_point;
+        const hovered: boolean = Ray.Hit(distant_point, element);
+        if (hovered) {
+            distance = -distance;
+        }
 
         return new SnappableElement(element, distance, closest_point, center, center_distance, hovered);
     }
@@ -51,13 +55,8 @@ class Ray {
 
         const pos: Vector2 = new Vector2(start.x, start.y);
 
-        let hasSnap: boolean = this.hit(pos, element);
+        let hasSnap: boolean = Ray.Hit(pos, element);
         let hadSnap: boolean = hasSnap;
-
-        // If we already have snappable under us, it means we already are in a button
-        if (hasSnap) {
-            return pos;
-        }
 
         // Store the current segment
         const vector: {x: number, y: number} = {
@@ -77,6 +76,33 @@ class Ray {
             y: end.y
         }
 
+        // If we already have snappable under us, it means we already are in a button
+        // Let's find the closest border in the shape anyway, we'll do that
+        // by going the other direction
+        if (hasSnap) {
+            const rect: DOMRect = element.getBoundingClientRect();
+            const longest: number = Math.sqrt(
+                Math.pow(rect.width / 2, 2) +
+                Math.pow(rect.height / 2, 2)
+            );
+
+            // We'll use the vector as a direction vector, return it, normalize it
+            // and multiply by the longest value the shape can have
+            vector.x = -vector.x;
+            vector.y = -vector.y;
+
+            const vectorLength: number = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
+
+            vector.x /= vectorLength;
+            vector.y /= vectorLength;
+
+            vector.x *= longest;
+            vector.y *= longest;
+
+            nextEnd.x = start.x + vector.x;
+            nextEnd.y = start.y + vector.y;
+        }
+
         // Store the length of the vector
         let distance: number = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
 
@@ -85,7 +111,7 @@ class Ray {
         pos.y = pos.y + (vector.y / 2);
 
         while (distance > 1) {
-            hasSnap = this.hit(pos, element);
+            hasSnap = Ray.Hit(pos, element);
 
             // If we changed state, we reverse the direction
             if ((hasSnap && !hadSnap) || (!hasSnap && hadSnap)) {
@@ -114,7 +140,7 @@ class Ray {
         return pos;
     }
 
-    private static hit(position: Vector2, element: Element): boolean {
+    public static Hit(position: Vector2, element: Element): boolean {
         let elementsAtPos: Element[] = document.elementsFromPoint(position.x, position.y);
         return elementsAtPos.find((value: Element, index: number, obj: Element[]) => value === element) !== undefined;
     }
@@ -178,16 +204,28 @@ export class SnappingPlugin extends InputActionPlugin {
                     // If snapForce = 0, cursor position is snapped in the middle
                     let snapForce: number = Number.parseFloat(elements[0].element.getAttribute("data-snapforce") ?? this.snapSoftness.toString());
 
-                    let softSnapT: number = (elements[0].center_distance / 50) * this.lerp(
+                    // From center of the shape to the border of the shape, following the direction between the center and the cursor
+                    // From what we already have, vector = closest_center - closest_point
+                    const centerToBorderVector: Vector2 = new Vector2(
+                        elements[0].center.x - elements[0].closest_point.x,
+                        elements[0].center.y - elements[0].closest_point.y
+                    )
+                    const distance: number = Math.sqrt(
+                        Math.pow(centerToBorderVector.x, 2) +
+                        Math.pow(centerToBorderVector.y, 2)
+                    );
+
+                    let softSnapT: number = (elements[0].center_distance / distance) * this.lerp(
                         SnappingPlugin.MIN_SOFTNESS,
                         SnappingPlugin.MAX_SOFTNESS,
-                        snapForce);
+                        snapForce
+                    );
 
                     softSnapT = Math.max(Math.min(softSnapT, 1), 0);
 
                     const finalPos: {x: number, y: number} = {x: 0, y: 0};
-                    finalPos.x = this.lerp(elements[0].center.x, cursorPos.x, softSnapT);
-                    finalPos.y = this.lerp(elements[0].center.y, cursorPos.y, softSnapT);
+                    finalPos.x = this.lerp(elements[0].center.x, elements[0].closest_point.x, softSnapT);
+                    finalPos.y = this.lerp(elements[0].center.y, elements[0].closest_point.y, softSnapT);
 
                     _inputAction.CursorPosition[0] = finalPos.x;
                     _inputAction.CursorPosition[1] = (window.innerHeight - finalPos.y);
