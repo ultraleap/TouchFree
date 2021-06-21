@@ -19,10 +19,10 @@ export class InputActionManager extends EventTarget {
     // The instance of the singleton for referencing the events transmitted
     static _instance: InputActionManager;
 
-    static plugins: Array<InputActionPlugin>;
+    static plugins: Array<InputActionPlugin> | null = null;
 
     public static get instance() {
-        if (InputActionManager._instance == null) {
+        if (InputActionManager._instance === undefined) {
             InputActionManager._instance = new InputActionManager();
         }
 
@@ -49,11 +49,11 @@ export class InputActionManager extends EventTarget {
 
         let action = _action;
 
-        if (this.plugins != null) {
+        if (this.plugins !== null) {
             for (var i = 0; i < this.plugins.length; i++) {
                 let modifiedAction = this.plugins[i].RunPlugin(action);
 
-                if (modifiedAction != null) {
+                if (modifiedAction !== null) {
                     action = modifiedAction;
                 } else {
                     // The plugin has cancelled the InputAction entirely
