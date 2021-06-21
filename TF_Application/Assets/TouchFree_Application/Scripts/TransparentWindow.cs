@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEngine;
 
 namespace Ultraleap.TouchFree
@@ -61,8 +61,11 @@ namespace Ultraleap.TouchFree
         void Start()
         {
 #if !UNITY_EDITOR // You really don't want to enable this in the editor..
-		hwnd = GetActiveWindow();
+		    hwnd = GetActiveWindow();
+            SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);// Transparency=51=20%
+            SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 #endif
+
             clickThroughEnabled = false;
             EnableClickThrough();
         }
@@ -70,22 +73,26 @@ namespace Ultraleap.TouchFree
         public void DisableClickThrough()
         {
 #if !UNITY_EDITOR
-        if (!clickThroughEnabled)
-        {    return;
-        }
-        clickThroughEnabled = false;
-        SetConfigWindow(true);
+            if (!clickThroughEnabled)
+            {    
+                return;
+            }
+
+            clickThroughEnabled = false;
+            SetConfigWindow(true);
 #endif
         }
 
         public void EnableClickThrough()
         {
 #if !UNITY_EDITOR
-        if (clickThroughEnabled || ctiActive)
-        {            return;
-        }
-        clickThroughEnabled = true;
-        SetCursorWindow(true);
+            if (clickThroughEnabled || ctiActive)
+            {            
+                return;
+            }
+
+            clickThroughEnabled = true;
+            SetCursorWindow(true);
 #endif
         }
 
@@ -114,17 +121,26 @@ namespace Ultraleap.TouchFree
                 Screen.SetResolution(TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, FullScreenMode.Windowed);
             }
 
-            SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-            SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);// Transparency=51=20%
+            SetWindowLong(hwnd, -20, WS_EX_LAYERED | WS_EX_TRANSPARENT);
+
             SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y),
                 TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
             var margins = new MARGINS() { cxLeftWidth = -1 };
-            SetWindowLong(hwnd, -20, WS_EX_LAYERED | WS_EX_TRANSPARENT);
-            SetWindowPos(hwnd, HWND_TOPMOST, Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y),
-                TouchFreeMain.CursorWindowSize, TouchFreeMain.CursorWindowSize, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
-
             DwmExtendFrameIntoClientArea(hwnd, ref margins);
+
+            StartCoroutine(FocusPreviousWindowNextFrame());
+        }
+
+        /// <summary>
+        /// Used to remove focus from the TouchFree Application. This is useful to allow users
+        /// a single click on the taskbar to launch the UI.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator FocusPreviousWindowNextFrame()
+        {
+            yield return new WaitForSeconds(0.2f);
+            FocusPreviousWindow();
         }
 
         void SetConfigWindow(bool setResolution)
@@ -134,41 +150,37 @@ namespace Ultraleap.TouchFree
                 Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.Windowed);
             }
 
-            SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-            SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
-            SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
-
-            var margins = new MARGINS();
-
             // get the current -20 window and remove the layerd and transparent parts
             long style = GetWindowLong(hwnd, -20);
             style &= ~WS_EX_TRANSPARENT;
             style &= ~WS_EX_LAYERED;
-
             SetWindowLong(hwnd, -20, style);
+
             SetWindowPos(hwnd, -2, 0, 0, Display.main.systemWidth, Display.main.systemHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
+            var margins = new MARGINS();
             DwmExtendFrameIntoClientArea(hwnd, ref margins);
         }
 
         void Update()
         {
 #if !UNITY_EDITOR
-		if (clickThroughEnabled)
-		{
-            int xPos = Mathf.RoundToInt(position.x);
-            int yPos = Mathf.RoundToInt(position.y);
-            if (xPos + TouchFreeMain.CursorWindowSize > 0 && xPos < Display.main.systemWidth && yPos + TouchFreeMain.CursorWindowSize > 0 && yPos < Display.main.systemHeight)
-            {
-                SetWindowPos(hwnd,
-                    HWND_TOPMOST,
-                    Mathf.RoundToInt(position.x),
-                    Mathf.RoundToInt(position.y),
-                    TouchFreeMain.CursorWindowSize,
-                    TouchFreeMain.CursorWindowSize,
-                    SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-            }
-		}
+		    if (clickThroughEnabled)
+		    {
+                int xPos = Mathf.RoundToInt(position.x);
+                int yPos = Mathf.RoundToInt(position.y);
+
+                if (xPos + TouchFreeMain.CursorWindowSize > 0 && xPos < Display.main.systemWidth && yPos + TouchFreeMain.CursorWindowSize > 0 && yPos < Display.main.systemHeight)
+                {
+                    SetWindowPos(hwnd,
+                        HWND_TOPMOST,
+                        Mathf.RoundToInt(position.x),
+                        Mathf.RoundToInt(position.y),
+                        TouchFreeMain.CursorWindowSize,
+                        TouchFreeMain.CursorWindowSize,
+                        SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+                }
+		    }
 #endif
         }
 
@@ -201,5 +213,92 @@ namespace Ultraleap.TouchFree
         {
             SetConfigWindow(true);
         }
+
+#region Remove focus
+
+        /// <summary>
+        /// filter function
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        public delegate bool EnumDelegate(IntPtr hWnd, int lParam);
+
+        /// <summary>
+        /// check if windows visible
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWindowVisible(IntPtr hWnd);
+
+        /// <summary>
+        /// return windows text
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="lpWindowText"></param>
+        /// <param name="nMaxCount"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll", EntryPoint = "GetWindowText",
+        ExactSpelling = false, CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpWindowText, int nMaxCount);
+
+        /// <summary>
+        /// enumarator on all desktop windows
+        /// </summary>
+        /// <param name="hDesktop"></param>
+        /// <param name="lpEnumCallbackFunction"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll", EntryPoint = "EnumDesktopWindows",
+        ExactSpelling = false, CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool EnumDesktopWindows(IntPtr hDesktop, EnumDelegate lpEnumCallbackFunction, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool BringWindowToTop(IntPtr hWnd);
+
+        void FocusPreviousWindow()
+        {
+            // Nullable var so we can check it is populated
+            IntPtr? firstWindow = null;
+
+            // Windows user3d delegate for enumerating through the windows
+            EnumDelegate filter = delegate (IntPtr hWnd, int lParam)
+            {
+                // We already have the topmost non-TouchFree window, no need to go any further
+                if (firstWindow.HasValue)
+                {
+                    return true;
+                }
+
+                // Get the name of the window so we can check it is valid and compare it
+                // to "TouchFree"
+                StringBuilder strbTitle = new StringBuilder(255);
+                int nLength = GetWindowText(hWnd, strbTitle, strbTitle.Capacity + 1);
+                string strTitle = strbTitle.ToString();
+
+                if (IsWindowVisible(hWnd) && !string.IsNullOrEmpty(strTitle))
+                {
+                    if (!strTitle.Contains("TouchFree"))
+                    {
+                        firstWindow = hWnd;
+                    }
+                }
+                return true;
+            };
+
+            // Begin the enumeration
+            if (EnumDesktopWindows(IntPtr.Zero, filter, IntPtr.Zero))
+            {
+                // Once enumerated, if we found a window to focus, bring it to the top
+                if (firstWindow.HasValue)
+                {
+                    BringWindowToTop(firstWindow.Value);
+                }
+            }
+        }
+#endregion
+
     }
 }
