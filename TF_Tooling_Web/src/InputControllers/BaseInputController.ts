@@ -1,4 +1,4 @@
-import { ConnectionManager } from "../Connection/ConnectionManager";
+import { InputActionManager } from '../Plugins/InputActionManager';
 import { TouchFreeInputAction, InputType } from "../TouchFreeToolingTypes";
 
 // Class: InputController
@@ -13,10 +13,10 @@ export abstract class BaseInputController {
     // Group: MonoBehaviour Overrides
 
     // Function: constructor
-    // Adds a listener to <ConnectionManager> to invoke <HandleInputAction> with <TouchFreeInputActions> as they
+    // Adds a listener to <InputActionManager> to invoke <HandleInputAction> with <TouchFreeInputActions> as they
     // are received.
     constructor() {
-        ConnectionManager.instance.addEventListener('TransmitInputAction',
+        InputActionManager.instance.addEventListener('TransmitInputAction',
             ((e: CustomEvent<TouchFreeInputAction>) => {
                 this.HandleInputAction(e.detail);
             }) as EventListener);
