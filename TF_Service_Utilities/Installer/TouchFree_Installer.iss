@@ -25,7 +25,7 @@ AppPublisherURL={#CompanyURL}
 AppSupportURL={#CompanyURL}
 AppUpdatesURL={#CompanyURL}
 CreateUninstallRegKey=yes
-DefaultDirName={autopf}\Ultraleap\{#ProductName}
+DefaultDirName={autopf64}\Ultraleap\{#ProductName}
 DisableProgramGroupPage=yes
 LicenseFile={#SourcePath}..\..\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
@@ -48,32 +48,32 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: TouchFree_Application; Description: "Install the TouchFree Application";
 
 [Files]
-Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{commonpf64}\Ultraleap\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{commonpf64}\Ultraleap\TouchFree\TouchFree"; Tasks: TouchFree_Application; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Tasks: TouchFree_Application; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{commonpf64}\Ultraleap\TouchFree\TouchFree\{#TouchFreeAppExeName}"; Tasks: TouchFree_Application;
-Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{commonpf64}\Ultraleap\TouchFree\ServiceUI\{#ServiceUIExeName}";
-Name: "{autostartup}\{#TrayAppName}"; Filename: "{commonpf64}\Ultraleap\TouchFree\Tray\{#TrayAppExeName}";
+Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Tasks: TouchFree_Application;
+Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{app}\ServiceUI\{#ServiceUIExeName}";
+Name: "{autostartup}\{#TrayAppName}"; Filename: "{app}\Tray\{#TrayAppExeName}";
 
 [Registry]
 Root: HKA64; Subkey: "Software\Ultraleap"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletekey
-Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{commonpf64}\Ultraleap\TouchFree\Wrapper\{#WrapperExeName}"
+Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
 
 [Run]
-Filename: "{commonpf64}\Ultraleap\TouchFree\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{commonpf64}\Ultraleap\TouchFree\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{commonpf64}\Ultraleap\TouchFree\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
-Filename: "{commonpf64}\Ultraleap\TouchFree\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
+Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
+Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
+Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
+Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
 Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopService"; Flags: runhidden
-Filename: "{commonpf64}\Ultraleap\TouchFree\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
+Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
 
 [Code]
 function GetWrapperPath: string;
