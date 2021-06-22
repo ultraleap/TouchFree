@@ -408,6 +408,16 @@ namespace Ultraleap.TouchFree
             ConfigManager.Config.ConfigWasUpdated();
             ConfigManager.Config.SaveConfig();
         }
+
+        public void ResetToDefaults()
+        {
+            RemoveValueChangedListeners();
+            ConfigManager.Config.SetAllValuesToDefault();
+            ConfigManager.Config.ConfigWasUpdated();
+            ConfigManager.Config.SaveConfig();
+            LoadConfigValuesIntoFields();
+            AddValueChangedListeners();
+        }
         #endregion
 
         #region OnValueChanged Overrides
