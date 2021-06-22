@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.InteropServices;
-using System.Text;
 using UnityEngine;
 
 namespace Ultraleap.TouchFree
@@ -139,7 +138,7 @@ namespace Ultraleap.TouchFree
         /// <returns></returns>
         IEnumerator FocusPreviousWindowNextFrame()
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return null;
             FocusPreviousWindow();
         }
 
@@ -234,17 +233,6 @@ namespace Ultraleap.TouchFree
         public static extern bool IsWindowVisible(IntPtr hWnd);
 
         /// <summary>
-        /// return windows text
-        /// </summary>
-        /// <param name="hWnd"></param>
-        /// <param name="lpWindowText"></param>
-        /// <param name="nMaxCount"></param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "GetWindowText",
-        ExactSpelling = false, CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpWindowText, int nMaxCount);
-
-        /// <summary>
         /// enumarator on all desktop windows
         /// </summary>
         /// <param name="hDesktop"></param>
@@ -261,28 +249,16 @@ namespace Ultraleap.TouchFree
         void FocusPreviousWindow()
         {
             // Nullable var so we can check it is populated
-            IntPtr? firstWindow = null;
+            IntPtr? previousTopWindow = null;
 
-            // Windows user3d delegate for enumerating through the windows
+            // Windows user delegate for enumerating through the windows
             EnumDelegate filter = delegate (IntPtr hWnd, int lParam)
             {
-                // We already have the topmost non-TouchFree window, no need to go any further
-                if (firstWindow.HasValue)
+                if (IsWindowVisible(hWnd) && !previousTopWindow.HasValue)
                 {
-                    return true;
-                }
-
-                // Get the name of the window so we can check it is valid and compare it
-                // to "TouchFree"
-                StringBuilder strbTitle = new StringBuilder(255);
-                int nLength = GetWindowText(hWnd, strbTitle, strbTitle.Capacity + 1);
-                string strTitle = strbTitle.ToString();
-
-                if (IsWindowVisible(hWnd) && !string.IsNullOrEmpty(strTitle))
-                {
-                    if (!strTitle.Contains("TouchFree"))
+                    if(hwnd != hWnd)
                     {
-                        firstWindow = hWnd;
+                        previousTopWindow = hWnd;
                     }
                 }
                 return true;
@@ -292,9 +268,9 @@ namespace Ultraleap.TouchFree
             if (EnumDesktopWindows(IntPtr.Zero, filter, IntPtr.Zero))
             {
                 // Once enumerated, if we found a window to focus, bring it to the top
-                if (firstWindow.HasValue)
+                if (previousTopWindow.HasValue)
                 {
-                    BringWindowToTop(firstWindow.Value);
+                    BringWindowToTop(previousTopWindow.Value);
                 }
             }
         }
