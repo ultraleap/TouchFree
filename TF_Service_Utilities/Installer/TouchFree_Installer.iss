@@ -48,32 +48,32 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: TouchFree_Application; Description: "Install the TouchFree Application";
 
 [Files]
-Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{commonpf64}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{commonpf64}\TouchFree"; Tasks: TouchFree_Application; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{commonpf64}\Ultraleap\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{commonpf64}\Ultraleap\TouchFree\TouchFree"; Tasks: TouchFree_Application; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{commonpf64}\TouchFree\{#TouchFreeAppExeName}"; Tasks: TouchFree_Application;
-Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{commonpf64}\ServiceUI\{#ServiceUIExeName}";
-Name: "{autostartup}\{#TrayAppName}"; Filename: "{commonpf64}\Tray\{#TrayAppExeName}";
+Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{commonpf64}\Ultraleap\TouchFree\TouchFree\{#TouchFreeAppExeName}"; Tasks: TouchFree_Application;
+Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{commonpf64}\Ultraleap\TouchFree\ServiceUI\{#ServiceUIExeName}";
+Name: "{autostartup}\{#TrayAppName}"; Filename: "{commonpf64}\Ultraleap\TouchFree\Tray\{#TrayAppExeName}";
 
 [Registry]
 Root: HKA64; Subkey: "Software\Ultraleap"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletekey
-Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{commonpf64}\Wrapper\{#WrapperExeName}"
+Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{commonpf64}\Ultraleap\TouchFree\Wrapper\{#WrapperExeName}"
 
 [Run]
-Filename: "{commonpf64}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{commonpf64}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{commonpf64}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
-Filename: "{commonpf64}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
+Filename: "{commonpf64}\Ultraleap\TouchFree\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
+Filename: "{commonpf64}\Ultraleap\TouchFree\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
+Filename: "{commonpf64}\Ultraleap\TouchFree\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
+Filename: "{commonpf64}\Ultraleap\TouchFree\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
 Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopService"; Flags: runhidden
-Filename: "{commonpf64}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
+Filename: "{commonpf64}\Ultraleap\TouchFree\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
 
 [Code]
 function GetWrapperPath: string;
