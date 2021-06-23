@@ -8,6 +8,7 @@ namespace Ultraleap.TouchFree.Service
     public class PositionStabiliser : MonoBehaviour
     {
         [HideInInspector] public float defaultDeadzoneRadius;
+        public float smoothingRate;
         public float internalShrinkFactor = 2f;
 
         [Header("Progress based scaling")]
@@ -19,6 +20,9 @@ namespace Ultraleap.TouchFree.Service
         // Shrinking Params
         [HideInInspector] public bool isShrinking = false;
         private float shrinkingSpeed;
+
+        private bool havePreviousPositionSmoothing;
+        private Vector3 previousPositionSmoothing;
 
         private bool havePreviousPositionDeadzone;
         private Vector2 previousPositionDeadzoneDefaultSize;
@@ -34,6 +38,32 @@ namespace Ultraleap.TouchFree.Service
         void OnDisable()
         {
             InteractionConfig.OnConfigUpdated -= OnSettingsUpdated;
+        }
+
+        // Apply smoothing
+        public Vector3 ApplySmoothing(Vector3 position, float currentVelocity, float deltaTime)
+        {
+            if(defaultDeadzoneRadius == 0)
+            {
+                return position;
+            }
+
+            Vector3 smoothedPosition;
+
+            if (!havePreviousPositionSmoothing)
+            {
+                havePreviousPositionSmoothing = true;
+                smoothedPosition = position;
+            }
+            else
+            {
+                // When velocity is high, increase the lerp speed to reduce filtering effect
+                float lerpRate = Mathf.Lerp(smoothingRate, 1f / deltaTime, currentVelocity);
+                smoothedPosition = Vector3.Lerp(previousPositionSmoothing, position, lerpRate * deltaTime);
+            }
+
+            previousPositionSmoothing = smoothedPosition;
+            return smoothedPosition;
         }
 
         public Vector2 ApplyDeadzone(Vector2 position)
