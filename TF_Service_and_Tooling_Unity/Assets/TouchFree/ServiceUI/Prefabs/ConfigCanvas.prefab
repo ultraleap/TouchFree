@@ -27095,7 +27095,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 59.99989, y: -54.703}
+  m_AnchoredPosition: {x: 49, y: -73}
   m_SizeDelta: {x: -479.70087, y: 109.40581}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &4910109140836425465
@@ -31104,7 +31104,7 @@ RectTransform:
   m_AnchorMin: {x: 0.028461, y: 1}
   m_AnchorMax: {x: 0.68023044, y: 1}
   m_AnchoredPosition: {x: 1.0302124, y: -61.1}
-  m_SizeDelta: {x: 263.4549, y: 61.15349}
+  m_SizeDelta: {x: 263.4549, y: 80}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &5868556551159701292
 CanvasRenderer:
@@ -31147,7 +31147,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 'Changing this location will overwrite any configuration files in the selected
-    destination. WARNING: May require re-launching this application in administrator
+    destination.
+
+    WARNING: May require re-launching this application in administrator
     mode.'
 --- !u!1 &7932232038609692038
 GameObject:
