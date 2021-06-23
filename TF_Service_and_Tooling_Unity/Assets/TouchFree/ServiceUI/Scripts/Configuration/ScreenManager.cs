@@ -36,6 +36,7 @@ namespace Ultraleap.TouchFree.ServiceUI
                 root.SetActive(false);
             }
 
+            HandManager.Instance.lockTrackingMode = false;
             _newScreenRoot.SetActive(true);
             currentScreen = _newScreenRoot;
         }
