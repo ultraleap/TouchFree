@@ -65,11 +65,13 @@ namespace ServiceUITray
             if (startedProcess != null && !startedProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                //ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                ExecuteWithoutAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
             else
             {
-                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                //startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                startedProcess = ExecuteWithoutAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
         }
 
@@ -121,6 +123,15 @@ namespace ServiceUITray
             proc.StartInfo.FileName = fileName;
             proc.StartInfo.UseShellExecute = true;
             proc.StartInfo.Verb = "runas";
+            proc.Start();
+
+            return proc;
+        }
+
+        public Process ExecuteWithoutAdmin(string fileName)
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = fileName;
             proc.Start();
 
             return proc;
