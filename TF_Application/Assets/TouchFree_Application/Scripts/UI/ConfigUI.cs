@@ -5,6 +5,8 @@ using System.IO;
 
 using HSVPicker;
 using SFB;
+using System.Threading;
+using System.Globalization;
 
 namespace Ultraleap.TouchFree
 {
@@ -57,6 +59,12 @@ namespace Ultraleap.TouchFree
         private Color CustomSecondaryColor = Color.white;
         private Color CustomTertiaryColor = Color.white;
         private string CTIFilePath;
+
+        private void Awake()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+        }
 
         protected virtual void OnEnable()
         {
@@ -399,6 +407,16 @@ namespace Ultraleap.TouchFree
 
             ConfigManager.Config.ConfigWasUpdated();
             ConfigManager.Config.SaveConfig();
+        }
+
+        public void ResetToDefaults()
+        {
+            RemoveValueChangedListeners();
+            ConfigManager.Config.SetAllValuesToDefault();
+            ConfigManager.Config.ConfigWasUpdated();
+            ConfigManager.Config.SaveConfig();
+            LoadConfigValuesIntoFields();
+            AddValueChangedListeners();
         }
         #endregion
 

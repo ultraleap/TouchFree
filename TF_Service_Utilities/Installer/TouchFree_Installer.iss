@@ -6,7 +6,7 @@
 #define Publisher "Ultraleap Inc."
 #define ReleaseVersion "1.0.0-alpha5"
 #define ServiceUIExeName "TouchFreeServiceUI.exe"
-#define ServiceUIName "TouchFree Service Configuration"
+#define ServiceUIName "TouchFree Service Settings"
 #define TouchFreeAppExeName "TouchFree_Application.exe"
 #define TouchFreeAppName "TouchFree Application"
 #define TrayAppExeName "ServiceUITray.exe"
@@ -25,7 +25,7 @@ AppPublisherURL={#CompanyURL}
 AppSupportURL={#CompanyURL}
 AppUpdatesURL={#CompanyURL}
 CreateUninstallRegKey=yes
-DefaultDirName={autopf}\Ultraleap\{#ProductName}
+DefaultDirName={autopf64}\Ultraleap\{#ProductName}
 DisableProgramGroupPage=yes
 LicenseFile={#SourcePath}..\..\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
