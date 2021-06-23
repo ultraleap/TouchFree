@@ -1577,8 +1577,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -1158.682}
-  m_SizeDelta: {x: 1685.5487, y: 170}
+  m_AnchoredPosition: {x: 30, y: -1158.1531}
+  m_SizeDelta: {x: 1686.4795, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &755417834150110135
 CanvasRenderer:
@@ -2149,8 +2149,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -75}
-  m_SizeDelta: {x: 1685.5487, y: 50}
+  m_AnchoredPosition: {x: 0, y: -90}
+  m_SizeDelta: {x: 1686.4795, y: 80}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &755417834262671851
 CanvasRenderer:
@@ -2192,7 +2192,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: The path to the currently utilised Call To Interact file
+  m_Text: 'The path to the currently utilised Call To Interact file.
+
+    WARNING:
+    May require re-launching this application in administrator mode.'
 --- !u!1 &755417834280686709
 GameObject:
   m_ObjectHideFlags: 0
