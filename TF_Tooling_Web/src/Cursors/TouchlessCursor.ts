@@ -1,5 +1,6 @@
 import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
-import { ConnectionManager } from '../Connection/ConnectionManager';
+import { InputActionManager } from '../Plugins/InputActionManager';
+
 
 // Class: TouchlessCursor
 // This class is a base class for creating custom Touchless cursors for use with TouchFree Tooling.
@@ -17,12 +18,12 @@ export abstract class TouchlessCursor {
     // Group: Functions
 
     // Function: constructor
-    // Registers the Cursor for updates from the <ConnectionManager>
+    // Registers the Cursor for updates from the <InputActionManager>
     //
     // If you intend to make use of the <WebInputController>, make sure that _cursor has the
     // "touchfreecursor" class. This prevents it blocking other elements from recieving events.
     constructor(_cursor: HTMLElement) {
-        ConnectionManager.instance.addEventListener('TransmitInputAction', ((e: CustomEvent<TouchFreeInputAction>) => {
+        InputActionManager.instance.addEventListener('TransmitInputAction', ((e: CustomEvent<TouchFreeInputAction>) => {
             this.HandleInputAction(e.detail);
         }) as EventListener);
 

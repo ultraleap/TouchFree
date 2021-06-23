@@ -11,6 +11,7 @@ import {
     InputType,
     WebsocketInputAction
 } from '../TouchFreeToolingTypes';
+import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
 
 // Class: MessageReceiver
@@ -155,7 +156,7 @@ export class MessageReceiver {
     // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
     // clears out non-essential <TouchFreeInputActions> down to the number specified by
     // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
-    // <serviceConnection> to handle the action.
+    // <InputActionManager> to handle the action.
     CheckForAction(): void {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
@@ -175,7 +176,7 @@ export class MessageReceiver {
             // Parse newly received messages & distribute them
             let converted: TouchFreeInputAction = ConvertInputAction(action);
 
-            ConnectionManager.HandleInputAction(converted);
+            InputActionManager.HandleInputAction(converted);
         }
 
         if (this.lastStateUpdate != HandPresenceState.PROCESSED) {
