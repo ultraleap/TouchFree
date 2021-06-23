@@ -46,12 +46,6 @@ namespace Ultraleap.TouchFree
         public Image FillCursorPreviewRing;
         public Image FillCursorPreviewBorder;
 
-        [Header("InteractionZone")]
-        public Toggle EnableInteractionZoneToggle;
-        public InputField InteractionMinDistanceField;
-        public InputField InteractionMaxDistanceField;
-        public GameObject[] InteractionZoneSettingsToHide;
-
         private Color PrimaryColor;
         private Color SecondaryColor;
         private Color TertiaryColor;
@@ -129,12 +123,6 @@ namespace Ultraleap.TouchFree
             CTIHideOnPresenceToggle.onValueChanged.AddListener(OnValueChanged);
             CTIShowDelayField.onValueChanged.AddListener(OnValueChanged);
 
-            // Interaction Zone Events
-            EnableInteractionZoneToggle.onValueChanged.AddListener(OnValueChanged);
-            EnableInteractionZoneToggle.onValueChanged.AddListener(ShowHideInteractionZoneControls);
-            InteractionMinDistanceField.onValueChanged.AddListener(OnValueChanged);
-            InteractionMaxDistanceField.onValueChanged.AddListener(OnValueChanged);
-
             TouchFreeCursorManager.CursorChanged += SetCurrentlyActiveCursor;
         }
 
@@ -164,12 +152,6 @@ namespace Ultraleap.TouchFree
             CTIHideOnInteractionToggle.onValueChanged.RemoveListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.RemoveListener(OnValueChanged);
             CTIShowDelayField.onValueChanged.RemoveListener(OnValueChanged);
-
-            // Interaction Zone Events
-            EnableInteractionZoneToggle.onValueChanged.RemoveListener(OnValueChanged);
-            EnableInteractionZoneToggle.onValueChanged.RemoveListener(ShowHideInteractionZoneControls);
-            InteractionMinDistanceField.onValueChanged.RemoveListener(OnValueChanged);
-            InteractionMaxDistanceField.onValueChanged.RemoveListener(OnValueChanged);
 
             TouchFreeCursorManager.CursorChanged -= SetCurrentlyActiveCursor;
         }
@@ -211,14 +193,6 @@ namespace Ultraleap.TouchFree
         protected void ShowHideCursorControls(bool _state)
         {
             foreach (GameObject control in CursorSettingsToHide)
-            {
-                control.SetActive(_state);
-            }
-        }
-
-        protected void ShowHideInteractionZoneControls(bool _state)
-        {
-            foreach (GameObject control in InteractionZoneSettingsToHide)
             {
                 control.SetActive(_state);
             }
@@ -328,14 +302,8 @@ namespace Ultraleap.TouchFree
             CTIFilePath = ConfigManager.Config.ctiFilePath;
             CTIShowDelayField.SetTextWithoutNotify(ConfigManager.Config.ctiShowAfterTimer.ToString());
 
-            // Interaction Zone settings
-            EnableInteractionZoneToggle.SetIsOnWithoutNotify(ConfigManager.Config.interactionZoneEnabled);
-            InteractionMinDistanceField.SetTextWithoutNotify(ConfigManager.Config.interactionMinDistanceCm.ToString());
-            InteractionMaxDistanceField.SetTextWithoutNotify(ConfigManager.Config.interactionMaxDistanceCm.ToString());
-
             ShowHideCursorControls(ConfigManager.Config.cursorEnabled);
             ShowHideCtiControls(ConfigManager.Config.ctiEnabled);
-            ShowHideInteractionZoneControls(ConfigManager.Config.interactionZoneEnabled);
 
             switch (ConfigManager.Config.ctiHideTrigger)
             {
@@ -363,7 +331,6 @@ namespace Ultraleap.TouchFree
             // Values pulled from UI elements
             ConfigManager.Config.ctiEnabled = EnableCTIToggle.isOn;
             ConfigManager.Config.cursorEnabled = EnableCursorToggle.isOn;
-            ConfigManager.Config.interactionZoneEnabled = EnableInteractionZoneToggle.isOn;
 
             ConfigManager.Config.cursorSizeCm = CursorSizeInputSlider.Value;
 
@@ -371,16 +338,6 @@ namespace Ultraleap.TouchFree
                 ConfigDataUtilities.TryParseNewStringToFloat(
                     ConfigManager.Config.ctiShowAfterTimer,
                     CTIShowDelayField.text);
-
-            ConfigManager.Config.interactionMinDistanceCm =
-                ConfigDataUtilities.TryParseNewStringToFloat(
-                    ConfigManager.Config.interactionMinDistanceCm,
-                    InteractionMinDistanceField.text);
-
-            ConfigManager.Config.interactionMaxDistanceCm =
-                ConfigDataUtilities.TryParseNewStringToFloat(
-                    ConfigManager.Config.interactionMaxDistanceCm,
-                    InteractionMaxDistanceField.text);
 
             // Toggles
             if (LightColorPresetToggle.isOn)
