@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Leap.Unity;
 using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
-using System.IO;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -30,6 +29,8 @@ namespace Ultraleap.TouchFree.Service
 
         private const float DRAG_SMOOTHING_FACTOR = 10f;
         private Positions positions;
+
+        private const float NEAREST_BONE_BIAS = 0.01f;
 
         protected void OnEnable()
         {
@@ -135,7 +136,7 @@ namespace Ultraleap.TouchFree.Service
                         {
                             Vector3 jointPos = bone.NextJoint.ToVector3();
 
-                            nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - lastBoneBias; // add a bias to the previous finger tip position
+                            nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - NEAREST_BONE_BIAS; // add a bias to the previous finger tip position
 
                             nearestJointPos = jointPos;
                             fingerType = finger.Type;
@@ -169,41 +170,6 @@ namespace Ultraleap.TouchFree.Service
             lastUsedFingerType = fingerType;
             lastUsedBoneType = boneType;
             return nearestJointPos;
-        }
-
-        float timer = 0.5f;
-        public float lastBoneBias = 0.02f;
-
-        private void Update()
-        {
-            timer -= Time.deltaTime;
-
-            if(timer <= 0)
-            {
-                // re-load the json file for the lastBoneBias
-                if(Directory.Exists(Application.streamingAssetsPath))
-                {
-                    if(File.Exists(Path.Combine(Application.streamingAssetsPath, "BoneBias.txt")))
-                    {
-                        lastBoneBias = float.Parse(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "BoneBias.txt")));
-                    }
-                    else
-                    {
-                        FileStream stream = File.Create(Path.Combine(Application.streamingAssetsPath, "BoneBias.txt"));
-                        stream.Close();
-
-                        File.WriteAllText(Path.Combine(Application.streamingAssetsPath, "BoneBias.txt"), "0.02");
-                    }
-                }
-                else
-                {
-                    Directory.CreateDirectory(Application.streamingAssetsPath);
-                    FileStream stream = File.Create(Path.Combine(Application.streamingAssetsPath, "BoneBias.txt"));
-                    stream.Close();
-
-                    File.WriteAllText(Path.Combine(Application.streamingAssetsPath, "BoneBias.txt"), "0.02");
-                }
-            }
         }
     }
 }
