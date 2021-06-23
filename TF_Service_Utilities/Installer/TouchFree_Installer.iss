@@ -4,7 +4,7 @@
 #define CompanyURL "https://ultraleap.com"
 #define ProductName "TouchFree"
 #define Publisher "Ultraleap Inc."
-#define ReleaseVersion "1.0.0-alpha5"
+#define ReleaseVersion "2.0.0-beta1"
 #define ServiceUIExeName "TouchFreeServiceUI.exe"
 #define ServiceUIName "TouchFree Service Settings"
 #define TouchFreeAppExeName "TouchFree_Application.exe"
