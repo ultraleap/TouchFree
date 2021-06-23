@@ -310,7 +310,7 @@ PrefabInstance:
     - target: {fileID: 1126840439187934994, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: trackedPosition
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3616744418239270202, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
@@ -320,12 +320,12 @@ PrefabInstance:
     - target: {fileID: 5412000550174380604, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: trackedPosition
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6954799463210034526, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: trackedPosition
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
