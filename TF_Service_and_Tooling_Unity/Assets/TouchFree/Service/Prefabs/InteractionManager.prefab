@@ -154,7 +154,6 @@ MonoBehaviour:
   trackedPosition: 0
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  lastBoneBias: 0.02
 --- !u!1 &3045357794578251532
 GameObject:
   m_ObjectHideFlags: 0
@@ -353,7 +352,6 @@ MonoBehaviour:
   trackedPosition: 2
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  lastBoneBias: 0.02
 --- !u!1 &5911777841778895746
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,7 +498,6 @@ MonoBehaviour:
   trackedPosition: 3
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  lastBoneBias: 0.02
 --- !u!1 &6491336837799979747
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,7 +545,6 @@ MonoBehaviour:
   trackedPosition: 0
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
-  lastBoneBias: 0.02
 --- !u!114 &5753121179731557265
 MonoBehaviour:
   m_ObjectHideFlags: 0
