@@ -4,7 +4,6 @@
 #define CompanyURL "https://ultraleap.com"
 #define ProductName "TouchFree"
 #define Publisher "Ultraleap Inc."
-#define ReleaseVersion "2.0.0-beta1"
 #define ServiceUIExeName "TouchFreeServiceUI.exe"
 #define ServiceUIName "TouchFree Service Settings"
 #define TouchFreeAppExeName "TouchFree_Application.exe"
@@ -18,7 +17,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{FE678A79-DE6B-4FC4-8160-F2D036CE27D2}
 AppName={#ProductName}
-AppVersion={#ReleaseVersion}
+AppVersion={#TouchFreeVersion}
 AppVerName={#ProductName}
 AppPublisher={#Publisher}
 AppPublisherURL={#CompanyURL}
@@ -33,7 +32,7 @@ UninstallDisplayIcon={app}\TouchFree\{#TouchFreeAppExeName}
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir="{#SourcePath}..\..\Installer_Build"
-OutputBaseFilename={#ProductName}_{#ReleaseVersion}_Installer
+OutputBaseFilename={#ProductName}_{#TouchFreeVersion}_Installer
 Compression=lzma
 SolidCompression=yes
 VersionInfoCompany={#Publisher}
