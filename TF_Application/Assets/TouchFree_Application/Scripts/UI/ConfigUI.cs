@@ -15,6 +15,7 @@ namespace Ultraleap.TouchFree
         [Header("CursorSettings")]
         public Toggle EnableCursorToggle;
         public SliderInputFieldCombiner CursorSizeInputSlider;
+        public SliderInputFieldCombiner CursorRingThicknessInputSlider;
 
         public Toggle LightColorPresetToggle;
         public Toggle DarkColorPresetToggle;
@@ -121,6 +122,7 @@ namespace Ultraleap.TouchFree
             TertiaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
 
             CursorSizeInputSlider.onValueChanged.AddListener(OnValueChanged);
+            CursorRingThicknessInputSlider.onValueChanged.AddListener(OnValueChanged);
 
             // CTI Events
             EnableCTIToggle.onValueChanged.AddListener(OnValueChanged);
@@ -157,6 +159,7 @@ namespace Ultraleap.TouchFree
             TertiaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
 
             CursorSizeInputSlider.onValueChanged.RemoveListener(OnValueChanged);
+            CursorRingThicknessInputSlider.onValueChanged.RemoveListener(OnValueChanged);
 
             // CTI Events
             EnableCTIToggle.onValueChanged.RemoveListener(OnValueChanged);
@@ -314,6 +317,7 @@ namespace Ultraleap.TouchFree
             // Cursor settings
             EnableCursorToggle.SetIsOnWithoutNotify(ConfigManager.Config.cursorEnabled);
             CursorSizeInputSlider.SetValueWithoutNotify(ConfigManager.Config.cursorSizeCm);
+            CursorRingThicknessInputSlider.SetValueWithoutNotify(ConfigManager.Config.cursorRingThickness);
             CustomPrimaryColor = ConfigManager.Config.primaryCustomColor;
             ColorPicker.CurrentColor = ConfigManager.Config.primaryCustomColor;
             CustomSecondaryColor = ConfigManager.Config.secondaryCustomColor;
@@ -366,7 +370,7 @@ namespace Ultraleap.TouchFree
             ConfigManager.Config.interactionZoneEnabled = EnableInteractionZoneToggle.isOn;
 
             ConfigManager.Config.cursorSizeCm = CursorSizeInputSlider.Value;
-
+            ConfigManager.Config.cursorRingThickness = CursorRingThicknessInputSlider.Value;
             ConfigManager.Config.ctiShowAfterTimer =
                 ConfigDataUtilities.TryParseNewStringToFloat(
                     ConfigManager.Config.ctiShowAfterTimer,

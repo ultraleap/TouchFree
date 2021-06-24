@@ -19,10 +19,13 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         public RectTransform cursorTransform;
         protected Vector2 targetPos;
 
-        // Variable: cursorDotSize
-        // The size of the dot when it isn't being shrunk
-        [SerializeField]
+        // Variable: cursorSize
+        // The standard size of the cursor
         public float cursorSize = 0.25f;
+
+        // Variable: cursorRingThickness
+        // The thickness of the cursor ring (if it has one)
+        public float cursorRingThickness = 1.5f;
 
         public Color primaryColor
         {
@@ -113,6 +116,13 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
             _primaryColor = _primary;
             _secondaryColor = _secondary;
             _tertiaryColor = _tertiary;
+        }
+
+        // Function: SetRingThickness
+        // Used to set the <cursorRingThickness> value. Can be overridden to remap or clamp this value.
+        public virtual void SetRingThickness(float _thickness)
+        {
+            cursorRingThickness = _thickness;
         }
     }
 }

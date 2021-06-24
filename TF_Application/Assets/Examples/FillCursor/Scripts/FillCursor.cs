@@ -24,6 +24,14 @@ public class FillCursor : TouchlessCursor
 
     public Image fillRingImage;
 
+    // Variable: minRingThickness
+    // The minimum thickness the ring can be.
+    public float minRingThickness = 1.05f;
+
+    // Variable: maxRingThickness
+    // The maximum thickness the ring can be.
+    public float maxRingThickness = 2;
+
     // Variable: pulseShrinkCurve
     // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
     // shrinking and expanding). This AnimationCurve governs the shrinking that follows a
@@ -269,6 +277,16 @@ public class FillCursor : TouchlessCursor
     {
         cursorLocalScale = new Vector3(_scale, _scale, _scale);
         cursorBorder.transform.localScale = cursorLocalScale;
+    }
+
+
+    // Function: SetRingThickness
+    // Used to set the <cursorRingThickness> value. Overridden to clamp between
+    // <minRingThickness> and <maxRingThickness>.
+    public override void SetRingThickness(float _thickness)
+    {
+        cursorRingThickness = Utilities.MapRangeToRange(_thickness, 0, 1, minRingThickness, maxRingThickness);
+        fillRingImage.transform.localScale = Vector3.one * cursorRingThickness;
     }
 
     // Function: ResetCursor

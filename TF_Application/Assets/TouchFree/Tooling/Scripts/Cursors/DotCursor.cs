@@ -44,6 +44,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         //
         //  e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
         public float cursorMaxRingSize = 32;
+        private const float minRingScale = 1f;
 
         // Variable: ringCurve
         // This curve is used to determine how the ring's scale changes with the value of the latest
@@ -60,10 +61,13 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // transparent. It has to be scaled to match the ring itself.
         public RectTransform ringMask;
 
-        // Variable: ringThickness
-        // Used to set the thickness of the ring itself (i.e. the distance between the inner and
-        // outer edges of the ring)
-        public float ringThickness = 1.5f;
+        // Variable: minRingThickness
+        // The minimum thickness the ring can be.
+        public float minRingThickness = 1.5f;
+
+        // Variable: maxRingThickness
+        // The maximum thickness the ring can be.
+        public float maxRingThickness = 10;
 
         // Variable: pulseShrinkCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
@@ -117,18 +121,16 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         void ScaleRing(float _progressToClick)
         {
-            // 0.8f so that the boundary between ring and dot is not visible.
-            float minRingScale = 0.8f;
             float ringScale = Mathf.Lerp(minRingScale, cursorMaxRingSize, ringCurve.Evaluate(_progressToClick));
             ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
 
-            ringOuter.transform.localScale = Vector3.one * ringScale;
+            ringMask.transform.localScale = Vector3.one * ringScale;
 
-            ringMask.transform.localScale = new Vector3()
+            ringOuter.transform.localScale = new Vector3()
             {
-                x = Mathf.Max(0, ringOuter.localScale.x - ringThickness),
-                y = Mathf.Max(0, ringOuter.localScale.y - ringThickness),
-                z = ringOuter.localScale.z
+                x = Mathf.Max(0, ringMask.localScale.x + cursorRingThickness),
+                y = Mathf.Max(0, ringMask.localScale.y + cursorRingThickness),
+                z = ringMask.localScale.z
             };
         }
 
@@ -360,6 +362,14 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         {
             cursorLocalScale = new Vector3(_scale, _scale, _scale);
             cursorBorder.transform.localScale = cursorLocalScale;
+        }
+
+        // Function: SetRingThickness
+        // Used to set the <cursorRingThickness> value. Overridden to clamp between
+        // <minRingThickness> and <maxRingThickness>.
+        public override void SetRingThickness(float _thickness)
+        {
+            cursorRingThickness = Utilities.MapRangeToRange(_thickness, 0, 1, minRingThickness, maxRingThickness);
         }
 
         // Function: ResetCursor

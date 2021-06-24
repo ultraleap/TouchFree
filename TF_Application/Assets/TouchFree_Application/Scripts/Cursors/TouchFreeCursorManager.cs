@@ -38,6 +38,7 @@ namespace Ultraleap.TouchFree
 
             foreach (InteractionCursor cursor in interactionCursors)
             {
+                cursor.cursor.SetRingThickness(ConfigManager.Config.cursorRingThickness);
                 cursor.cursor.cursorSize = cursorSize;
                 cursor.cursor.SetColors(Primary, Secondary, Tertiary);
             }
