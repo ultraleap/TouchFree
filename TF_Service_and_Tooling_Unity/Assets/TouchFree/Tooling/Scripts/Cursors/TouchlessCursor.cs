@@ -19,10 +19,15 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         public RectTransform cursorTransform;
         protected Vector2 targetPos;
 
-        // Variable: cursorDotSize
-        // The size of the dot when it isn't being shrunk
+        // Variable: cursorSize
+        // The standard size of the cursor
         [SerializeField]
         public float cursorSize = 0.25f;
+
+        // Variable: cursorRingThickness
+        // The thickness of the cursor ring (if it has one)
+        [SerializeField]
+        public float cursorRingThickness = 32f;
 
         public Color primaryColor
         {

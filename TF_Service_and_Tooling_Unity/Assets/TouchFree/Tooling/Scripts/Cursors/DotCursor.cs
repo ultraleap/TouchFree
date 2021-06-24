@@ -61,11 +61,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // transparent. It has to be scaled to match the ring itself.
         public RectTransform ringMask;
 
-        // Variable: ringThickness
-        // Used to set the thickness of the ring itself (i.e. the distance between the inner and
-        // outer edges of the ring)
-        public float ringThickness = 1.5f;
-
         // Variable: pulseShrinkCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
         // shrinking and expanding). This AnimationCurve governs the shrinking that follows a
@@ -125,8 +120,8 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
             ringOuter.transform.localScale = new Vector3()
             {
-                x = Mathf.Max(0, ringMask.localScale.x + ringThickness),
-                y = Mathf.Max(0, ringMask.localScale.y + ringThickness),
+                x = Mathf.Max(0, ringMask.localScale.x + cursorRingThickness),
+                y = Mathf.Max(0, ringMask.localScale.y + cursorRingThickness),
                 z = ringMask.localScale.z
             };
         }
