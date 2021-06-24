@@ -47,11 +47,14 @@ namespace ServiceUITray
                 Icon = Properties.Resources.IconActive,
                 ContextMenu = new ContextMenu(new MenuItem[] {
                     new MenuItem("Settings", Settings),
+                    new MenuItem("Settings (Admin)", SettingsAdmin),
                     new MenuItem("-"),
                     new MenuItem("Exit", Exit),
                 }),
                 Visible = true
             };
+
+            trayIcon.DoubleClick += new EventHandler(Settings);
 
             CheckForServiceActivity(null, null);
 
@@ -72,6 +75,19 @@ namespace ServiceUITray
             {
                 //startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
                 startedProcess = ExecuteWithoutAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+            }
+        }
+
+        private void SettingsAdmin(object sender, EventArgs e)
+        {
+            if (startedProcess != null && !startedProcess.HasExited)
+            {
+                // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
+                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+            }
+            else
+            {
+                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
         }
 

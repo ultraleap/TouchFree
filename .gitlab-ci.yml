@@ -8,10 +8,9 @@ variables:
   TF_TFU_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling
   TF_SRV_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Service
 
-  TF_TFU_VERSION: 'alpha5'
-  TF_TFW_VERSION: 'alpha5'
-  TF_SRV_VERSION: 'alpha5'
-  TOUCHFREE_VERSION: 'alpha5'
+  TF_TFU_VERSION: '1.0.0-beta1'
+  TF_TFW_VERSION: '1.0.0-beta1'
+  TOUCHFREE_VERSION: '2.0.0-beta1'
 
   TF_TOOLING_API_VERSION: '1.1.0'
 
@@ -175,7 +174,7 @@ TF_Service::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SRV_PATH}/Version.txt --swVer ${env:TF_SRV_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SRV_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     - mkdir $CI_PROJECT_DIR/Build
     - cp ${env:TF_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
     - mkdir $CI_PROJECT_DIR/UIBuild
@@ -183,7 +182,7 @@ TF_Service::build:
 
     # Update ProjectSettings file with correct version & build service
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
     - "& ./build_service.bat $UNITY_EXE"
     - python ./UpdateBuildSettings_Service.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/EditorBuildSettings.asset
     - "& ./build_serviceUI.bat $UNITY_EXE"
@@ -195,7 +194,7 @@ TF_Service::build:
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/TouchFreeServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "TouchFree_Service_${env:TF_SRV_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Service_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - Build/**
     - UIBuild/**
@@ -240,7 +239,7 @@ TouchFree::build:
 
     # Build TouchFree
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../TF_Application/ProjectSettings/ProjectSettings.asset --ver ${env:TF_SRV_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Application/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
     - "& ./build_touchfree.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
@@ -375,13 +374,13 @@ TouchFree::installer:
   script:
     # Run innosetup
     - cd ./Scripts/
-    - "& ./compile_installer.bat $CI_PROJECT_DIR/TF_Service_Utilities/Installer/TouchFree_Installer.iss"
+    - "& ./compile_installer.bat ${env:TOUCHFREE_VERSION} $CI_PROJECT_DIR/TF_Service_Utilities/Installer/TouchFree_Installer.iss"
 
     # Sign the installer with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_1.0.0-${TF_SRV_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_${TOUCHFREE_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "TouchFree_Installer_${TF_SRV_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Installer_${TOUCHFREE_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
       - ./Installer_Build/*.exe
     expire_in: 2 weeks
