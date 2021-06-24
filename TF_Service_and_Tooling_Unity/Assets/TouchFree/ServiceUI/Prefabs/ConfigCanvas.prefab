@@ -11184,8 +11184,6 @@ MonoBehaviour:
   HoverCompleteTimeSlider: {fileID: 8369050281944507175}
   TouchPlaneDistance: {fileID: 2438409303943929637}
   TouchPlaneDistanceSlider: {fileID: 434762975847531436}
-  TouchPlaneStartDistance: {fileID: 0}
-  TouchPlaneStartDistanceSlider: {fileID: 0}
   interactionTypeTogglePush: {fileID: 490877295159199697}
   interactionTypeTogglePinch: {fileID: 9080536655001637737}
   interactionTypeToggleHover: {fileID: 870000112671912379}
@@ -11206,7 +11204,6 @@ MonoBehaviour:
     typeSpecificElements:
     - {fileID: 2822668365494874370}
     - {fileID: 1052801740277418952}
-    - {fileID: 0}
 --- !u!1 &2506632316690300859
 GameObject:
   m_ObjectHideFlags: 0

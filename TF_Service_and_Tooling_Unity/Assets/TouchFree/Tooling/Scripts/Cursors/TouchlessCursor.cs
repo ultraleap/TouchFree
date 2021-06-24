@@ -21,13 +21,11 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         // Variable: cursorSize
         // The standard size of the cursor
-        [SerializeField]
         public float cursorSize = 0.25f;
 
         // Variable: cursorRingThickness
         // The thickness of the cursor ring (if it has one)
-        [SerializeField]
-        public float cursorRingThickness = 32f;
+        public float cursorRingThickness = 1.5f;
 
         public Color primaryColor
         {
@@ -118,6 +116,14 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
             _primaryColor = _primary;
             _secondaryColor = _secondary;
             _tertiaryColor = _tertiary;
+        }
+
+        // Function: SetRingThickness
+        // Used to set the <cursorRingThickness> value. Can be overridden to remap or clamp this value.
+        // _thickness should range from 0-1 0 being the thinnest and 1 being the thickest.
+        public virtual void SetRingThickness(float _thickness)
+        {
+            cursorRingThickness = _thickness;
         }
     }
 }
