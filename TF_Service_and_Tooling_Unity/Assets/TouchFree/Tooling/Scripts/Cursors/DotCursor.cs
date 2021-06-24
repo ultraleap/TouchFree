@@ -44,6 +44,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         //
         //  e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
         public float cursorMaxRingSize = 32;
+        private const float minRingScale = 1f;
 
         // Variable: ringCurve
         // This curve is used to determine how the ring's scale changes with the value of the latest
@@ -117,18 +118,16 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         void ScaleRing(float _progressToClick)
         {
-            // 0.8f so that the boundary between ring and dot is not visible.
-            float minRingScale = 0.8f;
             float ringScale = Mathf.Lerp(minRingScale, cursorMaxRingSize, ringCurve.Evaluate(_progressToClick));
             ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
 
-            ringOuter.transform.localScale = Vector3.one * ringScale;
+            ringMask.transform.localScale = Vector3.one * ringScale;
 
-            ringMask.transform.localScale = new Vector3()
+            ringOuter.transform.localScale = new Vector3()
             {
-                x = Mathf.Max(0, ringOuter.localScale.x - ringThickness),
-                y = Mathf.Max(0, ringOuter.localScale.y - ringThickness),
-                z = ringOuter.localScale.z
+                x = Mathf.Max(0, ringMask.localScale.x + ringThickness),
+                y = Mathf.Max(0, ringMask.localScale.y + ringThickness),
+                z = ringMask.localScale.z
             };
         }
 
