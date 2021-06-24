@@ -11124,7 +11124,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.000051158826, y: -41.90039}
-  m_SizeDelta: {x: 320, y: 320}
+  m_SizeDelta: {x: 380, y: 320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &776535134370830211
 CanvasRenderer:
@@ -11153,9 +11153,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ad7c1c5a9eec1ef4d94d2e48bb55ef3e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fb53a6af94e1f9f4aabd711a29c59f6c, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -28354,7 +28354,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 59.99989, y: -54.703}
+  m_AnchoredPosition: {x: 49, y: -73}
   m_SizeDelta: {x: -479.70087, y: 109.40581}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &4910109140836425465
@@ -31124,7 +31124,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.000045776, y: -41.9}
-  m_SizeDelta: {x: 320, y: 320}
+  m_SizeDelta: {x: 380, y: 320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1863429418074712170
 CanvasRenderer:
@@ -31153,9 +31153,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 862828ab06f92f747a7486a3f27e6232, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 870d855ac0d5e9a4688e3b1e06d55fd4, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -32632,10 +32632,10 @@ RectTransform:
   m_Father: {fileID: 3628230514478347924}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50.030212, y: -61.1}
-  m_SizeDelta: {x: 1120.8, y: 61.15349}
+  m_AnchorMin: {x: 0.028461, y: 1}
+  m_AnchorMax: {x: 0.68023044, y: 1}
+  m_AnchoredPosition: {x: 1.0302124, y: -61.1}
+  m_SizeDelta: {x: 263.4549, y: 80}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &5868556551159701292
 CanvasRenderer:
@@ -32668,17 +32668,20 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: dd450587c7cf60b428bed28f72c98437, type: 3}
     m_FontSize: 25
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
-    m_MaxSize: 50
+    m_MaxSize: 25
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Changing this location will overwrite any configuration files in the selected
+  m_Text: 'Changing this location will overwrite any configuration files in the selected
     destination.
+
+    WARNING: May require re-launching this application in administrator
+    mode.'
 --- !u!1 &7932232038609692038
 GameObject:
   m_ObjectHideFlags: 0

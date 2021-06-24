@@ -40,6 +40,16 @@ namespace Ultraleap.TouchFree.ServiceShared
             PhysicalScreenPlane = new Plane(-planeNormal, 0f);
         }
 
+        public float DistanceFromScreenPlane(Vector3 worldPosition)
+        {
+            var rayDir = PhysicalScreenPlane.normal;
+            Ray r = new Ray(worldPosition, rayDir);
+
+            PhysicalScreenPlane.Raycast(r, out float distanceFromPlane);
+
+            return distanceFromPlane;
+        }
+
         /// <summary>
         /// Return value is a screen position whose origin (0,0) is in bottom left corner.
         /// X-axis is positive right.

@@ -349,7 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9d82368268df34fbac87c03007e578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackedPosition: 1
+  trackedPosition: 2
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
 --- !u!1 &5911777841778895746
@@ -495,7 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9d82368268df34fbac87c03007e578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackedPosition: 1
+  trackedPosition: 3
   positioningUtils: {fileID: 2581891099264974723}
   Stabiliser: {fileID: 1209870512470156362}
 --- !u!1 &6491336837799979747
