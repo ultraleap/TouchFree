@@ -55,8 +55,8 @@ namespace Ultraleap.TouchFree.ServiceUI
         public Toggle interactionTypeToggleTouchPlane;
 
         [Header("Interaction Preview")]
-        public GameObject pushPreview;
-        public GameObject grabPreview;
+        public GameObject airPushPreview;
+        public GameObject touchPlanePreview;
         public GameObject hoverPreview;
 
         [Space]
@@ -202,21 +202,22 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         void DisplayIntractionPreview()
         {
-            pushPreview.SetActive(false);
-            grabPreview.SetActive(false);
+            airPushPreview.SetActive(false);
+            touchPlanePreview.SetActive(false);
             hoverPreview.SetActive(false);
 
             switch (ConfigManager.InteractionConfig.InteractionType)
             {
                 case InteractionType.GRAB:
-                    grabPreview.SetActive(true);
                     break;
                 case InteractionType.HOVER:
                     hoverPreview.SetActive(true);
                     break;
                 case InteractionType.PUSH:
+                    airPushPreview.SetActive(true);
+                    break;
                 case InteractionType.TOUCHPLANE:
-                    pushPreview.SetActive(true);
+                    touchPlanePreview.SetActive(true);
                     break;
             }
 
