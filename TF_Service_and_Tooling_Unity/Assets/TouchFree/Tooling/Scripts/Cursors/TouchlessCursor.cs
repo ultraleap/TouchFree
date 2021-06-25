@@ -27,6 +27,14 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // The thickness of the cursor ring (if it has one)
         public float cursorRingThickness = 1.5f;
 
+        // Variable: minRingThickness
+        // The minimum thickness the ring can be.
+        public float minRingThickness = 1.5f;
+
+        // Variable: maxRingThickness
+        // The maximum thickness the ring can be.
+        public float maxRingThickness = 10;
+
         public Color primaryColor
         {
             get { return _primaryColor; }
@@ -123,7 +131,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // _thickness should range from 0-1 0 being the thinnest and 1 being the thickest.
         public virtual void SetRingThickness(float _thickness)
         {
-            cursorRingThickness = _thickness;
+            cursorRingThickness = Utilities.MapRangeToRange(_thickness, 0, 1, minRingThickness, maxRingThickness);
         }
     }
 }

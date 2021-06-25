@@ -24,14 +24,6 @@ public class FillCursor : TouchlessCursor
 
     public Image fillRingImage;
 
-    // Variable: minRingThickness
-    // The minimum thickness the ring can be.
-    public float minRingThickness = 1.05f;
-
-    // Variable: maxRingThickness
-    // The maximum thickness the ring can be.
-    public float maxRingThickness = 2;
-
     // Variable: pulseShrinkCurve
     // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
     // shrinking and expanding). This AnimationCurve governs the shrinking that follows a
