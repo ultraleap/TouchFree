@@ -44,6 +44,7 @@ namespace Ultraleap.TouchFree
         // Cursor Settings
         public bool cursorEnabled = true;
         public float cursorSizeCm = 0.25f;
+        public float cursorRingThickness = 0.15f;
         public CursorColorPreset activeCursorPreset = CursorColorPreset.LIGHT;
         public Color primaryCustomColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         public Color secondaryCustomColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -95,6 +96,7 @@ namespace Ultraleap.TouchFree
 
             cursorEnabled = defaults.cursorEnabled;
             cursorSizeCm = defaults.cursorSizeCm;
+            cursorRingThickness = defaults.cursorRingThickness;
             activeCursorPreset = defaults.activeCursorPreset;
             primaryCustomColor = defaults.primaryCustomColor;
             secondaryCustomColor = defaults.secondaryCustomColor;
