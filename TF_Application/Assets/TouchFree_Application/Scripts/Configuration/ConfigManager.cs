@@ -96,6 +96,7 @@ namespace Ultraleap.TouchFree
 
             cursorEnabled = defaults.cursorEnabled;
             cursorSizeCm = defaults.cursorSizeCm;
+            cursorRingThickness = defaults.cursorRingThickness;
             activeCursorPreset = defaults.activeCursorPreset;
             primaryCustomColor = defaults.primaryCustomColor;
             secondaryCustomColor = defaults.secondaryCustomColor;
