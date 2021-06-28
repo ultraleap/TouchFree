@@ -29,6 +29,10 @@ namespace Ultraleap.TouchFree
         public Toggle SecondaryColorToggle;
         public Toggle TertiaryColorToggle;
 
+        public Toggle PrimaryColorAlphaToggle;
+        public Toggle SecondaryColorAlphaToggle;
+        public Toggle TertiaryColorAlphaToggle;
+
         [Header("CTISettings")]
         public Toggle EnableCTIToggle;
         public InputField CurrentCTIFilepath;
@@ -121,6 +125,10 @@ namespace Ultraleap.TouchFree
             SecondaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
             TertiaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
 
+            PrimaryColorAlphaToggle.onValueChanged.AddListener(PrimaryAlphaToggled);
+            SecondaryColorAlphaToggle.onValueChanged.AddListener(SecondaryAlphaToggled);
+            TertiaryColorAlphaToggle.onValueChanged.AddListener(TertiaryAlphaToggled);
+
             CursorSizeInputSlider.onValueChanged.AddListener(OnValueChanged);
             CursorRingThicknessInputSlider.onValueChanged.AddListener(OnValueChanged);
 
@@ -157,6 +165,10 @@ namespace Ultraleap.TouchFree
             PrimaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
             SecondaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
             TertiaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
+
+            PrimaryColorAlphaToggle.onValueChanged.RemoveListener(PrimaryAlphaToggled);
+            SecondaryColorAlphaToggle.onValueChanged.RemoveListener(SecondaryAlphaToggled);
+            TertiaryColorAlphaToggle.onValueChanged.RemoveListener(TertiaryAlphaToggled);
 
             CursorSizeInputSlider.onValueChanged.RemoveListener(OnValueChanged);
             CursorRingThicknessInputSlider.onValueChanged.RemoveListener(OnValueChanged);
@@ -240,6 +252,13 @@ namespace Ultraleap.TouchFree
 
         private void UpdatePreviewCursorColors()
         {
+            if (CustomColorPresetToggle.isOn)
+            {
+                PrimaryColor = CustomPrimaryColor;
+                SecondaryColor = CustomSecondaryColor;
+                TertiaryColor = CustomTertiaryColor;
+            }
+
             RingCursorPreviewCenter.color = PrimaryColor;
             FillCursorPreviewCenter.color = PrimaryColor;
             RingCursorPreviewRing.color = SecondaryColor;
@@ -270,8 +289,16 @@ namespace Ultraleap.TouchFree
                 CustomTertiaryColor = newColor;
             }
 
+            PrimaryColorAlphaToggle.SetIsOnWithoutNotify(CustomPrimaryColor.a != 0);
+            SecondaryColorAlphaToggle.SetIsOnWithoutNotify(CustomSecondaryColor.a != 0);
+            TertiaryColorAlphaToggle.SetIsOnWithoutNotify(CustomTertiaryColor.a != 0);
+
             if (CustomColorPresetToggle.isOn)
             {
+                PrimaryColor = CustomPrimaryColor;
+                SecondaryColor = CustomSecondaryColor;
+                TertiaryColor = CustomTertiaryColor;
+
                 SetColorsToCorrectPreset();
                 UpdatePreviewCursorColors();
             }
@@ -309,6 +336,47 @@ namespace Ultraleap.TouchFree
                 ColorPicker.CurrentColor = TertiaryColor;
             }
         }
+
+        private void PrimaryAlphaToggled(bool _toggledTo)
+        {
+            AlphaToggled(ref CustomPrimaryColor, _toggledTo);
+        }
+
+        private void SecondaryAlphaToggled(bool _toggledTo)
+        {
+            AlphaToggled(ref CustomSecondaryColor, _toggledTo);
+        }
+
+        private void TertiaryAlphaToggled(bool _toggledTo)
+        {
+            AlphaToggled(ref CustomTertiaryColor, _toggledTo);
+        }
+
+        void AlphaToggled(ref Color _colourToChange, bool _changeTo)
+        {
+            if (_changeTo)
+            {
+                _colourToChange.a = 1;
+            }
+            else
+            {
+                _colourToChange.a = 0;
+            }
+
+            PrimaryColor = CustomPrimaryColor;
+            SecondaryColor = CustomSecondaryColor;
+            TertiaryColor = CustomTertiaryColor;
+
+            SetColorPickerColor(true);
+
+            if (CustomColorPresetToggle.isOn)
+            {
+                SetColorsToCorrectPreset();
+                UpdatePreviewCursorColors();
+            }
+
+            SaveValuesToConfig();
+        }
         #endregion
 
         #region ConfigFile Methods
@@ -322,6 +390,11 @@ namespace Ultraleap.TouchFree
             ColorPicker.CurrentColor = ConfigManager.Config.primaryCustomColor;
             CustomSecondaryColor = ConfigManager.Config.secondaryCustomColor;
             CustomTertiaryColor = ConfigManager.Config.tertiaryCustomColor;
+
+            PrimaryColorAlphaToggle.SetIsOnWithoutNotify(CustomPrimaryColor.a != 0);
+            SecondaryColorAlphaToggle.SetIsOnWithoutNotify(CustomSecondaryColor.a != 0);
+            TertiaryColorAlphaToggle.SetIsOnWithoutNotify(CustomTertiaryColor.a != 0);
+
             SetPresetTogglesBasedOnColors(ConfigManager.Config.activeCursorPreset);
             SetColorsToCorrectPreset();
             UpdatePreviewCursorColors();
