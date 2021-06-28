@@ -114,7 +114,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         void ScaleRing(float _progressToClick)
         {
             float ringScale = Mathf.Lerp(minRingScale, cursorMaxRingSize, ringCurve.Evaluate(_progressToClick));
-            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
+            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f * secondaryColor.a, 0f, _progressToClick));
 
             ringMask.transform.localScale = Vector3.one * ringScale;
 
