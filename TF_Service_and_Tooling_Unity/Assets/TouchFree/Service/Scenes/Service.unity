@@ -259,6 +259,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 300253286169602614, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: grabAlgorithm
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 300253286169602614, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: grabThreshold
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 300253286169602614, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: pinchThreshold
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 300253286169602614, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: ungrabThreshold
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 300253286169602614, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: unpinchThreshold
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 518956833299686219, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: m_RootOrder
@@ -319,10 +344,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: ServiceSystems
       objectReference: {fileID: 0}
+    - target: {fileID: 1126840439187934994, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: trackedPosition
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: hoverInteractionModule
       value: 
       objectReference: {fileID: 1449548856}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 947370449796169668, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
+    - {fileID: 2970862436757045632, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
+    - {fileID: 2488075058490492921, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
+    - {fileID: 376660509096581074, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
+    - {fileID: 6826606639403425312, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
