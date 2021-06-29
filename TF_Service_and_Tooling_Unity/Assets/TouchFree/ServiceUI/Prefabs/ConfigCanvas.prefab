@@ -17379,10 +17379,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'An interaction zone can be used to reduce the area that TouchFree is active.
-
-    This
-    can be used to disable TouchFree near a screen to allow for touchscreen usage.'
+  m_Text: An interaction zone can be used to reduce the area that TouchFree is active
+    in.
 --- !u!1 &4239009965350019428
 GameObject:
   m_ObjectHideFlags: 0
