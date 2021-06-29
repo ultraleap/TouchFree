@@ -8,7 +8,7 @@ namespace Ultraleap.TouchFree.Service
         public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
 
         // The distance from the touchPlane at which the progressToClick is 0
-        private float touchPlaneZeroProgress = 0.03f;
+        private const float touchPlaneZeroProgress = 0.1f;
 
         // The distance from screen at which the progressToClick is 1
         private float touchPlaneDistance = 0.05f;
@@ -121,7 +121,6 @@ namespace Ultraleap.TouchFree.Service
 
             // Convert from CM to M
             touchPlaneDistance = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM / 100;
-            touchPlaneZeroProgress = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM / 100;
         }
     }
 }

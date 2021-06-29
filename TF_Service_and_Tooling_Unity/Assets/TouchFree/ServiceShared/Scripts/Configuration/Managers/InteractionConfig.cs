@@ -13,7 +13,6 @@ namespace Ultraleap.TouchFree.ServiceShared
     public class TouchPlaneInteractionSettings
     {
         public float TouchPlaneActivationDistanceCM = 5f;
-        public float TouchPlaneStartDistanceCM = 20f;
     }
 
     [Serializable]
@@ -41,7 +40,6 @@ namespace Ultraleap.TouchFree.ServiceShared
             HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
             TouchPlane.TouchPlaneActivationDistanceCM = defaults.TouchPlane.TouchPlaneActivationDistanceCM;
-            TouchPlane.TouchPlaneStartDistanceCM = defaults.TouchPlane.TouchPlaneStartDistanceCM;
             InteractionType = defaults.InteractionType;
         }
 

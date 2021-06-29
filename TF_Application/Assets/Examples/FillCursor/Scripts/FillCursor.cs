@@ -271,6 +271,16 @@ public class FillCursor : TouchlessCursor
         cursorBorder.transform.localScale = cursorLocalScale;
     }
 
+
+    // Function: SetRingThickness
+    // Used to set the <cursorRingThickness> value. Overridden to clamp between
+    // <minRingThickness> and <maxRingThickness>.
+    public override void SetRingThickness(float _thickness)
+    {
+        cursorRingThickness = Utilities.MapRangeToRange(_thickness, 0, 1, minRingThickness, maxRingThickness);
+        fillRingImage.transform.localScale = Vector3.one * cursorRingThickness;
+    }
+
     // Function: ResetCursor
     // This function stops all scaling coroutines and clears their related variables.
     public virtual void ResetCursor()
