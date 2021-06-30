@@ -9,7 +9,7 @@ namespace Ultraleap.TouchFree.Service
 {
     public class PositioningModule : MonoBehaviour
     {
-        public TRACKED_POSITION trackedPosition = TRACKED_POSITION.INDEX_STABLE;
+        public TrackedPosition trackedPosition = TrackedPosition.INDEX_STABLE;
 
         [Tooltip("If assigned, the cursor snapper and stabiliser will be accessed from the utils object.")]
         public GameObject positioningUtils;
@@ -83,13 +83,13 @@ namespace Ultraleap.TouchFree.Service
         {
             switch (trackedPosition)
             {
-                case TRACKED_POSITION.WRIST:
+                case TrackedPosition.WRIST:
                     return hand.WristPosition.ToVector3();
-                case TRACKED_POSITION.INDEX_TIP:
+                case TrackedPosition.INDEX_TIP:
                     return hand.GetIndex().TipPosition.ToVector3();
-                case TRACKED_POSITION.NEAREST:
+                case TrackedPosition.NEAREST:
                     return GetNearestBoneToScreen(hand);
-                case TRACKED_POSITION.INDEX_STABLE:
+                case TrackedPosition.INDEX_STABLE:
                 default:
                     return GetTrackedPointingJoint(hand);
             }

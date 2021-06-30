@@ -13,6 +13,7 @@ namespace Ultraleap.TouchFree.ServiceShared
     public class TouchPlaneInteractionSettings
     {
         public float TouchPlaneActivationDistanceCM = 5f;
+        public TrackedPosition TouchPlaneTrackedPosition = TrackedPosition.NEAREST;
     }
 
     [Serializable]

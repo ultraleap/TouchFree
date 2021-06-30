@@ -43,6 +43,8 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Header("TouchPlane")]
         public InputField TouchPlaneDistance;
         public Slider TouchPlaneDistanceSlider;
+        public Toggle trackingBoneNearestToggle;
+        public Toggle trackingBoneIndexTipToggle;
 
         [Header("Interaction Type")]
         public Toggle interactionTypeTogglePush;
@@ -103,6 +105,8 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             TouchPlaneDistance.onEndEdit.AddListener(OnValueChanged);
             TouchPlaneDistanceSlider.onValueChanged.AddListener(OnValueChanged);
+            trackingBoneNearestToggle.onValueChanged.AddListener(OnValueChanged);
+            trackingBoneIndexTipToggle.onValueChanged.AddListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.AddListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.AddListener(OnValueChanged);
@@ -122,6 +126,8 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             TouchPlaneDistance.onEndEdit.RemoveListener(OnValueChanged);
             TouchPlaneDistanceSlider.onValueChanged.RemoveListener(OnValueChanged);
+            trackingBoneNearestToggle.onValueChanged.RemoveListener(OnValueChanged);
+            trackingBoneIndexTipToggle.onValueChanged.RemoveListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.RemoveListener(OnValueChanged);
@@ -142,6 +148,19 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             TouchPlaneDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM.ToString("#0.00#"));
             TouchPlaneDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM);
+
+            trackingBoneNearestToggle.SetIsOnWithoutNotify(false);
+            trackingBoneIndexTipToggle.SetIsOnWithoutNotify(false);
+            switch (ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition)
+            {
+                case TrackedPosition.INDEX_TIP:
+                    trackingBoneIndexTipToggle.SetIsOnWithoutNotify(true);
+                    break;
+                default:
+                case TrackedPosition.NEAREST:
+                    trackingBoneNearestToggle.SetIsOnWithoutNotify(true);
+                    break;
+            }
 
             interactionTypeTogglePush.SetIsOnWithoutNotify(false);
             interactionTypeTogglePinch.SetIsOnWithoutNotify(false);
@@ -243,6 +262,15 @@ namespace Ultraleap.TouchFree.ServiceUI
             ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = HoverStartTimeSlider.value;
             ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = HoverCompleteTimeSlider.value;
             ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM = TouchPlaneDistanceSlider.value;
+
+            if(trackingBoneIndexTipToggle.isOn)
+            {
+                ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition = TrackedPosition.INDEX_TIP;
+            }
+            else
+            {
+                ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition = TrackedPosition.NEAREST;
+            }
 
             if (interactionTypeTogglePush.isOn)
             {

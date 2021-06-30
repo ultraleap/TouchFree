@@ -122,6 +122,7 @@ namespace Ultraleap.TouchFree.Service
 
             // Convert from CM to M
             touchPlaneDistance = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM / 100;
+            positioningModule.trackedPosition = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition;
         }
     }
 }

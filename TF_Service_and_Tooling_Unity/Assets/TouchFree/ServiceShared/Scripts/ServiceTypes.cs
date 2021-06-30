@@ -205,7 +205,7 @@ namespace Ultraleap.TouchFree.ServiceShared
     }
 
     [Serializable]
-    public enum TRACKED_POSITION
+    public enum TrackedPosition
     {
         INDEX_STABLE,
         INDEX_TIP,
