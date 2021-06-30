@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/TouchFree/Service/Scenes/Service.unity
     guid: b88c1aa821ba9944abd920c2e9c1956f
-  - enabled: 1
+  - enabled: 0
     path: Assets/TouchFree/ServiceUI/Scenes/ServiceUI.unity
     guid: 0bdcf645dd528a9429817c3a47891e82
   m_configObjects: {}
