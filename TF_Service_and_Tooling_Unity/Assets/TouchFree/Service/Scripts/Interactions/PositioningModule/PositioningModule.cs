@@ -9,14 +9,6 @@ namespace Ultraleap.TouchFree.Service
 {
     public class PositioningModule : MonoBehaviour
     {
-        public enum TRACKED_POSITION
-        {
-            INDEX_STABLE,
-            INDEX_TIP,
-            WRIST,
-            NEAREST
-        }
-
         public TRACKED_POSITION trackedPosition = TRACKED_POSITION.INDEX_STABLE;
 
         [Tooltip("If assigned, the cursor snapper and stabiliser will be accessed from the utils object.")]
