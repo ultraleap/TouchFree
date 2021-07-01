@@ -4,7 +4,7 @@ using UnityEngine;
 using Ultraleap.TouchFree.Tooling;
 using Ultraleap.TouchFree;
 
-public class InteractionZone : InputActionPlugin
+public class DelayedDown : InputActionPlugin
 {
     public static event InputActionManager.InputActionEvent InputOverrideInputAction;
 
@@ -16,40 +16,34 @@ public class InteractionZone : InputActionPlugin
     // be passed back to the <InputActionManager>.
     protected override InputAction? ModifyInputAction(InputAction _inputAction)
     {
-        if (ConfigManager.Config.interactionZoneEnabled)
+        InputAction? overrideInputAction = HandleDelayedDownAndUp(_inputAction);
+
+        if (overrideInputAction.HasValue)
         {
-            InputAction? overrideInputAction = HandleDelayedDownAndUp(_inputAction);
+            InputOverrideInputAction?.Invoke(overrideInputAction.Value);
 
-            if (overrideInputAction.HasValue)
+            if (overrideInputAction.Value.InputType == InputType.CANCEL)
             {
-                InputOverrideInputAction?.Invoke(overrideInputAction.Value);
-
-                if(overrideInputAction.Value.InputType == InputType.CANCEL)
-                {
-                    // Only return modified inputactions if they have been cancelled as
-                    // this relates to both input and cursors.
-                    return overrideInputAction.Value;
-                }
-            }
-            else
-            {
-                return null;
+                // Only return modified inputactions if they have been cancelled as
+                // this relates to both input and cursors.
+                return overrideInputAction.Value;
             }
         }
         else
         {
-            InputOverrideInputAction?.Invoke(_inputAction);
+            return null;
         }
 
         return _inputAction;
     }
-
 
     Vector2 downPos;
     Vector2 upPos;
 
     bool delayedDown = false;
     bool delayedUp = false;
+
+    bool cancelledInput = false;
 
     InputAction? HandleDelayedDownAndUp(InputAction _inputAction)
     {
@@ -91,8 +85,7 @@ public class InteractionZone : InputActionPlugin
             }
         }
 
-        if (_inputAction.DistanceFromScreen < (ConfigManager.Config.interactionMinDistanceCm / 100) ||
-                _inputAction.DistanceFromScreen > (ConfigManager.Config.interactionMaxDistanceCm / 100))
+        if (_inputAction.InputType == InputType.CANCEL)
         {
             delayedDown = false;
 
@@ -121,6 +114,4 @@ public class InteractionZone : InputActionPlugin
 
         return _inputAction;
     }
-
-    bool cancelledInput = false;
 }

@@ -10,7 +10,7 @@ public class WindowsInputController : InputController
 
     protected override void Start()
     {
-        InteractionZone.InputOverrideInputAction += HandleInputAction;
+        DelayedDown.InputOverrideInputAction += HandleInputAction;
         TouchInjection.Initialize(10, TouchFeedback.NONE);
 
         touches = new PointerTouchInfo[1];
@@ -22,7 +22,7 @@ public class WindowsInputController : InputController
 
     protected override void OnDestroy()
     {
-        InteractionZone.InputOverrideInputAction -= HandleInputAction;
+        DelayedDown.InputOverrideInputAction -= HandleInputAction;
     }
 
     protected override void HandleInputAction(InputAction _inputData)

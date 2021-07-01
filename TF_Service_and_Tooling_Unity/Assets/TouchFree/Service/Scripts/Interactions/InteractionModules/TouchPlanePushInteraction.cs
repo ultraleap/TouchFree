@@ -38,7 +38,6 @@ namespace Ultraleap.TouchFree.Service
                 return;
             }
 
-            positions = positioningModule.CalculatePositions(hand);
             HandleInteractions();
         }
 

@@ -55,6 +55,12 @@ namespace Ultraleap.TouchFree.ServiceUI
         public GameObject touchPlanePreview;
         public GameObject hoverPreview;
 
+        [Header("InteractionZone")]
+        public Toggle EnableInteractionZoneToggle;
+        public InputField InteractionMinDistanceField;
+        public InputField InteractionMaxDistanceField;
+        public GameObject[] InteractionZoneSettingsToHide;
+
         [Space]
         public GameObject resetToDefaultWarning;
 
@@ -108,6 +114,12 @@ namespace Ultraleap.TouchFree.ServiceUI
             interactionTypeTogglePinch.onValueChanged.AddListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.AddListener(OnValueChanged);
             interactionTypeToggleTouchPlane.onValueChanged.AddListener(OnValueChanged);
+
+            // Interaction Zone Events
+            EnableInteractionZoneToggle.onValueChanged.AddListener(OnValueChanged);
+            EnableInteractionZoneToggle.onValueChanged.AddListener(ShowHideInteractionZoneControls);
+            InteractionMinDistanceField.onValueChanged.AddListener(OnValueChanged);
+            InteractionMaxDistanceField.onValueChanged.AddListener(OnValueChanged);
         }
 
         protected override void RemoveValueChangedListeners()
@@ -127,6 +139,12 @@ namespace Ultraleap.TouchFree.ServiceUI
             interactionTypeTogglePinch.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeToggleTouchPlane.onValueChanged.RemoveListener(OnValueChanged);
+
+            // Interaction Zone Events
+            EnableInteractionZoneToggle.onValueChanged.RemoveListener(OnValueChanged);
+            EnableInteractionZoneToggle.onValueChanged.RemoveListener(ShowHideInteractionZoneControls);
+            InteractionMinDistanceField.onValueChanged.RemoveListener(OnValueChanged);
+            InteractionMaxDistanceField.onValueChanged.RemoveListener(OnValueChanged);
         }
 
         protected override void LoadConfigValuesIntoFields()
@@ -163,6 +181,12 @@ namespace Ultraleap.TouchFree.ServiceUI
                     break;
             }
 
+            // Interaction Zone settings
+            EnableInteractionZoneToggle.SetIsOnWithoutNotify(ConfigManager.InteractionConfig.interactionZoneEnabled);
+            InteractionMinDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.interactionMinDistanceCm.ToString());
+            InteractionMaxDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.interactionMaxDistanceCm.ToString());
+
+            ShowHideInteractionZoneControls(ConfigManager.InteractionConfig.interactionZoneEnabled);
             DisplayIntractionPreview();
         }
 
@@ -206,6 +230,14 @@ namespace Ultraleap.TouchFree.ServiceUI
             }
 
             HandleSpecificElements(ConfigManager.InteractionConfig.InteractionType);
+        }
+
+        protected void ShowHideInteractionZoneControls(bool _state)
+        {
+            foreach (GameObject control in InteractionZoneSettingsToHide)
+            {
+                control.SetActive(_state);
+            }
         }
 
         void HandleSpecificElements(InteractionType _interactionType)
@@ -260,6 +292,18 @@ namespace Ultraleap.TouchFree.ServiceUI
             {
                 ConfigManager.InteractionConfig.InteractionType = InteractionType.TOUCHPLANE;
             }
+
+            ConfigManager.InteractionConfig.interactionZoneEnabled = EnableInteractionZoneToggle.isOn;
+
+            ConfigManager.InteractionConfig.interactionMinDistanceCm =
+                ServiceUtility.TryParseNewStringToFloat(
+                    ConfigManager.InteractionConfig.interactionMinDistanceCm,
+                    InteractionMinDistanceField.text);
+
+            ConfigManager.InteractionConfig.interactionMaxDistanceCm =
+                ServiceUtility.TryParseNewStringToFloat(
+                    ConfigManager.InteractionConfig.interactionMaxDistanceCm,
+                    InteractionMaxDistanceField.text);
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();
             ConfigManager.InteractionConfig.SaveConfig();

@@ -68,6 +68,75 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             }
         }
 
+        // Property: interactionZoneEnabled
+        // Changes whether the Interaction Zone values will be used
+        public bool interactionZoneEnabled
+        {
+            get
+            {
+                return InteractionZoneEnabled;
+            }
+            set
+            {
+                if (configValues.ContainsKey("InteractionZoneEnabled"))
+                {
+                    configValues["InteractionZoneEnabled"] = value;
+                }
+                else
+                {
+                    configValues.Add("InteractionZoneEnabled", value);
+                }
+
+                InteractionZoneEnabled = value;
+            }
+        }
+
+        // Property: interactionMinDistanceCm
+        // The minimum distance from the screen that users can interact within
+        public float interactionMinDistanceCm
+        {
+            get
+            {
+                return InteractionMinDistanceCm;
+            }
+            set
+            {
+                if (configValues.ContainsKey("InteractionMinDistanceCm"))
+                {
+                    configValues["InteractionMinDistanceCm"] = value;
+                }
+                else
+                {
+                    configValues.Add("InteractionMinDistanceCm", value);
+                }
+
+                InteractionMinDistanceCm = value;
+            }
+        }
+
+        // Property: interactionMaxDistanceCm
+        // The maximum distance from the screen that users can interact within
+        public float interactionMaxDistanceCm
+        {
+            get
+            {
+                return InteractionMaxDistanceCm;
+            }
+            set
+            {
+                if (configValues.ContainsKey("InteractionMaxDistanceCm"))
+                {
+                    configValues["InteractionMaxDistanceCm"] = value;
+                }
+                else
+                {
+                    configValues.Add("InteractionMaxDistanceCm", value);
+                }
+
+                InteractionMaxDistanceCm = value;
+            }
+        }
+
         // Property: interactionType
         // This represents the type of interaction currently selected
         public InteractionType interactionType
@@ -103,6 +172,9 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
         [SerializeField] private bool UseScrollingOrDragging;
         [SerializeField] private float DeadzoneRadius;
+        [SerializeField] private bool InteractionZoneEnabled;
+        [SerializeField] private float InteractionMinDistanceCm;
+        [SerializeField] private float InteractionMaxDistanceCm;
         [SerializeField] private InteractionType InteractionType;
     }
 

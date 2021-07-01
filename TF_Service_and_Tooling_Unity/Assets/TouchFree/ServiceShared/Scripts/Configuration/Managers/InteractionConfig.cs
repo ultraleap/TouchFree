@@ -21,6 +21,10 @@ namespace Ultraleap.TouchFree.ServiceShared
         public bool UseScrollingOrDragging = false;
         public float DeadzoneRadius = 0.003f;
 
+        public bool interactionZoneEnabled = false;
+        public float interactionMinDistanceCm = 0.0f;
+        public float interactionMaxDistanceCm = 25.0f;
+
         public InteractionType InteractionType = InteractionType.PUSH;
 
         // Interaction-specific settings

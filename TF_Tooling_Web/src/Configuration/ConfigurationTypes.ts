@@ -26,6 +26,18 @@ export interface InteractionConfig {
     // radius of that deadzone.
     DeadzoneRadius: number;
 
+    // Property: InteractionZoneEnabled
+    // Changes whether the Interaction Zone values will be used
+    InteractionZoneEnabled: boolean;
+
+    // Property: InteractionMinDistanceCm
+    // The minimum distance from the screen that users can interact within
+    InteractionMinDistanceCm: number;
+
+    // Property: InteractionMaxDistanceCm
+    // The maximum distance from the screen that users can interact within
+    InteractionMaxDistanceCm: number;
+
     // Property: InteractionType
     // This represents the type of interaction currently selected
     InteractionType: InteractionType;
