@@ -16,10 +16,6 @@ namespace Ultraleap.TouchFree.Service
 
         public PositionStabiliser Stabiliser;
 
-        [NonSerialized]
-        public bool ApplyDragLerp;
-
-        private const float DRAG_SMOOTHING_FACTOR = 10f;
         private Positions positions;
 
         private const float NEAREST_BONE_BIAS = 0.01f;
@@ -58,16 +54,7 @@ namespace Ultraleap.TouchFree.Service
             // Vector2 position in screen-space (measured in pixels)
             // float distanceFromScreen (measured in meters)
 
-            float velocity = hand.PalmVelocity.Magnitude;
             Vector3 worldPos = GetTrackedPosition(hand);
-            float smoothingTime = Time.deltaTime;
-            if (ApplyDragLerp)
-            {
-                // Apply a different smoothing time if dragging
-                smoothingTime *= DRAG_SMOOTHING_FACTOR;
-            }
-            worldPos = Stabiliser.ApplySmoothing(worldPos, velocity, smoothingTime);
-
             Vector3 screenPos = ConfigManager.GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
             Vector2 screenPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
             float distanceFromScreen = screenPos.z;

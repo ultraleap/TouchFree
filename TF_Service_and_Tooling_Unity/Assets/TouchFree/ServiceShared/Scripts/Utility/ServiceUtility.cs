@@ -1,4 +1,7 @@
-﻿namespace Ultraleap.TouchFree.ServiceShared
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
+
+namespace Ultraleap.TouchFree.ServiceShared
 {
     public static class ServiceUtility
     {
@@ -20,6 +23,32 @@
             }
             return newValue;
         }
+
+        public static float TryParseNewStringToFloat(float _original,
+                                         string _newText,
+                                         bool _convertToStorageUnits = false,
+                                         bool _convertToDisplayUnits = false)
+        {
+            // Match any character that is not period (.), hypen (-), or numbers 0 to 9, and strip them out.
+            _newText = Regex.Replace(_newText, "[^.0-9-]", "");
+
+            float val;
+
+            if (!float.TryParse(_newText, NumberStyles.Number, CultureInfo.CurrentCulture, out val))
+                val = _original; // string was not compatible!
+
+            if (_convertToDisplayUnits)
+            {
+                val = ToDisplayUnits(val);
+            }
+            else if (_convertToStorageUnits)
+            {
+                val = FromDisplayUnits(val);
+            }
+
+            return val;
+        }
+
         public static int ToDisplayUnits(int _value)
         {
             return (int)(_value * ConfigToDisplayMeasurementMultiplier);
