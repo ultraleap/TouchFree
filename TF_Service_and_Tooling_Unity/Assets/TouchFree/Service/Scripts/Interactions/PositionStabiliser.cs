@@ -21,9 +21,6 @@ namespace Ultraleap.TouchFree.Service
         [HideInInspector] public bool isShrinking = false;
         private float shrinkingSpeed;
 
-        private bool havePreviousPositionSmoothing;
-        private Vector3 previousPositionSmoothing;
-
         private bool havePreviousPositionDeadzone;
         private Vector2 previousPositionDeadzoneDefaultSize;
         private Vector2 previousPositionDeadzoneCurrentSize;
@@ -38,32 +35,6 @@ namespace Ultraleap.TouchFree.Service
         void OnDisable()
         {
             InteractionConfig.OnConfigUpdated -= OnSettingsUpdated;
-        }
-
-        // Apply smoothing
-        public Vector3 ApplySmoothing(Vector3 position, float currentVelocity, float deltaTime)
-        {
-            if(defaultDeadzoneRadius == 0)
-            {
-                return position;
-            }
-
-            Vector3 smoothedPosition;
-
-            if (!havePreviousPositionSmoothing)
-            {
-                havePreviousPositionSmoothing = true;
-                smoothedPosition = position;
-            }
-            else
-            {
-                // When velocity is high, increase the lerp speed to reduce filtering effect
-                float lerpRate = Mathf.Lerp(smoothingRate, 1f / deltaTime, currentVelocity);
-                smoothedPosition = Vector3.Lerp(previousPositionSmoothing, position, lerpRate * deltaTime);
-            }
-
-            previousPositionSmoothing = smoothedPosition;
-            return smoothedPosition;
         }
 
         public Vector2 ApplyDeadzone(Vector2 position)
