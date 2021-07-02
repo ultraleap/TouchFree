@@ -2051,7 +2051,7 @@ MonoBehaviour:
   m_Text: 'The path to the currently utilised Call To Interact file.
 
     WARNING:
-    May require re-launching this application in administrator mode.'
+    May require re-launching this application in Administrator mode'
 --- !u!1 &755417834280686709
 GameObject:
   m_ObjectHideFlags: 0
@@ -2564,7 +2564,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enable/Disable the cursor
+  m_Text: Show/Hide the cursor
 --- !u!1 &755417834471995336
 GameObject:
   m_ObjectHideFlags: 0
@@ -3373,7 +3373,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enable/Disable the Call to Interact display
+  m_Text: Enable/Disable display of the Call to Interact
 --- !u!1 &755417834746433214
 GameObject:
   m_ObjectHideFlags: 0
@@ -4987,7 +4987,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Current Call To Interact
+  m_Text: Current Call to Interact
 --- !u!1 &755417835035597117
 GameObject:
   m_ObjectHideFlags: 0
@@ -5065,7 +5065,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Hide Call to Interact when
+  m_Text: 'Display Call to Interact until:'
 --- !u!1 &755417835049605928
 GameObject:
   m_ObjectHideFlags: 0
@@ -5678,7 +5678,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Choose what state will cause the Call to Interact to stop being displayed
+  m_Text: Choose the action that will cause the Call to Interact to be hidden
 --- !u!1 &755417835161214636
 GameObject:
   m_ObjectHideFlags: 0
@@ -5756,8 +5756,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: A call to interact shows your users that the display is touchless and how
-    to use it
+  m_Text: A Call to Interact shows your users that the display is touchless and how
+    to use it.  This can be an animation or a static image
 --- !u!1 &755417835166705970
 GameObject:
   m_ObjectHideFlags: 0
@@ -6305,7 +6305,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: The delay after the hand leaves the visible area before the Call to Interact
-    will be displayed (in seconds)
+    will be displayed again (in seconds)
 --- !u!1 &755417835377270162
 GameObject:
   m_ObjectHideFlags: 0
@@ -12260,7 +12260,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sets the thickness of the cursors ring
+  m_Text: Sets the thickness of the cursor's ring
 --- !u!1 &5502668891914438484
 GameObject:
   m_ObjectHideFlags: 0
@@ -12587,7 +12587,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Select color to edit
+  m_Text: Select colour to edit
 --- !u!114 &381143341015985989
 MonoBehaviour:
   m_ObjectHideFlags: 0
