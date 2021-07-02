@@ -287,27 +287,26 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             }
         }
 
-        // Property: touchPlaneStartDistanceCM
-        // This determines how far (in cm) from the TouchPlane that the interaction will begin to progress.
-        // The progress can be used to show a cursor that shows users how close they are to the TouchPlane.
-        public float touchPlaneStartDistanceCM
+        // Property: touchPlaneTrackedPosition
+        // This determines which bone position will be tracked when performing the interaction.
+        public TrackedPosition touchPlaneTrackedPosition
         {
             get
             {
-                return TouchPlaneStartDistanceCM;
+                return TouchPlaneTrackedPosition;
             }
             set
             {
-                if (configValues.ContainsKey("TouchPlaneStartDistanceCM"))
+                if (configValues.ContainsKey("TouchPlaneTrackedPosition"))
                 {
-                    configValues["TouchPlaneStartDistanceCM"] = value;
+                    configValues["TouchPlaneTrackedPosition"] = value;
                 }
                 else
                 {
-                    configValues.Add("TouchPlaneStartDistanceCM", value);
+                    configValues.Add("TouchPlaneTrackedPosition", value);
                 }
 
-                TouchPlaneStartDistanceCM = value;
+                TouchPlaneTrackedPosition = value;
             }
         }
 
@@ -319,7 +318,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
 
         [SerializeField] private float TouchPlaneActivationDistanceCM;
-        [SerializeField] private float TouchPlaneStartDistanceCM;
+        [SerializeField] private TrackedPosition TouchPlaneTrackedPosition;
     }
 
     // Class: PhysicalConfig
@@ -443,5 +442,19 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
         [SerializeField] private Vector3 LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
         [SerializeField] private Vector3 LeapRotationD = Vector3.zero;
         [SerializeField] private float ScreenRotationD = 0f;
+    }
+
+    // Enum: TrackedPosition
+    // INDEX_STABLE - Towards the screen from the proximal knuckle position of the index finger 
+    // INDEX_TIP - The index finger tip position
+    // WRIST - The wrist position
+    // NEAREST - The nearest bone to the screen
+    [System.Serializable]
+    public enum TrackedPosition
+    {
+        INDEX_STABLE,
+        INDEX_TIP,
+        WRIST,
+        NEAREST
     }
 }

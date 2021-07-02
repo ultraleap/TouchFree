@@ -203,4 +203,13 @@ namespace Ultraleap.TouchFree.ServiceShared
             DistanceFromScreen = _distanceFromScreen;
         }
     }
+
+    [Serializable]
+    public enum TrackedPosition
+    {
+        INDEX_STABLE,
+        INDEX_TIP,
+        WRIST,
+        NEAREST
+    }
 }
