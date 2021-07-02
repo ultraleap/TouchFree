@@ -630,8 +630,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 860.4995, y: 0}
-  m_SizeDelta: {x: 1720.999, y: 70}
+  m_AnchoredPosition: {x: 860.3718, y: 0}
+  m_SizeDelta: {x: 1720.7437, y: 70}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &95236600007408961
 GameObject:
@@ -1721,7 +1721,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -70}
-  m_SizeDelta: {x: 1720.999, y: 80}
+  m_SizeDelta: {x: 1720.7437, y: 80}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3140958205621962512
 CanvasRenderer:
@@ -2009,7 +2009,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 50, y: 0}
-  m_SizeDelta: {x: 1620.999, y: 70}
+  m_SizeDelta: {x: 1620.7437, y: 70}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &480037246402305305
 GameObject:
@@ -3223,8 +3223,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 860.4995, y: -70}
-  m_SizeDelta: {x: 1720.999, y: 80}
+  m_AnchoredPosition: {x: 860.3718, y: -70}
+  m_SizeDelta: {x: 1720.7437, y: 90}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5645054208995556039
 CanvasRenderer:
@@ -3254,7 +3254,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 800, y: 80}
+  m_CellSize: {x: 800, y: 90}
   m_Spacing: {x: 100, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
@@ -3759,8 +3759,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Determines the position on the hand that will be used for tracking it.
-    This is usually a bone.
+  m_Text: Determines what part of the hand will be tracked when using the Touch Plane
+    interaction
 --- !u!1 &891465548562200546
 GameObject:
   m_ObjectHideFlags: 0
@@ -3795,7 +3795,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1720.999, y: 70}
+  m_SizeDelta: {x: 1720.7437, y: 70}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &922961601774930758
 GameObject:
@@ -6013,8 +6013,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -1045}
-  m_SizeDelta: {x: 1720.999, y: 170}
+  m_AnchoredPosition: {x: 890.3718, y: -1055}
+  m_SizeDelta: {x: 1720.7437, y: 170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &244260973169869205
 MonoBehaviour:
@@ -6243,8 +6243,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -470}
-  m_SizeDelta: {x: 1720.999, y: 150}
+  m_AnchoredPosition: {x: 890.3718, y: -470}
+  m_SizeDelta: {x: 1720.7437, y: 160}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &27081691039692167
 MonoBehaviour:
@@ -7139,8 +7139,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -1900.0459}
-  m_SizeDelta: {x: 1720.999, y: 50}
+  m_AnchoredPosition: {x: 30, y: -1940.233}
+  m_SizeDelta: {x: 1720.7437, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &2726585497947764770
 CanvasRenderer:
@@ -7204,8 +7204,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: 0}
-  m_SizeDelta: {x: 757.37, y: 70}
+  m_AnchoredPosition: {x: 50, y: 10}
+  m_SizeDelta: {x: 757.37, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8636742070114962683
 CanvasRenderer:
@@ -7247,10 +7247,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Increases stability of the cursor by adjusting the hand movement required
-
-    to
-    begin a movement. This stability changes during interactions.'
+  m_Text: Changes the hand movement required before the cursor begins to move. Stability
+    will reduce cursor 'jitter' (recommended for interactions > 10cm). Responsiveness
+    increases cursor alignment (recommended for interactions < 10cm)
 --- !u!1 &1259983321685098487
 GameObject:
   m_ObjectHideFlags: 0
@@ -8616,7 +8615,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -70}
-  m_SizeDelta: {x: 1720.999, y: 100}
+  m_SizeDelta: {x: 1720.7437, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &7307056035175068401
 CanvasRenderer:
@@ -8797,7 +8796,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -70}
-  m_SizeDelta: {x: 1720.999, y: 100}
+  m_SizeDelta: {x: 1720.7437, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &5842251447360503671
 CanvasRenderer:
@@ -9402,7 +9401,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0.000061035156}
-  m_SizeDelta: {x: 0, y: 2050.046}
+  m_SizeDelta: {x: 0, y: 2090.233}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6682412694465663846
 MonoBehaviour:
@@ -9545,8 +9544,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: -40}
-  m_SizeDelta: {x: 800, y: 80}
+  m_AnchoredPosition: {x: 400, y: -45}
+  m_SizeDelta: {x: 800, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4359669487551674208
 CanvasRenderer:
@@ -10203,8 +10202,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -1465}
-  m_SizeDelta: {x: 1720.999, y: 50}
+  m_AnchoredPosition: {x: 890.3718, y: -1475}
+  m_SizeDelta: {x: 1720.7437, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &103496280125966589
 CanvasRenderer:
@@ -10965,8 +10964,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -705}
-  m_SizeDelta: {x: 1720.999, y: 170}
+  m_AnchoredPosition: {x: 890.3718, y: -715}
+  m_SizeDelta: {x: 1720.7437, y: 170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3825901236695401860
 MonoBehaviour:
@@ -12145,8 +12144,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -1335}
-  m_SizeDelta: {x: 1720.999, y: 110}
+  m_AnchoredPosition: {x: 890.3718, y: -1345}
+  m_SizeDelta: {x: 1720.7437, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2523337327364248469
 MonoBehaviour:
@@ -12283,7 +12282,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Nearest Bone to Touch Plane
+  m_Text: Closest bone to the Touch Plane
 --- !u!1 &2523337327465247115
 GameObject:
   m_ObjectHideFlags: 0
@@ -12754,7 +12753,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Index Fingertip
+  m_Text: Index fingertip
 --- !u!1 &2524938974200854782
 GameObject:
   m_ObjectHideFlags: 0
@@ -13158,7 +13157,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 50, y: 0}
-  m_SizeDelta: {x: 1620.999, y: 70}
+  m_SizeDelta: {x: 1620.7437, y: 70}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &2698350600858657478
 GameObject:
@@ -13653,8 +13652,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -410}
-  m_SizeDelta: {x: 1720.999, y: 120}
+  m_AnchoredPosition: {x: 890.3718, y: -410}
+  m_SizeDelta: {x: 1720.7437, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8991837132085601901
 MonoBehaviour:
@@ -14365,7 +14364,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 50, y: 0}
-  m_SizeDelta: {x: 1620.999, y: 50}
+  m_SizeDelta: {x: 1620.7437, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2015868386988589776
 MonoBehaviour:
@@ -14524,8 +14523,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -1760.0474}
-  m_SizeDelta: {x: 1720.999, y: 140}
+  m_AnchoredPosition: {x: 30, y: -1800.2345}
+  m_SizeDelta: {x: 1720.7437, y: 140}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6877298616210775973
 CanvasRenderer:
@@ -14672,8 +14671,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 860.4995, y: -50}
-  m_SizeDelta: {x: 1620.999, y: 50}
+  m_AnchoredPosition: {x: 860.3718, y: -50}
+  m_SizeDelta: {x: 1620.7437, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8488180476061085569
 CanvasRenderer:
@@ -15336,8 +15335,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 860.4995, y: -35}
-  m_SizeDelta: {x: 1720.999, y: 70}
+  m_AnchoredPosition: {x: 860.3718, y: -35}
+  m_SizeDelta: {x: 1720.7437, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3492131416538732745
 GameObject:
@@ -16787,7 +16786,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3433395074731522990}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.36454642
+  m_Size: 0.3576063
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17954,7 +17953,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 30, y: -300}
-  m_SizeDelta: {x: 1720.999, y: 50}
+  m_SizeDelta: {x: 1720.7437, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8783671356275508366
 CanvasRenderer:
@@ -18180,7 +18179,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 30, y: -0}
-  m_SizeDelta: {x: 1720.999, y: 300}
+  m_SizeDelta: {x: 1720.7437, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1939758611472356712
 MonoBehaviour:
@@ -18254,7 +18253,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -70}
-  m_SizeDelta: {x: 1720.999, y: 100}
+  m_SizeDelta: {x: 1720.7437, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6349375204179459890
 CanvasRenderer:
@@ -18351,8 +18350,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -1490}
-  m_SizeDelta: {x: 1720.999, y: 30.050167}
+  m_AnchoredPosition: {x: 890.3718, y: -1500}
+  m_SizeDelta: {x: 1720.7437, y: 60.237316}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &1943139232646798333
 CanvasRenderer:
@@ -18394,8 +18393,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: An interaction zone can be used to reduce the area that TouchFree is active
-    in.
+  m_Text: 'The Interaction Zone is the region where users'' hands are detected.
+
+    All
+    hand movements outside of this region are ignored'
 --- !u!1 &4239009965350019428
 GameObject:
   m_ObjectHideFlags: 0
@@ -18430,7 +18431,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1720.999, y: 70}
+  m_SizeDelta: {x: 1720.7437, y: 70}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &4258758642812535508
 GameObject:
@@ -18921,8 +18922,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -1570.0496}
-  m_SizeDelta: {x: 1720.999, y: 100}
+  m_AnchoredPosition: {x: 890.3718, y: -1610.2367}
+  m_SizeDelta: {x: 1720.7437, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6720074743829365233
 CanvasRenderer:
@@ -20645,8 +20646,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 860.4995, y: -35}
-  m_SizeDelta: {x: 1720.999, y: 70}
+  m_AnchoredPosition: {x: 860.3718, y: -35}
+  m_SizeDelta: {x: 1720.7437, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4852224622988348252
 GameObject:
@@ -21118,7 +21119,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 50, y: -70}
-  m_SizeDelta: {x: 1620.999, y: 70}
+  m_SizeDelta: {x: 1620.7437, y: 70}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8871037334545263454
 CanvasRenderer:
@@ -21160,8 +21161,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sets the minimum distance from the screen in centimetres that TouchFree
-    will be active
+  m_Text: Sets the minimum distance from the screen that a user's hands are detected
 --- !u!1 &4921749745831871438
 GameObject:
   m_ObjectHideFlags: 0
@@ -23315,7 +23315,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 50, y: -70}
-  m_SizeDelta: {x: 1620.999, y: 70}
+  m_SizeDelta: {x: 1620.7437, y: 70}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &5164174942627756836
 CanvasRenderer:
@@ -23357,8 +23357,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sets the maximum distance from the screen in centimetres that TouchFree
-    will be active
+  m_Text: Sets the maximum distance from the screen that a user's hands are detected
 --- !u!1 &5716220526358578037
 GameObject:
   m_ObjectHideFlags: 0
@@ -23522,8 +23521,8 @@ RectTransform:
   m_Father: {fileID: 7721387797600153966}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.6354536}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0.6423937}
+  m_AnchorMax: {x: 1, y: 0.9999999}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -25400,8 +25399,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -1620.0488}
-  m_SizeDelta: {x: 1720.999, y: 140}
+  m_AnchoredPosition: {x: 30, y: -1660.236}
+  m_SizeDelta: {x: 1720.7437, y: 140}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3812867269055521574
 CanvasRenderer:
@@ -28565,8 +28564,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -1390}
-  m_SizeDelta: {x: 1720.999, y: 50}
+  m_AnchoredPosition: {x: 30, y: -1400}
+  m_SizeDelta: {x: 1720.7437, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &7604460790044214708
 CanvasRenderer:
@@ -29590,8 +29589,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -1205}
-  m_SizeDelta: {x: 1720.999, y: 150}
+  m_AnchoredPosition: {x: 890.3718, y: -1215}
+  m_SizeDelta: {x: 1720.7437, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2654229202923324673
 MonoBehaviour:
@@ -33008,8 +33007,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -1950.0459}
-  m_SizeDelta: {x: 1720.999, y: 100}
+  m_AnchoredPosition: {x: 30, y: -1990.233}
+  m_SizeDelta: {x: 1720.7437, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1424865959009787107
 CanvasRenderer:
@@ -34082,8 +34081,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 860.4995, y: -95}
-  m_SizeDelta: {x: 1720.999, y: 50}
+  m_AnchoredPosition: {x: 860.3718, y: -95}
+  m_SizeDelta: {x: 1720.7437, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5154681923341182584
 CanvasRenderer:
@@ -34607,8 +34606,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 890.4995, y: -875}
-  m_SizeDelta: {x: 1720.999, y: 170}
+  m_AnchoredPosition: {x: 890.3718, y: -885}
+  m_SizeDelta: {x: 1720.7437, y: 170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &9115074765233585392
 MonoBehaviour:
@@ -35359,8 +35358,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 860.4995, y: 0}
-  m_SizeDelta: {x: 1720.999, y: 70}
+  m_AnchoredPosition: {x: 860.3718, y: 0}
+  m_SizeDelta: {x: 1720.7437, y: 70}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &9059019265734637793
 GameObject:
@@ -35397,8 +35396,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1300, y: -40}
-  m_SizeDelta: {x: 800, y: 80}
+  m_AnchoredPosition: {x: 1300, y: -45}
+  m_SizeDelta: {x: 800, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4468040324628998751
 CanvasRenderer:
