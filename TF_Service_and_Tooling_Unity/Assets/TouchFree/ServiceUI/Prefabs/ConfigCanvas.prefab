@@ -7250,7 +7250,7 @@ MonoBehaviour:
   m_Text: 'Changes the hand movement required before the cursor begins to move.
 
     Stability
-    reduces cursor ''jitter'', Responsiveness increases cursor alignment'
+    reduces cursor ''jitter'', Responsiveness increases cursor alignment.'
 --- !u!1 &1259983321685098487
 GameObject:
   m_ObjectHideFlags: 0
