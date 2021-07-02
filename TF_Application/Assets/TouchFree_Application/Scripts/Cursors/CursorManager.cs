@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.TouchFree.Tooling;
+using Ultraleap.TouchFree.Tooling.Connection;
 using Ultraleap.TouchFree.Tooling.Cursors;
 using System;
 
@@ -18,6 +19,8 @@ public class CursorManager : MonoBehaviour
     InteractionType currentInteractionType;
     bool setOnce = false;
 
+    protected bool handsActive = false;
+
     private void Start()
     {
         if (Instance == null)
@@ -33,11 +36,25 @@ public class CursorManager : MonoBehaviour
     protected virtual void OnEnable()
     {
         InputActionManager.TransmitInputAction += HandleInputAction;
+        ConnectionManager.HandFound += HandFound;
+        ConnectionManager.HandsLost += HandLost;
     }
 
     protected virtual void OnDisable()
     {
         InputActionManager.TransmitInputAction -= HandleInputAction;
+        ConnectionManager.HandFound -= HandFound;
+        ConnectionManager.HandsLost -= HandLost;
+    }
+
+    void HandFound()
+    {
+        handsActive = true;
+    }
+
+    void HandLost()
+    {
+        handsActive = false;
     }
 
     void HandleInputAction(InputAction _inputAction)
@@ -65,10 +82,18 @@ public class CursorManager : MonoBehaviour
             }
             else
             {
-                interactionCursor.cursor.gameObject.SetActive(true);
                 enabledCursor = interactionCursor.cursor;
                 currentCursor = enabledCursor;
                 cursorSet = true;
+
+                if(handsActive)
+                {
+                    currentCursor.ShowCursor();
+                }
+                else
+                {
+                    currentCursor.HideCursor();
+                }
 
                 CursorChanged?.Invoke(interactionCursor.cursorType);
             }
@@ -76,7 +101,6 @@ public class CursorManager : MonoBehaviour
 
         if(!cursorSet)
         {
-            defaultCursor.gameObject.SetActive(true);
             currentCursor = defaultCursor;
         }
 
