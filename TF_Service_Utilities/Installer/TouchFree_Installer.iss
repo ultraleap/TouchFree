@@ -67,7 +67,7 @@ Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType:
 [Run]
 Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
+Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait shellexec;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden nowait
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden nowait
 
@@ -101,7 +101,7 @@ begin
 
   if CompareText(WrapperPath, '') > 0 then
   begin
-    Exec('cmd', '/C taskkill /im ServiceUITray.exe /f /t', '', SW_HIDE, ewNoWait, ResultCode);
+    Exec('cmd', '/C taskkill /im ServiceUITray.exe /f /t', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop "TouchFree Service"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec(ExpandConstant(WrapperPath), 'uninstall', '', SW_HIDE, ewNoWait, ResultCode);
   end;
