@@ -103,7 +103,7 @@ begin
   begin
     Exec('cmd', '/C taskkill /im ServiceUITray.exe /f /t', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop "TouchFree Service"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec(ExpandConstant(WrapperPath), 'uninstall', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec(ExpandConstant(WrapperPath), 'uninstall', '', SW_HIDE, ewNoWait, ResultCode);
   end;
 
   // Proceed Setup
