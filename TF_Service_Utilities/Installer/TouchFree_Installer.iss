@@ -68,8 +68,8 @@ Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType:
 Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
-Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
-Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
+Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden nowait
+Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden nowait
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
