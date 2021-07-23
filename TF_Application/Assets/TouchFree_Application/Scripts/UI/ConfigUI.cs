@@ -1,9 +1,12 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 using HSVPicker;
 using SFB;
+using System.Threading;
+using System.Globalization;
 
 namespace Ultraleap.TouchFree
 {
@@ -12,6 +15,7 @@ namespace Ultraleap.TouchFree
         [Header("CursorSettings")]
         public Toggle EnableCursorToggle;
         public SliderInputFieldCombiner CursorSizeInputSlider;
+        public SliderInputFieldCombiner CursorRingThicknessInputSlider;
 
         public Toggle LightColorPresetToggle;
         public Toggle DarkColorPresetToggle;
@@ -24,6 +28,10 @@ namespace Ultraleap.TouchFree
         public Toggle PrimaryColorToggle;
         public Toggle SecondaryColorToggle;
         public Toggle TertiaryColorToggle;
+
+        public Toggle PrimaryColorAlphaToggle;
+        public Toggle SecondaryColorAlphaToggle;
+        public Toggle TertiaryColorAlphaToggle;
 
         [Header("CTISettings")]
         public Toggle EnableCTIToggle;
@@ -43,12 +51,6 @@ namespace Ultraleap.TouchFree
         public Image FillCursorPreviewRing;
         public Image FillCursorPreviewBorder;
 
-        [Header("InteractionZone")]
-        public Toggle EnableInteractionZoneToggle;
-        public InputField InteractionMinDistanceField;
-        public InputField InteractionMaxDistanceField;
-        public GameObject[] InteractionZoneSettingsToHide;
-
         private Color PrimaryColor;
         private Color SecondaryColor;
         private Color TertiaryColor;
@@ -56,6 +58,12 @@ namespace Ultraleap.TouchFree
         private Color CustomSecondaryColor = Color.white;
         private Color CustomTertiaryColor = Color.white;
         private string CTIFilePath;
+
+        private void Awake()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+        }
 
         protected virtual void OnEnable()
         {
@@ -111,7 +119,12 @@ namespace Ultraleap.TouchFree
             SecondaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
             TertiaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
 
+            PrimaryColorAlphaToggle.onValueChanged.AddListener(PrimaryAlphaToggled);
+            SecondaryColorAlphaToggle.onValueChanged.AddListener(SecondaryAlphaToggled);
+            TertiaryColorAlphaToggle.onValueChanged.AddListener(TertiaryAlphaToggled);
+
             CursorSizeInputSlider.onValueChanged.AddListener(OnValueChanged);
+            CursorRingThicknessInputSlider.onValueChanged.AddListener(OnValueChanged);
 
             // CTI Events
             EnableCTIToggle.onValueChanged.AddListener(OnValueChanged);
@@ -119,12 +132,6 @@ namespace Ultraleap.TouchFree
             CTIHideOnInteractionToggle.onValueChanged.AddListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.AddListener(OnValueChanged);
             CTIShowDelayField.onValueChanged.AddListener(OnValueChanged);
-
-            // Interaction Zone Events
-            EnableInteractionZoneToggle.onValueChanged.AddListener(OnValueChanged);
-            EnableInteractionZoneToggle.onValueChanged.AddListener(ShowHideInteractionZoneControls);
-            InteractionMinDistanceField.onValueChanged.AddListener(OnValueChanged);
-            InteractionMaxDistanceField.onValueChanged.AddListener(OnValueChanged);
 
             TouchFreeCursorManager.CursorChanged += SetCurrentlyActiveCursor;
         }
@@ -147,7 +154,12 @@ namespace Ultraleap.TouchFree
             SecondaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
             TertiaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
 
+            PrimaryColorAlphaToggle.onValueChanged.RemoveListener(PrimaryAlphaToggled);
+            SecondaryColorAlphaToggle.onValueChanged.RemoveListener(SecondaryAlphaToggled);
+            TertiaryColorAlphaToggle.onValueChanged.RemoveListener(TertiaryAlphaToggled);
+
             CursorSizeInputSlider.onValueChanged.RemoveListener(OnValueChanged);
+            CursorRingThicknessInputSlider.onValueChanged.RemoveListener(OnValueChanged);
 
             // CTI Events
             EnableCTIToggle.onValueChanged.RemoveListener(OnValueChanged);
@@ -155,12 +167,6 @@ namespace Ultraleap.TouchFree
             CTIHideOnInteractionToggle.onValueChanged.RemoveListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.RemoveListener(OnValueChanged);
             CTIShowDelayField.onValueChanged.RemoveListener(OnValueChanged);
-
-            // Interaction Zone Events
-            EnableInteractionZoneToggle.onValueChanged.RemoveListener(OnValueChanged);
-            EnableInteractionZoneToggle.onValueChanged.RemoveListener(ShowHideInteractionZoneControls);
-            InteractionMinDistanceField.onValueChanged.RemoveListener(OnValueChanged);
-            InteractionMaxDistanceField.onValueChanged.RemoveListener(OnValueChanged);
 
             TouchFreeCursorManager.CursorChanged -= SetCurrentlyActiveCursor;
         }
@@ -179,7 +185,7 @@ namespace Ultraleap.TouchFree
             }
 
             var extFilter = new ExtensionFilter[] { new ExtensionFilter("CTIFileExtensions", extensions) };
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("", CTIFilePath, extFilter, false);
+            string[] paths = StandaloneFileBrowser.OpenFilePanel("", Path.GetDirectoryName(CTIFilePath), extFilter, false);
 
             if (paths.Length > 0)
             {
@@ -206,14 +212,6 @@ namespace Ultraleap.TouchFree
                 control.SetActive(_state);
             }
         }
-
-        protected void ShowHideInteractionZoneControls(bool _state)
-        {
-            foreach (GameObject control in InteractionZoneSettingsToHide)
-            {
-                control.SetActive(_state);
-            }
-        }
         #endregion
 
         #region Color Picker/Toggles methods
@@ -228,6 +226,13 @@ namespace Ultraleap.TouchFree
 
         private void UpdatePreviewCursorColors()
         {
+            if (CustomColorPresetToggle.isOn)
+            {
+                PrimaryColor = CustomPrimaryColor;
+                SecondaryColor = CustomSecondaryColor;
+                TertiaryColor = CustomTertiaryColor;
+            }
+
             RingCursorPreviewCenter.color = PrimaryColor;
             FillCursorPreviewCenter.color = PrimaryColor;
             RingCursorPreviewRing.color = SecondaryColor;
@@ -258,8 +263,16 @@ namespace Ultraleap.TouchFree
                 CustomTertiaryColor = newColor;
             }
 
+            PrimaryColorAlphaToggle.SetIsOnWithoutNotify(CustomPrimaryColor.a != 0);
+            SecondaryColorAlphaToggle.SetIsOnWithoutNotify(CustomSecondaryColor.a != 0);
+            TertiaryColorAlphaToggle.SetIsOnWithoutNotify(CustomTertiaryColor.a != 0);
+
             if (CustomColorPresetToggle.isOn)
             {
+                PrimaryColor = CustomPrimaryColor;
+                SecondaryColor = CustomSecondaryColor;
+                TertiaryColor = CustomTertiaryColor;
+
                 SetColorsToCorrectPreset();
                 UpdatePreviewCursorColors();
             }
@@ -297,6 +310,47 @@ namespace Ultraleap.TouchFree
                 ColorPicker.CurrentColor = TertiaryColor;
             }
         }
+
+        private void PrimaryAlphaToggled(bool _toggledTo)
+        {
+            AlphaToggled(ref CustomPrimaryColor, _toggledTo);
+        }
+
+        private void SecondaryAlphaToggled(bool _toggledTo)
+        {
+            AlphaToggled(ref CustomSecondaryColor, _toggledTo);
+        }
+
+        private void TertiaryAlphaToggled(bool _toggledTo)
+        {
+            AlphaToggled(ref CustomTertiaryColor, _toggledTo);
+        }
+
+        void AlphaToggled(ref Color _colourToChange, bool _changeTo)
+        {
+            if (_changeTo)
+            {
+                _colourToChange.a = 1;
+            }
+            else
+            {
+                _colourToChange.a = 0;
+            }
+
+            PrimaryColor = CustomPrimaryColor;
+            SecondaryColor = CustomSecondaryColor;
+            TertiaryColor = CustomTertiaryColor;
+
+            SetColorPickerColor(true);
+
+            if (CustomColorPresetToggle.isOn)
+            {
+                SetColorsToCorrectPreset();
+                UpdatePreviewCursorColors();
+            }
+
+            SaveValuesToConfig();
+        }
         #endregion
 
         #region ConfigFile Methods
@@ -305,10 +359,16 @@ namespace Ultraleap.TouchFree
             // Cursor settings
             EnableCursorToggle.SetIsOnWithoutNotify(ConfigManager.Config.cursorEnabled);
             CursorSizeInputSlider.SetValueWithoutNotify(ConfigManager.Config.cursorSizeCm);
+            CursorRingThicknessInputSlider.SetValueWithoutNotify(ConfigManager.Config.cursorRingThickness);
             CustomPrimaryColor = ConfigManager.Config.primaryCustomColor;
             ColorPicker.CurrentColor = ConfigManager.Config.primaryCustomColor;
             CustomSecondaryColor = ConfigManager.Config.secondaryCustomColor;
             CustomTertiaryColor = ConfigManager.Config.tertiaryCustomColor;
+
+            PrimaryColorAlphaToggle.SetIsOnWithoutNotify(CustomPrimaryColor.a != 0);
+            SecondaryColorAlphaToggle.SetIsOnWithoutNotify(CustomSecondaryColor.a != 0);
+            TertiaryColorAlphaToggle.SetIsOnWithoutNotify(CustomTertiaryColor.a != 0);
+
             SetPresetTogglesBasedOnColors(ConfigManager.Config.activeCursorPreset);
             SetColorsToCorrectPreset();
             UpdatePreviewCursorColors();
@@ -319,14 +379,8 @@ namespace Ultraleap.TouchFree
             CTIFilePath = ConfigManager.Config.ctiFilePath;
             CTIShowDelayField.SetTextWithoutNotify(ConfigManager.Config.ctiShowAfterTimer.ToString());
 
-            // Interaction Zone settings
-            EnableInteractionZoneToggle.SetIsOnWithoutNotify(ConfigManager.Config.interactionZoneEnabled);
-            InteractionMinDistanceField.SetTextWithoutNotify(ConfigManager.Config.interactionMinDistanceCm.ToString());
-            InteractionMaxDistanceField.SetTextWithoutNotify(ConfigManager.Config.interactionMaxDistanceCm.ToString());
-
             ShowHideCursorControls(ConfigManager.Config.cursorEnabled);
             ShowHideCtiControls(ConfigManager.Config.ctiEnabled);
-            ShowHideInteractionZoneControls(ConfigManager.Config.interactionZoneEnabled);
 
             switch (ConfigManager.Config.ctiHideTrigger)
             {
@@ -354,24 +408,13 @@ namespace Ultraleap.TouchFree
             // Values pulled from UI elements
             ConfigManager.Config.ctiEnabled = EnableCTIToggle.isOn;
             ConfigManager.Config.cursorEnabled = EnableCursorToggle.isOn;
-            ConfigManager.Config.interactionZoneEnabled = EnableInteractionZoneToggle.isOn;
 
             ConfigManager.Config.cursorSizeCm = CursorSizeInputSlider.Value;
-
+            ConfigManager.Config.cursorRingThickness = CursorRingThicknessInputSlider.Value;
             ConfigManager.Config.ctiShowAfterTimer =
                 ConfigDataUtilities.TryParseNewStringToFloat(
                     ConfigManager.Config.ctiShowAfterTimer,
                     CTIShowDelayField.text);
-
-            ConfigManager.Config.interactionMinDistanceCm =
-                ConfigDataUtilities.TryParseNewStringToFloat(
-                    ConfigManager.Config.interactionMinDistanceCm,
-                    InteractionMinDistanceField.text);
-
-            ConfigManager.Config.interactionMaxDistanceCm =
-                ConfigDataUtilities.TryParseNewStringToFloat(
-                    ConfigManager.Config.interactionMaxDistanceCm,
-                    InteractionMaxDistanceField.text);
 
             // Toggles
             if (LightColorPresetToggle.isOn)
@@ -398,6 +441,16 @@ namespace Ultraleap.TouchFree
 
             ConfigManager.Config.ConfigWasUpdated();
             ConfigManager.Config.SaveConfig();
+        }
+
+        public void ResetToDefaults()
+        {
+            RemoveValueChangedListeners();
+            ConfigManager.Config.SetAllValuesToDefault();
+            ConfigManager.Config.ConfigWasUpdated();
+            ConfigManager.Config.SaveConfig();
+            LoadConfigValuesIntoFields();
+            AddValueChangedListeners();
         }
         #endregion
 

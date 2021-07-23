@@ -1,7 +1,4 @@
-import { SnappingPlugin } from "../SnappingPlugin";
 import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
-import { InputActionPlugin } from "./InputActionPlugin";
-
 // Class: InputActionManager
 // The manager for all <TouchFreeInputActions> to be handled and distributed. This runs the
 // received data through any <InputActionPlugins> given to it and finaly distributes the data
@@ -14,24 +11,26 @@ export class InputActionManager extends EventTarget {
 
     // Event: TransmitInputActionRaw
     // An event for immediately transmitting <TouchFreeInputActions> that are received via the
-    // <messageReceiver>to be listened to.
+    // <messageReceiver> to be listened to. This is transmitted before any Plugins are executed.
 
     // Variable: instance
     // The instance of the singleton for referencing the events transmitted
     static _instance: InputActionManager;
 
-    static plugins: Array<InputActionPlugin>;
+    static plugins: Array<InputActionPlugin> | null = null;
 
     public static get instance() {
-        if (InputActionManager._instance == null) {
+        if (InputActionManager._instance === undefined) {
             InputActionManager._instance = new InputActionManager();
         }
 
         return InputActionManager._instance;
     }
 
-    public static SetPlugins(): void {
-        let _plugins = new Array<InputActionPlugin>(new SnappingPlugin());
+    // Function: SetPlugins
+    // Use this function to set the <InputActionPlugins> that the manager should use, as well as the order the
+    // <InputActionPlugins> should be used.
+    public static SetPlugins(_plugins: Array<InputActionPlugin>): void {
         this.plugins = _plugins;
     }
 
@@ -48,14 +47,13 @@ export class InputActionManager extends EventTarget {
 
         let action = _action;
 
-        if (this.plugins != null) {
+        if (this.plugins !== null) {
             for (var i = 0; i < this.plugins.length; i++) {
                 let modifiedAction = this.plugins[i].RunPlugin(action);
 
-                if (modifiedAction != null) {
+                if (modifiedAction !== null) {
                     action = modifiedAction;
-                }
-                else {
+                } else {
                     // The plugin has cancelled the InputAction entirely
                     return;
                 }

@@ -16,7 +16,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         // Variable: fadeDuration
         // The number of frames over which the cursor should fade when appearing/disappearing
-        [Range(0f, 60f)] public float fadeDuration = 30;
+        [Range(0f, 60f)] public float fadeDuration = 35;
 
         // Variable: cursorBorder
         // The image of the border around the dot, this is the parent image in the prefab and is
@@ -43,7 +43,8 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // The maximum size for the ring to be relative to the size of the dot.
         //
         //  e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
-        public float cursorMaxRingSize = 8;
+        public float cursorMaxRingSize = 32;
+        private const float minRingScale = 1f;
 
         // Variable: ringCurve
         // This curve is used to determine how the ring's scale changes with the value of the latest
@@ -59,11 +60,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // This is a reference to the mask that is used to make the center of the ring visual
         // transparent. It has to be scaled to match the ring itself.
         public RectTransform ringMask;
-
-        // Variable: ringThickness
-        // Used to set the thickness of the ring itself (i.e. the distance between the inner and
-        // outer edges of the ring)
-        public float ringThickness = 2;
 
         // Variable: pulseShrinkCurve
         // When a "click" is recognised, an animation plays where the dot "pulses" (briefly
@@ -87,8 +83,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         [Range(0.01f, 2f)] public float cursorDownScale;
 
         Coroutine cursorScalingRoutine;
-
-        protected float maxRingScale;
 
         protected bool hidingCursor = true;
         protected bool growQueued = false;
@@ -119,18 +113,16 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         void ScaleRing(float _progressToClick)
         {
-            // 0.8f so that the boundary between ring and dot is not visible.
-            float minRingScale = 0.8f;
-            float ringScale = Mathf.Lerp(minRingScale, maxRingScale, ringCurve.Evaluate(_progressToClick));
-            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f, 0f, _progressToClick));
+            float ringScale = Mathf.Lerp(minRingScale, cursorMaxRingSize, ringCurve.Evaluate(_progressToClick));
+            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, Mathf.Lerp(1f * secondaryColor.a, 0f, _progressToClick));
 
-            ringOuter.transform.localScale = Vector3.one * ringScale;
+            ringMask.transform.localScale = Vector3.one * ringScale;
 
-            ringMask.transform.localScale = new Vector3()
+            ringOuter.transform.localScale = new Vector3()
             {
-                x = Mathf.Max(0, ringOuter.localScale.x - ringThickness),
-                y = Mathf.Max(0, ringOuter.localScale.y - ringThickness),
-                z = ringOuter.localScale.z
+                x = Mathf.Max(0, ringMask.localScale.x + cursorRingThickness),
+                y = Mathf.Max(0, ringMask.localScale.y + cursorRingThickness),
+                z = ringMask.localScale.z
             };
         }
 
@@ -220,8 +212,6 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
             SetCursorLocalScale(cursorSize);
 
             SetColors(primaryColor, secondaryColor, tertiaryColor);
-
-            maxRingScale = (1f / cursorSize) * cursorMaxRingSize;
 
             // This is a crude way of forcing the sprites to draw on top of the UI, without masking it.
             ringOuterSprite.sortingOrder = ringSpriteSortingOrder;

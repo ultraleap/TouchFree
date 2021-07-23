@@ -26,8 +26,6 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public const float TouchPlaneDistance_Min = 0f;
         public const float TouchPlaneDistance_Max = 20f;
-        public const float TouchPlaneStartDistance_Min = 0f;
-        public const float TouchPlaneStartDistance_Max = 20f;
         #endregion
 
         // UI elements
@@ -45,8 +43,8 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Header("TouchPlane")]
         public InputField TouchPlaneDistance;
         public Slider TouchPlaneDistanceSlider;
-        public InputField TouchPlaneStartDistance;
-        public Slider TouchPlaneStartDistanceSlider;
+        public Toggle trackingBoneNearestToggle;
+        public Toggle trackingBoneIndexTipToggle;
 
         [Header("Interaction Type")]
         public Toggle interactionTypeTogglePush;
@@ -55,9 +53,15 @@ namespace Ultraleap.TouchFree.ServiceUI
         public Toggle interactionTypeToggleTouchPlane;
 
         [Header("Interaction Preview")]
-        public GameObject pushPreview;
-        public GameObject grabPreview;
+        public GameObject airPushPreview;
+        public GameObject touchPlanePreview;
         public GameObject hoverPreview;
+
+        [Header("InteractionZone")]
+        public Toggle EnableInteractionZoneToggle;
+        public InputField InteractionMinDistanceField;
+        public InputField InteractionMaxDistanceField;
+        public GameObject[] InteractionZoneSettingsToHide;
 
         [Space]
         public GameObject resetToDefaultWarning;
@@ -85,8 +89,6 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             TouchPlaneDistanceSlider.minValue = TouchPlaneDistance_Min;
             TouchPlaneDistanceSlider.maxValue = TouchPlaneDistance_Max;
-            TouchPlaneStartDistanceSlider.minValue = TouchPlaneStartDistance_Min;
-            TouchPlaneStartDistanceSlider.maxValue = TouchPlaneStartDistance_Max;
         }
 
         public void ResetToDefaultValues()
@@ -109,13 +111,19 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             TouchPlaneDistance.onEndEdit.AddListener(OnValueChanged);
             TouchPlaneDistanceSlider.onValueChanged.AddListener(OnValueChanged);
-            TouchPlaneStartDistance.onEndEdit.AddListener(OnValueChanged);
-            TouchPlaneStartDistanceSlider.onValueChanged.AddListener(OnValueChanged);
+            trackingBoneNearestToggle.onValueChanged.AddListener(OnValueChanged);
+            trackingBoneIndexTipToggle.onValueChanged.AddListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.AddListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.AddListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.AddListener(OnValueChanged);
             interactionTypeToggleTouchPlane.onValueChanged.AddListener(OnValueChanged);
+
+            // Interaction Zone Events
+            EnableInteractionZoneToggle.onValueChanged.AddListener(OnValueChanged);
+            EnableInteractionZoneToggle.onValueChanged.AddListener(ShowHideInteractionZoneControls);
+            InteractionMinDistanceField.onValueChanged.AddListener(OnValueChanged);
+            InteractionMaxDistanceField.onValueChanged.AddListener(OnValueChanged);
         }
 
         protected override void RemoveValueChangedListeners()
@@ -130,13 +138,19 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             TouchPlaneDistance.onEndEdit.RemoveListener(OnValueChanged);
             TouchPlaneDistanceSlider.onValueChanged.RemoveListener(OnValueChanged);
-            TouchPlaneStartDistance.onEndEdit.RemoveListener(OnValueChanged);
-            TouchPlaneStartDistanceSlider.onValueChanged.RemoveListener(OnValueChanged);
+            trackingBoneNearestToggle.onValueChanged.RemoveListener(OnValueChanged);
+            trackingBoneIndexTipToggle.onValueChanged.RemoveListener(OnValueChanged);
 
             interactionTypeTogglePush.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeTogglePinch.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeToggleHover.onValueChanged.RemoveListener(OnValueChanged);
             interactionTypeToggleTouchPlane.onValueChanged.RemoveListener(OnValueChanged);
+
+            // Interaction Zone Events
+            EnableInteractionZoneToggle.onValueChanged.RemoveListener(OnValueChanged);
+            EnableInteractionZoneToggle.onValueChanged.RemoveListener(ShowHideInteractionZoneControls);
+            InteractionMinDistanceField.onValueChanged.RemoveListener(OnValueChanged);
+            InteractionMaxDistanceField.onValueChanged.RemoveListener(OnValueChanged);
         }
 
         protected override void LoadConfigValuesIntoFields()
@@ -152,8 +166,19 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             TouchPlaneDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM.ToString("#0.00#"));
             TouchPlaneDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM);
-            TouchPlaneStartDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM.ToString("#0.00#"));
-            TouchPlaneStartDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM);
+
+            trackingBoneNearestToggle.SetIsOnWithoutNotify(false);
+            trackingBoneIndexTipToggle.SetIsOnWithoutNotify(false);
+            switch (ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition)
+            {
+                case TrackedPosition.INDEX_TIP:
+                    trackingBoneIndexTipToggle.SetIsOnWithoutNotify(true);
+                    break;
+                default:
+                case TrackedPosition.NEAREST:
+                    trackingBoneNearestToggle.SetIsOnWithoutNotify(true);
+                    break;
+            }
 
             interactionTypeTogglePush.SetIsOnWithoutNotify(false);
             interactionTypeTogglePinch.SetIsOnWithoutNotify(false);
@@ -175,6 +200,12 @@ namespace Ultraleap.TouchFree.ServiceUI
                     break;
             }
 
+            // Interaction Zone settings
+            EnableInteractionZoneToggle.SetIsOnWithoutNotify(ConfigManager.InteractionConfig.interactionZoneEnabled);
+            InteractionMinDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.interactionMinDistanceCm.ToString());
+            InteractionMaxDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.interactionMaxDistanceCm.ToString());
+
+            ShowHideInteractionZoneControls(ConfigManager.InteractionConfig.interactionZoneEnabled);
             DisplayIntractionPreview();
         }
 
@@ -194,33 +225,38 @@ namespace Ultraleap.TouchFree.ServiceUI
             var touchPlaneDistance = Mathf.Clamp(TouchPlaneDistanceSlider.value, TouchPlaneDistance_Min, TouchPlaneDistance_Max);
             TouchPlaneDistance.SetTextWithoutNotify(touchPlaneDistance.ToString("#0.00#"));
             TouchPlaneDistanceSlider.SetValueWithoutNotify(touchPlaneDistance);
-
-            var touchPlaneStartDistance = Mathf.Clamp(TouchPlaneStartDistanceSlider.value, TouchPlaneStartDistance_Min, TouchPlaneStartDistance_Max);
-            TouchPlaneStartDistance.SetTextWithoutNotify(touchPlaneStartDistance.ToString("#0.00#"));
-            TouchPlaneStartDistanceSlider.SetValueWithoutNotify(touchPlaneStartDistance);
         }
 
         void DisplayIntractionPreview()
         {
-            pushPreview.SetActive(false);
-            grabPreview.SetActive(false);
+            airPushPreview.SetActive(false);
+            touchPlanePreview.SetActive(false);
             hoverPreview.SetActive(false);
 
             switch (ConfigManager.InteractionConfig.InteractionType)
             {
                 case InteractionType.GRAB:
-                    grabPreview.SetActive(true);
                     break;
                 case InteractionType.HOVER:
                     hoverPreview.SetActive(true);
                     break;
                 case InteractionType.PUSH:
+                    airPushPreview.SetActive(true);
+                    break;
                 case InteractionType.TOUCHPLANE:
-                    pushPreview.SetActive(true);
+                    touchPlanePreview.SetActive(true);
                     break;
             }
 
             HandleSpecificElements(ConfigManager.InteractionConfig.InteractionType);
+        }
+
+        protected void ShowHideInteractionZoneControls(bool _state)
+        {
+            foreach (GameObject control in InteractionZoneSettingsToHide)
+            {
+                control.SetActive(_state);
+            }
         }
 
         void HandleSpecificElements(InteractionType _interactionType)
@@ -258,7 +294,15 @@ namespace Ultraleap.TouchFree.ServiceUI
             ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = HoverStartTimeSlider.value;
             ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = HoverCompleteTimeSlider.value;
             ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM = TouchPlaneDistanceSlider.value;
-            ConfigManager.InteractionConfig.TouchPlane.TouchPlaneStartDistanceCM = TouchPlaneStartDistanceSlider.value;
+
+            if(trackingBoneIndexTipToggle.isOn)
+            {
+                ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition = TrackedPosition.INDEX_TIP;
+            }
+            else
+            {
+                ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition = TrackedPosition.NEAREST;
+            }
 
             if (interactionTypeTogglePush.isOn)
             {
@@ -276,6 +320,18 @@ namespace Ultraleap.TouchFree.ServiceUI
             {
                 ConfigManager.InteractionConfig.InteractionType = InteractionType.TOUCHPLANE;
             }
+
+            ConfigManager.InteractionConfig.interactionZoneEnabled = EnableInteractionZoneToggle.isOn;
+
+            ConfigManager.InteractionConfig.interactionMinDistanceCm =
+                ServiceUtility.TryParseNewStringToFloat(
+                    ConfigManager.InteractionConfig.interactionMinDistanceCm,
+                    InteractionMinDistanceField.text);
+
+            ConfigManager.InteractionConfig.interactionMaxDistanceCm =
+                ServiceUtility.TryParseNewStringToFloat(
+                    ConfigManager.InteractionConfig.interactionMaxDistanceCm,
+                    InteractionMaxDistanceField.text);
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();
             ConfigManager.InteractionConfig.SaveConfig();

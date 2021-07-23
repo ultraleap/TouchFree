@@ -13,7 +13,7 @@ export abstract class BaseInputController {
     // Group: MonoBehaviour Overrides
 
     // Function: constructor
-    // Adds a listener to <ConnectionManager> to invoke <HandleInputAction> with <TouchFreeInputActions> as they
+    // Adds a listener to <InputActionManager> to invoke <HandleInputAction> with <TouchFreeInputActions> as they
     // are received.
     constructor() {
         InputActionManager.instance.addEventListener('TransmitInputAction',

@@ -18,7 +18,7 @@ export abstract class TouchlessCursor {
     // Group: Functions
 
     // Function: constructor
-    // Registers the Cursor for updates from the <ConnectionManager>
+    // Registers the Cursor for updates from the <InputActionManager>
     //
     // If you intend to make use of the <WebInputController>, make sure that _cursor has the
     // "touchfreecursor" class. This prevents it blocking other elements from recieving events.

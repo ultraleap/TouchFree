@@ -49,11 +49,13 @@ namespace Ultraleap.TouchFree
             if (startedProcess != null && !startedProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                //ExecuteAsAdmin(Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                ExecuteWithoutAdmin(Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
             else
             {
-                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                //startedProcess = ExecuteAsAdmin(Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                startedProcess = ExecuteWithoutAdmin(Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
             }
         }
 
@@ -63,6 +65,15 @@ namespace Ultraleap.TouchFree
             proc.StartInfo.FileName = fileName;
             proc.StartInfo.UseShellExecute = true;
             proc.StartInfo.Verb = "runas";
+            proc.Start();
+
+            return proc;
+        }
+
+        private Process ExecuteWithoutAdmin(string fileName)
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = fileName;
             proc.Start();
 
             return proc;

@@ -156,7 +156,7 @@ export class MessageReceiver {
     // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
     // clears out non-essential <TouchFreeInputActions> down to the number specified by
     // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
-    // <serviceConnection> to handle the action.
+    // <InputActionManager> to handle the action.
     CheckForAction(): void {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {

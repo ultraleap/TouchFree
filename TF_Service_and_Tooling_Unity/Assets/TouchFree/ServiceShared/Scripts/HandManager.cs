@@ -80,6 +80,9 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         private int handsLastFrame;
 
+        // Used by ServiceUI QuickSetup to ensure the tracking mode is the selected one
+        [HideInInspector] public bool lockTrackingMode = false;
+
         void Awake()
         {
             if (Instance != null)
@@ -155,6 +158,11 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public void UpdateLeapTrackingMode()
         {
+            if (lockTrackingMode)
+            {
+                return;
+            }
+
             // leap is looking down
             if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {

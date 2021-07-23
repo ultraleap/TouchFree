@@ -32,7 +32,6 @@ namespace Ultraleap.TouchFree.Service
             switch (handType)
             {
                 case HandType.PRIMARY:
-
                     hand = HandManager.Instance.PrimaryHand;
                     break;
                 case HandType.SECONDARY:
@@ -43,6 +42,9 @@ namespace Ultraleap.TouchFree.Service
             if (hand != null)
             {
                 handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
+
+                positions = positioningModule.CalculatePositions(hand);
+                hand = CheckHandInInteractionZone(hand);
             }
 
             UpdateData(hand);
@@ -84,6 +86,26 @@ namespace Ultraleap.TouchFree.Service
             ignoreDragging = !ConfigManager.InteractionConfig.UseScrollingOrDragging;
             ConfigManager.GlobalSettings.CreateVirtualScreen();
             positioningModule.Stabiliser.ResetValues();
+        }
+
+        /// <summary>
+        /// Check if the hand is within the interaction zone. Return relevant results.
+        /// This should be performed after 'positions' has been calculated.
+        /// </summary>
+        /// <param name="_hand"></param>
+        /// <returns>Returns null if the hand is outside of the interaction zone</returns>
+        Leap.Hand CheckHandInInteractionZone(Leap.Hand _hand)
+        {
+            if (_hand != null && ConfigManager.InteractionConfig.interactionZoneEnabled)
+            {
+                if (positions.DistanceFromScreen < ConfigManager.InteractionConfig.interactionMinDistanceCm / 100 ||
+                    positions.DistanceFromScreen > ConfigManager.InteractionConfig.interactionMaxDistanceCm / 100)
+                {
+                    return null;
+                }
+            }
+
+            return _hand;
         }
     }
 }

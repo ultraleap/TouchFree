@@ -44,6 +44,7 @@ namespace Ultraleap.TouchFree
         // Cursor Settings
         public bool cursorEnabled = true;
         public float cursorSizeCm = 0.25f;
+        public float cursorRingThickness = 0.15f;
         public CursorColorPreset activeCursorPreset = CursorColorPreset.LIGHT;
         public Color primaryCustomColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         public Color secondaryCustomColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -51,14 +52,11 @@ namespace Ultraleap.TouchFree
 
         // CTI Settings
         public bool ctiEnabled = true;
-        public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallTointeract", "1 Push in mid-air to start.mp4");
+        public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallToInteract", "AirPush_Portrait.mp4");
         public CtiHideTrigger ctiHideTrigger = CtiHideTrigger.INTERACTION;
         public float ctiShowAfterTimer = 10.0f;
 
         // Misc Settings
-        public bool interactionZoneEnabled = false;
-        public float interactionMinDistanceCm = 0.0f;
-        public float interactionMaxDistanceCm = 25.0f;
         public bool StartupUIShown = false;
 
         public event Action OnConfigUpdated;
@@ -95,6 +93,7 @@ namespace Ultraleap.TouchFree
 
             cursorEnabled = defaults.cursorEnabled;
             cursorSizeCm = defaults.cursorSizeCm;
+            cursorRingThickness = defaults.cursorRingThickness;
             activeCursorPreset = defaults.activeCursorPreset;
             primaryCustomColor = defaults.primaryCustomColor;
             secondaryCustomColor = defaults.secondaryCustomColor;
@@ -104,10 +103,6 @@ namespace Ultraleap.TouchFree
             ctiFilePath = defaults.ctiFilePath;
             ctiHideTrigger = defaults.ctiHideTrigger;
             ctiShowAfterTimer = defaults.ctiShowAfterTimer;
-
-            interactionZoneEnabled = defaults.interactionZoneEnabled;
-            interactionMinDistanceCm = defaults.interactionMinDistanceCm;
-            interactionMaxDistanceCm = defaults.interactionMaxDistanceCm;
         }
 
         public void SaveConfig()

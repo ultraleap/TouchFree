@@ -1,5 +1,7 @@
 import { InputActionManager } from './InputActionManager';
+import { InputActionPlugin } from './InputActionPlugin';
 
 module.exports = {
-    InputActionManager: InputActionManager
+    InputActionManager: InputActionManager,
+    InputActionPlugin: InputActionPlugin
 }

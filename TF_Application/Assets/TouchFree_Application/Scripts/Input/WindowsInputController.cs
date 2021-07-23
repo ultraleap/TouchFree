@@ -10,7 +10,7 @@ public class WindowsInputController : InputController
 
     protected override void Start()
     {
-        InteractionZone.InputOverrideInputAction += HandleInputAction;
+        DelayedDown.InputOverrideInputAction += HandleInputAction;
         TouchInjection.Initialize(10, TouchFeedback.NONE);
 
         touches = new PointerTouchInfo[1];
@@ -22,11 +22,17 @@ public class WindowsInputController : InputController
 
     protected override void OnDestroy()
     {
-        InteractionZone.InputOverrideInputAction -= HandleInputAction;
+        DelayedDown.InputOverrideInputAction -= HandleInputAction;
     }
 
     protected override void HandleInputAction(InputAction _inputData)
     {
+        // CTI can block input as we do not require input while CTI is active
+        if(CallToInteractController.isShowing)
+        {
+            return;
+        }
+
         var x = (int)_inputData.CursorPosition.x;
         var y = Display.main.systemHeight - (int)_inputData.CursorPosition.y;
 

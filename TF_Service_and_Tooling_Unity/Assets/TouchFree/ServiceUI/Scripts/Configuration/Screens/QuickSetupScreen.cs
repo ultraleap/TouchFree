@@ -31,6 +31,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             step2.SetActive(false);
             ScreenManager.Instance.SetCursorState(false);
             HandManager.Instance.useTrackingTransform = false;
+            HandManager.Instance.lockTrackingMode = true;
             DisplayTrackingLost(false);
             setupGuideButton.SetActive(false);
             noTrackingAttempts = 0;
@@ -39,6 +40,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         private void OnDisable()
         {
             HandManager.Instance.useTrackingTransform = true;
+            HandManager.Instance.lockTrackingMode = false;
             ScreenManager.Instance.SetCursorState(true);
         }
 

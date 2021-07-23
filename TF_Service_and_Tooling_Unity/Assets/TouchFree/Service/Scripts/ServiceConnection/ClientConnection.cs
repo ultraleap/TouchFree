@@ -137,7 +137,7 @@ namespace Ultraleap.TouchFree.Service
             string rawData = _message.Data;
 
             // Find key areas of the rawData, the "action" and the "content"
-            var match = Regex.Match(rawData, "{\"action\": ?\"([\\w\\d_]+?)\",\"content\": ?({.+?})}$");
+            var match = Regex.Match(rawData, "{\\s*?\"action\"\\s*?:\\s*?\"([\\w\\d_]+?)\"\\s*?,\\s*?\"content\"\\s*?:\\s*?({.+?})\\s*?}$");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
             ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());

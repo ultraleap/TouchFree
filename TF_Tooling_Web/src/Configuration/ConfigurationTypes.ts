@@ -26,6 +26,18 @@ export interface InteractionConfig {
     // radius of that deadzone.
     DeadzoneRadius: number;
 
+    // Property: InteractionZoneEnabled
+    // Changes whether the Interaction Zone values will be used
+    InteractionZoneEnabled: boolean;
+
+    // Property: InteractionMinDistanceCm
+    // The minimum distance from the screen that users can interact within
+    InteractionMinDistanceCm: number;
+
+    // Property: InteractionMaxDistanceCm
+    // The maximum distance from the screen that users can interact within
+    InteractionMaxDistanceCm: number;
+
     // Property: InteractionType
     // This represents the type of interaction currently selected
     InteractionType: InteractionType;
@@ -73,10 +85,9 @@ export interface TouchPlaneInteractionSettings {
     // represents the plane that the user must pass to begin and end a click event.
     TouchPlaneActivationDistanceCM: number;
 
-    // Property: TouchPlaneStartDistanceCM
-    // This determines how far (in cm) from the TouchPlane that the interaction will begin to progress.
-    // The progress can be used to show a cursor that shows users how close they are to the TouchPlane.
-    TouchPlaneStartDistanceCM: number;
+    // Property: TouchPlaneTrackedPosition
+    // This determines which bone position will be tracked when performing the interaction.
+    TouchPlaneTrackedPosition: TrackedPosition;
 }
 
 // Class: PhysicalConfig
@@ -114,4 +125,16 @@ export interface PhysicalConfig {
     // The rotation of the physical screen relative to the unity world space, measured in
     // degrees
     ScreenRotationD: number;
+}
+
+// Enum: TrackedPosition
+// INDEX_STABLE - Towards the screen from the proximal knuckle position of the index finger 
+// INDEX_TIP - The index finger tip position
+// WRIST - The wrist position
+// NEAREST - The nearest bone to the screen
+export enum TrackedPosition {
+    INDEX_STABLE,
+    INDEX_TIP,
+    WRIST,
+    NEAREST
 }
