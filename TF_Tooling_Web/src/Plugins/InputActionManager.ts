@@ -1,4 +1,6 @@
 import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
+import { InputActionPlugin } from "./InputActionPlugin";
+
 // Class: InputActionManager
 // The manager for all <TouchFreeInputActions> to be handled and distributed. This runs the
 // received data through any <InputActionPlugins> given to it and finaly distributes the data
