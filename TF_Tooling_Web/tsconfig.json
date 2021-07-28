@@ -66,6 +66,6 @@
   "include": [
     "src",
     "test",
-    "examples/SnappingPlugin"
+    "examples/SnappingPlugin/src"
   ]
 }
