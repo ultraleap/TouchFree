@@ -10,7 +10,7 @@ module.exports = {
             },
         },
         Snapping_Plugin: {
-            import: './examples/SnappingPlugin/SnappingPlugin.ts',
+            import: './examples/SnappingPlugin/src/SnappingPlugin.ts',
             dependOn: 'TouchFree_Tooling',
             library: {
                 name: "SnappingPlugin",
