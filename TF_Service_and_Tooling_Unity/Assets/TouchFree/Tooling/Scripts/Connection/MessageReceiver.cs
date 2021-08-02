@@ -132,6 +132,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             }
         }
 
+        Vector2 lastMovePos = new Vector2();
+
         // Function: CheckForAction
         // Checks <actionQueue> for valid <InputActions>. If there are too many in the queue,
         // clears out non-essential <InputActions> down to the number specified by
@@ -139,7 +141,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // <InputActionManager> to distribute the action.
         void CheckForAction()
         {
-            InputAction action;
+            InputAction action = new InputAction();
+
             while (actionQueue.Count > actionCullToCount)
             {
                 if (actionQueue.TryPeek(out action))
@@ -157,8 +160,19 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
             if (actionQueue.TryPeek(out action))
             {
+                if (action.InputType != InputType.UP)
+                {
+                    lastMovePos = action.CursorPosition;
+                }
+
                 // Parse newly received messages
                 actionQueue.TryDequeue(out action);
+
+                if (action.InputType == InputType.UP)
+                {
+                    action.CursorPosition = lastMovePos;
+                }
+
                 InputActionManager.Instance.SendInputAction(action);
             }
 
