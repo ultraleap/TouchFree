@@ -201,11 +201,11 @@ namespace Ultraleap.TouchFree.ServiceUI
             }
 
             // Interaction Zone settings
-            EnableInteractionZoneToggle.SetIsOnWithoutNotify(ConfigManager.InteractionConfig.interactionZoneEnabled);
-            InteractionMinDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.interactionMinDistanceCm.ToString());
-            InteractionMaxDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.interactionMaxDistanceCm.ToString());
+            EnableInteractionZoneToggle.SetIsOnWithoutNotify(ConfigManager.InteractionConfig.InteractionZoneEnabled);
+            InteractionMinDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.InteractionMinDistanceCm.ToString());
+            InteractionMaxDistanceField.SetTextWithoutNotify(ConfigManager.InteractionConfig.InteractionMaxDistanceCm.ToString());
 
-            ShowHideInteractionZoneControls(ConfigManager.InteractionConfig.interactionZoneEnabled);
+            ShowHideInteractionZoneControls(ConfigManager.InteractionConfig.InteractionZoneEnabled);
             DisplayIntractionPreview();
         }
 
@@ -321,16 +321,16 @@ namespace Ultraleap.TouchFree.ServiceUI
                 ConfigManager.InteractionConfig.InteractionType = InteractionType.TOUCHPLANE;
             }
 
-            ConfigManager.InteractionConfig.interactionZoneEnabled = EnableInteractionZoneToggle.isOn;
+            ConfigManager.InteractionConfig.InteractionZoneEnabled = EnableInteractionZoneToggle.isOn;
 
-            ConfigManager.InteractionConfig.interactionMinDistanceCm =
+            ConfigManager.InteractionConfig.InteractionMinDistanceCm =
                 ServiceUtility.TryParseNewStringToFloat(
-                    ConfigManager.InteractionConfig.interactionMinDistanceCm,
+                    ConfigManager.InteractionConfig.InteractionMinDistanceCm,
                     InteractionMinDistanceField.text);
 
-            ConfigManager.InteractionConfig.interactionMaxDistanceCm =
+            ConfigManager.InteractionConfig.InteractionMaxDistanceCm =
                 ServiceUtility.TryParseNewStringToFloat(
-                    ConfigManager.InteractionConfig.interactionMaxDistanceCm,
+                    ConfigManager.InteractionConfig.InteractionMaxDistanceCm,
                     InteractionMaxDistanceField.text);
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();
