@@ -36,20 +36,20 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             string jsonContent = "";
             jsonContent += "{\"action\":\"";
             jsonContent += action + "\",\"content\":{\"requestID\":\"";
-            jsonContent += requestID + "\",";
+            jsonContent += requestID + "\"";
 
-            if(_interaction != null)
+            if (_interaction != null)
             {
+                jsonContent += ",";
                 jsonContent += SerializeInteractionConfig(_interaction);
             }
 
             if (_physical != null)
             {
+                jsonContent += ",";
                 jsonContent += SerializePhysicalConfig(_physical);
             }
 
-            // last element added was final so remove the comma
-            jsonContent = jsonContent.Remove(jsonContent.Length - 1);
             jsonContent += "}}";
 
             ConnectionManager.serviceConnection.SendMessage(jsonContent, requestID, _callback);
@@ -73,11 +73,12 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
                     newContent += ",";
                 }
 
-                newContent += SerializeInteractionSpecificConfigs(_interaction);
-
                 // last element added was last in the list so remove the comma
                 newContent = newContent.Remove(newContent.Length - 1);
-                newContent += "},";
+
+                newContent += SerializeInteractionSpecificConfigs(_interaction);
+
+                newContent += "}";
             }
 
             return newContent;
@@ -89,7 +90,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
             if (_interaction.HoverAndHold.configValues.Count > 0)
             {
-                newContent += "\"HoverAndHold\":{";
+                newContent += ",\"HoverAndHold\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.HoverAndHold.configValues)
                 {
@@ -99,12 +100,12 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
                 // last element added was last in the list so remove the comma
                 newContent = newContent.Remove(newContent.Length - 1);
-                newContent += "},";
+                newContent += "}";
             }
 
             if (_interaction.TouchPlane.configValues.Count > 0)
             {
-                newContent += "\"TouchPlane\":{";
+                newContent += ",\"TouchPlane\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.TouchPlane.configValues)
                 {
@@ -114,7 +115,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
                 // last element added was last in the list so remove the comma
                 newContent = newContent.Remove(newContent.Length - 1);
-                newContent += "},";
+                newContent += "}";
             }
 
             return newContent;
@@ -128,7 +129,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             {
                 if (_physical.configValues.Count > 0)
                 {
-                    newContent += ",\"physical\":{";
+                    newContent += "\"physical\":{";
 
                     foreach (KeyValuePair<string, object> value in _physical.configValues)
                     {
@@ -138,7 +139,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
                     // last element added was last in the list so remove the comma
                     newContent = newContent.Remove(newContent.Length - 1);
-                    newContent += "},";
+                    newContent += "}";
                 }
             }
 
