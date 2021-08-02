@@ -38,11 +38,17 @@ namespace Ultraleap.TouchFree.ServiceShared
 
             UseScrollingOrDragging = defaults.UseScrollingOrDragging;
             DeadzoneRadius = defaults.DeadzoneRadius;
+
+            interactionZoneEnabled = defaults.interactionZoneEnabled;
+            interactionMinDistanceCm = defaults.interactionMinDistanceCm;
+            interactionMaxDistanceCm = defaults.interactionMaxDistanceCm;
+
+            InteractionType = defaults.InteractionType;
+
             HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
             TouchPlane.TouchPlaneActivationDistanceCM = defaults.TouchPlane.TouchPlaneActivationDistanceCM;
             TouchPlane.TouchPlaneTrackedPosition = defaults.TouchPlane.TouchPlaneTrackedPosition;
-            InteractionType = defaults.InteractionType;
         }
 
         public void SaveConfig()
