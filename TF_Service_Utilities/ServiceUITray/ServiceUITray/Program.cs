@@ -73,11 +73,9 @@ namespace ServiceUITray
                 {
                     Icon = Properties.Resources.IconActive,
                     ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Open TouchFree", LaunchApp),
-                    new MenuItem("Open TouchFree (Admin)", LaunchAppAdmin),
+                    new MenuItem("TouchFree Application", LaunchApp),
                     new MenuItem("-"),
-                    new MenuItem("Open Settings", Settings),
-                    new MenuItem("Open Settings (Admin)", SettingsAdmin),
+                    new MenuItem("Service Settings", Settings),
                     new MenuItem("-"),
                     new MenuItem("Exit", Exit),
                 }),
@@ -90,8 +88,7 @@ namespace ServiceUITray
                 {
                     Icon = Properties.Resources.IconActive,
                     ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Open Settings", Settings),
-                    new MenuItem("Open Settings (Admin)", SettingsAdmin),
+                    new MenuItem("Service Settings", Settings),
                     new MenuItem("-"),
                     new MenuItem("Exit", Exit),
                 }),
@@ -105,24 +102,11 @@ namespace ServiceUITray
             if (startedAppProcess != null && !startedAppProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteWithoutAdmin(Path.GetFullPath(APPLICATION_PATH));
+                LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
             }
             else
             {
-                startedAppProcess = ExecuteWithoutAdmin(Path.GetFullPath(APPLICATION_PATH));
-            }
-        }
-
-        private void LaunchAppAdmin(object sender, EventArgs e)
-        {
-            if (startedAppProcess != null && !startedAppProcess.HasExited)
-            {
-                // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteAsAdmin(Path.GetFullPath(APPLICATION_PATH));
-            }
-            else
-            {
-                startedAppProcess = ExecuteAsAdmin(Path.GetFullPath(APPLICATION_PATH));
+                startedAppProcess = LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
             }
         }
 
@@ -131,24 +115,11 @@ namespace ServiceUITray
             if (startedSettingsProcess != null && !startedSettingsProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteWithoutAdmin(Path.GetFullPath(SERVICE_SETTINGS_PATH));
+                LaunchApplication(Path.GetFullPath(SERVICE_SETTINGS_PATH));
             }
             else
             {
-                startedSettingsProcess = ExecuteWithoutAdmin(Path.GetFullPath(SERVICE_SETTINGS_PATH));
-            }
-        }
-
-        private void SettingsAdmin(object sender, EventArgs e)
-        {
-            if (startedSettingsProcess != null && !startedSettingsProcess.HasExited)
-            {
-                // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteAsAdmin(Path.GetFullPath(SERVICE_SETTINGS_PATH));
-            }
-            else
-            {
-                startedSettingsProcess = ExecuteAsAdmin(Path.GetFullPath(SERVICE_SETTINGS_PATH));
+                startedSettingsProcess = LaunchApplication(Path.GetFullPath(SERVICE_SETTINGS_PATH));
             }
         }
 
@@ -199,18 +170,7 @@ namespace ServiceUITray
             return ServiceController.GetServices().Any(serviceController => serviceController.ServiceName.Equals(serviceName));
         }
 
-        public Process ExecuteAsAdmin(string fileName)
-        {
-            Process proc = new Process();
-            proc.StartInfo.FileName = fileName;
-            proc.StartInfo.UseShellExecute = true;
-            proc.StartInfo.Verb = "runas";
-            proc.Start();
-
-            return proc;
-        }
-
-        public Process ExecuteWithoutAdmin(string fileName)
+        public Process LaunchApplication(string fileName)
         {
             Process proc = new Process();
             proc.StartInfo.FileName = fileName;
