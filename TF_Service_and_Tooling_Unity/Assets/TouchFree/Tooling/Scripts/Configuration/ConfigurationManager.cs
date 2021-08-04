@@ -40,13 +40,11 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
             if (_interaction != null)
             {
-                jsonContent += ",";
                 jsonContent += SerializeInteractionConfig(_interaction);
             }
 
             if (_physical != null)
             {
-                jsonContent += ",";
                 jsonContent += SerializePhysicalConfig(_physical);
             }
 
@@ -65,6 +63,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
             if (_interaction.configValues.Count > 0 || _interaction.HoverAndHold.configValues.Count > 0)
             {
+                newContent += ",";
                 newContent += "\"interaction\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.configValues)
@@ -90,7 +89,8 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
             if (_interaction.HoverAndHold.configValues.Count > 0)
             {
-                newContent += ",\"HoverAndHold\":{";
+                newContent += ",";
+                newContent += "\"HoverAndHold\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.HoverAndHold.configValues)
                 {
@@ -105,7 +105,8 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
             if (_interaction.TouchPlane.configValues.Count > 0)
             {
-                newContent += ",\"TouchPlane\":{";
+                newContent += ",";
+                newContent += "\"TouchPlane\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.TouchPlane.configValues)
                 {
@@ -129,6 +130,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             {
                 if (_physical.configValues.Count > 0)
                 {
+                    newContent += ",";
                     newContent += "\"physical\":{";
 
                     foreach (KeyValuePair<string, object> value in _physical.configValues)
