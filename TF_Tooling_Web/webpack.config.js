@@ -8,14 +8,16 @@ module.exports = {
                 name: "TouchFree",
                 type: "umd",
             },
+            filename: 'dist/TouchFree.js'
         },
         Snapping_Plugin: {
-            import: './examples/SnappingPlugin/src/SnappingPlugin.ts',
+            import: './plugins/SnappingPlugin/src/SnappingPlugin.ts',
             dependOn: 'TouchFree_Tooling',
             library: {
                 name: "SnappingPlugin",
                 type: "umd",
             },
+            filename: 'Plugins/SnappingPlugin/SnappingPlugin.js'
         },
     },
     mode: 'production',
@@ -34,7 +36,6 @@ module.exports = {
         minimize: false,
     },
     output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, 'dist'),
+        path: __dirname,
     },
 };

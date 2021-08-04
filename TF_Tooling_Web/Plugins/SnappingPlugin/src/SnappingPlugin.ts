@@ -65,8 +65,8 @@ export class SnappingPlugin extends InputActionPlugin {
                     softSnapT = Math.max(Math.min(softSnapT, 1), 0);
 
                     const finalPos: { x: number, y: number } = {
-                        x: this.lerp(elements[0].center.x, elements[0].closest_point.x, softSnapT),
-                        y: this.lerp(elements[0].center.y, elements[0].closest_point.y, softSnapT),
+                        x: this.lerp(elements[0].center.x, cursorPos.x, softSnapT),
+                        y: this.lerp(elements[0].center.y, cursorPos.y, softSnapT),
                     };
 
                     _inputAction.CursorPosition[0] = finalPos.x;
