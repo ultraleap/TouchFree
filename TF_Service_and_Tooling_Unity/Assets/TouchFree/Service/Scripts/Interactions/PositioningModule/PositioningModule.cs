@@ -9,25 +9,13 @@ namespace Ultraleap.TouchFree.Service
 {
     public class PositioningModule : MonoBehaviour
     {
-        public enum TRACKED_POSITION
-        {
-            INDEX_STABLE,
-            INDEX_TIP,
-            WRIST,
-            NEAREST
-        }
-
-        public TRACKED_POSITION trackedPosition = TRACKED_POSITION.INDEX_STABLE;
+        public TrackedPosition trackedPosition = TrackedPosition.INDEX_STABLE;
 
         [Tooltip("If assigned, the cursor snapper and stabiliser will be accessed from the utils object.")]
         public GameObject positioningUtils;
 
         public PositionStabiliser Stabiliser;
 
-        [NonSerialized]
-        public bool ApplyDragLerp;
-
-        private const float DRAG_SMOOTHING_FACTOR = 10f;
         private Positions positions;
 
         private const float NEAREST_BONE_BIAS = 0.01f;
@@ -66,16 +54,7 @@ namespace Ultraleap.TouchFree.Service
             // Vector2 position in screen-space (measured in pixels)
             // float distanceFromScreen (measured in meters)
 
-            float velocity = hand.PalmVelocity.Magnitude;
             Vector3 worldPos = GetTrackedPosition(hand);
-            float smoothingTime = Time.deltaTime;
-            if (ApplyDragLerp)
-            {
-                // Apply a different smoothing time if dragging
-                smoothingTime *= DRAG_SMOOTHING_FACTOR;
-            }
-            worldPos = Stabiliser.ApplySmoothing(worldPos, velocity, smoothingTime);
-
             Vector3 screenPos = ConfigManager.GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
             Vector2 screenPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
             float distanceFromScreen = screenPos.z;
@@ -91,13 +70,13 @@ namespace Ultraleap.TouchFree.Service
         {
             switch (trackedPosition)
             {
-                case TRACKED_POSITION.WRIST:
+                case TrackedPosition.WRIST:
                     return hand.WristPosition.ToVector3();
-                case TRACKED_POSITION.INDEX_TIP:
+                case TrackedPosition.INDEX_TIP:
                     return hand.GetIndex().TipPosition.ToVector3();
-                case TRACKED_POSITION.NEAREST:
+                case TrackedPosition.NEAREST:
                     return GetNearestBoneToScreen(hand);
-                case TRACKED_POSITION.INDEX_STABLE:
+                case TrackedPosition.INDEX_STABLE:
                 default:
                     return GetTrackedPointingJoint(hand);
             }

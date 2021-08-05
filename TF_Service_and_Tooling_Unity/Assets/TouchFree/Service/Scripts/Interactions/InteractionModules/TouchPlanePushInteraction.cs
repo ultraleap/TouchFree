@@ -18,6 +18,10 @@ namespace Ultraleap.TouchFree.Service
 
         private Vector2 downPos;
 
+        // Used to ignore hands that initialise while past the touchPlane.
+        // Particularly for those that are cancelled by InteractionZones
+        bool handReady = false;
+
         [Header("Dragging")]
         public float dragStartDistanceThresholdM = 0.01f;
         bool isDragging = false;
@@ -35,10 +39,10 @@ namespace Ultraleap.TouchFree.Service
                 pressComplete = false;
                 isDragging = false;
                 pressing = false;
+                handReady = false;
                 return;
             }
 
-            positions = positioningModule.CalculatePositions(hand);
             HandleInteractions();
         }
 
@@ -52,36 +56,39 @@ namespace Ultraleap.TouchFree.Service
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
             if (distanceFromScreen < touchPlaneDistance)
             {
-                // we are touching the screen
-                if (!pressing)
+                if (handReady)
                 {
-                    SendInputAction(InputType.DOWN, positions, progressToClick);
-                    downPos = currentCursorPosition;
-                    pressing = true;
-                }
-                else if(!ignoreDragging)
-                {
-                    if (!isDragging && CheckForStartDrag(downPos, positions.CursorPosition))
+                    // we are touching the screen
+                    if (!pressing)
                     {
-                        isDragging = true;
+                        SendInputAction(InputType.DOWN, positions, progressToClick);
+                        downPos = currentCursorPosition;
+                        pressing = true;
                     }
+                    else if (!ignoreDragging)
+                    {
+                        if (!isDragging && CheckForStartDrag(downPos, positions.CursorPosition))
+                        {
+                            isDragging = true;
+                        }
 
-                    if (isDragging)
-                    {
-                        SendInputAction(InputType.MOVE, positions, progressToClick);
+                        if (isDragging)
+                        {
+                            SendInputAction(InputType.MOVE, positions, progressToClick);
+                        }
+                        else
+                        {
+                            // NONE causes the client to react to data without using Input.
+                            SendInputAction(InputType.NONE, positions, progressToClick);
+                        }
                     }
-                    else
+                    else if (!pressComplete)
                     {
-                        // NONE causes the client to react to data without using Input.
-                        SendInputAction(InputType.NONE, positions, progressToClick);
-                    }
-                }
-                else if (!pressComplete)
-                {
-                    Positions downPositions = new Positions(downPos, distanceFromScreen);
-                    SendInputAction(InputType.UP, downPositions, progressToClick);
+                        Positions downPositions = new Positions(downPos, distanceFromScreen);
+                        SendInputAction(InputType.UP, downPositions, progressToClick);
 
-                    pressComplete = true;
+                        pressComplete = true;
+                    }
                 }
             }
             else
@@ -99,6 +106,7 @@ namespace Ultraleap.TouchFree.Service
                 pressComplete = false;
                 pressing = false;
                 isDragging = false;
+                handReady = true;
             }
         }
 
@@ -122,6 +130,7 @@ namespace Ultraleap.TouchFree.Service
 
             // Convert from CM to M
             touchPlaneDistance = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM / 100;
+            positioningModule.trackedPosition = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition;
         }
     }
 }

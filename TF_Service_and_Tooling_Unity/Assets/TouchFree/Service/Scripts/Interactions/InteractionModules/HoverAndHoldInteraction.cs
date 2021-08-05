@@ -40,7 +40,6 @@ namespace Ultraleap.TouchFree.Service
                 return;
             }
 
-            positions = positioningModule.CalculatePositions(hand);
             Vector2 cursorPositionM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(positions.CursorPosition);
             Vector2 hoverPosM = ApplyHoverzone(cursorPositionM);
             Vector2 hoverPos = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(hoverPosM);

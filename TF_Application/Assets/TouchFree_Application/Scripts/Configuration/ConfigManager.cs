@@ -57,9 +57,6 @@ namespace Ultraleap.TouchFree
         public float ctiShowAfterTimer = 10.0f;
 
         // Misc Settings
-        public bool interactionZoneEnabled = false;
-        public float interactionMinDistanceCm = 0.0f;
-        public float interactionMaxDistanceCm = 25.0f;
         public bool StartupUIShown = false;
 
         public event Action OnConfigUpdated;
@@ -106,10 +103,6 @@ namespace Ultraleap.TouchFree
             ctiFilePath = defaults.ctiFilePath;
             ctiHideTrigger = defaults.ctiHideTrigger;
             ctiShowAfterTimer = defaults.ctiShowAfterTimer;
-
-            interactionZoneEnabled = defaults.interactionZoneEnabled;
-            interactionMinDistanceCm = defaults.interactionMinDistanceCm;
-            interactionMaxDistanceCm = defaults.interactionMaxDistanceCm;
         }
 
         public void SaveConfig()
