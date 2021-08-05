@@ -39,9 +39,9 @@ namespace Ultraleap.TouchFree.ServiceShared
             UseScrollingOrDragging = defaults.UseScrollingOrDragging;
             DeadzoneRadius = defaults.DeadzoneRadius;
 
-            interactionZoneEnabled = defaults.interactionZoneEnabled;
-            interactionMinDistanceCm = defaults.interactionMinDistanceCm;
-            interactionMaxDistanceCm = defaults.interactionMaxDistanceCm;
+            InteractionZoneEnabled = defaults.InteractionZoneEnabled;
+            InteractionMinDistanceCm = defaults.InteractionMinDistanceCm;
+            InteractionMaxDistanceCm = defaults.InteractionMaxDistanceCm;
 
             InteractionType = defaults.InteractionType;
 
