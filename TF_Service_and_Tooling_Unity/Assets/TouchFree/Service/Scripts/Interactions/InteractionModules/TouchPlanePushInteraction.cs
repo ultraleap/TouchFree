@@ -20,7 +20,7 @@ namespace Ultraleap.TouchFree.Service
 
         // Used to ignore hands that initialise while past the touchPlane.
         // Particularly for those that are cancelled by InteractionZones
-        bool handWasCancelled = true;
+        bool handReady = false;
 
         [Header("Dragging")]
         public float dragStartDistanceThresholdM = 0.01f;
@@ -39,7 +39,7 @@ namespace Ultraleap.TouchFree.Service
                 pressComplete = false;
                 isDragging = false;
                 pressing = false;
-                handWasCancelled = true;
+                handReady = false;
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace Ultraleap.TouchFree.Service
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
             if (distanceFromScreen < touchPlaneDistance)
             {
-                if (!handWasCancelled)
+                if (handReady)
                 {
                     // we are touching the screen
                     if (!pressing)
@@ -93,11 +93,6 @@ namespace Ultraleap.TouchFree.Service
             }
             else
             {
-                if(handWasCancelled)
-                {
-                    handWasCancelled = false;
-                }
-
                 if (pressing && !pressComplete)
                 {
                     Positions downPositions = new Positions(downPos, distanceFromScreen);
@@ -111,6 +106,7 @@ namespace Ultraleap.TouchFree.Service
                 pressComplete = false;
                 pressing = false;
                 isDragging = false;
+                handReady = true;
             }
         }
 
