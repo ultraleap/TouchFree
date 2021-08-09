@@ -96,10 +96,10 @@ namespace Ultraleap.TouchFree.Service
         /// <returns>Returns null if the hand is outside of the interaction zone</returns>
         Leap.Hand CheckHandInInteractionZone(Leap.Hand _hand)
         {
-            if (_hand != null && ConfigManager.InteractionConfig.interactionZoneEnabled)
+            if (_hand != null && ConfigManager.InteractionConfig.InteractionZoneEnabled)
             {
-                if (positions.DistanceFromScreen < ConfigManager.InteractionConfig.interactionMinDistanceCm / 100 ||
-                    positions.DistanceFromScreen > ConfigManager.InteractionConfig.interactionMaxDistanceCm / 100)
+                if (positions.DistanceFromScreen < ConfigManager.InteractionConfig.InteractionMinDistanceCm / 100 ||
+                    positions.DistanceFromScreen > ConfigManager.InteractionConfig.InteractionMaxDistanceCm / 100)
                 {
                     return null;
                 }

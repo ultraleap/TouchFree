@@ -72,7 +72,7 @@ TF_Tooling::Web::build:
     # Build Tooling
     - cd ${env:TF_TFW_PATH}
     - npm i
-    - ./node_modules/.bin/gulp build
+    - npm run build
     # Clean last build
     - cd ${env:CI_PROJECT_DIR}
     - if (Test-Path -Path "./Tooling_Release") {
@@ -83,7 +83,8 @@ TF_Tooling::Web::build:
     - mkdir ./Tooling_Release
     - cp ${env:TF_TFW_PATH}/Version.txt ./Tooling_Release
     - cp -r ${env:TF_TFW_PATH}/dist ./Tooling_Release
-    - cp -r ${env:TF_TFW_PATH}/examples ./Tooling_Release
+    - cp -r ${env:TF_TFW_PATH}/Plugins ./Tooling_Release
+    - cp -r ${env:TF_TFW_PATH}/quick-start ./Tooling_Release
   artifacts:
     name: "Tooling_for_Web_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
