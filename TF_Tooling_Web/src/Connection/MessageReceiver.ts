@@ -152,16 +152,20 @@ export class MessageReceiver {
         }
     }
 
+    lastKnownCursorPosition: Array<number> = [0,0];
+
     // Function: CheckForAction
     // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
     // clears out non-essential <TouchFreeInputActions> down to the number specified by
     // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
     // <InputActionManager> to handle the action.
+    // UP <InputType>s have their positions set to the last known position to ensure
+    // input events trigger correctly.
     CheckForAction(): void {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
-                if (this.actionQueue[0].InteractionFlags & InputType.MOVE) {
+                if ((this.actionQueue[0].InteractionFlags & InputType.MOVE) != 0) {
                     // We want to ignore non-move results
                     this.actionQueue.shift();
                 } else {
@@ -173,8 +177,17 @@ export class MessageReceiver {
         let action: WebsocketInputAction | undefined = this.actionQueue.shift();
 
         if (action !== undefined) {
+
             // Parse newly received messages & distribute them
             let converted: TouchFreeInputAction = ConvertInputAction(action);
+
+            //Cache or use the lastKnownCursorPosition
+            if (converted.InputType != InputType.UP) {
+                this.lastKnownCursorPosition = converted.CursorPosition;
+            }
+            else {
+                converted.CursorPosition = this.lastKnownCursorPosition;
+            }
 
             InputActionManager.HandleInputAction(converted);
         }
