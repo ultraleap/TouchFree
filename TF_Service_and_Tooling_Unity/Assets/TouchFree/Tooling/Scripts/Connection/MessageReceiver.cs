@@ -132,13 +132,15 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             }
         }
 
-        Vector2 lastMovePos = new Vector2();
+        Vector2 lastKnownCursorPosition = new Vector2();
 
         // Function: CheckForAction
         // Checks <actionQueue> for valid <InputActions>. If there are too many in the queue,
         // clears out non-essential <InputActions> down to the number specified by
         // <actionCullToCount>. If any remain, sends the oldest <InputAction> to
         // <InputActionManager> to distribute the action.
+        // UP <InputType>s have their positions set to the last known position to ensure
+        // input events trigger correctly.
         void CheckForAction()
         {
             InputAction action = new InputAction();
@@ -160,17 +162,17 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
             if (actionQueue.TryPeek(out action))
             {
-                if (action.InputType != InputType.UP)
-                {
-                    lastMovePos = action.CursorPosition;
-                }
-
                 // Parse newly received messages
                 actionQueue.TryDequeue(out action);
 
-                if (action.InputType == InputType.UP)
+                // Cache or use the lastKnownCursorPosition
+                if (action.InputType != InputType.UP)
                 {
-                    action.CursorPosition = lastMovePos;
+                    lastKnownCursorPosition = action.CursorPosition;
+                }
+                else
+                {
+                    action.CursorPosition = lastKnownCursorPosition;
                 }
 
                 InputActionManager.Instance.SendInputAction(action);
