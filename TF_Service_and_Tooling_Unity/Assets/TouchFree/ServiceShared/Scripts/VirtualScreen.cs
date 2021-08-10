@@ -1,13 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Ultraleap.TouchFree.ServiceShared
 {
     public class VirtualScreen
     {
-        [DllImport("user32.dll")]
-        static extern int GetSystemMetrics(int smIndex);
-
         public float Width_VirtualPx { get; private set; }
         public float Height_VirtualPx { get; private set; }
         public float Width_PhysicalMeters { get; private set; }
@@ -136,11 +132,10 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public static void CaptureCurrentResolution()
         {
-            ConfigManager.PhysicalConfig.ScreenWidthPX = GetSystemMetrics(0); // Get the width of the default screen
-            ConfigManager.PhysicalConfig.ScreenHeightPX = GetSystemMetrics(1); // Get the height of the default screen
+            ConfigManager.PhysicalConfig.ScreenWidthPX = Display.main.systemWidth;
+            ConfigManager.PhysicalConfig.ScreenHeightPX = Display.main.systemHeight;
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();
-            ConfigManager.SaveAllConfigs();
         }
     }
 }

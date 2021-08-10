@@ -21,7 +21,6 @@ namespace Ultraleap.TouchFree.Service
         public WebSocketReceiver receiverQueue;
 
         public event Action LostAllConnections;
-        public event Action NewConnection;
 
         public short port = 9739;
 
@@ -85,7 +84,6 @@ namespace Ultraleap.TouchFree.Service
             if (_connection != null)
             {
                 activeConnections.Add(_connection);
-                NewConnection?.Invoke();
                 Debug.Log("Connection set up");
             }
         }

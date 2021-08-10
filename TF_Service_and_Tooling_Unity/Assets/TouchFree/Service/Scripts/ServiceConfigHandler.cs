@@ -8,13 +8,11 @@ namespace Ultraleap.TouchFree.Service
         void Start()
         {
             ClientConnectionManager.Instance.LostAllConnections += OnLostAllConnections;
-            ClientConnectionManager.Instance.NewConnection += OnNewConnection;
         }
 
         private void OnDestroy()
         {
             ClientConnectionManager.Instance.LostAllConnections -= OnLostAllConnections;
-            ClientConnectionManager.Instance.NewConnection -= OnNewConnection;
         }
 
         void OnLostAllConnections()
@@ -22,11 +20,6 @@ namespace Ultraleap.TouchFree.Service
             ConfigManager.LoadConfigsFromFiles();
             ConfigManager.InteractionConfig.ConfigWasUpdated();
             ConfigManager.PhysicalConfig.ConfigWasUpdated();
-        }
-
-        void OnNewConnection()
-        {
-            VirtualScreen.CaptureCurrentResolution();
         }
     }
 }
