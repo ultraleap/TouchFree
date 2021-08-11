@@ -184,12 +184,12 @@ export class MessageReceiver {
             // Parse newly received messages & distribute them
             let converted: TouchFreeInputAction = ConvertInputAction(action);
 
-            //Cache or use the lastKnownCursorPosition
+            //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
             if (converted.InputType != InputType.UP) {
-                this.lastKnownCursorPosition = converted.CursorPosition;
+                this.lastKnownCursorPosition = Array.from(converted.CursorPosition);
             }
             else {
-                converted.CursorPosition = this.lastKnownCursorPosition;
+                converted.CursorPosition = Array.from(this.lastKnownCursorPosition);
             }
 
             InputActionManager.HandleInputAction(converted);
