@@ -48,6 +48,11 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // appropriately. "PROCESSED" when there are no unprocessed changes.
         internal HandPresenceState handState;
 
+        // Used to ensure UP events are sent at the correct position relative to the previous
+        // MOVE event.
+        // This is required due to the culling of events from the actionQueue in CheckForAction.
+        Vector2 lastKnownCursorPosition = new Vector2();
+
         // Group: Functions
 
         // Function: Start
@@ -131,8 +136,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 }
             }
         }
-
-        Vector2 lastKnownCursorPosition = new Vector2();
 
         // Function: CheckForAction
         // Checks <actionQueue> for valid <InputActions>. If there are too many in the queue,

@@ -69,6 +69,11 @@ export class MessageReceiver {
     // Stores the reference number for the interval running <Update>, allowing it to be cleared.
     private updateInterval: number;
 
+    // Used to ensure UP events are sent at the correct position relative to the previous
+    // MOVE event.
+    // This is required due to the culling of events from the actionQueue in CheckForAction.
+    lastKnownCursorPosition: Array<number> = [0, 0];
+
     // Group: Functions
 
     // Function: constructor
@@ -152,8 +157,6 @@ export class MessageReceiver {
         }
     }
 
-    lastKnownCursorPosition: Array<number> = [0,0];
-
     // Function: CheckForAction
     // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
     // clears out non-essential <TouchFreeInputActions> down to the number specified by
@@ -165,7 +168,7 @@ export class MessageReceiver {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
-                if ((this.actionQueue[0].InteractionFlags & InputType.MOVE) != 0) {
+                if (this.actionQueue[0].InteractionFlags & InputType.MOVE) {
                     // We want to ignore non-move results
                     this.actionQueue.shift();
                 } else {
