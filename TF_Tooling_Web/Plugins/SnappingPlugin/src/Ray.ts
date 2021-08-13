@@ -4,7 +4,7 @@ export class Ray {
     public static Cast(start: Vector2, end: Vector2, element: Element): Vector2 {
         const pos: Vector2 = new Vector2(start.x, start.y);
 
-        let hasSnap: boolean = Ray.Hit(pos, element);
+        let hasSnap: boolean = Ray.Hit(pos, element.getBoundingClientRect());
         let hadSnap: boolean = hasSnap;
 
         // Store the current segment
