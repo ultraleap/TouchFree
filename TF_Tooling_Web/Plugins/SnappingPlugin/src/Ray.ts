@@ -59,7 +59,7 @@ export class Ray {
         pos.y = pos.y + (vector.y / 2);
 
         while (distance > 1) {
-            hasSnap = Ray.Hit(pos, element);
+            hasSnap = Ray.Hit(pos, element.getBoundingClientRect());
 
             // If we changed state, we reverse the direction
             if ((hasSnap && !hadSnap) || (!hasSnap && hadSnap)) {
@@ -88,8 +88,11 @@ export class Ray {
         return pos;
     }
 
-    public static Hit(position: Vector2, element: Element): boolean {
-        let elementsAtPos: Element[] = document.elementsFromPoint(position.x, position.y);
-        return elementsAtPos.find((value: Element, index: number, obj: Element[]) => value === element) !== undefined;
+    public static Hit(position: Vector2, rect: DOMRect): boolean {
+
+        return !(rect.right < position.x ||
+            rect.left > position.x ||
+            rect.bottom < position.y ||
+            rect.top > position.y);
     }
 }

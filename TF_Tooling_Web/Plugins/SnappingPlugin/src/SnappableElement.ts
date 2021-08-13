@@ -39,8 +39,7 @@ export class SnappableElement {
             Math.pow(distant_point.y - closest_point.y, 2)
         );
 
-        //const hovered: boolean = closest_point === distant_point;
-        const hovered: boolean = Ray.Hit(distant_point, element);
+        const hovered: boolean = Ray.Hit(distant_point, element.getBoundingClientRect());
         if (hovered) {
             distance = -distance;
         }
