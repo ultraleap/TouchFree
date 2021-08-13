@@ -89,10 +89,10 @@ export class Ray {
     }
 
     public static Hit(position: Vector2, rect: DOMRect): boolean {
-
-        return !(rect.right < position.x ||
-            rect.left > position.x ||
-            rect.bottom < position.y ||
-            rect.top > position.y);
+        // Is position inside the rect?
+        return (position.x < rect.right &&
+            position.x > rect.left &&
+            position.y < rect.bottom &&
+            position.y > rect.top);
     }
 }
