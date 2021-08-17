@@ -84,6 +84,8 @@ namespace Ultraleap.TouchFree.ServiceUI
             ConfigManager.PhysicalConfig.SetAllValuesToDefault();
 
             CalculateConfigurationValues(bottomPos, topPos);
+            VirtualScreen.CaptureCurrentResolution();
+
             ConfigManager.PhysicalConfig.SaveConfig();
 
             ScreenManager.Instance.ChangeScreen(completeScreen);
