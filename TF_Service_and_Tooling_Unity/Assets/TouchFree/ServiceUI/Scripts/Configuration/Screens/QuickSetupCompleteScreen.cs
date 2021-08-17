@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {

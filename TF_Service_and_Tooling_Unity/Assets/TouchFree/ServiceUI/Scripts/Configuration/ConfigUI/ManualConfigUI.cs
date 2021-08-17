@@ -47,6 +47,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             base.OnEnable();
             VirtualScreen.CaptureCurrentResolution();
+            SaveValuesToConfig();
         }
 
         protected override void AddValueChangedListeners()
