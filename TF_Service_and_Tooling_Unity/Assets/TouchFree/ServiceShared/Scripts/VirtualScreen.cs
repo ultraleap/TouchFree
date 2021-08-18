@@ -129,5 +129,13 @@ namespace Ultraleap.TouchFree.ServiceShared
                 position.y * Height_VirtualPx / Height_PhysicalMeters);
             return positionInPixels;
         }
+
+        public static void CaptureCurrentResolution()
+        {
+            ConfigManager.PhysicalConfig.ScreenWidthPX = Display.main.systemWidth;
+            ConfigManager.PhysicalConfig.ScreenHeightPX = Display.main.systemHeight;
+
+            ConfigManager.InteractionConfig.ConfigWasUpdated();
+        }
     }
 }

@@ -750,8 +750,10 @@ MonoBehaviour:
   CustomColorPresetToggle: {fileID: 755417835955399183}
   CursorSettingsToHide:
   - {fileID: 755417835073914360}
+  - {fileID: 1028020315873470357}
   - {fileID: 755417834032114152}
   - {fileID: 755417834772911838}
+  - {fileID: 6080665781070234335}
   CustomColorControlContainer: {fileID: 6080665781070234335}
   ColorPicker: {fileID: 4497781884775774316}
   PrimaryColorToggle: {fileID: 8659559685150810844}
