@@ -51,7 +51,7 @@ namespace Ultraleap.TouchFree
         public Color tertiaryCustomColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
 
         // CTI Settings
-        public bool ctiEnabled = true;
+        public bool ctiEnabled = false;
         public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallToInteract", "AirPush_Portrait.mp4");
         public CtiHideTrigger ctiHideTrigger = CtiHideTrigger.INTERACTION;
         public float ctiShowAfterTimer = 10.0f;
