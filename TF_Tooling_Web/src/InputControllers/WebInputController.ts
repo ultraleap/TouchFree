@@ -36,6 +36,7 @@ export class WebInputController extends BaseInputController {
         this.baseEventProps = {
             pointerId: this.pointerId,
             bubbles: true,
+            isPrimary: true,
             width: 10,
             height: 10,
             clientX: 0,
