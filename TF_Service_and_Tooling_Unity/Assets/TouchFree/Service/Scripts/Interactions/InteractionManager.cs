@@ -42,7 +42,7 @@ namespace Ultraleap.TouchFree.Service
 
             interactions.Add(InteractionType.PUSH, pushInteractionModule);
             interactions.Add(InteractionType.HOVER, hoverInteractionModule);
-            //interactions.Add(InteractionType.GRAB, grabInteractionModule);
+            interactions.Add(InteractionType.GRAB, grabInteractionModule);
             interactions.Add(InteractionType.TOUCHPLANE, touchPlaneInteractionModule);
 
             InteractionConfig.OnConfigUpdated += InteractionConfigUpdated;

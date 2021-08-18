@@ -9,16 +9,11 @@ namespace Ultraleap.TouchFree.Service
 {
     public class GeneralisedGrabDetector : MonoBehaviour
     {
-        [Header("Pinch Parameters")]
-        [Range(0, 1)] public float pinchThreshold;
-        [Range(0, 1)] public float unpinchThreshold;
-
         [Header("Grab Parameters")]
         [Range(0, 1)] public float grabThreshold;
         [Range(0, 1)] public float ungrabThreshold;
 
         [Header("Debug Parameters")]
-        public float pinchStrength;
         public float grabStrength;
         public bool grabbing;
         public float GeneralisedGrabStrength = 0;
@@ -30,7 +25,7 @@ namespace Ultraleap.TouchFree.Service
 
         public bool IsGrabbing(Leap.Hand hand)
         {
-            ResolveClassicPinchOrGrab(hand);
+            ResolveClassicGrab(hand);
 
             if (grabbing)
             {
@@ -42,22 +37,19 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        private void ResolveClassicPinchOrGrab(Leap.Hand hand)
+        private void ResolveClassicGrab(Leap.Hand hand)
         {
-            float pinchStrength = hand.PinchStrength;
             float grabStrength = hand.GrabStrength;
 
             if (grabbing)
             {
-                bool classicPinching = (pinchStrength >= unpinchThreshold);
                 bool classicGrabbing = (grabStrength >= ungrabThreshold);
-                grabbing = classicPinching | classicGrabbing;
+                grabbing = classicGrabbing;
             }
             else
             {
-                bool classicPinching = (pinchStrength >= pinchThreshold);
                 bool classicGrabbing = (grabStrength >= grabThreshold);
-                grabbing = classicPinching | classicGrabbing;
+                grabbing = classicGrabbing;
             }
 
             if (grabbing)
@@ -66,10 +58,9 @@ namespace Ultraleap.TouchFree.Service
             }
             else
             {
-                float normalisedPinchStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(pinchStrength, 0, pinchThreshold), 0, pinchThreshold, 0, 1);
                 float normalisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
 
-                GeneralisedGrabStrength = Mathf.Max(normalisedPinchStrength, normalisedGrabStrength);
+                GeneralisedGrabStrength = normalisedGrabStrength;
             }
         }
     }

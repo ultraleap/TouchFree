@@ -24,7 +24,6 @@ namespace Ultraleap.TouchFree.Service
 
         private bool pressing = false;
 
-        public bool instantUnclick = false;
         private bool requireHold = false;
         private int REQUIRED_HOLD_FRAMES = 1;
         private int heldFrames = 0;
@@ -100,7 +99,7 @@ namespace Ultraleap.TouchFree.Service
         {
             SendInputAction(InputType.DOWN, positions, grabDetector.GeneralisedGrabStrength);
             pressing = true;
-            if (instantUnclick && ignoreDragging)
+            if (ignoreDragging)
             {
                 requireHold = true;
                 heldFrames = 0;
@@ -122,7 +121,7 @@ namespace Ultraleap.TouchFree.Service
             else
             {
                 Positions downPositions = new Positions(cursorDownPos, positions.DistanceFromScreen);
-                if (instantUnclick && ignoreDragging)
+                if (ignoreDragging)
                 {
                     if (requireHold)
                     {
@@ -161,7 +160,7 @@ namespace Ultraleap.TouchFree.Service
             // Check if an unclick is needed, and perform if so
             if (pressing)
             {
-                if (!(ignoreDragging && instantUnclick))
+                if (!ignoreDragging)
                 {
                     if (!requireHold && !requireClick)
                     {
