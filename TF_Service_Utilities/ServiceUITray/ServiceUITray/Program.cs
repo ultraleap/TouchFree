@@ -6,6 +6,7 @@ using System.ServiceProcess;
 using Timer = System.Timers.Timer;
 using System.Timers;
 using System.Threading;
+using System.IO;
 
 namespace ServiceUITray
 {
@@ -34,25 +35,26 @@ namespace ServiceUITray
 
     public class ServiceUITray : ApplicationContext
     {
+        const string SERVICE_SETTINGS_PATH = "../ServiceUI/TouchFreeServiceUI.exe";
+        const string APPLICATION_PATH = "../TouchFree/TouchFree_Application.exe";
+
         private NotifyIcon trayIcon;
-        Process startedProcess;
+        Process startedSettingsProcess;
+        Process startedAppProcess;
         ServiceController touchFreeService = null;
 
         private Timer statusCheckTimer = new Timer();
 
         public ServiceUITray()
         {
-            trayIcon = new NotifyIcon()
+            if (File.Exists(APPLICATION_PATH))
             {
-                Icon = Properties.Resources.IconActive,
-                ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Settings", Settings),
-                    new MenuItem("Settings (Admin)", SettingsAdmin),
-                    new MenuItem("-"),
-                    new MenuItem("Exit", Exit),
-                }),
-                Visible = true
-            };
+                InitializeTray(true);
+            }
+            else
+            {
+                InitializeTray(false);
+            }
 
             trayIcon.DoubleClick += new EventHandler(Settings);
 
@@ -63,39 +65,74 @@ namespace ServiceUITray
             statusCheckTimer.Start();
         }
 
-        private void Settings(object sender, EventArgs e)
+        void InitializeTray(bool _withApplication)
         {
-            if (startedProcess != null && !startedProcess.HasExited)
+            if (_withApplication)
             {
-                // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                //ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
-                ExecuteWithoutAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                trayIcon = new NotifyIcon()
+                {
+                    Icon = Properties.Resources.IconActive,
+                    ContextMenu = new ContextMenu(new MenuItem[] {
+                    new MenuItem("TouchFree Application", LaunchApp),
+                    new MenuItem("-"),
+                    new MenuItem("Service Settings", Settings),
+                    new MenuItem("-"),
+                    new MenuItem("Exit", Exit),
+                }),
+                    Visible = true
+                };
             }
             else
             {
-                //startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
-                startedProcess = ExecuteWithoutAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                trayIcon = new NotifyIcon()
+                {
+                    Icon = Properties.Resources.IconActive,
+                    ContextMenu = new ContextMenu(new MenuItem[] {
+                    new MenuItem("Service Settings", Settings),
+                    new MenuItem("-"),
+                    new MenuItem("Exit", Exit),
+                }),
+                    Visible = true
+                };
             }
         }
 
-        private void SettingsAdmin(object sender, EventArgs e)
+        private void LaunchApp(object sender, EventArgs e)
         {
-            if (startedProcess != null && !startedProcess.HasExited)
+            if (startedAppProcess != null && !startedAppProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
             }
             else
             {
-                startedProcess = ExecuteAsAdmin(System.IO.Path.GetFullPath("../ServiceUI/TouchFreeServiceUI.exe"));
+                startedAppProcess = LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
+            }
+        }
+
+        private void Settings(object sender, EventArgs e)
+        {
+            if (startedSettingsProcess != null && !startedSettingsProcess.HasExited)
+            {
+                // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
+                LaunchApplication(Path.GetFullPath(SERVICE_SETTINGS_PATH));
+            }
+            else
+            {
+                startedSettingsProcess = LaunchApplication(Path.GetFullPath(SERVICE_SETTINGS_PATH));
             }
         }
 
         private void Exit(object sender, EventArgs e)
         {
-            if(startedProcess != null && !startedProcess.HasExited)
+            if(startedSettingsProcess != null && !startedSettingsProcess.HasExited)
             {
-                startedProcess.Kill();
+                startedSettingsProcess.Kill();
+            }
+
+            if (startedAppProcess != null && !startedAppProcess.HasExited)
+            {
+                startedAppProcess.Kill();
             }
 
             statusCheckTimer.Elapsed -= CheckForServiceActivity;
@@ -133,18 +170,7 @@ namespace ServiceUITray
             return ServiceController.GetServices().Any(serviceController => serviceController.ServiceName.Equals(serviceName));
         }
 
-        public Process ExecuteAsAdmin(string fileName)
-        {
-            Process proc = new Process();
-            proc.StartInfo.FileName = fileName;
-            proc.StartInfo.UseShellExecute = true;
-            proc.StartInfo.Verb = "runas";
-            proc.Start();
-
-            return proc;
-        }
-
-        public Process ExecuteWithoutAdmin(string fileName)
+        public Process LaunchApplication(string fileName)
         {
             Process proc = new Process();
             proc.StartInfo.FileName = fileName;
