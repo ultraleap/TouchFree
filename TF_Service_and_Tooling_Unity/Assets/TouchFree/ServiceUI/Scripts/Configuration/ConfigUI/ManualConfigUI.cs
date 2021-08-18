@@ -43,6 +43,13 @@ namespace Ultraleap.TouchFree.ServiceUI
             resetToDefaultWarning.SetActive(false);
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            VirtualScreen.CaptureCurrentResolution();
+            SaveValuesToConfig();
+        }
+
         protected override void AddValueChangedListeners()
         {
             PhysicalScreenTiltAngle.onEndEdit.AddListener(OnValueChanged);

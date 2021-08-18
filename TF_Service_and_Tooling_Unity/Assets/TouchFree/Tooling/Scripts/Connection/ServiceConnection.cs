@@ -18,11 +18,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // A reference to the websocket we are connected to.
         WebSocket webSocket;
 
-        // Variable: handshakeCompleted
-        // Used internally in this class to know if the Version compatibility handshake with
-        // the server has successfully completed.
-        private Boolean handshakeCompleted;
-
         // Group: Functions
 
         // Function: ServiceConnection
@@ -33,7 +28,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // until this handshake is completed succesfully.
         internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
-            handshakeCompleted = false;
             webSocket = new WebSocket($"ws://{_ip}:{_port}/connect");
 
             webSocket.OnMessage += (sender, e) =>
@@ -65,12 +59,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         private void ConnectionResultCallback(WebSocketResponse response)
         {
             // if failed, console log
-            // if succeeded, "complete" connecting and allow message sending/recieving
-            if (response.status == "Success")
-            {
-                handshakeCompleted = true;
-            }
-            else
+            if (response.status != "Success")
             {
                 Debug.Log($"Connection to Service failed. Details:\n{response.message}");
             }
