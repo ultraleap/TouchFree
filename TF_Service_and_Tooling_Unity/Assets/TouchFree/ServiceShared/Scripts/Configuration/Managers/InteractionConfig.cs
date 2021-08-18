@@ -22,9 +22,9 @@ namespace Ultraleap.TouchFree.ServiceShared
         public bool UseScrollingOrDragging = false;
         public float DeadzoneRadius = 0.003f;
 
-        public bool interactionZoneEnabled = false;
-        public float interactionMinDistanceCm = 0.0f;
-        public float interactionMaxDistanceCm = 25.0f;
+        public bool InteractionZoneEnabled = false;
+        public float InteractionMinDistanceCm = 0.0f;
+        public float InteractionMaxDistanceCm = 25.0f;
 
         public InteractionType InteractionType = InteractionType.PUSH;
 
@@ -38,11 +38,17 @@ namespace Ultraleap.TouchFree.ServiceShared
 
             UseScrollingOrDragging = defaults.UseScrollingOrDragging;
             DeadzoneRadius = defaults.DeadzoneRadius;
+
+            InteractionZoneEnabled = defaults.InteractionZoneEnabled;
+            InteractionMinDistanceCm = defaults.InteractionMinDistanceCm;
+            InteractionMaxDistanceCm = defaults.InteractionMaxDistanceCm;
+
+            InteractionType = defaults.InteractionType;
+
             HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
             TouchPlane.TouchPlaneActivationDistanceCM = defaults.TouchPlane.TouchPlaneActivationDistanceCM;
             TouchPlane.TouchPlaneTrackedPosition = defaults.TouchPlane.TouchPlaneTrackedPosition;
-            InteractionType = defaults.InteractionType;
         }
 
         public void SaveConfig()

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "webpack"
   },
   "author": "",
   "license": "SEE LICENSE IN ROOT OF REPO",
@@ -13,6 +14,7 @@
     "browserify": "^17.0.0",
     "eslint": "^7.17.0",
     "guid-typescript": "^1.0.9",
+    "merge-stream": "^2.0.0",
     "typescript": "^4.1.3",
     "uuid": "^8.3.2"
   },
@@ -22,7 +24,10 @@
     "gulp-typescript": "^6.0.0-alpha.1",
     "jest": "^26.6.3",
     "ts-jest": "^26.4.4",
+    "ts-loader": "^9.2.4",
     "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0"
+    "vinyl-source-stream": "^2.0.0",
+    "webpack": "^5.46.0",
+    "webpack-cli": "^4.7.2"
   }
 }
