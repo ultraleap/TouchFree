@@ -49,6 +49,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: TouchFree_Application; Description: "Install the TouchFree Application";
 
 [Files]
+Source: "{#SourcePath}..\..\Service_Package\dotNetFx48_Full_setup.exe"; DestDir: {tmp}; Flags: deleteafterinstall; AfterInstall: InstallFramework; Check: FrameworkIsNotInstalled
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Tasks: TouchFree_Application; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -65,6 +66,7 @@ Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletek
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
 
 [Run]
+Filename: "{tmp}\dotNetFx48_Full_setup.exe"; Check: FrameworkIsNotInstalled
 Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
@@ -77,6 +79,24 @@ Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopS
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
 
 [Code]
+function FrameworkIsNotInstalled: Boolean;
+begin
+  Result :=
+    not RegKeyExists(
+      HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\.NETFramework\policy\v4.0');
+end;
+
+procedure InstallFramework;
+var
+  ResultCode: Integer;
+begin
+  if not Exec(ExpandConstant('{tmp}\dotNetFx40_Full.exe'), '/q /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+  begin
+    MsgBox('.NET installation failed with code: ' + IntToStr(ResultCode) + '.',
+      mbError, MB_OK);
+  end;
+end;
+
 function GetWrapperPath: string;
 var
   wrapperExePath: string;
