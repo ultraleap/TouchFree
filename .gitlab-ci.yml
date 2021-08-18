@@ -115,10 +115,10 @@ TF_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper.sln /p:Configuration=Release
+    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper.sln /p:Configuration=Release /p:Platform=x64
     # Move the built wrapper to the root directory
     - mkdir ./Service_Wrapper_Build
-    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/* ./Service_Wrapper_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/x64/Release/* ./Service_Wrapper_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -137,10 +137,10 @@ TF_Service::Tray::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release
+    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release /p:Platform=x64
     # Move the built tray app to the root directory
     - mkdir ./Service_Tray_Build
-    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/Release/* ./Service_Tray_Build
+    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/x64/Release/* ./Service_Tray_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
