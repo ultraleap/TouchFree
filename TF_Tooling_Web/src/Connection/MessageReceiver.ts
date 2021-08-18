@@ -69,6 +69,11 @@ export class MessageReceiver {
     // Stores the reference number for the interval running <Update>, allowing it to be cleared.
     private updateInterval: number;
 
+    // Used to ensure UP events are sent at the correct position relative to the previous
+    // MOVE event.
+    // This is required due to the culling of events from the actionQueue in CheckForAction.
+    lastKnownCursorPosition: Array<number> = [0, 0];
+
     // Group: Functions
 
     // Function: constructor
@@ -157,6 +162,8 @@ export class MessageReceiver {
     // clears out non-essential <TouchFreeInputActions> down to the number specified by
     // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
     // <InputActionManager> to handle the action.
+    // UP <InputType>s have their positions set to the last known position to ensure
+    // input events trigger correctly.
     CheckForAction(): void {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
@@ -173,8 +180,17 @@ export class MessageReceiver {
         let action: WebsocketInputAction | undefined = this.actionQueue.shift();
 
         if (action !== undefined) {
+
             // Parse newly received messages & distribute them
             let converted: TouchFreeInputAction = ConvertInputAction(action);
+
+            //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
+            if (converted.InputType != InputType.UP) {
+                this.lastKnownCursorPosition = Array.from(converted.CursorPosition);
+            }
+            else {
+                converted.CursorPosition = Array.from(this.lastKnownCursorPosition);
+            }
 
             InputActionManager.HandleInputAction(converted);
         }

@@ -7,3 +7,5 @@
 ./test/*.js
 ./test/**/*.js
 dist
+
+./Plugins/**/SnappingPlugin.js
