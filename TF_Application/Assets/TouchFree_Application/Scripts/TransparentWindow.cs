@@ -17,9 +17,6 @@ namespace Ultraleap.TouchFree
         }
 
         [DllImport("user32.dll")]
-        private static extern IntPtr GetActiveWindow();
-
-        [DllImport("user32.dll")]
         private static extern uint SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
 
         [DllImport("user32.dll")]
@@ -36,6 +33,9 @@ namespace Ultraleap.TouchFree
 
         [DllImport("Dwmapi.dll")]
         private static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS margins);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         const int GWL_STYLE = -16;
         const uint WS_POPUP = 0x80000000;
@@ -60,7 +60,7 @@ namespace Ultraleap.TouchFree
         void Start()
         {
 #if !UNITY_EDITOR // You really don't want to enable this in the editor..
-		    hwnd = GetActiveWindow();
+            hwnd = FindWindow(null, "TouchFree");
             SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);// Transparency=51=20%
             SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 #endif
@@ -178,6 +178,13 @@ namespace Ultraleap.TouchFree
                         TouchFreeMain.CursorWindowSize,
                         TouchFreeMain.CursorWindowSize,
                         SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+                }
+
+                long style = GetWindowLong(hwnd, -20);
+                if((style & WS_EX_TRANSPARENT) != WS_EX_TRANSPARENT ||
+                    (style & WS_EX_LAYERED) != WS_EX_LAYERED)
+                {
+                    SetWindowLong(hwnd, -20, WS_EX_LAYERED | WS_EX_TRANSPARENT);
                 }
 		    }
 #endif
