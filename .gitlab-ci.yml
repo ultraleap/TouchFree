@@ -352,7 +352,7 @@ TF_Service::package:
     - cp -r ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
-    - cp -r ./TF_Service_Utilities/dotNetFx48_Full_setup.exe ./Service_Package/dotNetFx48_Full_setup.exe
+    - cp C:/installers/dotnet/ndp48-x86-x64-allos-enu.exe ./Service_Package/dotNetFx48_Full_setup.exe
 
   artifacts:
     name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
