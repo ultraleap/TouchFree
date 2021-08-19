@@ -49,7 +49,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1716293308780782, guid: e08a0f516f973834ea585fb53fdd54f9, type: 3}
       propertyPath: ungrabThreshold
-      value: 0.6
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 1716293308780782, guid: e08a0f516f973834ea585fb53fdd54f9, type: 3}
       propertyPath: unpinchThreshold
@@ -58,7 +58,7 @@ PrefabInstance:
     - target: {fileID: 331447746348606392, guid: e08a0f516f973834ea585fb53fdd54f9,
         type: 3}
       propertyPath: dragStartDistanceThresholdM
-      value: 0.02
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 833158614815339978, guid: e08a0f516f973834ea585fb53fdd54f9,
         type: 3}

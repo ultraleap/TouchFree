@@ -69,16 +69,19 @@ namespace Ultraleap.TouchFree.Service
 
         private void HandleInteractions(Leap.Hand hand, float _velocity)
         {
-            SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             // If already pressing, continue regardless of velocity
             if (grabDetector.IsGrabbing(hand) && (pressing || _velocity < maxHandVelocity))
             {
                 HandleInvoke();
             }
-            else
+            else if (pressing)
             {
                 HandlePotentialUnclick();
                 isDragging = false;
+            }
+            else
+            {
+                SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             }
         }
 
@@ -117,6 +120,7 @@ namespace Ultraleap.TouchFree.Service
         {
             if (isDragging)
             {
+                SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             }
             else
             {
@@ -135,12 +139,17 @@ namespace Ultraleap.TouchFree.Service
                         {
                             heldFrames += 1;
                         }
+                        SendInputAction(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
                     }
                     else if (requireClick)
                     {
                         SendInputAction(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
                         positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                         requireClick = false;
+                    }
+                    else
+                    {
+                        SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
                     }
                 }
                 else
@@ -151,6 +160,8 @@ namespace Ultraleap.TouchFree.Service
                         isDragging = true;
                         positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                     }
+
+                    SendInputAction(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
                 }
             }
         }
