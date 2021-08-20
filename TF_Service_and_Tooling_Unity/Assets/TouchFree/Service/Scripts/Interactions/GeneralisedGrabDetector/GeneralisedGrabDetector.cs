@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.ComponentModel;
-using System.Collections.Generic;
-using Leap.Unity;
-using UnityEngine;
+﻿using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.Service
@@ -26,15 +22,7 @@ namespace Ultraleap.TouchFree.Service
         public bool IsGrabbing(Leap.Hand hand)
         {
             ResolveClassicGrab(hand);
-
-            if (grabbing)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return grabbing;
         }
 
         private void ResolveClassicGrab(Leap.Hand hand)
@@ -59,7 +47,6 @@ namespace Ultraleap.TouchFree.Service
             else
             {
                 float normalisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
-
                 GeneralisedGrabStrength = normalisedGrabStrength;
             }
         }

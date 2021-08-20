@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Stopwatch = System.Diagnostics.Stopwatch;
 using System;
 using Ultraleap.TouchFree.ServiceShared;
 
@@ -76,8 +75,7 @@ namespace Ultraleap.TouchFree.Service
             }
             else if (pressing)
             {
-                HandlePotentialUnclick();
-                isDragging = false;
+                HandleUnclick();
             }
             else
             {
@@ -166,22 +164,21 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        private void HandlePotentialUnclick()
+        private void HandleUnclick()
         {
             // Check if an unclick is needed, and perform if so
-            if (pressing)
+            if (!ignoreDragging)
             {
-                if (!ignoreDragging)
+                if (!requireHold && !requireClick)
                 {
-                    if (!requireHold && !requireClick)
-                    {
-                        SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
-                    }
-                    positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                    SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
                 }
 
-                pressing = false;
+                positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
             }
+
+            pressing = false;
+            isDragging = false;
         }
 
         bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
