@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Stopwatch = System.Diagnostics.Stopwatch;
 using System;
 using Ultraleap.TouchFree.ServiceShared;
 
@@ -16,34 +15,22 @@ namespace Ultraleap.TouchFree.Service
         [Header("Other params")]
         [Tooltip("If hand is moving faster than this speed (in m/s), grabs will not be recognised")]
         public float maxHandVelocity = 0.15f;
-        public float verticalCursorOffset = 0.1f;
-
-        public bool alwaysHover = false;
-
-        public float inputPositionLerpSpeed;
-
-        public bool debugDist;
 
         public GeneralisedGrabDetector grabDetector;
 
         [Header("Drag Params")]
         public float dragStartDistanceThresholdM;
-        public float dragStartTimeDelaySecs;
-        public float dragLerpSpeed;
 
         private bool pressing = false;
 
-        public bool instantUnclick = false;
         private bool requireHold = false;
         private int REQUIRED_HOLD_FRAMES = 1;
         private int heldFrames = 0;
         private bool requireClick = false;
 
         // Dragging
-        private Vector2 posLastFrame;
         private Vector2 cursorDownPos;
         private bool isDragging;
-        private Stopwatch dragStartTimer = new Stopwatch();
 
         Tuple<long, Positions> previousPosition = new Tuple<long, Positions>(0, new Positions());
 
@@ -81,16 +68,18 @@ namespace Ultraleap.TouchFree.Service
 
         private void HandleInteractions(Leap.Hand hand, float _velocity)
         {
-            SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             // If already pressing, continue regardless of velocity
-            if (grabDetector.IsGrabbing(latestTimestamp, hand, _velocity) && (pressing || _velocity < maxHandVelocity))
+            if (grabDetector.IsGrabbing(hand) && (pressing || _velocity < maxHandVelocity))
             {
                 HandleInvoke();
             }
+            else if (pressing)
+            {
+                HandleUnclick();
+            }
             else
             {
-                HandlePotentialUnclick();
-                isDragging = false;
+                SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             }
         }
 
@@ -110,9 +99,8 @@ namespace Ultraleap.TouchFree.Service
         private void HandlePress()
         {
             SendInputAction(InputType.DOWN, positions, grabDetector.GeneralisedGrabStrength);
-            dragStartTimer.Restart();
             pressing = true;
-            if (instantUnclick && ignoreDragging)
+            if (ignoreDragging)
             {
                 requireHold = true;
                 heldFrames = 0;
@@ -123,17 +111,19 @@ namespace Ultraleap.TouchFree.Service
             positioningModule.Stabiliser.StopShrinkingDeadzone();
             float newDeadzoneRadius = deadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
             positioningModule.Stabiliser.currentDeadzoneRadius = newDeadzoneRadius;
+            cursorDownPos = positions.CursorPosition;
         }
 
         private void HandlePressHold()
         {
             if (isDragging)
             {
+                SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             }
             else
             {
                 Positions downPositions = new Positions(cursorDownPos, positions.DistanceFromScreen);
-                if (instantUnclick && ignoreDragging)
+                if (ignoreDragging)
                 {
                     if (requireHold)
                     {
@@ -147,12 +137,17 @@ namespace Ultraleap.TouchFree.Service
                         {
                             heldFrames += 1;
                         }
+                        SendInputAction(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
                     }
                     else if (requireClick)
                     {
                         SendInputAction(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
                         positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                         requireClick = false;
+                    }
+                    else
+                    {
+                        SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
                     }
                 }
                 else
@@ -163,26 +158,27 @@ namespace Ultraleap.TouchFree.Service
                         isDragging = true;
                         positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                     }
+
+                    SendInputAction(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
                 }
             }
         }
 
-        private void HandlePotentialUnclick()
+        private void HandleUnclick()
         {
             // Check if an unclick is needed, and perform if so
-            if (pressing)
+            if (!ignoreDragging)
             {
-                if (!(ignoreDragging && instantUnclick))
+                if (!requireHold && !requireClick)
                 {
-                    if (!requireHold && !requireClick)
-                    {
-                        SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
-                    }
-                    positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                    SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
                 }
 
-                pressing = false;
+                positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
             }
+
+            pressing = false;
+            isDragging = false;
         }
 
         bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
@@ -190,38 +186,13 @@ namespace Ultraleap.TouchFree.Service
             var a = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
             var b = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
             var distFromStartPos = (a - b).magnitude;
+
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
                 return true;
             }
 
-            if (dragStartTimer.ElapsedMilliseconds >= dragStartTimeDelaySecs * 1000f)
-            {
-                dragStartTimer.Stop();
-                return true;
-            }
-
             return false;
         }
-
-        Vector3 worldPos_debug;
-        Vector3 planeHit_debug;
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            if (Application.isPlaying)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(-ConfigManager.GlobalSettings.virtualScreen.PhysicalScreenPlane.normal * ConfigManager.GlobalSettings.virtualScreen.PhysicalScreenPlane.distance, 0.01f);
-                Gizmos.color = Color.green;
-                // Gizmos.DrawWireSphere(planeHit_debug + (-ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPlane.normal * ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPlane.distance), 0.01f);
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(worldPos_debug, 0.01f);
-                Gizmos.color = Color.blue;
-                Gizmos.DrawSphere(planeHit_debug, 0.005f);
-            }
-        }
-#endif
     }
 }
