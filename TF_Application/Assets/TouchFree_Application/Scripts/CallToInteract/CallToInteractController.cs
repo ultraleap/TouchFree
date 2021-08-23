@@ -236,7 +236,6 @@ public class CallToInteractController : MonoBehaviour
             showAfterHandsLostCoroutine = null;
         }
 
-        isShowing = false;
 
         if (loadedType == CTIType.IMAGE)
         {
@@ -249,6 +248,8 @@ public class CallToInteractController : MonoBehaviour
         }
 
         OnCTIInactive?.Invoke();
+
+        isShowing = false;
     }
 
     #region Asset Preparation

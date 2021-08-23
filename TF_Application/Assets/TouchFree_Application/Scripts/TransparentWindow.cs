@@ -166,25 +166,26 @@ namespace Ultraleap.TouchFree
 #if !UNITY_EDITOR
 		    if (clickThroughEnabled)
 		    {
-                int xPos = Mathf.RoundToInt(position.x);
-                int yPos = Mathf.RoundToInt(position.y);
-
-                if (xPos + TouchFreeMain.CursorWindowSize > 0 && xPos < Display.main.systemWidth && yPos + TouchFreeMain.CursorWindowSize > 0 && yPos < Display.main.systemHeight)
-                {
-                    SetWindowPos(hwnd,
-                        HWND_TOPMOST,
-                        Mathf.RoundToInt(position.x),
-                        Mathf.RoundToInt(position.y),
-                        TouchFreeMain.CursorWindowSize,
-                        TouchFreeMain.CursorWindowSize,
-                        SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-                }
+                SetWindowPos(hwnd,
+                    HWND_TOPMOST,
+                    Mathf.RoundToInt(position.x),
+                    Mathf.RoundToInt(position.y),
+                    TouchFreeMain.CursorWindowSize,
+                    TouchFreeMain.CursorWindowSize,
+                    SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 
                 long style = GetWindowLong(hwnd, -20);
                 if((style & WS_EX_TRANSPARENT) != WS_EX_TRANSPARENT ||
                     (style & WS_EX_LAYERED) != WS_EX_LAYERED)
                 {
                     SetWindowLong(hwnd, -20, WS_EX_LAYERED | WS_EX_TRANSPARENT);
+                }
+
+                style = GetWindowLong(hwnd, GWL_STYLE);
+                if((style & WS_POPUP) != WS_POPUP ||
+                    (style & WS_VISIBLE) != WS_VISIBLE)
+                {
+                    SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
                 }
 		    }
 #endif
