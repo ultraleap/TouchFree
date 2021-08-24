@@ -38,7 +38,7 @@ SolidCompression=yes
 VersionInfoCompany={#Publisher}
 VersionInfoProductName={#ProductName}
 UpdateUninstallLogAppName=no
-VersionInfoVersion=1.0.0.4
+VersionInfoVersion={#TouchFreeVersion}
 WizardStyle=modern
 PrivilegesRequired=admin
 
