@@ -81,9 +81,12 @@ Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId:
 [Code]
 function FrameworkIsNotInstalled: Boolean;
 begin
-  Result :=
-    not RegKeyExists(
-      HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\.NETFramework\policy\v4.0');
+  Result := True;
+
+  bSuccess := RegQueryDWordValue(HKLM, 'Software\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', regVersion);
+  if (True = bSuccess) and (regVersion >= 528372) then begin
+    Result := False;
+  end;
 end;
 
 procedure InstallFramework;
