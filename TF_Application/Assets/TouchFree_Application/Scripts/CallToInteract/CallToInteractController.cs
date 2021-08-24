@@ -48,7 +48,6 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound += OnHandEnter;
         ConnectionManager.HandsLost += OnAllHandsExit;
         InputActionManager.TransmitRawInputAction += HandleInputAction;
-        ScreenManager.UIActivated += UIActivated;
         ScreenManager.UIDeactivated += UIDeactivated;
         ConfigManager.Config.OnConfigUpdated += UpdateCTISettings;
 
@@ -61,7 +60,6 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound -= OnHandEnter;
         ConnectionManager.HandsLost -= OnAllHandsExit;
         InputActionManager.TransmitRawInputAction -= HandleInputAction;
-        ScreenManager.UIActivated -= UIActivated;
         ScreenManager.UIDeactivated -= UIDeactivated;
         ConfigManager.Config.OnConfigUpdated -= UpdateCTISettings;
 
@@ -75,16 +73,20 @@ public class CallToInteractController : MonoBehaviour
             CTIImage.texture = null;
         }
 
-        StopAllCoroutines();
-        delayedSetupCoroutine = null;
-        showAfterHandsLostCoroutine = null;
+        CancelShowHandsCoroutine();
+
+        if (delayedSetupCoroutine != null)
+        {
+            StopCoroutine(delayedSetupCoroutine);
+            delayedSetupCoroutine = null;
+        }
     }
 
     private void Update()
     {
         if(Input.anyKeyDown && isShowing)
         {
-            HideCTI();
+            StartCoroutine(HideAfterDelay());
         }
     }
 
@@ -109,6 +111,7 @@ public class CallToInteractController : MonoBehaviour
         }
 
         HideCTI();
+        isShowing = false;
         PrepareCTIAsset();
 
         if (loadedType == CTIType.VIDEO)
@@ -125,14 +128,6 @@ public class CallToInteractController : MonoBehaviour
         delayedSetupCoroutine = null;
     }
 
-    void UIActivated()
-    {
-        if(isShowing)
-        {
-            HideCTI();
-        }
-    }
-
     void UIDeactivated()
     {
         if(!handsPresent)
@@ -147,21 +142,18 @@ public class CallToInteractController : MonoBehaviour
 
         if (isShowing && ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.PRESENCE)
         {
-            HideCTI();
+            StartCoroutine(HideAfterDelay());
         }
 
-        if (showAfterHandsLostCoroutine != null)
-        {
-            StopCoroutine(showAfterHandsLostCoroutine);
-            showAfterHandsLostCoroutine = null;
-        }
+        CancelShowHandsCoroutine();
     }
 
     void OnAllHandsExit()
     {
         handsPresent = false;
+        CancelShowHandsCoroutine();
 
-        if (!isShowing && showAfterHandsLostCoroutine == null)
+        if (!isShowing)
         {
             showAfterHandsLostCoroutine = StartCoroutine(ShowAfterHandsLost());
         }
@@ -180,7 +172,7 @@ public class CallToInteractController : MonoBehaviour
         if(ConfigManager.Config.ctiHideTrigger == CtiHideTrigger.PRESENCE &&
             (isShowing || showAfterHandsLostCoroutine != null))
         {
-            HideCTI();
+            StartCoroutine(HideAfterDelay());
         }
     }
 
@@ -226,16 +218,13 @@ public class CallToInteractController : MonoBehaviour
     {
         yield return new WaitForSeconds(hideDelay);
         HideCTI();
+        yield return null;
+        isShowing = false;
     }
 
     void HideCTI()
     {
-        if(showAfterHandsLostCoroutine != null)
-        {
-            StopCoroutine(showAfterHandsLostCoroutine);
-            showAfterHandsLostCoroutine = null;
-        }
-
+        CancelShowHandsCoroutine();
 
         if (loadedType == CTIType.IMAGE)
         {
@@ -248,8 +237,15 @@ public class CallToInteractController : MonoBehaviour
         }
 
         OnCTIInactive?.Invoke();
+    }
 
-        isShowing = false;
+    void CancelShowHandsCoroutine()
+    {
+        if (showAfterHandsLostCoroutine != null)
+        {
+            StopCoroutine(showAfterHandsLostCoroutine);
+            showAfterHandsLostCoroutine = null;
+        }
     }
 
     #region Asset Preparation

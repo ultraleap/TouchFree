@@ -55,7 +55,7 @@ namespace Ultraleap.TouchFree
 
         private Vector2 position;
 
-        [HideInInspector] public bool clickThroughEnabled = false;
+        [HideInInspector] public static bool clickThroughEnabled = false;
 
         void Start()
         {
@@ -164,8 +164,8 @@ namespace Ultraleap.TouchFree
         void Update()
         {
 #if !UNITY_EDITOR
-		    if (clickThroughEnabled)
-		    {
+            if (clickThroughEnabled)
+            {
                 SetWindowPos(hwnd,
                     HWND_TOPMOST,
                     Mathf.RoundToInt(position.x),
@@ -187,7 +187,7 @@ namespace Ultraleap.TouchFree
                 {
                     SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
                 }
-		    }
+            }
 #endif
         }
 
