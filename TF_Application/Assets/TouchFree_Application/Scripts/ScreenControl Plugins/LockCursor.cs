@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree
 
         protected override InputAction? ModifyInputAction(InputAction _inputAction)
         {
-            if (window.clickThroughEnabled)
+            if (TransparentWindow.clickThroughEnabled)
             {
                 window.SetPosition(new Vector2(_inputAction.CursorPosition.x, _inputAction.CursorPosition.y));
                 _inputAction.CursorPosition = TouchFreeMain.CursorWindowMiddle;
