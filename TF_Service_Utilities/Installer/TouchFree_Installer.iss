@@ -80,6 +80,9 @@ Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId:
 
 [Code]
 function FrameworkIsNotInstalled: Boolean;
+var
+  bSuccess: Boolean;
+  regVersion: Cardinal;
 begin
   Result := True;
 
