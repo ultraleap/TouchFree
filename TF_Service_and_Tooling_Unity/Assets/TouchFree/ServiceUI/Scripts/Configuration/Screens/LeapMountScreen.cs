@@ -17,23 +17,10 @@ namespace Ultraleap.TouchFree.ServiceUI
         public GameObject aboveFacingUserCurrent;
 
         [Space]
-        public GameObject aboveFacingUserOption;
-
-        [Space]
         public GameObject nextScreen;
 
         private void OnEnable()
         {
-            // only show users the screentop option if they have the correct leap service
-            if (HandManager.Instance.screenTopAvailable)
-            {
-                aboveFacingUserOption.SetActive(true);
-            }
-            else
-            {
-                aboveFacingUserOption.SetActive(false);
-            }
-
             ShowCurrentMount();
 
             // Check to see if we need to warn that no tracking service is connected
@@ -69,7 +56,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             // leap is looking down
             if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {
-                if (HandManager.Instance.screenTopAvailable && ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
+                if (ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
                 {
                     //Screentop
                     aboveFacingUserCurrent.SetActive(true);

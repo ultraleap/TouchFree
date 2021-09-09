@@ -76,8 +76,6 @@ namespace Ultraleap.TouchFree.ServiceShared
         [HideInInspector] public bool useTrackingTransform = true;
         LeapTransform TrackingTransform;
 
-        [HideInInspector] public bool screenTopAvailable = false;
-
         private int handsLastFrame;
 
         // Used by ServiceUI QuickSetup to ensure the tracking mode is the selected one
@@ -94,40 +92,12 @@ namespace Ultraleap.TouchFree.ServiceShared
             handsLastFrame = 0;
 
             PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
-            CheckLeapVersionForScreentop();
             UpdateTrackingTransform();
         }
 
         void OnDestroy()
         {
             PhysicalConfig.OnConfigUpdated -= UpdateTrackingTransform;
-        }
-
-        void CheckLeapVersionForScreentop()
-        {
-            // find the LeapSvc.exe as it has the current version
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Leap Motion", "Core Services", "LeapSvc.exe");
-
-            if (File.Exists(path))
-            {
-                // get the version info from the service
-                FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(path);
-                string versionString = new string(myFileVersionInfo.FileVersion.Where(c => c == '.' || char.IsDigit(c)).ToArray());
-
-                // parse the version or use default (1.0.0)
-                Version version = new Version();
-                Version.TryParse(versionString, out version);
-                // Virsion screentop is introduced
-                Version screenTopVersionMin = new Version(4, 9, 0);
-
-                if (version != null)
-                {
-                    if (version.CompareTo(screenTopVersionMin) >= 0)
-                    {
-                        screenTopAvailable = true;
-                    }
-                }
-            }
         }
 
         IEnumerator UpdateTrackingAfterLeapInit()
@@ -166,7 +136,7 @@ namespace Ultraleap.TouchFree.ServiceShared
             // leap is looking down
             if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {
-                if (screenTopAvailable && ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
+                if (ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
                 {
                     //Screentop
                     SetLeapTrackingMode(MountingType.ABOVE_FACING_USER);
@@ -194,29 +164,16 @@ namespace Ultraleap.TouchFree.ServiceShared
                 case MountingType.BELOW:
                     leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
                     leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-
-                    if (screenTopAvailable)
-                    {
-                        leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    }
+                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     break;
                 case MountingType.ABOVE_FACING_USER:
                     leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
                     leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-
-                    if (screenTopAvailable)
-                    {
-                        leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    }
+                    leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     break;
                 case MountingType.ABOVE_FACING_SCREEN:
                     leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
-
-                    if (screenTopAvailable)
-                    {
-                        leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    }
-
+                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
