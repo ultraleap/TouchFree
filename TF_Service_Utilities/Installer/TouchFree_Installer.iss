@@ -38,23 +38,20 @@ SolidCompression=yes
 VersionInfoCompany={#Publisher}
 VersionInfoProductName={#ProductName}
 UpdateUninstallLogAppName=no
-VersionInfoVersion=1.0.0.4
+VersionInfoVersion={#TouchFreeVersion}
 WizardStyle=modern
 PrivilegesRequired=admin
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Tasks]
-Name: TouchFree_Application; Description: "Install the TouchFree Application";
-
 [Files]
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Tasks: TouchFree_Application; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Tasks: TouchFree_Application;
+Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}";
 Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{app}\ServiceUI\{#ServiceUIExeName}";
 Name: "{autostartup}\{#TrayAppName}"; Filename: "{app}\Tray\{#TrayAppExeName}";
 
@@ -65,8 +62,8 @@ Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletek
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
 
 [Run]
-Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Tasks: not TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Tasks: TouchFree_Application; Flags: runascurrentuser nowait postinstall skipifsilent
+; Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
+Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden

@@ -2966,6 +2966,21 @@ PrefabInstance:
       propertyPath: completeScreen
       value: 
       objectReference: {fileID: 4921749745831871438}
+    - target: {fileID: 7672903424454258684, guid: 2665ba4451b804e4081d58376afcac12,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7672903424454258684, guid: 2665ba4451b804e4081d58376afcac12,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4541549585632794220}
+    - target: {fileID: 7672903424454258684, guid: 2665ba4451b804e4081d58376afcac12,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetupGuidePressed
+      objectReference: {fileID: 0}
     - target: {fileID: 7861366818746455888, guid: 2665ba4451b804e4081d58376afcac12,
         type: 3}
       propertyPath: m_Pivot.x

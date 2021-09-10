@@ -63,7 +63,8 @@ export class ConnectionManager extends EventTarget {
     public static AddConnectionListener(_onConnectFunc: () => void): void {
         ConnectionManager.instance.addEventListener('OnConnected', _onConnectFunc);
 
-        if (ConnectionManager.currentServiceConnection !== null) {
+        if (ConnectionManager.currentServiceConnection !== null &&
+            ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN) {
             _onConnectFunc();
         }
     }
