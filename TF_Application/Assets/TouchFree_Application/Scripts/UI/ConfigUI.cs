@@ -372,7 +372,6 @@ namespace Ultraleap.TouchFree
             SetPresetTogglesBasedOnColors(ConfigManager.Config.activeCursorPreset);
             SetColorsToCorrectPreset();
             UpdatePreviewCursorColors();
-            SetCustomColorControlVisibility(false);
 
             // CTI settings
             EnableCTIToggle.SetIsOnWithoutNotify(ConfigManager.Config.ctiEnabled);
@@ -381,6 +380,8 @@ namespace Ultraleap.TouchFree
 
             ShowHideCursorControls(ConfigManager.Config.cursorEnabled);
             ShowHideCtiControls(ConfigManager.Config.ctiEnabled);
+
+            SetCustomColorControlVisibility(CustomColorPresetToggle.isOn);
 
             switch (ConfigManager.Config.ctiHideTrigger)
             {
