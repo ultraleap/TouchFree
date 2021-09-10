@@ -8,9 +8,9 @@ variables:
   TF_TFU_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling
   TF_SRV_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Service
 
-  TF_TFU_VERSION: '1.0.0-beta1'
-  TF_TFW_VERSION: '1.0.0-beta1'
-  TOUCHFREE_VERSION: '2.0.0-beta1'
+  TF_TFU_VERSION: '1.0.0'
+  TF_TFW_VERSION: '1.0.0'
+  TOUCHFREE_VERSION: '2.0.0'
 
   TF_TOOLING_API_VERSION: '1.1.0'
 

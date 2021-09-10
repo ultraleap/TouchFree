@@ -6362,7 +6362,7 @@ MonoBehaviour:
     m_HighlightedSprite: {fileID: 21300000, guid: 017cbee2d55a02c4e9a428f77ae08769,
       type: 3}
     m_PressedSprite: {fileID: 21300000, guid: 017cbee2d55a02c4e9a428f77ae08769, type: 3}
-    m_SelectedSprite: {fileID: 21300000, guid: 55e274b8bb4d3e0499f6349ebe3f40b5, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: a96495ee90a816e4db29c84861d57661, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -6375,9 +6375,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: ManualKeyEntry
-        m_Mode: 5
+      - m_Target: {fileID: 4541549585632794220}
+        m_MethodName: SetupGuidePressed
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
