@@ -48,7 +48,6 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound += OnHandEnter;
         ConnectionManager.HandsLost += OnAllHandsExit;
         InputActionManager.TransmitRawInputAction += HandleInputAction;
-        ScreenManager.UIDeactivated += UIDeactivated;
         ConfigManager.Config.OnConfigUpdated += UpdateCTISettings;
 
         isShowing = false;
@@ -60,7 +59,6 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandFound -= OnHandEnter;
         ConnectionManager.HandsLost -= OnAllHandsExit;
         InputActionManager.TransmitRawInputAction -= HandleInputAction;
-        ScreenManager.UIDeactivated -= UIDeactivated;
         ConfigManager.Config.OnConfigUpdated -= UpdateCTISettings;
 
         if (videoRenderTexture != null)
@@ -128,14 +126,6 @@ public class CallToInteractController : MonoBehaviour
         delayedSetupCoroutine = null;
     }
 
-    void UIDeactivated()
-    {
-        if(!handsPresent)
-        {
-            OnAllHandsExit();
-        }
-    }
-
     void OnHandEnter()
     {
         handsPresent = true;
@@ -186,7 +176,7 @@ public class CallToInteractController : MonoBehaviour
 
     void ShowCTI()
     {
-        if(ScreenManager.Instance.isActive || loadedType == CTIType.NONE)
+        if(loadedType == CTIType.NONE)
         {
             return;
         }

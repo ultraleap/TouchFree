@@ -54,6 +54,7 @@ namespace Ultraleap.TouchFree
         public IntPtr hwnd;
 
         private Vector2 position;
+        bool ctiActive = false;
 
         [HideInInspector] public static bool clickThroughEnabled = false;
 
@@ -71,9 +72,10 @@ namespace Ultraleap.TouchFree
 
         public void DisableClickThrough()
         {
+            ctiActive = true;
 #if !UNITY_EDITOR
             if (!clickThroughEnabled)
-            {    
+            {
                 return;
             }
 
@@ -84,9 +86,10 @@ namespace Ultraleap.TouchFree
 
         public void EnableClickThrough()
         {
+            ctiActive = false;
 #if !UNITY_EDITOR
             if (clickThroughEnabled || ctiActive)
-            {            
+            {
                 return;
             }
 
@@ -97,20 +100,14 @@ namespace Ultraleap.TouchFree
 
         private void OnEnable()
         {
-            ScreenManager.UIActivated += DisableClickThrough;
-            ScreenManager.UIDeactivated += EnableClickThrough;
-
-            CallToInteractController.OnCTIActive += CTIActivated;
-            CallToInteractController.OnCTIInactive += CTIDeactivated;
+            CallToInteractController.OnCTIActive += DisableClickThrough;
+            CallToInteractController.OnCTIInactive += EnableClickThrough;
         }
 
         private void OnDisable()
         {
-            ScreenManager.UIActivated -= DisableClickThrough;
-            ScreenManager.UIDeactivated -= EnableClickThrough;
-
-            CallToInteractController.OnCTIActive -= CTIActivated;
-            CallToInteractController.OnCTIInactive -= CTIDeactivated;
+            CallToInteractController.OnCTIActive -= DisableClickThrough;
+            CallToInteractController.OnCTIInactive -= EnableClickThrough;
         }
 
         void SetCursorWindow(bool setResolution)
@@ -199,30 +196,12 @@ namespace Ultraleap.TouchFree
             position.y = Display.main.systemHeight - position.y - (TouchFreeMain.CursorWindowSize / 2);
         }
 
-
-        bool ctiActive = false;
-        void CTIActivated()
-        {
-            ctiActive = true;
-            DisableClickThrough();
-        }
-
-        void CTIDeactivated()
-        {
-            ctiActive = false;
-            if (ScreenManager.Instance != null && !ScreenManager.Instance.isActive)
-            {
-                EnableClickThrough();
-            }
-        }
-
         private void OnApplicationQuit()
         {
             SetConfigWindow(true);
         }
 
 #region Remove focus
-
         /// <summary>
         /// filter function
         /// </summary>
