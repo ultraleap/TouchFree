@@ -15,6 +15,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space]
         public GameObject setupCameraScreen;
         public GameObject interactionSettingsScreen;
+        public GameObject overlayVisualsScreen;
         public GameObject advancedSettingsScreen;
 
         public Text versionText;
@@ -84,6 +85,11 @@ namespace Ultraleap.TouchFree.ServiceUI
         public void ChangeToInteractionSettings()
         {
             ScreenManager.Instance.ChangeScreen(interactionSettingsScreen);
+        }
+
+        public void ChangeToOverlayVisuals()
+        {
+            ScreenManager.Instance.ChangeScreen(overlayVisualsScreen);
         }
 
         public void ChangeToAdvancedSettings()
