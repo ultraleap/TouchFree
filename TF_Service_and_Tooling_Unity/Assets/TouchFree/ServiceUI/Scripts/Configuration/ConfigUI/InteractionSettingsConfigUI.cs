@@ -69,8 +69,18 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space, Tooltip("List all Settings elements that relate to the interactionType.")]
         public InteractionTypeElements[] interactionTypeElements;
 
+        public GameObject[] permissionsBlockers;
+
         private void Awake()
         {
+            if (!PermissionController.hasFilePermission)
+            {
+                foreach (var blocker in permissionsBlockers)
+                {
+                    blocker.SetActive(true);
+                }
+            }
+
             InitialiseUI();
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");

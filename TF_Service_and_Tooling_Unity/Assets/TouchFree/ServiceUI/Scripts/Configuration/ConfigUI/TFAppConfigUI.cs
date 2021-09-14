@@ -59,6 +59,8 @@ namespace Ultraleap.TouchFree.ServiceUI
         public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
         public static readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
 
+        public GameObject[] permissionsBlockers;
+
         private void Awake()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
@@ -67,6 +69,14 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         protected virtual void OnEnable()
         {
+            if (!PermissionController.hasFilePermission)
+            {
+                foreach (var blocker in permissionsBlockers)
+                {
+                    blocker.SetActive(true);
+                }
+            }
+
             LoadConfigValuesIntoFields();
             AddValueChangedListeners();
         }

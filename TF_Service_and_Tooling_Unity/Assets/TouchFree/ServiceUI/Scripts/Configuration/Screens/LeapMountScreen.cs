@@ -19,8 +19,19 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space]
         public GameObject nextScreen;
 
+        [Space]
+        public GameObject[] permissionsBlockers;
+
         private void OnEnable()
         {
+            if (!PermissionController.hasFilePermission)
+            {
+                foreach (var blocker in permissionsBlockers)
+                {
+                    blocker.SetActive(true);
+                }
+            }
+
             ShowCurrentMount();
 
             // Check to see if we need to warn that no tracking service is connected

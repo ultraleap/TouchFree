@@ -12,8 +12,18 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Header("File Location")]
         public InputField fileLocation;
 
+        public GameObject[] permissionsBlockers;
+
         private void OnEnable()
         {
+            if (!PermissionController.hasFilePermission)
+            {
+                foreach (var blocker in permissionsBlockers)
+                {
+                    blocker.SetActive(true);
+                }
+            }
+
             fileLocation.text = ConfigFileUtils.ConfigFileDirectory;
 
             // This combination allows users to highlight the text (to copy if desired) without
