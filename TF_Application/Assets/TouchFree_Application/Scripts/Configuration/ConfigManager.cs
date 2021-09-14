@@ -19,6 +19,8 @@ namespace Ultraleap.TouchFree
 
     public static class ConfigManager
     {
+        public static event Action OnConfigUpdated;
+
         public static ConfigurationState Config
         {
             get
@@ -34,6 +36,11 @@ namespace Ultraleap.TouchFree
             {
                 _config = value;
             }
+        }
+
+        public static void ConfigWasUpdated()
+        {
+            OnConfigUpdated?.Invoke();
         }
 
         private static ConfigurationState _config = null;
@@ -58,13 +65,6 @@ namespace Ultraleap.TouchFree
 
         // Misc Settings
         public bool StartupUIShown = false;
-
-        public event Action OnConfigUpdated;
-
-        public void ConfigWasUpdated()
-        {
-            OnConfigUpdated?.Invoke();
-        }
 
         public void GetCurrentColors(ref Color Primary, ref Color Secondary, ref Color Tertiary) {
             switch (activeCursorPreset)

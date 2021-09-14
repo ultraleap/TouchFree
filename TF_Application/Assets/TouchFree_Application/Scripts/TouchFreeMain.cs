@@ -18,13 +18,13 @@ namespace Ultraleap.TouchFree
 
         void OnEnable()
         {
-            ConfigManager.Config.OnConfigUpdated += ConfigUpdated;
+            ConfigManager.OnConfigUpdated += ConfigUpdated;
             ConfigUpdated();
         }
 
         void OnDisable()
         {
-            ConfigManager.Config.OnConfigUpdated -= ConfigUpdated;
+            ConfigManager.OnConfigUpdated -= ConfigUpdated;
         }
 
         void ConfigUpdated()
