@@ -440,7 +440,7 @@ namespace Ultraleap.TouchFree
                 ConfigManager.Config.ctiHideTrigger = CtiHideTrigger.PRESENCE;
             }
 
-            ConfigManager.Config.ConfigWasUpdated();
+            ConfigManager.ConfigWasUpdated();
             ConfigManager.Config.SaveConfig();
         }
 
@@ -448,7 +448,7 @@ namespace Ultraleap.TouchFree
         {
             RemoveValueChangedListeners();
             ConfigManager.Config.SetAllValuesToDefault();
-            ConfigManager.Config.ConfigWasUpdated();
+            ConfigManager.ConfigWasUpdated();
             ConfigManager.Config.SaveConfig();
             LoadConfigValuesIntoFields();
             AddValueChangedListeners();

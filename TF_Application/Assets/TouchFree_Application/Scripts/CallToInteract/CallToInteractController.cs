@@ -49,7 +49,7 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandsLost += OnAllHandsExit;
         InputActionManager.TransmitRawInputAction += HandleInputAction;
         ScreenManager.UIDeactivated += UIDeactivated;
-        ConfigManager.Config.OnConfigUpdated += UpdateCTISettings;
+        ConfigManager.OnConfigUpdated += UpdateCTISettings;
 
         isShowing = false;
         SetupCTI(true);
@@ -61,7 +61,7 @@ public class CallToInteractController : MonoBehaviour
         ConnectionManager.HandsLost -= OnAllHandsExit;
         InputActionManager.TransmitRawInputAction -= HandleInputAction;
         ScreenManager.UIDeactivated -= UIDeactivated;
-        ConfigManager.Config.OnConfigUpdated -= UpdateCTISettings;
+        ConfigManager.OnConfigUpdated -= UpdateCTISettings;
 
         if (videoRenderTexture != null)
         {
