@@ -11,7 +11,7 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class TFAppConfigUI : MonoBehaviour
+    public class TFAppConfigUI : ConfigScreen
     {
         [Header("CursorSettings")]
         public Toggle EnableCursorToggle;
@@ -65,8 +65,9 @@ namespace Ultraleap.TouchFree.ServiceUI
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             LoadConfigValuesIntoFields();
             AddValueChangedListeners();
         }

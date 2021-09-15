@@ -4,7 +4,7 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class LeapMountScreen : MonoBehaviour
+    public class LeapMountScreen : ConfigScreen
     {
         public GameObject trackingServiceWarning;
 
@@ -19,8 +19,10 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space]
         public GameObject nextScreen;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+
             ShowCurrentMount();
 
             // Check to see if we need to warn that no tracking service is connected

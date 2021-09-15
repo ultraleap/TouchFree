@@ -5,7 +5,7 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class HomeScreen : MonoBehaviour
+    public class HomeScreen : ConfigScreen
     {
         bool lastFrameServiceConnected = true;
 
@@ -27,8 +27,9 @@ namespace Ultraleap.TouchFree.ServiceUI
             PopulateVersion();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             lastFrameServiceConnected = true;
 
             leapConnectedNotification.SetActive(true);
