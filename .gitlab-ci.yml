@@ -186,21 +186,21 @@ TF_Service::build:
     - python ./UpdateUnityProjVer.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
     - "& ./build_service.bat $UNITY_EXE"
     - python ./UpdateBuildSettings_Service.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/EditorBuildSettings.asset
-    - "& ./build_serviceUI.bat $UNITY_EXE"
+    - "& ./build_settingsUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/TouchFree_Service.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
 
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/TouchFreeServiceUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/TouchFreeSettingsUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Service_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - Build/**
     - UIBuild/**
     - ./Service_build.log
-    - ./ServiceUI_build.log
+    - ./SettingsUI_build.log
     expire_in: 2 weeks
     when: always
   tags:
