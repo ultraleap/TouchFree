@@ -468,8 +468,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: This application does not have permission to edit files. To modify these
-    settings, run this application as an administrator.
+  m_Text: This user has insufficient permissions. To modify settings, run this application
+    as an administrator.
 --- !u!1 &391749601852207711
 GameObject:
   m_ObjectHideFlags: 0
