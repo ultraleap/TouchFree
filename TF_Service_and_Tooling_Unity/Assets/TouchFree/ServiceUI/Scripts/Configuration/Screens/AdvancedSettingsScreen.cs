@@ -7,23 +7,14 @@ using System.IO;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class AdvancedSettingsScreen : MonoBehaviour
+    public class AdvancedSettingsScreen : ConfigScreen
     {
         [Header("File Location")]
         public InputField fileLocation;
 
-        public GameObject[] permissionsBlockers;
-
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            if (!PermissionController.hasFilePermission)
-            {
-                foreach (var blocker in permissionsBlockers)
-                {
-                    blocker.SetActive(true);
-                }
-            }
-
+            base.OnEnable();
             fileLocation.text = ConfigFileUtils.ConfigFileDirectory;
 
             // This combination allows users to highlight the text (to copy if desired) without

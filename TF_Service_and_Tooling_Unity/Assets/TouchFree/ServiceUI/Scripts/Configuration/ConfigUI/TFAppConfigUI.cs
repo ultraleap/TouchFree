@@ -11,7 +11,7 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class TFAppConfigUI : MonoBehaviour
+    public class TFAppConfigUI : ConfigScreen
     {
         [Header("CursorSettings")]
         public Toggle EnableCursorToggle;
@@ -59,24 +59,15 @@ namespace Ultraleap.TouchFree.ServiceUI
         public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
         public static readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
 
-        public GameObject[] permissionsBlockers;
-
         private void Awake()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
-            if (!PermissionController.hasFilePermission)
-            {
-                foreach (var blocker in permissionsBlockers)
-                {
-                    blocker.SetActive(true);
-                }
-            }
-
+            base.OnEnable();
             LoadConfigValuesIntoFields();
             AddValueChangedListeners();
         }

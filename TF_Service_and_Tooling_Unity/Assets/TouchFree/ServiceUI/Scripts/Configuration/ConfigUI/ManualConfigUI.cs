@@ -38,8 +38,6 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public GameObject resetToDefaultWarning;
 
-        public GameObject[] permissionsBlockers;
-
         private void Awake()
         {
             resetToDefaultWarning.SetActive(false);
@@ -47,14 +45,6 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         protected override void OnEnable()
         {
-            if (!PermissionController.hasFilePermission)
-            {
-                foreach (var blocker in permissionsBlockers)
-                {
-                    blocker.SetActive(true);
-                }
-            }
-
             base.OnEnable();
             VirtualScreen.CaptureCurrentResolution();
             SaveValuesToConfig();

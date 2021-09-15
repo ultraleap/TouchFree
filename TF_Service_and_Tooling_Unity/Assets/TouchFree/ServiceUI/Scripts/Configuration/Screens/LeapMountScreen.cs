@@ -4,7 +4,7 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class LeapMountScreen : MonoBehaviour
+    public class LeapMountScreen : ConfigScreen
     {
         public GameObject trackingServiceWarning;
 
@@ -19,18 +19,9 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space]
         public GameObject nextScreen;
 
-        [Space]
-        public GameObject[] permissionsBlockers;
-
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            if (!PermissionController.hasFilePermission)
-            {
-                foreach (var blocker in permissionsBlockers)
-                {
-                    blocker.SetActive(true);
-                }
-            }
+            base.OnEnable();
 
             ShowCurrentMount();
 

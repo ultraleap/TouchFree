@@ -6,10 +6,11 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public abstract class ConfigUI : MonoBehaviour
+    public abstract class ConfigUI : ConfigScreen
     {
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             LoadConfigValuesIntoFields();
             AddValueChangedListeners();
         }
