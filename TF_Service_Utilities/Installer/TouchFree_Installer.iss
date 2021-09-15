@@ -7,7 +7,7 @@
 #define ServiceUIExeName "TouchFreeServiceUI.exe"
 #define ServiceUIName "TouchFree Service Settings"
 #define TouchFreeAppExeName "TouchFree.exe"
-#define TouchFreeAppName "TouchFree Application"
+#define TouchFreeAppName "TouchFree"
 #define TrayAppExeName "ServiceUITray.exe"
 #define TrayAppName "TouchFree Service Control Panel"
 #define WrapperExeName "ServiceWrapper.exe"
