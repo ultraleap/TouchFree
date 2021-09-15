@@ -36,7 +36,7 @@ namespace ServiceUITray
     public class ServiceUITray : ApplicationContext
     {
         const string SERVICE_SETTINGS_PATH = "../ServiceUI/TouchFreeServiceUI.exe";
-        const string APPLICATION_PATH = "../TouchFree/TouchFree_Application.exe";
+        const string APPLICATION_PATH = "../TouchFree/TouchFree.exe";
 
         private NotifyIcon trayIcon;
         Process startedSettingsProcess;
@@ -73,7 +73,7 @@ namespace ServiceUITray
                 {
                     Icon = Properties.Resources.IconActive,
                     ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("TouchFree Application", LaunchApp),
+                    new MenuItem("Start TouchFree", LaunchApp),
                     new MenuItem("-"),
                     new MenuItem("Service Settings", Settings),
                     new MenuItem("-"),

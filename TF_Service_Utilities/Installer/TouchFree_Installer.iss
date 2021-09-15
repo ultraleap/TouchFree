@@ -6,7 +6,7 @@
 #define Publisher "Ultraleap Inc."
 #define ServiceUIExeName "TouchFreeServiceUI.exe"
 #define ServiceUIName "TouchFree Service Settings"
-#define TouchFreeAppExeName "TouchFree_Application.exe"
+#define TouchFreeAppExeName "TouchFree.exe"
 #define TouchFreeAppName "TouchFree Application"
 #define TrayAppExeName "ServiceUITray.exe"
 #define TrayAppName "TouchFree Service Control Panel"
