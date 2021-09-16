@@ -25,7 +25,6 @@ namespace Leap.Unity {
     /// <summary> Calls the `setColor` delegate. </summary>
     public Color color { set { implSetColor(value); }}
 
-    private Matrix4x4 _matrix = Matrix4x4.identity;
     public Stack<Matrix4x4> _matrices;
     public Matrix4x4 _currMatrix = Matrix4x4.identity;
     public bool MaybePushMatrix(Matrix4x4? m) {
@@ -122,7 +121,8 @@ namespace Leap.Unity {
         #if UNITY_EDITOR
         var origM = UnityEditor.Handles.matrix;
         var origColor = UnityEditor.Handles.color;
-        Color.RGBToHSV(origColor, out float h, out float s, out float v);
+        float h, s, v;
+        Color.RGBToHSV(origColor, out h, out s, out v);
         UnityEditor.Handles.color = origColor.WithHSV(h, s * 1f, v * 3f);
         UnityEditor.Handles.matrix = m;
         // UnityEditor.Handles.SphereHandleCap
@@ -276,7 +276,7 @@ namespace Leap.Unity {
       _basisColors[2] = zColor;
 
       var bipyramid = new Geometry.Bipyramid(a: Vector3.zero, b: Vector3.zero,
-        polySegments: 16, lengthFraction: 0.5f, overrideMatrix: pose.matrix);
+        polySegments: 16, lengthFraction: 0.5f, overrideMatrix: pose.matrix());
       for (var bIdx = 0; bIdx < 3; bIdx++) {
         var b = Vector3.zero; b[bIdx] = length;
         bipyramid.b = b;
