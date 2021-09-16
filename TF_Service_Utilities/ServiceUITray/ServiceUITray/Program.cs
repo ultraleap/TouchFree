@@ -35,7 +35,7 @@ namespace ServiceUITray
 
     public class ServiceUITray : ApplicationContext
     {
-        const string SERVICE_SETTINGS_PATH = "../ServiceUI/TouchFreeSettingsUI.exe";
+        const string SERVICE_SETTINGS_PATH = "../SettingsUI/TouchFreeSettingsUI.exe";
         const string APPLICATION_PATH = "../TouchFree/TouchFree.exe";
 
         private NotifyIcon trayIcon;
