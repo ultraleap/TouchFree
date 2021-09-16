@@ -63,7 +63,8 @@ Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType:
 
 [Run]
 ; Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(SettingsUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
+Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "Configure TouchFree"; Flags: runascurrentuser nowait postinstall skipifsilent
+; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
