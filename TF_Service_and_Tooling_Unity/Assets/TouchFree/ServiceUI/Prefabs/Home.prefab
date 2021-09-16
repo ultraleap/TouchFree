@@ -230,7 +230,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Interaction Settings
+  m_Text: Interaction
 --- !u!1 &1028502702410251896
 GameObject:
   m_ObjectHideFlags: 0
@@ -971,6 +971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf7be2c81ee9ff4fa371929774da448, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  permissionsBlockers: []
   leapConnectedNotification: {fileID: 2864637073095998154}
   leapDisconnectedNotification: {fileID: 3151833205612043774}
   setupCameraScreen: {fileID: 0}
@@ -1055,7 +1056,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Overlay Visuals
+  m_Text: Appearance
 --- !u!1 &4686882809274064054
 GameObject:
   m_ObjectHideFlags: 0
@@ -2180,7 +2181,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Setup Camera
+  m_Text: Camera Setup
 --- !u!1 &8943635847571375036
 GameObject:
   m_ObjectHideFlags: 0
@@ -2258,7 +2259,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Advanced Settings
+  m_Text: Advanced
 --- !u!1 &9034014555623299596
 GameObject:
   m_ObjectHideFlags: 0
