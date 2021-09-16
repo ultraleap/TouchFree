@@ -584,7 +584,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b389e418635964082a0a8a2ea324f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  functionalityToDisable: {fileID: 1104336824340231345}
+  toolingClientGameobject: {fileID: 1104336824340231345}
+  visibleCanvasses:
+  - {fileID: 1938642279}
+  - {fileID: 7749370175400263840}
 --- !u!4 &1555531686
 Transform:
   m_ObjectHideFlags: 0
@@ -701,6 +704,12 @@ Canvas:
 --- !u!4 &1938642278 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1583922761665443115, guid: 1287b01b288ed67459e06e84b05eb05e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1938642276}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1938642279 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8538130551986925400, guid: 1287b01b288ed67459e06e84b05eb05e,
     type: 3}
   m_PrefabInstance: {fileID: 1938642276}
   m_PrefabAsset: {fileID: 0}

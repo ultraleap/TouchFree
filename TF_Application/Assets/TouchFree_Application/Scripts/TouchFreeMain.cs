@@ -14,16 +14,18 @@ namespace Ultraleap.TouchFree
         public static int CursorWindowSize = 200;
         public static Vector3 CursorWindowMiddle = new Vector2(100, 100);
 
-        bool settingsOpen = false;
-        public GameObject disableWhenSettingsOpen;
-
         static int minCursorWindowSize = 50;
         static int maxCursorWindowSize = 500;
+
+        bool settingsAppOpen = false;
+
+        public GameObject toolingClientGameobject;
+        public GameObject[] visibleCanvasses;
 
         void Awake()
         {
             Application.targetFrameRate = 60;
-            StartCoroutine(CheckForSettingsOpen());
+            StartCoroutine(CheckForSettingsAppState());
         }
 
         void OnEnable()
@@ -59,7 +61,7 @@ namespace Ultraleap.TouchFree
             CursorWindowMiddle = Vector2.one * (CursorWindowSize / 2);
         }
 
-        IEnumerator CheckForSettingsOpen()
+        IEnumerator CheckForSettingsAppState()
         {
             WaitForSeconds wait = new WaitForSeconds(1);
 
@@ -71,25 +73,50 @@ namespace Ultraleap.TouchFree
 
                 if ((int)hwnd != 0)
                 {
-                    if (!settingsOpen)
+                    if (!settingsAppOpen)
                     {
-                        disableWhenSettingsOpen.SetActive(false);
+                        HandleSettingsAppOpened();
                     }
 
-                    settingsOpen = true;
+                    settingsAppOpen = true;
                 }
                 else
                 {
-                    if (settingsOpen)
+                    if (settingsAppOpen)
                     {
-                        disableWhenSettingsOpen.SetActive(true);
-                        TouchFreeConfigFile.LoadConfig();
+                        HandleSettingsAppClosed();
                     }
 
-                    settingsOpen = false;
+                    settingsAppOpen = false;
                 }
 
                 yield return wait;
+            }
+        }
+
+        void HandleSettingsAppOpened()
+        {
+            SetToolingClientActiveState(false);
+            SetVisibleCanvassesActveState(false);
+        }
+
+        void HandleSettingsAppClosed()
+        {
+            SetToolingClientActiveState(true);
+            SetVisibleCanvassesActveState(true);
+            TouchFreeConfigFile.LoadConfig();
+        }
+
+        void SetToolingClientActiveState(bool _activate)
+        {
+            toolingClientGameobject.SetActive(_activate);
+        }
+
+        void SetVisibleCanvassesActveState(bool _activate)
+        {
+            foreach (var canvas in visibleCanvasses)
+            {
+                canvas.SetActive(_activate);
             }
         }
     }
