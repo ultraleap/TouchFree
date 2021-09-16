@@ -344,11 +344,11 @@ TF_Service::package:
     - mkdir ./Service_Package/
     - mkdir ./Service_Package/Licenses/
     - mkdir ./Service_Package/Service/
-    - mkdir ./Service_Package/ServiceUI/
+    - mkdir ./Service_Package/SettingsUI/
     - mkdir ./Service_Package/Wrapper/
     - mkdir ./Service_Package/Tray/
     - cp -r ./Build/* ./Service_Package/Service/
-    - cp -r ./UIBuild/* ./Service_Package/ServiceUI/
+    - cp -r ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -r ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/

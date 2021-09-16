@@ -4,8 +4,8 @@
 #define CompanyURL "https://ultraleap.com"
 #define ProductName "TouchFree"
 #define Publisher "Ultraleap Inc."
-#define ServiceUIExeName "TouchFreeSettingsUI.exe"
-#define ServiceUIName "TouchFree Settings"
+#define SettingsUIExeName "TouchFreeSettingsUI.exe"
+#define SettingsUIName "TouchFree Settings"
 #define TouchFreeAppExeName "TouchFree.exe"
 #define TouchFreeAppName "TouchFree"
 #define TrayAppExeName "ServiceUITray.exe"
@@ -52,7 +52,7 @@ Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flag
 
 [Icons]
 Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}";
-Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{app}\ServiceUI\{#ServiceUIExeName}";
+Name: "{autoprograms}\{#SettingsUIName}"; Filename: "{app}\SettingsUI\{#SettingsUIExeName}";
 Name: "{autostartup}\{#TrayAppName}"; Filename: "{app}\Tray\{#TrayAppExeName}";
 
 [Registry]
@@ -62,7 +62,7 @@ Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletek
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
 
 [Run]
-; Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
+; Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(SettingsUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
