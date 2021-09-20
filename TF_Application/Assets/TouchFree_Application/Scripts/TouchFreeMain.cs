@@ -69,7 +69,7 @@ namespace Ultraleap.TouchFree
 
             while (true)
             {
-                IntPtr hwnd = FindWindow(null, "TouchFreeService");
+                IntPtr hwnd = FindWindow(null, "TouchFreeSettings");
 
                 if ((int)hwnd != 0)
                 {

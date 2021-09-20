@@ -3273,6 +3273,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a25ff27f7715b64bb8ba8819325f71a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  permissionsBlockers:
+  - {fileID: 6664427212806529253}
+  - {fileID: 2965770804744872911}
   EnableCursorToggle: {fileID: 5003157216307672289}
   CursorSizeInputSlider: {fileID: 5698461444894588874}
   CursorRingThicknessInputSlider: {fileID: 943995538486647989}
@@ -3307,9 +3310,6 @@ MonoBehaviour:
   RingCursorPreviewCenter: {fileID: 1962556382232892452}
   RingCursorPreviewRing: {fileID: 5537117942935412651}
   RingCursorPreviewBorder: {fileID: 6596988443900570136}
-  permissionsBlockers:
-  - {fileID: 6664427212806529253}
-  - {fileID: 2965770804744872911}
 --- !u!1 &5003157214568514515
 GameObject:
   m_ObjectHideFlags: 0
@@ -10015,7 +10015,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: User Interface Settings
+  m_Text: Appearance Settings
 --- !u!1 &5003157216307672291
 GameObject:
   m_ObjectHideFlags: 0
