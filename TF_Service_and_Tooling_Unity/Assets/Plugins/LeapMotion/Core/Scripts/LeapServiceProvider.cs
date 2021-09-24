@@ -7,6 +7,7 @@
  ******************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,6 +52,19 @@ namespace Leap.Unity {
     #endregion
 
     #region Inspector
+    
+    public enum Mode
+    {
+      None,
+      Desktop,
+      ScreenTop,
+      HeadMounted
+    }
+
+    [Tooltip("Sets the mode with which to initialise the tracking system. " +
+      "The default value for this parameter is None, which implies that the tracking system " +
+      "will remain in it's last known state. Change this to force a specific tracking mode on startup.")]
+    [SerializeField] private Mode _mode = Mode.None;
 
     public enum InteractionVolumeVisualization {
       None,
@@ -88,18 +102,6 @@ namespace Leap.Unity {
     [Tooltip("The amount of time (in seconds) to extrapolate the physics data by.")]
     [SerializeField]
     protected float _physicsExtrapolationTime = 1.0f / 90.0f;
-
-    public enum TrackingOptimizationMode {
-      Desktop,
-      ScreenTop,
-      HMD
-    }
-    [Tooltip("[Service must be >= 4.9.2!] " +
-      "Which tracking mode to request that the service optimize for. " +
-      "(Use the LeapXRServiceProvider for HMD Mode instead of this option!)")]
-    [SerializeField]
-    [EditTimeOnly]
-    protected TrackingOptimizationMode _trackingOptimization = TrackingOptimizationMode.Desktop;
 
 #if UNITY_2017_3_OR_NEWER
     [Tooltip("When checked, profiling data from the LeapCSharp worker thread will be used to populate the UnityProfiler.")]
@@ -471,28 +473,108 @@ namespace Leap.Unity {
       }
       #endif
     }
- 
+    
+    private Coroutine _changeModeCoroutine;
+
     /// <summary>
-    /// Initializes Leap Motion policy flags.
+    /// Sets the initial mode if it is anything other than None, None leave the tracking system in its last state
     /// </summary>
-    protected virtual void initializeFlags() {
-      if (_leapController == null) {
-        return;
+    protected virtual void initialiseMode()
+    {
+      changeMode(_mode);
+    }
+
+    /// <summary>
+    /// Triggers a coroutine that sets appropriate policy flags and wait for them to be set to ensure we've changed mode
+    /// </summary>
+    /// <param name="mode">Mode to set</param>
+    public void changeMode(Mode mode)
+    {
+      if (_changeModeCoroutine != null)
+      {
+        StopCoroutine(_changeModeCoroutine);
+      }
+      
+      switch (mode)
+      {
+        case Mode.None:
+          break;        
+        case Mode.Desktop:
+          _changeModeCoroutine = StartCoroutine(setMode(setDesktopModeFlags, mode));
+          break;
+        case Mode.ScreenTop:
+          _changeModeCoroutine = StartCoroutine(setMode(setScreenTopModeFlags, mode));
+          break;
+        case Mode.HeadMounted:
+          _changeModeCoroutine = StartCoroutine(setMode(setHeadMountedModeFlags, mode));
+          break;
       }
 
-      if (_trackingOptimization == TrackingOptimizationMode.Desktop) {
-        _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
+      //local functions since these methods should not be callable outside of this function
+      
+      //set mode flags
+      void setDesktopModeFlags()
+      {  
         _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
         _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-      } else if (_trackingOptimization == TrackingOptimizationMode.ScreenTop) {
-        _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
-        _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-        _leapController.SetPolicy  (Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-      } else if (_trackingOptimization == TrackingOptimizationMode.HMD) {
-        _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
-        _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-        _leapController.SetPolicy  (Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
       }
+
+      void setScreenTopModeFlags()
+      {  
+        _leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+        _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+      }
+
+      void setHeadMountedModeFlags()
+      {  
+        _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+        _leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+      }
+
+      //set mode coroutine
+      IEnumerator setMode(Action modeCallback, Mode targetMode)
+      {  
+        modeCallback();
+
+        var isModeSet = getMode() == targetMode;
+
+        while (!isModeSet)
+        {
+          isModeSet = getMode() == targetMode;
+          yield return null;
+        }
+
+        _changeModeCoroutine = null;
+      }
+    }
+
+    /// <summary>
+    /// Gets the current mode by polling policy flags
+    /// </summary>
+    public Mode getMode()
+    {
+      var screenTopPolicySet = _leapController.IsPolicySet(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+      var headMountedPolicySet = _leapController.IsPolicySet(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+      
+      var desktopMode = !screenTopPolicySet && !headMountedPolicySet;
+      if (desktopMode)
+      {
+        return Mode.Desktop;
+      }
+      
+      var headMountedMode = !screenTopPolicySet && headMountedPolicySet;
+      if (headMountedMode)
+      {
+        return Mode.HeadMounted;
+      }
+      
+      var screenTopMode = screenTopPolicySet && !headMountedPolicySet;
+      if (screenTopMode)
+      {
+        return Mode.ScreenTop;
+      }
+
+      return Mode.None;
     }
 
     /// <summary>
@@ -512,7 +594,7 @@ namespace Leap.Unity {
       };
 
       if (_leapController.IsConnected) {
-        initializeFlags();
+        initialiseMode();
       } else {
         _leapController.Device += onHandControllerConnect;
       }
@@ -534,10 +616,6 @@ namespace Leap.Unity {
     /// </summary>
     protected void destroyController() {
       if (_leapController != null) {
-        if (_leapController.IsConnected) {
-          _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-          _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-        }
         _leapController.StopConnection();
         _leapController.Dispose();
         _leapController = null;
@@ -576,7 +654,7 @@ namespace Leap.Unity {
     }
 
     protected void onHandControllerConnect(object sender, LeapEventArgs args) {
-      initializeFlags();
+      initialiseMode();
 
       if (_leapController != null) {
         _leapController.Device -= onHandControllerConnect;
