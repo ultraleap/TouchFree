@@ -191,6 +191,8 @@ namespace Ultraleap.TouchFree.ServiceUI
             ConfigManager.PhysicalConfig.SetAllValuesToDefault();
             ConfigManager.PhysicalConfig.ConfigWasUpdated();
             ConfigManager.PhysicalConfig.SaveConfig();
+
+            ScreenManager.Instance.SetCursorState(false);
             LoadConfigValuesIntoFields();
         }
     }
