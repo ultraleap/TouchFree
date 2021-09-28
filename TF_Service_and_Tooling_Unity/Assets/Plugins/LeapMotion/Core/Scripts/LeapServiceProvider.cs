@@ -53,7 +53,7 @@ namespace Leap.Unity {
 
     #region Inspector
     
-    public enum Mode
+    public enum TrackingMode
     {
       None,
       Desktop,
@@ -64,7 +64,7 @@ namespace Leap.Unity {
     [Tooltip("Sets the mode with which to initialise the tracking system. " +
       "The default value for this parameter is None, which implies that the tracking system " +
       "will remain in it's last known state. Change this to force a specific tracking mode on startup.")]
-    [SerializeField] private Mode _mode = Mode.None;
+    [SerializeField] private TrackingMode _trackingMode = TrackingMode.None;
 
     public enum InteractionVolumeVisualization {
       None,
@@ -474,39 +474,32 @@ namespace Leap.Unity {
       #endif
     }
     
-    private Coroutine _changeModeCoroutine;
-
     /// <summary>
     /// Sets the initial mode if it is anything other than None, None leave the tracking system in its last state
     /// </summary>
-    protected virtual void initialiseMode()
+    protected virtual void initialiseTrackingMode()
     {
-      changeMode(_mode);
+      changeTrackingMode(_trackingMode);
     }
 
     /// <summary>
     /// Triggers a coroutine that sets appropriate policy flags and wait for them to be set to ensure we've changed mode
     /// </summary>
-    /// <param name="mode">Mode to set</param>
-    public void changeMode(Mode mode)
+    /// <param name="trackingMode">Tracking mode to set</param>
+    public void changeTrackingMode(TrackingMode trackingMode)
     {
-      if (_changeModeCoroutine != null)
+      switch (trackingMode)
       {
-        StopCoroutine(_changeModeCoroutine);
-      }
-      
-      switch (mode)
-      {
-        case Mode.None:
+        case TrackingMode.None:
           break;        
-        case Mode.Desktop:
-          _changeModeCoroutine = StartCoroutine(setMode(setDesktopModeFlags, mode));
+        case TrackingMode.Desktop:
+          setDesktopModeFlags();
           break;
-        case Mode.ScreenTop:
-          _changeModeCoroutine = StartCoroutine(setMode(setScreenTopModeFlags, mode));
+        case TrackingMode.ScreenTop:
+          setScreenTopModeFlags();
           break;
-        case Mode.HeadMounted:
-          _changeModeCoroutine = StartCoroutine(setMode(setHeadMountedModeFlags, mode));
+        case TrackingMode.HeadMounted:
+          setHeadMountedModeFlags();
           break;
       }
 
@@ -526,32 +519,16 @@ namespace Leap.Unity {
       }
 
       void setHeadMountedModeFlags()
-      {  
+      {
         _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
         _leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-      }
-
-      //set mode coroutine
-      IEnumerator setMode(Action modeCallback, Mode targetMode)
-      {  
-        modeCallback();
-
-        var isModeSet = getMode() == targetMode;
-
-        while (!isModeSet)
-        {
-          isModeSet = getMode() == targetMode;
-          yield return null;
-        }
-
-        _changeModeCoroutine = null;
       }
     }
 
     /// <summary>
     /// Gets the current mode by polling policy flags
     /// </summary>
-    public Mode getMode()
+    public TrackingMode getTrackingMode()
     {
       var screenTopPolicySet = _leapController.IsPolicySet(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
       var headMountedPolicySet = _leapController.IsPolicySet(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
@@ -559,22 +536,22 @@ namespace Leap.Unity {
       var desktopMode = !screenTopPolicySet && !headMountedPolicySet;
       if (desktopMode)
       {
-        return Mode.Desktop;
+        return TrackingMode.Desktop;
       }
       
       var headMountedMode = !screenTopPolicySet && headMountedPolicySet;
       if (headMountedMode)
       {
-        return Mode.HeadMounted;
+        return TrackingMode.HeadMounted;
       }
       
       var screenTopMode = screenTopPolicySet && !headMountedPolicySet;
       if (screenTopMode)
       {
-        return Mode.ScreenTop;
+        return TrackingMode.ScreenTop;
       }
 
-      return Mode.None;
+      return TrackingMode.None;
     }
 
     /// <summary>
@@ -594,7 +571,7 @@ namespace Leap.Unity {
       };
 
       if (_leapController.IsConnected) {
-        initialiseMode();
+        initialiseTrackingMode();
       } else {
         _leapController.Device += onHandControllerConnect;
       }
@@ -654,7 +631,7 @@ namespace Leap.Unity {
     }
 
     protected void onHandControllerConnect(object sender, LeapEventArgs args) {
-      initialiseMode();
+      initialiseTrackingMode();
 
       if (_leapController != null) {
         _leapController.Device -= onHandControllerConnect;

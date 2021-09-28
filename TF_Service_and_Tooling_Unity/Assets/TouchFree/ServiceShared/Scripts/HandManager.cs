@@ -170,13 +170,13 @@ namespace Ultraleap.TouchFree.ServiceShared
             {
                 case MountingType.NONE:
                 case MountingType.BELOW:
-                    trackingProvider.changeMode(LeapServiceProvider.Mode.Desktop);
+                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.Desktop);
                     break;
                 case MountingType.ABOVE_FACING_USER:
-                    trackingProvider.changeMode(LeapServiceProvider.Mode.ScreenTop);
+                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.ScreenTop);
                     break;
                 case MountingType.ABOVE_FACING_SCREEN:
-                    trackingProvider.changeMode(LeapServiceProvider.Mode.HeadMounted);
+                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.HeadMounted);
                     break;
             }
         }
