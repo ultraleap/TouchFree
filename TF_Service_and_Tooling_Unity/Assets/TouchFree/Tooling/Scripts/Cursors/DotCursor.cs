@@ -84,7 +84,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
 
         Coroutine cursorScalingRoutine;
 
-        protected bool hidingCursor = true;
+        protected bool hidingCursor = false;
         protected bool growQueued = false;
         protected Vector3 cursorLocalScale = Vector3.one;
         protected const int ringSpriteSortingOrder = 32766;
