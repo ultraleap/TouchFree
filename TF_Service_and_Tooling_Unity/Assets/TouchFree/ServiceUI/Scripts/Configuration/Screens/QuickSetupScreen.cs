@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public GameObject completeScreen;
 
-        private const float TARGET_DIST_FROM_EDGE_PERCENTAGE = 0.2f;
+        private const float TARGET_DIST_FROM_EDGE_PERCENTAGE = 0.1f;
         private const float HEIGHT_SCALING_FACTOR = 1f / (1f - (2 * TARGET_DIST_FROM_EDGE_PERCENTAGE));
         private const float EDGE_SCALING_FACTOR = ( ( HEIGHT_SCALING_FACTOR - 1f ) / 2f ) + 1f;
 
