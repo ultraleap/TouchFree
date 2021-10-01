@@ -277,7 +277,7 @@ public class CallToInteractController : MonoBehaviour
             ReleaseRenderTexture();
         }
 
-        videoRenderTexture = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.ARGB32, 0);
+        videoRenderTexture = new RenderTexture(Display.main.systemWidth, Display.main.systemHeight, 0, RenderTextureFormat.ARGB32, 0);
         videoRenderTexture.Create();
     }
 

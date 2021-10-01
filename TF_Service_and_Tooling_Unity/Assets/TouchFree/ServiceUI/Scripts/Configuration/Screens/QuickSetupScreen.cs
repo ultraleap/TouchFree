@@ -9,6 +9,8 @@ namespace Ultraleap.TouchFree.ServiceUI
     {
         public GameObject step1;
         public GameObject step2;
+        public GameObject target1;
+        public GameObject target2;
         public GameObject trackingLost;
         public GameObject setupGuideButton;
 
@@ -22,12 +24,17 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public GameObject completeScreen;
 
-        protected override void OnEnable()
+        private const float TARGET_DIST_FROM_EDGE_PERCENTAGE = 0.1f;
+        private const float HEIGHT_SCALING_FACTOR = 1f / (1f - (2 * TARGET_DIST_FROM_EDGE_PERCENTAGE));
+        private const float EDGE_SCALING_FACTOR = ( ( HEIGHT_SCALING_FACTOR - 1f ) / 2f ) + 1f;
+
+        private void OnEnable()
         {
             base.OnEnable();
             // reset the quick setup
             bottomPosM = Vector3.zero;
             topPosM = Vector3.zero;
+            SetTargetPositions();
             step1.SetActive(true);
             step2.SetActive(false);
             ScreenManager.Instance.SetCursorState(false);
@@ -97,7 +104,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             Vector3 bottomNoX = new Vector3(0, bottomPos.y, bottomPos.z);
             Vector3 topNoX = new Vector3(0, topPos.y, topPos.z);
 
-            ConfigManager.PhysicalConfig.ScreenHeightM = Vector3.Distance(bottomNoX, topNoX) * 1.25f;
+            ConfigManager.PhysicalConfig.ScreenHeightM = Vector3.Distance(bottomNoX, topNoX) * HEIGHT_SCALING_FACTOR;
 
             var bottomEdge = BottomCentreFromTouches(bottomPos, topPos);
             var topEdge = TopCentreFromTouches(bottomPos, topPos);
@@ -140,7 +147,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         /// </summary>
         public Vector3 TopCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
         {
-            return Vector3.LerpUnclamped(bottomTouch, topTouch, 1.125f);
+            return Vector3.LerpUnclamped(bottomTouch, topTouch, EDGE_SCALING_FACTOR);
         }
 
         /// <summary>
@@ -150,7 +157,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         /// </summary>
         public Vector3 BottomCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
         {
-            return Vector3.LerpUnclamped(topTouch, bottomTouch, 1.125f);
+            return Vector3.LerpUnclamped(topTouch, bottomTouch, EDGE_SCALING_FACTOR);
         }
 
         /// <summary>
@@ -207,6 +214,16 @@ namespace Ultraleap.TouchFree.ServiceUI
         public void SetBottomPos(Vector3 position)
         {
             bottomPosM = position;
+        }
+
+        private void SetTargetPositions()
+        {
+            // Canvas is set to scale from 1920 * 1080 to local screen size,
+            // so relative positions have to be in that scale
+            var verticalDistance = 1080f * TARGET_DIST_FROM_EDGE_PERCENTAGE;
+
+            target1.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, verticalDistance, 0f);
+            target2.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, -1f * verticalDistance, 0f);
         }
     }
 }
