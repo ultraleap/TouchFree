@@ -49,18 +49,6 @@ namespace ServiceUITray
 
         public ServiceUITray()
         {
-            trayIcon.DoubleClick += new EventHandler(Settings);
-
-            CheckForServiceActivity(null, null);
-
-            statusCheckTimer.Interval = 5000;
-            statusCheckTimer.Elapsed += CheckForTouchFree;
-            statusCheckTimer.Elapsed += CheckForServiceActivity;
-            statusCheckTimer.Start();
-        }
-
-        void InitializeTray(bool _withApplication)
-        {
             touchFreeMenuItem = new MenuItem("TouchFree Application", LaunchApp);
 
             trayIcon = new NotifyIcon()
@@ -75,6 +63,15 @@ namespace ServiceUITray
                 }),
                 Visible = true
             };
+
+            trayIcon.DoubleClick += new EventHandler(Settings);
+
+            CheckForServiceActivity(null, null);
+
+            statusCheckTimer.Interval = 5000;
+            statusCheckTimer.Elapsed += CheckForTouchFree;
+            statusCheckTimer.Elapsed += CheckForServiceActivity;
+            statusCheckTimer.Start();
         }
 
         private void LaunchApp(object sender, EventArgs e)
@@ -147,6 +144,7 @@ namespace ServiceUITray
                 trayIcon.Text = "TouchFree Service is running";
             }
         }
+
         private void CheckForTouchFree(object sender, ElapsedEventArgs e)
         {
             if (startedAppProcess == null)
@@ -161,7 +159,7 @@ namespace ServiceUITray
                 else
                 {
                     startedAppProcess = null;
-                    trayIcon.Text = "Stop TouchFree";
+                    touchFreeMenuItem.Text = "Stop TouchFree";
                 }
             }
         }
