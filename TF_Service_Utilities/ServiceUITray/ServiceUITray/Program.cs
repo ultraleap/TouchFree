@@ -147,7 +147,7 @@ namespace ServiceUITray
                 trayIcon.Text = "TouchFree Service is running";
             }
         }
-        private void CheckForTouchFree()
+        private void CheckForTouchFree(object sender, ElapsedEventArgs e)
         {
             if (startedAppProcess == null)
             {
