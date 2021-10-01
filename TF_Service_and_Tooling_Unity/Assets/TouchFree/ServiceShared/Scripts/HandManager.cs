@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics;
-using System.IO;
 
 using UnityEngine;
 
 using Leap;
 using Leap.Unity;
-using System.Linq;
 
 namespace Ultraleap.TouchFree.ServiceShared
 {
-    [DefaultExecutionOrder(-1)]
+    [RequireComponent(typeof(LeapServiceProvider)), DefaultExecutionOrder(-1)]
     public class HandManager : MonoBehaviour
     {
         public static HandManager Instance;
@@ -76,6 +73,8 @@ namespace Ultraleap.TouchFree.ServiceShared
         [HideInInspector] public bool useTrackingTransform = true;
         LeapTransform TrackingTransform;
 
+        LeapServiceProvider trackingProvider;
+
         private int handsLastFrame;
 
         // Used by ServiceUI QuickSetup to ensure the tracking mode is the selected one
@@ -91,42 +90,38 @@ namespace Ultraleap.TouchFree.ServiceShared
             Instance = this;
             handsLastFrame = 0;
 
-            PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
-            UpdateTrackingTransform();
+            trackingProvider = (LeapServiceProvider)Hands.Provider;
+            PhysicalConfig.OnConfigUpdated += UpdateTrackingTransformAndMode;
+            StartCoroutine(UpdateTrackingAfterLeapInit());
         }
 
         void OnDestroy()
         {
-            PhysicalConfig.OnConfigUpdated -= UpdateTrackingTransform;
+            PhysicalConfig.OnConfigUpdated -= UpdateTrackingTransformAndMode;
         }
+
+#region Tracking Mode and Tracking Transform 
 
         IEnumerator UpdateTrackingAfterLeapInit()
         {
-            while (((LeapServiceProvider)Hands.Provider).GetLeapController() == null)
+            while (trackingProvider.GetLeapController() == null)
             {
                 yield return null;
             }
 
-            // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
-            // Therefore, we must convert to the real values before using them.
-            // If top mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
-            var isTopMounted = Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.z, 180f);
-            float xAngleDegree = isTopMounted ? -ConfigManager.PhysicalConfig.LeapRotationD.x : ConfigManager.PhysicalConfig.LeapRotationD.x;
-
-            UpdateLeapTrackingMode();
-            TrackingTransform = new LeapTransform(
-                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.ToVector(),
-                Quaternion.Euler(xAngleDegree, ConfigManager.PhysicalConfig.LeapRotationD.y,
-                ConfigManager.PhysicalConfig.LeapRotationD.z).ToLeapQuaternion()
-            );
+            UpdateTrackingTransformAndMode();
         }
 
-        private void UpdateTrackingTransform()
+        /// <summary>
+        /// Used directly and via a callback to trigger tracking transform and mode changes
+        /// </summary>
+        void UpdateTrackingTransformAndMode()
         {
-            StartCoroutine(UpdateTrackingAfterLeapInit());
+            UpdateTrackingMode();
+            UpdateTrackingTransform();
         }
 
-        public void UpdateLeapTrackingMode()
+        void UpdateTrackingMode()
         {
             if (lockTrackingMode)
             {
@@ -139,49 +134,58 @@ namespace Ultraleap.TouchFree.ServiceShared
                 if (ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
                 {
                     //Screentop
-                    SetLeapTrackingMode(MountingType.ABOVE_FACING_USER);
+                    SetTrackingMode(MountingType.ABOVE_FACING_USER);
                 }
                 else
                 {
                     //HMD
-                    SetLeapTrackingMode(MountingType.ABOVE_FACING_SCREEN);
+                    SetTrackingMode(MountingType.ABOVE_FACING_SCREEN);
                 }
             }
             else
             {
                 //Desktop
-                SetLeapTrackingMode(MountingType.BELOW);
+                SetTrackingMode(MountingType.BELOW);
             }
         }
 
-        public void SetLeapTrackingMode(MountingType _mount)
+        void UpdateTrackingTransform()
         {
-            Controller leapController = ((LeapServiceProvider)Hands.Provider).GetLeapController();
+            // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
+            // Therefore, we must convert to the real values before using them.
+            // If top mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
+            var isTopMounted = Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.z, 180f);
+            float xAngleDegree = isTopMounted ? -ConfigManager.PhysicalConfig.LeapRotationD.x : ConfigManager.PhysicalConfig.LeapRotationD.x;
 
+            TrackingTransform = new LeapTransform(
+                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.ToVector(),
+                Quaternion.Euler(xAngleDegree, ConfigManager.PhysicalConfig.LeapRotationD.y,
+                ConfigManager.PhysicalConfig.LeapRotationD.z).ToLeapQuaternion()
+            );
+        }
+
+        public void SetTrackingMode(MountingType _mount)
+        {
             switch (_mount)
             {
                 case MountingType.NONE:
                 case MountingType.BELOW:
-                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
-                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.Desktop);
                     break;
                 case MountingType.ABOVE_FACING_USER:
-                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
-                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-                    leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.ScreenTop);
                     break;
                 case MountingType.ABOVE_FACING_SCREEN:
-                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
-                    leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.HeadMounted);
                     break;
             }
         }
 
+#endregion
+
         private void Update()
         {
-            var currentFrame = Hands.Provider.CurrentFrame;
+            var currentFrame = trackingProvider.CurrentFrame;
             var handCount = currentFrame.Hands.Count;
 
             if (handCount == 0 && handsLastFrame > 0)
@@ -214,7 +218,6 @@ namespace Ultraleap.TouchFree.ServiceShared
             }
 
             UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
-
             UpdateHandStatus(ref SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
         }
 
@@ -310,7 +313,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public bool IsLeapServiceConnected()
         {
-            return ((LeapServiceProvider)Hands.Provider).IsConnected();
+            return trackingProvider.IsConnected();
         }
     }
 
