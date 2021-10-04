@@ -103,7 +103,7 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         void SetTrackingModeAndContinue()
         {
-            HandManager.Instance.SetLeapTrackingMode(ScreenManager.Instance.selectedMountType);
+            HandManager.Instance.SetTrackingMode(ScreenManager.Instance.selectedMountType);
             ScreenManager.Instance.ChangeScreen(nextScreen);
         }
 
