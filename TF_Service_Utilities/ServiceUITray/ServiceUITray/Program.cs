@@ -49,7 +49,7 @@ namespace ServiceUITray
 
         public ServiceUITray()
         {
-            touchFreeMenuItem = new MenuItem("TouchFree Application", LaunchApp);
+            touchFreeMenuItem = new MenuItem("Start TouchFree", LaunchApp);
 
             trayIcon = new NotifyIcon()
             {
@@ -81,12 +81,14 @@ namespace ServiceUITray
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
                 // LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
 
-                startedAppProcess.Close();
+                startedAppProcess.Kill();
             }
             else
             {
                 startedAppProcess = LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
             }
+
+            CheckForTouchFree(null, null);
         }
 
         private void Settings(object sender, EventArgs e)
@@ -147,20 +149,17 @@ namespace ServiceUITray
 
         private void CheckForTouchFree(object sender, ElapsedEventArgs e)
         {
-            if (startedAppProcess == null)
-            {
-                Process[] processes = Process.GetProcessesByName("TouchFree_Application");
+            Process[] processes = Process.GetProcessesByName("TouchFree");
 
-                if (processes != null && processes.Length > 0)
-                {
-                    startedAppProcess = processes[0];
-                    touchFreeMenuItem.Text = "Start TouchFree";
-                }
-                else
-                {
-                    startedAppProcess = null;
-                    touchFreeMenuItem.Text = "Stop TouchFree";
-                }
+            if (processes != null && processes.Length > 0)
+            {
+                startedAppProcess = processes[0];
+                touchFreeMenuItem.Text = "Stop TouchFree";
+            }
+            else
+            {
+                startedAppProcess = null;
+                touchFreeMenuItem.Text = "Start TouchFree";
             }
         }
 
