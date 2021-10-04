@@ -81,7 +81,14 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         protected void SaveConfig_Internal(TData config)
         {
-            File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(config, true));
+            try
+            {
+                File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(config, true));
+            }
+            catch
+            {
+                PermissionController.hasFilePermission = false;
+            }
         }
 
         private bool DoesConfigFileExist()
@@ -101,10 +108,17 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         private void CreateDefaultConfigFile()
         {
-            Directory.CreateDirectory(ConfigFileUtils.ConfigFileDirectory);
-            RequestConfigFilePermissions();
-            File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(new TData(), true));
-            Debug.LogWarning($"No {ConfigFileName} file found in {ConfigFileUtils.ConfigFileDirectory}. One has been generated for you with default values.");
+            try
+            {
+                Directory.CreateDirectory(ConfigFileUtils.ConfigFileDirectory);
+                RequestConfigFilePermissions();
+                File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(new TData(), true));
+                Debug.LogWarning($"No {ConfigFileName} file found in {ConfigFileUtils.ConfigFileDirectory}. One has been generated for you with default values.");
+            }
+            catch
+            {
+                PermissionController.hasFilePermission = false;
+            }
         }
 
         void RequestConfigFilePermissions()

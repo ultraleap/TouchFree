@@ -2,7 +2,7 @@
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class QuickSetupCompleteScreen : MonoBehaviour
+    public class QuickSetupCompleteScreen : ConfigScreen
     {
         public GameObject quickSetupScreen;
         public GameObject manualSetupScreen;

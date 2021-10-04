@@ -54,6 +54,7 @@ namespace Ultraleap.TouchFree
         public IntPtr hwnd;
 
         private Vector2 position;
+        bool ctiActive = false;
 
         [HideInInspector] public static bool clickThroughEnabled = false;
 
@@ -66,14 +67,15 @@ namespace Ultraleap.TouchFree
 #endif
 
             clickThroughEnabled = false;
-            EnableClickThrough();
+            CTIDeactivated();
         }
 
-        public void DisableClickThrough()
+        public void CTIActivated()
         {
+            ctiActive = true;
 #if !UNITY_EDITOR
             if (!clickThroughEnabled)
-            {    
+            {
                 return;
             }
 
@@ -82,11 +84,12 @@ namespace Ultraleap.TouchFree
 #endif
         }
 
-        public void EnableClickThrough()
+        public void CTIDeactivated()
         {
+            ctiActive = false;
 #if !UNITY_EDITOR
             if (clickThroughEnabled || ctiActive)
-            {            
+            {
                 return;
             }
 
@@ -97,18 +100,12 @@ namespace Ultraleap.TouchFree
 
         private void OnEnable()
         {
-            ScreenManager.UIActivated += DisableClickThrough;
-            ScreenManager.UIDeactivated += EnableClickThrough;
-
             CallToInteractController.OnCTIActive += CTIActivated;
             CallToInteractController.OnCTIInactive += CTIDeactivated;
         }
 
         private void OnDisable()
         {
-            ScreenManager.UIActivated -= DisableClickThrough;
-            ScreenManager.UIDeactivated -= EnableClickThrough;
-
             CallToInteractController.OnCTIActive -= CTIActivated;
             CallToInteractController.OnCTIInactive -= CTIDeactivated;
         }
@@ -127,19 +124,6 @@ namespace Ultraleap.TouchFree
 
             var margins = new MARGINS() { cxLeftWidth = -1 };
             DwmExtendFrameIntoClientArea(hwnd, ref margins);
-
-            StartCoroutine(FocusPreviousWindowNextFrame());
-        }
-
-        /// <summary>
-        /// Used to remove focus from the TouchFree Application. This is useful to allow users
-        /// a single click on the taskbar to launch the UI.
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator FocusPreviousWindowNextFrame()
-        {
-            yield return null;
-            FocusPreviousWindow();
         }
 
         void SetConfigWindow(bool setResolution)
@@ -199,90 +183,9 @@ namespace Ultraleap.TouchFree
             position.y = Display.main.systemHeight - position.y - (TouchFreeMain.CursorWindowSize / 2);
         }
 
-
-        bool ctiActive = false;
-        void CTIActivated()
-        {
-            ctiActive = true;
-            DisableClickThrough();
-        }
-
-        void CTIDeactivated()
-        {
-            ctiActive = false;
-            if (ScreenManager.Instance != null && !ScreenManager.Instance.isActive)
-            {
-                EnableClickThrough();
-            }
-        }
-
         private void OnApplicationQuit()
         {
             SetConfigWindow(true);
         }
-
-#region Remove focus
-
-        /// <summary>
-        /// filter function
-        /// </summary>
-        /// <param name="hWnd"></param>
-        /// <param name="lParam"></param>
-        /// <returns></returns>
-        public delegate bool EnumDelegate(IntPtr hWnd, int lParam);
-
-        /// <summary>
-        /// check if windows visible
-        /// </summary>
-        /// <param name="hWnd"></param>
-        /// <returns></returns>
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWindowVisible(IntPtr hWnd);
-
-        /// <summary>
-        /// enumarator on all desktop windows
-        /// </summary>
-        /// <param name="hDesktop"></param>
-        /// <param name="lpEnumCallbackFunction"></param>
-        /// <param name="lParam"></param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "EnumDesktopWindows",
-        ExactSpelling = false, CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern bool EnumDesktopWindows(IntPtr hDesktop, EnumDelegate lpEnumCallbackFunction, IntPtr lParam);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern bool BringWindowToTop(IntPtr hWnd);
-
-        void FocusPreviousWindow()
-        {
-            // Nullable var so we can check it is populated
-            IntPtr? previousTopWindow = null;
-
-            // Windows user delegate for enumerating through the windows
-            EnumDelegate filter = delegate (IntPtr hWnd, int lParam)
-            {
-                if (IsWindowVisible(hWnd) && !previousTopWindow.HasValue)
-                {
-                    if(hwnd != hWnd)
-                    {
-                        previousTopWindow = hWnd;
-                    }
-                }
-                return true;
-            };
-
-            // Begin the enumeration
-            if (EnumDesktopWindows(IntPtr.Zero, filter, IntPtr.Zero))
-            {
-                // Once enumerated, if we found a window to focus, bring it to the top
-                if (previousTopWindow.HasValue)
-                {
-                    BringWindowToTop(previousTopWindow.Value);
-                }
-            }
-        }
-#endregion
-
     }
 }

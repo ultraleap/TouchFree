@@ -4,10 +4,10 @@
 #define CompanyURL "https://ultraleap.com"
 #define ProductName "TouchFree"
 #define Publisher "Ultraleap Inc."
-#define ServiceUIExeName "TouchFreeServiceUI.exe"
-#define ServiceUIName "TouchFree Service Settings"
-#define TouchFreeAppExeName "TouchFree_Application.exe"
-#define TouchFreeAppName "TouchFree Application"
+#define SettingsUIExeName "TouchFreeSettingsUI.exe"
+#define SettingsUIName "TouchFree Settings"
+#define TouchFreeAppExeName "TouchFree.exe"
+#define TouchFreeAppName "TouchFree"
 #define TrayAppExeName "ServiceUITray.exe"
 #define TrayAppName "TouchFree Service Control Panel"
 #define WrapperExeName "ServiceWrapper.exe"
@@ -52,7 +52,7 @@ Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flag
 
 [Icons]
 Name: "{autoprograms}\{#TouchFreeAppName}"; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}";
-Name: "{autoprograms}\{#ServiceUIName}"; Filename: "{app}\ServiceUI\{#ServiceUIExeName}";
+Name: "{autoprograms}\{#SettingsUIName}"; Filename: "{app}\SettingsUI\{#SettingsUIExeName}";
 Name: "{autostartup}\{#TrayAppName}"; Filename: "{app}\Tray\{#TrayAppExeName}";
 
 [Registry]
@@ -62,8 +62,9 @@ Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletek
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
 
 [Run]
-; Filename: "{app}\ServiceUI\{#ServiceUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ServiceUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
-Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
+; Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(SettingsUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
+Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "Configure TouchFree"; Flags: runascurrentuser nowait postinstall skipifsilent
+; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
@@ -105,4 +106,63 @@ begin
 
   // Proceed Setup
   Result := '';
+end;
+
+{ Scripts to uninstall a previous version before installing the new one from and article on StackOverflow: }
+{ https://stackoverflow.com/questions/2000296/inno-setup-how-to-automatically-uninstall-previous-installed-version }
+
+function GetUninstallString(): String;
+var
+  sUnInstPath: String;
+  sUnInstallString: String;
+begin
+  sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#emit SetupSetting("AppId")}_is1');
+  sUnInstallString := '';
+  if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
+    RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
+  Result := sUnInstallString;
+end;
+
+{ ///////////////////////////////////////////////////////////////////// }
+function IsUpgrade(): Boolean;
+begin
+  Result := (GetUninstallString() <> '');
+end;
+
+{ ///////////////////////////////////////////////////////////////////// }
+function UnInstallOldVersion(): Integer;
+var
+  sUnInstallString: String;
+  iResultCode: Integer;
+begin
+{ Return Values: }
+{ 1 - uninstall string is empty }
+{ 2 - error executing the UnInstallString }
+{ 3 - successfully executed the UnInstallString }
+
+  { default return value }
+  Result := 0;
+
+  { get the uninstall string of the old app }
+  sUnInstallString := GetUninstallString();
+  if sUnInstallString <> '' then begin
+    sUnInstallString := RemoveQuotes(sUnInstallString);
+    if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
+end;
+
+{ ///////////////////////////////////////////////////////////////////// }
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if (CurStep=ssInstall) then
+  begin
+    if (IsUpgrade()) then
+    begin
+      UnInstallOldVersion();
+    end;
+  end;
 end;
