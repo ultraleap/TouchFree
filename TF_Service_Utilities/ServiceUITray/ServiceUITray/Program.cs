@@ -22,7 +22,7 @@ namespace ServiceUITray
 
             mutex = new Mutex(true, appName, out createdNew);
 
-            if(!createdNew)
+            if (!createdNew)
             {
                 return;
             }
@@ -39,6 +39,8 @@ namespace ServiceUITray
         const string APPLICATION_PATH = "../TouchFree/TouchFree.exe";
 
         private NotifyIcon trayIcon;
+        private MenuItem touchFreeMenuItem;
+
         Process startedSettingsProcess;
         Process startedAppProcess;
         ServiceController touchFreeService = null;
@@ -47,54 +49,29 @@ namespace ServiceUITray
 
         public ServiceUITray()
         {
-            if (File.Exists(APPLICATION_PATH))
+            touchFreeMenuItem = new MenuItem("Start TouchFree", LaunchApp);
+
+            trayIcon = new NotifyIcon()
             {
-                InitializeTray(true);
-            }
-            else
-            {
-                InitializeTray(false);
-            }
+                Icon = Properties.Resources.IconActive,
+                ContextMenu = new ContextMenu(new MenuItem[] {
+                    touchFreeMenuItem,
+                    new MenuItem("-"),
+                    new MenuItem("Settings", Settings),
+                    new MenuItem("-"),
+                    new MenuItem("Exit", Exit),
+                }),
+                Visible = true
+            };
 
             trayIcon.DoubleClick += new EventHandler(Settings);
 
             CheckForServiceActivity(null, null);
 
             statusCheckTimer.Interval = 5000;
+            statusCheckTimer.Elapsed += CheckForTouchFree;
             statusCheckTimer.Elapsed += CheckForServiceActivity;
             statusCheckTimer.Start();
-        }
-
-        void InitializeTray(bool _withApplication)
-        {
-            if (_withApplication)
-            {
-                trayIcon = new NotifyIcon()
-                {
-                    Icon = Properties.Resources.IconActive,
-                    ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Start TouchFree", LaunchApp),
-                    new MenuItem("-"),
-                    new MenuItem("Settings", Settings),
-                    new MenuItem("-"),
-                    new MenuItem("Exit", Exit),
-                }),
-                    Visible = true
-                };
-            }
-            else
-            {
-                trayIcon = new NotifyIcon()
-                {
-                    Icon = Properties.Resources.IconActive,
-                    ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Settings", Settings),
-                    new MenuItem("-"),
-                    new MenuItem("Exit", Exit),
-                }),
-                    Visible = true
-                };
-            }
         }
 
         private void LaunchApp(object sender, EventArgs e)
@@ -102,12 +79,16 @@ namespace ServiceUITray
             if (startedAppProcess != null && !startedAppProcess.HasExited)
             {
                 // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
+                // LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
+
+                startedAppProcess.Kill();
             }
             else
             {
                 startedAppProcess = LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
             }
+
+            CheckForTouchFree(null, null);
         }
 
         private void Settings(object sender, EventArgs e)
@@ -125,7 +106,7 @@ namespace ServiceUITray
 
         private void Exit(object sender, EventArgs e)
         {
-            if(startedSettingsProcess != null && !startedSettingsProcess.HasExited)
+            if (startedSettingsProcess != null && !startedSettingsProcess.HasExited)
             {
                 startedSettingsProcess.Kill();
             }
@@ -136,6 +117,7 @@ namespace ServiceUITray
             }
 
             statusCheckTimer.Elapsed -= CheckForServiceActivity;
+            statusCheckTimer.Elapsed -= CheckForTouchFree;
             statusCheckTimer.Stop();
 
             // Hide tray icon, otherwise it will remain shown until user mouses over it
@@ -162,6 +144,22 @@ namespace ServiceUITray
             {
                 trayIcon.Icon = Properties.Resources.IconActive;
                 trayIcon.Text = "TouchFree Service is running";
+            }
+        }
+
+        private void CheckForTouchFree(object sender, ElapsedEventArgs e)
+        {
+            Process[] processes = Process.GetProcessesByName("TouchFree");
+
+            if (processes != null && processes.Length > 0)
+            {
+                startedAppProcess = processes[0];
+                touchFreeMenuItem.Text = "Stop TouchFree";
+            }
+            else
+            {
+                startedAppProcess = null;
+                touchFreeMenuItem.Text = "Start TouchFree";
             }
         }
 
