@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using UnityEngine;
@@ -46,7 +46,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
         // Used to store HandPresenceState changes as they are recieved and emit messages
         // appropriately. "PROCESSED" when there are no unprocessed changes.
-        internal HandPresenceState handState;
+        internal HandPresenceState handState = HandPresenceState.PROCESSED;
 
         // Used to ensure UP events are sent at the correct position relative to the previous
         // MOVE event.
@@ -59,7 +59,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Unity's initialization function. Used to begin the <ClearUnresponsiveCallbacks> coroutine.
         void Start()
         {
-            handState = HandPresenceState.PROCESSED;
             StartCoroutine(ClearUnresponsiveCallbacks());
         }
 

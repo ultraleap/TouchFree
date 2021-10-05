@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Service
 
         private bool websocketInitalised = false;
 
-        internal Nullable<HandPresenceEvent> missedHandPresenceEvent = null;
+        internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
         private void Awake()
         {
@@ -55,6 +55,7 @@ namespace Ultraleap.TouchFree.Service
                 missedHandPresenceEvent = handFoundEvent;
             }
         }
+
         private void OnHandsLost()
         {
             HandPresenceEvent handsLostEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);

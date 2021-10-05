@@ -96,10 +96,7 @@ namespace Ultraleap.TouchFree.Service
 
         private void SendInitialHandState()
         {
-            if (ClientConnectionManager.Instance.missedHandPresenceEvent.HasValue)
-            {
-                this.SendHandPresenceEvent(ClientConnectionManager.Instance.missedHandPresenceEvent.Value);
-            }
+            this.SendHandPresenceEvent(ClientConnectionManager.Instance.missedHandPresenceEvent);
         }
 
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)
