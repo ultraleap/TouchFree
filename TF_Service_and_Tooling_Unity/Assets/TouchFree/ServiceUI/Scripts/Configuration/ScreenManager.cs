@@ -132,8 +132,6 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             ChangeScreen(previousScreens[previousScreens.Count-1], true);
             previousScreens.RemoveAt(previousScreens.Count-1);
-
-            HandManager.Instance.UpdateLeapTrackingMode();
         }
 
         public void CloseApplication()

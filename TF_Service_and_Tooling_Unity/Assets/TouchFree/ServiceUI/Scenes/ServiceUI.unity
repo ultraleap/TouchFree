@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -285,6 +285,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1163268008 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6391408716024586186, guid: dc0e884672fe42e49b02672301208def,
+    type: 3}
+  m_PrefabInstance: {fileID: 5846096576921452454}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1301626538 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1050801407432259790, guid: dc0e884672fe42e49b02672301208def,
+    type: 3}
+  m_PrefabInstance: {fileID: 5846096576921452454}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2124978200
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,11 +505,21 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3257243321683968188, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4541549585632794220, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: clientRootObj
       value: 
       objectReference: {fileID: 25156774}
+    - target: {fileID: 4826058112137510207, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4852224622988348252, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_Name
@@ -607,6 +629,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6508488732236733192, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: target1
+      value: 
+      objectReference: {fileID: 1301626538}
+    - target: {fileID: 6508488732236733192, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: target2
+      value: 
+      objectReference: {fileID: 1163268008}
+    - target: {fileID: 6508488732236733192, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: TARGET_DIST_FROM_EDGE_PERCENTAGE
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 7364053366511253776, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
