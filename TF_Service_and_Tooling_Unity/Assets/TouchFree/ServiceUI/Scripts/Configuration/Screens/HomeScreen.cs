@@ -5,7 +5,7 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class HomeScreen : MonoBehaviour
+    public class HomeScreen : ConfigScreen
     {
         bool lastFrameServiceConnected = true;
 
@@ -15,6 +15,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space]
         public GameObject setupCameraScreen;
         public GameObject interactionSettingsScreen;
+        public GameObject overlayVisualsScreen;
         public GameObject advancedSettingsScreen;
 
         public Text versionText;
@@ -26,8 +27,9 @@ namespace Ultraleap.TouchFree.ServiceUI
             PopulateVersion();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             lastFrameServiceConnected = true;
 
             leapConnectedNotification.SetActive(true);
@@ -84,6 +86,11 @@ namespace Ultraleap.TouchFree.ServiceUI
         public void ChangeToInteractionSettings()
         {
             ScreenManager.Instance.ChangeScreen(interactionSettingsScreen);
+        }
+
+        public void ChangeToOverlayVisuals()
+        {
+            ScreenManager.Instance.ChangeScreen(overlayVisualsScreen);
         }
 
         public void ChangeToAdvancedSettings()

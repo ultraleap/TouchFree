@@ -5,7 +5,7 @@ using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
-    public class QuickSetupScreen : MonoBehaviour
+    public class QuickSetupScreen : ConfigScreen
     {
         public GameObject step1;
         public GameObject step2;
@@ -30,6 +30,7 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private void OnEnable()
         {
+            base.OnEnable();
             // reset the quick setup
             bottomPosM = Vector3.zero;
             topPosM = Vector3.zero;
