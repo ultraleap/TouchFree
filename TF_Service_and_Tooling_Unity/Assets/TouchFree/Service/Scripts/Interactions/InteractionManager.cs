@@ -12,8 +12,8 @@ namespace Ultraleap.TouchFree.Service
         public delegate void InteractionInputAction(InputAction _inputData);
         public static event InteractionInputAction HandleInputAction;
 
-        public static Dictionary<InteractionType, InteractionModule> interactions =
-                  new Dictionary<InteractionType, InteractionModule>();
+        public static Dictionary<InteractionType, InteractionModulePair> interactions =
+                  new Dictionary<InteractionType, InteractionModulePair>();
 
         private static InteractionManager instance = null;
         public static InteractionManager Instance
@@ -24,10 +24,10 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        public InteractionModule pushInteractionModule;
-        public InteractionModule hoverInteractionModule;
-        public InteractionModule grabInteractionModule;
-        public InteractionModule touchPlaneInteractionModule;
+        public InteractionModulePair pushInteractionModules;
+        public InteractionModulePair hoverInteractionModules;
+        public InteractionModulePair grabInteractionModules;
+        public InteractionModulePair touchPlaneInteractionModules;
 
         private void Awake()
         {
@@ -40,14 +40,15 @@ namespace Ultraleap.TouchFree.Service
 
             InteractionModule.HandleInputAction += HandleInteractionModuleInputAction;
 
-            interactions.Add(InteractionType.PUSH, pushInteractionModule);
-            interactions.Add(InteractionType.HOVER, hoverInteractionModule);
-            interactions.Add(InteractionType.GRAB, grabInteractionModule);
-            interactions.Add(InteractionType.TOUCHPLANE, touchPlaneInteractionModule);
+            interactions.Add(InteractionType.PUSH, pushInteractionModules);
+            interactions.Add(InteractionType.HOVER, hoverInteractionModules);
+            interactions.Add(InteractionType.GRAB, grabInteractionModules);
+            interactions.Add(InteractionType.TOUCHPLANE, touchPlaneInteractionModules);
 
             InteractionConfig.OnConfigUpdated += InteractionConfigUpdated;
 
             SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
+            SetActiveInteractions(ConfigManager.InteractionConfig.InteractionTypeSecondary, false);
         }
 
         private void OnDestroy()
@@ -56,13 +57,13 @@ namespace Ultraleap.TouchFree.Service
             InteractionConfig.OnConfigUpdated -= InteractionConfigUpdated;
         }
 
-        public void SetActiveInteractions(InteractionType _activateType)
+        public void SetActiveInteractions(InteractionType _activateType, bool _primary = true)
         {
-            SetActiveInteractions(new InteractionType[] { _activateType });
+            SetActiveInteractions(new InteractionType[] { _activateType }, _primary);
         }
 
         // For Config settings and Client Interaction requests
-        public void SetActiveInteractions(InteractionType[] _activateTypes)
+        public void SetActiveInteractions(InteractionType[] _activateTypes, bool _primary = true)
         {
             foreach(var interaction in interactions)
             {
@@ -73,19 +74,28 @@ namespace Ultraleap.TouchFree.Service
                     {
                         set = true;
 
-                        if(!interaction.Value.enabled)
+                        if(_primary)
                         {
-                            interaction.Value.enabled = true;
+                            interaction.Value.primaryModule.enabled = true;
                         }
+                        else
+                        {
+                            interaction.Value.secondaryModule.enabled = true;
+                        }
+
                         break;
                     }
                 }
 
                 if(!set)
                 {
-                    if (interaction.Value.enabled)
+                    if (_primary)
                     {
-                        interaction.Value.enabled = false;
+                        interaction.Value.primaryModule.enabled = false;
+                    }
+                    else
+                    {
+                        interaction.Value.secondaryModule.enabled = false;
                     }
                 }
             }
@@ -99,6 +109,14 @@ namespace Ultraleap.TouchFree.Service
         private void InteractionConfigUpdated()
         {
             SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
+            SetActiveInteractions(ConfigManager.InteractionConfig.InteractionTypeSecondary, false);
         }
+    }
+
+    [System.Serializable]
+    public struct InteractionModulePair
+    {
+        public InteractionModule primaryModule;
+        public InteractionModule secondaryModule;
     }
 }

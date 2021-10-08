@@ -27,6 +27,7 @@ namespace Ultraleap.TouchFree.ServiceShared
         public float InteractionMaxDistanceCm = 25.0f;
 
         public InteractionType InteractionType = InteractionType.PUSH;
+        public InteractionType InteractionTypeSecondary = InteractionType.PUSH;
 
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
