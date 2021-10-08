@@ -9,6 +9,9 @@ public class CameraPreviewScreen : MonoBehaviour
     public Material leftCameraMat;
     public Material rightCameraMat;
 
+    [SerializeField]
+    private float thresholdValue = 0.5f;
+
     void OnEnable()
     {
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
@@ -23,8 +26,8 @@ public class CameraPreviewScreen : MonoBehaviour
     void OnOverExposureValueChanged(bool state)
     {
         if (state) {
-            leftCameraMat.SetFloat("_threshold", 0.5f);
-            rightCameraMat.SetFloat("_threshold", 0.5f);
+            leftCameraMat.SetFloat("_threshold", thresholdValue);
+            rightCameraMat.SetFloat("_threshold", thresholdValue);
         } else {
             leftCameraMat.SetFloat("_threshold", 1.0f);
             rightCameraMat.SetFloat("_threshold", 1.0f);
