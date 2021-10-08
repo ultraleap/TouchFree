@@ -21,8 +21,8 @@ TF_Service::dotNet::build:
   stage: build
   when: always
   script:
-    - dotnet build -c Release "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
     # Move the built wrapper to the root directory
+    - dotnet publish -c Release "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
     - mkdir ./Service_dotNet_Build
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/*" ./Service_dotNet_Build
 
