@@ -91,4 +91,9 @@ Testing/ServiceSocketTests/results/**
 !/TF_Service_Utilities/**/*.csproj
 !/TF_Service_Utilities/**/*.sln
 
+# =================== #
+#    Service dotNet   #
+# =================== #
 
+!/TF_Service_dotNet/**/*.csproj
+!/TF_Service_dotNet/**/*.sln
