@@ -24,7 +24,7 @@ TF_Service::dotNet::build:
     - MSBuild.exe "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln" /p:Configuration=Release /p:Platform=x64
     # Move the built wrapper to the root directory
     - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/x64/Release/netcoreapp3.1/*" ./Service_dotNet_Build
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/x64/Release/net5.0/*" ./Service_dotNet_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
