@@ -24,24 +24,18 @@ namespace Ultraleap.TouchFree.Tooling.InputControllers
         [SerializeField]
         private EventSystem eventSystem;
 
-        // Group: Cached Input Information
-        // These variables are determined whenever <HandleInputAction> is called and are used
-        // to inform the inherited values in the section below when queried.
-        private Vector2 touchPosition;
-        private TouchPhase touchPhase = TouchPhase.Ended;
-        private int baseDragThreshold = 100000;
         public bool sendHoverEvents = true;
-        private bool isTouching = false;
-        private bool isCancelled = true;
+
+        public TouchData primaryTouchData = new TouchData();
+        public TouchData secondaryTouchData = new TouchData();
 
         // Group: Inherited Values
         // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
         // and are overridden here so their values can be determined from the TouchFree Service.
-        public override Vector2 mousePosition => (sendHoverEvents && !isCancelled) ? touchPosition : base.mousePosition;
-        public override bool mousePresent => (sendHoverEvents && !isCancelled) ? true : base.mousePresent;
-        public override bool touchSupported => isTouching ? true : base.touchSupported;
-        public override int touchCount => isTouching ? 1 : base.touchCount;
-        public override Touch GetTouch(int index) => isTouching ? CheckForTouch(index) : base.GetTouch(index);
+        public override Vector2 mousePosition => IsTouchFreeInputWithinScreen() ? primaryTouchData.touchPosition : base.mousePosition;
+        public override bool mousePresent => IsTouchFreeInputWithinScreen() ? true : base.mousePresent;
+        public override bool touchSupported => true;
+        public override int touchCount => GetTouchCount() != 0 ? GetTouchCount() : base.touchCount;
 
         // Group: Methods
 
@@ -58,28 +52,77 @@ namespace Ultraleap.TouchFree.Tooling.InputControllers
             }
 
             inputModule.inputOverride = this;
+            eventSystem.pixelDragThreshold = 0;
         }
 
-        // Function: CheckForTouch
-        // Used in the override for <GetTouch> to update the current Touch state based on the
+        // Function: GetTouch
+        // Used to update the current Touch state based on the
         // latest InputActions processed by <HandleInputAction>.
         //
         // Parameters:
         //     index - The Touch index, passed down from <GetTouch>
-        private Touch CheckForTouch(int index)
+        public override Touch GetTouch(int index)
         {
-            if (touchPhase == TouchPhase.Ended || touchPhase == TouchPhase.Canceled)
+            if(touchCount == 0)
             {
-                isTouching = false;
+                return base.GetTouch(index);
+            }
+            
+            if(touchCount == 1)
+            {
+                if(primaryTouchData.isTouching)
+                {
+                    return GetTouchFromData(index, ref primaryTouchData);
+                }
+                else
+                {
+                    return GetTouchFromData(index, ref secondaryTouchData);
+                }
+            }
+            else
+            {
+                if (index == 0)
+                {
+                    return GetTouchFromData(index, ref primaryTouchData);
+                }
+                else
+                {
+                    return GetTouchFromData(index, ref secondaryTouchData);
+                }
+            }
+        }
+
+        Touch GetTouchFromData(int index,  ref TouchData _touchData)
+        {
+            if (_touchData.touchPhase == TouchPhase.Ended || _touchData.touchPhase == TouchPhase.Canceled)
+            {
+                _touchData.isTouching = false;
             }
 
             return new Touch()
             {
                 fingerId = index,
-                position = touchPosition,
+                position = _touchData.touchPosition,
                 radius = 0.1f,
-                phase = touchPhase
+                phase = _touchData.touchPhase
             };
+        }
+
+        int GetTouchCount()
+        {
+            int count = 0;
+
+            if (primaryTouchData.isTouching)
+            {
+                count++;
+            }
+
+            if(secondaryTouchData.isTouching)
+            {
+                count++;
+            }
+
+            return count;
         }
 
         // Function: HandleInputAction
@@ -90,46 +133,73 @@ namespace Ultraleap.TouchFree.Tooling.InputControllers
         //     _inputData - The latest Action to arrive via the <ServiceConnection>.
         protected override void HandleInputAction(InputAction _inputData)
         {
-            base.HandleInputAction(_inputData);
-
-            InputType type = _inputData.InputType;
-            Vector2 cursorPosition = _inputData.CursorPosition;
-
-            touchPosition = cursorPosition;
-            isCancelled = false;
-
-            switch (type)
+            switch (_inputData.HandType)
             {
-                case InputType.DOWN:
-                    touchPhase = TouchPhase.Began;
-                    eventSystem.pixelDragThreshold = 0;
-                    isTouching = true;
+                case HandType.PRIMARY:
+                    HandlePerHandInputAction(_inputData, ref primaryTouchData);
                     break;
-
-                case InputType.MOVE:
-                    touchPhase = TouchPhase.Moved;
-                    break;
-
-                case InputType.CANCEL:
-                    touchPhase = TouchPhase.Canceled;
-                    eventSystem.pixelDragThreshold = baseDragThreshold;
-                    isCancelled = true;
-                    break;
-
-                case InputType.UP:
-                    touchPhase = TouchPhase.Ended;
-                    eventSystem.pixelDragThreshold = baseDragThreshold;
+                case HandType.SECONDARY:
+                    HandlePerHandInputAction(_inputData, ref secondaryTouchData);
                     break;
             }
         }
 
+        void HandlePerHandInputAction(InputAction _inputData, ref TouchData _touchData)
+        {
+            switch (_inputData.InputType)
+            {
+                case InputType.DOWN:
+                    _touchData.touchPhase = TouchPhase.Began;
+                    _touchData.isTouching = true;
+                    break;
+
+                case InputType.MOVE:
+                    if (_touchData.isTouching && _touchData.touchPosition != _inputData.CursorPosition)
+                    {
+                        _touchData.touchPhase = TouchPhase.Moved;
+                    }
+                    break;
+
+                case InputType.CANCEL:
+                    _touchData.touchPhase = TouchPhase.Canceled;
+                    break;
+
+                case InputType.UP:
+                    _touchData.touchPhase = TouchPhase.Ended;
+                    break;
+            }
+
+            _touchData.touchPosition = _inputData.CursorPosition;
+        }
+
+        bool IsTouchFreeInputWithinScreen()
+        {
+            if(!sendHoverEvents || primaryTouchData.touchPhase == TouchPhase.Canceled)
+            {
+                return false;
+            }
+
+            if(primaryTouchData.touchPosition.x < 0 || primaryTouchData.touchPosition.y < 0 || primaryTouchData.touchPosition.x > Screen.width || primaryTouchData.touchPosition.y > Screen.height)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         protected override void OnDisable()
         {
-            touchPhase = TouchPhase.Canceled;
-            eventSystem.pixelDragThreshold = baseDragThreshold;
-            isCancelled = true;
+            primaryTouchData.touchPhase = TouchPhase.Canceled;
+            secondaryTouchData.touchPhase = TouchPhase.Canceled;
 
             base.OnDisable();
         }
+    }
+    [System.Serializable]
+    public class TouchData
+    {
+        public Vector2 touchPosition;
+        public TouchPhase touchPhase = TouchPhase.Ended;
+        public bool isTouching = false;
     }
 }
