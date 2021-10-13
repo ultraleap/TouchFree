@@ -1,35 +1,33 @@
 ﻿using System;
-using Leap;
+using System.Timers;
 
 namespace Ultraleap.TouchFree.Service
 {
     class Program
     {
-        public static Controller controller = new Controller();
+        private Timer mainTimer;
 
         static void Main(string[] args)
         {
-            new Program().Run();
+            var program = new Program();
+
+            while(true) { }
         }
 
-        void Run()
+        Program()
         {
-            Console.WriteLine("TouchFree physical config screen height is: " + Configuration.ConfigManager.PhysicalConfig.ScreenHeightM);
+            Console.WriteLine(Configuration.ConfigManager.PhysicalConfig.ScreenHeightM);
 
-            TrackingModeManager.UpdateTrackingMode();
-            controller.FrameReady += OnFrameReady;
+            mainTimer = new Timer(1000f / 60f);
 
-            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-        }
+            //var trackingMgr = new TrackingConnectionManager(mainTimer);
+            //var interactionMgr = new InteractionManager();
+            var clientMgr = new ClientConnectionManager(mainTimer);
+            //var configWatcher = ConfigFileWatcher();
 
-        void OnFrameReady(object sender, FrameEventArgs eventArgs)
-        {
-            Frame frame = eventArgs.frame;
 
-            if (frame.Hands.Count > 0)
-            {
-                Console.WriteLine("Palm Position = " + frame.Hands[0].PalmPosition);
-            }
+
+            mainTimer.Start();
         }
     }
 }
