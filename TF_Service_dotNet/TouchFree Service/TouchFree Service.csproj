@@ -7,6 +7,11 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /yr &quot;.\Plugins\LeapC\x86_64\LeapC.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;" />
+  </Target>
+
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
