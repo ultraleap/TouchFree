@@ -6,7 +6,7 @@ namespace Ultraleap.TouchFree.Service
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Configuration.ConfigManager.PhysicalConfig.ScreenHeightM);
+            Console.WriteLine("TouchFree physical config screen height is: " + Configuration.ConfigManager.PhysicalConfig.ScreenHeightM);
         }
     }
 }
