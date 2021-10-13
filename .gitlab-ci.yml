@@ -20,7 +20,7 @@ stages:
   - package
   - installer
 
-TF_Tooling::Unity::build:
+.TF_Tooling::Unity::build:
   stage: build
   when: always
   script:
@@ -63,7 +63,7 @@ TF_Tooling::Unity::build:
     - unity
     - win10
 
-TF_Tooling::Web::build:
+.TF_Tooling::Web::build:
   stage: build
   when: always
   script:
@@ -95,7 +95,7 @@ TF_Tooling::Web::build:
     - unity
     - win10
 
-TF_Tooling::Docs::build:
+.TF_Tooling::Docs::build:
   stage: build
   when: always
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
@@ -111,7 +111,7 @@ TF_Tooling::Docs::build:
   tags:
     - docker
 
-TF_Service::Wrapper::build:
+.TF_Service::Wrapper::build:
   stage: build
   when: always
   script:
@@ -133,7 +133,29 @@ TF_Service::Wrapper::build:
     - unity
     - win10
 
-TF_Service::Tray::build:
+TF_Service::dotNet::build:
+  stage: build
+  when: always
+  script:
+    # Move the built wrapper to the root directory
+    - dotnet publish -c Release "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
+    - mkdir ./Service_dotNet_Build
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/publish/*" ./Service_dotNet_Build
+
+    # Sign the executable with the UltraLeap certificate
+    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree Service.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+  artifacts:
+    name: "TouchFree_Service_dotNet"
+    paths:
+    - ./Service_dotNet_Build/**
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
+
+.TF_Service::Tray::build:
   stage: build
   when: always
   script:
@@ -155,7 +177,7 @@ TF_Service::Tray::build:
     - unity
     - win10
 
-TF_Service::build:
+.TF_Service::build:
   stage: build
   when: always
   script:
@@ -207,7 +229,7 @@ TF_Service::build:
     - unity
     - win10
 
-TouchFree::build:
+.TouchFree::build:
   stage: build
   when: always
   script:
@@ -258,7 +280,7 @@ TouchFree::build:
     - unity
     - win10
 
-TF_Service::test:
+.TF_Service::test:
   stage: test
 
   dependencies:
@@ -282,7 +304,7 @@ TF_Service::test:
     - unity
     - win10
 
-TF_Tooling::Web::package:
+.TF_Tooling::Web::package:
   stage: package
   image: alpine:3.13
   dependencies:
@@ -305,7 +327,7 @@ TF_Tooling::Web::package:
   tags:
     - docker
 
-TF_Tooling::Unity::package:
+.TF_Tooling::Unity::package:
   stage: package
   image: alpine:3.13
   dependencies:
@@ -328,7 +350,7 @@ TF_Tooling::Unity::package:
   tags:
     - docker
 
-TF_Service::package:
+.TF_Service::package:
   stage: package
   dependencies:
     - TF_Service::build
@@ -363,7 +385,7 @@ TF_Service::package:
     - unity
     - win10
 
-TouchFree::installer:
+.TouchFree::installer:
   stage: installer
   dependencies:
     - TF_Service::package
