@@ -138,9 +138,9 @@ TF_Service::dotNet::build:
   when: always
   script:
     # Move the built wrapper to the root directory
-    - dotnet publish -c Release "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
+    - dotnet build -c Release "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
     - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/publish/*" ./Service_dotNet_Build
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/*" ./Service_dotNet_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
