@@ -5,7 +5,7 @@ namespace Ultraleap.TouchFree.Service
 {
     class Program
     {
-        private Controller controller = new Controller();
+        public static Controller controller = new Controller();
 
         static void Main(string[] args)
         {
@@ -16,6 +16,7 @@ namespace Ultraleap.TouchFree.Service
         {
             Console.WriteLine("TouchFree physical config screen height is: " + Configuration.ConfigManager.PhysicalConfig.ScreenHeightM);
 
+            TrackingModeManager.UpdateTrackingMode();
             controller.FrameReady += OnFrameReady;
 
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
