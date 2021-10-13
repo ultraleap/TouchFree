@@ -4,9 +4,17 @@ using Ultraleap.TouchFree.Service.Configuration;
 
 namespace Ultraleap.TouchFree.Service
 {
-    class TrackingModeManager
+    class TrackingConnectionManager
     {
-        public static void UpdateTrackingMode()
+        Controller controller;
+
+        public TrackingConnectionManager()
+        {
+            controller = new Controller();
+            UpdateTrackingMode();
+        }
+
+        public void UpdateTrackingMode()
         {
             // leap is looking down
             if (Math.Abs(ConfigManager.PhysicalConfig.LeapRotationD.Z) > 90f)
@@ -26,23 +34,23 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        static void SetTrackingMode(TrackingMode _mode)
+        void SetTrackingMode(TrackingMode _mode)
         {
             Console.WriteLine($"Requesting {_mode} tracking mode");
 
             switch (_mode)
             {
                 case TrackingMode.DESKTOP:
-                    Program.controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    Program.controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
                 case TrackingMode.HMD:
-                    Program.controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    Program.controller.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    controller.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
                 case TrackingMode.SCREENTOP:
-                    Program.controller.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    Program.controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    controller.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
         }
