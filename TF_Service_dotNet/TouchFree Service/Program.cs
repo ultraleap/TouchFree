@@ -23,9 +23,7 @@ namespace Ultraleap.TouchFree.Service
             //var trackingMgr = new TrackingConnectionManager(mainTimer);
             //var interactionMgr = new InteractionManager();
             var clientMgr = new ClientConnectionManager(mainTimer);
-            //var configWatcher = ConfigFileWatcher();
-
-
+            var configWatcher = new Configuration.ConfigFileWatcher(mainTimer);
 
             mainTimer.Start();
         }
