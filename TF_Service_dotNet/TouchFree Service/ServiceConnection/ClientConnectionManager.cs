@@ -1,58 +1,61 @@
 using System;
-
-using UnityEngine;
 using System.Collections.Generic;
+using System.Timers;
 
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-using Ultraleap.TouchFree.ServiceShared;
-using Ultraleap.TouchFree.Service.ServiceTypes;
+//using Ultraleap.TouchFree.ServiceShared;
+using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 namespace Ultraleap.TouchFree.Service
 {
-    [RequireComponent(typeof(WebSocketReceiver)), DisallowMultipleComponent]
-    public class ClientConnectionManager : MonoBehaviour
+    public class ClientConnectionManager
     {
         public static ClientConnectionManager Instance;
-
-        private WebSocketServer wsServer = null;
-        private List<ClientConnection> activeConnections = new List<ClientConnection>();
         public WebSocketReceiver receiverQueue;
 
         public event Action LostAllConnections;
 
         public short port = 9739;
 
+        private WebSocketServer wsServer = null;
+        private List<ClientConnection> activeConnections = new List<ClientConnection>();   
+
+        private Timer mainTimer;
         private bool websocketInitalised = false;
 
-        internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
+        //internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-        private void Awake()
+        public ClientConnectionManager(Timer _mainTimer)
         {
-            Application.targetFrameRate = 60;
-
             Instance = this;
-            InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
+            this.mainTimer = _mainTimer;
+            //InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
             InitialiseServer();
+        }
+
+        ~ClientConnectionManager()
+        {
+            //InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }
 
         private void OnHandFound()
         {
-            HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HAND_FOUND);
+            //HandPresenceEvent handFoundEvent = new HandPresenceEvent(HandPresenceState.HAND_FOUND);
 
             foreach (ClientConnection _connection in activeConnections)
             {
-                if (_connection.ConnectionState == WebSocketState.Open)
+                if (_connection.State == WebSocketState.Open)
                 {
-                    _connection.SendHandPresenceEvent(handFoundEvent);
+                    //_connection.SendHandPresenceEvent(handFoundEvent);
                 }
             }
 
             // Cache handPresenceEvent when no clients are connected
             if (activeConnections.Count == 0)
             {
-                missedHandPresenceEvent = handFoundEvent;
+                //missedHandPresenceEvent = handFoundEvent;
             }
         }
 
@@ -62,7 +65,7 @@ namespace Ultraleap.TouchFree.Service
 
             foreach (ClientConnection _connection in activeConnections)
             {
-                if (_connection.ConnectionState == WebSocketState.Open)
+                if (_connection.State == WebSocketState.Open)
                 {
                     _connection.SendHandPresenceEvent(handsLostEvent);
                 }
@@ -71,13 +74,8 @@ namespace Ultraleap.TouchFree.Service
             // Cache handPresenceEvent when no clients are connected
             if (activeConnections.Count == 0)
             {
-                missedHandPresenceEvent = handsLostEvent;
+                //missedHandPresenceEvent = handsLostEvent;
             }
-        }
-
-        void OnDestroy()
-        {
-            InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }
 
         private void SetupConnection(ClientConnection _connection)
@@ -85,7 +83,7 @@ namespace Ultraleap.TouchFree.Service
             if (_connection != null)
             {
                 activeConnections.Add(_connection);
-                Debug.Log("Connection set up");
+                Console.WriteLine("Connection set up");
             }
         }
 
@@ -104,7 +102,7 @@ namespace Ultraleap.TouchFree.Service
         {
             websocketInitalised = false;
 
-            receiverQueue = GetComponent<WebSocketReceiver>();
+            receiverQueue = new WebSocketReceiver(mainTimer);
 
             wsServer = new WebSocketServer($"ws://127.0.0.1:{port}");
             wsServer.AddWebSocketService<ClientConnection>("/connect", SetupConnection);
@@ -113,11 +111,11 @@ namespace Ultraleap.TouchFree.Service
             wsServer.ReuseAddress = true;
             wsServer.Start();
 
-            HandManager.Instance.HandFound += OnHandFound;
-            HandManager.Instance.HandsLost += OnHandsLost;
+            //HandManager.Instance.HandFound += OnHandFound;
+            //HandManager.Instance.HandsLost += OnHandsLost;
 
             // This is here so the test infrastructure has some sign that the app is ready
-            Debug.Log("Service Setup Complete");
+            Console.WriteLine("Service Setup Complete");
         }
 
         void SendInputActionToWebsocket(InputAction _data)
@@ -144,7 +142,7 @@ namespace Ultraleap.TouchFree.Service
 
             foreach (ClientConnection connection in activeConnections)
             {
-                if (connection.ConnectionState == WebSocketState.Open)
+                if (connection.State == WebSocketState.Open)
                 {
                     connection.SendInputAction(_data);
                 }
@@ -155,7 +153,7 @@ namespace Ultraleap.TouchFree.Service
         {
             foreach (ClientConnection connection in activeConnections)
             {
-                if (connection.ConnectionState == WebSocketState.Open)
+                if (connection.State == WebSocketState.Open)
                 {
                     connection.SendConfigChangeResponse(_response);
                 }
@@ -166,7 +164,7 @@ namespace Ultraleap.TouchFree.Service
         {
             foreach (ClientConnection connection in activeConnections)
             {
-                if (connection.ConnectionState == WebSocketState.Open)
+                if (connection.State == WebSocketState.Open)
                 {
                     connection.SendConfigState(_config);
                 }

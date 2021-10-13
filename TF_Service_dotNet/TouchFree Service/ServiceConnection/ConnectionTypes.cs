@@ -1,7 +1,7 @@
 using System;
-using Ultraleap.TouchFree.ServiceShared;
+using Ultraleap.TouchFree.Service.Configuration;
 
-namespace Ultraleap.TouchFree.Service.ServiceTypes
+namespace Ultraleap.TouchFree.Service.ConnectionTypes
 {
     internal enum ActionCode
     {

@@ -1,20 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Collections.Concurrent;
-using Ultraleap.TouchFree.Service.ServiceTypes;
-using Ultraleap.TouchFree.ServiceShared;
+using System.Timers;
+
+using Ultraleap.TouchFree.Service.Configuration;
+using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Ultraleap.TouchFree.Service
 {
-    [DisallowMultipleComponent]
-    public class WebSocketReceiver : MonoBehaviour
+    public class WebSocketReceiver
     {
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
+        
+        private Timer mainTimer;
+
+        public WebSocketReceiver(Timer _mainTimer)
+        {
+            mainTimer = _mainTimer;
+            mainTimer.Elapsed += (object sender, ElapsedEventArgs e) => Update();
+        }
+
+        ~WebSocketReceiver()
+        {
+            mainTimer.Elapsed -= (object sender, ElapsedEventArgs e) => Update();
+        }
 
         void Update()
         {
@@ -35,7 +47,7 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        void HandleConfigStateRequest(string _content) 
+        void HandleConfigStateRequest(string _content)
         {
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
@@ -59,7 +71,7 @@ namespace Ultraleap.TouchFree.Service
             ClientConnectionManager.Instance.SendConfigState(currentConfig);
         }
         #endregion
-        
+
         #region Config Change
 
         void CheckConfigChangeQueue()
@@ -225,7 +237,11 @@ namespace Ultraleap.TouchFree.Service
         {
             ConfigState combinedData = new ConfigState("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
 
-            JsonUtility.FromJsonOverwrite(_content, combinedData);
+            //JsonUtility.FromJsonOverwrite(_content, combinedData);
+
+            var serializerSettings = new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Reuse };
+
+            combinedData = JsonConvert.DeserializeObject<ConfigState>(_content, serializerSettings);
 
             ConfigManager.InteractionConfig = combinedData.interaction;
             ConfigManager.PhysicalConfig = combinedData.physical;
