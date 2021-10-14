@@ -4,24 +4,6 @@ namespace Ultraleap.TouchFree.Service.Configuration
 {
     public static class ConfigManager
     {
-        //public static GlobalSettings GlobalSettings
-        //{
-        //    get
-        //    {
-        //        if (_globals == null)
-        //        {
-        //            _globals = new GlobalSettings();
-        //        }
-
-        //        return _globals;
-        //    }
-        //    set
-        //    {
-        //        _globals = value;
-        //    }
-        //}
-        //private static GlobalSettings _globals = null;
-
         public static InteractionConfig InteractionConfig
         {
             get
@@ -60,7 +42,6 @@ namespace Ultraleap.TouchFree.Service.Configuration
 
         public static void LoadConfigsFromFiles()
         {
-            //_globals = new GlobalSettings();
             _interactions = InteractionConfigFile.LoadConfig();
             _physical = PhysicalConfigFile.LoadConfig();
         }
