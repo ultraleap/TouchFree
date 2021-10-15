@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchFree Service", "TouchFree Service.csproj", "{E510819F-927F-4BA5-B4FB-A5E824C0BF5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchFree", "..\TouchFree\TouchFree.csproj", "{BAD74AA8-5811-456D-B957-F70414E905CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchFreeLib", "..\TouchFree\TouchFreeLib.csproj", "{BAD74AA8-5811-456D-B957-F70414E905CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchFreeTests", "..\TouchFreeTests\TouchFreeTests.csproj", "{8CB763FF-7F80-4A57-92BF-0F4D25CCD040}"
 EndProject
