@@ -1,4 +1,4 @@
-﻿namespace Ultraleap.TouchFree.Service.Configuration
+﻿namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class PhysicalConfigFile : ConfigFile<PhysicalConfig, PhysicalConfigFile>
     {

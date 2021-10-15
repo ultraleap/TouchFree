@@ -2,7 +2,7 @@
 using System;
 using Microsoft.Win32;
 
-namespace Ultraleap.TouchFree.Service.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public static class ConfigFileUtils
     {

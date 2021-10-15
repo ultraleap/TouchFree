@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Ultraleap.TouchFree.Service.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     [Serializable]
     public class PhysicalConfig : BaseConfig
