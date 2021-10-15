@@ -4,7 +4,7 @@ using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
-namespace Ultraleap.TouchFree.Service.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public abstract class ConfigFile<TData, UThisClass>
     where TData : class, new()

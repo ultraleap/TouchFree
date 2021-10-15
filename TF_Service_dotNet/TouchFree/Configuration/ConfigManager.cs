@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ultraleap.TouchFree.Service.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public static class ConfigManager
     {

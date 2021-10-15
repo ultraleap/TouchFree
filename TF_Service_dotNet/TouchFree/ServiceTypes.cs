@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library
 {
     public static class VersionInfo
     {

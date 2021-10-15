@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Timers;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Service
             UpdateBehaviour updateLoop = new();
             updateLoop.OnUpdate += TickTock;
 
-            Console.WriteLine("TouchFree physical config screen height is: " + Configuration.ConfigManager.PhysicalConfig.ScreenHeightM);
+            Console.WriteLine("TouchFree physical config screen height is: " + ConfigManager.PhysicalConfig.ScreenHeightM);
             while(true)
             {
 
