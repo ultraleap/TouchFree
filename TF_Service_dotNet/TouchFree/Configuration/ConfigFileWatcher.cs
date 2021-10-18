@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
@@ -6,8 +7,6 @@ namespace Ultraleap.TouchFree.Library.Configuration
     {
         private FileSystemWatcher interactionWatcher;
         private FileSystemWatcher physicalWatcher;
-
-        bool fileChanged = false;
 
         public ConfigFileWatcher()
         {
@@ -30,24 +29,25 @@ namespace Ultraleap.TouchFree.Library.Configuration
             physicalWatcher.EnableRaisingEvents = true;
         }
 
-        public void Update()
+        private void UpdateConfigs()
         {
-            if (fileChanged)
-            {
-                ConfigFileUtils.CheckForConfigDirectoryChange();
-                interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                fileChanged = false;
-                ConfigManager.LoadConfigsFromFiles();
-                ConfigManager.InteractionConfig.ConfigWasUpdated();
-                ConfigManager.PhysicalConfig.ConfigWasUpdated();
-            }
+            ConfigFileUtils.CheckForConfigDirectoryChange();
+            interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+            physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+            ConfigManager.LoadConfigsFromFiles();
+            ConfigManager.InteractionConfig.ConfigWasUpdated();
+            ConfigManager.PhysicalConfig.ConfigWasUpdated();
+
+            Console.WriteLine("A config file was changed. Re-loading configs from files.");
         }
 
         private void FileUpdated(object source, FileSystemEventArgs e)
         {
-            // save that it changed, this is on a thread so needs the reaction to be thread safe
-            fileChanged = true;
+            var configChangedDelegate = new Action(delegate()
+            {
+                UpdateConfigs();
+            });
+            configChangedDelegate.Invoke();
         }
     }
 }
