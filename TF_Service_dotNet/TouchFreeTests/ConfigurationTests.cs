@@ -15,5 +15,11 @@ namespace TouchFreeTests
         {
             Assert.IsTrue(ConfigManager.PhysicalConfig.ScreenHeightM > 0);
         }
+
+        [Test]
+        public void FailingTest()
+        {
+            Assert.Fail();
+        }
     }
 }
