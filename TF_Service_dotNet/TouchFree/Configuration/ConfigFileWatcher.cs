@@ -1,16 +1,15 @@
-﻿using UnityEngine;
-using System.IO;
+﻿using System.IO;
 
-namespace Ultraleap.TouchFree.ServiceShared
+namespace Ultraleap.TouchFree.Library.Configuration
 {
-    public class ConfigFileWatcher : MonoBehaviour
+    public class ConfigFileWatcher
     {
         private FileSystemWatcher interactionWatcher;
         private FileSystemWatcher physicalWatcher;
 
         bool fileChanged = false;
 
-        private void Start()
+        public ConfigFileWatcher()
         {
             interactionWatcher = new FileSystemWatcher();
             interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
@@ -20,7 +19,6 @@ namespace Ultraleap.TouchFree.ServiceShared
             interactionWatcher.Changed += new FileSystemEventHandler(FileUpdated);
             interactionWatcher.IncludeSubdirectories = true;
             interactionWatcher.EnableRaisingEvents = true;
-
 
             physicalWatcher = new FileSystemWatcher();
             physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
@@ -32,7 +30,7 @@ namespace Ultraleap.TouchFree.ServiceShared
             physicalWatcher.EnableRaisingEvents = true;
         }
 
-        private void Update()
+        public void Update()
         {
             if (fileChanged)
             {
