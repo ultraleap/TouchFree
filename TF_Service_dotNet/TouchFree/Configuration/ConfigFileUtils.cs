@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System;
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
@@ -35,25 +36,28 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\TouchFree\Service\Settings
             // Check registry for override to default directory
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\TouchFree\Service\Settings");
-
-            if (regKey != null)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var pathObj = regKey.GetValue("ConfigFileDirectory");
+                RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Ultraleap\TouchFree\Service\Settings");
 
-                if (pathObj != null)
+                if (regKey != null)
                 {
-                    string path = pathObj.ToString();
+                    var pathObj = regKey.GetValue("ConfigFileDirectory");
 
-                    if (Directory.Exists(path))
+                    if (pathObj != null)
                     {
-                        regKey.Close();
-                        configFileDirectory = path;
-                        return;
-                    }
-                }
+                        string path = pathObj.ToString();
 
-                regKey.Close();
+                        if (Directory.Exists(path))
+                        {
+                            regKey.Close();
+                            configFileDirectory = path;
+                            return;
+                        }
+                    }
+
+                    regKey.Close();
+                }
             }
 
             // else
