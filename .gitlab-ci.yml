@@ -139,9 +139,6 @@ TF_Service::dotNet::build:
   script:
     - dotnet build -c Release "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
 
-    # Run unit tests
-    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj"
-
     # Move the built executable to the root directory
     - mkdir ./Service_dotNet_Build
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/*" ./Service_dotNet_Build
@@ -155,6 +152,24 @@ TF_Service::dotNet::build:
     - ./Service_dotNet_Build/**
     expire_in: 2 weeks
     when: always
+  tags:
+    - unity
+    - win10
+
+TF_Service::dotNet::test:
+  stage: test
+  when: always
+  script:
+    # Run unit tests
+    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;"
+
+  artifacts:
+    when: always
+    name: "TestResults"
+    paths:
+    - $CI_PROJECT_DIR/TestResults/Test_Results.xml
+    reports:
+      junit: $CI_PROJECT_DIR/TestResults/Test_Results.xml
   tags:
     - unity
     - win10
