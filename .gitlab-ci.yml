@@ -161,7 +161,7 @@ TF_Service::dotNet::test:
   when: always
   script:
     # Run unit tests
-    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;"
+    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
 
   artifacts:
     when: always
