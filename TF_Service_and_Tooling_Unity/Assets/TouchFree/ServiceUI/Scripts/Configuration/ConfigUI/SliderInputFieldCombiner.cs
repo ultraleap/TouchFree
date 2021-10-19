@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -47,13 +48,38 @@ namespace Ultraleap.TouchFree.ServiceUI
         void OnSliderValueChanged(float val)
         {
             InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
-            onValueChanged?.Invoke(val);
+
+            if (valueChangedDelay <= 0)
+            {
+                valueChangedDelay = 0.1f;
+                StartCoroutine(SetValueChangedAfterDelay());
+            }
+            else
+            {
+                valueChangedDelay = 0.1f;
+            }
         }
 
         public void SetValueWithoutNotify(float val)
         {
             Slider.SetValueWithoutNotify(val);
-            OnSliderValueChanged(val);
+            InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
+        }
+
+        float valueChangedDelay = 0;
+        /// <summary>
+        /// Used to delay slider-based file saving to ensure we don't write too many
+        /// file changes in a short period of time
+        /// </summary>
+        IEnumerator SetValueChangedAfterDelay()
+        {
+            while(valueChangedDelay > 0)
+            {
+                valueChangedDelay -= Time.deltaTime;
+                yield return null;
+            }
+
+            OnInputFieldValueChanged(InputField.text);
         }
 
         public class OnChangeEvent : UnityEvent<float> { }
