@@ -11,6 +11,9 @@ namespace Ultraleap.TouchFree.Service
             UpdateBehaviour updateLoop = new();
             updateLoop.OnUpdate += TickTock;
 
+            ConfigFileWatcher configFileWatcher = new ConfigFileWatcher();
+            updateLoop.OnUpdate += configFileWatcher.Update;
+
             Console.WriteLine("TouchFree physical config screen height is: " + ConfigManager.PhysicalConfig.ScreenHeightM);
             while(true)
             {
@@ -20,7 +23,7 @@ namespace Ultraleap.TouchFree.Service
 
         private static void TickTock()
         {
-            Console.WriteLine("TickTock");
+            //Console.WriteLine("TickTock");
         }
     }
 }
