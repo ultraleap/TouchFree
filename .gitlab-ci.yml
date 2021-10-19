@@ -20,7 +20,7 @@ stages:
   - package
   - installer
 
-.TF_Tooling::Unity::build:
+TF_Tooling::Unity::build:
   stage: build
   when: always
   script:
@@ -63,7 +63,7 @@ stages:
     - unity
     - win10
 
-.TF_Tooling::Web::build:
+TF_Tooling::Web::build:
   stage: build
   when: always
   script:
@@ -95,7 +95,7 @@ stages:
     - unity
     - win10
 
-.TF_Tooling::Docs::build:
+TF_Tooling::Docs::build:
   stage: build
   when: always
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
@@ -111,7 +111,7 @@ stages:
   tags:
     - docker
 
-.TF_Service::Wrapper::build:
+TF_Service::Wrapper::build:
   stage: build
   when: always
   script:
@@ -155,7 +155,7 @@ TF_Service::dotNet::build:
     - unity
     - win10
 
-.TF_Service::Tray::build:
+TF_Service::Tray::build:
   stage: build
   when: always
   script:
@@ -177,7 +177,7 @@ TF_Service::dotNet::build:
     - unity
     - win10
 
-.TF_Service::build:
+TF_Service::build:
   stage: build
   when: always
   script:
@@ -229,7 +229,7 @@ TF_Service::dotNet::build:
     - unity
     - win10
 
-.TouchFree::build:
+TouchFree::build:
   stage: build
   when: always
   script:
@@ -280,7 +280,7 @@ TF_Service::dotNet::build:
     - unity
     - win10
 
-.TF_Service::test:
+TF_Service::test:
   stage: test
 
   dependencies:
@@ -304,7 +304,7 @@ TF_Service::dotNet::build:
     - unity
     - win10
 
-.TF_Tooling::Web::package:
+TF_Tooling::Web::package:
   stage: package
   image: alpine:3.13
   dependencies:
@@ -327,7 +327,7 @@ TF_Service::dotNet::build:
   tags:
     - docker
 
-.TF_Tooling::Unity::package:
+TF_Tooling::Unity::package:
   stage: package
   image: alpine:3.13
   dependencies:
@@ -350,7 +350,7 @@ TF_Service::dotNet::build:
   tags:
     - docker
 
-.TF_Service::package:
+TF_Service::package:
   stage: package
   dependencies:
     - TF_Service::build
@@ -385,7 +385,7 @@ TF_Service::dotNet::build:
     - unity
     - win10
 
-.TouchFree::installer:
+TouchFree::installer:
   stage: installer
   dependencies:
     - TF_Service::package
