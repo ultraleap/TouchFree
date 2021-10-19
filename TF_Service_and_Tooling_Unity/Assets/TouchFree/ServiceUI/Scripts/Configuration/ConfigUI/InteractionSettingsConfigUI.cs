@@ -70,6 +70,8 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space, Tooltip("List all Settings elements that relate to the interactionType.")]
         public InteractionTypeElements[] interactionTypeElements;
 
+        float sliderValueChangedDelay = 0;
+
         private void Awake()
         {
             InitialiseUI();
@@ -223,7 +225,6 @@ namespace Ultraleap.TouchFree.ServiceUI
             }
         }
 
-        float sliderValueChangedDelay = 0;
         /// <summary>
         /// Used to delay slider-based file saving to ensure we don't write too many
         /// file changes in a short period of time

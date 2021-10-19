@@ -13,6 +13,8 @@ namespace Ultraleap.TouchFree.ServiceUI
         public string InputFieldValueFormat = "#0.00#";
         public OnChangeEvent onValueChanged = new OnChangeEvent();
 
+        float valueChangedDelay = 0;
+
         public float Value
         {
             get { return Slider.value; }
@@ -66,7 +68,6 @@ namespace Ultraleap.TouchFree.ServiceUI
             InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
         }
 
-        float valueChangedDelay = 0;
         /// <summary>
         /// Used to delay slider-based file saving to ensure we don't write too many
         /// file changes in a short period of time
