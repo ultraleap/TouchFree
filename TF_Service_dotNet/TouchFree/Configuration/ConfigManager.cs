@@ -63,6 +63,9 @@ namespace Ultraleap.TouchFree.Library.Configuration
             //_globals = new GlobalSettings();
             _interactions = InteractionConfigFile.LoadConfig();
             _physical = PhysicalConfigFile.LoadConfig();
+
+            InteractionConfig.ConfigWasUpdated();
+            PhysicalConfig.ConfigWasUpdated();
         }
     }
 }

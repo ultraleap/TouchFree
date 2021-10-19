@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using System.IO;
 
 namespace Ultraleap.TouchFree.Library.Configuration
@@ -7,6 +8,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
     {
         private FileSystemWatcher interactionWatcher;
         private FileSystemWatcher physicalWatcher;
+
+        private bool configFileChanged = false;
 
         public ConfigFileWatcher()
         {
@@ -29,25 +32,28 @@ namespace Ultraleap.TouchFree.Library.Configuration
             physicalWatcher.EnableRaisingEvents = true;
         }
 
-        private void UpdateConfigs()
+        public void Update()
         {
-            ConfigFileUtils.CheckForConfigDirectoryChange();
-            interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            ConfigManager.LoadConfigsFromFiles();
-            ConfigManager.InteractionConfig.ConfigWasUpdated();
-            ConfigManager.PhysicalConfig.ConfigWasUpdated();
-
-            Console.WriteLine("A config file was changed. Re-loading configs from files.");
+            if(configFileChanged)
+            {
+                try
+                {
+                    ConfigFileUtils.CheckForConfigDirectoryChange();
+                    interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                    physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                    ConfigManager.LoadConfigsFromFiles();
+                    Console.WriteLine("A config file was changed. Re-loading configs from files.");
+                    configFileChanged = false;
+                }
+                catch
+                {
+                }
+            }
         }
 
         private void FileUpdated(object source, FileSystemEventArgs e)
         {
-            var configChangedDelegate = new Action(delegate()
-            {
-                UpdateConfigs();
-            });
-            configChangedDelegate.Invoke();
+            configFileChanged = true;
         }
     }
 }
