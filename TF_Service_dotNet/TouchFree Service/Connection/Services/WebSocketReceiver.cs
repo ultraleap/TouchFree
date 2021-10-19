@@ -1,17 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Collections.Concurrent;
-using Ultraleap.TouchFree.Service.ServiceTypes;
-using Ultraleap.TouchFree.ServiceShared;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Ultraleap.TouchFree.Service
+using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Service.ConnectionTypes;
+
+namespace Ultraleap.TouchFree.Service.Connection
 {
-    [DisallowMultipleComponent]
-    public class WebSocketReceiver : MonoBehaviour
+    // TODO:
+    // * Convert this to a Service used by the router
+    // * Dependency Inject the ConfigManager (also make the configManager be a Service?)
+
+    public class WebSocketReceiver
     {
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
@@ -35,7 +37,7 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        void HandleConfigStateRequest(string _content) 
+        void HandleConfigStateRequest(string _content)
         {
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
@@ -59,7 +61,7 @@ namespace Ultraleap.TouchFree.Service
             ClientConnectionManager.Instance.SendConfigState(currentConfig);
         }
         #endregion
-        
+
         #region Config Change
 
         void CheckConfigChangeQueue()
@@ -77,7 +79,7 @@ namespace Ultraleap.TouchFree.Service
         {
             ResponseToClient response = ValidateConfigChange(_content);
 
-            if(response.status == "Success")
+            if (response.status == "Success")
             {
                 ChangeConfig(_content);
             }
@@ -97,7 +99,7 @@ namespace Ultraleap.TouchFree.Service
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
             // Explicitly check for requestID because it is the only required key
-            if(!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
+            if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
             {
                 // Validation has failed because there is no valid requestID
                 response.status = "Failure";
@@ -225,7 +227,8 @@ namespace Ultraleap.TouchFree.Service
         {
             ConfigState combinedData = new ConfigState("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
 
-            JsonUtility.FromJsonOverwrite(_content, combinedData);
+            JsonConvert.PopulateObject(_content, combinedData);
+            //JsonUtility.FromJsonOverwrite(_content, combinedData);
 
             ConfigManager.InteractionConfig = combinedData.interaction;
             ConfigManager.PhysicalConfig = combinedData.physical;

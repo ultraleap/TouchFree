@@ -1,22 +1,33 @@
 using System;
-
-using UnityEngine;
-
-using WebSocketSharp;
+using System.Net.WebSockets;
 using System.Text.RegularExpressions;
-using WebSocketSharp.Server;
-
-using Ultraleap.TouchFree.ServiceShared;
-using Ultraleap.TouchFree.Service.ServiceTypes;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
+using System.Text;
 
-namespace Ultraleap.TouchFree.Service
+using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Service.ConnectionTypes;
+
+namespace Ultraleap.TouchFree.Service.Connection
 {
-    internal class ClientConnection : WebSocketBehavior
+    internal class ClientConnection
     {
+        public WebSocket socket;
         private bool HandshakeCompleted;
+        private readonly WebSocketReceiver receiver;
+
+        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver)
+        {
+            socket = _socket;
+            receiver = _receiver;
+            HandshakeCompleted = false;
+
+            //socket.ReceiveAsync
+
+            Console.WriteLine("Websocket Connection opened");
+        }
 
         public void SendInputAction(InputAction _data)
         {
@@ -32,7 +43,7 @@ namespace Ultraleap.TouchFree.Service
             CommunicationWrapper<WebsocketInputAction> message =
                 new CommunicationWrapper<WebsocketInputAction>(ActionCode.INPUT_ACTION.ToString(), converted);
 
-            string jsonMessage = JsonUtility.ToJson(message);
+            string jsonMessage = JsonConvert.SerializeObject(message);
 
             Send(jsonMessage);
         }
@@ -44,9 +55,8 @@ namespace Ultraleap.TouchFree.Service
                     ActionCode.HAND_PRESENCE_EVENT.ToString(),
                     _response);
 
-            string jsonMessage = JsonUtility.ToJson(message);
+            string jsonMessage = JsonConvert.SerializeObject(message);
 
-            Send(jsonMessage);
         }
 
         public void SendHandshakeResponse(ResponseToClient _response)
@@ -56,7 +66,7 @@ namespace Ultraleap.TouchFree.Service
                     ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(),
                     _response);
 
-            string jsonMessage = JsonUtility.ToJson(message);
+            string jsonMessage = JsonConvert.SerializeObject(message);
 
             Send(jsonMessage);
         }
@@ -66,7 +76,7 @@ namespace Ultraleap.TouchFree.Service
             CommunicationWrapper<ResponseToClient> message =
                 new CommunicationWrapper<ResponseToClient>(ActionCode.CONFIGURATION_RESPONSE.ToString(), _response);
 
-            string jsonMessage = JsonUtility.ToJson(message);
+            string jsonMessage = JsonConvert.SerializeObject(message);
 
             Send(jsonMessage);
         }
@@ -76,22 +86,18 @@ namespace Ultraleap.TouchFree.Service
             CommunicationWrapper<ConfigState> message =
                 new CommunicationWrapper<ConfigState>(ActionCode.CONFIGURATION_STATE.ToString(), _configState);
 
-            string jsonMessage = JsonUtility.ToJson(message);
+            string jsonMessage = JsonConvert.SerializeObject(message);
 
             Send(jsonMessage);
         }
 
-        protected override void OnOpen()
+        private void Send(string message)
         {
-            Debug.Log("Websocket Connection opened");
-            HandshakeCompleted = false;
-        }
-
-        protected override void OnClose(CloseEventArgs eventArgs)
-        {
-            Debug.Log("Websocket Connection closed");
-            HandshakeCompleted = false;
-            ClientConnectionManager.Instance.RemoveConnection(this);
+            socket.SendAsync(
+                Encoding.UTF8.GetBytes(message),
+                WebSocketMessageType.Text,
+                true,
+                CancellationToken.None);
         }
 
         private void SendInitialHandState()
@@ -129,12 +135,10 @@ namespace Ultraleap.TouchFree.Service
             return Compatibility.COMPATIBLE;
         }
 
-        protected override void OnMessage(MessageEventArgs _message)
+        internal void OnMessage(string _message)
         {
-            string rawData = _message.Data;
-
             // Find key areas of the rawData, the "action" and the "content"
-            var match = Regex.Match(rawData, "{\\s*?\"action\"\\s*?:\\s*?\"([\\w\\d_]+?)\"\\s*?,\\s*?\"content\"\\s*?:\\s*?({.+?})\\s*?}$");
+            var match = Regex.Match(_message, "{\\s*?\"action\"\\s*?:\\s*?\"([\\w\\d_]+?)\"\\s*?,\\s*?\"content\"\\s*?:\\s*?({.+?})\\s*?}$");
 
             // "action" = match.Groups[1] // "content" = match.Groups[2]
             ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());
@@ -152,18 +156,18 @@ namespace Ultraleap.TouchFree.Service
             switch (action)
             {
                 case ActionCode.SET_CONFIGURATION_STATE:
-                    ClientConnectionManager.Instance.receiverQueue.configChangeQueue.Enqueue(content);
+                    receiver.configChangeQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
-                    ClientConnectionManager.Instance.receiverQueue.configStateRequestQueue.Enqueue(content);
+                    receiver.configStateRequestQueue.Enqueue(content);
                     break;
                 case ActionCode.INPUT_ACTION:
                 case ActionCode.CONFIGURATION_STATE:
                 case ActionCode.CONFIGURATION_RESPONSE:
-                    Debug.LogError("Received a " + action + " action. This action is not expected on the Service.");
+                    Console.Error.WriteLine("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:
-                    Debug.LogError("Received a " + action + " action. This action is not recognised.");
+                    Console.Error.WriteLine("Received a " + action + " action. This action is not recognised.");
                     break;
             }
         }
@@ -178,7 +182,7 @@ namespace Ultraleap.TouchFree.Service
                 // Validation has failed because there is no valid requestID
                 response.status = "Failure";
                 response.message = "Handshaking failed. This is due to a missing or invalid requestID";
-                Debug.LogError("Handshaking failed. This is due to a missing or invalid requestID");
+                Console.Error.WriteLine("Handshaking failed. This is due to a missing or invalid requestID");
                 SendHandshakeResponse(response);
                 return;
             }
@@ -191,7 +195,7 @@ namespace Ultraleap.TouchFree.Service
                 // cannot be processed
                 response.status = "Failure";
                 response.message = "Request Rejected: Requests cannot be processed until handshaking is complete.";
-                Debug.LogError("Request Rejected: Requests cannot be processed until handshaking is complete.");
+                Console.Error.WriteLine("Request Rejected: Requests cannot be processed until handshaking is complete.");
                 SendHandshakeResponse(response);
                 return;
             }
@@ -201,7 +205,7 @@ namespace Ultraleap.TouchFree.Service
                 // Send back immediate error: Cannot compare version number w/o a version number
                 response.status = "Failure";
                 response.message = "Handshaking Failed: No API Version supplied.";
-                Debug.LogError("Handshaking Failed: No API Version supplied.");
+                Console.Error.WriteLine("Handshaking Failed: No API Version supplied.");
                 SendHandshakeResponse(response);
                 return;
             }
@@ -215,17 +219,17 @@ namespace Ultraleap.TouchFree.Service
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Successful";
-                    Debug.Log("Handshake Successful");
+                    Console.WriteLine("Handshake Successful");
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
                 case Compatibility.CLIENT_OUTDATED:
                     response.message = "Handshake Failed: Client is outdated relative to Service.";
-                    Debug.LogError("Handshake Failed: Client is outdated relative to Service.");
+                    Console.Error.WriteLine("Handshake Failed: Client is outdated relative to Service.");
                     break;
                 case Compatibility.SERVICE_OUTDATED:
                     response.message = "Handshake Failed: Service is outdated relative to Client.";
-                    Debug.LogError("Handshake Failed: Service is outdated relative to Client.");
+                    Console.Error.WriteLine("Handshake Failed: Service is outdated relative to Client.");
                     break;
             }
 
