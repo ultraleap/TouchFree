@@ -14,26 +14,23 @@ namespace Ultraleap.TouchFree.Service.Connection
         // * Dependency Inject the InteractionManager reference
         // * Dependency Inject the HandManager
 
-        public static ClientConnectionManager Instance;
-
         private List<ClientConnection> activeConnections = new List<ClientConnection>();
-        public WebSocketReceiver receiverQueue;
-
+        
         public event Action LostAllConnections;
 
         public short port = 9739;
 
-        private bool websocketInitalised = false;
-
         internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-        ClientConnectionManager()
+        public ClientConnectionManager()
         {
-            Instance = this;
-
             // InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
 
-            InitialiseServer();
+            // HandManager.Instance.HandFound += OnHandFound;
+            // HandManager.Instance.HandsLost += OnHandsLost;
+
+            // This is here so the test infrastructure has some sign that the app is ready
+            Console.WriteLine("Service Setup Complete");
         }
 
         ~ClientConnectionManager()
@@ -90,31 +87,32 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         internal void RemoveConnection(WebSocket _socket)
         {
-            activeConnections.ForEach((ClientConnection connection) =>
+            ClientConnection connectionToRemove = null;
+
+            foreach (var connection in activeConnections)
             {
                 if (connection.socket == _socket)
                 {
-                    activeConnections.Remove(connection);
-                    Console.WriteLine("Connection closed");
+                    connectionToRemove = connection;
+                    break;
                 }
-            });
+            }
+                    
+            if (connectionToRemove != null)
+            {
+                activeConnections.Remove(connectionToRemove);
+                Console.WriteLine("Connection closed");
+            }
+            else
+            {
+                Console.Error.WriteLine("Attempted to close a connection that was no longer active");
+            }
 
             if (activeConnections.Count < 1)
             {
                 // there are no connections
                 LostAllConnections?.Invoke();
             }
-        }
-
-        private void InitialiseServer()
-        {
-            websocketInitalised = false;
-
-            //HandManager.Instance.HandFound += OnHandFound;
-            //HandManager.Instance.HandsLost += OnHandsLost;
-
-            // This is here so the test infrastructure has some sign that the app is ready
-            Console.WriteLine("Service Setup Complete");
         }
 
         void SendInputActionToWebsocket(InputAction _data)

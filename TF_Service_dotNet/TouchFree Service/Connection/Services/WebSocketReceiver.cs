@@ -9,14 +9,21 @@ using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
-    // TODO:
-    // * Convert this to a Service used by the router
-    // * Dependency Inject the ConfigManager (also make the configManager be a Service?)
-
     public class WebSocketReceiver
     {
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
+
+        private readonly UpdateBehaviour updateBehaviour;
+        private readonly ClientConnectionManager clientMgr;
+
+        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr)
+        {
+            clientMgr = _clientMgr;
+            updateBehaviour = _updateBehaviour;
+
+            updateBehaviour.OnUpdate += Update;
+        }
 
         void Update()
         {
@@ -49,7 +56,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
                 // This is a failed request, do not continue with sendingthe configuration,
                 // the Client will have no way to handle the config state
-                ClientConnectionManager.Instance.SendConfigChangeResponse(response);
+                clientMgr.SendConfigChangeResponse(response);
                 return;
             }
 
@@ -58,7 +65,8 @@ namespace Ultraleap.TouchFree.Service.Connection
                 ConfigManager.InteractionConfig,
                 ConfigManager.PhysicalConfig);
 
-            ClientConnectionManager.Instance.SendConfigState(currentConfig);
+
+            clientMgr.SendConfigState(currentConfig);
         }
         #endregion
 
@@ -84,7 +92,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 ChangeConfig(_content);
             }
 
-            ClientConnectionManager.Instance.SendConfigChangeResponse(response);
+            clientMgr.SendConfigChangeResponse(response);
         }
 
         /// <summary>

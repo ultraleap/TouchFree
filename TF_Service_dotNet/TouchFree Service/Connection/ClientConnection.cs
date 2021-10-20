@@ -17,14 +17,14 @@ namespace Ultraleap.TouchFree.Service.Connection
         public WebSocket socket;
         private bool HandshakeCompleted;
         private readonly WebSocketReceiver receiver;
+        private readonly ClientConnectionManager clientMgr;
 
-        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver)
+        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, ClientConnectionManager _clientMgr)
         {
             socket = _socket;
             receiver = _receiver;
+            clientMgr = _clientMgr;
             HandshakeCompleted = false;
-
-            //socket.ReceiveAsync
 
             Console.WriteLine("Websocket Connection opened");
         }
@@ -102,7 +102,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         private void SendInitialHandState()
         {
-            this.SendHandPresenceEvent(ClientConnectionManager.Instance.missedHandPresenceEvent);
+            this.SendHandPresenceEvent(clientMgr.missedHandPresenceEvent);
         }
 
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)

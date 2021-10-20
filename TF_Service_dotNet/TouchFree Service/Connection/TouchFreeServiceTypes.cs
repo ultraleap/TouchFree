@@ -1,5 +1,5 @@
 using System;
-using Ultraleap.TouchFree.ServiceShared;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.ConnectionTypes
 {

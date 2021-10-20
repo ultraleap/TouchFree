@@ -14,19 +14,7 @@ namespace Ultraleap.TouchFree.Service
     {
         static void Main(string[] args)
         {
-            UpdateBehaviour updateLoop = new();
-
-            ConfigFileWatcher configFileWatcher = new ConfigFileWatcher();
-            updateLoop.OnUpdate += configFileWatcher.Update;
-
             CreateHostBuilder(args).Build().Run();
-
-            Console.WriteLine("TouchFree physical config screen height is: " + ConfigManager.PhysicalConfig.ScreenHeightM);
-
-            while (true)
-            {
-
-            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

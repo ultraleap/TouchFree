@@ -7,7 +7,7 @@ using System.Timers;
 
 namespace Ultraleap.TouchFree.Service
 {
-    class UpdateBehaviour
+    public class UpdateBehaviour
     {
         public delegate void UpdateEvent();
         public event UpdateEvent OnUpdate;

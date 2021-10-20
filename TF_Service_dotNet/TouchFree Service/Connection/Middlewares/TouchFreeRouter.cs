@@ -1,9 +1,9 @@
 using System;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Http;
 
 namespace Ultraleap.TouchFree.Service.Connection
@@ -27,7 +27,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                ClientConnection connection = new ClientConnection(webSocket, receiver);
+                ClientConnection connection = new ClientConnection(webSocket, receiver, clientMgr);
                 clientMgr.AddConnection(connection);
 
                 Console.WriteLine("WebSocket Connected");
