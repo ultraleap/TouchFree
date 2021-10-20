@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.ServiceShared
+namespace Ultraleap.TouchFree.Library
 {
     public class VirtualScreen
     {
@@ -36,16 +39,16 @@ namespace Ultraleap.TouchFree.ServiceShared
             Width_PhysicalMeters = heightPhysicalMeters * aspectRatio;
 
             AngleOfPhysicalScreen_Degrees = physicalScreenAngleDegrees;
-            var planeNormal = new Vector3(0f, Mathf.Sin(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad), -Mathf.Cos(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad));
+            var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), -(float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
             PhysicalScreenPlane = new Plane(-planeNormal, 0f);
         }
 
         public float DistanceFromScreenPlane(Vector3 worldPosition)
         {
-            var rayDir = PhysicalScreenPlane.normal;
+            var rayDir = PhysicalScreenPlane.Normal;
             Ray r = new Ray(worldPosition, rayDir);
 
-            PhysicalScreenPlane.Raycast(r, out float distanceFromPlane);
+            RaycastAgainstPlane(PhysicalScreenPlane, r, out float distanceFromPlane);
 
             return distanceFromPlane;
         }
@@ -63,41 +66,40 @@ namespace Ultraleap.TouchFree.ServiceShared
         /// <returns>Vector3 whose X and Y are screen pixels, and Z is the physical distance from the virtual touch plane in meters.</returns>
         public Vector3 WorldPositionToVirtualScreen(Vector3 worldPosition, out Vector3 planeHitWorldPosition)
         {
-            var rayDir = PhysicalScreenPlane.normal;
+            var rayDir = PhysicalScreenPlane.Normal;
 
             // Cast a ray towards the physical screen to get a point mapped onto that physical screen.
             Ray r = new Ray(worldPosition, rayDir);
-            //Debug.DrawRay(r.origin, r.direction * 0.02f, Color.green); // Direction of the ray pointing from the world position to intersect the screen plane.
-            PhysicalScreenPlane.Raycast(r, out float distanceFromPlane);
+            RaycastAgainstPlane(PhysicalScreenPlane, r, out float distanceFromPlane);
             planeHitWorldPosition = r.origin + (r.direction * distanceFromPlane);
 
             // If the screen is rotated, this effectively scales down or "projects" the rotated screen vector back onto the UP axis, giving us the new UP axis height of the screen.
-            var screenHeight = Height_PhysicalMeters * Mathf.Cos(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad);
+            float screenHeight = Height_PhysicalMeters * (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees));
 
-            var screenPos = Vector3.zero;
-            var tX = ((Width_PhysicalMeters / 2.0f) + planeHitWorldPosition.x) / Width_PhysicalMeters; // World X = 0 is middle of screen, so shift everything over by half width (w/2).
-            var tY = planeHitWorldPosition.y / screenHeight; // World Y = 0 is bottom of the screen, so this is linear.
+            Vector3 screenPos = Vector3.Zero;
+            float tX = ((Width_PhysicalMeters / 2.0f) + planeHitWorldPosition.X) / Width_PhysicalMeters; // World X = 0 is middle of screen, so shift everything over by half width (w/2).
+            float tY = planeHitWorldPosition.Y / screenHeight; // World Y = 0 is bottom of the screen, so this is linear.
 
-            screenPos.x = Width_VirtualPx * tX;
-            screenPos.y = Height_VirtualPx * tY;
-            screenPos.z = distanceFromPlane;
+            screenPos.X = Width_VirtualPx * tX;
+            screenPos.Y = Height_VirtualPx * tY;
+            screenPos.Z = distanceFromPlane;
 
             return screenPos;
         }
 
         public Vector3 VirtualScreenPositionToWorld(Vector2 screenPos, float distanceFromVirtualScreen)
         {
-            Vector3 worldPos = Vector3.zero;
+            Vector3 worldPos = Vector3.Zero;
 
-            var tX = screenPos.x / Width_VirtualPx;
-            var tY = screenPos.y / Height_VirtualPx;
+            float tX = screenPos.X / Width_VirtualPx;
+            float tY = screenPos.Y / Height_VirtualPx;
 
             // If the screen is rotated, this effectively scales down or "projects" the rotated screen vector back onto the UP axis, giving us the new UP axis height of the screen.
-            var screenHeight = Height_PhysicalMeters * Mathf.Cos(AngleOfPhysicalScreen_Degrees * Mathf.Deg2Rad);
+            float screenHeight = Height_PhysicalMeters * (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees));
 
-            worldPos.x = (Width_PhysicalMeters * tX) - (Width_PhysicalMeters / 2.0f);
-            worldPos.y = screenHeight * tY;
-            worldPos.z = distanceFromVirtualScreen;
+            worldPos.X = (Width_PhysicalMeters * tX) - (Width_PhysicalMeters / 2.0f);
+            worldPos.Y = screenHeight * tY;
+            worldPos.Z = distanceFromVirtualScreen;
 
             return worldPos;
         }
@@ -106,13 +108,13 @@ namespace Ultraleap.TouchFree.ServiceShared
         //
         // Do not rotate or offset the axes
         //
-        // This does not give the "worldPosition", but can be used to calculate distances in metres
-        // instead of pixels.
+        // This does not give the "worldPosition", but can be used to calculate distances in pixels
+        // instead of metres.
         public Vector2 PixelsToMeters(Vector2 position)
         {
             Vector2 positionInMeters = new Vector2(
-                position.x * Width_PhysicalMeters / Width_VirtualPx,
-                position.y * Height_PhysicalMeters / Height_VirtualPx);
+                position.X * Width_PhysicalMeters / Width_VirtualPx,
+                position.Y * Height_PhysicalMeters / Height_VirtualPx);
             return positionInMeters;
         }
 
@@ -125,17 +127,100 @@ namespace Ultraleap.TouchFree.ServiceShared
         public Vector2 MetersToPixels(Vector2 position)
         {
             Vector2 positionInPixels = new Vector2(
-                position.x * Width_VirtualPx / Width_PhysicalMeters,
-                position.y * Height_VirtualPx / Height_PhysicalMeters);
+                position.X * Width_VirtualPx / Width_PhysicalMeters,
+                position.Y * Height_VirtualPx / Height_PhysicalMeters);
             return positionInPixels;
         }
 
         public static void CaptureCurrentResolution()
         {
-            ConfigManager.PhysicalConfig.ScreenWidthPX = Display.main.systemWidth;
-            ConfigManager.PhysicalConfig.ScreenHeightPX = Display.main.systemHeight;
+            ConfigManager.PhysicalConfig.ScreenWidthPX = GetActualScreenWidth();
+            ConfigManager.PhysicalConfig.ScreenHeightPX = GetActualScreenHeight();
 
             ConfigManager.InteractionConfig.ConfigWasUpdated();
+        }
+
+        public static VirtualScreen virtualScreen
+        {
+            get
+            {
+                if (_virtualScreen == null)
+                {
+                    CreateVirtualScreen();
+                }
+
+                return _virtualScreen;
+            }
+        }
+        static VirtualScreen _virtualScreen;
+
+        static void CreateVirtualScreen()
+        {
+            _virtualScreen = new VirtualScreen(
+                ConfigManager.PhysicalConfig.ScreenWidthPX,
+                ConfigManager.PhysicalConfig.ScreenHeightPX,
+                ConfigManager.PhysicalConfig.ScreenHeightM,
+                ConfigManager.PhysicalConfig.ScreenRotationD);
+        }
+
+        [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        public static extern int GetSystemMetrics(int nIndex);
+
+        public static int GetActualScreenWidth()
+        {
+            return GetSystemMetrics(0);
+        }
+        public static int GetActualScreenHeight()
+        {
+            return GetSystemMetrics(1);
+        }
+
+        public static float DegreesToRadians(float angle)
+        {
+            return ((float)Math.PI / 180) * angle;
+        }
+
+        public bool RaycastAgainstPlane(Plane plane, Ray ray, out float enter)
+        {
+            float vdot = Vector3.Dot(ray.direction, plane.Normal);
+            float ndot = -Vector3.Dot(ray.origin, plane.Normal) - plane.D;
+
+            if (vdot < 0.1f && vdot > -0.1f)
+            {
+                enter = 0.0F;
+                return false;
+            }
+
+            enter = ndot / vdot;
+
+            return enter > 0.0F;
+        }
+    }
+
+    public struct Ray
+    {
+        Vector3 m_Origin;
+        Vector3 m_Direction;
+
+        // Creates a ray starting at /origin/ along /direction/.
+        public Ray(Vector3 origin, Vector3 direction)
+        {
+            m_Origin = origin;
+            m_Direction = Vector3.Normalize(direction);
+        }
+
+        // The origin point of the ray.
+        public Vector3 origin
+        {
+            get { return m_Origin; }
+            set { m_Origin = value; }
+        }
+
+        // The direction of the ray.
+        public Vector3 direction
+        {
+            get { return m_Direction; }
+            set { m_Direction = Vector3.Normalize(value); }
         }
     }
 }
