@@ -3,8 +3,9 @@ using System;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
 
-namespace Ultraleap.TouchFree.Service.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public abstract class ConfigFile<TData, UThisClass>
     where TData : class, new()
@@ -98,26 +99,28 @@ namespace Ultraleap.TouchFree.Service.Configuration
         {
             try
             {
-                AccessRule rule;
-                SecurityIdentifier securityIdentifier = new SecurityIdentifier
-                    (WellKnownSidType.BuiltinUsersSid, null);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    SecurityIdentifier securityIdentifier = new SecurityIdentifier
+                        (WellKnownSidType.BuiltinUsersSid, null);
 
-                rule = new FileSystemAccessRule(
-                    securityIdentifier,
-                    FileSystemRights.Write |
-                    FileSystemRights.ReadAndExecute |
-                    FileSystemRights.Modify,
-                    InheritanceFlags.ContainerInherit |
-                    InheritanceFlags.ObjectInherit,
-                    PropagationFlags.InheritOnly,
-                    AccessControlType.Allow);
+                    AccessRule rule = new FileSystemAccessRule(
+                        securityIdentifier,
+                        FileSystemRights.Write |
+                        FileSystemRights.ReadAndExecute |
+                        FileSystemRights.Modify,
+                        InheritanceFlags.ContainerInherit |
+                        InheritanceFlags.ObjectInherit,
+                        PropagationFlags.InheritOnly,
+                        AccessControlType.Allow);
 
-                DirectoryInfo dirInfo = new DirectoryInfo(ConfigFileUtils.ConfigFileDirectory);
+                    DirectoryInfo dirInfo = new DirectoryInfo(ConfigFileUtils.ConfigFileDirectory);
 
-                // Create the directory and request permissions to it for all users
-                DirectorySecurity directorySecurity = FileSystemAclExtensions.GetAccessControl(dirInfo);
-                directorySecurity.ModifyAccessRule(AccessControlModification.Add, rule, out _);
-                FileSystemAclExtensions.SetAccessControl(dirInfo, directorySecurity);
+                    // Create the directory and request permissions to it for all users
+                    DirectorySecurity directorySecurity = FileSystemAclExtensions.GetAccessControl(dirInfo);
+                    directorySecurity.ModifyAccessRule(AccessControlModification.Add, rule, out _);
+                    FileSystemAclExtensions.SetAccessControl(dirInfo, directorySecurity);
+                }
             }
             catch
             {

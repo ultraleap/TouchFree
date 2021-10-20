@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ultraleap.TouchFree.Service.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public static class ConfigManager
     {
@@ -63,6 +63,9 @@ namespace Ultraleap.TouchFree.Service.Configuration
             //_globals = new GlobalSettings();
             _interactions = InteractionConfigFile.LoadConfig();
             _physical = PhysicalConfigFile.LoadConfig();
+
+            InteractionConfig.ConfigWasUpdated();
+            PhysicalConfig.ConfigWasUpdated();
         }
     }
 }

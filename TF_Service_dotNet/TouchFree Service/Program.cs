@@ -1,34 +1,29 @@
 ﻿using System;
-using Leap;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service
 {
     class Program
     {
-        private Controller controller = new Controller();
 
         static void Main(string[] args)
         {
-            new Program().Run();
-        }
+            UpdateBehaviour updateLoop = new();
+            updateLoop.OnUpdate += TickTock;
 
-        void Run()
-        {
-            Console.WriteLine("TouchFree physical config screen height is: " + Configuration.ConfigManager.PhysicalConfig.ScreenHeightM);
+            ConfigFileWatcher configFileWatcher = new ConfigFileWatcher();
+            updateLoop.OnUpdate += configFileWatcher.Update;
 
-            controller.FrameReady += OnFrameReady;
-
-            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-        }
-
-        void OnFrameReady(object sender, FrameEventArgs eventArgs)
-        {
-            Frame frame = eventArgs.frame;
-
-            if (frame.Hands.Count > 0)
+            Console.WriteLine("TouchFree physical config screen height is: " + ConfigManager.PhysicalConfig.ScreenHeightM);
+            while(true)
             {
-                Console.WriteLine("Palm Position = " + frame.Hands[0].PalmPosition);
+
             }
+        }
+
+        private static void TickTock()
+        {
+            //Console.WriteLine("TickTock");
         }
     }
 }
