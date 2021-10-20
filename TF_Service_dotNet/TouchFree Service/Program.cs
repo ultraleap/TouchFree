@@ -1,5 +1,6 @@
 ﻿using System;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -10,6 +11,8 @@ namespace Ultraleap.TouchFree.Service
         {
             UpdateBehaviour updateLoop = new();
             updateLoop.OnUpdate += TickTock;
+
+            TrackingConnectionManager trackingConnectionManager = new TrackingConnectionManager();
 
             ConfigFileWatcher configFileWatcher = new ConfigFileWatcher();
             updateLoop.OnUpdate += configFileWatcher.Update;
