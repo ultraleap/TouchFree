@@ -57,6 +57,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
+            Send(jsonMessage);
         }
 
         public void SendHandshakeResponse(ResponseToClient _response)
