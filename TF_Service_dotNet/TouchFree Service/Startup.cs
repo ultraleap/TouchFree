@@ -31,6 +31,8 @@ namespace Ultraleap.TouchFree.Service
 
             app.UseTouchFreeRouter();
 
+            app.ApplicationServices.GetService<Library.TrackingConnectionManager>();
+
             // This is here so the test infrastructure has some sign that the app is ready
             Console.WriteLine("Service Setup Complete");
 
