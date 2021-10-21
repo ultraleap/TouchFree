@@ -19,7 +19,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         REQUEST_CONFIGURATION_STATE,
         VERSION_HANDSHAKE,
         VERSION_HANDSHAKE_RESPONSE,
-        HAND_PRESENCE_EVENT
+        HAND_PRESENCE_EVENT,
+        CUSTOM_SETTINGS_REQUEST
     }
 
     // Enum: HandPresenceState
@@ -156,6 +157,19 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         {
             action = _actionCode;
             content = _content;
+        }
+    }
+
+    [Serializable]
+    public struct CustomSettingsRequest
+    {
+        public string requestID;
+        public bool multiCursorMode;
+
+        public CustomSettingsRequest(string _id, bool _multiCursorMode)
+        {
+            requestID = _id;
+            multiCursorMode = _multiCursorMode;
         }
     }
 }

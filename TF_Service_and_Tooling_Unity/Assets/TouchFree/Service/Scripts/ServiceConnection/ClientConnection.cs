@@ -162,6 +162,9 @@ namespace Ultraleap.TouchFree.Service
                 case ActionCode.CONFIGURATION_RESPONSE:
                     Debug.LogError("Received a " + action + " action. This action is not expected on the Service.");
                     break;
+                case ActionCode.CUSTOM_SETTINGS_REQUEST:
+                        ClientConnectionManager.Instance.receiverQueue.customRequest = content;
+                    break;
                 default:
                     Debug.LogError("Received a " + action + " action. This action is not recognised.");
                     break;

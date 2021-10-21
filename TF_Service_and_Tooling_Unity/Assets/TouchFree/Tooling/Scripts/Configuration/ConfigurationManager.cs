@@ -149,5 +149,17 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
         }
 
         #endregion
+
+        public static void EnableMultiCursor()
+        {
+            string requestID = Guid.NewGuid().ToString();
+
+            CustomSettingsRequest request = new CustomSettingsRequest(requestID, true);
+            CommunicationWrapper<CustomSettingsRequest> wrappedRequest = new CommunicationWrapper<CustomSettingsRequest>(ActionCode.CUSTOM_SETTINGS_REQUEST.ToString(), request);
+
+            string jsonRequest = UnityEngine.JsonUtility.ToJson(wrappedRequest);
+
+            ConnectionManager.serviceConnection.SendMessage(jsonRequest, requestID, null);
+        }
     }
 }

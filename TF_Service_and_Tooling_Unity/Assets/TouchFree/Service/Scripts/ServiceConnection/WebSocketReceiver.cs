@@ -16,10 +16,28 @@ namespace Ultraleap.TouchFree.Service
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
 
+        public string customRequest;
+
         void Update()
         {
             CheckConfigChangeQueue();
             CheckConfigStateRequestQueue();
+            CheckCustomRequest();
+        }
+
+        void CheckCustomRequest()
+        {
+            if(customRequest != "")
+            {
+                CustomSettingsRequest request = JsonUtility.FromJson<CustomSettingsRequest>(customRequest);
+                
+                if (request.multiCursorMode)
+                {
+                    InteractionManager.Instance.EnableSecondaryInteractionModules();
+                }
+
+                customRequest = "";
+            }
         }
 
         #region Config State Request

@@ -29,6 +29,8 @@ namespace Ultraleap.TouchFree.Service
         public InteractionModulePair grabInteractionModules;
         public InteractionModulePair touchPlaneInteractionModules;
 
+        public GameObject secondaryInteractionModulesParent;
+
         private void Awake()
         {
             // if the singleton hasn't been initialized yet
@@ -110,6 +112,11 @@ namespace Ultraleap.TouchFree.Service
         {
             SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
             SetActiveInteractions(ConfigManager.InteractionConfig.InteractionTypeSecondary, false);
+        }
+
+        public void EnableSecondaryInteractionModules()
+        {
+            secondaryInteractionModulesParent.SetActive(true);
         }
     }
 

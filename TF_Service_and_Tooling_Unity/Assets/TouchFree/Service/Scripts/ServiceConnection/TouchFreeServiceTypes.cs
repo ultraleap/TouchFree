@@ -12,7 +12,8 @@ namespace Ultraleap.TouchFree.Service.ServiceTypes
         REQUEST_CONFIGURATION_STATE,
         VERSION_HANDSHAKE,
         VERSION_HANDSHAKE_RESPONSE,
-        HAND_PRESENCE_EVENT
+        HAND_PRESENCE_EVENT,
+        CUSTOM_SETTINGS_REQUEST
     }
 
     public enum HandPresenceState
@@ -68,6 +69,19 @@ namespace Ultraleap.TouchFree.Service.ServiceTypes
             status = _status;
             message = _msg;
             originalRequest = _request;
+        }
+    }
+
+    [Serializable]
+    public struct CustomSettingsRequest
+    {
+        public string requestID;
+        public bool multiCursorMode;
+
+        public CustomSettingsRequest(string _id, bool _multiCursorMode)
+        {
+            requestID = _id;
+            multiCursorMode = _multiCursorMode;
         }
     }
 
