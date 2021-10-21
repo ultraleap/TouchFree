@@ -236,7 +236,6 @@ namespace Ultraleap.TouchFree.Service.Connection
             ConfigState combinedData = new ConfigState("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
 
             JsonConvert.PopulateObject(_content, combinedData);
-            //JsonUtility.FromJsonOverwrite(_content, combinedData);
 
             ConfigManager.InteractionConfig = combinedData.interaction;
             ConfigManager.PhysicalConfig = combinedData.physical;

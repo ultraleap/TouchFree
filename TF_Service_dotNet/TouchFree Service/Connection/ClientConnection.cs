@@ -183,7 +183,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 // Validation has failed because there is no valid requestID
                 response.status = "Failure";
                 response.message = "Handshaking failed. This is due to a missing or invalid requestID";
-                Console.Error.WriteLine("Handshaking failed. This is due to a missing or invalid requestID");
+                Console.Error.WriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -196,7 +196,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 // cannot be processed
                 response.status = "Failure";
                 response.message = "Request Rejected: Requests cannot be processed until handshaking is complete.";
-                Console.Error.WriteLine("Request Rejected: Requests cannot be processed until handshaking is complete.");
+                Console.Error.WriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -206,7 +206,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 // Send back immediate error: Cannot compare version number w/o a version number
                 response.status = "Failure";
                 response.message = "Handshaking Failed: No API Version supplied.";
-                Console.Error.WriteLine("Handshaking Failed: No API Version supplied.");
+                Console.Error.WriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -220,17 +220,17 @@ namespace Ultraleap.TouchFree.Service.Connection
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Successful";
-                    Console.WriteLine("Handshake Successful");
+                    Console.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
                 case Compatibility.CLIENT_OUTDATED:
                     response.message = "Handshake Failed: Client is outdated relative to Service.";
-                    Console.Error.WriteLine("Handshake Failed: Client is outdated relative to Service.");
+                    Console.Error.WriteLine(response.message);
                     break;
                 case Compatibility.SERVICE_OUTDATED:
                     response.message = "Handshake Failed: Service is outdated relative to Client.";
-                    Console.Error.WriteLine("Handshake Failed: Service is outdated relative to Client.");
+                    Console.Error.WriteLine(response.message);
                     break;
             }
 

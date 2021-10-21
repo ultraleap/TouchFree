@@ -55,7 +55,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
             else
             {
-                Console.WriteLine("A request was made to the server that was not a ");
+                Console.WriteLine("A request was made to the server that was not an attempt to conenct to a WebSocket?");
                 await next(context);
             }
         }

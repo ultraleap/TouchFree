@@ -15,7 +15,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         // * Dependency Inject the HandManager
 
         private List<ClientConnection> activeConnections = new List<ClientConnection>();
-        
+
         public event Action LostAllConnections;
 
         public short port = 9739;
@@ -97,7 +97,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                     break;
                 }
             }
-                    
+
             if (connectionToRemove != null)
             {
                 activeConnections.Remove(connectionToRemove);
