@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Timers;
 
 namespace Ultraleap.TouchFree.Service
 {
-    class UpdateBehaviour
+    public class UpdateBehaviour
     {
         public delegate void UpdateEvent();
         public event UpdateEvent OnUpdate;
