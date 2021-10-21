@@ -6,11 +6,11 @@ namespace Ultraleap.TouchFree.Library
 {
     public class TrackingConnectionManager
     {
-        Controller controller;
+        Leap.Controller controller;
 
         public TrackingConnectionManager()
         {
-            controller = new Controller();
+            controller = new Leap.Controller();
             UpdateTrackingMode();
         }
 
@@ -41,16 +41,16 @@ namespace Ultraleap.TouchFree.Library
             switch (_mode)
             {
                 case TrackingMode.DESKTOP:
-                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
                 case TrackingMode.HMD:
-                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
                 case TrackingMode.SCREENTOP:
-                    controller.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
         }
