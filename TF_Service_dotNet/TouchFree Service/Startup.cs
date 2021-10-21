@@ -18,6 +18,8 @@ namespace Ultraleap.TouchFree.Service
             services.AddUpdateBehaviour();
             services.AddConfigFileWatcher();
 
+            services.AddTrackingConnectionManager();
+
             services.AddClientConnectionManager();
             services.AddWebSocketReceiver();
         }
