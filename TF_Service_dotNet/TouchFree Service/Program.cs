@@ -1,32 +1,20 @@
-﻿using System;
-using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Library;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Ultraleap.TouchFree.Service
 {
-    class Program
+    public class Program
     {
-
         static void Main(string[] args)
         {
-            UpdateBehaviour updateLoop = new();
-            updateLoop.OnUpdate += TickTock;
-
-            TrackingConnectionManager trackingConnectionManager = new TrackingConnectionManager();
-
-            ConfigFileWatcher configFileWatcher = new ConfigFileWatcher();
-            updateLoop.OnUpdate += configFileWatcher.Update;
-
-            Console.WriteLine("TouchFree physical config screen height is: " + ConfigManager.PhysicalConfig.ScreenHeightM);
-            while(true)
-            {
-
-            }
+            CreateHostBuilder(args).Build().Run();
         }
 
-        private static void TickTock()
-        {
-            //Console.WriteLine("TickTock");
-        }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
