@@ -96,7 +96,7 @@ namespace Ultraleap.TouchFree.Library
     {
         public long Timestamp;
         public BitmaskFlags InteractionFlags;
-        public Vector2 CursorPosition;
+        public WebSocketVector2 CursorPosition;
         public float DistanceFromScreen;
         public float ProgressToClick;
 
@@ -107,7 +107,7 @@ namespace Ultraleap.TouchFree.Library
                                                                 _data.HandType,
                                                                 _data.Chirality,
                                                                 _data.InputType);
-            CursorPosition = _data.CursorPosition;
+            CursorPosition = new WebSocketVector2(_data.CursorPosition);
             DistanceFromScreen = _data.DistanceFromScreen;
             ProgressToClick = _data.ProgressToClick;
         }
@@ -210,5 +210,24 @@ namespace Ultraleap.TouchFree.Library
         INDEX_TIP,
         WRIST,
         NEAREST
+    }
+
+    [Serializable]
+    public struct WebSocketVector2
+    {
+        public float x;
+        public float y;
+
+        public WebSocketVector2(Vector2 _vector)
+        {
+            x = _vector.X;
+            y = _vector.Y;
+        }
+
+        public WebSocketVector2(float _x, float _y)
+        {
+            x = _x;
+            y = _y;
+        }
     }
 }
