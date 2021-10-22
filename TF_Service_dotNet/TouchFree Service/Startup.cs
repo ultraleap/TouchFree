@@ -18,6 +18,8 @@ namespace Ultraleap.TouchFree.Service
             services.AddUpdateBehaviour();
             services.AddConfigFileWatcher();
 
+            services.AddTrackingConnectionManager();
+
             services.AddClientConnectionManager();
             services.AddWebSocketReceiver();
         }
@@ -28,6 +30,8 @@ namespace Ultraleap.TouchFree.Service
             app.UseWebSockets();
 
             app.UseTouchFreeRouter();
+
+            app.ApplicationServices.GetService<Library.TrackingConnectionManager>();
 
             // This is here so the test infrastructure has some sign that the app is ready
             Console.WriteLine("Service Setup Complete");
