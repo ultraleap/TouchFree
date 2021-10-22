@@ -9,5 +9,9 @@
   <ItemGroup>
     <ProjectReference Include="..\TouchFree\TouchFreeLib.csproj" />
   </ItemGroup>
+  
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="xcopy /yr &quot;..\TouchFree\Plugins\LeapC\x86_64\LeapC.dll&quot; &quot;$(TargetDir)&quot;" />
+  </Target>
 
 </Project>
