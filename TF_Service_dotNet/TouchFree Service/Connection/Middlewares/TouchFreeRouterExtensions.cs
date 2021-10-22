@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
+using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.Connection
@@ -29,6 +30,12 @@ namespace Ultraleap.TouchFree.Service.Connection
         public static IServiceCollection AddUpdateBehaviour(this IServiceCollection services)
         {
             services.AddSingleton<UpdateBehaviour>();
+            return services;
+        }
+
+        public static IServiceCollection AddTrackingConnectionManager(this IServiceCollection services)
+        {
+            services.AddSingleton<TrackingConnectionManager>();
             return services;
         }
 
