@@ -15,6 +15,7 @@ namespace Ultraleap.TouchFree.Service
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls("http://localhost:9739");
                 });
     }
 }
