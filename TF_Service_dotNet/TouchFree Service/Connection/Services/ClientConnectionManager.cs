@@ -115,7 +115,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        void SendInputActionToWebsocket(InputAction _data)
+        internal void SendInputActionToWebsocket(InputAction _data)
         {
             if (activeConnections == null ||
                 activeConnections.Count < 1)

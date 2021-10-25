@@ -6,7 +6,7 @@ namespace Ultraleap.TouchFree.Library
 {
     public class TrackingConnectionManager
     {
-        Leap.Controller controller;
+        public Leap.Controller controller;
 
         public TrackingConnectionManager()
         {
