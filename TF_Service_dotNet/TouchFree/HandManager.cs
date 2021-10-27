@@ -1,28 +1,22 @@
-﻿using System;
-using System.Collections;
-
-using UnityEngine;
-
+﻿using Ultraleap.TouchFree.Library.Configuration;
+using System;
 using Leap;
-using Leap.Unity;
 
-namespace Ultraleap.TouchFree.ServiceShared
+
+namespace Ultraleap.TouchFree.Library
 {
-    [RequireComponent(typeof(LeapServiceProvider)), DefaultExecutionOrder(-1)]
-    public class HandManager : MonoBehaviour
+    public class HandManager
     {
-        public static HandManager Instance;
-
         public long Timestamp { get; private set; }
 
         // The PrimaryHand is the hand that appeared first. It does not change until tracking on it is lost.
         public Hand PrimaryHand;
-        Chirality primaryChirality;
+        public HandChirality primaryChirality;
 
         // The SecondaryHand is the second hand that appears. It may be promoted to the PrimaryHand if the
         // PrimaryHand is lost.
         public Hand SecondaryHand;
-        Chirality secondaryChirality;
+        public HandChirality secondaryChirality;
 
         public event Action HandFound;
         public event Action HandsLost;
@@ -70,83 +64,21 @@ namespace Ultraleap.TouchFree.ServiceShared
             }
         }
 
-        [HideInInspector] public bool useTrackingTransform = true;
-        LeapTransform TrackingTransform;
+        private LeapTransform trackingTransform;
 
-        LeapServiceProvider trackingProvider;
+        private TrackingConnectionManager trackingProvider;
 
         private int handsLastFrame;
 
-        // Used by ServiceUI QuickSetup to ensure the tracking mode is the selected one
-        [HideInInspector] public bool lockTrackingMode = false;
 
-        void Awake()
+        public HandManager(TrackingConnectionManager _trackingManager)
         {
-            if (Instance != null)
-            {
-                Destroy(this);
-                return;
-            }
-            Instance = this;
             handsLastFrame = 0;
 
-            trackingProvider = (LeapServiceProvider)Hands.Provider;
-            PhysicalConfig.OnConfigUpdated += UpdateTrackingTransformAndMode;
-            StartCoroutine(UpdateTrackingAfterLeapInit());
-        }
-
-        void OnDestroy()
-        {
-            PhysicalConfig.OnConfigUpdated -= UpdateTrackingTransformAndMode;
-        }
-
-#region Tracking Mode and Tracking Transform 
-
-        IEnumerator UpdateTrackingAfterLeapInit()
-        {
-            while (trackingProvider.GetLeapController() == null)
-            {
-                yield return null;
-            }
-
-            UpdateTrackingTransformAndMode();
-        }
-
-        /// <summary>
-        /// Used directly and via a callback to trigger tracking transform and mode changes
-        /// </summary>
-        void UpdateTrackingTransformAndMode()
-        {
-            UpdateTrackingMode();
+            trackingProvider = _trackingManager;
+            trackingProvider.controller.FrameReady += Update;
+            ConfigManager.PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
             UpdateTrackingTransform();
-        }
-
-        void UpdateTrackingMode()
-        {
-            if (lockTrackingMode)
-            {
-                return;
-            }
-
-            // leap is looking down
-            if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
-            {
-                if (ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
-                {
-                    //Screentop
-                    SetTrackingMode(MountingType.ABOVE_FACING_USER);
-                }
-                else
-                {
-                    //HMD
-                    SetTrackingMode(MountingType.ABOVE_FACING_SCREEN);
-                }
-            }
-            else
-            {
-                //Desktop
-                SetTrackingMode(MountingType.BELOW);
-            }
         }
 
         void UpdateTrackingTransform()
@@ -154,38 +86,22 @@ namespace Ultraleap.TouchFree.ServiceShared
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
             // Therefore, we must convert to the real values before using them.
             // If top mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
-            var isTopMounted = Mathf.Approximately(ConfigManager.PhysicalConfig.LeapRotationD.z, 180f);
-            float xAngleDegree = isTopMounted ? -ConfigManager.PhysicalConfig.LeapRotationD.x : ConfigManager.PhysicalConfig.LeapRotationD.x;
+            var isTopMounted = ((ConfigManager.PhysicalConfig.LeapRotationD.Z > 179.9f) && (ConfigManager.PhysicalConfig.LeapRotationD.Z < 180.1f));
+            float xAngleDegree = isTopMounted ? -ConfigManager.PhysicalConfig.LeapRotationD.X : ConfigManager.PhysicalConfig.LeapRotationD.X;
 
-            TrackingTransform = new LeapTransform(
-                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.ToVector(),
-                Quaternion.Euler(xAngleDegree, ConfigManager.PhysicalConfig.LeapRotationD.y,
-                ConfigManager.PhysicalConfig.LeapRotationD.z).ToLeapQuaternion()
-            );
+            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(VirtualScreen.DegreesToRadians(ConfigManager.PhysicalConfig.LeapRotationD.Y),
+                VirtualScreen.DegreesToRadians(-xAngleDegree),
+                VirtualScreen.DegreesToRadians(ConfigManager.PhysicalConfig.LeapRotationD.Z));
+
+            trackingTransform = new LeapTransform(new Vector(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.X,
+                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.Y,
+                -ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
+                LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
         }
 
-        public void SetTrackingMode(MountingType _mount)
+        public void Update(object sender, FrameEventArgs e)
         {
-            switch (_mount)
-            {
-                case MountingType.NONE:
-                case MountingType.BELOW:
-                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.Desktop);
-                    break;
-                case MountingType.ABOVE_FACING_USER:
-                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.ScreenTop);
-                    break;
-                case MountingType.ABOVE_FACING_SCREEN:
-                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.HeadMounted);
-                    break;
-            }
-        }
-
-#endregion
-
-        private void Update()
-        {
-            var currentFrame = trackingProvider.CurrentFrame;
+            var currentFrame = e.frame;
             var handCount = currentFrame.Hands.Count;
 
             if (handCount == 0 && handsLastFrame > 0)
@@ -199,10 +115,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
             handsLastFrame = handCount;
 
-            if (useTrackingTransform)
-            {
-                currentFrame.Transform(TrackingTransform);
-            }
+            currentFrame.Transform(trackingTransform);
 
             Timestamp = currentFrame.Timestamp;
 
@@ -223,8 +136,8 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, HandType _handType)
         {
-            // We must use the cached Chirality to ensure persistence
-            Chirality handChirality;
+            // We must use the cached HandChirality to ensure persistence
+            HandChirality handChirality;
 
             if (_handType == HandType.PRIMARY)
             {
@@ -252,13 +165,13 @@ namespace Ultraleap.TouchFree.ServiceShared
             {
                 // Check hand is still active
 
-                if (handChirality == Chirality.Left && _left != null)
+                if (handChirality == HandChirality.LEFT && _left != null)
                 {
                     // Hand is still left
                     _hand = _left;
                     return;
                 }
-                else if (handChirality == Chirality.Right && _right != null)
+                else if (handChirality == HandChirality.RIGHT && _right != null)
                 {
                     // Hand is still right
                     _hand = _right;
@@ -286,12 +199,12 @@ namespace Ultraleap.TouchFree.ServiceShared
             if (_right != null)
             {
                 PrimaryHand = _right;
-                primaryChirality = Chirality.Right;
+                primaryChirality = HandChirality.RIGHT;
             }
             else if (_left != null)
             {
                 PrimaryHand = _left;
-                primaryChirality = Chirality.Left;
+                primaryChirality = HandChirality.LEFT;
             }
         }
 
@@ -299,29 +212,21 @@ namespace Ultraleap.TouchFree.ServiceShared
         {
             SecondaryHand = null;
 
-            if (_right != null && primaryChirality != Chirality.Right)
+            if (_right != null && primaryChirality != HandChirality.RIGHT)
             {
                 SecondaryHand = _right;
-                secondaryChirality = Chirality.Right;
+                secondaryChirality = HandChirality.RIGHT;
             }
-            else if (_left != null && primaryChirality != Chirality.Left)
+            else if (_left != null && primaryChirality != HandChirality.LEFT)
             {
                 SecondaryHand = _left;
-                secondaryChirality = Chirality.Left;
+                secondaryChirality = HandChirality.LEFT;
             }
         }
 
         public bool IsLeapServiceConnected()
         {
-            return trackingProvider.IsConnected();
+            return trackingProvider.controller.IsConnected;
         }
-    }
-
-    public enum MountingType
-    {
-        NONE,
-        BELOW,
-        ABOVE_FACING_USER,
-        ABOVE_FACING_SCREEN
     }
 }

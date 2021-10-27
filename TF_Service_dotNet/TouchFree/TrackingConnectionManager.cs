@@ -1,5 +1,4 @@
 ﻿using System;
-using Leap;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library

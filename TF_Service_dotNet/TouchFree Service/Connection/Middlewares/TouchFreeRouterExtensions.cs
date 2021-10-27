@@ -50,5 +50,11 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.Add(descriptor);
             return services;
         }
+
+        public static IServiceCollection AddHandManager(this IServiceCollection services)
+        {
+            services.AddSingleton<HandManager>();
+            return services;
+        }
     }
 }
