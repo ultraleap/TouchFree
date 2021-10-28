@@ -1,40 +1,31 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Ultraleap.TouchFree.ServiceShared;
+﻿using System;
+using System.Numerics;
+using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library
 {
-    public class PositionStabiliser : MonoBehaviour
+    public class PositionStabiliser
     {
-        [HideInInspector] public float defaultDeadzoneRadius;
-        public float smoothingRate;
+        public float defaultDeadzoneRadius;
+        public float smoothingRate = 10f;
         public float internalShrinkFactor = 2f;
 
-        [Header("Progress based scaling")]
-        public AnimationCurve deadzoneProgressScaling;
-
         // This is the radius that actually gets applied
-        [HideInInspector] public float currentDeadzoneRadius;
+        public float currentDeadzoneRadius;
 
         // Shrinking Params
-        [HideInInspector] public bool isShrinking = false;
+        public bool isShrinking = false;
         private float shrinkingSpeed;
 
         private bool havePreviousPositionDeadzone;
         private Vector2 previousPositionDeadzoneDefaultSize;
         private Vector2 previousPositionDeadzoneCurrentSize;
 
-        private void OnEnable()
+        public PositionStabiliser()
         {
+            ConfigManager.InteractionConfig.OnConfigUpdated += OnSettingsUpdated;
+            OnSettingsUpdated(ConfigManager.InteractionConfig);
             ResetValues();
-            InteractionConfig.OnConfigUpdated += OnSettingsUpdated;
-            OnSettingsUpdated();
-        }
-
-        void OnDisable()
-        {
-            InteractionConfig.OnConfigUpdated -= OnSettingsUpdated;
         }
 
         public Vector2 ApplyDeadzone(Vector2 position)
@@ -72,13 +63,13 @@ namespace Ultraleap.TouchFree.Service
             return constrainedPositionCurrent;
         }
 
-        public static Vector2 ApplyDeadzoneSized(Vector2 previous, Vector2 current, float radius)
+        public Vector2 ApplyDeadzoneSized(Vector2 previous, Vector2 current, float radius)
         {
-            Vector2 constrainedPosition = Vector2.zero;
+            Vector2 constrainedPosition = Vector2.Zero;
             float distance = Vector2.Distance(previous, current);
             if (distance > radius)
             {
-                Vector2 unitVector = (previous - current).normalized;
+                Vector2 unitVector = Vector2.Normalize(previous - current);
                 constrainedPosition = current + (unitVector * radius);
             }
             else
@@ -119,16 +110,16 @@ namespace Ultraleap.TouchFree.Service
             Vector2 defaultPositionChange = (constrainedPositionDefault - previousPositionDeadzoneDefaultSize);
             Vector2 previousConstraintVector = (previousPositionDeadzoneDefaultSize - previousPositionDeadzoneCurrentSize);
 
-            float internalConstraintVariable = previousConstraintVector.magnitude + internalShrinkFactor * defaultDeadzoneRadius;
+            float internalConstraintVariable = previousConstraintVector.Length() + internalShrinkFactor * defaultDeadzoneRadius;
 
             if (internalConstraintVariable < currentDeadzoneRadius)
             {
                 currentDeadzoneRadius = internalConstraintVariable;
             }
-            else if (previousConstraintVector != Vector2.zero)
+            else if (previousConstraintVector != Vector2.Zero)
             {
-                float distanceAwayFromConstraint = Vector2.Dot(defaultPositionChange, previousConstraintVector) / previousConstraintVector.magnitude;
-                distanceAwayFromConstraint = Mathf.Max(0, distanceAwayFromConstraint);
+                float distanceAwayFromConstraint = Vector2.Dot(defaultPositionChange, previousConstraintVector) / previousConstraintVector.Length();
+                distanceAwayFromConstraint = Math.Max(0, distanceAwayFromConstraint);
 
                 float shrinkDistance = distanceAwayFromConstraint * shrinkingSpeed;
                 currentDeadzoneRadius -= shrinkDistance;
@@ -143,16 +134,16 @@ namespace Ultraleap.TouchFree.Service
 
         public void ScaleDeadzoneByProgress(float _progressToClick)
         {
-            // Assumes deadzoneProgressScaling runs from 0.0 to 1.0.
-            var scaledValue = deadzoneProgressScaling.Evaluate(_progressToClick);
+            // Assumes _progressToClick is clamped.
+            var scaledValue = _progressToClick * _progressToClick;
             var deadZoneRadius = defaultDeadzoneRadius * scaledValue;
 
             currentDeadzoneRadius = deadZoneRadius;
         }
 
-        void OnSettingsUpdated()
+        void OnSettingsUpdated(BaseConfig _baseConfig)
         {
-            defaultDeadzoneRadius = ConfigManager.InteractionConfig.DeadzoneRadius;
+            defaultDeadzoneRadius = ((InteractionConfig)_baseConfig).DeadzoneRadius;
         }
     }
 }
