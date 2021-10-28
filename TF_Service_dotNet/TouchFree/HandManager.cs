@@ -234,11 +234,6 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        public bool IsLeapServiceConnected()
-        {
-            return trackingProvider.controller.IsConnected;
-        }
-
         public LeapTransform TrackingTransform()
         {
             return trackingTransform;
