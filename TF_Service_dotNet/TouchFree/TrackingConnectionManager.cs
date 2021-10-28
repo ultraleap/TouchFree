@@ -10,16 +10,18 @@ namespace Ultraleap.TouchFree.Library
         public TrackingConnectionManager()
         {
             controller = new Leap.Controller();
-            UpdateTrackingMode();
+            UpdateTrackingMode(ConfigManager.PhysicalConfig);
             ConfigManager.PhysicalConfig.OnConfigUpdated += UpdateTrackingMode;
         }
 
-        public void UpdateTrackingMode()
+        public void UpdateTrackingMode(BaseConfig _config)
         {
+            PhysicalConfig config = _config as PhysicalConfig;
+
             // leap is looking down
-            if (Math.Abs(ConfigManager.PhysicalConfig.LeapRotationD.Z) > 90f)
+            if (Math.Abs(config.LeapRotationD.Z) > 90f)
             {
-                if (ConfigManager.PhysicalConfig.LeapRotationD.X <= 0f)
+                if (config.LeapRotationD.X <= 0f)
                 {
                     SetTrackingMode(TrackingMode.SCREENTOP);
                 }

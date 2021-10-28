@@ -40,7 +40,7 @@ namespace Ultraleap.TouchFree.Service
 
             clientConnectionManager = app.ApplicationServices.GetService<ClientConnectionManager>();
             handManager = app.ApplicationServices.GetService<HandManager>();
-
+            handManager.HandsUpdated += UpdateHand;
             app.ApplicationServices.GetService<UpdateBehaviour>().OnUpdate += Update;
 
             // This is here so the test infrastructure has some sign that the app is ready
@@ -49,11 +49,18 @@ namespace Ultraleap.TouchFree.Service
             Console.WriteLine("TouchFree physical config screen height is: " + ConfigManager.PhysicalConfig.ScreenHeightM);
         }
 
+        #region Temporary test methods
+        Hand primaryHand;
+        void UpdateHand(Hand primary, Hand secondary)
+        {
+            primaryHand = primary;
+        }
+
         void Update()
         {
-            if(handManager.PrimaryHand != null)
+            if(primaryHand != null)
             {
-                Vector palmPos = handManager.PrimaryHand.PalmPosition / 1000;
+                Vector palmPos = primaryHand.PalmPosition / 1000;
                 System.Numerics.Vector3 screenPos = VirtualScreen.virtualScreen.WorldPositionToVirtualScreen(new System.Numerics.Vector3(palmPos.x, palmPos.y, -palmPos.z), out _);
 
                 Positions positions = new Positions(new System.Numerics.Vector2(screenPos.X, screenPos.Y), screenPos.Z);
@@ -70,5 +77,7 @@ namespace Ultraleap.TouchFree.Service
                 clientConnectionManager.SendInputActionToWebsocket(inputAction);
             }
         }
+
+        #endregion
     }
 }

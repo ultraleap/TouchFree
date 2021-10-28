@@ -20,6 +20,8 @@ namespace Ultraleap.TouchFree.Library
 
         public event Action HandFound;
         public event Action HandsLost;
+        public delegate void HandUpdate(Hand primary, Hand secondary);
+        public event HandUpdate HandsUpdated;
 
         bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
         bool PrimaryIsRight => PrimaryHand != null && !PrimaryHand.IsLeft;
@@ -76,26 +78,32 @@ namespace Ultraleap.TouchFree.Library
             handsLastFrame = 0;
 
             trackingProvider = _trackingManager;
-            trackingProvider.controller.FrameReady += Update;
+            if (trackingProvider != null)
+            {
+                trackingProvider.controller.FrameReady += Update;
+            }
+            
             ConfigManager.PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
-            UpdateTrackingTransform();
+            UpdateTrackingTransform(ConfigManager.PhysicalConfig);
         }
 
-        void UpdateTrackingTransform()
+        public void UpdateTrackingTransform(BaseConfig _config)
         {
+            PhysicalConfig config = _config as PhysicalConfig;
+
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
             // Therefore, we must convert to the real values before using them.
-            // If top mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
-            var isTopMounted = ((ConfigManager.PhysicalConfig.LeapRotationD.Z > 179.9f) && (ConfigManager.PhysicalConfig.LeapRotationD.Z < 180.1f));
-            float xAngleDegree = isTopMounted ? -ConfigManager.PhysicalConfig.LeapRotationD.X : ConfigManager.PhysicalConfig.LeapRotationD.X;
+            // If bottom mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
+            var isTopMounted = ((config.LeapRotationD.Z > 179.9f) && (config.LeapRotationD.Z < 180.1f));
+            float xAngleDegree = isTopMounted ? config.LeapRotationD.X : -config.LeapRotationD.X;
 
-            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(VirtualScreen.DegreesToRadians(ConfigManager.PhysicalConfig.LeapRotationD.Y),
-                VirtualScreen.DegreesToRadians(-xAngleDegree),
-                VirtualScreen.DegreesToRadians(ConfigManager.PhysicalConfig.LeapRotationD.Z));
+            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(VirtualScreen.DegreesToRadians(config.LeapRotationD.Y),
+                VirtualScreen.DegreesToRadians(xAngleDegree),
+                VirtualScreen.DegreesToRadians(config.LeapRotationD.Z));
 
-            trackingTransform = new LeapTransform(new Vector(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.X,
-                ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.Y,
-                -ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
+            trackingTransform = new LeapTransform(new Vector(config.LeapPositionRelativeToScreenBottomM.X,
+                config.LeapPositionRelativeToScreenBottomM.Y,
+                -config.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
                 LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
         }
 
@@ -132,6 +140,8 @@ namespace Ultraleap.TouchFree.Library
 
             UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
             UpdateHandStatus(ref SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
+
+            HandsUpdated?.Invoke(PrimaryHand, SecondaryHand);
         }
 
         void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, HandType _handType)
@@ -227,6 +237,11 @@ namespace Ultraleap.TouchFree.Library
         public bool IsLeapServiceConnected()
         {
             return trackingProvider.controller.IsConnected;
+        }
+
+        public LeapTransform TrackingTransform()
+        {
+            return trackingTransform;
         }
     }
 }
