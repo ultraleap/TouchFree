@@ -39,7 +39,7 @@ namespace TouchFreeTests
         {
             // Given
             InteractionConfig testConfig = new InteractionConfig { UseScrollingOrDragging = true };
-            PhysicalConfig.OnConfigUpdated += OnInteractionConfig;
+            InteractionConfig.OnConfigUpdated += OnInteractionConfig;
 
             // When
             testConfig.ConfigWasUpdated();
