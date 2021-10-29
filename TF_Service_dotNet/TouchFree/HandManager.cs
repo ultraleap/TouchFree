@@ -83,27 +83,25 @@ namespace Ultraleap.TouchFree.Library
                 trackingProvider.controller.FrameReady += Update;
             }
             
-            PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
+            ConfigManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
             UpdateTrackingTransform(ConfigManager.PhysicalConfig);
         }
 
-        public void UpdateTrackingTransform(BaseConfig _config)
+        public void UpdateTrackingTransform(PhysicalConfig _config)
         {
-            PhysicalConfig config = _config as PhysicalConfig;
-
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
             // Therefore, we must convert to the real values before using them.
             // If bottom mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
-            var isTopMounted = ((config.LeapRotationD.Z > 179.9f) && (config.LeapRotationD.Z < 180.1f));
-            float xAngleDegree = isTopMounted ? config.LeapRotationD.X : -config.LeapRotationD.X;
+            var isTopMounted = ((_config.LeapRotationD.Z > 179.9f) && (_config.LeapRotationD.Z < 180.1f));
+            float xAngleDegree = isTopMounted ? _config.LeapRotationD.X : -_config.LeapRotationD.X;
 
-            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(VirtualScreen.DegreesToRadians(config.LeapRotationD.Y),
+            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(VirtualScreen.DegreesToRadians(_config.LeapRotationD.Y),
                 VirtualScreen.DegreesToRadians(xAngleDegree),
-                VirtualScreen.DegreesToRadians(config.LeapRotationD.Z));
+                VirtualScreen.DegreesToRadians(_config.LeapRotationD.Z));
 
-            trackingTransform = new LeapTransform(new Vector(config.LeapPositionRelativeToScreenBottomM.X,
-                config.LeapPositionRelativeToScreenBottomM.Y,
-                -config.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
+            trackingTransform = new LeapTransform(new Vector(_config.LeapPositionRelativeToScreenBottomM.X,
+                _config.LeapPositionRelativeToScreenBottomM.Y,
+                -_config.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
                 LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
         }
 

@@ -240,8 +240,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             ConfigManager.InteractionConfig = combinedData.interaction;
             ConfigManager.PhysicalConfig = combinedData.physical;
 
-            ConfigManager.PhysicalConfig.ConfigWasUpdated();
-            ConfigManager.InteractionConfig.ConfigWasUpdated();
+            ConfigManager.PhysicalConfigWasUpdated();
+            ConfigManager.InteractionConfigWasUpdated();
         }
         #endregion
     }

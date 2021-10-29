@@ -17,7 +17,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
     }
 
     [Serializable]
-    public class InteractionConfig : BaseConfig
+    public class InteractionConfig
     {
         public bool UseScrollingOrDragging = false;
         public float DeadzoneRadius = 0.003f;
@@ -31,12 +31,5 @@ namespace Ultraleap.TouchFree.Library.Configuration
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
         public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
-
-        public static event ConfigUpdated OnConfigUpdated;
-
-        public override void ConfigWasUpdated()
-        {
-            OnConfigUpdated?.Invoke(this);
-        }
     }
 }

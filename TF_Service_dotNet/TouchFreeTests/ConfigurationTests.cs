@@ -24,10 +24,10 @@ namespace TouchFreeTests
         {
             // Given
             PhysicalConfig testConfig = new PhysicalConfig { ScreenHeightM = 0.5f };
-            PhysicalConfig.OnConfigUpdated += OnPhysicalConfig;
+            ConfigManager.OnPhysicalConfigUpdated += OnPhysicalConfig;
             
             // When
-            testConfig.ConfigWasUpdated();
+            ConfigManager.PhysicalConfigWasUpdated();
 
             // Then
             Assert.IsTrue(physicalConfig != null);
@@ -39,10 +39,10 @@ namespace TouchFreeTests
         {
             // Given
             InteractionConfig testConfig = new InteractionConfig { UseScrollingOrDragging = true };
-            InteractionConfig.OnConfigUpdated += OnInteractionConfig;
+            ConfigManager.OnInteractionConfigUpdated += OnInteractionConfig;
 
             // When
-            testConfig.ConfigWasUpdated();
+            ConfigManager.InteractionConfigWasUpdated();
 
             // Then
             Assert.IsTrue(interactionConfig != null);
@@ -50,14 +50,14 @@ namespace TouchFreeTests
         }
 
 
-        public void OnPhysicalConfig(BaseConfig config)
+        public void OnPhysicalConfig(PhysicalConfig config)
         {
-            physicalConfig = config as PhysicalConfig;
+            physicalConfig = config;
         }
 
-        public void OnInteractionConfig(BaseConfig config)
+        public void OnInteractionConfig(InteractionConfig config)
         {
-            interactionConfig = config as InteractionConfig;
+            interactionConfig = config;
         }
     }
 }
