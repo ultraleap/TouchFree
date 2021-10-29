@@ -17,7 +17,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
     }
 
     [Serializable]
-    public class InteractionConfig : BaseConfig
+    public class InteractionConfig
     {
         public bool UseScrollingOrDragging = false;
         public float DeadzoneRadius = 0.003f;

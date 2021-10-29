@@ -4,6 +4,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
 {
     public static class ConfigManager
     {
+        public delegate void InteractionConfigEvent(InteractionConfig config = null);
+        public delegate void PhysicalConfigEvent(PhysicalConfig config = null);
+        public static event InteractionConfigEvent OnInteractionConfigUpdated;
+        public static event PhysicalConfigEvent OnPhysicalConfigUpdated;
+
         public static InteractionConfig InteractionConfig
         {
             get
@@ -20,7 +25,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 _interactions = value;
             }
         }
-        private static InteractionConfig _interactions = null;
+        private static InteractionConfig _interactions;
 
         public static PhysicalConfig PhysicalConfig
         {
@@ -45,8 +50,18 @@ namespace Ultraleap.TouchFree.Library.Configuration
             _interactions = InteractionConfigFile.LoadConfig();
             _physical = PhysicalConfigFile.LoadConfig();
 
-            InteractionConfig.ConfigWasUpdated();
-            PhysicalConfig.ConfigWasUpdated();
+            InteractionConfigWasUpdated();
+            PhysicalConfigWasUpdated();
+        }
+
+        public static void PhysicalConfigWasUpdated()
+        {
+            OnPhysicalConfigUpdated?.Invoke(_physical);
+        }
+
+        public static void InteractionConfigWasUpdated()
+        {
+            OnInteractionConfigUpdated?.Invoke(_interactions);
         }
     }
 }
