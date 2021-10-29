@@ -29,6 +29,12 @@ namespace Ultraleap.TouchFree.Library
         /// <param name="trackingOffset"></param>
         public VirtualScreen(int widthPx, int heightPx, float heightPhysicalMeters, float physicalScreenAngleDegrees)
         {
+            UpdateVirtualScreenValues(widthPx, heightPx, heightPhysicalMeters, physicalScreenAngleDegrees);
+            PhysicalConfig.OnConfigUpdated += PhysicalConfigUpdated;
+        }
+
+        void UpdateVirtualScreenValues(int widthPx, int heightPx, float heightPhysicalMeters, float physicalScreenAngleDegrees)
+        {
             Width_VirtualPx = widthPx;
             Height_VirtualPx = heightPx;
 
@@ -41,6 +47,17 @@ namespace Ultraleap.TouchFree.Library
             AngleOfPhysicalScreen_Degrees = physicalScreenAngleDegrees;
             var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), -(float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
             PhysicalScreenPlane = new Plane(-planeNormal, 0f);
+        }
+
+        void PhysicalConfigUpdated(BaseConfig _config)
+        {
+            PhysicalConfig config = _config as PhysicalConfig;
+
+            UpdateVirtualScreenValues(
+                config.ScreenWidthPX,
+                config.ScreenHeightPX,
+                config.ScreenHeightM,
+                config.ScreenRotationD);
         }
 
         public float DistanceFromScreenPlane(Vector3 worldPosition)
