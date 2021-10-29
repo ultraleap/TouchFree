@@ -141,9 +141,10 @@ namespace Ultraleap.TouchFree.Library
             currentDeadzoneRadius = deadZoneRadius;
         }
 
-        void OnSettingsUpdated(BaseConfig _baseConfig)
+        void OnSettingsUpdated(BaseConfig _config)
         {
-            defaultDeadzoneRadius = ((InteractionConfig)_baseConfig).DeadzoneRadius;
+            InteractionConfig config = _config as InteractionConfig;
+            defaultDeadzoneRadius = config.DeadzoneRadius;
         }
     }
 }

@@ -57,6 +57,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
+
+        // TODO: Delete. This is temporary and should be deleted when 'InteractionModule's are introduced
         public static IServiceCollection AddPositionStabiliser(this IServiceCollection services)
         {
             services.AddSingleton<PositionStabiliser>();
