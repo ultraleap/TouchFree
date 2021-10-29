@@ -25,8 +25,9 @@ namespace TouchFreeTests
             // Given
             PhysicalConfig testConfig = new PhysicalConfig { ScreenHeightM = 0.5f };
             ConfigManager.OnPhysicalConfigUpdated += OnPhysicalConfig;
-            
+
             // When
+            ConfigManager.PhysicalConfig = testConfig;
             ConfigManager.PhysicalConfigWasUpdated();
 
             // Then
@@ -42,6 +43,7 @@ namespace TouchFreeTests
             ConfigManager.OnInteractionConfigUpdated += OnInteractionConfig;
 
             // When
+            ConfigManager.InteractionConfig = testConfig;
             ConfigManager.InteractionConfigWasUpdated();
 
             // Then
