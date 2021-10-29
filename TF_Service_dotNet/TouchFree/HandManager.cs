@@ -83,7 +83,7 @@ namespace Ultraleap.TouchFree.Library
                 trackingProvider.controller.FrameReady += Update;
             }
             
-            ConfigManager.PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
+            PhysicalConfig.OnConfigUpdated += UpdateTrackingTransform;
             UpdateTrackingTransform(ConfigManager.PhysicalConfig);
         }
 

@@ -13,5 +13,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public int ScreenWidthPX = 0;
         public int ScreenHeightPX = 0;
+
+        public static event ConfigUpdated OnConfigUpdated;
+
+        public override void ConfigWasUpdated()
+        {
+            OnConfigUpdated?.Invoke(this);
+        }
     }
 }

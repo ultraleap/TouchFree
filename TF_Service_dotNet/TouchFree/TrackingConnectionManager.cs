@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Library
         {
             controller = new Leap.Controller();
             UpdateTrackingMode(ConfigManager.PhysicalConfig);
-            ConfigManager.PhysicalConfig.OnConfigUpdated += UpdateTrackingMode;
+            PhysicalConfig.OnConfigUpdated += UpdateTrackingMode;
         }
 
         public void UpdateTrackingMode(BaseConfig _config)
