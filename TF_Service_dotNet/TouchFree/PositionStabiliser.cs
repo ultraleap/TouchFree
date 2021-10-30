@@ -23,7 +23,7 @@ namespace Ultraleap.TouchFree.Library
 
         public PositionStabiliser()
         {
-            ConfigManager.InteractionConfig.OnConfigUpdated += OnSettingsUpdated;
+            ConfigManager.OnInteractionConfigUpdated += OnSettingsUpdated;
             OnSettingsUpdated(ConfigManager.InteractionConfig);
             ResetValues();
         }
@@ -141,10 +141,9 @@ namespace Ultraleap.TouchFree.Library
             currentDeadzoneRadius = deadZoneRadius;
         }
 
-        void OnSettingsUpdated(BaseConfig _config)
+        void OnSettingsUpdated(InteractionConfig _config)
         {
-            InteractionConfig config = _config as InteractionConfig;
-            defaultDeadzoneRadius = config.DeadzoneRadius;
+            defaultDeadzoneRadius = _config.DeadzoneRadius;
         }
     }
 }
