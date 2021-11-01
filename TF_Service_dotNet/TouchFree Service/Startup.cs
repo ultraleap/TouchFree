@@ -16,6 +16,7 @@ namespace Ultraleap.TouchFree.Service
     {
         ClientConnectionManager clientConnectionManager;
         HandManager handManager;
+        PositionStabiliser positionStabiliser;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -26,6 +27,7 @@ namespace Ultraleap.TouchFree.Service
 
             services.AddTrackingConnectionManager();
             services.AddHandManager();
+            services.AddPositionStabiliser();
 
             services.AddClientConnectionManager();
             services.AddWebSocketReceiver();
@@ -39,6 +41,7 @@ namespace Ultraleap.TouchFree.Service
             app.UseTouchFreeRouter();
 
             clientConnectionManager = app.ApplicationServices.GetService<ClientConnectionManager>();
+            positionStabiliser = app.ApplicationServices.GetService<PositionStabiliser>();
             handManager = app.ApplicationServices.GetService<HandManager>();
             handManager.HandsUpdated += UpdateHand;
             app.ApplicationServices.GetService<UpdateBehaviour>().OnUpdate += Update;
@@ -65,7 +68,12 @@ namespace Ultraleap.TouchFree.Service
 
                 Positions positions = new Positions(new System.Numerics.Vector2(screenPos.X, screenPos.Y), screenPos.Z);
 
-               InputAction inputAction = new InputAction(
+                System.Numerics.Vector2 screenPosM = VirtualScreen.virtualScreen.PixelsToMeters(positions.CursorPosition);
+                screenPosM = positionStabiliser.ApplyDeadzone(screenPosM);
+                System.Numerics.Vector2 stabilisedPos = VirtualScreen.virtualScreen.MetersToPixels(screenPosM);
+                positions.CursorPosition = stabilisedPos;
+
+                InputAction inputAction = new InputAction(
                     0,
                     InteractionType.PUSH,
                     HandType.PRIMARY,
