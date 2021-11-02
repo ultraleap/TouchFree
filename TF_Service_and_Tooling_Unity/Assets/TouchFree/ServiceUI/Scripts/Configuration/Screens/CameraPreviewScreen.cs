@@ -18,7 +18,7 @@ public class CameraPreviewScreen : MonoBehaviour
     [Tooltip("The ratio of the slider length to the masking capacity. Total capacity is the full width/height of the camera image.")]
     public float sliderRatio = 0.5f;
 
-    DiagnosticAPI.ImageMaskData currentMaskData;
+    float currentMaskLeft, currentMaskRight, currentMaskTop, currentMaskBottom;
     bool newMaskDataReceived = false;
 
     public GameObject maskingDiabledWarningObject;
@@ -61,10 +61,7 @@ public class CameraPreviewScreen : MonoBehaviour
     {
         if(newMaskDataReceived)
         {
-            maskingSiderL.SetValueWithoutNotify((float)currentMaskData.left / sliderRatio);
-            maskingSiderR.SetValueWithoutNotify((float)currentMaskData.right / sliderRatio);
-            maskingSiderT.SetValueWithoutNotify((float)currentMaskData.lower / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
-            maskingSiderB.SetValueWithoutNotify((float)currentMaskData.upper / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
+            SetSliders(currentMaskLeft, currentMaskRight, currentMaskTop, currentMaskBottom);
             newMaskDataReceived = false;
         }
     }
@@ -94,22 +91,24 @@ public class CameraPreviewScreen : MonoBehaviour
 
     void SetMasking()
     {
-        currentMaskData.device_id = diagnosticAPI.connectedDeviceID;
-        currentMaskData.left = maskingSiderL.value * sliderRatio;
-        currentMaskData.right = maskingSiderR.value * sliderRatio;
-        currentMaskData.upper = maskingSiderB.value * sliderRatio; // These are reversed as the shader for rendering camera feeds is upside-down
-        currentMaskData.lower = maskingSiderT.value * sliderRatio; // These are reversed as the shader for rendering camera feeds is upside-down
+        currentMaskLeft = maskingSiderL.value * sliderRatio;
+        currentMaskRight = maskingSiderR.value * sliderRatio;
+        currentMaskTop = maskingSiderB.value * sliderRatio;
+        currentMaskBottom = maskingSiderT.value * sliderRatio;
 
-        diagnosticAPI.Request("SetImageMask:" + JsonUtility.ToJson(currentMaskData));
+        diagnosticAPI.SetMasking(
+            currentMaskLeft,
+            currentMaskRight,
+            currentMaskTop,
+            currentMaskBottom);
     }
 
-    public void SetSliders(DiagnosticAPI.ImageMaskData _maskValues)
+    public void SetSliders(float _left, float _right, float _top, float _bottom)
     {
-        currentMaskData = _maskValues;
-        maskingSiderL.SetValueWithoutNotify((float)currentMaskData.left / sliderRatio);
-        maskingSiderR.SetValueWithoutNotify((float)currentMaskData.right / sliderRatio);
-        maskingSiderT.SetValueWithoutNotify((float)currentMaskData.lower / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
-        maskingSiderB.SetValueWithoutNotify((float)currentMaskData.upper / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
+        maskingSiderL.SetValueWithoutNotify(_left / sliderRatio);
+        maskingSiderR.SetValueWithoutNotify(_right / sliderRatio);
+        maskingSiderT.SetValueWithoutNotify(_bottom / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
+        maskingSiderB.SetValueWithoutNotify(_top / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
     }
 
     public void OnSliderChanged(float _)

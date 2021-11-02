@@ -13,7 +13,9 @@ public class DiagnosticAPI : IDisposable
     private Status status = Status.Expired;
     private WebSocket webSocket = null;
 
-    public static event Action<ImageMaskData> OnGetMaskingResponse;
+    public delegate void MaskingDataDelegate(float _left, float _right, float _top, float _bottom);
+
+    public static event MaskingDataDelegate OnGetMaskingResponse;
     public static event Action<bool> OnMaskingVersionCheck;
 
     public uint connectedDeviceID;
@@ -25,9 +27,7 @@ public class DiagnosticAPI : IDisposable
 
     public DiagnosticAPI(MonoBehaviour _creatorMonobehaviour)
     {
-        Debug.Log("DiagnosticAPI constructor... ");
         Connect();
-
         _creatorMonobehaviour.StartCoroutine(MessageQueueReader());
     }
 
@@ -56,11 +56,8 @@ public class DiagnosticAPI : IDisposable
 
         if (requireSetup)
         {
-            Debug.Log("DiagnosticAPI setup.");
-
             if (webSocket != null)
             {
-                Debug.Log("DiagnosticAPI close previous.");
                 webSocket.Close();
             }
 
@@ -80,12 +77,11 @@ public class DiagnosticAPI : IDisposable
             };
         }
 
-        Debug.Log("DiagnosticAPI connecting... ");
         try
         {
             webSocket.Connect();
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         { 
             Debug.Log("DiagnosticAPI connection exception... " + "\n" + ex.ToString() );
             status = Status.Expired;
@@ -107,7 +103,11 @@ public class DiagnosticAPI : IDisposable
             try
             {
                 GetImageMaskResponse maskResponse = JsonUtility.FromJson<GetImageMaskResponse>(_message);
-                OnGetMaskingResponse?.Invoke(maskResponse.value);
+                OnGetMaskingResponse?.Invoke(
+                    (float)maskResponse.value.left,
+                    (float)maskResponse.value.right,
+                    (float)maskResponse.value.upper,
+                    (float)maskResponse.value.lower);
             }
             catch
             {
@@ -173,6 +173,18 @@ public class DiagnosticAPI : IDisposable
         }
     }
 
+    public void SetMasking(float _left, float _right, float _top, float _bottom)
+    {
+        ImageMaskData maskingData = new ImageMaskData();
+        maskingData.device_id = connectedDeviceID;
+        maskingData.left = _left;
+        maskingData.right = _right;
+        maskingData.upper = _top;
+        maskingData.lower = _bottom;
+
+        Request("SetImageMask:" + JsonUtility.ToJson(maskingData));
+    }
+
     void IDisposable.Dispose ()
     {
         status = Status.Expired;
@@ -180,7 +192,7 @@ public class DiagnosticAPI : IDisposable
     }
 
     [Serializable]
-    public struct ImageMaskData
+    struct ImageMaskData
     {
         public double lower;
         public double upper;
@@ -189,14 +201,14 @@ public class DiagnosticAPI : IDisposable
         public uint device_id;
     }
 
-    public struct GetImageMaskResponse
+    struct GetImageMaskResponse
     {
         public string request;
         public int status;
         public ImageMaskData value;
     }
 
-    public struct GetDevicesResponse
+    struct GetDevicesResponse
     {
         public int status;
         public DiagnosticDevice[] value;
@@ -204,7 +216,7 @@ public class DiagnosticAPI : IDisposable
     }
 
     [Serializable]
-    public struct DiagnosticDevice
+    struct DiagnosticDevice
     {
         public uint id;
         public string type;
@@ -212,7 +224,7 @@ public class DiagnosticAPI : IDisposable
         public bool streaming;
     }
 
-    public struct GetVersionResponse
+    struct GetVersionResponse
     {
         public string request;
         public int status;
@@ -220,7 +232,7 @@ public class DiagnosticAPI : IDisposable
     }
 
     [Serializable]
-    public struct VersionContainer
+    struct VersionContainer
     {
         public string version;
     }
