@@ -21,6 +21,8 @@ public class CameraPreviewScreen : MonoBehaviour
     DiagnosticAPI.ImageMaskData currentMaskData;
     bool newMaskDataReceived = false;
 
+    public GameObject maskingDiabledWarningObject;
+
     void OnEnable()
     {
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
@@ -28,23 +30,26 @@ public class CameraPreviewScreen : MonoBehaviour
 
         if(diagnosticAPI == null)
         {
-            diagnosticAPI = new DiagnosticAPI();
+            diagnosticAPI = new DiagnosticAPI(this);
         }
 
-        DiagnosticAPI.OnGetMaskingResponse += ReceiveMaskValues;
+        DiagnosticAPI.OnGetMaskingResponse += SetSliders;
+        DiagnosticAPI.OnMaskingVersionCheck += HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderR.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderT.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
-        diagnosticAPI.Request("GetImageMask:1");
+        diagnosticAPI.Request("GetDevices"); // get the connected device ID
+        diagnosticAPI.Request("GetVersion");
     }
 
     void OnDisable()
     {
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
-        DiagnosticAPI.OnGetMaskingResponse -= ReceiveMaskValues;
+        DiagnosticAPI.OnGetMaskingResponse -= SetSliders;
+        DiagnosticAPI.OnMaskingVersionCheck -= HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.RemoveListener(OnSliderChanged);
         maskingSiderR.onValueChanged.RemoveListener(OnSliderChanged);
@@ -64,12 +69,24 @@ public class CameraPreviewScreen : MonoBehaviour
         }
     }
 
+    public void HandleMaskingVersionCheck(bool _maskingAvailable)
+    {
+        maskingSiderL.gameObject.SetActive(_maskingAvailable);
+        maskingSiderR.gameObject.SetActive(_maskingAvailable);
+        maskingSiderT.gameObject.SetActive(_maskingAvailable);
+        maskingSiderB.gameObject.SetActive(_maskingAvailable);
+        maskingDiabledWarningObject.SetActive(!_maskingAvailable);
+    }
+
     void OnOverExposureValueChanged(bool state)
     {
-        if (state) {
+        if (state)
+        {
             leftCameraMat.SetFloat("_threshold", exposureThresholdValue);
             rightCameraMat.SetFloat("_threshold", exposureThresholdValue);
-        } else {
+        }
+        else
+        {
             leftCameraMat.SetFloat("_threshold", 1.0f);
             rightCameraMat.SetFloat("_threshold", 1.0f);
         }
@@ -77,7 +94,7 @@ public class CameraPreviewScreen : MonoBehaviour
 
     void SetMasking()
     {
-        currentMaskData.device_id = 1; // not used but must not be 0
+        currentMaskData.device_id = diagnosticAPI.connectedDeviceID;
         currentMaskData.left = maskingSiderL.value * sliderRatio;
         currentMaskData.right = maskingSiderR.value * sliderRatio;
         currentMaskData.upper = maskingSiderB.value * sliderRatio; // These are reversed as the shader for rendering camera feeds is upside-down
@@ -86,24 +103,13 @@ public class CameraPreviewScreen : MonoBehaviour
         diagnosticAPI.Request("SetImageMask:" + JsonUtility.ToJson(currentMaskData));
     }
 
-    void SetSliders(DiagnosticAPI.ImageMaskData _maskValues)
+    public void SetSliders(DiagnosticAPI.ImageMaskData _maskValues)
     {
         currentMaskData = _maskValues;
         maskingSiderL.SetValueWithoutNotify((float)currentMaskData.left / sliderRatio);
         maskingSiderR.SetValueWithoutNotify((float)currentMaskData.right / sliderRatio);
         maskingSiderT.SetValueWithoutNotify((float)currentMaskData.lower / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
         maskingSiderB.SetValueWithoutNotify((float)currentMaskData.upper / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
-    }
-
-    public void ReceiveMaskValues(DiagnosticAPI.ImageMaskData _maskValues)
-    {
-        // This method is called on a thread via WebSocketSharp so Invoke a Delegate to ensure it is performed on the main thread
-        var updateValuesDelegate = new Action(delegate ()
-        {
-            SetSliders(_maskValues);
-        });
-
-        updateValuesDelegate.Invoke();
     }
 
     public void OnSliderChanged(float _)
