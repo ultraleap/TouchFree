@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using Ultraleap.TouchFree.ServiceShared;
+﻿using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library.Interactions
 {
-    public abstract class InteractionModule : MonoBehaviour
+    public abstract class InteractionModule
     {
         public virtual InteractionType InteractionType { get; } = InteractionType.PUSH;
 
@@ -11,10 +10,9 @@ namespace Ultraleap.TouchFree.Service
         public HandType handType;
 
         public bool ignoreDragging;
-        public PositioningModule positioningModule;
 
-        public delegate void InteractionInputAction(HandChirality _chirality, HandType _handType, InputAction _inputData);
-        public static event InteractionInputAction HandleInputAction;
+        public delegate void InteractionInputAction(InputAction _inputData);
+        public event InteractionInputAction HandleInputAction;
 
         protected Positions positions;
 
@@ -22,20 +20,32 @@ namespace Ultraleap.TouchFree.Service
 
         protected bool hadHandLastFrame = false;
 
-        void Update()
+        protected PositionStabiliser positioningStabiliser;
+        protected PositioningModule positioningModule;
+        protected readonly HandManager handManager;
+
+        public InteractionModule(HandManager _handManager)
+        {
+            handManager = _handManager;
+            positioningStabiliser = new PositionStabiliser();
+
+            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.NEAREST);
+        }
+
+        public void Update()
         {
             // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
-            latestTimestamp = HandManager.Instance.Timestamp;
+            latestTimestamp = handManager.Timestamp;
 
             Leap.Hand hand = null;
 
             switch (handType)
             {
                 case HandType.PRIMARY:
-                    hand = HandManager.Instance.PrimaryHand;
+                    hand = handManager.PrimaryHand;
                     break;
                 case HandType.SECONDARY:
-                    hand = HandManager.Instance.SecondaryHand;
+                    hand = handManager.SecondaryHand;
                     break;
             }
 
@@ -65,26 +75,24 @@ namespace Ultraleap.TouchFree.Service
         protected void SendInputAction(InputType _inputType, Positions _positions, float _progressToClick)
         {
             InputAction actionData = new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
-            HandleInputAction?.Invoke(handChirality, handType, actionData);
+            HandleInputAction?.Invoke(actionData);
         }
 
         protected virtual void OnEnable()
         {
-            InteractionConfig.OnConfigUpdated += OnSettingsUpdated;
-            PhysicalConfig.OnConfigUpdated += OnSettingsUpdated;
-            OnSettingsUpdated();
+            ConfigManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
+            OnInteractionSettingsUpdated(ConfigManager.InteractionConfig);
         }
 
         protected virtual void OnDisable()
         {
-            InteractionConfig.OnConfigUpdated -= OnSettingsUpdated;
-            PhysicalConfig.OnConfigUpdated -= OnSettingsUpdated;
+            ConfigManager.OnInteractionConfigUpdated -= OnInteractionSettingsUpdated;
+
         }
 
-        protected virtual void OnSettingsUpdated()
+        protected virtual void OnInteractionSettingsUpdated(InteractionConfig _config)
         {
-            ignoreDragging = !ConfigManager.InteractionConfig.UseScrollingOrDragging;
-            ConfigManager.GlobalSettings.CreateVirtualScreen();
+            ignoreDragging = !_config.UseScrollingOrDragging;
             positioningModule.Stabiliser.ResetValues();
         }
 

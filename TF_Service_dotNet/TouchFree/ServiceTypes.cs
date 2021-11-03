@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
 
+using Leap;
+
 namespace Ultraleap.TouchFree.Library
 {
     public static class VersionInfo
@@ -179,6 +181,22 @@ namespace Ultraleap.TouchFree.Library
             }
 
             return returnVal;
+        }
+
+        public static System.Numerics.Vector3 LeapToNumerics(Leap.Vector _leap)
+        {
+            Leap.Vector scaledDown = _leap / 1000;
+            return new System.Numerics.Vector3(scaledDown.x, scaledDown.y, -scaledDown.z);
+        }
+
+        public static float Lerp(float first, float second, float amount)
+        {
+            return second * amount - first * (1.0f - amount);
+        }
+
+        public static float InverseLerp(float first, float second, float value)
+        {
+            return (value - first) / (second - first);
         }
     }
 

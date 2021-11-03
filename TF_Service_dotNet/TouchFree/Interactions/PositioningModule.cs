@@ -1,32 +1,32 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Leap.Unity;
-using UnityEngine;
-using Ultraleap.TouchFree.ServiceShared;
+using System.Numerics;
+using System.Linq;
 
-namespace Ultraleap.TouchFree.Service
+using Leap;
+
+
+namespace Ultraleap.TouchFree.Library.Interactions
 {
-    public class PositioningModule : MonoBehaviour
+    public class PositioningModule
     {
         public TrackedPosition trackedPosition = TrackedPosition.INDEX_STABLE;
-
-        [Tooltip("If assigned, the cursor snapper and stabiliser will be accessed from the utils object.")]
-        public GameObject positioningUtils;
-
-        public PositionStabiliser Stabiliser;
 
         private Positions positions;
 
         private const float NEAREST_BONE_BIAS = 0.01f;
 
-        protected void OnEnable()
-        {
-            if (positioningUtils != null)
-            {
-                Stabiliser = positioningUtils.GetComponent<PositionStabiliser>();
-            }
+        public readonly PositionStabiliser Stabiliser;
 
+        public PositioningModule(PositionStabiliser _stabiliser, TrackedPosition _position)
+        {
+            Stabiliser = _stabiliser;
+            trackedPosition = _position;
+
+            Enable();
+        }
+
+        protected void Enable()
+        {
             Stabiliser.ResetValues();
         }
 
@@ -55,13 +55,13 @@ namespace Ultraleap.TouchFree.Service
             // float distanceFromScreen (measured in meters)
 
             Vector3 worldPos = GetTrackedPosition(hand);
-            Vector3 screenPos = ConfigManager.GlobalSettings.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
-            Vector2 screenPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
-            float distanceFromScreen = screenPos.z;
+            Vector3 screenPos = VirtualScreen.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
+            Vector2 screenPosM = VirtualScreen.virtualScreen.PixelsToMeters(new Vector2(screenPos.X, screenPos.Y));
+            float distanceFromScreen = screenPos.Z;
 
             screenPosM = Stabiliser.ApplyDeadzone(screenPosM);
 
-            Vector2 oneToOnePosition = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(screenPosM);
+            Vector2 oneToOnePosition = VirtualScreen.virtualScreen.MetersToPixels(screenPosM);
 
             return new Tuple<Vector2, float>(oneToOnePosition, distanceFromScreen);
         }
@@ -71,9 +71,10 @@ namespace Ultraleap.TouchFree.Service
             switch (trackedPosition)
             {
                 case TrackedPosition.WRIST:
-                    return hand.WristPosition.ToVector3();
+                    return Utilities.LeapToNumerics(hand.WristPosition);
                 case TrackedPosition.INDEX_TIP:
-                    return hand.GetIndex().TipPosition.ToVector3();
+                    var tipPos = hand.Fingers.First(finger => (finger.Type == Finger.FingerType.TYPE_INDEX)).TipPosition;
+                    return Utilities.LeapToNumerics(tipPos);
                 case TrackedPosition.NEAREST:
                     return GetNearestBoneToScreen(hand);
                 case TrackedPosition.INDEX_STABLE:
@@ -86,10 +87,10 @@ namespace Ultraleap.TouchFree.Service
         {
             const float trackedJointDistanceOffset = 0.0533f;
 
-            var bones = hand.GetIndex().bones;
+            var bones = hand.Fingers.First(finger => (finger.Type == Finger.FingerType.TYPE_INDEX)).bones;
 
-            Vector3 trackedJointVector = (bones[0].NextJoint.ToVector3() + bones[1].NextJoint.ToVector3()) / 2;
-            trackedJointVector.z += trackedJointDistanceOffset;
+            Vector3 trackedJointVector = (Utilities.LeapToNumerics(bones[0].NextJoint) + Utilities.LeapToNumerics(bones[1].NextJoint)) / 2;
+            trackedJointVector.Z += trackedJointDistanceOffset;
             return trackedJointVector;
         }
 
@@ -98,8 +99,8 @@ namespace Ultraleap.TouchFree.Service
 
         Vector3 GetNearestBoneToScreen(Leap.Hand hand)
         {
-            float nearestDistance = Mathf.Infinity;
-            Vector3 nearestJointPos = Vector3.zero;
+            float nearestDistance = float.PositiveInfinity;
+            Vector3 nearestJointPos = Vector3.Zero;
             Leap.Finger.FingerType fingerType = Leap.Finger.FingerType.TYPE_UNKNOWN;
             Leap.Bone.BoneType boneType = Leap.Bone.BoneType.TYPE_INVALID;
 
@@ -113,9 +114,9 @@ namespace Ultraleap.TouchFree.Service
                     {
                         if(bone.Type == lastUsedBoneType)
                         {
-                            Vector3 jointPos = bone.NextJoint.ToVector3();
+                            Vector3 jointPos = Utilities.LeapToNumerics(bone.NextJoint);
 
-                            nearestDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos) - NEAREST_BONE_BIAS; // add a bias to the previous finger tip position
+                            nearestDistance = VirtualScreen.virtualScreen.DistanceFromScreenPlane(jointPos) - NEAREST_BONE_BIAS; // add a bias to the previous finger tip position
 
                             nearestJointPos = jointPos;
                             fingerType = finger.Type;
@@ -132,8 +133,8 @@ namespace Ultraleap.TouchFree.Service
             {
                 foreach (var bone in finger.bones)
                 {
-                    Vector3 jointPos = bone.NextJoint.ToVector3();
-                    float screenDistance = ConfigManager.GlobalSettings.virtualScreen.DistanceFromScreenPlane(jointPos);
+                    Vector3 jointPos = Utilities.LeapToNumerics(bone.NextJoint);
+                    float screenDistance = VirtualScreen.virtualScreen.DistanceFromScreenPlane(jointPos);
 
                     if (nearestDistance > screenDistance)
                     {

@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<WebSocketReceiver>();
             return services;
         }
-    
+
         public static IServiceCollection AddUpdateBehaviour(this IServiceCollection services)
         {
             services.AddSingleton<UpdateBehaviour>();
@@ -57,11 +57,9 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
-
-        // TODO: Delete. This is temporary and should be deleted when 'InteractionModule's are introduced
-        public static IServiceCollection AddPositionStabiliser(this IServiceCollection services)
+        public static IServiceCollection AddInteractionManager(this IServiceCollection services)
         {
-            services.AddSingleton<PositionStabiliser>();
+            services.AddSingleton<InteractionManager>();
             return services;
         }
     }
