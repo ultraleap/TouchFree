@@ -71,10 +71,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
             switch (trackedPosition)
             {
                 case TrackedPosition.WRIST:
-                    return Utilities.LeapToNumerics(hand.WristPosition);
+                    return Utilities.LeapVectorToNumerics(hand.WristPosition);
                 case TrackedPosition.INDEX_TIP:
                     var tipPos = hand.Fingers.First(finger => (finger.Type == Finger.FingerType.TYPE_INDEX)).TipPosition;
-                    return Utilities.LeapToNumerics(tipPos);
+                    return Utilities.LeapVectorToNumerics(tipPos);
                 case TrackedPosition.NEAREST:
                     return GetNearestBoneToScreen(hand);
                 case TrackedPosition.INDEX_STABLE:
@@ -89,7 +89,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             var bones = hand.Fingers.First(finger => (finger.Type == Finger.FingerType.TYPE_INDEX)).bones;
 
-            Vector3 trackedJointVector = (Utilities.LeapToNumerics(bones[0].NextJoint) + Utilities.LeapToNumerics(bones[1].NextJoint)) / 2;
+            Vector3 trackedJointVector = (Utilities.LeapVectorToNumerics(bones[0].NextJoint) + Utilities.LeapVectorToNumerics(bones[1].NextJoint)) / 2;
             trackedJointVector.Z += trackedJointDistanceOffset;
             return trackedJointVector;
         }
@@ -114,7 +114,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     {
                         if(bone.Type == lastUsedBoneType)
                         {
-                            Vector3 jointPos = Utilities.LeapToNumerics(bone.NextJoint);
+                            Vector3 jointPos = Utilities.LeapVectorToNumerics(bone.NextJoint);
 
                             nearestDistance = VirtualScreen.virtualScreen.DistanceFromScreenPlane(jointPos) - NEAREST_BONE_BIAS; // add a bias to the previous finger tip position
 
@@ -133,7 +133,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 foreach (var bone in finger.bones)
                 {
-                    Vector3 jointPos = Utilities.LeapToNumerics(bone.NextJoint);
+                    Vector3 jointPos = Utilities.LeapVectorToNumerics(bone.NextJoint);
                     float screenDistance = VirtualScreen.virtualScreen.DistanceFromScreenPlane(jointPos);
 
                     if (nearestDistance > screenDistance)

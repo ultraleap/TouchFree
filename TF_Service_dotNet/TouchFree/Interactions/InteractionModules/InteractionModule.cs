@@ -1,4 +1,6 @@
-﻿using Ultraleap.TouchFree.Library.Configuration;
+﻿using System;
+
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
@@ -11,8 +13,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public bool ignoreDragging;
 
-        public delegate void InteractionInputAction(InputAction _inputData);
-        public event InteractionInputAction HandleInputAction;
+        public event Action<InputAction> HandleInputAction;
 
         protected Positions positions;
 
@@ -30,6 +31,17 @@ namespace Ultraleap.TouchFree.Library.Interactions
             positioningStabiliser = new PositionStabiliser();
 
             positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.NEAREST);
+        }
+        public virtual void Enable()
+        {
+            ConfigManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
+            OnInteractionSettingsUpdated(ConfigManager.InteractionConfig);
+        }
+
+        public virtual void Disable()
+        {
+            ConfigManager.OnInteractionConfigUpdated -= OnInteractionSettingsUpdated;
+
         }
 
         public void Update()
@@ -76,18 +88,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             InputAction actionData = new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
             HandleInputAction?.Invoke(actionData);
-        }
-
-        protected virtual void OnEnable()
-        {
-            ConfigManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
-            OnInteractionSettingsUpdated(ConfigManager.InteractionConfig);
-        }
-
-        protected virtual void OnDisable()
-        {
-            ConfigManager.OnInteractionConfigUpdated -= OnInteractionSettingsUpdated;
-
         }
 
         protected virtual void OnInteractionSettingsUpdated(InteractionConfig _config)

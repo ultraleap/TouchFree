@@ -24,6 +24,7 @@ namespace Ultraleap.TouchFree.Service
             // This will need to be swapped with a system to add/remove these listeners per the "active" interaction
             updateBehaviour.OnUpdate += touchPlane.Update;
             touchPlane.HandleInputAction += connectionManager.SendInputActionToWebsocket;
+            touchPlane.Enable();
         }
     }
 }

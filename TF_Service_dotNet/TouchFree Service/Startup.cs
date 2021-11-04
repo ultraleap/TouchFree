@@ -35,7 +35,7 @@ namespace Ultraleap.TouchFree.Service
             app.UseWebSockets();
             app.UseTouchFreeRouter();
 
-            interactionManager = app.ApplicationServices.GetService<InteractionManager>();
+            app.ApplicationServices.GetService<InteractionManager>();
 
             // This is here so the test infrastructure has some sign that the app is ready
             Console.WriteLine("Service Setup Complete");

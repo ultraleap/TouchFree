@@ -183,7 +183,7 @@ namespace Ultraleap.TouchFree.Library
             return returnVal;
         }
 
-        public static System.Numerics.Vector3 LeapToNumerics(Leap.Vector _leap)
+        public static System.Numerics.Vector3 LeapVectorToNumerics(Leap.Vector _leap)
         {
             Leap.Vector scaledDown = _leap / 1000;
             return new System.Numerics.Vector3(scaledDown.x, scaledDown.y, -scaledDown.z);
