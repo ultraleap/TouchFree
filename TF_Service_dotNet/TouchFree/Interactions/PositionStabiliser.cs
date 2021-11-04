@@ -2,7 +2,7 @@
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library.Interactions
 {
     public class PositionStabiliser
     {
