@@ -1,69 +1,62 @@
-﻿using UnityEngine;
-using Stopwatch = System.Diagnostics.Stopwatch;
+﻿using System;
 using System.Collections.Generic;
-using Ultraleap.TouchFree.ServiceShared;
+using System.Diagnostics;
+using System.Numerics;
 
-namespace Ultraleap.TouchFree.Service
+using Ultraleap.TouchFree.Library;
+
+namespace Ultraleap.TouchFree.Library.Interactions
 {
     public class AirPushInteraction : InteractionModule
     {
         public override InteractionType InteractionType { get; } = InteractionType.PUSH;
 
-        [Header("Hand Entry")]
-        public double millisecondsCooldownOnEntry;
+        public double millisecondsCooldownOnEntry = 300.0;
         Stopwatch handAppearedCooldown = new Stopwatch();
 
-        [Header("AirPush Detection")]
-        public float speedMin;
-        public float speedMax;
-        public float distAtSpeedMin;
-        public float distAtSpeedMax;
-        public AnimationCurve stiffnessCurve;
-        public float horizontalDecayDist;
+        public float speedMin = 0.15f;
+        public float speedMax = 0.5f;
+        public float distAtSpeedMin = 0.03f;
+        public float distAtSpeedMax = 0.005f;
+        public float horizontalDecayDist = 0.05f;
 
-        [Header("AirPush Angles")]
-        [Range(0, 180)]
-        public float thetaOne;
-        [Range(0, 180)]
-        public float thetaTwo;
+        public float thetaOne = 15f;
+        public float thetaTwo = 135f;
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
         // If a hand moves between the two angles, this is "horizontal" to the screen
-
-        [Header("AirPush Click")]
-        private Vector2 cursorPressPosition;
-
-        [Header("AirPush Unclick")]
-
-        [Range(0, 0.999f)]
-        public float unclickThreshold = 0.999f;
-        public bool decayForceOnClick;
-        [Range(0, 0.999f)]
-        public float forceDecayTime;
+                
+        public float unclickThreshold = 0.85f;
+        public bool decayForceOnClick = true;
+        public float forceDecayTime = 0.1f;
         bool decayingForce;
 
-        [Header("TouchPlane Params")]
-        public bool useTouchPlaneForce;
-        public float distPastTouchPlane;
+        public bool useTouchPlaneForce = true;
+        public float distPastTouchPlane = 0.02f;
+
+        public float dragStartDistanceThresholdM = 0.01f;
+        public float dragDeadzoneShrinkRate = 0.5f;
+        public float dragDeadzoneShrinkDistanceThresholdM = 0.01f;
+
+        public float deadzoneMaxSizeIncrease = 0.02f;
+        public float deadzoneShrinkRate = 0.8f;
+
+        private Vector2 cursorPressPosition;
 
         private long previousTime = 0;
-        private float previousScreenDistance = Mathf.Infinity;
-        private Vector2 previousScreenPos = Vector2.zero;
+        private float previousScreenDistance = float.PositiveInfinity;
+        private Vector2 previousScreenPos = Vector2.Zero; 
 
         private float appliedForce = 0f;
         private bool pressing = false;
 
-        [Header("Dragging")]
-        public float dragStartDistanceThresholdM = 0.04f;
-        public float dragDeadzoneShrinkRate = 0.5f;
-        public float dragDeadzoneShrinkDistanceThresholdM = 0.001f;
-
-        [Header("Deadzone")]
-        public float deadzoneMaxSizeIncrease;
-        public float deadzoneShrinkRate;
-
         private bool dragDeadzoneShrinkTriggered = false;
         private bool isDragging = false;
+
+        public AirPushInteraction(HandManager _handManager) : base(_handManager) 
+        { 
+            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.INDEX_STABLE);
+        }
 
         protected override void UpdateData(Leap.Hand hand)
         {
@@ -106,12 +99,12 @@ namespace Ultraleap.TouchFree.Service
                 float currentVelocity = dz / dt;    // m/s
 
                 Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
-                Vector2 dPerp = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(dPerpPx);
+                Vector2 dPerp = VirtualScreen.virtualScreen.PixelsToMeters(dPerpPx);
 
                 // Update AppliedForce, which is the crux of the AirPush algorithm
                 float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, positions.DistanceFromScreen);
                 appliedForce += forceChange;
-                appliedForce = Mathf.Clamp01(appliedForce);
+                appliedForce = Math.Clamp(appliedForce, 0f, 1f);
 
                 // Update the deadzone size
                 if (!pressing)
@@ -126,7 +119,7 @@ namespace Ultraleap.TouchFree.Service
                     {
                         pressing = false;
                         isDragging = false;
-                        cursorPressPosition = Vector2.zero;
+                        cursorPressPosition = Vector2.Zero;
                         SendInputAction(InputType.UP, positions, appliedForce);
                     }
                     else
@@ -194,9 +187,9 @@ namespace Ultraleap.TouchFree.Service
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).magnitude;
+            Vector2 startPosM = VirtualScreen.virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = VirtualScreen.virtualScreen.PixelsToMeters(_currentPos);
+            float distFromStartPos = (startPosM - currentPosM).Length();
 
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
@@ -208,16 +201,16 @@ namespace Ultraleap.TouchFree.Service
 
         private bool CheckForStartDragDeadzoneShrink(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).magnitude;
+            Vector2 startPosM = VirtualScreen.virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = VirtualScreen.virtualScreen.PixelsToMeters(_currentPos);
+            float distFromStartPos = (startPosM - currentPosM).Length();
             return (distFromStartPos > dragDeadzoneShrinkDistanceThresholdM);
         }
 
         private void AdjustDeadzoneSize(float _df)
         {
             // _df is change in Force in the last frame
-            if (_df < -1f * Mathf.Epsilon)
+            if (_df < -1f * float.Epsilon)
             {
                 // Start decreasing deadzone size
                 positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkRate);
@@ -232,7 +225,7 @@ namespace Ultraleap.TouchFree.Service
                 float deadzoneMaxSize = deadzoneMinSize + deadzoneMaxSizeIncrease;
 
                 float newDeadzoneSize = positioningModule.Stabiliser.currentDeadzoneRadius + deadzoneSizeIncrease;
-                newDeadzoneSize = Mathf.Clamp(newDeadzoneSize, deadzoneMinSize, deadzoneMaxSize);
+                newDeadzoneSize = Math.Clamp(newDeadzoneSize, deadzoneMinSize, deadzoneMaxSize);
                 positioningModule.Stabiliser.currentDeadzoneRadius = newDeadzoneSize;
             }
         }
@@ -246,7 +239,7 @@ namespace Ultraleap.TouchFree.Service
 
             float forceChange = 0f;
 
-            if (_dt < Mathf.Epsilon)
+            if (_dt < float.Epsilon)
             {
                 // Not long enough between the two frames
                 // Also triggered if recognising a new hand (dt is negative)
@@ -260,7 +253,7 @@ namespace Ultraleap.TouchFree.Service
                 float stiffness = 1.0f / distPastTouchPlane;
 
                 // Do not reduce force on backwards motion
-                float forwardVelocity = Mathf.Max(0f, _currentVelocity);
+                float forwardVelocity = Math.Max(0f, _currentVelocity);
                 forceChange = stiffness * forwardVelocity * _dt;
 
                 // Do not decay force when beyond the touch plane.
@@ -268,7 +261,9 @@ namespace Ultraleap.TouchFree.Service
             }
             else
             {
-                float angleFromScreen = Mathf.Atan2(_dPerp.magnitude, _currentVelocity * _dt) * Mathf.Rad2Deg;
+                float angleFromScreen = (float) Math.Atan2(
+                    _dPerp.Length(),
+                    _currentVelocity * _dt * (Math.PI / 180.0));
 
                 if (angleFromScreen < thetaOne || angleFromScreen > thetaTwo)
                 {
@@ -277,14 +272,14 @@ namespace Ultraleap.TouchFree.Service
                     // Adjust force based on spring stiffness
 
                     // Perform a calculation:
-                    float vClamped = Mathf.Clamp(Mathf.Abs(_currentVelocity), speedMin, speedMax);
+                    float vClamped = Math.Clamp(Math.Abs(_currentVelocity), speedMin, speedMax);
 
                     float ratio = (vClamped - speedMin) / (speedMax - speedMin);
 
                     float stiffnessMin = 1.0f / distAtSpeedMin;
                     float stiffnessMax = 1.0f / distAtSpeedMax;
 
-                    float k = stiffnessMin + stiffnessCurve.Evaluate(ratio) * (stiffnessMax - stiffnessMin);
+                    float k = stiffnessMin + (ratio * ratio) * (stiffnessMax - stiffnessMin);
 
                     forceChange = k * _currentVelocity * _dt;
                 }
@@ -299,7 +294,7 @@ namespace Ultraleap.TouchFree.Service
                     else
                     {
                         // Change force based on horizontal velocity and a horizontal decay distance
-                        float vPerp = _dPerp.magnitude / _dt;
+                        float vPerp = _dPerp.Length() / _dt;
 
                         float stiffness = 1f / horizontalDecayDist;
                         forceChange = -1f * stiffness * vPerp * _dt;

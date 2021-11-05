@@ -27,7 +27,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public float dragStartDistanceThresholdM = 0.01f;
         bool isDragging = false;
 
-        public TouchPlanePushInteraction(HandManager _handManager) : base(_handManager) { }
+        public TouchPlanePushInteraction(HandManager _handManager) : base(_handManager)
+        {
+            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.NEAREST);
+        }
 
         protected override void UpdateData(Leap.Hand hand)
         {
