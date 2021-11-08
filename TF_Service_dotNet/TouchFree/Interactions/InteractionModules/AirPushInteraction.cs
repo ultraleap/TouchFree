@@ -25,7 +25,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
         // If a hand moves between the two angles, this is "horizontal" to the screen
-                
+
         public float unclickThreshold = 0.85f;
         public bool decayForceOnClick = true;
         public float forceDecayTime = 0.1f;
@@ -45,7 +45,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private long previousTime = 0;
         private float previousScreenDistance = float.PositiveInfinity;
-        private Vector2 previousScreenPos = Vector2.Zero; 
+        private Vector2 previousScreenPos = Vector2.Zero;
 
         private float appliedForce = 0f;
         private bool pressing = false;
@@ -53,8 +53,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private bool dragDeadzoneShrinkTriggered = false;
         private bool isDragging = false;
 
-        public AirPushInteraction(HandManager _handManager) : base(_handManager) 
-        { 
+        public AirPushInteraction(HandManager _handManager) : base(_handManager)
+        {
             positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.INDEX_STABLE);
         }
 
@@ -274,12 +274,12 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     // Perform a calculation:
                     float vClamped = Math.Clamp(Math.Abs(_currentVelocity), speedMin, speedMax);
 
-                    float ratio = (vClamped - speedMin) / (speedMax - speedMin);
+                    float stiffnessRatio = (vClamped - speedMin) / (speedMax - speedMin);
 
                     float stiffnessMin = 1.0f / distAtSpeedMin;
                     float stiffnessMax = 1.0f / distAtSpeedMax;
 
-                    float k = stiffnessMin + (ratio * ratio) * (stiffnessMax - stiffnessMin);
+                    float k = stiffnessMin + (stiffnessRatio * stiffnessRatio) * (stiffnessMax - stiffnessMin);
 
                     forceChange = k * _currentVelocity * _dt;
                 }
