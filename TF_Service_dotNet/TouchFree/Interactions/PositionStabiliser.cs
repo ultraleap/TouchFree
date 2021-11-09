@@ -65,7 +65,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public Vector2 ApplyDeadzoneSized(Vector2 previous, Vector2 current, float radius)
         {
-            Vector2 constrainedPosition = Vector2.Zero;
+            Vector2 constrainedPosition;
+
             float distance = Vector2.Distance(previous, current);
             if (distance > radius)
             {

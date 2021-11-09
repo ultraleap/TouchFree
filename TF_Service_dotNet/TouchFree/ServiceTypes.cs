@@ -21,6 +21,7 @@ namespace Ultraleap.TouchFree.Library
         public readonly Vector2 CursorPosition;
         public readonly float DistanceFromScreen;
         public readonly float ProgressToClick;
+
         public InputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _progressToClick)
         {
             Timestamp = _timestamp;

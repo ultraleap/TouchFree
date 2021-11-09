@@ -1,15 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+
 using Stopwatch = System.Diagnostics.Stopwatch;
 
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library.Interactions
 {
-    public class ProgressTimer : MonoBehaviour
+    public class ProgressTimer
     {
         public float timeLimit = 500f;
 
         private Stopwatch stopwatch = new Stopwatch();
+
+        public ProgressTimer(float _timeLimit)
+        {
+            timeLimit = _timeLimit;
+        }
 
         public bool IsRunning
         {
@@ -24,7 +28,7 @@ namespace Ultraleap.TouchFree.Service
         private float GetProgress()
         {
             float progress = stopwatch.ElapsedMilliseconds / timeLimit;
-            progress = Mathf.Min(progress, 1f);
+            progress = Math.Min(progress, 1f);
             return progress;
         }
 
