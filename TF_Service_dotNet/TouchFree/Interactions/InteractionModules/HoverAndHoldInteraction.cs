@@ -54,9 +54,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             Vector2 cursorPositionM = VirtualScreen.virtualScreen.PixelsToMeters(positions.CursorPosition);
             Vector2 hoverPosM = ApplyHoverzone(cursorPositionM);
-            Vector2 hoverPos = VirtualScreen.virtualScreen.MetersToPixels(hoverPosM);
+            positions.CursorPosition = VirtualScreen.virtualScreen.MetersToPixels(hoverPosM);
 
-            HandleInteractions(hoverPos);
+            HandleInteractions();
         }
 
         private Vector2 ApplyHoverzone(Vector2 _screenPosM)
@@ -66,9 +66,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return previousHoverPosDeadzone;
         }
 
-        private void HandleInteractions(Vector2 _hoverPosition)
+        private void HandleInteractions()
         {
-            if (!clickHeld && !hoverTriggered && _hoverPosition == previousHoverPosScreen)
+            if (!clickHeld && !hoverTriggered && positions.CursorPosition == previousScreenPos)
             {
                 if (!hoverTriggerTimer.IsRunning)
                 {
@@ -96,8 +96,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         else if (progressTimer.IsRunning && progressTimer.Progress == 1f)
                         {
                             positioningModule.Stabiliser.currentDeadzoneRadius = (timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius);
-                            
-                            Console.WriteLine("Stopping progresstimer to click");
                             progressTimer.StopTimer();
                             clickHeld = true;
                             clickingTimer.Restart();
@@ -109,6 +107,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
                             float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
                             float deadzoneRadius = Utilities.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
+
                             positioningModule.Stabiliser.currentDeadzoneRadius = deadzoneRadius;
                         }
                     }
@@ -129,10 +128,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         SendInputAction(InputType.UP, positions, progressTimer.Progress);
                     }
 
-                    Console.WriteLine("Resetting progresstimer because cursor had moved");
-                    Console.WriteLine($"Moved {previousScreenPos.X - positions.CursorPosition.X}, {previousScreenPos.Y - positions.CursorPosition.Y}");
-                    //Console.WriteLine($"Was at {previousScreenPos}, now at {positions.CursorPosition}");
-
                     progressTimer.ResetTimer();
 
                     hoverTriggered = false;
@@ -150,7 +145,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
             }
 
-            previousHoverPosScreen = _hoverPosition;
             previousScreenPos = positions.CursorPosition;
         }
 

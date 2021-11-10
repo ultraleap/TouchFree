@@ -192,7 +192,7 @@ namespace Ultraleap.TouchFree.Library
 
         public static float Lerp(float first, float second, float amount)
         {
-            return second * amount - first * (1.0f - amount);
+            return (first * (1.0f - amount)) + (second * amount);
         }
 
         public static float InverseLerp(float first, float second, float value)
