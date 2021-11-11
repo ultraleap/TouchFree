@@ -8,6 +8,7 @@ namespace Ultraleap.TouchFree.Service
     public class InteractionManager
     {
         private AirPushInteraction airPush;
+        private GrabInteraction grab;
         private HoverAndHoldInteraction hoverAndHold;
         private TouchPlanePushInteraction touchPlane;
 
@@ -22,6 +23,7 @@ namespace Ultraleap.TouchFree.Service
             connectionManager = _connectionManager;
 
             airPush = new AirPushInteraction(handManager);
+            grab = new GrabInteraction(handManager);
             hoverAndHold = new HoverAndHoldInteraction(handManager);
             touchPlane = new TouchPlanePushInteraction(handManager);
 
@@ -35,9 +37,13 @@ namespace Ultraleap.TouchFree.Service
             //airPush.HandleInputAction += connectionManager.SendInputActionToWebsocket;
             //airPush.Enable();
 
-            updateBehaviour.OnUpdate += hoverAndHold.Update;
-            hoverAndHold.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-            hoverAndHold.Enable();
+            //updateBehaviour.OnUpdate += hoverAndHold.Update;
+            //hoverAndHold.HandleInputAction += connectionManager.SendInputActionToWebsocket;
+            //hoverAndHold.Enable();
+
+            updateBehaviour.OnUpdate += grab.Update;
+            grab.HandleInputAction += connectionManager.SendInputActionToWebsocket;
+            grab.Enable();
         }
     }
 }

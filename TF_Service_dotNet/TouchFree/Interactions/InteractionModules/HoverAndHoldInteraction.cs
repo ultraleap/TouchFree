@@ -21,7 +21,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public float clickHoldTime = 200f;
 
         private Vector2 previousHoverPosDeadzone = Vector2.Zero;
-        private Vector2 previousHoverPosScreen = Vector2.Zero;
         private Vector2 previousScreenPos = Vector2.Zero;
 
         private bool hoverTriggered = false;
