@@ -1,20 +1,19 @@
-﻿using UnityEngine;
-using Ultraleap.TouchFree.ServiceShared;
+﻿using System;
+
+using Ultraleap.TouchFree.Library;
 
 namespace Ultraleap.TouchFree.Service
 {
-    public class GeneralisedGrabDetector : MonoBehaviour
+    public class GeneralisedGrabDetector
     {
-        [Header("Grab Parameters")]
-        [Range(0, 1)] public float grabThreshold;
-        [Range(0, 1)] public float ungrabThreshold;
+        public float grabThreshold = 0.8f;
+        public float ungrabThreshold = 0.7f;
 
-        [Header("Debug Parameters")]
-        public float grabStrength;
         public bool grabbing;
+        public float grabStrength;
         public float GeneralisedGrabStrength = 0;
 
-        private void Start()
+        public GeneralisedGrabDetector()
         {
             grabbing = false;
         }
@@ -46,7 +45,7 @@ namespace Ultraleap.TouchFree.Service
             }
             else
             {
-                float normalisedGrabStrength = ServiceUtility.MapRangeToRange(Mathf.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
+                float normalisedGrabStrength = Utilities.MapRangeToRange(Math.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
                 GeneralisedGrabStrength = normalisedGrabStrength;
             }
         }

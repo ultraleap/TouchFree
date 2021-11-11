@@ -1,6 +1,8 @@
-﻿using UnityEngine;
-using System;
-using Ultraleap.TouchFree.ServiceShared;
+﻿using System;
+using System.Numerics;
+
+using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Interactions;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -8,25 +10,21 @@ namespace Ultraleap.TouchFree.Service
     {
         public override InteractionType InteractionType { get; } = InteractionType.GRAB;
 
-        [Header("positioningModule.Stabiliser Params")]
-        public float deadzoneEnlargementDistance;
+        public float deadzoneEnlargementDistance = 0.02f;
+        public float deadzoneShrinkSpeed = 0.3f;
 
-        public float deadzoneShrinkSpeed;
-
-        [Header("Other params")]
-        [Tooltip("If hand is moving faster than this speed (in m/s), grabs will not be recognised")]
         public float maxHandVelocity = 0.15f;
 
         public GeneralisedGrabDetector grabDetector;
 
-        [Header("Drag Params")]
-        public float dragStartDistanceThresholdM;
+        public float dragStartDistanceThresholdM = 0.01f;
 
         private bool pressing = false;
-
         private bool requireHold = false;
+
         private int REQUIRED_HOLD_FRAMES = 1;
         private int heldFrames = 0;
+
         private bool requireClick = false;
 
         // Dragging
@@ -34,6 +32,12 @@ namespace Ultraleap.TouchFree.Service
         private bool isDragging;
 
         Tuple<long, Positions> previousPosition = new Tuple<long, Positions>(0, new Positions());
+
+        public GrabInteraction(HandManager _handManager) : base(_handManager)
+        {
+            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.INDEX_STABLE);
+            grabDetector = new GeneralisedGrabDetector();
+        }
 
         protected override void UpdateData(Leap.Hand hand)
         {
@@ -57,9 +61,9 @@ namespace Ultraleap.TouchFree.Service
                 //
                 // I find that this velocity is quite similar to hand.PalmVelocity.Magnitude, but (as expected)
                 // this velocity calculation gets much closer to 0 when the hand is more still.
-                Vector3 previousWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
-                Vector3 currentWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
-                float changeInPos = (currentWorldPos - previousWorldPos).magnitude;
+                Vector3 previousWorldPos = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
+                Vector3 currentWorldPos = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
+                float changeInPos = (currentWorldPos - previousWorldPos).Length();
                 float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
                 velocity = changeInPos / changeInTime;
             }
@@ -184,9 +188,9 @@ namespace Ultraleap.TouchFree.Service
 
         bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            var a = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
-            var b = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
-            var distFromStartPos = (a - b).magnitude;
+            var a = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
+            var b = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
+            var distFromStartPos = (a - b).Length();
 
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
