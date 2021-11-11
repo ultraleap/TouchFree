@@ -40,58 +40,56 @@ namespace Ultraleap.TouchFree.Service
             switch(lastInteraction)
             {
                 case InteractionType.TOUCHPLANE:
-                    updateBehaviour.OnUpdate -= touchPlane.Update;
-                    touchPlane.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-                    touchPlane.Disable();
+                    DisableInteraction(touchPlane);
                     break;
 
                 case InteractionType.PUSH:
-                    updateBehaviour.OnUpdate -= airPush.Update;
-                    airPush.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-                    airPush.Disable();
+                    DisableInteraction(airPush);
                     break;
 
                 case InteractionType.HOVER:
-                    updateBehaviour.OnUpdate -= hoverAndHold.Update;
-                    hoverAndHold.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-                    hoverAndHold.Disable();
+                    DisableInteraction(hoverAndHold);
                     break;
 
                 case InteractionType.GRAB:
-                    updateBehaviour.OnUpdate -= grab.Update;
-                    grab.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-                    grab.Disable();
+                    DisableInteraction(grab);
                     break;
             }
 
             switch(_config.InteractionType)
             {
                 case InteractionType.TOUCHPLANE:
-                    updateBehaviour.OnUpdate += touchPlane.Update;
-                    touchPlane.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-                    touchPlane.Enable();
+                    EnableInteraction(touchPlane);
                     break;
 
                 case InteractionType.PUSH:
-                    updateBehaviour.OnUpdate += airPush.Update;
-                    airPush.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-                    airPush.Enable();
+                    EnableInteraction(airPush);
                     break;
 
                 case InteractionType.HOVER:
-                    updateBehaviour.OnUpdate += hoverAndHold.Update;
-                    hoverAndHold.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-                    hoverAndHold.Enable();
+                    EnableInteraction(hoverAndHold);
                     break;
 
                 case InteractionType.GRAB:
-                    updateBehaviour.OnUpdate += grab.Update;
-                    grab.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-                    grab.Enable();
+                    EnableInteraction(grab);
                     break;
             }
 
             lastInteraction = _config.InteractionType;
+        }
+
+        protected void EnableInteraction(InteractionModule target)
+        {
+            updateBehaviour.OnUpdate += target.Update;
+            target.HandleInputAction += connectionManager.SendInputActionToWebsocket;
+            target.Enable();
+        }
+
+        protected void DisableInteraction(InteractionModule target)
+        {
+            updateBehaviour.OnUpdate -= target.Update;
+            target.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
+            target.Disable();
         }
     }
 }
