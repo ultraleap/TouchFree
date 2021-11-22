@@ -32,13 +32,21 @@ namespace Ultraleap.TouchFree.Tooling
         [Tooltip("These plugins modify InputActions and are performed in order.")]
         [SerializeField] ToggleablePlugin[] plugins;
 
-        private void Awake()
+        private void OnEnable()
         {
             if (Instance != null && Instance != this)
             {
                 return;
             }
             Instance = this;
+        }
+
+        void OnDisable()
+        {
+            if (Instance != null)
+            {
+                Instance = null;
+            }
         }
 
         internal void SendInputAction(InputAction _inputAction)
