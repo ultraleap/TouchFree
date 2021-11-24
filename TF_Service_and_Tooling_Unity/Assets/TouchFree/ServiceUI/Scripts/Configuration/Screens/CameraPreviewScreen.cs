@@ -11,8 +11,6 @@ public class CameraPreviewScreen : MonoBehaviour
     [SerializeField]
     private float exposureThresholdValue = 0.5f;
 
-    DiagnosticAPI diagnosticAPI;
-
     public Slider maskingSiderL, maskingSiderR, maskingSiderT, maskingSiderB;
 
     [Tooltip("The ratio of the slider length to the masking capacity. Total capacity is the full width/height of the camera image.")]
@@ -28,9 +26,9 @@ public class CameraPreviewScreen : MonoBehaviour
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
         OnOverExposureValueChanged(enableOverexposureHighlighting.isOn);
 
-        if(diagnosticAPI == null)
+        if(DiagnosticAPIManager.diagnosticAPI == null)
         {
-            diagnosticAPI = new DiagnosticAPI(this);
+            DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
         }
 
         DiagnosticAPI.OnGetMaskingResponse += SetSliders;
@@ -41,8 +39,9 @@ public class CameraPreviewScreen : MonoBehaviour
         maskingSiderT.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
-        diagnosticAPI.Request("GetDevices"); // get the connected device ID
-        diagnosticAPI.Request("GetVersion");
+        DiagnosticAPIManager.diagnosticAPI.Request("GetImageMask:" + DiagnosticAPIManager.diagnosticAPI.connectedDeviceID);
+
+        HandleMaskingVersionCheck(DiagnosticAPIManager.maskngAvailable);
     }
 
     void OnDisable()
@@ -96,7 +95,7 @@ public class CameraPreviewScreen : MonoBehaviour
         currentMaskTop = maskingSiderB.value * sliderRatio;
         currentMaskBottom = maskingSiderT.value * sliderRatio;
 
-        diagnosticAPI.SetMasking(
+        DiagnosticAPIManager.diagnosticAPI.SetMasking(
             currentMaskLeft,
             currentMaskRight,
             currentMaskTop,
