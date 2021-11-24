@@ -21,7 +21,7 @@ public class DiagnosticAPI : IDisposable
     public uint connectedDeviceID;
     public bool maskingAllowed = false;
 
-    const string minimumMaskingAPIVerison = "2.0.0";
+    const string minimumMaskingAPIVerison = "2.1.0";
 
     ConcurrentQueue<string> newMessages = new ConcurrentQueue<string>();
 
