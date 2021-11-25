@@ -322,5 +322,16 @@ namespace Ultraleap.TouchFree.Service
             }
             return forceChange;
         }
+
+        protected override void OnSettingsUpdated()
+        {
+            base.OnSettingsUpdated();
+
+            distAtSpeedMax = ConfigManager.InteractionConfig.AirPush.AirPushTriggerDistanceAtMaxSpeedM;
+            distAtSpeedMin = ConfigManager.InteractionConfig.AirPush.AirPushTriggerDistanceAtMinSpeedM;
+            thetaOne = ConfigManager.InteractionConfig.AirPush.AirPushApproachAngleDeg;
+            thetaTwo = ConfigManager.InteractionConfig.AirPush.AirPushExitAngleDeg;
+            unclickThreshold = ConfigManager.InteractionConfig.AirPush.AirPushReleaseThreshold;
+        }
     }
 }
