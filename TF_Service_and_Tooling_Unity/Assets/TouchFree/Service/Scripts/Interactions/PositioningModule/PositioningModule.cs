@@ -59,6 +59,18 @@ namespace Ultraleap.TouchFree.Service
             Vector2 screenPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(screenPos);
             float distanceFromScreen = screenPos.z;
 
+
+
+            float deadzoneRadiusScreenspace = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(Vector2.one * Stabiliser.currentDeadzoneRadius).x;
+
+            InteractionManager.Instance.rawCursorTransform.anchoredPosition = screenPos;
+            InteractionManager.Instance.deadzoneTransform.anchoredPosition = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(screenPosM + Stabiliser.deadzoneOffset);
+            InteractionManager.Instance.rawCursorWithOffsetTransform.anchoredPosition = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(screenPosM + Stabiliser.deadzoneOffset);            
+
+            InteractionManager.Instance.deadzoneTransform.sizeDelta = Vector2.one * deadzoneRadiusScreenspace * 2;
+
+
+
             screenPosM = Stabiliser.ApplyDeadzone(screenPosM);
 
             Vector2 oneToOnePosition = ConfigManager.GlobalSettings.virtualScreen.MetersToPixels(screenPosM);

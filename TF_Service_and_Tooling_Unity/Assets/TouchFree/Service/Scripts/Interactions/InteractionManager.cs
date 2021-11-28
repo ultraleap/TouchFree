@@ -29,6 +29,10 @@ namespace Ultraleap.TouchFree.Service
         public InteractionModule grabInteractionModule;
         public InteractionModule touchPlaneInteractionModule;
 
+        public RectTransform deadzoneTransform;
+        public RectTransform rawCursorTransform;
+        public RectTransform rawCursorWithOffsetTransform;
+
         private void Awake()
         {
             // if the singleton hasn't been initialized yet
