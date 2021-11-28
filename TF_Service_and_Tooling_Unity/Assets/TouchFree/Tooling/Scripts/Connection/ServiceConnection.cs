@@ -32,7 +32,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
             webSocket.OnMessage += (sender, e) =>
             {
-                OnMessage(e);
+                //OnMessage(e);
             };
 
             webSocket.OnOpen += (sender, e) =>
@@ -51,6 +51,22 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             };
 
             webSocket.Connect();
+
+            Ultraleap.TouchFree.Service.ClientConnectionManager.Instance.inputActionEvent += HandleInputAtion;
+        }
+
+        void HandleInputAtion(string _action)
+        {
+            // Find key areas of the rawData, the "action" and the "content"
+            Match match = Regex.Match(_action, "{\"action\": ?\"([\\w\\d_]+?)\",\"content\": ?({.+?})}$");
+
+            // "action" = match.Groups[1] // "content" = match.Groups[2]
+            ActionCode action = (ActionCode)Enum.Parse(typeof(ActionCode), match.Groups[1].ToString());
+            string content = match.Groups[2].ToString();
+
+            WebsocketInputAction wsInput = JsonUtility.FromJson<WebsocketInputAction>(content);
+            InputAction cInput = new InputAction(wsInput);
+            ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
         }
 
         // Function: ConnectionResultCallback

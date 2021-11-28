@@ -34,6 +34,8 @@ namespace Ultraleap.TouchFree.Service
 
             string jsonMessage = JsonUtility.ToJson(message);
 
+            ClientConnectionManager.Instance.InputActionSend(jsonMessage);
+
             Send(jsonMessage);
         }
 

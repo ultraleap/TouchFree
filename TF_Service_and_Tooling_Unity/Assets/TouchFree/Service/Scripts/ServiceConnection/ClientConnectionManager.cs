@@ -28,6 +28,13 @@ namespace Ultraleap.TouchFree.Service
 
         internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
+        public event Action<string> inputActionEvent;
+
+        public void InputActionSend(string _aciton)
+        {
+            inputActionEvent?.Invoke(_aciton);
+        }
+
         private void Awake()
         {
             Application.targetFrameRate = 60;
