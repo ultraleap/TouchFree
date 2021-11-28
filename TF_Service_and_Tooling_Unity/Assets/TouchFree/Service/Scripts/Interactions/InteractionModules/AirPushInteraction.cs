@@ -89,8 +89,6 @@ namespace Ultraleap.TouchFree.Service
 
         private void HandleInteractionsAirPush()
         {
-            long currentTimestamp = latestTimestamp;
-
             if (handAppearedCooldown.IsRunning && handAppearedCooldown.ElapsedMilliseconds >= millisecondsCooldownOnEntry)
             {
                 handAppearedCooldown.Stop();
@@ -99,17 +97,8 @@ namespace Ultraleap.TouchFree.Service
             // If not ignoring clicks...
             if ((previousTime != 0f) && !handAppearedCooldown.IsRunning)
             {
-                // Calculate important variables needed in determining the key events
-                long dtMicroseconds = (currentTimestamp - previousTime);
-                float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
-                float dz = (-1f) * (positions.DistanceFromScreen - previousScreenDistance);   // Metres +ve = towards screen
-                float currentVelocity = dz / dt;    // m/s
-
-                Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
-                Vector2 dPerp = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(dPerpPx);
-
                 // Update AppliedForce, which is the crux of the AirPush algorithm
-                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, positions.DistanceFromScreen);
+                float forceChange = GetAppliedForceChange();
                 appliedForce += forceChange;
                 appliedForce = Mathf.Clamp01(appliedForce);
 
@@ -187,7 +176,7 @@ namespace Ultraleap.TouchFree.Service
             }
 
             // Update stored variables
-            previousTime = currentTimestamp;
+            previousTime = latestTimestamp;
             previousScreenDistance = positions.DistanceFromScreen;
             previousScreenPos = positions.CursorPosition;
         }
@@ -237,16 +226,19 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        private float GetAppliedForceChange(float _currentVelocity, float _dt, Vector2 _dPerp, float _distanceFromTouchPlane)
+        private float GetAppliedForceChange()
         {
-            // currentVelocity = current z-component of velocity in m/s
-            // dt = current change in time in seconds
-            // dPerp = horizontal change in position
-            // distanceFromTouchPlane = z-distance from a virtual plane where clicks are always triggered
+            // Calculate important variables needed in determining the key events
+            float dt = (latestTimestamp - previousTime) / (1000f * 1000f); // Seconds
+            float perpendicularMovement = previousScreenDistance - positions.DistanceFromScreen; // Metres towards screen
+            float currentVelocity = perpendicularMovement / dt; // m/s
+
+            Vector2 paralleMovement = positions.CursorPosition - previousScreenPos;
+            paralleMovement = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(paralleMovement);
 
             float forceChange = 0f;
 
-            if (_dt < Mathf.Epsilon)
+            if (dt < Mathf.Epsilon)
             {
                 // Not long enough between the two frames
                 // Also triggered if recognising a new hand (dt is negative)
@@ -260,15 +252,15 @@ namespace Ultraleap.TouchFree.Service
                 float stiffness = 1.0f / distAtSpeedMax;
 
                 // Do not reduce force on backwards motion
-                float forwardVelocity = Mathf.Max(0f, _currentVelocity);
-                forceChange = stiffness * forwardVelocity * _dt;
+                float forwardVelocity = Mathf.Max(0f, currentVelocity);
+                forceChange = stiffness * forwardVelocity * dt;
 
                 // Do not decay force when beyond the touch plane.
                 // This is to ensure the user cannot edge closer and closer to the screen.
             }
             else
             {
-                float angleFromScreen = Mathf.Atan2(_dPerp.magnitude, _currentVelocity * _dt) * Mathf.Rad2Deg;
+                float angleFromScreen = Mathf.Atan2(paralleMovement.magnitude, currentVelocity * dt) * Mathf.Rad2Deg;
 
                 if (angleFromScreen < thetaOne || angleFromScreen > thetaTwo)
                 {
@@ -277,7 +269,7 @@ namespace Ultraleap.TouchFree.Service
                     // Adjust force based on spring stiffness
 
                     // Perform a calculation:
-                    float vClamped = Mathf.Clamp(Mathf.Abs(_currentVelocity), speedMin, speedMax);
+                    float vClamped = Mathf.Clamp(Mathf.Abs(currentVelocity), speedMin, speedMax);
 
                     float ratio = (vClamped - speedMin) / (speedMax - speedMin);
 
@@ -286,23 +278,20 @@ namespace Ultraleap.TouchFree.Service
 
                     float k = stiffnessMin + stiffnessCurve.Evaluate(ratio) * (stiffnessMax - stiffnessMin);
 
-                    forceChange = k * _currentVelocity * _dt;
+                    forceChange = k * currentVelocity * dt;
                 }
                 else
                 {
                     // Approximately horizontal movement.
                     if (pressing)
                     {
-                        // If pressing, do not change
                         forceChange = 0f;
                     }
                     else
                     {
                         // Change force based on horizontal velocity and a horizontal decay distance
-                        float vPerp = _dPerp.magnitude / _dt;
-
                         float stiffness = 1f / horizontalDecayDist;
-                        forceChange = -1f * stiffness * vPerp * _dt;
+                        forceChange = -1f * stiffness * paralleMovement.magnitude;
                     }
                 }
 
@@ -311,7 +300,7 @@ namespace Ultraleap.TouchFree.Service
                 {
                     if (forceChange <= 0f)
                     {
-                        forceChange -= (1f - (unclickThreshold - 0.1f)) * (_dt / forceDecayTime);
+                        forceChange -= (1f - (unclickThreshold - 0.1f)) * (dt / forceDecayTime);
                     }
                     else
                     {
