@@ -44,7 +44,7 @@ namespace Ultraleap.TouchFree.Service
 
         [Header("TouchPlane Params")]
         public bool useTouchPlaneForce;
-        public float distPastTouchPlane;
+        public float touchPlaneDistance;
 
         private long previousTime = 0;
         private float previousScreenDistance = Mathf.Infinity;
@@ -254,10 +254,10 @@ namespace Ultraleap.TouchFree.Service
                 // No change in force
                 forceChange = 0f;
             }
-            else if (useTouchPlaneForce && _distanceFromTouchPlane < 0f)
+            else if (useTouchPlaneForce && positions.DistanceFromScreen - touchPlaneDistance < 0f)
             {
                 // Use a fixed stiffness beyond the touch-plane
-                float stiffness = 1.0f / distPastTouchPlane;
+                float stiffness = 1.0f / distAtSpeedMax;
 
                 // Do not reduce force on backwards motion
                 float forwardVelocity = Mathf.Max(0f, _currentVelocity);

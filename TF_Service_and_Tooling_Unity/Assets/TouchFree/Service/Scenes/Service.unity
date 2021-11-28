@@ -307,5 +307,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ServiceSystems
       objectReference: {fileID: 0}
+    - target: {fileID: 5475144641699676489, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: touchPlaneDistance
+      value: 0.02
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
