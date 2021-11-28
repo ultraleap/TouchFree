@@ -183,10 +183,10 @@ namespace Ultraleap.TouchFree.Service
             return false;
         }
 
-        private void AdjustDeadzoneSize(float _df)
+        private void AdjustDeadzoneSize(float _changeInForce)
         {
-            // _df is change in Force in the last frame
-            if (_df < -1f * Mathf.Epsilon)
+            // _changeInForce is change in Force in the last frame
+            if (_changeInForce < -1f * Mathf.Epsilon)
             {
                 // Start decreasing deadzone size
                 positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkRate);
@@ -194,15 +194,7 @@ namespace Ultraleap.TouchFree.Service
             else
             {
                 positioningModule.Stabiliser.StopShrinkingDeadzone();
-
-                float deadzoneSizeIncrease = deadzoneMaxSizeIncrease * _df;
-
-                float deadzoneMinSize = positioningModule.Stabiliser.defaultDeadzoneRadius;
-                float deadzoneMaxSize = deadzoneMinSize + deadzoneMaxSizeIncrease;
-
-                float newDeadzoneSize = positioningModule.Stabiliser.currentDeadzoneRadius + deadzoneSizeIncrease;
-                newDeadzoneSize = Mathf.Clamp(newDeadzoneSize, deadzoneMinSize, deadzoneMaxSize);
-                positioningModule.Stabiliser.currentDeadzoneRadius = newDeadzoneSize;
+                positioningModule.Stabiliser.ScaleDeadzoneByProgress(appliedForce, deadzoneMaxSizeIncrease);
             }
         }
 

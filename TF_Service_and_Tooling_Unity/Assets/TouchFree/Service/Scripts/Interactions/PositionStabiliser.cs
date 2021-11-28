@@ -141,11 +141,11 @@ namespace Ultraleap.TouchFree.Service
             }
         }
 
-        public void ScaleDeadzoneByProgress(float _progressToClick)
+        public void ScaleDeadzoneByProgress(float _progressToClick, float _maxDeadzoneIncrease)
         {
             // Assumes deadzoneProgressScaling runs from 0.0 to 1.0.
-            var scaledValue = deadzoneProgressScaling.Evaluate(_progressToClick);
-            var deadZoneRadius = defaultDeadzoneRadius * scaledValue;
+            var scaledProgress = deadzoneProgressScaling.Evaluate(_progressToClick);
+            var deadZoneRadius = Mathf.Lerp(defaultDeadzoneRadius, defaultDeadzoneRadius + _maxDeadzoneIncrease, scaledProgress);
 
             currentDeadzoneRadius = deadZoneRadius;
         }
