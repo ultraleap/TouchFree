@@ -8,9 +8,6 @@ namespace Ultraleap.TouchFree.Service
     public class PositionStabiliser : MonoBehaviour
     {
         [HideInInspector] public float defaultDeadzoneRadius;
-        public float smoothingRate;
-        public float internalShrinkFactor = 2f;
-
         [Header("Progress based scaling")]
         public AnimationCurve deadzoneProgressScaling;
 
@@ -119,13 +116,7 @@ namespace Ultraleap.TouchFree.Service
             Vector2 defaultPositionChange = (constrainedPositionDefault - previousPositionDeadzoneDefaultSize);
             Vector2 previousConstraintVector = (previousPositionDeadzoneDefaultSize - previousPositionDeadzoneCurrentSize);
 
-            float internalConstraintVariable = previousConstraintVector.magnitude + internalShrinkFactor * defaultDeadzoneRadius;
-
-            if (internalConstraintVariable < currentDeadzoneRadius)
-            {
-                currentDeadzoneRadius = internalConstraintVariable;
-            }
-            else if (previousConstraintVector != Vector2.zero)
+            if (previousConstraintVector != Vector2.zero)
             {
                 float distanceAwayFromConstraint = Vector2.Dot(defaultPositionChange, previousConstraintVector) / previousConstraintVector.magnitude;
                 distanceAwayFromConstraint = Mathf.Max(0, distanceAwayFromConstraint);
