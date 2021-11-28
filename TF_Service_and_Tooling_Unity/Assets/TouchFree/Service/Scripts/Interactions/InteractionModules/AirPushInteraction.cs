@@ -37,6 +37,8 @@ namespace Ultraleap.TouchFree.Service
 
         [Range(0, 0.999f)]
         public float unclickThreshold = 0.999f;
+        [Range(0, 0.999f)]
+        public float unclickThresholdDrag = 0.999f;
         public bool decayForceOnClick;
         [Range(0, 0.999f)]
         public float forceDecayTime;
@@ -109,7 +111,7 @@ namespace Ultraleap.TouchFree.Service
                 // Determine whether to send any other events
                 if (pressing)
                 {
-                    if (appliedForce < unclickThreshold || ignoreDragging)
+                    if ((!isDragging && appliedForce < unclickThreshold) || (isDragging && appliedForce < unclickThresholdDrag) || ignoreDragging)
                     {
                         pressing = false;
                         isDragging = false;
