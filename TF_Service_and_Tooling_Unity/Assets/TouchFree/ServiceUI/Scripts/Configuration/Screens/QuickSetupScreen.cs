@@ -7,36 +7,37 @@ namespace Ultraleap.TouchFree.ServiceUI
 {
     public class QuickSetupScreen : ConfigScreen
     {
-        public GameObject step1;
-        public GameObject step2;
-        public GameObject target1;
-        public GameObject target2;
         public GameObject trackingLost;
         public GameObject setupGuideButton;
 
         [Space]
         public int trackingFailsToSetupGuide = 3;
 
-        Vector3 bottomPosM;
-        Vector3 topPosM;
-
         int noTrackingAttempts = 0;
 
         public GameObject completeScreen;
 
-        private const float TARGET_DIST_FROM_EDGE_PERCENTAGE = 0.1f;
-        private const float HEIGHT_SCALING_FACTOR = 1f / (1f - (2 * TARGET_DIST_FROM_EDGE_PERCENTAGE));
-        private const float EDGE_SCALING_FACTOR = ( ( HEIGHT_SCALING_FACTOR - 1f ) / 2f ) + 1f;
+        Vector3 pos1;
+        Vector3 pos2;
 
-        private void OnEnable()
+        bool pos1Taken = false;
+        bool pos2Taken = false;
+        bool beganDrawingBox = false;
+
+        public float minFingersTogetherTimer = 2;
+        public float maxFingersTogetherDistance = 0.02f;
+
+        public float currentFingersTogetherTimer = 0;
+
+        public UnityEngine.UI.Text text;
+
+        protected override void OnEnable()
         {
             base.OnEnable();
             // reset the quick setup
-            bottomPosM = Vector3.zero;
-            topPosM = Vector3.zero;
-            SetTargetPositions();
-            step1.SetActive(true);
-            step2.SetActive(false);
+            pos1Taken = false;
+            pos2Taken = false;
+            beganDrawingBox = false;
             ScreenManager.Instance.SetCursorState(false);
             HandManager.Instance.useTrackingTransform = false;
             HandManager.Instance.lockTrackingMode = true;
@@ -54,36 +55,109 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (!pos2Taken && HandManager.Instance.PrimaryHand != null && HandManager.Instance.SecondaryHand != null)
             {
-                if (bottomPosM == Vector3.zero)
+                Vector3 primaryFingerPos = HandManager.Instance.PrimaryHand.GetIndex().TipPosition.ToVector3();
+                Vector3 secondaryFingerPos = HandManager.Instance.SecondaryHand.GetIndex().TipPosition.ToVector3();
+
+                if(AreFingersTogether(primaryFingerPos, secondaryFingerPos))
                 {
-                    if (HandManager.Instance.PrimaryHand != null)
+                    currentFingersTogetherTimer += Time.deltaTime;
+
+                    if (!beganDrawingBox)
                     {
-                        SetBottomPos(HandManager.Instance.PrimaryHand.GetIndex().TipPosition.ToVector3());
-                        // display second quick setup screen
-                        step1.SetActive(false);
-                        step2.SetActive(true);
+                        if (!pos1Taken)
+                        {
+                            text.text = "HOLD your INDEX fingers together: " + (minFingersTogetherTimer - currentFingersTogetherTimer).ToString("F2");
+                        }
+
+                        if (!pos1Taken && currentFingersTogetherTimer >= minFingersTogetherTimer)
+                        {
+                            pos1 = (primaryFingerPos + secondaryFingerPos) / 2;
+
+                            pos1Taken = true;
+                            text.text = "Draw your INDEX fingers around the edge of the screen until they are TOUCHING at the middle of the BOTTOM of the screen";
+                        }
                     }
                     else
                     {
-                        // Display a notification that tracking was lost
-                        DisplayTrackingLost();
+                        if (!pos2Taken)
+                        {
+                            text.text = "HOLD your INDEX fingers together: " + (minFingersTogetherTimer - currentFingersTogetherTimer).ToString("F2");
+                        }
+
+                        if (currentFingersTogetherTimer >= minFingersTogetherTimer)
+                        {
+                            pos2 = (primaryFingerPos + secondaryFingerPos) / 2;
+                            pos2Taken = true;
+                            text.text = "Completing Setup";
+                            CalculatePositions();
+                        }
                     }
                 }
-                else if (topPosM == Vector3.zero)
+                else
                 {
-                    if (HandManager.Instance.PrimaryHand != null)
+                    if(!pos1Taken)
                     {
-                        SetTopPos(HandManager.Instance.PrimaryHand.GetIndex().TipPosition.ToVector3());
-                        CompleteQuickSetup(bottomPosM, topPosM);
+                        text.text = "Place your INDEX fingers together while TOUCHING the middle of the TOP of the screen";
+                    }
+                    else if(!pos2Taken)
+                    {
+                        text.text = "Draw your INDEX fingers around the edge of the screen until they are TOUCHING at the middle of the BOTTOM of the screen";
                     }
                     else
                     {
-                        // Display a notification that tracking was lost
-                        DisplayTrackingLost();
+                        text.text = "Completing Setup";
+                    }
+
+                    currentFingersTogetherTimer = 0;
+
+                    if (pos1Taken)
+                    {
+                        beganDrawingBox = true;
                     }
                 }
+            }
+            else
+            {
+                if(!pos1Taken)
+                {
+                    text.text = "Place your INDEX fingers together while TOUCHING the middle of the TOP of the screen";
+                }
+                else if(!beganDrawingBox)
+                {
+                    text.text = "Draw your INDEX fingers around the edge of the screen until they are TOUCHING at the middle of the BOTTOM of the screen";
+                }
+                else if(!pos2Taken)
+                {
+                    text.text = "Place your INDEX fingers together while TOUCHING the middle of the BOTTOM of the screen";
+                }
+                else
+                {
+                    text.text = "All done :)";
+                }
+            }
+        }
+
+        bool AreFingersTogether(Vector3 _pos1, Vector3 _pos2)
+        {
+            if (Vector3.Distance(_pos1, _pos2) < maxFingersTogetherDistance)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        void CalculatePositions()
+        {
+            if(pos1.y < pos2.y)
+            {
+                CompleteQuickSetup(pos1, pos2);
+            }
+            else
+            {
+                CompleteQuickSetup(pos2, pos1);
             }
         }
 
@@ -104,13 +178,10 @@ namespace Ultraleap.TouchFree.ServiceUI
             Vector3 bottomNoX = new Vector3(0, bottomPos.y, bottomPos.z);
             Vector3 topNoX = new Vector3(0, topPos.y, topPos.z);
 
-            ConfigManager.PhysicalConfig.ScreenHeightM = Vector3.Distance(bottomNoX, topNoX) * HEIGHT_SCALING_FACTOR;
-
-            var bottomEdge = BottomCentreFromTouches(bottomPos, topPos);
-            var topEdge = TopCentreFromTouches(bottomPos, topPos);
+            ConfigManager.PhysicalConfig.ScreenHeightM = Vector3.Distance(bottomNoX, topNoX);
 
             ConfigManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(bottomPos, topPos);
-            ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM = LeapPositionInScreenSpace(bottomEdge, ConfigManager.PhysicalConfig.LeapRotationD);
+            ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM = LeapPositionInScreenSpace(bottomPos, ConfigManager.PhysicalConfig.LeapRotationD);
             ConfigManager.PhysicalConfig.ConfigWasUpdated();
         }
 
@@ -138,26 +209,6 @@ namespace Ultraleap.TouchFree.ServiceUI
             // Multiply by -1 so the vector is from screen to camera
             Vector3 leapPosition = rotatedVector * -1f;
             return leapPosition;
-        }
-
-        /// <summary>
-        /// BottomTouch -> TopTouch is 1/8th screen height as touch points are placed 10% in from the edge.
-        /// We need to offset the touch point by 1/10th of screen height = 1/8th of the distance between touch points.
-        /// For this we can Lerp from bottom to top touch travelling an extra 8th distance.
-        /// </summary>
-        public Vector3 TopCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
-        {
-            return Vector3.LerpUnclamped(bottomTouch, topTouch, EDGE_SCALING_FACTOR);
-        }
-
-        /// <summary>
-        /// TopTouch -> BottomTouch is 1/8th screen height as touch points are placed 10% in from the edge.
-        /// We need to offset the touch point by 1/10th of screen height = 1/8th of the distance between touch points.
-        /// For this we can Lerp from top to bottom touch travelling an extra 8th distance
-        /// </summary>
-        public Vector3 BottomCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
-        {
-            return Vector3.LerpUnclamped(topTouch, bottomTouch, EDGE_SCALING_FACTOR);
         }
 
         /// <summary>
@@ -204,26 +255,6 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             yield return new WaitForSeconds(2);
             DisplayTrackingLost(false);
-        }
-
-        public void SetTopPos(Vector3 position)
-        {
-            topPosM = position;
-        }
-
-        public void SetBottomPos(Vector3 position)
-        {
-            bottomPosM = position;
-        }
-
-        private void SetTargetPositions()
-        {
-            // Canvas is set to scale from 1920 * 1080 to local screen size,
-            // so relative positions have to be in that scale
-            var verticalDistance = 1080f * TARGET_DIST_FROM_EDGE_PERCENTAGE;
-
-            target1.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, verticalDistance, 0f);
-            target2.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, -1f * verticalDistance, 0f);
         }
     }
 }
