@@ -121,6 +121,7 @@ namespace Ultraleap.TouchFree.Service
                         if (isDragging)
                         {
                             SendInputAction(InputType.MOVE, positions, appliedForce);
+                            positioningModule.Stabiliser.ReduceDeadzoneOffset();
                         }
                         else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
@@ -137,25 +138,23 @@ namespace Ultraleap.TouchFree.Service
                 }
                 else if (!decayingForce && appliedForce >= 1f)
                 {
-                    // Need the !decayingForce check here to eliminate the risk of double-clicks
-                    // when ignoring dragging and moving past the touch-plane.
-
                     pressing = true;
                     SendInputAction(InputType.DOWN, positions, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
-
-                    // If dragging is off, we want to decay the force after a click back to the unclick threshold
                     if (decayForceOnClick && ignoreDragging)
                     {
                         decayingForce = true;
                     }
+
+                    positioningModule.Stabiliser.SetDeadzoneOffset();
+                    positioningModule.Stabiliser.currentDeadzoneRadius = dragStartDistanceThresholdM;
                 }
                 else if (positions.CursorPosition != previousScreenPos || positions.DistanceFromScreen != previousScreenDistance)
                 {
                     // Send the move event
                     SendInputAction(InputType.MOVE, positions, appliedForce);
+                    positioningModule.Stabiliser.ReduceDeadzoneOffset();
                 }
-
                 if (decayingForce && (appliedForce <= unclickThreshold - 0.1f))
                 {
                     decayingForce = false;

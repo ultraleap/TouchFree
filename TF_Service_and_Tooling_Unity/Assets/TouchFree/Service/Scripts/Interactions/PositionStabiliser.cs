@@ -22,6 +22,19 @@ namespace Ultraleap.TouchFree.Service
         private Vector2 previousPositionDeadzoneDefaultSize;
         private Vector2 previousPositionDeadzoneCurrentSize;
 
+        [HideInInspector] public Vector2 deadzoneOffset;
+        Vector2 lastRawPos;
+
+        public void SetDeadzoneOffset()
+        {
+            deadzoneOffset = previousPositionDeadzoneCurrentSize - lastRawPos;
+        }
+
+        public void ReduceDeadzoneOffset()
+        {
+            deadzoneOffset = deadzoneOffset * 0.95f;
+        }
+
         private void OnEnable()
         {
             ResetValues();
@@ -36,6 +49,9 @@ namespace Ultraleap.TouchFree.Service
 
         public Vector2 ApplyDeadzone(Vector2 position)
         {
+            lastRawPos = position;
+            position += deadzoneOffset;
+
             if (defaultDeadzoneRadius == 0)
             {
                 return position;
