@@ -54,15 +54,13 @@ namespace Ultraleap.TouchFree.Service
         private bool pressing = false;
 
         [Header("Dragging")]
-        public float dragStartDistanceThresholdM = 0.04f;
+        public float dragStartDistanceThresholdM = 0.01f;
         public float dragDeadzoneShrinkRate = 0.5f;
-        public float dragDeadzoneShrinkDistanceThresholdM = 0.001f;
 
         [Header("Deadzone")]
         public float deadzoneMaxSizeIncrease;
         public float deadzoneShrinkRate;
 
-        private bool dragDeadzoneShrinkTriggered = false;
         private bool isDragging = false;
 
         protected override void UpdateData(Leap.Hand hand)
@@ -122,19 +120,13 @@ namespace Ultraleap.TouchFree.Service
                     {
                         if (isDragging)
                         {
-                            if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, positions.CursorPosition))
-                            {
-                                positioningModule.Stabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
-                                dragDeadzoneShrinkTriggered = true;
-                            }
-
                             SendInputAction(InputType.MOVE, positions, appliedForce);
                         }
                         else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
                             isDragging = true;
-                            dragDeadzoneShrinkTriggered = false;
                             SendInputAction(InputType.MOVE, positions, appliedForce);
+                            positioningModule.Stabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
                         }
                         else
                         {
@@ -183,24 +175,12 @@ namespace Ultraleap.TouchFree.Service
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).magnitude;
-
-            if (distFromStartPos > dragStartDistanceThresholdM)
+            if (_currentPos != _startPos)
             {
                 return true;
             }
 
             return false;
-        }
-
-        private bool CheckForStartDragDeadzoneShrink(Vector2 _startPos, Vector2 _currentPos)
-        {
-            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).magnitude;
-            return (distFromStartPos > dragDeadzoneShrinkDistanceThresholdM);
         }
 
         private void AdjustDeadzoneSize(float _df)
