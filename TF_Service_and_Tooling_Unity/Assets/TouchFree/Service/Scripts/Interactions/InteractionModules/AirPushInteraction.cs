@@ -294,7 +294,9 @@ namespace Ultraleap.TouchFree.Service
             thetaOne = ConfigManager.InteractionConfig.AirPush.AirPushApproachAngleDeg;
             thetaTwo = ConfigManager.InteractionConfig.AirPush.AirPushExitAngleDeg;
             unclickThreshold = ConfigManager.InteractionConfig.AirPush.AirPushReleaseThreshold;
-            dragStartDistanceThresholdM = ConfigManager.InteractionConfig.AirPush.DragDistanceThresholdM;
+            unclickThresholdDrag = ConfigManager.InteractionConfig.AirPush.AirPushDraggingReleaseThreshold;
+            dragStartDistanceThresholdM = ConfigManager.InteractionConfig.AirPush.AirPushDragDistanceThresholdM;
+            dragDeadzoneShrinkRate = ConfigManager.InteractionConfig.AirPush.AirPushDragDeadzoneShrinkRate;
         }
     }
 }

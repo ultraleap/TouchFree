@@ -35,8 +35,10 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         public float AirPushReleaseThreshold = 0.85f;
         // unclickThreshold
+        public float AirPushDraggingReleaseThreshold = 0.5f;
 
-        public float DragDistanceThresholdM = 0.01f;
+        public float AirPushDragDistanceThresholdM = 0.01f;
+        public float AirPushDragDeadzoneShrinkRate = 0.5f;
     }
 
     [Serializable]
