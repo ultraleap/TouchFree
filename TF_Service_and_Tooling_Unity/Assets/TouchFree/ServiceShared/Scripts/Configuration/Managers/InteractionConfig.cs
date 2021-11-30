@@ -80,6 +80,9 @@ namespace Ultraleap.TouchFree.ServiceShared
             AirPush.AirPushApproachAngleDeg = defaults.AirPush.AirPushApproachAngleDeg;
             AirPush.AirPushExitAngleDeg = defaults.AirPush.AirPushExitAngleDeg;
             AirPush.AirPushReleaseThreshold = defaults.AirPush.AirPushReleaseThreshold;
+            AirPush.AirPushDraggingReleaseThreshold = defaults.AirPush.AirPushDraggingReleaseThreshold;
+            AirPush.AirPushDragDistanceThresholdM = defaults.AirPush.AirPushDragDistanceThresholdM;
+            AirPush.AirPushDragDeadzoneShrinkRate = defaults.AirPush.AirPushDragDeadzoneShrinkRate;
         }
 
         public void SaveConfig()
