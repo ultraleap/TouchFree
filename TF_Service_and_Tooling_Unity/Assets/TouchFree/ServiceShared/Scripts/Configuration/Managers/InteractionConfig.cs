@@ -20,8 +20,8 @@ namespace Ultraleap.TouchFree.ServiceShared
     public class AirPushInteractionSettings
     {
         // distance to drag start
-        public float AirPushTriggerDistanceAtMaxSpeedM = 0.03f;
-        public float AirPushTriggerDistanceAtMinSpeedM = 0.0005f;
+        public float AirPushTriggerDistanceAtMaxSpeedM = 0.005f;
+        public float AirPushTriggerDistanceAtMinSpeedM = 0.03f;
 
         // Angles before click cancel
         public float AirPushApproachAngleDeg = 15f;
