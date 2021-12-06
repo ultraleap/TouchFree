@@ -21,10 +21,10 @@ namespace Ultraleap.TouchFree.ServiceShared
     {
         // distance to drag start
         public float AirPushTriggerDistanceAtMaxSpeedM = 0.005f;
-        public float AirPushTriggerDistanceAtMinSpeedM = 0.03f;
+        public float AirPushTriggerDistanceAtMinSpeedM = 0.015f;
 
         // Angles before click cancel
-        public float AirPushApproachAngleDeg = 15f;
+        public float AirPushApproachAngleDeg = 40f;
         // thetaOne
         public float AirPushExitAngleDeg = 135f;
         // thetaTwo
@@ -33,12 +33,12 @@ namespace Ultraleap.TouchFree.ServiceShared
         // If a hand moves an angle greater than ExitAngle, this is "backwards" from the screen
         // If a hand moves between the two angles, this is "horizontal" to the screen
 
-        public float AirPushReleaseThreshold = 0.85f;
+        public float AirPushReleaseThreshold = 0.9f;
         // unclickThreshold
-        public float AirPushDraggingReleaseThreshold = 0.5f;
+        public float AirPushDraggingReleaseThreshold = 0.8f;
 
-        public float AirPushDragDistanceThresholdM = 0.01f;
-        public float AirPushDragDeadzoneShrinkRate = 0.5f;
+        public float AirPushDragDistanceThresholdM = 0.013f;
+        public float AirPushDragDeadzoneShrinkRate = 0.9f;
     }
 
     [Serializable]
