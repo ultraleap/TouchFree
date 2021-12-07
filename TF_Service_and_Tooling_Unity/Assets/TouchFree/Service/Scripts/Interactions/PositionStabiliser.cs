@@ -32,15 +32,17 @@ namespace Ultraleap.TouchFree.Service
         public void SetDeadzoneOffset()
         {
             deadzoneOffset = previousPositionDeadzoneCurrentSize - lastRawPos;
-            deadzoneAtLastSet = deadzoneOffset;
-            timeAtLastSet = Time.time;
+            //deadzoneAtLastSet = deadzoneOffset;
+            //timeAtLastSet = Time.time;
         }
 
         public void ReduceDeadzoneOffset()
         {
-            float t = Mathf.InverseLerp(timeAtLastSet, timeAtLastSet + deadzoneOffsetResetDuration, Time.time);
-            deadzoneOffset.x = Mathf.Lerp(deadzoneAtLastSet.x, 0f, t);
-            deadzoneOffset.y = Mathf.Lerp(deadzoneAtLastSet.y, 0f, t);
+            //float t = Mathf.InverseLerp(timeAtLastSet, timeAtLastSet + deadzoneOffsetResetDuration, Time.time);
+            //deadzoneOffset.x = Mathf.Lerp(deadzoneAtLastSet.x, 0f, t);
+            //deadzoneOffset.y = Mathf.Lerp(deadzoneAtLastSet.y, 0f, t);
+
+            deadzoneOffset = deadzoneOffset * 0.9f;
         }
 
         private void OnEnable()
