@@ -59,6 +59,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             // Never use TrackingTransform in UI scene, tracking is only used for
             // Quick Setup here
             HandManager.Instance.useTrackingTransform = false;
+            EnsureCorrectLanguageCulture();
         }
 
         public void SetCursorState(bool _state)
