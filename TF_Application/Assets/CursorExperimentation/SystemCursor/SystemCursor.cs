@@ -9,8 +9,7 @@ using UnityEngine.UI;
 
 public class SystemCursor : TouchlessCursor
 {
-    public Image borderFill;
-    public Image fillFill;
+    public Image fillImage;
 
     public AnimationCurve fillCurve;
 
@@ -29,12 +28,17 @@ public class SystemCursor : TouchlessCursor
     bool hidingCursor = false;
     bool hidingAfterDelay = false;
 
+    public RectTransform cursorScaler;
+
+    public Ultraleap.TouchFree.TransparentWindow transparentWindow;
+
     protected override void OnEnable()
     {
         base.OnEnable();
         ConnectionManager.HandFound += ShowCursor;
         ConnectionManager.HandsLost += HideCursor;
         HideCursor();
+        SetCursorLocalScale(cursorSize);
     }
 
     protected override void OnDisable()
@@ -48,14 +52,9 @@ public class SystemCursor : TouchlessCursor
     {
         targetPos = _inputData.CursorPosition;
 
-        if(borderFill != null)
+        if(fillImage != null)
         {
-            borderFill.fillAmount = fillCurve.Evaluate(_inputData.ProgressToClick);
-        }
-
-        if(fillFill != null)
-        {
-            fillFill.fillAmount = fillCurve.Evaluate(_inputData.ProgressToClick);
+            fillImage.fillAmount = fillCurve.Evaluate(_inputData.ProgressToClick);
         }
 
         switch (_inputData.InputType)
@@ -109,6 +108,8 @@ public class SystemCursor : TouchlessCursor
         {
             currentCursorPunch = StartCoroutine(PunchCursor());
         }
+
+        SetCursorLocalScale(cursorSize);
     }
 
     public override void HideCursor()
@@ -172,5 +173,14 @@ public class SystemCursor : TouchlessCursor
 
         targetPos = new Vector2(Screen.width / 2, Screen.height / 2);
         cursorTransform.anchoredPosition = targetPos;
+
+        transparentWindow.SetPosition(new Vector2(Display.main.systemWidth/2, Display.main.systemHeight/2));
+    }
+
+
+    protected virtual void SetCursorLocalScale(float _scale)
+    {
+        Vector3 cursorLocalScale = new Vector3(_scale, _scale, _scale);
+        cursorScaler.transform.localScale = cursorLocalScale;
     }
 }
