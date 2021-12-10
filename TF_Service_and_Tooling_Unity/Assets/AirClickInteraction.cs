@@ -5,7 +5,7 @@ using Leap.Unity;
 
 namespace Ultraleap.TouchFree.Service
 {
-    public class AirTapInteraction : InteractionModule
+    public class AirClickInteraction : InteractionModule
     {
         public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
 
@@ -41,11 +41,12 @@ namespace Ultraleap.TouchFree.Service
 
         private void HandleInteractions(Leap.Hand hand)
         {
-            Vector3 palmForward = (hand.PalmPosition - hand.WristPosition).ToVector3().normalized;
-            Vector3 indexForward = (hand.GetIndex().bones[2].NextJoint - hand.GetIndex().bones[1].NextJoint).ToVector3().normalized;
+            Vector3 palmForward = (hand.GetMiddle().bones[0].NextJoint - hand.PalmPosition).ToVector3().normalized;
+            Vector3 indexForward = (hand.GetIndex().Direction).ToVector3().normalized;
 
             float dot = Vector3.Dot(palmForward, indexForward);
             float progress = progressCurve.Evaluate(dot);
+
             positioningModule.Stabiliser.ScaleDeadzoneByProgress(progress, 0.02f);
 
             if (progress >= 1)
