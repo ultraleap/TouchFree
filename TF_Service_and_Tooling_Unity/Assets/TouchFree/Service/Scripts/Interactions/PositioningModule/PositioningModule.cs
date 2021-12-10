@@ -76,6 +76,9 @@ namespace Ultraleap.TouchFree.Service
                     return hand.GetIndex().TipPosition.ToVector3();
                 case TrackedPosition.NEAREST:
                     return GetNearestBoneToScreen(hand);
+                case TrackedPosition.INDEX_PALM_DIRECTION:
+                    return GetIndexWithPalmDirection(hand);
+                    break;
                 case TrackedPosition.INDEX_STABLE:
                 default:
                     return GetTrackedPointingJoint(hand);
@@ -149,6 +152,16 @@ namespace Ultraleap.TouchFree.Service
             lastUsedFingerType = fingerType;
             lastUsedBoneType = boneType;
             return nearestJointPos;
+        }
+
+        Vector3 GetIndexWithPalmDirection(Leap.Hand hand)
+        {
+            Vector3 pos = hand.GetIndex().bones[0].PrevJoint.ToVector3();
+            Vector3 palmForward = (hand.PalmPosition - hand.WristPosition).ToVector3().normalized;
+
+            pos += palmForward * 0.05f;
+
+            return pos;
         }
     }
 }

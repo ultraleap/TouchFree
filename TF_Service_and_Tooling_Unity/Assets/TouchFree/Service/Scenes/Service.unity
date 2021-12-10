@@ -240,6 +240,73 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cda6721080db7f3438270f538c555acd, type: 3}
+--- !u!1 &2125932743 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6207777299082980697, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 6157711595471703630}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2125932744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125932743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dfede379c1981649be0721f957e1b21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 0
+  ignoreDragging: 0
+  positioningModule: {fileID: 2125932745}
+  dragStartDistanceThresholdM: 0.01
+  progressCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3
+      value: 1
+      inSlope: -0
+      outSlope: -1.4285715
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1.4285715
+      outSlope: -1.4285715
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &2125932745 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3616744418239270202, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 6157711595471703630}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125932743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c9d82368268df34fbac87c03007e578, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6157711595471703630
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -307,6 +374,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ServiceSystems
       objectReference: {fileID: 0}
+    - target: {fileID: 3616744418239270202, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: trackedPosition
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 5475144641699676489, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: touchPlaneDistance
@@ -317,5 +389,6 @@ PrefabInstance:
       propertyPath: unclickThresholdDrag
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6207777299082980699, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}

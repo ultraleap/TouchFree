@@ -210,6 +210,7 @@ namespace Ultraleap.TouchFree.ServiceShared
         INDEX_STABLE,
         INDEX_TIP,
         WRIST,
-        NEAREST
+        NEAREST,
+        INDEX_PALM_DIRECTION
     }
 }
