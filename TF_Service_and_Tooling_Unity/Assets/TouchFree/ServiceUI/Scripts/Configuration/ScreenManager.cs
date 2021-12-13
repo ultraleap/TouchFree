@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
+
 using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
 
@@ -18,6 +21,13 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private PhysicalConfig defaultConfig = null;
         bool cursorStateOverridden = false;
+
+        [RuntimeInitializeOnLoadMethod]
+        void EnsureCorrectLanguageCulture()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+        }
 
         public void ChangeScreen(GameObject _newScreenRoot, bool _movingBack = false)
         {
@@ -49,6 +59,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             // Never use TrackingTransform in UI scene, tracking is only used for
             // Quick Setup here
             HandManager.Instance.useTrackingTransform = false;
+            EnsureCorrectLanguageCulture();
         }
 
         public void SetCursorState(bool _state)

@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using Ultraleap.TouchFree.ServiceShared;
 
@@ -72,8 +70,6 @@ namespace Ultraleap.TouchFree.ServiceUI
         private void Awake()
         {
             InitialiseUI();
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
             resetToDefaultWarning.SetActive(false);
         }
 
