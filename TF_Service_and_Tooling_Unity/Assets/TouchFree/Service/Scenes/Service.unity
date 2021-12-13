@@ -261,7 +261,7 @@ MonoBehaviour:
   handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 2125932745}
-  dragStartDistanceThresholdM: 0.01
+  dragStartDistanceThresholdM: 0.02
   progressCurve:
     serializedVersion: 2
     m_Curve:

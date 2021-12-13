@@ -47,14 +47,14 @@ namespace Ultraleap.TouchFree.Service
             float dot = Vector3.Dot(palmForward, indexForward);
             float progress = progressCurve.Evaluate(dot);
 
-            positioningModule.Stabiliser.ScaleDeadzoneByProgress(progress, 0.02f);
-
-            if (progress >= 1)
+            if (progress >= 1 || (progress > 0.8f && isDragging))
             {
                 // we are touching the screen
                 if (!pressing)
                 {
                     SendInputAction(InputType.DOWN, positions, progress);
+                    positioningModule.Stabiliser.SetDeadzoneOffset();
+                    positioningModule.Stabiliser.currentDeadzoneRadius = dragStartDistanceThresholdM;
                     downPos = positions.CursorPosition;
                     pressing = true;
                 }
@@ -68,6 +68,7 @@ namespace Ultraleap.TouchFree.Service
                     if (isDragging)
                     {
                         SendInputAction(InputType.MOVE, positions, progress);
+                        positioningModule.Stabiliser.ReduceDeadzoneOffset();
                     }
                     else
                     {
@@ -85,6 +86,8 @@ namespace Ultraleap.TouchFree.Service
             }
             else
             {
+                positioningModule.Stabiliser.ScaleDeadzoneByProgress(progress, 0.02f);
+
                 if (pressing && !pressComplete)
                 {
                     Positions downPositions = new Positions(downPos, progress);
@@ -93,6 +96,7 @@ namespace Ultraleap.TouchFree.Service
                 else
                 {
                     SendInputAction(InputType.MOVE, positions, progress);
+                    positioningModule.Stabiliser.ReduceDeadzoneOffset();
                 }
 
                 pressComplete = false;
@@ -103,11 +107,7 @@ namespace Ultraleap.TouchFree.Service
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = ConfigManager.GlobalSettings.virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).magnitude;
-
-            if (distFromStartPos > dragStartDistanceThresholdM)
+            if (_currentPos != _startPos)
             {
                 return true;
             }
