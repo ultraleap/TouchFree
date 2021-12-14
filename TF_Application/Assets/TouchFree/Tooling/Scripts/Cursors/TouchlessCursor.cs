@@ -58,7 +58,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // Function: Update
         // Runs on Unity's update loop to keep the attached Cursor at the position
         // last stored in <HandleInputAction>
-        protected virtual void Update()
+        protected virtual void LateUpdate()
         {
             cursorTransform.anchoredPosition = targetPos;
         }
