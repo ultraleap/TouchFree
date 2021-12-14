@@ -7,7 +7,7 @@ namespace Ultraleap.TouchFree.Service
     {
         public virtual InteractionType InteractionType { get; } = InteractionType.PUSH;
 
-        private HandChirality handChirality;
+        protected HandChirality handChirality;
         public HandType handType;
 
         public bool ignoreDragging;
@@ -18,53 +18,14 @@ namespace Ultraleap.TouchFree.Service
 
         protected Positions positions;
 
-        protected long latestTimestamp;
+        public bool isTouching = false;
 
-        protected bool hadHandLastFrame = false;
-
-        void Update()
-        {
-            // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
-            latestTimestamp = HandManager.Instance.Timestamp;
-
-            Leap.Hand hand = null;
-
-            switch (handType)
-            {
-                case HandType.PRIMARY:
-                    hand = HandManager.Instance.PrimaryHand;
-                    break;
-                case HandType.SECONDARY:
-                    hand = HandManager.Instance.SecondaryHand;
-                    break;
-            }
-
-            if (hand != null)
-            {
-                handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
-
-                positions = positioningModule.CalculatePositions(hand);
-                hand = CheckHandInInteractionZone(hand);
-            }
-
-            UpdateData(hand);
-
-            if (hand != null)
-            {
-                hadHandLastFrame = true;
-            }
-            else
-            {
-                hadHandLastFrame = false;
-            }
-        }
-
-        // This is the main update loop of the interaction module
-        protected virtual void UpdateData(Leap.Hand hand) { }
+        public abstract float CalculateProgress(Leap.Hand _hand);
+        public abstract void RunInteraction(Leap.Hand _hand, float _progress);
 
         protected void SendInputAction(InputType _inputType, Positions _positions, float _progressToClick)
         {
-            InputAction actionData = new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
+            InputAction actionData = new InputAction(HandManager.Instance.Timestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
             HandleInputAction?.Invoke(handChirality, handType, actionData);
         }
 
@@ -94,7 +55,7 @@ namespace Ultraleap.TouchFree.Service
         /// </summary>
         /// <param name="_hand"></param>
         /// <returns>Returns null if the hand is outside of the interaction zone</returns>
-        Leap.Hand CheckHandInInteractionZone(Leap.Hand _hand)
+        protected Leap.Hand CheckHandInInteractionZone(Leap.Hand _hand)
         {
             if (_hand != null && ConfigManager.InteractionConfig.InteractionZoneEnabled)
             {

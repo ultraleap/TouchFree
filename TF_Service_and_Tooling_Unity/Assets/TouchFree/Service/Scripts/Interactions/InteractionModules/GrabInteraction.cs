@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using Ultraleap.TouchFree.ServiceShared;
+using Leap;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -34,37 +35,37 @@ namespace Ultraleap.TouchFree.Service
 
         Tuple<long, Positions> previousPosition = new Tuple<long, Positions>(0, new Positions());
 
-        protected override void UpdateData(Leap.Hand hand)
-        {
-            if (hand == null)
-            {
-                if (hadHandLastFrame)
-                {
-                    // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, 0);
-                }
+        //protected override void UpdateData(Leap.Hand hand)
+        //{
+        //    if (hand == null)
+        //    {
+        //        if (hadHandLastFrame)
+        //        {
+        //            // We lost the hand so cancel anything we may have been doing
+        //            SendInputAction(InputType.CANCEL, positions, 0);
+        //        }
 
-                return;
-            }
+        //        return;
+        //    }
 
-            positions = positioningModule.CalculatePositions(hand);
+        //    positions = positioningModule.CalculatePositions(hand);
 
-            float velocity = hand.PalmVelocity.Magnitude;
-            if (previousPosition.Item1 != 0)
-            {
-                // Use the cursor velocity for x-y velocity
-                //
-                // I find that this velocity is quite similar to hand.PalmVelocity.Magnitude, but (as expected)
-                // this velocity calculation gets much closer to 0 when the hand is more still.
-                Vector3 previousWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
-                Vector3 currentWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
-                float changeInPos = (currentWorldPos - previousWorldPos).magnitude;
-                float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
-                velocity = changeInPos / changeInTime;
-            }
-            HandleInteractions(hand, velocity);
-            previousPosition = new Tuple<long, Positions>(latestTimestamp, positions);
-        }
+        //    float velocity = hand.PalmVelocity.Magnitude;
+        //    if (previousPosition.Item1 != 0)
+        //    {
+        //        // Use the cursor velocity for x-y velocity
+        //        //
+        //        // I find that this velocity is quite similar to hand.PalmVelocity.Magnitude, but (as expected)
+        //        // this velocity calculation gets much closer to 0 when the hand is more still.
+        //        Vector3 previousWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
+        //        Vector3 currentWorldPos = ConfigManager.GlobalSettings.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
+        //        float changeInPos = (currentWorldPos - previousWorldPos).magnitude;
+        //        float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
+        //        velocity = changeInPos / changeInTime;
+        //    }
+        //    HandleInteractions(hand, velocity);
+        //    previousPosition = new Tuple<long, Positions>(latestTimestamp, positions);
+        //}
 
         private void HandleInteractions(Leap.Hand hand, float _velocity)
         {
@@ -193,6 +194,16 @@ namespace Ultraleap.TouchFree.Service
             }
 
             return false;
+        }
+
+        public override float CalculateProgress(Hand _hand)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void RunInteraction(Hand _hand, float _progress)
+        {
+            throw new NotImplementedException();
         }
     }
 }

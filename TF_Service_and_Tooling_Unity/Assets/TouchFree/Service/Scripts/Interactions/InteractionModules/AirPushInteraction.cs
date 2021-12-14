@@ -2,6 +2,7 @@
 using Stopwatch = System.Diagnostics.Stopwatch;
 using System.Collections.Generic;
 using Ultraleap.TouchFree.ServiceShared;
+using Leap;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -48,12 +49,10 @@ namespace Ultraleap.TouchFree.Service
         public bool useTouchPlaneForce;
         public float touchPlaneDistance;
 
-        private long previousTime = 0;
         private float previousScreenDistance = Mathf.Infinity;
         private Vector2 previousScreenPos = Vector2.zero;
 
         private float appliedForce = 0f;
-        private bool pressing = false;
 
         [Header("Dragging")]
         public float dragStartDistanceThresholdM = 0.01f;
@@ -65,28 +64,6 @@ namespace Ultraleap.TouchFree.Service
 
         private bool isDragging = false;
 
-        protected override void UpdateData(Leap.Hand hand)
-        {
-            if (hand == null)
-            {
-                appliedForce = 0f;
-                pressing = false;
-                isDragging = false;
-                // Restarts the hand timer every frame that we have no active hand
-                handAppearedCooldown.Restart();
-
-                if(hadHandLastFrame)
-                {
-                    // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, appliedForce);
-                }
-
-                return;
-            }
-
-            HandleInteractionsAirPush();
-        }
-
         private void HandleInteractionsAirPush()
         {
             if (handAppearedCooldown.IsRunning && handAppearedCooldown.ElapsedMilliseconds >= millisecondsCooldownOnEntry)
@@ -95,25 +72,20 @@ namespace Ultraleap.TouchFree.Service
             }
 
             // If not ignoring clicks...
-            if ((previousTime != 0f) && !handAppearedCooldown.IsRunning)
+            if (!handAppearedCooldown.IsRunning)
             {
-                // Update AppliedForce, which is the crux of the AirPush algorithm
-                float forceChange = GetAppliedForceChange();
-                appliedForce += forceChange;
-                appliedForce = Mathf.Clamp01(appliedForce);
-
                 // Update the deadzone size
-                if (!pressing)
+                if (!isTouching)
                 {
                     AdjustDeadzoneSize(forceChange);
                 }
 
                 // Determine whether to send any other events
-                if (pressing)
+                if (isTouching)
                 {
                     if ((!isDragging && appliedForce < unclickThreshold) || (isDragging && appliedForce < unclickThresholdDrag) || ignoreDragging)
                     {
-                        pressing = false;
+                        isTouching = false;
                         isDragging = false;
                         cursorPressPosition = Vector2.zero;
                         SendInputAction(InputType.UP, positions, appliedForce);
@@ -140,7 +112,7 @@ namespace Ultraleap.TouchFree.Service
                 }
                 else if (!decayingForce && appliedForce >= 1f)
                 {
-                    pressing = true;
+                    isTouching = true;
                     SendInputAction(InputType.DOWN, positions, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
                     if (decayForceOnClick && ignoreDragging)
@@ -169,7 +141,6 @@ namespace Ultraleap.TouchFree.Service
             }
 
             // Update stored variables
-            previousTime = latestTimestamp;
             previousScreenDistance = positions.DistanceFromScreen;
             previousScreenPos = positions.CursorPosition;
         }
@@ -202,7 +173,7 @@ namespace Ultraleap.TouchFree.Service
         private float GetAppliedForceChange()
         {
             // Calculate important variables needed in determining the key events
-            float dt = (latestTimestamp - previousTime) / (1000f * 1000f); // Seconds
+            float dt = Time.deltaTime; // Seconds
             float perpendicularMovement = previousScreenDistance - positions.DistanceFromScreen; // Metres towards screen
             float currentVelocity = perpendicularMovement / dt; // m/s
 
@@ -256,7 +227,7 @@ namespace Ultraleap.TouchFree.Service
                 else
                 {
                     // Approximately horizontal movement.
-                    if (pressing)
+                    if (isTouching)
                     {
                         forceChange = 0f;
                     }
@@ -297,6 +268,50 @@ namespace Ultraleap.TouchFree.Service
             unclickThresholdDrag = ConfigManager.InteractionConfig.AirPush.AirPushDraggingReleaseThreshold;
             dragStartDistanceThresholdM = ConfigManager.InteractionConfig.AirPush.AirPushDragDistanceThresholdM;
             dragDeadzoneShrinkRate = ConfigManager.InteractionConfig.AirPush.AirPushDragDeadzoneShrinkRate;
+        }
+
+        public override float CalculateProgress(Hand _hand)
+        {
+            if (_hand == null)
+            {
+                return 0;
+            }
+
+            positions = positioningModule.CalculatePositions(_hand);
+
+            // Update AppliedForce, which is the crux of the AirPush algorithm
+            forceChange = GetAppliedForceChange();
+            appliedForce += forceChange;
+            appliedForce = Mathf.Clamp01(appliedForce);
+
+            previousScreenDistance = positions.DistanceFromScreen;
+            previousScreenPos = positions.CursorPosition;
+
+            return appliedForce;
+        }
+
+        float forceChange;
+
+        public override void RunInteraction(Hand _hand, float _progress)
+        {
+            if (_hand == null)
+            {
+                appliedForce = 0f;
+                isTouching = false;
+                isDragging = false;
+                // Restarts the hand timer every frame that we have no active hand
+                handAppearedCooldown.Restart();
+
+                if (InteractionManager.Instance.hadHandLastFrame)
+                {
+                    // We lost the hand so cancel anything we may have been doing
+                    SendInputAction(InputType.CANCEL, positions, appliedForce);
+                }
+
+                return;
+            }
+
+            HandleInteractionsAirPush();
         }
     }
 }

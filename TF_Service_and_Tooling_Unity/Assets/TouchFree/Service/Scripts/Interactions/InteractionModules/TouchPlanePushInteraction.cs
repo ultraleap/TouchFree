@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
+using Leap;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -26,25 +27,25 @@ namespace Ultraleap.TouchFree.Service
         public float dragStartDistanceThresholdM = 0.01f;
         bool isDragging = false;
 
-        protected override void UpdateData(Leap.Hand hand)
-        {
-            if (hand == null)
-            {
-                if (hadHandLastFrame)
-                {
-                    // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, 0);
-                }
+        //protected override void UpdateData(Leap.Hand hand)
+        //{
+        //    if (hand == null)
+        //    {
+        //        if (hadHandLastFrame)
+        //        {
+        //            // We lost the hand so cancel anything we may have been doing
+        //            SendInputAction(InputType.CANCEL, positions, 0);
+        //        }
 
-                pressComplete = false;
-                isDragging = false;
-                pressing = false;
-                handReady = false;
-                return;
-            }
+        //        pressComplete = false;
+        //        isDragging = false;
+        //        pressing = false;
+        //        handReady = false;
+        //        return;
+        //    }
 
-            HandleInteractions();
-        }
+        //    HandleInteractions();
+        //}
 
         private void HandleInteractions()
         {
@@ -131,6 +132,16 @@ namespace Ultraleap.TouchFree.Service
             // Convert from CM to M
             touchPlaneDistance = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM / 100;
             positioningModule.trackedPosition = ConfigManager.InteractionConfig.TouchPlane.TouchPlaneTrackedPosition;
+        }
+
+        public override float CalculateProgress(Hand _hand)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void RunInteraction(Hand _hand, float _progress)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

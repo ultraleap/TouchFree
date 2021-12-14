@@ -2,6 +2,7 @@
 using Ultraleap.TouchFree.ServiceShared;
 
 using Leap.Unity;
+using Leap;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -9,8 +10,7 @@ namespace Ultraleap.TouchFree.Service
     {
         public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
 
-        private bool pressing = false;
-        bool pressComplete = false;
+        bool touchComplete = false;
 
         private Vector2 downPos;
 
@@ -20,43 +20,68 @@ namespace Ultraleap.TouchFree.Service
 
         public AnimationCurve progressCurve;
 
-        protected override void UpdateData(Leap.Hand hand)
+
+        private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            if (hand == null)
+            if (_currentPos != _startPos)
             {
-                if (hadHandLastFrame)
+                return true;
+            }
+
+            return false;
+        }
+
+
+
+
+
+
+
+
+        public override float CalculateProgress(Hand _hand)
+        {
+            if(_hand == null)
+            {
+                return 0;
+            }
+
+            Vector3 palmForward = (_hand.GetMiddle().bones[0].NextJoint - _hand.PalmPosition).ToVector3().normalized;
+            Vector3 indexForward = (_hand.GetIndex().Direction).ToVector3().normalized;
+
+            float dot = Vector3.Dot(palmForward, indexForward);
+            return progressCurve.Evaluate(dot);
+        }
+
+        public override void RunInteraction(Hand _hand, float _progress)
+        {
+            positions = positioningModule.CalculatePositions(_hand);
+
+            if (_hand == null)
+            {
+                if (InteractionManager.Instance.hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
                     SendInputAction(InputType.CANCEL, positions, 0);
                 }
 
-                pressComplete = false;
+                touchComplete = false;
                 isDragging = false;
-                pressing = false;
+                isTouching = false;
                 return;
             }
 
-            HandleInteractions(hand);
-        }
+            handChirality = _hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
 
-        private void HandleInteractions(Leap.Hand hand)
-        {
-            Vector3 palmForward = (hand.GetMiddle().bones[0].NextJoint - hand.PalmPosition).ToVector3().normalized;
-            Vector3 indexForward = (hand.GetIndex().Direction).ToVector3().normalized;
-
-            float dot = Vector3.Dot(palmForward, indexForward);
-            float progress = progressCurve.Evaluate(dot);
-
-            if (progress >= 1 || (progress > 0.8f && isDragging))
+            if (_progress >= 1 || (_progress > 0.8f && isDragging))
             {
                 // we are touching the screen
-                if (!pressing)
+                if (!isTouching)
                 {
-                    SendInputAction(InputType.DOWN, positions, progress);
+                    SendInputAction(InputType.DOWN, positions, _progress);
                     positioningModule.Stabiliser.SetDeadzoneOffset();
                     positioningModule.Stabiliser.currentDeadzoneRadius = dragStartDistanceThresholdM;
                     downPos = positions.CursorPosition;
-                    pressing = true;
+                    isTouching = true;
                 }
                 else if (!ignoreDragging)
                 {
@@ -67,52 +92,42 @@ namespace Ultraleap.TouchFree.Service
 
                     if (isDragging)
                     {
-                        SendInputAction(InputType.MOVE, positions, progress);
+                        SendInputAction(InputType.MOVE, positions, _progress);
                         positioningModule.Stabiliser.ReduceDeadzoneOffset();
                     }
                     else
                     {
                         // NONE causes the client to react to data without using Input.
-                        SendInputAction(InputType.NONE, positions, progress);
+                        SendInputAction(InputType.NONE, positions, _progress);
                     }
                 }
-                else if (!pressComplete)
+                else if (!touchComplete)
                 {
-                    Positions downPositions = new Positions(downPos, progress);
-                    SendInputAction(InputType.UP, downPositions, progress);
+                    Positions downPositions = new Positions(downPos, _progress);
+                    SendInputAction(InputType.UP, positions, _progress);
 
-                    pressComplete = true;
+                    touchComplete = true;
                 }
             }
             else
             {
-                positioningModule.Stabiliser.ScaleDeadzoneByProgress(progress, 0.02f);
+                positioningModule.Stabiliser.ScaleDeadzoneByProgress(_progress, 0.02f);
 
-                if (pressing && !pressComplete)
+                if (isTouching && !touchComplete)
                 {
-                    Positions downPositions = new Positions(downPos, progress);
-                    SendInputAction(InputType.UP, downPositions, progress);
+                    Positions downPositions = new Positions(downPos, _progress);
+                    SendInputAction(InputType.UP, positions, _progress);
                 }
                 else
                 {
-                    SendInputAction(InputType.MOVE, positions, progress);
+                    SendInputAction(InputType.MOVE, positions, _progress);
                     positioningModule.Stabiliser.ReduceDeadzoneOffset();
                 }
 
-                pressComplete = false;
-                pressing = false;
+                touchComplete = false;
+                isTouching = false;
                 isDragging = false;
             }
-        }
-
-        private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
-        {
-            if (_currentPos != _startPos)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

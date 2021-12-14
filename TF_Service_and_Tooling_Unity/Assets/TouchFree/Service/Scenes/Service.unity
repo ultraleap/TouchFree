@@ -121,6 +121,30 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &1005315312 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5475144641699676489, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 6157711595471703630}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 195c01a09afb90d4fb44a1539453c90b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1866799234 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1029108818825522835, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 6157711595471703630}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5f12ce61472896499eed99452844f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1868409418
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -261,6 +285,7 @@ MonoBehaviour:
   handType: 0
   ignoreDragging: 0
   positioningModule: {fileID: 2125932745}
+  isTouching: 0
   dragStartDistanceThresholdM: 0.02
   progressCurve:
     serializedVersion: 2
@@ -314,6 +339,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 50990712132344160, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 518956833299686219, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: m_RootOrder
@@ -374,10 +404,55 @@ PrefabInstance:
       propertyPath: m_Name
       value: ServiceSystems
       objectReference: {fileID: 0}
+    - target: {fileID: 1029108818825522835, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3616744418239270202, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: trackedPosition
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412000550174380604, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: trackedPosition
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: hybridInteractions.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: hybridInteractions.Array.data[0]
+      value: 
+      objectReference: {fileID: 2125932744}
+    - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: hybridInteractions.Array.data[1]
+      value: 
+      objectReference: {fileID: 1005315312}
+    - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: hybridInteractions.Array.data[2]
+      value: 
+      objectReference: {fileID: 1866799234}
+    - target: {fileID: 5475144641699676489, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: speedMin
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5475144641699676489, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5475144641699676489, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: distAtSpeedMax
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 5475144641699676489, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
@@ -388,6 +463,11 @@ PrefabInstance:
         type: 3}
       propertyPath: unclickThresholdDrag
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6954799463210034526, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: trackedPosition
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6207777299082980699, guid: ebc87c879d5115749a6a9a0aa75e16dd, type: 3}

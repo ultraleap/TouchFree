@@ -15,6 +15,8 @@ namespace Ultraleap.TouchFree.Service
         public static Dictionary<InteractionType, InteractionModule> interactions =
                   new Dictionary<InteractionType, InteractionModule>();
 
+        public InteractionModule[] hybridInteractions;
+
         private static InteractionManager instance = null;
         public static InteractionManager Instance
         {
@@ -28,6 +30,9 @@ namespace Ultraleap.TouchFree.Service
         public InteractionModule hoverInteractionModule;
         public InteractionModule grabInteractionModule;
         public InteractionModule touchPlaneInteractionModule;
+
+        public HandType handType;
+        public bool hadHandLastFrame = false;
 
         private void Awake()
         {
@@ -47,13 +52,53 @@ namespace Ultraleap.TouchFree.Service
 
             InteractionConfig.OnConfigUpdated += InteractionConfigUpdated;
 
-            SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
+            //SetActiveInteractions(ConfigManager.InteractionConfig.InteractionType);
         }
 
         private void OnDestroy()
         {
             InteractionModule.HandleInputAction -= HandleInteractionModuleInputAction;
             InteractionConfig.OnConfigUpdated -= InteractionConfigUpdated;
+        }
+
+        private void LateUpdate()
+        {
+            Leap.Hand hand = null;
+
+            switch (handType)
+            {
+                case HandType.PRIMARY:
+                    hand = HandManager.Instance.PrimaryHand;
+                    break;
+                case HandType.SECONDARY:
+                    hand = HandManager.Instance.SecondaryHand;
+                    break;
+            }
+
+            int dominantInteractionIndex = 0;
+            float dominantInteractionProgress = 0;
+
+            for (int index = 0; index < hybridInteractions.Length; index++)
+            {
+                if(hybridInteractions[index].isTouching)
+                {
+                    dominantInteractionIndex = index;
+                    dominantInteractionProgress = hybridInteractions[index].CalculateProgress(hand);
+                    break;
+                }
+
+                float progress = hybridInteractions[index].CalculateProgress(hand);
+
+                if(progress > dominantInteractionProgress)
+                {
+                    dominantInteractionIndex = index;
+                    dominantInteractionProgress = progress;
+                }
+            }
+
+            hybridInteractions[dominantInteractionIndex].RunInteraction(hand, dominantInteractionProgress);
+
+            hadHandLastFrame = hand != null;
         }
 
         public void SetActiveInteractions(InteractionType _activateType)
@@ -64,31 +109,31 @@ namespace Ultraleap.TouchFree.Service
         // For Config settings and Client Interaction requests
         public void SetActiveInteractions(InteractionType[] _activateTypes)
         {
-            foreach(var interaction in interactions)
-            {
-                bool set = false;
-                foreach(var toActivate in _activateTypes)
-                {
-                    if(interaction.Key == toActivate)
-                    {
-                        set = true;
+            //foreach(var interaction in interactions)
+            //{
+            //    bool set = false;
+            //    foreach(var toActivate in _activateTypes)
+            //    {
+            //        if(interaction.Key == toActivate)
+            //        {
+            //            set = true;
 
-                        if(!interaction.Value.enabled)
-                        {
-                            interaction.Value.enabled = true;
-                        }
-                        break;
-                    }
-                }
+            //            if(!interaction.Value.enabled)
+            //            {
+            //                interaction.Value.enabled = true;
+            //            }
+            //            break;
+            //        }
+            //    }
 
-                if(!set)
-                {
-                    if (interaction.Value.enabled)
-                    {
-                        interaction.Value.enabled = false;
-                    }
-                }
-            }
+            //    if(!set)
+            //    {
+            //        if (interaction.Value.enabled)
+            //        {
+            //            interaction.Value.enabled = false;
+            //        }
+            //    }
+            //}
         }
 
         private void HandleInteractionModuleInputAction(HandChirality _chirality, HandType _handType, InputAction _inputData)
