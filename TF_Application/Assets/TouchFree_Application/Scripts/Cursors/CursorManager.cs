@@ -69,50 +69,50 @@ public class CursorManager : MonoBehaviour
 
     void ChangeCursorForInteraction(InteractionType _interaction)
     {
-        bool cursorSet = false;
+        //bool cursorSet = false;
 
-        TouchlessCursor enabledCursor = null;
+        //TouchlessCursor enabledCursor = null;
 
-        foreach(var interactionCursor in interactionCursors)
-        {
-            if (interactionCursor.interaction != _interaction &&
-                enabledCursor != interactionCursor.cursor)
-            {
-                interactionCursor.cursor.gameObject.SetActive(false);
-            }
-            else
-            {
-                enabledCursor = interactionCursor.cursor;
-                currentCursor = enabledCursor;
-                cursorSet = true;
+        //foreach(var interactionCursor in interactionCursors)
+        //{
+        //    if (interactionCursor.interaction != _interaction &&
+        //        enabledCursor != interactionCursor.cursor)
+        //    {
+        //        interactionCursor.cursor.gameObject.SetActive(false);
+        //    }
+        //    else
+        //    {
+        //        enabledCursor = interactionCursor.cursor;
+        //        currentCursor = enabledCursor;
+        //        cursorSet = true;
 
-                if(handsActive)
-                {
-                    currentCursor.ShowCursor();
-                }
-                else
-                {
-                    currentCursor.HideCursor();
-                }
+        //        if(handsActive)
+        //        {
+        //            currentCursor.ShowCursor();
+        //        }
+        //        else
+        //        {
+        //            currentCursor.HideCursor();
+        //        }
 
-                CursorChanged?.Invoke(interactionCursor.cursorType);
-            }
-        }
+        //        CursorChanged?.Invoke(interactionCursor.cursorType);
+        //    }
+        //}
 
-        if(!cursorSet)
-        {
-            currentCursor = defaultCursor;
-        }
+        //if(!cursorSet)
+        //{
+        //    currentCursor = defaultCursor;
+        //}
 
-        SetCursorVisibility(Ultraleap.TouchFree.ConfigManager.Config.cursorEnabled);
+        //SetCursorVisibility(Ultraleap.TouchFree.ConfigManager.Config.cursorEnabled);
     }
 
     public void SetCursorVisibility(bool _setTo)
     {
-        if (currentCursor != null)
-        {
-            currentCursor.gameObject.SetActive(_setTo);
-        }
+        //if (currentCursor != null)
+        //{
+        //    currentCursor.gameObject.SetActive(_setTo);
+        //}
     }
 
     [System.Serializable]
