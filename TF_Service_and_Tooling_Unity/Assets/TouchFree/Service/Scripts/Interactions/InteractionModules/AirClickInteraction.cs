@@ -18,9 +18,16 @@ namespace Ultraleap.TouchFree.Service
         public float dragStartDistanceThresholdM = 0.01f;
         bool isDragging = false;
 
-        public AnimationCurve progressCurve;
 
+        bool clickProgressing = false;
 
+        float prevAngle;
+
+        float startAngle;
+
+        float maxAngleChange = 20;
+
+        float minAngleChangePerSecond = 200;
 
         public override float CalculateProgress(Hand _hand)
         {
@@ -36,7 +43,48 @@ namespace Ultraleap.TouchFree.Service
             Vector3 indexForward = (_hand.GetIndex().Direction).ToVector3().normalized;
 
             float dot = Vector3.Dot(palmForward, indexForward);
-            return progressCurve.Evaluate(dot);
+
+            float angle = Mathf.Abs(dot - 1) * 90;
+
+            float progress = 0;
+
+            if (!isTouching)
+            {
+                if (angle - prevAngle > minAngleChangePerSecond * Time.deltaTime)
+                {
+                    // we are moving fast enough!
+
+                    if (!clickProgressing)
+                    {
+                        clickProgressing = true;
+                        startAngle = angle;
+                    }
+
+                    float angleChange = angle - startAngle;
+                    progress = Mathf.Clamp01(ServiceUtility.MapRangeToRange(maxAngleChange - angleChange, maxAngleChange, 0, 0, 1));
+                }
+                else
+                {
+                    clickProgressing = false;
+                }
+            }
+            else
+            {
+                clickProgressing = false;
+
+                if (angle < startAngle)
+                {
+                    progress = 0;
+                }
+                else
+                {
+                    progress = 1;
+                }
+            }
+
+            prevAngle = angle;
+
+            return progress;
         }
 
         public override void RunInteraction(Hand _hand, float _progress)
