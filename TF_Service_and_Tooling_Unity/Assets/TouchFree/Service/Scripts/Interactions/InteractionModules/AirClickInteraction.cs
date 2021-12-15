@@ -21,22 +21,6 @@ namespace Ultraleap.TouchFree.Service
         public AnimationCurve progressCurve;
 
 
-        private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
-        {
-            if (_currentPos != _startPos)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-
-
-
-
-
-
 
         public override float CalculateProgress(Hand _hand)
         {
@@ -132,6 +116,16 @@ namespace Ultraleap.TouchFree.Service
                 isTouching = false;
                 isDragging = false;
             }
+        }
+
+        private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
+        {
+            if (_currentPos != _startPos)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
