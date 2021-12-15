@@ -92,7 +92,7 @@ namespace Ultraleap.TouchFree.Service
                             clickAlreadySent = true;
                             isTouching = false;
                         }
-                        else if(clickAlreadySent)
+                        else
                         {
                             nextInput = InputType.NONE;
                         }
