@@ -42,6 +42,9 @@ namespace Ultraleap.TouchFree.Service
         {
             if(_hand == null)
             {
+                touchComplete = false;
+                isDragging = false;
+                isTouching = false;
                 return 0;
             }
 
@@ -88,6 +91,7 @@ namespace Ultraleap.TouchFree.Service
                     if (!isDragging && CheckForStartDrag(downPos, positions.CursorPosition))
                     {
                         isDragging = true;
+                        positioningModule.Stabiliser.StartShrinkingDeadzone(0.9f);
                     }
 
                     if (isDragging)
