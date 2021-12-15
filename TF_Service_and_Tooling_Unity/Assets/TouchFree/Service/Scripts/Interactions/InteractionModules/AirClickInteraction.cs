@@ -18,16 +18,13 @@ namespace Ultraleap.TouchFree.Service
         public float dragStartDistanceThresholdM = 0.01f;
         bool isDragging = false;
 
-
         bool clickProgressing = false;
-
         float prevAngle;
-
         float startAngle;
-
-        float maxAngleChange = 20;
-
-        float minAngleChangePerSecond = 200;
+        float endAngle;
+        float maxAngleChange = 25;
+        float minAngleChangePerSecond = 180;
+        bool progressHit1 = false;
 
         public override float CalculateProgress(Hand _hand)
         {
@@ -45,7 +42,6 @@ namespace Ultraleap.TouchFree.Service
             float dot = Vector3.Dot(palmForward, indexForward);
 
             float angle = Mathf.Abs(dot - 1) * 90;
-
             float progress = 0;
 
             if (!isTouching)
@@ -53,7 +49,6 @@ namespace Ultraleap.TouchFree.Service
                 if (angle - prevAngle > minAngleChangePerSecond * Time.deltaTime)
                 {
                     // we are moving fast enough!
-
                     if (!clickProgressing)
                     {
                         clickProgressing = true;
@@ -62,24 +57,29 @@ namespace Ultraleap.TouchFree.Service
 
                     float angleChange = angle - startAngle;
                     progress = Mathf.Clamp01(ServiceUtility.MapRangeToRange(maxAngleChange - angleChange, maxAngleChange, 0, 0, 1));
+
+                    if (progress == 1 && !progressHit1)
+                    {
+                        progressHit1 = true;
+                        endAngle = angle;
+                    }
                 }
                 else
                 {
                     clickProgressing = false;
                 }
-            }
-            else
-            {
-                clickProgressing = false;
 
-                if (angle < startAngle)
-                {
-                    progress = 0;
-                }
-                else
+                if (progressHit1)
                 {
                     progress = 1;
                 }
+            }
+            else
+            {
+                progressHit1 = false;
+                clickProgressing = false;
+
+                progress = Mathf.Clamp01(ServiceUtility.MapRangeToRange(angle, endAngle, startAngle, 1, 0));
             }
 
             prevAngle = angle;

@@ -61,6 +61,8 @@ namespace Ultraleap.TouchFree.Service
             InteractionConfig.OnConfigUpdated -= InteractionConfigUpdated;
         }
 
+        int lastDominantHybridInteraciton = -1;
+
         private void LateUpdate()
         {
             Leap.Hand hand = null;
@@ -78,12 +80,23 @@ namespace Ultraleap.TouchFree.Service
             int dominantInteractionIndex = 0;
             float dominantInteractionProgress = 0;
 
+            if (lastDominantHybridInteraciton != -1 && !hybridInteractions[lastDominantHybridInteraciton].isTouching)
+            {
+                lastDominantHybridInteraciton = -1;
+            }
+
             for (int index = 0; index < hybridInteractions.Length; index++)
             {
-                if(hybridInteractions[index].isTouching)
+                if(hybridInteractions[index].isTouching && (lastDominantHybridInteraciton == index || lastDominantHybridInteraciton == -1))
                 {
                     dominantInteractionIndex = index;
                     dominantInteractionProgress = hybridInteractions[index].CalculateProgress(hand);
+
+                    if(lastDominantHybridInteraciton == -1)
+                    {
+                        lastDominantHybridInteraciton = index;
+                    }
+
                     continue;
                 }
 
