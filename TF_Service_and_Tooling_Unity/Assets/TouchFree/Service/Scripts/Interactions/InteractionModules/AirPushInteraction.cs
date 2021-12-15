@@ -274,6 +274,11 @@ namespace Ultraleap.TouchFree.Service
         {
             if (_hand == null)
             {
+                appliedForce = 0f;
+                isTouching = false;
+                isDragging = false;
+                // Restarts the hand timer every frame that we have no active hand
+                handAppearedCooldown.Restart();
                 return 0;
             }
 
@@ -283,9 +288,6 @@ namespace Ultraleap.TouchFree.Service
             forceChange = GetAppliedForceChange();
             appliedForce += forceChange;
             appliedForce = Mathf.Clamp01(appliedForce);
-
-            previousScreenDistance = positions.DistanceFromScreen;
-            previousScreenPos = positions.CursorPosition;
 
             return appliedForce;
         }
@@ -312,6 +314,17 @@ namespace Ultraleap.TouchFree.Service
             }
 
             HandleInteractionsAirPush();
+        }
+
+        public override void RunPostProgressNonInteraction() 
+        {
+            previousScreenDistance = positions.DistanceFromScreen;
+            previousScreenPos = positions.CursorPosition;
+
+            if (decayingForce && (appliedForce <= unclickThreshold - 0.1f))
+            {
+                decayingForce = false;
+            }
         }
     }
 }

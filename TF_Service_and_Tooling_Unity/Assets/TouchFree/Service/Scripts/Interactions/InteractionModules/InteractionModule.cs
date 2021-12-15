@@ -68,5 +68,7 @@ namespace Ultraleap.TouchFree.Service
 
             return _hand;
         }
+
+        public virtual void RunPostProgressNonInteraction() { }
     }
 }
