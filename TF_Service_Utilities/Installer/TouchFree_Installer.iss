@@ -17,7 +17,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{FE678A79-DE6B-4FC4-8160-F2D036CE27D2}
 AppName={#ProductName}
-AppVersion={#TouchFreeVersion}_{#ReleaseMaturity}
+AppVersion={#TouchFreeVersion}
 AppVerName={#ProductName}
 AppPublisher={#Publisher}
 AppPublisherURL={#CompanyURL}
@@ -32,13 +32,13 @@ UninstallDisplayIcon={app}\TouchFree\{#TouchFreeAppExeName}
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir="{#SourcePath}..\..\Installer_Build"
-OutputBaseFilename={#ProductName}_{#TouchFreeVersion}_{#ReleaseMaturity}_Installer
+OutputBaseFilename={#ProductName}_{#TouchFreeVersion}_Installer
 Compression=lzma
 SolidCompression=yes
 VersionInfoCompany={#Publisher}
 VersionInfoProductName={#ProductName}
 UpdateUninstallLogAppName=no
-VersionInfoVersion={#TouchFreeVersion}
+VersionInfoVersion={#TouchFreeVersionNumeric}
 WizardStyle=modern
 PrivilegesRequired=admin
 
