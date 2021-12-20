@@ -1,1 +1,1 @@
-"C:/Program Files (x86)/Inno Setup 6/iscc.exe" /dTouchFreeVersion=%1 %2
+"C:/Program Files (x86)/Inno Setup 6/iscc.exe" /dTouchFreeVersion=%1 /dReleaseMaturity=%2 %3
