@@ -380,9 +380,9 @@ TouchFree::installer:
 
     # Sign the installer with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_${TOUCHFREE_VERSION}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Installer_Build/TouchFree_${TOUCHFREE_VERSION}_${RELEASE_MATURITY}_Installer.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "TouchFree_Installer_${TOUCHFREE_VERSION}_${CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Installer_${TOUCHFREE_VERSION}_${RELEASE_MATURITY}_${CI_COMMIT_SHORT_SHA}"
     paths:
       - ./Installer_Build/*.exe
     expire_in: 2 weeks
