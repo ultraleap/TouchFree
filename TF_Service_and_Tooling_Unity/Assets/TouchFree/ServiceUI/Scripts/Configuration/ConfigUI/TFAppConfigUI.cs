@@ -5,8 +5,6 @@ using System.IO;
 
 using HSVPicker;
 using SFB;
-using System.Threading;
-using System.Globalization;
 using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
@@ -58,12 +56,6 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
         public static readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
-
-        private void Awake()
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-        }
 
         protected override void OnEnable()
         {
