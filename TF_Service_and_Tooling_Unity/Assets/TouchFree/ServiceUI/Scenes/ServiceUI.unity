@@ -2255,6 +2255,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5898236633391820984}
     m_Modifications:
+    - target: {fileID: 622360720662005162, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: handsCameraObject
+      value: 
+      objectReference: {fileID: 2093597948}
     - target: {fileID: 1193318199542051608, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: handsCameraObject
