@@ -21,8 +21,11 @@ public class CameraPreviewScreen : MonoBehaviour
 
     public GameObject maskingDiabledWarningObject;
 
+    public GameObject handsCameraObject;
+
     void OnEnable()
     {
+        handsCameraObject.SetActive(true);
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
         OnOverExposureValueChanged(enableOverexposureHighlighting.isOn);
 
@@ -46,6 +49,7 @@ public class CameraPreviewScreen : MonoBehaviour
 
     void OnDisable()
     {
+        handsCameraObject.SetActive(false);
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
         DiagnosticAPI.OnGetMaskingResponse -= SetSliders;
         DiagnosticAPI.OnMaskingVersionCheck -= HandleMaskingVersionCheck;
