@@ -115,7 +115,7 @@ namespace Ultraleap.TouchFree.ServiceShared
         /// <summary>
         /// Used directly and via a callback to trigger tracking transform and mode changes
         /// </summary>
-        void UpdateTrackingTransformAndMode()
+        public void UpdateTrackingTransformAndMode()
         {
             UpdateTrackingMode();
             UpdateTrackingTransform();

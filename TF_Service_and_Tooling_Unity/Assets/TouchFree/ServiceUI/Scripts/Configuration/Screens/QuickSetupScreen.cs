@@ -225,5 +225,13 @@ namespace Ultraleap.TouchFree.ServiceUI
             target1.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, verticalDistance, 0f);
             target2.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, -1f * verticalDistance, 0f);
         }
+
+        public void CancelQuickSetup()
+        {
+            HandManager.Instance.lockTrackingMode = false;
+            HandManager.Instance.useTrackingTransform = true;
+            HandManager.Instance.UpdateTrackingTransformAndMode();
+            ScreenManager.Instance.PreviousScreen();
+        }
     }
 }
