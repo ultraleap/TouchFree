@@ -37,7 +37,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             SetTargetPositions();
             step1.SetActive(true);
             step2.SetActive(false);
-            ScreenManager.Instance.SetCursorState(false);
+            ScreenManager.Instance.SetCursorState(false, true);
             HandManager.Instance.useTrackingTransform = false;
             HandManager.Instance.lockTrackingMode = true;
             DisplayTrackingLost(false);
@@ -49,7 +49,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             HandManager.Instance.useTrackingTransform = true;
             HandManager.Instance.lockTrackingMode = false;
-            ScreenManager.Instance.SetCursorState(true);
+            ScreenManager.Instance.SetCursorState(true, true);
         }
 
         private void Update()
