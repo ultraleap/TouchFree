@@ -11,7 +11,9 @@ namespace Ultraleap.TouchFree.ServiceUI
     {
         public static ScreenManager Instance;
 
-        public GameObject clientRootObj;
+        public GameObject clientCursorObj;
+        public Tooling.InputControllers.UnityUIInputController clientInput;
+
         public GameObject[] stateRoots;
         public GameObject homeScreen;
         GameObject currentScreen;
@@ -62,10 +64,15 @@ namespace Ultraleap.TouchFree.ServiceUI
             EnsureCorrectLanguageCulture();
         }
 
-        public void SetCursorState(bool _state)
+        public void SetCursorState(bool _state, bool _andForce = false)
         {
-            clientRootObj.SetActive(_state);
-            cursorStateOverridden = !_state;
+            clientCursorObj.SetActive(_state);
+            clientInput.enabled = _state;
+
+            if (_andForce)
+            {
+                cursorStateOverridden = !_state;
+            }
         }
 
         void OnApplicationFocus(bool hasFocus)
@@ -76,7 +83,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             }
             else
             {
-                clientRootObj.SetActive(hasFocus);
+                SetCursorState(false);
             }
         }
 
@@ -96,11 +103,11 @@ namespace Ultraleap.TouchFree.ServiceUI
             if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
             {
-                clientRootObj.SetActive(false);
+                SetCursorState(false);
             }
             else
             {
-                clientRootObj.SetActive(true);
+                SetCursorState(true);
             }
         }
 
