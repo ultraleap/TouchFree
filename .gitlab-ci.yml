@@ -142,7 +142,7 @@ TF_Service::dotNet::Windows::build:
 
     # Move the built executable to the root directory
     - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/*" ./Service_dotNet_Build
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/win-x64/*" ./Service_dotNet_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -166,7 +166,7 @@ TF_Service::dotNet::ARMLinux::build:
 
     # Move the built executable to the root directory
     - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/*" ./Service_dotNet_Build
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
