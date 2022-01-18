@@ -137,7 +137,8 @@ TF_Service::dotNet::Windows::build:
   stage: build
   when: always
   script:
-    - dotnet build -c Release -r win-64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
+    - dotnet build -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
+    - dotnet build -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.csproj"
 
     # Move the built executable to the root directory
     - mkdir ./Service_dotNet_Build
@@ -160,7 +161,8 @@ TF_Service::dotNet::ARMLinux::build:
   stage: build
   when: always
   script:
-    - dotnet build -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.sln"
+    - dotnet build -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
+    - dotnet build -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.csproj"
 
     # Move the built executable to the root directory
     - mkdir ./Service_dotNet_Build
