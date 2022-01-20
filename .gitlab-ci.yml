@@ -141,6 +141,10 @@ TF_Service::dotNet::Windows::build:
     - dotnet build -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.csproj"
 
     # Move the built executable to the root directory
+    - if (Test-Path -Path "./Service_dotNet_Build") {
+        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
+        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
+      }
     - mkdir ./Service_dotNet_Build
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/win-x64/*" ./Service_dotNet_Build
 
@@ -165,6 +169,10 @@ TF_Service::dotNet::ARMLinux::build:
     - dotnet build -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/TouchFree Service.csproj"
 
     # Move the built executable to the root directory
+    - if (Test-Path -Path "./Service_dotNet_Build") {
+        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
+        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
+      }
     - mkdir ./Service_dotNet_Build
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
 
