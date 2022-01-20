@@ -176,9 +176,9 @@ TF_Service::dotNet::ARMLinux::build:
     - mkdir ./Service_dotNet_Build
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
 
-    # Sign the executable with the UltraLeap certificate
-    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree Service.exe" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    # We don't sign the Linux builds as yet as we're not sure of the method.
+    # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    # - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree Service" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Service_dotNet"
     paths:
