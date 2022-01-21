@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -24,24 +25,24 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private void Awake()
         {
-            InputField.onValueChanged.AddListener(OnInputFieldValueChanged);
+            InputField.onEndEdit.AddListener(OnInputFieldValueChanged);
             Slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
 
         private void OnDestroy()
         {
-            InputField.onValueChanged.RemoveListener(OnInputFieldValueChanged);
+            InputField.onEndEdit.RemoveListener(OnInputFieldValueChanged);
             Slider.onValueChanged.RemoveListener(OnSliderValueChanged);
         }
 
         void OnInputFieldValueChanged(string val)
         {
-            if (float.TryParse(val, NumberStyles.Number, CultureInfo.CurrentCulture, out float result))
-            {
-                Mathf.Clamp(result, Slider.minValue, Slider.maxValue);
-                Slider.SetValueWithoutNotify(result);
-                onValueChanged?.Invoke(result);
-            }
+            float newVal = ServiceUtility.TryParseNewStringToFloat(Slider.value, val);
+            newVal = Mathf.Clamp(newVal, Slider.minValue, Slider.maxValue);
+
+            InputField.SetTextWithoutNotify(newVal.ToString(InputFieldValueFormat));
+            Slider.SetValueWithoutNotify(newVal);
+            onValueChanged?.Invoke(newVal);
         }
 
         void OnSliderValueChanged(float val)
@@ -53,7 +54,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         public void SetValueWithoutNotify(float val)
         {
             Slider.SetValueWithoutNotify(val);
-            OnSliderValueChanged(val);
+            InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
         }
 
         public class OnChangeEvent : UnityEvent<float> { }

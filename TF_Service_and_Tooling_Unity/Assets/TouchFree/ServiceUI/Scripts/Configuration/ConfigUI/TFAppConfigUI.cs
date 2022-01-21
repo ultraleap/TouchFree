@@ -124,7 +124,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             EnableCTIToggle.onValueChanged.AddListener(ShowHideCtiControls);
             CTIHideOnInteractionToggle.onValueChanged.AddListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.AddListener(OnValueChanged);
-            CTIShowDelayField.onValueChanged.AddListener(OnValueChanged);
+            CTIShowDelayField.onEndEdit.AddListener(OnValueChanged);
         }
 
         private void RemoveValueChangedListeners()
@@ -157,7 +157,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             EnableCTIToggle.onValueChanged.RemoveListener(ShowHideCtiControls);
             CTIHideOnInteractionToggle.onValueChanged.RemoveListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.RemoveListener(OnValueChanged);
-            CTIShowDelayField.onValueChanged.RemoveListener(OnValueChanged);
+            CTIShowDelayField.onEndEdit.RemoveListener(OnValueChanged);
         }
 
         public void SetFileLocation()
@@ -323,6 +323,12 @@ namespace Ultraleap.TouchFree.ServiceUI
         #endregion
 
         #region ConfigFile Methods
+        private void ValidateValues()
+        {
+            CTIShowDelayField.SetTextWithoutNotify(ServiceUtility.TryParseNewStringToFloat(TFAppConfig.Config.ctiShowAfterTimer,
+                CTIShowDelayField.text).ToString("##0.0"));
+        }
+
         private void LoadConfigValuesIntoFields()
         {
             // Cursor settings
@@ -447,6 +453,7 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         protected void OnValueChanged()
         {
+            ValidateValues();
             SaveValuesToConfig();
             SetColorsToCorrectPreset();
         }
