@@ -21,7 +21,7 @@ Shader "Unlit/CameraImages"
             // make fog work
             #pragma multi_compile LEAP_FORMAT_IR LEAP_FORMAT_RGB
 
-            #include "Assets/Plugins/LeapMotion/Core/Resources/LeapCG.cginc"
+            #include "Assets/ThirdParty/Ultraleap/Tracking/Core/Runtime/Resources/LeapCG.cginc"
             #include "UnityCG.cginc"
 
             uniform float _LeapGlobalColorSpaceGamma;
