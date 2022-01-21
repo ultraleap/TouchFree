@@ -12,7 +12,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         public static ScreenManager Instance;
 
         public GameObject clientCursorObj;
-        public Tooling.InputControllers.UnityUIInputController clientInput;
+        public InputActionBlockerPlugin inputActionBlocker;
 
         public GameObject[] stateRoots;
         public GameObject homeScreen;
@@ -67,7 +67,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         public void SetCursorState(bool _state, bool _andForce = false)
         {
             clientCursorObj.SetActive(_state);
-            clientInput.enabled = _state;
+            inputActionBlocker.SetBlocking(!_state);
 
             if (_andForce)
             {
