@@ -13,6 +13,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public ConfigFileWatcher()
         {
+            // We ask the config manager for references for these as this will cause the
+            // files to be created if they don't already exist, and FileSystemWatchers will
+            // error if the file they need to watch does not exist.
+            InteractionConfig InteractionCfg = ConfigManager.InteractionConfig;
+            PhysicalConfig PhysicalCfg = ConfigManager.PhysicalConfig;
+
             interactionWatcher = new FileSystemWatcher();
             interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
             interactionWatcher.NotifyFilter = NotifyFilters.LastWrite;
