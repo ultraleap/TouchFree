@@ -6,13 +6,16 @@ namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigFileWatcher
     {
+        private readonly IConfigManager configManager;
         private FileSystemWatcher interactionWatcher;
         private FileSystemWatcher physicalWatcher;
 
         private bool configFileChanged = false;
 
-        public ConfigFileWatcher()
+        public ConfigFileWatcher(IConfigManager _configManager)
         {
+            configManager = _configManager;
+
             interactionWatcher = new FileSystemWatcher();
             interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
             interactionWatcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -41,7 +44,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                     ConfigFileUtils.CheckForConfigDirectoryChange();
                     interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    ConfigManager.LoadConfigsFromFiles();
+                    configManager.LoadConfigsFromFiles();
                     Console.WriteLine("A config file was changed. Re-loading configs from files.");
                     configFileChanged = false;
                 }
