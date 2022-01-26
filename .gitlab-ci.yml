@@ -147,7 +147,7 @@ TF_Service::dotNet::Windows::build:
       }
     - mkdir ./Service_dotNet_Build
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/win-x64/*" ./Service_dotNet_Build
-    - cp "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/Plugins/AnyCPU/LeapC.dll"
+    - cp "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/Plugins/LeapC/AnyCPU/*" ./Service_dotNet_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -176,7 +176,7 @@ TF_Service::dotNet::ARMLinux::build:
       }
     - mkdir ./Service_dotNet_Build
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
-    - cp "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/Plugins/ARM64/*" ./Service_dotNet_Build
+    - cp "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/Plugins/LeapC/ARM64/*" ./Service_dotNet_Build
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
