@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>TouchFree_Service</RootNamespace>
     <AssemblyName>TouchFree Service</AssemblyName>
+    <Platforms>AnyCPU;ARM64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +12,7 @@
   </ItemGroup>
   
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="xcopy /yr &quot;..\TouchFree\Plugins\LeapC\x86_64\LeapC.dll&quot; &quot;$(TargetDir)&quot;" />
+    <Exec Command="xcopy /yr &quot;..\TouchFree\Plugins\LeapC\$(PlatformName)\LeapC.dll&quot; &quot;$(TargetDir)&quot;" />
   </Target>
 
 </Project>
