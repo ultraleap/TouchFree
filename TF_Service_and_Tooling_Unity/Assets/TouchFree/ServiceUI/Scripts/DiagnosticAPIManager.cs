@@ -3,7 +3,7 @@
 public class DiagnosticAPIManager : MonoBehaviour
 {
     public static DiagnosticAPI diagnosticAPI;
-    public static bool maskngAvailable = true;
+    public static bool maskngAvailable = false;
 
     private void Awake()
     {
