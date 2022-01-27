@@ -178,10 +178,6 @@ TF_Service::dotNet::ARMLinux::build:
     - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
     - cp "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/Plugins/LeapC/ARM64/*" ./Service_dotNet_Build
 
-    - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
-    - ln ./Service_dotNet_Build/libLeapC.so.5 ./Service_dotNet_Build/libLeapC.so
-    - ln ./Service_dotNet_Build/libstdc++.so.6.0.28 ./Service_dotNet_Build/libstdc++.so.6
-
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     # - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree_Service" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
@@ -450,6 +446,10 @@ TF_Service::dotNet::ARMLinux::package:
     - TF_Service::dotNet::ARMLinux::build
   needs: [ "TF_Service::dotNet::ARMLinux::build" ]
   script:
+    - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
+    - ln ./Service_dotNet_Build/libLeapC.so.5 ./Service_dotNet_Build/libLeapC.so
+    - ln ./Service_dotNet_Build/libstdc++.so.6.0.28 ./Service_dotNet_Build/libstdc++.so.6
+
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - ./make-extension-ubi "$CI_PROJECT_DIR/Service_dotNet_Build/" TF_Service_BS
   artifacts:
