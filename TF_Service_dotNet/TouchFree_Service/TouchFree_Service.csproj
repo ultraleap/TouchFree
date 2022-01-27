@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>TouchFree_Service</RootNamespace>
-    <AssemblyName>TouchFree Service</AssemblyName>
+    <AssemblyName>TouchFree_Service</AssemblyName>
     <Platforms>AnyCPU;ARM64</Platforms>
   </PropertyGroup>
 
