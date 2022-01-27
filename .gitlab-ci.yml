@@ -146,7 +146,7 @@ TF_Service::dotNet::Windows::build:
         Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/win-x64/*" ./Service_dotNet_Build
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/win-x64/*" ./Service_dotNet_Build
     - cp "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/Plugins/LeapC/AnyCPU/*" ./Service_dotNet_Build
 
     # Sign the executable with the UltraLeap certificate
@@ -175,7 +175,7 @@ TF_Service::dotNet::ARMLinux::build:
         Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
     - cp "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/Plugins/LeapC/ARM64/*" ./Service_dotNet_Build
 
     - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
@@ -184,7 +184,7 @@ TF_Service::dotNet::ARMLinux::build:
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    # - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree Service" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    # - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree_Service" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
     name: "TouchFree_Service_dotNet"
     paths:
