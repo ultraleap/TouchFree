@@ -23,9 +23,9 @@ namespace TouchFreeTests
             Assert.AreEqual(0.4f, virtualScreen.Height_PhysicalMeters);
             Assert.AreEqual(0.225f, virtualScreen.Width_PhysicalMeters, 0.001);
             Assert.AreEqual(0, virtualScreen.AngleOfPhysicalScreen_Degrees);
-            Assert.AreEqual(0, virtualScreen.PhysicalScreenPlane.Normal.X);
-            Assert.AreEqual(0, virtualScreen.PhysicalScreenPlane.Normal.Y);
-            Assert.AreEqual(1, virtualScreen.PhysicalScreenPlane.Normal.Z);
+            Assert.AreEqual(0, virtualScreen.ScreenPlane.Normal.X);
+            Assert.AreEqual(0, virtualScreen.ScreenPlane.Normal.Y);
+            Assert.AreEqual(1, virtualScreen.ScreenPlane.Normal.Z);
         }
 
         private int ScreenWidthInPixels = 1080;
@@ -70,12 +70,12 @@ namespace TouchFreeTests
             Assert.AreEqual(pixelY, pixelPosition.Y, 0.0001);
         }
 
-        [TestCase(1, 0, -1, 0, 1)]
-        [TestCase(1, 1, -1, 0, 1)]
-        [TestCase(0, 1, -1, 0, 1)]
-        [TestCase(1, 0, -1, 45, 0.707f)]
-        [TestCase(1, 1, -1, 45, 1.414f)]
-        [TestCase(0, 1, -1, 45, 1.414f)]
+        [TestCase(1, 0, 1, 0, 1)]
+        [TestCase(1, 1, 1, 0, 1)]
+        [TestCase(0, 1, 1, 0, 1)]
+        [TestCase(1, 0, 1, 45, 0.707f)]
+        [TestCase(1, 1, 1, 45, 1.414f)]
+        [TestCase(0, 1, 1, 45, 1.414f)]
         public void DistanceFromScreenPlane_IsPositiveDistanceFromScreenPlane_ReturnsDistance(float x, float y, float z, float screenAngle, float expectedDistance)
         {
             //Given
@@ -94,7 +94,7 @@ namespace TouchFreeTests
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen(angleInDegrees: 0);
-            Vector3 worldPosition = new Vector3(0, 0, -1);
+            Vector3 worldPosition = new Vector3(0, 0, 1);
 
             //When
             var screenPosition = virtualScreen.WorldPositionToVirtualScreen(worldPosition, out var planeHitWorldPosition);
@@ -105,9 +105,9 @@ namespace TouchFreeTests
             Assert.AreEqual(1, screenPosition.Z);
         }
 
-        [TestCase(0.1f, 0, -1, 1020, 0, 1)]
-        [TestCase(-0.1f, 0.1f, -1, 60, 480, 1)]
-        [TestCase(0, 0.15f, -2, 540, 720, 2)]
+        [TestCase(0.1f, 0, 1, 1020, 0, 1)]
+        [TestCase(-0.1f, 0.1f, 1, 60, 480, 1)]
+        [TestCase(0, 0.15f, 2, 540, 720, 2)]
         public void WorldPositionToVirtualScreen_UnangledScreen_ReturnsMappedPosition(float x, float y, float z, float expectedX, float expectedY, float expectedZ)
         {
             //Given
@@ -125,7 +125,7 @@ namespace TouchFreeTests
 
         [TestCase(0.1f, 0, 0, 1020, 0, 0)]
         [TestCase(0, 0.1f, 0, 540, 415.692f, 0.05f)]
-        [TestCase(0, 0.1f, -0.05f, 540, 295.692f, 0.093f)]
+        [TestCase(0, 0.1f, 0.05f, 540, 295.692f, 0.093f)]
         public void WorldPositionToVirtualScreen_AngledScreen_ReturnsMappedPosition(float x, float y, float z, float expectedX, float expectedY, float expectedZ)
         {
             //Given

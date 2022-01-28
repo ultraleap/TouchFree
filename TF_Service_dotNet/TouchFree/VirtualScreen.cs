@@ -16,7 +16,7 @@ namespace Ultraleap.TouchFree.Library
         /// </summary>
         public float AngleOfPhysicalScreen_Degrees { get; private set; }
 
-        public Plane PhysicalScreenPlane { get; private set; }
+        public Plane ScreenPlane { get; private set; }
 
         /// <summary>
         ///
@@ -44,8 +44,8 @@ namespace Ultraleap.TouchFree.Library
             Width_PhysicalMeters = heightPhysicalMeters * aspectRatio;
 
             AngleOfPhysicalScreen_Degrees = physicalScreenAngleDegrees;
-            var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), -(float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
-            PhysicalScreenPlane = new Plane(-planeNormal, 0f);
+            var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
+            ScreenPlane = new Plane(planeNormal, 0f);
         }
 
         void PhysicalConfigUpdated(PhysicalConfig _config)
@@ -59,13 +59,7 @@ namespace Ultraleap.TouchFree.Library
 
         public float DistanceFromScreenPlane(Vector3 worldPosition)
         {
-            var rayDir = PhysicalScreenPlane.Normal;
-            Ray r = new Ray(worldPosition, rayDir);
-
-            RaycastAgainstPlane(PhysicalScreenPlane, r, out float distanceFromPlane);
-
-            // Take the absolute value here to normalise against negative values
-            return Math.Abs(distanceFromPlane);
+            return Vector3.Dot(worldPosition, ScreenPlane.Normal);
         }
 
         /// <summary>
@@ -81,12 +75,8 @@ namespace Ultraleap.TouchFree.Library
         /// <returns>Vector3 whose X and Y are screen pixels, and Z is the physical distance from the virtual touch plane in meters.</returns>
         public Vector3 WorldPositionToVirtualScreen(Vector3 worldPosition, out Vector3 planeHitWorldPosition)
         {
-            var rayDir = PhysicalScreenPlane.Normal;
-
-            // Cast a ray towards the physical screen to get a point mapped onto that physical screen.
-            Ray r = new Ray(worldPosition, rayDir);
-            RaycastAgainstPlane(PhysicalScreenPlane, r, out float distanceFromPlane);
-            planeHitWorldPosition = r.origin + (r.direction * distanceFromPlane);
+            var distanceFromPlane = DistanceFromScreenPlane(worldPosition);
+            planeHitWorldPosition = worldPosition - (ScreenPlane.Normal * distanceFromPlane);
 
             // If the screen is rotated, this effectively scales down or "projects" the rotated screen vector back onto the UP axis, giving us the new UP axis height of the screen.
             float screenHeight = Height_PhysicalMeters * (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees));
@@ -162,22 +152,6 @@ namespace Ultraleap.TouchFree.Library
         public static float DegreesToRadians(float angle)
         {
             return ((float)Math.PI / 180) * angle;
-        }
-
-        public bool RaycastAgainstPlane(Plane plane, Ray ray, out float enter)
-        {
-            float vdot = Vector3.Dot(ray.direction, plane.Normal);
-            float ndot = -Vector3.Dot(ray.origin, plane.Normal) - plane.D;
-
-            if (vdot < 0.1f && vdot > -0.1f)
-            {
-                enter = 0.0F;
-                return false;
-            }
-
-            enter = ndot / vdot;
-
-            return enter > 0.0F;
         }
     }
 
