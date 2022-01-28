@@ -453,7 +453,7 @@ TF_Service::dotNet::ARMLinux::package:
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
     - apt-get update
-    - apt-get install squashfs-tools
+    - apt-get --assume-yes install squashfs-tools
     - ./make-extension-ubi "$CI_PROJECT_DIR/Service_dotNet_Build/" TF_Service_BS
   artifacts:
     name: "TouchFree_Service_Extension"
