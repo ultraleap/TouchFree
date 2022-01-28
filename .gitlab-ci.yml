@@ -449,6 +449,7 @@ TF_Service::dotNet::ARMLinux::package:
     - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
     - ln ./Service_dotNet_Build/libLeapC.so.5 ./Service_dotNet_Build/libLeapC.so
     - ln ./Service_dotNet_Build/libstdc++.so.6.0.28 ./Service_dotNet_Build/libstdc++.so.6
+    - chmod +x ./Service_dotNet_Build/TouchFree_Service
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
