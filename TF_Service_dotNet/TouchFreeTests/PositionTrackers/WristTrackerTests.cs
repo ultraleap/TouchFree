@@ -13,8 +13,8 @@ namespace TouchFreeTests.PositionTrackers
             sut = new WristTracker();
         }
 
-        [TestCase(1000, 2000, -3000, 1, 2, 3)]
-        [TestCase(500, 1000, -2000, 0.5f, 1, 2)]
+        [TestCase(1000, 2000, 3000, 1, 2, 3)]
+        [TestCase(500, 1000, 2000, 0.5f, 1, 2)]
         public void CalculatePositions_ValidHandPosition_Returns2dVector(float fingerTipX, float fingerTipY, float fingerTipZ, float cursorX, float cursorY, float distanceFromScreen)
         {
             //Given

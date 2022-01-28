@@ -22,8 +22,8 @@ namespace TouchFreeTests.PositionTrackers
         public void GetTrackedPointingJoint_ValidPointingIndexFinger_ReturnsNearestJoint()
         {
             //Given
-            Leap.Vector firstJointPosition = new Leap.Vector(1000, 2000, -2990);
-            Leap.Vector secondJointPosition = new Leap.Vector(1000, 2000, -3010);
+            Leap.Vector firstJointPosition = new Leap.Vector(1000, 2000, 2990);
+            Leap.Vector secondJointPosition = new Leap.Vector(1000, 2000, 3010);
             Leap.Finger finger = new Leap.Finger(0, 0, 0, 1, new Leap.Vector(), new Leap.Vector(), 1, 1, true, Leap.Finger.FingerType.TYPE_INDEX, new Leap.Bone(), new Leap.Bone(), new Leap.Bone(), new Leap.Bone());
             Leap.Hand hand = new Leap.Hand();
             hand.Fingers.Clear();

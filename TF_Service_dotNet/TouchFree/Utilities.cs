@@ -71,7 +71,7 @@ namespace Ultraleap.TouchFree.Library
         public static System.Numerics.Vector3 LeapVectorToNumerics(Leap.Vector _leap)
         {
             Leap.Vector scaledDown = _leap / 1000;
-            return new System.Numerics.Vector3(scaledDown.x, scaledDown.y, -scaledDown.z);
+            return new System.Numerics.Vector3(scaledDown.x, scaledDown.y, scaledDown.z);
         }
 
         public static float Lerp(float first, float second, float amount)

@@ -26,10 +26,10 @@ namespace TouchFreeTests
             sut.TrackedPosition = TrackedPosition.INDEX_TIP;
         }
 
-        [TestCase(1000, 2000, -3000, 100, 200, 1, 250, 400, 3)]
-        [TestCase(500, 1000, -2000, 100, 200, 1, 150, 200, 2)]
-        [TestCase(500, 1000, -2000, 100, 200, 0.5f, 250, 400, 2)]
-        [TestCase(500, 1000, -2000, 200, 300, 1, 250, 300, 2)]
+        [TestCase(1000, 2000, 3000, 100, 200, 1, 250, 400, 3)]
+        [TestCase(500, 1000, 2000, 100, 200, 1, 150, 200, 2)]
+        [TestCase(500, 1000, 2000, 100, 200, 0.5f, 250, 400, 2)]
+        [TestCase(500, 1000, 2000, 200, 300, 1, 250, 300, 2)]
         public void CalculatePositions_ValidHandPosition_Returns2dVector(float fingerTipX, float fingerTipY, float fingerTipZ, int screenWidthPx, int screenHeightPx, float screenPhysicalHeightM, float cursorX, float cursorY, float distanceFromScreen)
         {
             //Given
@@ -49,10 +49,10 @@ namespace TouchFreeTests
             Assert.AreEqual(distanceFromScreen, position.DistanceFromScreen);
         }
 
-        [TestCase(1000, 2000, -3000, 100, 200, 1, 250, 289.734192f, 3.30171967f)]
-        [TestCase(500, 1000, -2000, 100, 200, 1, 150, 127.502274f, 2.14326358f)]
-        [TestCase(500, 1000, -2000, 100, 200, 0.5f, 250, 255.004547f, 2.14326358f)]
-        [TestCase(500, 1000, -2000, 200, 300, 1, 250, 191.253418f, 2.14326358f)]
+        [TestCase(1000, 2000, 3000, 100, 200, 1, 250, 289.734192f, 3.30171967f)]
+        [TestCase(500, 1000, 2000, 100, 200, 1, 150, 127.502274f, 2.14326358f)]
+        [TestCase(500, 1000, 2000, 100, 200, 0.5f, 250, 255.004547f, 2.14326358f)]
+        [TestCase(500, 1000, 2000, 200, 300, 1, 250, 191.253418f, 2.14326358f)]
         public void CalculatePositions_ValidHandPositionScreenAtAngle_Returns2dVector(float fingerTipX, float fingerTipY, float fingerTipZ, int screenWidthPx, int screenHeightPx, float screenPhysicalHeightM, float cursorX, float cursorY, float distanceFromScreen)
         {
             //Given

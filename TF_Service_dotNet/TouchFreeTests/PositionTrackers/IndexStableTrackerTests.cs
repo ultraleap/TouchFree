@@ -17,10 +17,10 @@ namespace TouchFreeTests.PositionTrackers
         public void GetTrackedPointingJoint_ValidPointingIndexFinger_ReturnsAveragePlacementOfFirstTwoJoints()
         {
             //Given
-            Leap.Vector firstJointPosition = new Leap.Vector(1000, 2000, -2990);
-            Leap.Vector secondJointPosition = new Leap.Vector(1000, 2000, -3010);
-            Leap.Vector thirdJointPosition = new Leap.Vector(1000, 2000, -3030);
-            Leap.Vector fourthJointPosition = new Leap.Vector(1000, 2000, -3050);
+            Leap.Vector firstJointPosition = new Leap.Vector(1000, 2000, 2990);
+            Leap.Vector secondJointPosition = new Leap.Vector(1000, 2000, 3010);
+            Leap.Vector thirdJointPosition = new Leap.Vector(1000, 2000, 3030);
+            Leap.Vector fourthJointPosition = new Leap.Vector(1000, 2000, 3050);
             Leap.Finger finger = new Leap.Finger(0, 0, 0, 1, new Leap.Vector(), new Leap.Vector(), 1, 1, true, Leap.Finger.FingerType.TYPE_INDEX, 
                 new Leap.Bone() { NextJoint = firstJointPosition }, 
                 new Leap.Bone() { NextJoint = secondJointPosition }, 
