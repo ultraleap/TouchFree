@@ -6,18 +6,21 @@ namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigFileWatcher
     {
+        private readonly IConfigManager configManager;
         private FileSystemWatcher interactionWatcher;
         private FileSystemWatcher physicalWatcher;
 
         private bool configFileChanged = false;
 
-        public ConfigFileWatcher()
+        public ConfigFileWatcher(IConfigManager _configManager)
         {
             // We ask the config manager for references for these as this will cause the
             // files to be created if they don't already exist, and FileSystemWatchers will
             // error if the file they need to watch does not exist.
-            InteractionConfig InteractionCfg = ConfigManager.InteractionConfig;
-            PhysicalConfig PhysicalCfg = ConfigManager.PhysicalConfig;
+            InteractionConfig InteractionCfg = _configManager.InteractionConfig;
+            PhysicalConfig PhysicalCfg = _configManager.PhysicalConfig;
+
+            configManager = _configManager;
 
             interactionWatcher = new FileSystemWatcher();
             interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
@@ -47,7 +50,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                     ConfigFileUtils.CheckForConfigDirectoryChange();
                     interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    ConfigManager.LoadConfigsFromFiles();
+                    configManager.LoadConfigsFromFiles();
                     Console.WriteLine("A config file was changed. Re-loading configs from files.");
                     configFileChanged = false;
                 }

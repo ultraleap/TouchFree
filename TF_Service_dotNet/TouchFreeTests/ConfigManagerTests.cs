@@ -3,20 +3,16 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace TouchFreeTests
 {
-    public class Tests
+    public class ConfigManagerTests
     {
         PhysicalConfig physicalConfig;
         InteractionConfig interactionConfig;
+        ConfigManager configManager;
 
         [SetUp]
         public void Setup()
         {
-        }
-
-        [Test]
-        public void PhysicalScreenHeightIsPositive()
-        {
-            Assert.IsTrue(ConfigManager.PhysicalConfig.ScreenHeightM > 0);
+            configManager = new ConfigManager();
         }
 
         [Test]
@@ -24,15 +20,15 @@ namespace TouchFreeTests
         {
             // Given
             PhysicalConfig testConfig = new PhysicalConfig { ScreenHeightM = 0.5f };
-            ConfigManager.OnPhysicalConfigUpdated += OnPhysicalConfig;
+            configManager.OnPhysicalConfigUpdated += OnPhysicalConfig;
 
             // When
-            ConfigManager.PhysicalConfig = testConfig;
-            ConfigManager.PhysicalConfigWasUpdated();
+            configManager.PhysicalConfig = testConfig;
+            configManager.PhysicalConfigWasUpdated();
 
             // Then
-            Assert.IsTrue(physicalConfig != null);
-            Assert.IsTrue(physicalConfig.ScreenHeightM == 0.5f);
+            Assert.IsNotNull(physicalConfig);
+            Assert.AreEqual(0.5f, physicalConfig.ScreenHeightM);
         }
 
         [Test]
@@ -40,15 +36,15 @@ namespace TouchFreeTests
         {
             // Given
             InteractionConfig testConfig = new InteractionConfig { UseScrollingOrDragging = true };
-            ConfigManager.OnInteractionConfigUpdated += OnInteractionConfig;
+            configManager.OnInteractionConfigUpdated += OnInteractionConfig;
 
             // When
-            ConfigManager.InteractionConfig = testConfig;
-            ConfigManager.InteractionConfigWasUpdated();
+            configManager.InteractionConfig = testConfig;
+            configManager.InteractionConfigWasUpdated();
 
             // Then
-            Assert.IsTrue(interactionConfig != null);
-            Assert.IsTrue(interactionConfig.UseScrollingOrDragging == true);
+            Assert.IsNotNull(interactionConfig);
+            Assert.IsTrue(interactionConfig.UseScrollingOrDragging);
         }
 
 

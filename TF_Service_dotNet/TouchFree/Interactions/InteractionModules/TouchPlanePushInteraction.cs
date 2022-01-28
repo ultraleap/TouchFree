@@ -27,9 +27,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public float dragStartDistanceThresholdM = 0.01f;
         bool isDragging = false;
 
-        public TouchPlanePushInteraction(HandManager _handManager) : base(_handManager)
+        public TouchPlanePushInteraction(
+            HandManager _handManager,
+            IVirtualScreenManager _virtualScreenManager,
+            IConfigManager _configManager) : base(_handManager, _virtualScreenManager, _configManager, TrackedPosition.NEAREST)
         {
-            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.NEAREST);
         }
 
         protected override void UpdateData(Leap.Hand hand)
@@ -118,8 +120,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = VirtualScreen.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = VirtualScreen.virtualScreen.PixelsToMeters(_currentPos);
+            Vector2 startPosM = virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = virtualScreen.PixelsToMeters(_currentPos);
             float distFromStartPos = (startPosM - currentPosM).Length();
 
             if (distFromStartPos > dragStartDistanceThresholdM)
@@ -136,7 +138,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             // Convert from CM to M
             touchPlaneDistance = _config.TouchPlane.TouchPlaneActivationDistanceCM / 100;
-            positioningModule.trackedPosition = _config.TouchPlane.TouchPlaneTrackedPosition;
+            positioningModule.TrackedPosition = _config.TouchPlane.TouchPlaneTrackedPosition;
         }
     }
 }

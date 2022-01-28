@@ -2,16 +2,14 @@
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
-    public static class ConfigManager
+    public class ConfigManager : IConfigManager
     {
-        public delegate void InteractionConfigEvent(InteractionConfig config = null);
-        public delegate void PhysicalConfigEvent(PhysicalConfig config = null);
-        public static event InteractionConfigEvent OnInteractionConfigUpdated;
-        public static event PhysicalConfigEvent OnPhysicalConfigUpdated;
-        private static InteractionConfig _interactions;
-        private static PhysicalConfig _physical;
+        public event IConfigManager.InteractionConfigEvent OnInteractionConfigUpdated;
+        public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
+        private InteractionConfig _interactions;
+        private PhysicalConfig _physical;
 
-        public static InteractionConfig InteractionConfig
+        public InteractionConfig InteractionConfig
         {
             get
             {
@@ -28,7 +26,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
-        public static PhysicalConfig PhysicalConfig
+        public PhysicalConfig PhysicalConfig
         {
             get
             {
@@ -45,7 +43,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
-        public static void LoadConfigsFromFiles()
+        public void LoadConfigsFromFiles()
         {
             _interactions = InteractionConfigFile.LoadConfig();
             _physical = PhysicalConfigFile.LoadConfig();
@@ -54,12 +52,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
             PhysicalConfigWasUpdated();
         }
 
-        public static void PhysicalConfigWasUpdated()
+        public void PhysicalConfigWasUpdated()
         {
             OnPhysicalConfigUpdated?.Invoke(_physical);
         }
 
-        public static void InteractionConfigWasUpdated()
+        public void InteractionConfigWasUpdated()
         {
             OnInteractionConfigUpdated?.Invoke(_interactions);
         }

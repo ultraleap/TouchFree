@@ -39,15 +39,16 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
-        public static IServiceCollection AddConfigFileWatcher(this IServiceCollection services)
+        public static IServiceCollection AddConfig(this IServiceCollection services)
         {
-            var watcher = new ConfigFileWatcher();
+            var configManager = new ConfigManager();
+            services.AddSingleton<IConfigManager>(configManager);
+            var watcher = new ConfigFileWatcher(configManager);
 
             services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
 
-            var descriptor = new ServiceDescriptor(typeof(ConfigFileWatcher), watcher);
+            services.AddSingleton(watcher);
 
-            services.Add(descriptor);
             return services;
         }
 
@@ -60,6 +61,12 @@ namespace Ultraleap.TouchFree.Service.Connection
         public static IServiceCollection AddInteractionManager(this IServiceCollection services)
         {
             services.AddSingleton<InteractionManager>();
+            return services;
+        }
+
+        public static IServiceCollection AddVirtualScreenManager(this IServiceCollection services)
+        {
+            services.AddSingleton<IVirtualScreenManager, VirtualScreenManager>();
             return services;
         }
     }

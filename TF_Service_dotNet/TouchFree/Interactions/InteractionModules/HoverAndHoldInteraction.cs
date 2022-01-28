@@ -31,10 +31,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private bool clickAlreadySent = false;
         private Stopwatch clickingTimer = new Stopwatch();
 
-        public HoverAndHoldInteraction(HandManager _handManager) : base(_handManager)
+        public HoverAndHoldInteraction(
+            HandManager _handManager,
+            IVirtualScreenManager _virtualScreenManager,
+            IConfigManager _configManager) : base(_handManager, _virtualScreenManager, _configManager, TrackedPosition.INDEX_STABLE)
         {
-            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.INDEX_STABLE);
-
             progressTimer = new ProgressTimer(600f);
         }
 
@@ -51,17 +52,17 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return;
             }
 
-            Vector2 cursorPositionM = VirtualScreen.virtualScreen.PixelsToMeters(positions.CursorPosition);
+            Vector2 cursorPositionM = virtualScreen.PixelsToMeters(positions.CursorPosition);
             Vector2 hoverPosM = ApplyHoverzone(cursorPositionM);
-            positions.CursorPosition = VirtualScreen.virtualScreen.MetersToPixels(hoverPosM);
+            positions.CursorPosition = virtualScreen.MetersToPixels(hoverPosM);
 
             HandleInteractions();
         }
 
         private Vector2 ApplyHoverzone(Vector2 _screenPosM)
         {
-            float deadzoneRad = positioningModule.Stabiliser.defaultDeadzoneRadius + hoverDeadzoneEnlargementDistance;
-            previousHoverPosDeadzone = positioningModule.Stabiliser.ApplyDeadzoneSized(previousHoverPosDeadzone, _screenPosM, deadzoneRad);
+            float deadzoneRad = positioningStabiliser.defaultDeadzoneRadius + hoverDeadzoneEnlargementDistance;
+            previousHoverPosDeadzone = positioningStabiliser.ApplyDeadzoneSized(previousHoverPosDeadzone, _screenPosM, deadzoneRad);
             return previousHoverPosDeadzone;
         }
 
@@ -77,7 +78,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 {
                     hoverTriggered = true;
                     hoverTriggerTimer.Stop();
-                    hoverTriggeredDeadzoneRadius = positioningModule.Stabiliser.currentDeadzoneRadius;
+                    hoverTriggeredDeadzoneRadius = positioningStabiliser.currentDeadzoneRadius;
                     previousScreenPos = positions.CursorPosition; // To prevent instant-abandonment of hover
                 }
             }
@@ -94,7 +95,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         }
                         else if (progressTimer.IsRunning && progressTimer.Progress == 1f)
                         {
-                            positioningModule.Stabiliser.currentDeadzoneRadius = (timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius);
+                            positioningStabiliser.currentDeadzoneRadius = (timerDeadzoneEnlargementDistance + positioningStabiliser.defaultDeadzoneRadius);
                             progressTimer.StopTimer();
                             clickHeld = true;
                             clickingTimer.Restart();
@@ -104,10 +105,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         {
                             SendInputAction(InputType.MOVE, positions, progressTimer.Progress);
 
-                            float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
+                            float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positioningStabiliser.defaultDeadzoneRadius;
                             float deadzoneRadius = Utilities.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
 
-                            positioningModule.Stabiliser.currentDeadzoneRadius = deadzoneRadius;
+                            positioningStabiliser.currentDeadzoneRadius = deadzoneRadius;
                         }
                     }
                     else
@@ -136,7 +137,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     clickAlreadySent = false;
                     clickingTimer.Stop();
 
-                    positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                    positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                 }
             }
             else

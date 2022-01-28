@@ -24,13 +24,12 @@ namespace Ultraleap.TouchFree.Library
         /// <param name="widthPx"></param>
         /// <param name="heightPx"></param>
         /// <param name="heightPhysicalMeters"></param>
-        /// <param name="distanceFromPhysicalMeters"></param>
         /// <param name="physicalScreenAngleDegrees">The angle or tilt of the physical screen in degrees, where 0 would be a vertical screen facing the user, and 90 would be a flat screen facing the ceiling.</param>
-        /// <param name="trackingOffset"></param>
-        public VirtualScreen(int widthPx, int heightPx, float heightPhysicalMeters, float physicalScreenAngleDegrees)
+        /// <param name="configManager"></param>
+        public VirtualScreen(int widthPx, int heightPx, float heightPhysicalMeters, float physicalScreenAngleDegrees, IConfigManager configManager)
         {
             UpdateVirtualScreenValues(widthPx, heightPx, heightPhysicalMeters, physicalScreenAngleDegrees);
-            ConfigManager.OnPhysicalConfigUpdated += PhysicalConfigUpdated;
+            configManager.OnPhysicalConfigUpdated += PhysicalConfigUpdated;
         }
 
         void UpdateVirtualScreenValues(int widthPx, int heightPx, float heightPhysicalMeters, float physicalScreenAngleDegrees)
@@ -145,29 +144,6 @@ namespace Ultraleap.TouchFree.Library
                 position.X * Width_VirtualPx / Width_PhysicalMeters,
                 position.Y * Height_VirtualPx / Height_PhysicalMeters);
             return positionInPixels;
-        }
-
-        public static VirtualScreen virtualScreen
-        {
-            get
-            {
-                if (_virtualScreen == null)
-                {
-                    CreateVirtualScreen();
-                }
-
-                return _virtualScreen;
-            }
-        }
-        static VirtualScreen _virtualScreen;
-
-        static void CreateVirtualScreen()
-        {
-            _virtualScreen = new VirtualScreen(
-                ConfigManager.PhysicalConfig.ScreenWidthPX,
-                ConfigManager.PhysicalConfig.ScreenHeightPX,
-                ConfigManager.PhysicalConfig.ScreenHeightM,
-                ConfigManager.PhysicalConfig.ScreenRotationD);
         }
 
         [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]

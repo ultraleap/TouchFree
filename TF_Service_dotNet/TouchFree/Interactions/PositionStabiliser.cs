@@ -4,27 +4,27 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
-    public class PositionStabiliser
+    public class PositionStabiliser : IPositionStabiliser
     {
-        public float defaultDeadzoneRadius;
-        public float smoothingRate = 10f;
-        public float internalShrinkFactor = 2f;
+        public float defaultDeadzoneRadius { get; set; }
+        public float internalShrinkFactor { get; set; }
 
         // This is the radius that actually gets applied
-        public float currentDeadzoneRadius;
+        public float currentDeadzoneRadius { get; set; }
 
         // Shrinking Params
-        public bool isShrinking = false;
+        public bool isShrinking { get; set; }
         private float shrinkingSpeed;
 
         private bool havePreviousPositionDeadzone;
         private Vector2 previousPositionDeadzoneDefaultSize;
         private Vector2 previousPositionDeadzoneCurrentSize;
 
-        public PositionStabiliser()
+        public PositionStabiliser(IConfigManager _configManager)
         {
-            ConfigManager.OnInteractionConfigUpdated += OnSettingsUpdated;
-            OnSettingsUpdated(ConfigManager.InteractionConfig);
+            internalShrinkFactor = 2f;
+            _configManager.OnInteractionConfigUpdated += OnSettingsUpdated;
+            OnSettingsUpdated(_configManager.InteractionConfig);
             ResetValues();
         }
 

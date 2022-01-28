@@ -2,6 +2,7 @@
 using System.Numerics;
 
 using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
 
 namespace Ultraleap.TouchFree.Service
@@ -16,7 +17,6 @@ namespace Ultraleap.TouchFree.Service
         public float maxHandVelocity = 0.15f;
 
         public GeneralisedGrabDetector grabDetector;
-
         public float dragStartDistanceThresholdM = 0.01f;
 
         private bool pressing = false;
@@ -33,9 +33,12 @@ namespace Ultraleap.TouchFree.Service
 
         Tuple<long, Positions> previousPosition = new Tuple<long, Positions>(0, new Positions());
 
-        public GrabInteraction(HandManager _handManager) : base(_handManager)
+        public GrabInteraction(
+            HandManager _handManager,
+            IVirtualScreenManager _virtualScreenManager,
+            IConfigManager _configManager)
+             : base(_handManager, _virtualScreenManager, _configManager, TrackedPosition.INDEX_STABLE)
         {
-            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.INDEX_STABLE);
             grabDetector = new GeneralisedGrabDetector();
         }
 
@@ -61,8 +64,8 @@ namespace Ultraleap.TouchFree.Service
                 //
                 // I find that this velocity is quite similar to hand.PalmVelocity.Magnitude, but (as expected)
                 // this velocity calculation gets much closer to 0 when the hand is more still.
-                Vector3 previousWorldPos = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
-                Vector3 currentWorldPos = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
+                Vector3 previousWorldPos = virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
+                Vector3 currentWorldPos = virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
                 float changeInPos = (currentWorldPos - previousWorldPos).Length();
                 float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
                 velocity = changeInPos / changeInTime;
@@ -113,9 +116,9 @@ namespace Ultraleap.TouchFree.Service
             }
 
             // Adjust deadzone
-            positioningModule.Stabiliser.StopShrinkingDeadzone();
-            float newDeadzoneRadius = deadzoneEnlargementDistance + positioningModule.Stabiliser.defaultDeadzoneRadius;
-            positioningModule.Stabiliser.currentDeadzoneRadius = newDeadzoneRadius;
+            positioningStabiliser.StopShrinkingDeadzone();
+            float newDeadzoneRadius = deadzoneEnlargementDistance + positioningStabiliser.defaultDeadzoneRadius;
+            positioningStabiliser.currentDeadzoneRadius = newDeadzoneRadius;
             cursorDownPos = positions.CursorPosition;
         }
 
@@ -147,7 +150,7 @@ namespace Ultraleap.TouchFree.Service
                     else if (requireClick)
                     {
                         SendInputAction(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
-                        positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                        positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                         requireClick = false;
                     }
                     else
@@ -161,7 +164,7 @@ namespace Ultraleap.TouchFree.Service
                     if (CheckForStartDrag(cursorDownPos, positions.CursorPosition) && !ignoreDragging)
                     {
                         isDragging = true;
-                        positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                        positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                     }
 
                     SendInputAction(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
@@ -179,7 +182,7 @@ namespace Ultraleap.TouchFree.Service
                     SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
                 }
 
-                positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
             }
 
             pressing = false;
@@ -188,8 +191,8 @@ namespace Ultraleap.TouchFree.Service
 
         bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            var a = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
-            var b = VirtualScreen.virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
+            var a = virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
+            var b = virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
             var distFromStartPos = (a - b).Length();
 
             if (distFromStartPos > dragStartDistanceThresholdM)

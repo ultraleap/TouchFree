@@ -17,70 +17,70 @@ namespace TouchFreeTests
         public void TranslationIsCorrectlyConstructedFromConfig()
         {
             // Given
-            HandManager handManger = new HandManager(null);
-            System.Numerics.Vector3 translationInMeters = new System.Numerics.Vector3(0.1f, 0.2f, 0.3f);
+            HandManager handManger = new (null, null);
+            System.Numerics.Vector3 translationInMeters = new (0.1f, 0.2f, 0.3f);
             Leap.Vector translationInLeapSpace = new Leap.Vector(translationInMeters.X, translationInMeters.Y, -translationInMeters.Z) * 1000;
-            PhysicalConfig testConfig = new PhysicalConfig { LeapPositionRelativeToScreenBottomM = translationInMeters };
+            PhysicalConfig testConfig = new () { LeapPositionRelativeToScreenBottomM = translationInMeters };
 
             // When 
             handManger.UpdateTrackingTransform(testConfig);
 
             // Then 
-            Assert.IsTrue(handManger.TrackingTransform().translation == translationInLeapSpace);
+            Assert.AreEqual(translationInLeapSpace, handManger.TrackingTransform().translation);
         }
 
         [Test]
         public void TopMountedOrientationDoesNotInvertXRotation()
         {
             // Given
-            HandManager handManger = new HandManager(null);
-            System.Numerics.Vector3 topDownRotation = new System.Numerics.Vector3(45, 0, 180);
+            HandManager handManger = new (null, null);
+            System.Numerics.Vector3 topDownRotation = new (45, 0, 180);
             System.Numerics.Quaternion topDownQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 VirtualScreen.DegreesToRadians(topDownRotation.Y), 
                 VirtualScreen.DegreesToRadians(topDownRotation.X),
                 VirtualScreen.DegreesToRadians(topDownRotation.Z));
 
-            PhysicalConfig testConfig = new PhysicalConfig { LeapRotationD = topDownRotation };
+            PhysicalConfig testConfig = new () { LeapRotationD = topDownRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
 
             //Then 
-            System.Numerics.Quaternion handManagerRotation = new System.Numerics.Quaternion
+            System.Numerics.Quaternion handManagerRotation = new ()
             {
                 X = handManger.TrackingTransform().rotation.x,
                 Y = handManger.TrackingTransform().rotation.y,
                 Z = handManger.TrackingTransform().rotation.z,
                 W = handManger.TrackingTransform().rotation.w
             };
-            Assert.IsTrue(handManagerRotation == topDownQuaternion);
+            Assert.AreEqual(topDownQuaternion, handManagerRotation);
         }
 
         [Test]
         public void BottomMountedOrientationInvertsXRotation()
         {
             // Given
-            HandManager handManger = new HandManager(null);
-            System.Numerics.Vector3 bottomRotation = new System.Numerics.Vector3(45, 0, 0);
+            HandManager handManger = new (null, null);
+            System.Numerics.Vector3 bottomRotation = new (45, 0, 0);
             System.Numerics.Quaternion bottomQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 VirtualScreen.DegreesToRadians(bottomRotation.Y),
                 VirtualScreen.DegreesToRadians(-bottomRotation.X),
                 VirtualScreen.DegreesToRadians(bottomRotation.Z));
 
-            PhysicalConfig testConfig = new PhysicalConfig { LeapRotationD = bottomRotation };
+            PhysicalConfig testConfig = new () { LeapRotationD = bottomRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
 
             //Then 
-            System.Numerics.Quaternion handManagerRotation = new System.Numerics.Quaternion
+            System.Numerics.Quaternion handManagerRotation = new ()
             {
                 X = handManger.TrackingTransform().rotation.x,
                 Y = handManger.TrackingTransform().rotation.y,
                 Z = handManger.TrackingTransform().rotation.z,
                 W = handManger.TrackingTransform().rotation.w
             };
-            Assert.IsTrue(handManagerRotation == bottomQuaternion);
+            Assert.AreEqual(bottomQuaternion, handManagerRotation);
         }
 
     }

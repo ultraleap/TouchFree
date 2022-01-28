@@ -21,26 +21,33 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         protected bool hadHandLastFrame = false;
 
-        protected PositionStabiliser positioningStabiliser;
-        protected PositioningModule positioningModule;
-        protected readonly HandManager handManager;
+        protected IPositionStabiliser positioningStabiliser { get => positioningModule.Stabiliser; }
+        protected IPositioningModule positioningModule;
 
-        public InteractionModule(HandManager _handManager)
+        protected readonly HandManager handManager;
+        private readonly IVirtualScreenManager virtualScreenManager;
+        private readonly IConfigManager configManager;
+
+        protected VirtualScreen virtualScreen { get => virtualScreenManager.virtualScreen; }
+
+        public InteractionModule(HandManager _handManager, IVirtualScreenManager _virtualScreenManager, IConfigManager _configManager, TrackedPosition trackedPosition)
         {
             handManager = _handManager;
-            positioningStabiliser = new PositionStabiliser();
+            virtualScreenManager = _virtualScreenManager;
+            configManager = _configManager;
 
-            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.NEAREST);
+            positioningModule = new PositioningModule(new PositionStabiliser(_configManager), trackedPosition, _virtualScreenManager);
+
         }
         public virtual void Enable()
         {
-            ConfigManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
-            OnInteractionSettingsUpdated(ConfigManager.InteractionConfig);
+            configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
+            OnInteractionSettingsUpdated(configManager.InteractionConfig);
         }
 
         public virtual void Disable()
         {
-            ConfigManager.OnInteractionConfigUpdated -= OnInteractionSettingsUpdated;
+            configManager.OnInteractionConfigUpdated -= OnInteractionSettingsUpdated;
 
         }
 
@@ -93,7 +100,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected virtual void OnInteractionSettingsUpdated(InteractionConfig _config)
         {
             ignoreDragging = !_config.UseScrollingOrDragging;
-            positioningModule.Stabiliser.ResetValues();
+            positioningStabiliser.ResetValues();
         }
 
         /// <summary>
@@ -104,16 +111,31 @@ namespace Ultraleap.TouchFree.Library.Interactions
         /// <returns>Returns null if the hand is outside of the interaction zone</returns>
         Leap.Hand CheckHandInInteractionZone(Leap.Hand _hand)
         {
-            if (_hand != null && ConfigManager.InteractionConfig.InteractionZoneEnabled)
+            if (_hand != null && configManager.InteractionConfig.InteractionZoneEnabled)
             {
-                if (positions.DistanceFromScreen < ConfigManager.InteractionConfig.InteractionMinDistanceCm / 100 ||
-                    positions.DistanceFromScreen > ConfigManager.InteractionConfig.InteractionMaxDistanceCm / 100)
+                if (positions.DistanceFromScreen < configManager.InteractionConfig.InteractionMinDistanceCm / 100 ||
+                    positions.DistanceFromScreen > configManager.InteractionConfig.InteractionMaxDistanceCm / 100)
                 {
                     return null;
                 }
             }
 
             return _hand;
+        }
+
+        /// <summary>
+        /// Returns whether the hand is within the interaction zone.
+        /// This should be performed after 'positions' has been calculated.
+        /// </summary>
+        /// <returns>Returns whether the hand is within the interaction zone.</returns>
+        public bool IsHandInInteractionZone()
+        {
+            float minInteractionDistanceMeters = configManager.InteractionConfig.InteractionMinDistanceCm / 100;
+            float maxInteractionDistanceMeters = configManager.InteractionConfig.InteractionMaxDistanceCm / 100;
+
+            return !configManager.InteractionConfig.InteractionZoneEnabled ||
+                (positions.DistanceFromScreen >= minInteractionDistanceMeters &&
+                 positions.DistanceFromScreen <= maxInteractionDistanceMeters);
         }
     }
 }
