@@ -36,8 +36,8 @@ namespace Ultraleap.TouchFree.Service
         public GrabInteraction(
             HandManager _handManager,
             IVirtualScreenManager _virtualScreenManager,
-            IConfigManager _configManager)
-             : base(_handManager, _virtualScreenManager, _configManager, TrackedPosition.INDEX_STABLE)
+            IConfigManager _configManager,
+            IPositioningModule _positioningModule) : base(_handManager, _virtualScreenManager, _configManager, _positioningModule, TrackedPosition.INDEX_STABLE)
         {
             grabDetector = new GeneralisedGrabDetector();
         }

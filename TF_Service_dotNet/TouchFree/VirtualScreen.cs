@@ -64,7 +64,8 @@ namespace Ultraleap.TouchFree.Library
 
             RaycastAgainstPlane(PhysicalScreenPlane, r, out float distanceFromPlane);
 
-            return distanceFromPlane;
+            // Take the absolute value here to normalise against negative values
+            return Math.Abs(distanceFromPlane);
         }
 
         /// <summary>

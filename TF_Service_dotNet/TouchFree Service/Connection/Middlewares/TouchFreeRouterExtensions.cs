@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Interactions;
+using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -58,15 +60,35 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
-        public static IServiceCollection AddInteractionManager(this IServiceCollection services)
+        public static IServiceCollection AddInteractions(this IServiceCollection services)
         {
             services.AddSingleton<InteractionManager>();
+
+            services.AddSingleton<AirPushInteraction>();
+            services.AddSingleton<GrabInteraction>();
+            services.AddSingleton<HoverAndHoldInteraction>();
+            services.AddSingleton<TouchPlanePushInteraction>();
+
             return services;
         }
 
         public static IServiceCollection AddVirtualScreenManager(this IServiceCollection services)
         {
             services.AddSingleton<IVirtualScreenManager, VirtualScreenManager>();
+            return services;
+        }
+
+        public static IServiceCollection AddPositioning(this IServiceCollection services)
+        {
+            // Using transient here so we create new instances for the different interactions
+            services.AddTransient<IPositioningModule, PositioningModule>();
+            services.AddTransient<IPositionStabiliser, PositionStabiliser>();
+
+            services.AddSingleton<IPositionTracker, IndexStableTracker>();
+            services.AddSingleton<IPositionTracker, IndexTipTracker>();
+            services.AddSingleton<IPositionTracker, NearestTracker>();
+            services.AddSingleton<IPositionTracker, WristTracker>();
+
             return services;
         }
     }

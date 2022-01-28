@@ -8,32 +8,32 @@ namespace Ultraleap.TouchFree.Service
 {
     public class InteractionManager
     {
-        private AirPushInteraction airPush;
-        private GrabInteraction grab;
-        private HoverAndHoldInteraction hoverAndHold;
-        private TouchPlanePushInteraction touchPlane;
+        private readonly AirPushInteraction airPush;
+        private readonly GrabInteraction grab;
+        private readonly HoverAndHoldInteraction hoverAndHold;
+        private readonly TouchPlanePushInteraction touchPlane;
 
         private InteractionType lastInteraction;
 
-        private readonly HandManager handManager;
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager connectionManager;
 
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
-            HandManager _handManager,
             ClientConnectionManager _connectionManager,
-            IVirtualScreenManager _virtualScreenManager,
+            AirPushInteraction _airPush,
+            GrabInteraction _grab,
+            HoverAndHoldInteraction _hoverAndHold,
+            TouchPlanePushInteraction _touchPlane,
             IConfigManager _configManager)
         {
-            handManager = _handManager;
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
 
-            airPush = new AirPushInteraction(handManager, _virtualScreenManager, _configManager);
-            grab = new GrabInteraction(handManager, _virtualScreenManager, _configManager);
-            hoverAndHold = new HoverAndHoldInteraction(handManager, _virtualScreenManager, _configManager);
-            touchPlane = new TouchPlanePushInteraction(handManager, _virtualScreenManager, _configManager);
+            airPush = _airPush;
+            grab = _grab;
+            hoverAndHold = _hoverAndHold;
+            touchPlane = _touchPlane;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
