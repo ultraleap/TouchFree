@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using Moq;
 using NUnit.Framework;
 using TouchFreeTests.TestImplementations;
 using Ultraleap.TouchFree.Library;
@@ -10,38 +13,46 @@ namespace TouchFreeTests
 {
     class PositioningModuleTests
     {
-        PositioningModule sut;
         TestVirtualScreenManager virtualScreenManager = new TestVirtualScreenManager();
 
-        public PositioningModuleTests()
+        private PositioningModule CreatePositioningModule(IEnumerable<IPositionTracker> positionTrackers)
         {
-            // TODO: Remove dependency on the Trackers here and instead use vector3 from mocked tracker instead of hand coordinates to make the tests simpler
-            sut = new PositioningModule(new TestPositionStabiliser(), virtualScreenManager, 
-                new IPositionTracker[] {
-                    new IndexTipTracker(),
-                    new IndexStableTracker(),
-                    new NearestTracker(virtualScreenManager),
-                    new WristTracker()
-                });
-            sut.TrackedPosition = TrackedPosition.INDEX_TIP;
+            if (!positionTrackers.Any(x => x.TrackedPosition == TrackedPosition.INDEX_STABLE))
+            {
+                positionTrackers = positionTrackers.Append(new IndexStableTracker());
+            }
+
+            Mock<IPositionStabiliser> stabiliser = new Mock<IPositionStabiliser>();
+            stabiliser.Setup(x => x.ApplyDeadzone(It.IsAny<Vector2>())).Returns<Vector2>(v => v);
+
+            PositioningModule positioningModule = new PositioningModule(stabiliser.Object, virtualScreenManager,
+                positionTrackers);
+            positioningModule.TrackedPosition = TrackedPosition.INDEX_TIP;
+
+            return positioningModule;
         }
 
-        [TestCase(1000, 2000, 3000, 100, 200, 1, 250, 400, 3)]
-        [TestCase(500, 1000, 2000, 100, 200, 1, 150, 200, 2)]
-        [TestCase(500, 1000, 2000, 100, 200, 0.5f, 250, 400, 2)]
-        [TestCase(500, 1000, 2000, 200, 300, 1, 250, 300, 2)]
-        public void CalculatePositions_ValidHandPosition_Returns2dVector(float fingerTipX, float fingerTipY, float fingerTipZ, int screenWidthPx, int screenHeightPx, float screenPhysicalHeightM, float cursorX, float cursorY, float distanceFromScreen)
+        private IPositionTracker CreateTrackerWithPosition(TrackedPosition trackedPosition, float x, float y, float z)
+        {
+            Mock<IPositionTracker> mockTracker = new Mock<IPositionTracker>();
+            mockTracker.SetupGet(x => x.TrackedPosition).Returns(trackedPosition);
+            mockTracker.Setup(x => x.GetTrackedPosition(It.IsAny<Leap.Hand>())).Returns(new Vector3(x, y, z));
+            return mockTracker.Object;
+        }
+
+        [TestCase(0, 0.5f, 3, 100, 200, 1, 50, 100, 3)]
+        [TestCase(0.25f, 0.5f, 2, 100, 200, 1, 100, 100, 2)]
+        [TestCase(0.25f, 0.5f, 2, 100, 200, 2f, 75, 50, 2)]
+        [TestCase(0.25f, 0.5f, 2, 200, 300, 1, 175, 150, 2)]
+        public void CalculatePositions_ValidHandPosition_Returns2dVector(float positionX, float positionY, float positionZ, int screenWidthPx, int screenHeightPx, float screenPhysicalHeightM, float cursorX, float cursorY, float distanceFromScreen)
         {
             //Given
-            Leap.Vector fingerTipPosition = new Leap.Vector(fingerTipX, fingerTipY, fingerTipZ);
-            Leap.Finger finger = new Leap.Finger(0, 0, 0, 1, fingerTipPosition, new Leap.Vector(), 1, 1, true, Leap.Finger.FingerType.TYPE_INDEX, new Leap.Bone(), new Leap.Bone(), new Leap.Bone(), new Leap.Bone());
-            Leap.Hand hand = new Leap.Hand();
-            hand.Fingers.Add(finger);
-
             virtualScreenManager.virtualScreen = new VirtualScreen(screenWidthPx, screenHeightPx, screenPhysicalHeightM, 0, new TestConfigManager());
+            IPositionTracker positionTracker = CreateTrackerWithPosition(TrackedPosition.INDEX_TIP, positionX, positionY, positionZ);
+            PositioningModule positioningModule = CreatePositioningModule(new[] { positionTracker });
 
             //When
-            Ultraleap.TouchFree.Library.Positions position = sut.CalculatePositions(hand);
+            Ultraleap.TouchFree.Library.Positions position = positioningModule.CalculatePositions(new Leap.Hand());
 
             //Then
             Assert.AreEqual(cursorX, position.CursorPosition.X);
@@ -49,27 +60,45 @@ namespace TouchFreeTests
             Assert.AreEqual(distanceFromScreen, position.DistanceFromScreen);
         }
 
-        [TestCase(1000, 2000, 3000, 100, 200, 1, 250, 289.734192f, 3.30171967f)]
-        [TestCase(500, 1000, 2000, 100, 200, 1, 150, 127.502274f, 2.14326358f)]
-        [TestCase(500, 1000, 2000, 100, 200, 0.5f, 250, 255.004547f, 2.14326358f)]
-        [TestCase(500, 1000, 2000, 200, 300, 1, 250, 191.253418f, 2.14326358f)]
-        public void CalculatePositions_ValidHandPositionScreenAtAngle_Returns2dVector(float fingerTipX, float fingerTipY, float fingerTipZ, int screenWidthPx, int screenHeightPx, float screenPhysicalHeightM, float cursorX, float cursorY, float distanceFromScreen)
+        [TestCase(0, 1f, 1, 100, 200, 1, 50, 162.23191f, 1.1584558f)]
+        [TestCase(0.25f, 0.5f, 1, 100, 200, 1, 100, 63.751144f, 1.0716317f)]
+        [TestCase(0.25f, 0.5f, 1, 100, 200, 2f, 75, 31.8755722f, 1.0716317f)]
+        [TestCase(0.25f, 0.5f, 1, 200, 300, 1, 175, 95.62671f, 1.0716317f)]
+        public void CalculatePositions_ValidHandPositionScreenAtAngle_Returns2dVector(float positionX, float positionY, float positionZ, int screenWidthPx, int screenHeightPx, float screenPhysicalHeightM, float cursorX, float cursorY, float distanceFromScreen)
         {
             //Given
-            Leap.Vector fingerTipPosition = new Leap.Vector(fingerTipX, fingerTipY, fingerTipZ);
-            Leap.Finger finger = new Leap.Finger(0, 0, 0, 1, fingerTipPosition, new Leap.Vector(), 1, 1, true, Leap.Finger.FingerType.TYPE_INDEX, new Leap.Bone(), new Leap.Bone(), new Leap.Bone(), new Leap.Bone());
-            Leap.Hand hand = new Leap.Hand();
-            hand.Fingers.Add(finger);
-
             virtualScreenManager.virtualScreen = new VirtualScreen(screenWidthPx, screenHeightPx, screenPhysicalHeightM, 10, new TestConfigManager());
+            IPositionTracker positionTracker = CreateTrackerWithPosition(TrackedPosition.INDEX_TIP, positionX, positionY, positionZ);
+            PositioningModule positioningModule = CreatePositioningModule(new[] { positionTracker });
 
             //When
-            Ultraleap.TouchFree.Library.Positions position = sut.CalculatePositions(hand);
+            Ultraleap.TouchFree.Library.Positions position = positioningModule.CalculatePositions(new Leap.Hand());
 
             //Then
             Assert.AreEqual(cursorX, position.CursorPosition.X, 0.001);
             Assert.AreEqual(cursorY, position.CursorPosition.Y, 0.001);
             Assert.AreEqual(distanceFromScreen, position.DistanceFromScreen, 0.001);
+        }
+
+        [Test]
+        public void CalculatePositions_NoHand_ReturnLastPosition()
+        {
+            //Given
+            virtualScreenManager.virtualScreen = new VirtualScreen(100, 200, 10, 0, new TestConfigManager());
+            IPositionTracker positionTracker = CreateTrackerWithPosition(TrackedPosition.INDEX_TIP, 0, 1, 1);
+            PositioningModule positioningModule = CreatePositioningModule(new[] { positionTracker });
+            Ultraleap.TouchFree.Library.Positions oldPosition = positioningModule.CalculatePositions(new Leap.Hand());
+
+            //When
+            Ultraleap.TouchFree.Library.Positions position = positioningModule.CalculatePositions(null);
+
+            //Then
+            Assert.AreEqual(oldPosition.CursorPosition.X, position.CursorPosition.X, 0.001);
+            Assert.AreEqual(oldPosition.CursorPosition.Y, position.CursorPosition.Y, 0.001);
+            Assert.AreEqual(oldPosition.DistanceFromScreen, position.DistanceFromScreen, 0.001);
+            Assert.AreEqual(50, position.CursorPosition.X, 0.001);
+            Assert.AreEqual(20, position.CursorPosition.Y, 0.001);
+            Assert.AreEqual(1, position.DistanceFromScreen, 0.001);
         }
 
         [TestCase(TrackedPosition.INDEX_TIP, typeof(IndexTipTracker))]
@@ -79,46 +108,19 @@ namespace TouchFreeTests
         public void TrackerToUse_TrackedPositionChanged_SetToExpectedTracker(TrackedPosition trackedPosition, Type expectedTracker)
         {
             //Given
+            PositioningModule positioningModule = CreatePositioningModule(new IPositionTracker[] {
+                    new IndexTipTracker(),
+                    new IndexStableTracker(),
+                    new NearestTracker(virtualScreenManager),
+                    new WristTracker()
+                });
 
             //When
-            sut.TrackedPosition = trackedPosition;
+            positioningModule.TrackedPosition = trackedPosition;
 
             //Then
-            Assert.AreEqual(expectedTracker, sut.TrackerToUse.GetType());
-            Assert.AreEqual(trackedPosition, sut.TrackerToUse.TrackedPosition);
-        }
-
-        private class TestPositionStabiliser : IPositionStabiliser
-        {
-            public float defaultDeadzoneRadius { get; set; }
-            public float smoothingRate { get; set; }
-            public float internalShrinkFactor { get; set; }
-            public float currentDeadzoneRadius { get; set; }
-            public bool isShrinking { get; set; }
-
-            public Vector2 ApplyDeadzone(Vector2 position)
-            {
-                return position;
-            }
-
-            public Vector2 ApplyDeadzoneSized(Vector2 previous, Vector2 current, float radius)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void ResetValues()
-            {
-            }
-
-            public void StartShrinkingDeadzone(float speed)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void StopShrinkingDeadzone()
-            {
-                throw new System.NotImplementedException();
-            }
+            Assert.AreEqual(expectedTracker, positioningModule.TrackerToUse.GetType());
+            Assert.AreEqual(trackedPosition, positioningModule.TrackerToUse.TrackedPosition);
         }
     }
 }
