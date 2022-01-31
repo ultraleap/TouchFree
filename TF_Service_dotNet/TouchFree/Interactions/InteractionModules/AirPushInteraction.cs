@@ -54,6 +54,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private bool dragDeadzoneShrinkTriggered = false;
         private bool isDragging = false;
 
+        private const float RADTODEG = (float)(180.0 / Math.PI);
+
         public AirPushInteraction(
             HandManager _handManager, 
             IVirtualScreenManager _virtualScreenManager,
@@ -266,7 +268,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 float angleFromScreen = (float) Math.Atan2(
                     _dPerp.Length(),
-                    _currentVelocity * _dt * (Math.PI / 180.0));
+                    _currentVelocity * _dt) * RADTODEG;
 
                 if (angleFromScreen < thetaOne || angleFromScreen > thetaTwo)
                 {
