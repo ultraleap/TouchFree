@@ -452,14 +452,14 @@ TF_Service::dotNet::Brightsign::example:
     - cp ./Scripts/BrightSign_Scripts/QuickStart-autorun.brs ./BS_Example_package
     - mv ./BS_Example_package/QuickStart-autorun.brs ./BS_Example_package/autorun.brs 
     - cp -r ./Tooling_Package* ./BS_Example_package
-    
+
   artifacts:
     name: "BrightSign_Example_Package_${CI_COMMIT_SHORT_SHA}"
     paths:
     - ./BS_Example_Package
     expire_in: 2 weeks
     when: always
-    tags:
+  tags:
     - win10
 
 TouchFree::installer:
