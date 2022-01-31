@@ -191,6 +191,22 @@ TF_Service::dotNet::ARMLinux::build:
     - unity
     - win10
 
+Tracking::ARMLinux::download_package:
+  stage: build
+  when: always
+  script:
+    - cd ./Scripts/BrightSign_Scripts
+    - python ./Download_Tracking.py -t ${env:GITLAB_TOKEN}
+  after_script:
+    - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
+  artifacts:
+    paths:
+    - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_5.3.4.tar.gz
+    expire_in: 1 hour
+  tags:
+    - unity
+    - win10
+
 TF_Service::dotNet::test:
   stage: test
   when: always
