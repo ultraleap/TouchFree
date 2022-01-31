@@ -16,11 +16,13 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
+        private readonly IConfigManager configManager;
 
-        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr)
+        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr, IConfigManager _configManager)
         {
             clientMgr = _clientMgr;
             updateBehaviour = _updateBehaviour;
+            configManager = _configManager;
 
             updateBehaviour.OnUpdate += Update;
         }
@@ -62,8 +64,8 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             ConfigState currentConfig = new ConfigState(
                 contentObj.GetValue("requestID").ToString(),
-                ConfigManager.InteractionConfig,
-                ConfigManager.PhysicalConfig);
+                configManager.InteractionConfig,
+                configManager.PhysicalConfig);
 
 
             clientMgr.SendConfigState(currentConfig);
@@ -233,15 +235,15 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void ChangeConfig(string _content)
         {
-            ConfigState combinedData = new ConfigState("", ConfigManager.InteractionConfig, ConfigManager.PhysicalConfig);
+            ConfigState combinedData = new ConfigState("", configManager.InteractionConfig, configManager.PhysicalConfig);
 
             JsonConvert.PopulateObject(_content, combinedData);
 
-            ConfigManager.InteractionConfig = combinedData.interaction;
-            ConfigManager.PhysicalConfig = combinedData.physical;
+            configManager.InteractionConfig = combinedData.interaction;
+            configManager.PhysicalConfig = combinedData.physical;
 
-            ConfigManager.PhysicalConfigWasUpdated();
-            ConfigManager.InteractionConfigWasUpdated();
+            configManager.PhysicalConfigWasUpdated();
+            configManager.InteractionConfigWasUpdated();
         }
         #endregion
     }

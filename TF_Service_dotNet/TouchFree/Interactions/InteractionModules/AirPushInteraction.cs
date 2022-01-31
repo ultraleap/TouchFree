@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Numerics;
 
 using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
@@ -53,9 +54,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private bool dragDeadzoneShrinkTriggered = false;
         private bool isDragging = false;
 
-        public AirPushInteraction(HandManager _handManager) : base(_handManager)
+        private const float RADTODEG = (float)(180.0 / Math.PI);
+
+        public AirPushInteraction(
+            HandManager _handManager, 
+            IVirtualScreenManager _virtualScreenManager,
+            IConfigManager _configManager) : base(_handManager, _virtualScreenManager, _configManager, TrackedPosition.INDEX_STABLE)
         {
-            positioningModule = new PositioningModule(positioningStabiliser, TrackedPosition.INDEX_STABLE);
         }
 
         protected override void UpdateData(Leap.Hand hand)
@@ -99,7 +104,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 float currentVelocity = dz / dt;    // m/s
 
                 Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
-                Vector2 dPerp = VirtualScreen.virtualScreen.PixelsToMeters(dPerpPx);
+                Vector2 dPerp = virtualScreen.PixelsToMeters(dPerpPx);
 
                 // Update AppliedForce, which is the crux of the AirPush algorithm
                 float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, positions.DistanceFromScreen);
@@ -128,7 +133,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         {
                             if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, positions.CursorPosition))
                             {
-                                positioningModule.Stabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
+                                positioningStabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
                                 dragDeadzoneShrinkTriggered = true;
                             }
 
@@ -187,8 +192,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = VirtualScreen.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = VirtualScreen.virtualScreen.PixelsToMeters(_currentPos);
+            Vector2 startPosM = virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = virtualScreen.PixelsToMeters(_currentPos);
             float distFromStartPos = (startPosM - currentPosM).Length();
 
             if (distFromStartPos > dragStartDistanceThresholdM)
@@ -201,8 +206,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool CheckForStartDragDeadzoneShrink(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = VirtualScreen.virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = VirtualScreen.virtualScreen.PixelsToMeters(_currentPos);
+            Vector2 startPosM = virtualScreen.PixelsToMeters(_startPos);
+            Vector2 currentPosM = virtualScreen.PixelsToMeters(_currentPos);
             float distFromStartPos = (startPosM - currentPosM).Length();
             return (distFromStartPos > dragDeadzoneShrinkDistanceThresholdM);
         }
@@ -213,20 +218,20 @@ namespace Ultraleap.TouchFree.Library.Interactions
             if (_df < -1f * float.Epsilon)
             {
                 // Start decreasing deadzone size
-                positioningModule.Stabiliser.StartShrinkingDeadzone(deadzoneShrinkRate);
+                positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkRate);
             }
             else
             {
-                positioningModule.Stabiliser.StopShrinkingDeadzone();
+                positioningStabiliser.StopShrinkingDeadzone();
 
                 float deadzoneSizeIncrease = deadzoneMaxSizeIncrease * _df;
 
-                float deadzoneMinSize = positioningModule.Stabiliser.defaultDeadzoneRadius;
+                float deadzoneMinSize = positioningStabiliser.defaultDeadzoneRadius;
                 float deadzoneMaxSize = deadzoneMinSize + deadzoneMaxSizeIncrease;
 
-                float newDeadzoneSize = positioningModule.Stabiliser.currentDeadzoneRadius + deadzoneSizeIncrease;
+                float newDeadzoneSize = positioningStabiliser.currentDeadzoneRadius + deadzoneSizeIncrease;
                 newDeadzoneSize = Math.Clamp(newDeadzoneSize, deadzoneMinSize, deadzoneMaxSize);
-                positioningModule.Stabiliser.currentDeadzoneRadius = newDeadzoneSize;
+                positioningStabiliser.currentDeadzoneRadius = newDeadzoneSize;
             }
         }
 
@@ -263,7 +268,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 float angleFromScreen = (float) Math.Atan2(
                     _dPerp.Length(),
-                    _currentVelocity * _dt * (Math.PI / 180.0));
+                    _currentVelocity * _dt) * RADTODEG;
 
                 if (angleFromScreen < thetaOne || angleFromScreen > thetaTwo)
                 {

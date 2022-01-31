@@ -73,7 +73,7 @@ namespace Ultraleap.TouchFree.Library
         private int handsLastFrame;
 
 
-        public HandManager(TrackingConnectionManager _trackingManager)
+        public HandManager(TrackingConnectionManager _trackingManager, IConfigManager _configManager)
         {
             handsLastFrame = 0;
 
@@ -82,9 +82,12 @@ namespace Ultraleap.TouchFree.Library
             {
                 trackingProvider.controller.FrameReady += Update;
             }
-            
-            ConfigManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
-            UpdateTrackingTransform(ConfigManager.PhysicalConfig);
+
+            if (_configManager != null)
+            {
+                _configManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
+                UpdateTrackingTransform(_configManager.PhysicalConfig);
+            }
         }
 
         public void UpdateTrackingTransform(PhysicalConfig _config)

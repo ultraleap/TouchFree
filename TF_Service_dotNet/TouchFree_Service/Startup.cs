@@ -18,10 +18,11 @@ namespace Ultraleap.TouchFree.Service
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddUpdateBehaviour();
-            services.AddConfigFileWatcher();
+            services.AddConfig();
 
             services.AddTrackingConnectionManager();
             services.AddHandManager();
+            services.AddVirtualScreenManager();
 
             services.AddClientConnectionManager();
             services.AddWebSocketReceiver();
@@ -36,11 +37,12 @@ namespace Ultraleap.TouchFree.Service
             app.UseTouchFreeRouter();
 
             interactionManager = app.ApplicationServices.GetService<InteractionManager>();
+            var configManager = app.ApplicationServices.GetService<IConfigManager>();
 
             // This is here so the test infrastructure has some sign that the app is ready
             Console.WriteLine("Service Setup Complete");
 
-            Console.WriteLine("TouchFree physical config screen height is: " + ConfigManager.PhysicalConfig.ScreenHeightM);
+            Console.WriteLine("TouchFree physical config screen height is: " + configManager.PhysicalConfig.ScreenHeightM);
         }
     }
 }
