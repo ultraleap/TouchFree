@@ -1,0 +1,13 @@
+#!/bin/sh
+
+PIDFILE=/var/run/Ultraleap_Tracking_Service.pid
+DAEMON="./libtrack_server"
+
+if [[ $1 == "start" ]]; then
+    export LD_LIBRARY_PATH=.
+    start-stop-daemon --start \
+        --pidfile $PIDFILE --make-pidfile \
+        --background --exec $DAEMON
+elif [[ $1 == "stop" ]]; then
+    start-stop-daemon --stop --exec $DAEMON --pidfile $PIDFILE
+fi

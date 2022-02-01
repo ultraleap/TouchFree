@@ -462,6 +462,9 @@ TF_Service::dotNet::ARMLinux::package:
     - TF_Service::dotNet::ARMLinux::build
   needs: [ "TF_Service::dotNet::ARMLinux::build" ]
   script:
+    - apt-get update
+    - apt-get --assume-yes install squashfs-tools
+
     - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
     - ln ./Service_dotNet_Build/libLeapC.so.5 ./Service_dotNet_Build/libLeapC.so
     - ln ./Service_dotNet_Build/libstdc++.so.6.0.28 ./Service_dotNet_Build/libstdc++.so.6
@@ -469,15 +472,45 @@ TF_Service::dotNet::ARMLinux::package:
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
-    - apt-get update
-    - apt-get --assume-yes install squashfs-tools
+    - mv ./Initialisation_Scripts/bsext_init_touchfree ./bsext_init
     - ./make-extension-ubi "$CI_PROJECT_DIR/Service_dotNet_Build/" TF_Service_BS
+
     - mkdir $CI_PROJECT_DIR/TF_Service_BS/
     - cp ./build-TF_Service_BS/*.tar.gz $CI_PROJECT_DIR/TF_Service_BS/
   artifacts:
     name: "TouchFree_Service_Extension"
     paths:
       - "$CI_PROJECT_DIR/TF_Service_BS/*"
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - docker
+
+Tracking::ARMLinux::package:
+  stage: package
+  image: ubuntu:20.04
+  dependencies:
+    - Tracking::ARMLinux::download_package
+  needs: [ "Tracking::ARMLinux::download_package" ]
+  script:
+    - apt-get update
+    - apt-get --assume-yes install squashfs-tools
+
+    - cd $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/
+    - tar -xzf ./Ultraleap_Tracking_Installer_5.3.4.tar.gz
+    - chmod +x ./TrackingService/bin/libtrack_server
+
+    - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
+    - chmod +x ./make-extension-ubi
+    - mv ./Initialisation_Scripts/bsext_init_tracking ./bsext_init
+    - ./make-extension-ubi ./TrackingService/bin/ Tracking_Service_BS
+
+    - mkdir $CI_PROJECT_DIR/Tracking_Service_BS/
+    - cp ./build-Tracking_Service_BS/*.tar.gz $CI_PROJECT_DIR/Tracking_Service_BS/
+  artifacts:
+    name: "TouchFree_Service_Extension"
+    paths:
+      - "$CI_PROJECT_DIR/Tracking_Service_BS/*"
     expire_in: 2 weeks
     when: always
   tags:
