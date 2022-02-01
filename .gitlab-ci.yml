@@ -498,12 +498,12 @@ Tracking::ARMLinux::package:
 
     - cd $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/
     - tar -xzf ./Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_5.3.4.tar.gz
-    - chmod +x ./Build_ARM64_Linux_release/TrackingService/bin/libtrack_server
+    - chmod +x ./TrackingService/bin/libtrack_server
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
     - mv ./Initialisation_Scripts/bsext_init_tracking ./bsext_init
-    - ./make-extension-ubi ./Build_ARM64_Linux_release/TrackingService/bin/ Tracking_Service_BS
+    - ./make-extension-ubi ./TrackingService/bin/ Tracking_Service_BS
 
     - mkdir $CI_PROJECT_DIR/Tracking_Service_BS/
     - cp ./build-Tracking_Service_BS/*.tar.gz $CI_PROJECT_DIR/Tracking_Service_BS/
