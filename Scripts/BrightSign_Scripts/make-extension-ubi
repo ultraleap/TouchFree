@@ -6,9 +6,9 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-name=UL_$packagename
 srcdir=$1
 packagename=$2
+name="UL_$packagename"
 workdir=extension-temp-$componentname/
 builddir=build-$packagename/
 
