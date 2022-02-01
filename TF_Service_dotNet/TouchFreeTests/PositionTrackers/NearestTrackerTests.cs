@@ -31,14 +31,15 @@ namespace TouchFreeTests.PositionTrackers
                 new Leap.Bone() { NextJoint = firstJointPosition },
                 new Leap.Bone() { NextJoint = secondJointPosition }
             };
+            Vector3 expectedPositionM = new Vector3(1, 2, 2.99f);
 
             //When
             Vector3 position = sut.GetTrackedPosition(hand);
 
             //Then
-            Assert.AreEqual(1f, position.X);
-            Assert.AreEqual(2f, position.Y);
-            Assert.AreEqual(2.99f, position.Z);
+            Assert.AreEqual(expectedPositionM.X, position.X);
+            Assert.AreEqual(expectedPositionM.Y, position.Y);
+            Assert.AreEqual(expectedPositionM.Z, position.Z);
         }
     }
 }

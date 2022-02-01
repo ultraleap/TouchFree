@@ -29,14 +29,16 @@ namespace TouchFreeTests.PositionTrackers
             Leap.Hand hand = new Leap.Hand();
             hand.Fingers.Add(finger);
 
+            Vector3 expectedPositionM = new Vector3(1, 2, 3.0533f);
+            // Note there is an offset of 0.0533 for the Z position from the average
+
             //When
             Vector3 position = sut.GetTrackedPosition(hand);
 
             //Then
-            Assert.AreEqual(1f, position.X);
-            Assert.AreEqual(2f, position.Y);
-            Assert.AreEqual(3.0533f, position.Z);
-            // Note there is an offset of 0.0533 from the average
+            Assert.AreEqual(expectedPositionM.X, position.X);
+            Assert.AreEqual(expectedPositionM.Y, position.Y);
+            Assert.AreEqual(expectedPositionM.Z, position.Z);
         }
     }
 }
