@@ -478,7 +478,7 @@ TF_Service::dotNet::ARMLinux::package:
     - mkdir $CI_PROJECT_DIR/TF_Service_BS/
     - cp ./build-TF_Service_BS/*.tar.gz $CI_PROJECT_DIR/TF_Service_BS/
   artifacts:
-    name: "TouchFree_Service_Extension"
+    name: "TouchFree_Service_Extension_$CI_COMMIT_SHORT_SHA"
     paths:
       - "$CI_PROJECT_DIR/TF_Service_BS/*"
     expire_in: 2 weeks
@@ -508,7 +508,7 @@ Tracking::ARMLinux::package:
     - mkdir $CI_PROJECT_DIR/Tracking_Service_BS/
     - cp ./build-Tracking_Service_BS/*.tar.gz $CI_PROJECT_DIR/Tracking_Service_BS/
   artifacts:
-    name: "TouchFree_Service_Extension"
+    name: "Tracking_Service_Extension_$CI_COMMIT_SHORT_SHA"
     paths:
       - "$CI_PROJECT_DIR/Tracking_Service_BS/*"
     expire_in: 2 weeks
