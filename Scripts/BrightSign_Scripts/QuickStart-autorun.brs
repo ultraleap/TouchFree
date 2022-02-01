@@ -11,6 +11,9 @@ Sub Main()
 		url: url,
 		mouse_enabled: true,
 		storage_path: "/local/",
+		inspector_server: {
+			port:2999
+		}
 	}
 	
 	html = CreateObject("roHtmlWidget", rect, config)
