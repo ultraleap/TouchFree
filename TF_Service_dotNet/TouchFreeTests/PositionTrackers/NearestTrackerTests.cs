@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
+using Moq;
 using NUnit.Framework;
-using TouchFreeTests.TestImplementations;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
@@ -9,13 +9,12 @@ namespace TouchFreeTests.PositionTrackers
     internal class NearestTrackerTests
     {
         NearestTracker sut;
-        TestVirtualScreenManager virtualScreenManager = new TestVirtualScreenManager();
 
         public NearestTrackerTests()
         {
-            sut = new NearestTracker(virtualScreenManager);
-
-            virtualScreenManager.virtualScreen = new VirtualScreen(100, 100, 1, 0, new TestConfigManager());
+            var mockVirtualScreen = new Mock<IVirtualScreen>();
+            mockVirtualScreen.Setup(x => x.DistanceFromScreenPlane(It.IsAny<Vector3>())).Returns<Vector3>(worldPos => worldPos.Z);
+            sut = new NearestTracker(mockVirtualScreen.Object);
         }
 
         [Test]

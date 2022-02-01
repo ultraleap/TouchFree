@@ -1,5 +1,3 @@
-using System.Linq;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -72,9 +70,9 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
-        public static IServiceCollection AddVirtualScreenManager(this IServiceCollection services)
+        public static IServiceCollection AddVirtualScreen(this IServiceCollection services)
         {
-            services.AddSingleton<IVirtualScreenManager, VirtualScreenManager>();
+            services.AddSingleton<IVirtualScreen, VirtualScreen>();
             return services;
         }
 

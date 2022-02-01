@@ -12,7 +12,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private Positions positions;
 
-        private IVirtualScreenManager virtualScreenManager;
+        private IVirtualScreen virtualScreen;
 
         public IPositionStabiliser Stabiliser { get { return stabiliser; } }
         private readonly IPositionStabiliser stabiliser;
@@ -22,10 +22,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public IPositionTracker TrackerToUse { get; private set; }
         private readonly IPositionTracker defaultTracker;
 
-        public PositioningModule(IPositionStabiliser _stabiliser, IVirtualScreenManager _virtualScreenManager, IEnumerable<IPositionTracker> _positionTrackers)
+        public PositioningModule(IPositionStabiliser _stabiliser, IVirtualScreen _virtualScreen, IEnumerable<IPositionTracker> _positionTrackers)
         {
             stabiliser = _stabiliser;
-            virtualScreenManager = _virtualScreenManager;
+            virtualScreen = _virtualScreen;
             positionTrackers = _positionTrackers;
 
             defaultTracker = positionTrackers.Single(x => x.GetType() == typeof(IndexStableTracker));
@@ -48,13 +48,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
 
             Vector3 worldPos = TrackerToUse.GetTrackedPosition(hand);
-            Vector3 screenPos = virtualScreenManager.virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
-            Vector2 screenPosM = virtualScreenManager.virtualScreen.PixelsToMeters(new Vector2(screenPos.X, screenPos.Y));
+            Vector3 screenPos = virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
+            Vector2 screenPosM = virtualScreen.PixelsToMeters(new Vector2(screenPos.X, screenPos.Y));
             float distanceFromScreen = screenPos.Z;
 
             screenPosM = stabiliser.ApplyDeadzone(screenPosM);
 
-            Vector2 oneToOnePosition = virtualScreenManager.virtualScreen.MetersToPixels(screenPosM);
+            Vector2 oneToOnePosition = virtualScreen.MetersToPixels(screenPosM);
 
             // float distanceFromScreen (measured in meters)
             positions.DistanceFromScreen = distanceFromScreen;

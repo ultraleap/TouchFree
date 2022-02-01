@@ -13,12 +13,17 @@ namespace TouchFreeTests.PositionTrackers
             sut = new IndexTipTracker();
         }
 
-        [TestCase(1000, 2000, 3000, 1, 2, 3)]
-        [TestCase(500, 1000, 2000, 0.5f, 1, 2)]
-        public void CalculatePositions_ValidHandPosition_Returns2dVector(float fingerTipX, float fingerTipY, float fingerTipZ, float cursorX, float cursorY, float distanceFromScreen)
+        private static object[] positionsData = new object[]
+        {
+            new object[] { new Vector3(1000, 2000, 3000), new Vector2(1, 2), 3 },
+            new object[] { new Vector3(500, 1000, 2000), new Vector2(0.5f, 1), 2 }
+        };
+
+        [TestCaseSource(nameof(positionsData))]
+        public void CalculatePositions_ValidHandPosition_Returns2dVector(Vector3 wristPositionMm, Vector2 expectedCursorPositionPx, float distanceFromScreenM)
         {
             //Given
-            Leap.Vector fingerTipPosition = new Leap.Vector(fingerTipX, fingerTipY, fingerTipZ);
+            Leap.Vector fingerTipPosition = new Leap.Vector(wristPositionMm.X, wristPositionMm.Y, wristPositionMm.Z);
             Leap.Finger finger = new Leap.Finger(0, 0, 0, 1, fingerTipPosition, new Leap.Vector(), 1, 1, true, Leap.Finger.FingerType.TYPE_INDEX, new Leap.Bone(), new Leap.Bone(), new Leap.Bone(), new Leap.Bone());
             Leap.Hand hand = new Leap.Hand();
             hand.Fingers.Add(finger);
@@ -27,9 +32,9 @@ namespace TouchFreeTests.PositionTrackers
             Vector3 position = sut.GetTrackedPosition(hand);
 
             //Then
-            Assert.AreEqual(cursorX, position.X);
-            Assert.AreEqual(cursorY, position.Y);
-            Assert.AreEqual(distanceFromScreen, position.Z);
+            Assert.AreEqual(expectedCursorPositionPx.X, position.X);
+            Assert.AreEqual(expectedCursorPositionPx.Y, position.Y);
+            Assert.AreEqual(distanceFromScreenM, position.Z);
         }
     }
 }

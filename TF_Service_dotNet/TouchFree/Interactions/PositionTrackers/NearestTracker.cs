@@ -1,22 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using Leap;
 
 namespace Ultraleap.TouchFree.Library.Interactions.PositionTrackers
 {
     public class NearestTracker : IPositionTracker
     {
-        public NearestTracker(IVirtualScreenManager _virtualScreenManager)
+        public NearestTracker(IVirtualScreen _virtualScreen)
         {
-            virtualScreenManager = _virtualScreenManager;
+            virtualScreen = _virtualScreen;
         }
 
         public TrackedPosition TrackedPosition => TrackedPosition.NEAREST;
 
         Leap.Finger.FingerType lastUsedFingerType = Leap.Finger.FingerType.TYPE_UNKNOWN;
         Leap.Bone.BoneType lastUsedBoneType = Leap.Bone.BoneType.TYPE_INVALID;
-        private readonly IVirtualScreenManager virtualScreenManager;
+        private readonly IVirtualScreen virtualScreen;
 
         private const float NEAREST_BONE_BIAS = 0.01f;
 
@@ -39,7 +37,7 @@ namespace Ultraleap.TouchFree.Library.Interactions.PositionTrackers
                         {
                             Vector3 jointPos = Utilities.LeapVectorToNumerics(bone.NextJoint);
 
-                            nearestDistance = virtualScreenManager.virtualScreen.DistanceFromScreenPlane(jointPos) - NEAREST_BONE_BIAS; // add a bias to the previous finger tip position
+                            nearestDistance = virtualScreen.DistanceFromScreenPlane(jointPos) - NEAREST_BONE_BIAS; // add a bias to the previous finger tip position
 
                             nearestJointPos = jointPos;
                             fingerType = finger.Type;
@@ -57,7 +55,7 @@ namespace Ultraleap.TouchFree.Library.Interactions.PositionTrackers
                 foreach (var bone in finger.bones)
                 {
                     Vector3 jointPos = Utilities.LeapVectorToNumerics(bone.NextJoint);
-                    float screenDistance = virtualScreenManager.virtualScreen.DistanceFromScreenPlane(jointPos);
+                    float screenDistance = virtualScreen.DistanceFromScreenPlane(jointPos);
 
                     if (nearestDistance > screenDistance)
                     {

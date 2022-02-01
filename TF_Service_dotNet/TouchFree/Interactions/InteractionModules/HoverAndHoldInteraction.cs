@@ -33,9 +33,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public HoverAndHoldInteraction(
             HandManager _handManager,
-            IVirtualScreenManager _virtualScreenManager,
+            IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IPositioningModule _positioningModule) : base(_handManager, _virtualScreenManager, _configManager, _positioningModule, TrackedPosition.INDEX_STABLE)
+            IPositioningModule _positioningModule) : base(_handManager, _virtualScreen, _configManager, _positioningModule, TrackedPosition.INDEX_STABLE)
         {
             progressTimer = new ProgressTimer(600f);
         }

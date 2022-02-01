@@ -22,7 +22,7 @@ namespace Ultraleap.TouchFree.Service
 
             services.AddTrackingConnectionManager();
             services.AddHandManager();
-            services.AddVirtualScreenManager();
+            services.AddVirtualScreen();
 
             services.AddPositioning();
 

@@ -25,15 +25,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected IPositioningModule positioningModule;
 
         protected readonly HandManager handManager;
-        private readonly IVirtualScreenManager virtualScreenManager;
+        protected readonly IVirtualScreen virtualScreen;
         private readonly IConfigManager configManager;
 
-        protected VirtualScreen virtualScreen { get => virtualScreenManager.virtualScreen; }
-
-        public InteractionModule(HandManager _handManager, IVirtualScreenManager _virtualScreenManager, IConfigManager _configManager, IPositioningModule _positioningModule, TrackedPosition trackedPosition)
+        public InteractionModule(HandManager _handManager, IVirtualScreen _virtualScreen, IConfigManager _configManager, IPositioningModule _positioningModule, TrackedPosition trackedPosition)
         {
             handManager = _handManager;
-            virtualScreenManager = _virtualScreenManager;
+            virtualScreen = _virtualScreen;
             configManager = _configManager;
 
             positioningModule = _positioningModule;

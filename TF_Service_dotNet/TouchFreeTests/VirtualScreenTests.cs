@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
+using Moq;
 using NUnit.Framework;
-using TouchFreeTests.TestImplementations;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 
@@ -8,14 +8,29 @@ namespace TouchFreeTests
 {
     public class VirtualScreenTests
     {
+
+        private IConfigManager CreateMockedConfigManager(PhysicalConfig physicalConfig)
+        {
+            Mock<IConfigManager> mockConfigManager = new Mock<IConfigManager>();
+            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfig());
+            mockConfigManager.SetupGet(x => x.PhysicalConfig).Returns(physicalConfig);
+            return mockConfigManager.Object;
+        }
+
         [Test]
         public void Constructor_ValidInputs_ReturnsInstance()
         {
             //Given
-            IConfigManager configManager = new TestConfigManager();
+            IConfigManager configManager = CreateMockedConfigManager(new PhysicalConfig()
+            {
+                ScreenWidthPX = 1080, 
+                ScreenHeightPX = 1920,
+                ScreenHeightM = 0.4f,
+                ScreenRotationD = 0
+            });
 
             //When
-            VirtualScreen virtualScreen = new VirtualScreen(1080, 1920, 0.4f, 0, configManager);
+            VirtualScreen virtualScreen = new VirtualScreen(configManager);
 
             //Then
             Assert.AreEqual(1080, virtualScreen.Width_VirtualPx);
@@ -34,8 +49,16 @@ namespace TouchFreeTests
 
         private VirtualScreen CreateVirtualScreen(float angleInDegrees)
         {
-            IConfigManager configManager = new TestConfigManager();
-            return new VirtualScreen(ScreenWidthInPixels, ScreenHeightInPixels, ScreenHeightInMeters, angleInDegrees, configManager);
+            var physicalConfig = new PhysicalConfig()
+            {
+                ScreenWidthPX = ScreenWidthInPixels,
+                ScreenHeightPX = ScreenHeightInPixels,
+                ScreenHeightM = ScreenHeightInMeters,
+                ScreenRotationD = angleInDegrees
+            };
+            IConfigManager configManager = CreateMockedConfigManager(physicalConfig);
+
+            return new VirtualScreen(configManager);
         }
 
         [TestCase(480, 960, 0.1f, 0.2f)]

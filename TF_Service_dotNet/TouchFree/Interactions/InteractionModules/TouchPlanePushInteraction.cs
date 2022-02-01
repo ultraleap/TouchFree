@@ -29,9 +29,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public TouchPlanePushInteraction(
             HandManager _handManager,
-            IVirtualScreenManager _virtualScreenManager,
+            IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IPositioningModule _positioningModule) : base(_handManager, _virtualScreenManager, _configManager, _positioningModule, TrackedPosition.NEAREST)
+            IPositioningModule _positioningModule) : base(_handManager, _virtualScreen, _configManager, _positioningModule, TrackedPosition.NEAREST)
         {
         }
 

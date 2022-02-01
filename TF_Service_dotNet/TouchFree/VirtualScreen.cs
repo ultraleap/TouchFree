@@ -5,7 +5,7 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public class VirtualScreen
+    public class VirtualScreen : IVirtualScreen
     {
         public float Width_VirtualPx { get; private set; }
         public float Height_VirtualPx { get; private set; }
@@ -26,35 +26,26 @@ namespace Ultraleap.TouchFree.Library
         /// <param name="heightPhysicalMeters"></param>
         /// <param name="physicalScreenAngleDegrees">The angle or tilt of the physical screen in degrees, where 0 would be a vertical screen facing the user, and 90 would be a flat screen facing the ceiling.</param>
         /// <param name="configManager"></param>
-        public VirtualScreen(int widthPx, int heightPx, float heightPhysicalMeters, float physicalScreenAngleDegrees, IConfigManager configManager)
+        public VirtualScreen(IConfigManager configManager)
         {
-            UpdateVirtualScreenValues(widthPx, heightPx, heightPhysicalMeters, physicalScreenAngleDegrees);
+            PhysicalConfigUpdated(configManager.PhysicalConfig);
             configManager.OnPhysicalConfigUpdated += PhysicalConfigUpdated;
-        }
-
-        void UpdateVirtualScreenValues(int widthPx, int heightPx, float heightPhysicalMeters, float physicalScreenAngleDegrees)
-        {
-            Width_VirtualPx = widthPx;
-            Height_VirtualPx = heightPx;
-
-            Height_PhysicalMeters = heightPhysicalMeters;
-            // Calc screen physical width from the physical height and resolution ratio.
-            // May not be correct if screen resolution doesn't fill entire physical screen (e.g. 16:9 resolution on a physical 16:10 screen).
-            var aspectRatio = (float)widthPx / (float)heightPx;
-            Width_PhysicalMeters = heightPhysicalMeters * aspectRatio;
-
-            AngleOfPhysicalScreen_Degrees = physicalScreenAngleDegrees;
-            var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
-            ScreenPlane = new Plane(planeNormal, 0f);
         }
 
         void PhysicalConfigUpdated(PhysicalConfig _config)
         {
-            UpdateVirtualScreenValues(
-                _config.ScreenWidthPX,
-                _config.ScreenHeightPX,
-                _config.ScreenHeightM,
-                _config.ScreenRotationD);
+            Width_VirtualPx = _config.ScreenWidthPX;
+            Height_VirtualPx = _config.ScreenHeightPX;
+
+            Height_PhysicalMeters = _config.ScreenHeightM;
+            // Calc screen physical width from the physical height and resolution ratio.
+            // May not be correct if screen resolution doesn't fill entire physical screen (e.g. 16:9 resolution on a physical 16:10 screen).
+            var aspectRatio = (float)_config.ScreenWidthPX / (float)_config.ScreenHeightPX;
+            Width_PhysicalMeters = _config.ScreenHeightM * aspectRatio;
+
+            AngleOfPhysicalScreen_Degrees = _config.ScreenRotationD;
+            var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
+            ScreenPlane = new Plane(planeNormal, 0f);
         }
 
         public float DistanceFromScreenPlane(Vector3 worldPosition)
