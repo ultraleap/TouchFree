@@ -6,7 +6,7 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-name=UL_TouchFree_Service
+name=UL_$packagename
 srcdir=$1
 packagename=$2
 workdir=extension-temp-$componentname/
