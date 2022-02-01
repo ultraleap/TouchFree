@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PIDFILE=/var/run/haptic-server.pid
+PIDFILE=/var/run/TouchFree_Service.pid
 DAEMON="./TouchFree_Service"
 
 if [[ $1 == "start" ]]; then
