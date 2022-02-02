@@ -167,7 +167,7 @@ TF_Service::dotNet::ARMLinux::build:
   when: always
   script:
     - dotnet build -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
-    - dotnet build -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
+    - dotnet build -c Release -r linux-arm64 --self-contained false "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
     - if (Test-Path -Path "./Service_dotNet_Build") {
