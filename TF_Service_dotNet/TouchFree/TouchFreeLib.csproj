@@ -3,6 +3,9 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<Platforms>AnyCPU;ARM64</Platforms>
+		
+		<!--Adding the RuntimeIdentifier forces the build of the service to pass down the runtime-->
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
 
 	<ItemGroup>
