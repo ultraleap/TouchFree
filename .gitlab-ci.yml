@@ -484,8 +484,8 @@ TF_Service::dotNet::ARMLinux::package:
     - mkdir ./TouchFree_Extension
     - mkdir ./TouchFree_Extension/Tracking
     - mkdir ./TouchFree_Extension/TouchFree
-    - cp -R ./TrackingService/bin ./TouchFree_Extension/Tracking
-    - cp -R $CI_PROJECT_DIR/Service_dotNet_Build ./TouchFree_Extension/TouchFree
+    - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking
+    - cp -R $CI_PROJECT_DIR/Service_dotNet_Build/* ./TouchFree_Extension/TouchFree
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
