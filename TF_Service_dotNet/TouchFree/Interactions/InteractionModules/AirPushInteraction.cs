@@ -193,9 +193,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            float distFromStartPos = (_startPos - _currentPos).Length();
+            float distFromStartPosPx = (_startPos - _currentPos).Length();
 
-            return distFromStartPos > virtualScreen.MetersToPixels(dragStartDistanceThresholdM);
+            return distFromStartPosPx > virtualScreen.MetersToPixels(dragStartDistanceThresholdM);
         }
 
         private void AdjustDeadzoneSize(float _df)
