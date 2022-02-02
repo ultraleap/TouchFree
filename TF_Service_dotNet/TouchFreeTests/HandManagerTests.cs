@@ -30,7 +30,7 @@ namespace TouchFreeTests
         }
 
         [Test]
-        public void TopMountedOrientationDoesNotInvertXRotation()
+        public void UpdateTrackingTransform_TopMountedOrientation_XRotationNotInverted()
         {
             // Given
             HandManager handManger = new (null, null);
@@ -57,7 +57,7 @@ namespace TouchFreeTests
         }
 
         [Test]
-        public void BottomMountedOrientationInvertsXRotation()
+        public void UpdateTrackingTransform_BottomMountedOrientation_XRotationInverted()
         {
             // Given
             HandManager handManger = new (null, null);
@@ -81,6 +81,50 @@ namespace TouchFreeTests
                 W = handManger.TrackingTransform().rotation.w
             };
             Assert.AreEqual(bottomQuaternion, handManagerRotation);
+        }
+
+        [Test]
+        public void UpdateTrackingTransform_BottomMountedOrientation_UseLeapPositionRelative()
+        {
+            // Given
+            HandManager handManger = new(null, null);
+            System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
+            System.Numerics.Vector3 relativePosition = new(1, 2, 3);
+            System.Numerics.Vector3 positionTranslation = new(1000, 2000, -3000);
+
+            PhysicalConfig testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomM = relativePosition };
+
+            //When
+            handManger.UpdateTrackingTransform(testConfig);
+
+            //Then 
+            System.Numerics.Vector3 handManagerRelativePosition = new()
+            {
+                X = handManger.TrackingTransform().translation.x,
+                Y = handManger.TrackingTransform().translation.y,
+                Z = handManger.TrackingTransform().translation.z
+            };
+            Assert.AreEqual(positionTranslation, handManagerRelativePosition);
+        }
+
+        [Test]
+        public void UpdateTrackingTransform_BottomMountedOrientationScreenIsRotated_UseLeapPositionRelativeWithScreenRotation()
+        {
+            // Given
+            HandManager handManger = new(null, null);
+            System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
+            System.Numerics.Vector3 relativePosition = new(1, 1, 1);
+            System.Numerics.Vector3 positionTranslation = new(1000, 1158.46f, -811.16f);
+
+            PhysicalConfig testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomM = relativePosition, ScreenRotationD = 10 };
+
+            //When
+            handManger.UpdateTrackingTransform(testConfig);
+
+            //Then
+            Assert.AreEqual(positionTranslation.X, handManger.TrackingTransform().translation.x, 0.01);
+            Assert.AreEqual(positionTranslation.Y, handManger.TrackingTransform().translation.y, 0.01);
+            Assert.AreEqual(positionTranslation.Z, handManger.TrackingTransform().translation.z, 0.01);
         }
 
     }

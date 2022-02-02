@@ -44,13 +44,12 @@ namespace TouchFreeTests
             Vector3 worldPosition = new Vector3(1, 2, 3);
             Vector3 screenPosition = new Vector3(4, 5, 6);
             Vector2 screenPositionM = new Vector2(7, 8);
-            Vector3 planeHitPosition;
 
             SetTrackerPosition(TrackedPosition.INDEX_TIP, worldPosition);
 
             PositioningModule positioningModule = CreatePositioningModule(new[] { mockTracker.Object });
 
-            mockVirtualScreen.Setup(x => x.WorldPositionToVirtualScreen(worldPosition, out planeHitPosition)).Returns(screenPosition);
+            mockVirtualScreen.Setup(x => x.WorldPositionToVirtualScreen(worldPosition)).Returns(screenPosition);
             mockVirtualScreen.Setup(x => x.PixelsToMeters(It.Is<Vector2>(v => v.X == screenPosition.X && v.Y == screenPosition.Y))).Returns(screenPositionM);
             mockVirtualScreen.Setup(x => x.MetersToPixels(screenPositionM)).Returns(new Vector2(screenPosition.X, screenPosition.Y));
 
@@ -73,13 +72,12 @@ namespace TouchFreeTests
             Vector3 worldPosition = new Vector3(1, 2, 3);
             Vector3 screenPosition = new Vector3(4, 5, 6);
             Vector2 screenPositionM = new Vector2(7, 8);
-            Vector3 planeHitPosition;
 
             SetTrackerPosition(TrackedPosition.INDEX_TIP, worldPosition);
 
             PositioningModule positioningModule = CreatePositioningModule(new[] { mockTracker.Object });
 
-            mockVirtualScreen.Setup(x => x.WorldPositionToVirtualScreen(worldPosition, out planeHitPosition)).Returns(screenPosition);
+            mockVirtualScreen.Setup(x => x.WorldPositionToVirtualScreen(worldPosition)).Returns(screenPosition);
             mockVirtualScreen.Setup(x => x.PixelsToMeters(It.Is<Vector2>(v => v.X == screenPosition.X && v.Y == screenPosition.Y))).Returns(screenPositionM);
             mockVirtualScreen.Setup(x => x.MetersToPixels(screenPositionM)).Returns(new Vector2(screenPosition.X, screenPosition.Y));
 

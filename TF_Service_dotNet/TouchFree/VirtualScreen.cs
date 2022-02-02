@@ -15,13 +15,6 @@ namespace Ultraleap.TouchFree.Library
         public float MetersToPixelsConversion { get; private set; }
 
         /// <summary>
-        /// The angle or tilt of the physical screen in degrees, where 0 would be a vertical screen facing the user, and 90 would be a flat screen facing the ceiling.
-        /// </summary>
-        public float AngleOfPhysicalScreen_Degrees { get; private set; }
-
-        public Plane ScreenPlane { get; private set; }
-
-        /// <summary>
         ///
         /// </summary>
         /// <param name="widthPx"></param>
@@ -47,15 +40,11 @@ namespace Ultraleap.TouchFree.Library
             Width_PhysicalMeters = _config.ScreenHeightM * aspectRatio;
 
             MetersToPixelsConversion = Height_VirtualPx / Height_PhysicalMeters;
-
-            AngleOfPhysicalScreen_Degrees = _config.ScreenRotationD;
-            var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
-            ScreenPlane = new Plane(planeNormal, 0f);
         }
 
         public float DistanceFromScreenPlane(Vector3 worldPosition)
         {
-            return Vector3.Dot(worldPosition, ScreenPlane.Normal);
+            return worldPosition.Z;
         }
 
         /// <summary>
@@ -69,21 +58,13 @@ namespace Ultraleap.TouchFree.Library
         /// <param name="planeHitWorldPosition">Out param to provide computed world space plane hit point.</param>
         /// <param name="isRaycastParallelToScreenNormal">Whether the raycast direction is parallel to the screen normal, or parallel to the ground (straight forwards).</param>
         /// <returns>Vector3 whose X and Y are screen pixels, and Z is the physical distance from the virtual touch plane in meters.</returns>
-        public Vector3 WorldPositionToVirtualScreen(Vector3 worldPosition, out Vector3 planeHitWorldPosition)
+        public Vector3 WorldPositionToVirtualScreen(Vector3 worldPosition)
         {
-            var distanceFromPlane = DistanceFromScreenPlane(worldPosition);
-            planeHitWorldPosition = worldPosition - (ScreenPlane.Normal * distanceFromPlane);
-
-            // If the screen is rotated, this effectively scales down or "projects" the rotated screen vector back onto the UP axis, giving us the new UP axis height of the screen.
-            float screenHeight = Height_PhysicalMeters * (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees));
-
             Vector3 screenPos = Vector3.Zero;
-            float tX = ((Width_PhysicalMeters / 2.0f) + planeHitWorldPosition.X) / Width_PhysicalMeters; // World X = 0 is middle of screen, so shift everything over by half width (w/2).
-            float tY = planeHitWorldPosition.Y / screenHeight; // World Y = 0 is bottom of the screen, so this is linear.
 
-            screenPos.X = Width_VirtualPx * tX;
-            screenPos.Y = Height_VirtualPx * tY;
-            screenPos.Z = distanceFromPlane;
+            screenPos.X = (worldPosition.X + (Width_PhysicalMeters / 2.0f)) * MetersToPixelsConversion; // World X = 0 is middle of screen, so shift everything over by half width (w/2).
+            screenPos.Y = worldPosition.Y * MetersToPixelsConversion; // World Y = 0 is bottom of the screen, so this is linear.
+            screenPos.Z = DistanceFromScreenPlane(worldPosition);
 
             return screenPos;
         }
@@ -92,14 +73,8 @@ namespace Ultraleap.TouchFree.Library
         {
             Vector3 worldPos = Vector3.Zero;
 
-            float tX = screenPos.X / Width_VirtualPx;
-            float tY = screenPos.Y / Height_VirtualPx;
-
-            // If the screen is rotated, this effectively scales down or "projects" the rotated screen vector back onto the UP axis, giving us the new UP axis height of the screen.
-            float screenHeight = Height_PhysicalMeters * (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees));
-
-            worldPos.X = (Width_PhysicalMeters * tX) - (Width_PhysicalMeters / 2.0f);
-            worldPos.Y = screenHeight * tY;
+            worldPos.X = (screenPos.X / MetersToPixelsConversion) - (Width_PhysicalMeters / 2.0f);
+            worldPos.Y = (screenPos.Y / MetersToPixelsConversion);
             worldPos.Z = distanceFromVirtualScreen;
 
             return worldPos;

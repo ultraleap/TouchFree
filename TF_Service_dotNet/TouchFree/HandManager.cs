@@ -99,12 +99,18 @@ namespace Ultraleap.TouchFree.Library
             float xAngleDegree = isTopMounted ? _config.LeapRotationD.X : -_config.LeapRotationD.X;
 
             System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(VirtualScreen.DegreesToRadians(_config.LeapRotationD.Y),
-                VirtualScreen.DegreesToRadians(xAngleDegree),
+                VirtualScreen.DegreesToRadians(xAngleDegree + _config.ScreenRotationD),
                 VirtualScreen.DegreesToRadians(_config.LeapRotationD.Z));
 
-            trackingTransform = new LeapTransform(new Vector(_config.LeapPositionRelativeToScreenBottomM.X,
-                _config.LeapPositionRelativeToScreenBottomM.Y,
-                -_config.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
+            var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomM.Y, -_config.LeapPositionRelativeToScreenBottomM.Z).Magnitude;
+            var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomM.Z / _config.LeapPositionRelativeToScreenBottomM.Y);
+            var angleWithScreenRotation = VirtualScreen.DegreesToRadians(_config.ScreenRotationD) + angle;
+
+            var translatedUsingScreenPosition = new Vector(_config.LeapPositionRelativeToScreenBottomM.X,
+                (float)(distanceFromScreenBottom * Math.Cos(angleWithScreenRotation)),
+                (float)(distanceFromScreenBottom * Math.Sin(angleWithScreenRotation)));
+
+            trackingTransform = new LeapTransform(translatedUsingScreenPosition * 1000, new
                 LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
         }
 

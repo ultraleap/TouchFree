@@ -52,7 +52,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private float appliedForce = 0f;
         private bool pressing = false;
 
-        private bool dragDeadzoneShrinkTriggered = false;
         private bool isDragging = false;
 
         private const float RADTODEG = (float)(180.0 / Math.PI);
