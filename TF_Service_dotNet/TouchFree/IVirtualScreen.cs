@@ -9,5 +9,6 @@ namespace Ultraleap.TouchFree.Library
         float DistanceFromScreenPlane(Vector3 worldPosition);
         Vector2 MetersToPixels(Vector2 position);
         Vector2 PixelsToMeters(Vector2 position);
+        float MetersToPixels(float distanceM);
     }
 }

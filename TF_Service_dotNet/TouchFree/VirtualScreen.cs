@@ -128,6 +128,17 @@ namespace Ultraleap.TouchFree.Library
             return positionInPixels;
         }
 
+        // Perform a unit conversion from meters to pixels
+        //
+        // Do not rotate or offset the axes
+        //
+        // This does not give the "worldPosition", but can be used to calculate distances in metres
+        // instead of pixels.
+        public float MetersToPixels(float distanceM)
+        {
+            return distanceM * Height_VirtualPx / Height_PhysicalMeters;
+        }
+
         [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         public static extern int GetSystemMetrics(int nIndex);
 

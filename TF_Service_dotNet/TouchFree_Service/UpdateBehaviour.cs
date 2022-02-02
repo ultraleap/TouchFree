@@ -1,8 +1,9 @@
-﻿using System.Timers;
+﻿using System;
+using System.Timers;
 
 namespace Ultraleap.TouchFree.Service
 {
-    public class UpdateBehaviour
+    public class UpdateBehaviour : IDisposable
     {
         public delegate void UpdateEvent();
         public event UpdateEvent OnUpdate;
@@ -31,6 +32,11 @@ namespace Ultraleap.TouchFree.Service
         public Timer UpdateTimer()
         {
             return updateLoop;
+        }
+
+        public void Dispose()
+        {
+            updateLoop?.Dispose();
         }
     }
 }
