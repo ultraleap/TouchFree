@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
+using Moq;
 using NUnit.Framework;
-using TouchFreeTests.TestImplementations;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 
@@ -8,14 +8,29 @@ namespace TouchFreeTests
 {
     public class VirtualScreenTests
     {
+
+        private IConfigManager CreateMockedConfigManager(PhysicalConfig physicalConfig)
+        {
+            Mock<IConfigManager> mockConfigManager = new Mock<IConfigManager>();
+            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfig());
+            mockConfigManager.SetupGet(x => x.PhysicalConfig).Returns(physicalConfig);
+            return mockConfigManager.Object;
+        }
+
         [Test]
         public void Constructor_ValidInputs_ReturnsInstance()
         {
             //Given
-            IConfigManager configManager = new TestConfigManager();
+            IConfigManager configManager = CreateMockedConfigManager(new PhysicalConfig()
+            {
+                ScreenWidthPX = 1080, 
+                ScreenHeightPX = 1920,
+                ScreenHeightM = 0.4f,
+                ScreenRotationD = 0
+            });
 
             //When
-            VirtualScreen virtualScreen = new VirtualScreen(1080, 1920, 0.4f, 0, configManager);
+            VirtualScreen virtualScreen = new VirtualScreen(configManager);
 
             //Then
             Assert.AreEqual(1080, virtualScreen.Width_VirtualPx);
@@ -23,9 +38,9 @@ namespace TouchFreeTests
             Assert.AreEqual(0.4f, virtualScreen.Height_PhysicalMeters);
             Assert.AreEqual(0.225f, virtualScreen.Width_PhysicalMeters, 0.001);
             Assert.AreEqual(0, virtualScreen.AngleOfPhysicalScreen_Degrees);
-            Assert.AreEqual(0, virtualScreen.PhysicalScreenPlane.Normal.X);
-            Assert.AreEqual(0, virtualScreen.PhysicalScreenPlane.Normal.Y);
-            Assert.AreEqual(1, virtualScreen.PhysicalScreenPlane.Normal.Z);
+            Assert.AreEqual(0, virtualScreen.ScreenPlane.Normal.X);
+            Assert.AreEqual(0, virtualScreen.ScreenPlane.Normal.Y);
+            Assert.AreEqual(1, virtualScreen.ScreenPlane.Normal.Z);
         }
 
         private int ScreenWidthInPixels = 1080;
@@ -34,59 +49,79 @@ namespace TouchFreeTests
 
         private VirtualScreen CreateVirtualScreen(float angleInDegrees)
         {
-            IConfigManager configManager = new TestConfigManager();
-            return new VirtualScreen(ScreenWidthInPixels, ScreenHeightInPixels, ScreenHeightInMeters, angleInDegrees, configManager);
+            var physicalConfig = new PhysicalConfig()
+            {
+                ScreenWidthPX = ScreenWidthInPixels,
+                ScreenHeightPX = ScreenHeightInPixels,
+                ScreenHeightM = ScreenHeightInMeters,
+                ScreenRotationD = angleInDegrees
+            };
+            IConfigManager configManager = CreateMockedConfigManager(physicalConfig);
+
+            return new VirtualScreen(configManager);
         }
 
-        [TestCase(480, 960, 0.1f, 0.2f)]
-        [TestCase(0, 540, 0f, 0.1125f)]
-        public void PixelsToMeters_ConvertsPixelPositionToMeters(int pixelX, int pixelY, float metersX, float metersY)
+        private static object[] pixelsToMetersCases = new object[]
+        {
+            new[] { new Vector2 (480, 960), new Vector2 (0.1f, 0.2f) },
+            new[] { new Vector2 (0, 540), new Vector2 (0f, 0.1125f) }
+        };
+
+        [TestCaseSource(nameof(pixelsToMetersCases))]
+        public void PixelsToMeters_ConvertsPixelPositionToMeters(Vector2 positionPx, Vector2 expectedPositionM)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen(0);
-            Vector2 pixelPosition = new Vector2(pixelX, pixelY);
 
             //When
-            Vector2 meterPosition = virtualScreen.PixelsToMeters(pixelPosition);
+            Vector2 meterPosition = virtualScreen.PixelsToMeters(positionPx);
 
             //Then
-            Assert.AreEqual(metersX, meterPosition.X, 0.0001);
-            Assert.AreEqual(metersY, meterPosition.Y, 0.0001);
+            Assert.AreEqual(expectedPositionM.X, meterPosition.X, 0.0001);
+            Assert.AreEqual(expectedPositionM.Y, meterPosition.Y, 0.0001);
         }
 
-        [TestCase(0.1f, 0.2f, 480, 960)]
-        [TestCase(0f, 0.1125f, 0, 540)]
-        public void MetersToPixels_ConvertsMeterPositionToPixels(float metersX, float metersY, int pixelX, int pixelY)
+        private static object[] metersToPixelsCases = new object[]
+        {
+            new[] { new Vector2 (0.1f, 0.2f), new Vector2 (480, 960) },
+            new[] { new Vector2(0f, 0.1125f), new Vector2 (0, 540) }
+        };
+
+        [TestCaseSource(nameof(metersToPixelsCases))]
+        public void MetersToPixels_ConvertsMeterPositionToPixels(Vector2 positionM, Vector2 expectedPositionPx)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen(0);
-            Vector2 meterPosition = new Vector2(metersX, metersY);
 
             //When
-            Vector2 pixelPosition = virtualScreen.MetersToPixels(meterPosition);
+            Vector2 pixelPosition = virtualScreen.MetersToPixels(positionM);
 
             //Then
-            Assert.AreEqual(pixelX, pixelPosition.X, 0.0001);
-            Assert.AreEqual(pixelY, pixelPosition.Y, 0.0001);
+            Assert.AreEqual(expectedPositionPx.X, pixelPosition.X, 0.0001);
+            Assert.AreEqual(expectedPositionPx.Y, pixelPosition.Y, 0.0001);
         }
 
-        [TestCase(1, 0, -1, 0, 1)]
-        [TestCase(1, 1, -1, 0, 1)]
-        [TestCase(0, 1, -1, 0, 1)]
-        [TestCase(1, 0, -1, 45, 0.707f)]
-        [TestCase(1, 1, -1, 45, 1.414f)]
-        [TestCase(0, 1, -1, 45, 1.414f)]
-        public void DistanceFromScreenPlane_IsPositiveDistanceFromScreenPlane_ReturnsDistance(float x, float y, float z, float screenAngle, float expectedDistance)
+        private static object[] distanceFromScreenPlaneCases = new object[]
+        {
+            new object[] { new Vector3(1, 0, 1), 0, 1 },
+            new object[] { new Vector3(1, 1, 1), 0, 1 },
+            new object[] { new Vector3(0, 1, 1), 0, 1 },
+            new object[] { new Vector3(1, 0, 1), 45, 0.707f },
+            new object[] { new Vector3(1, 1, 1), 45, 1.414f },
+            new object[] { new Vector3(0, 1, 1), 45, 1.414f }
+        };
+
+        [TestCaseSource(nameof(distanceFromScreenPlaneCases))]
+        public void DistanceFromScreenPlane_IsPositiveDistanceFromScreenPlane_ReturnsDistance(Vector3 worldPositionM, float screenAngle, float expectedDistanceM)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen(screenAngle);
-            Vector3 worldPosition = new Vector3(x, y, z);
 
             //When
-            var distance = virtualScreen.DistanceFromScreenPlane(worldPosition);
+            var distance = virtualScreen.DistanceFromScreenPlane(worldPositionM);
 
             //Then
-            Assert.AreEqual(expectedDistance, distance, 0.001);
+            Assert.AreEqual(expectedDistanceM, distance, 0.001);
         }
 
         [Test]
@@ -94,7 +129,7 @@ namespace TouchFreeTests
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen(angleInDegrees: 0);
-            Vector3 worldPosition = new Vector3(0, 0, -1);
+            Vector3 worldPosition = new Vector3(0, 0, 1);
 
             //When
             var screenPosition = virtualScreen.WorldPositionToVirtualScreen(worldPosition, out var planeHitWorldPosition);
@@ -105,40 +140,48 @@ namespace TouchFreeTests
             Assert.AreEqual(1, screenPosition.Z);
         }
 
-        [TestCase(0.1f, 0, -1, 1020, 0, 1)]
-        [TestCase(-0.1f, 0.1f, -1, 60, 480, 1)]
-        [TestCase(0, 0.15f, -2, 540, 720, 2)]
-        public void WorldPositionToVirtualScreen_UnangledScreen_ReturnsMappedPosition(float x, float y, float z, float expectedX, float expectedY, float expectedZ)
+        private static object[] worldPositionToVirtualScreenUnangledScreenCases = new object[]
+        {
+            new object[] { new Vector3(0.1f, 0, 1), new Vector3(1020, 0, 1) },
+            new object[] { new Vector3(-0.1f, 0.1f, 1), new Vector3(60, 480, 1) },
+            new object[] { new Vector3(0, 0.15f, 2), new Vector3(540, 720, 2) },
+        };
+
+        [TestCaseSource(nameof(worldPositionToVirtualScreenUnangledScreenCases))]
+        public void WorldPositionToVirtualScreen_UnangledScreen_ReturnsMappedPosition(Vector3 worldPositionM, Vector3 expectedScreenPosition)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen(angleInDegrees: 0);
-            Vector3 worldPosition = new Vector3(x, y, z);
 
             //When
-            var screenPosition = virtualScreen.WorldPositionToVirtualScreen(worldPosition, out var planeHitWorldPosition);
+            var screenPosition = virtualScreen.WorldPositionToVirtualScreen(worldPositionM, out _);
 
             //Then
-            Assert.AreEqual(expectedX, screenPosition.X, 0.001);
-            Assert.AreEqual(expectedY, screenPosition.Y, 0.001);
-            Assert.AreEqual(expectedZ, screenPosition.Z, 0.001);
+            Assert.AreEqual(expectedScreenPosition.X, screenPosition.X, 0.001);
+            Assert.AreEqual(expectedScreenPosition.Y, screenPosition.Y, 0.001);
+            Assert.AreEqual(expectedScreenPosition.Z, screenPosition.Z, 0.001);
         }
 
-        [TestCase(0.1f, 0, 0, 1020, 0, 0)]
-        [TestCase(0, 0.1f, 0, 540, 415.692f, 0.05f)]
-        [TestCase(0, 0.1f, -0.05f, 540, 295.692f, 0.093f)]
-        public void WorldPositionToVirtualScreen_AngledScreen_ReturnsMappedPosition(float x, float y, float z, float expectedX, float expectedY, float expectedZ)
+        private static object[] worldPositionToVirtualScreenAngledScreenCases = new object[]
+        {
+            new object[] { new Vector3(0.1f, 0, 0), new Vector3(1020, 0, 0) },
+            new object[] { new Vector3(0, 0.1f, 0), new Vector3(540, 415.692f, 0.05f) },
+            new object[] { new Vector3(0, 0.1f, 0.05f), new Vector3(540, 295.692f, 0.093f) },
+        };
+
+        [TestCaseSource(nameof(worldPositionToVirtualScreenAngledScreenCases))]
+        public void WorldPositionToVirtualScreen_AngledScreen_ReturnsMappedPosition(Vector3 worldPositionM, Vector3 expectedScreenPosition)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen(angleInDegrees: 30);
-            Vector3 worldPosition = new Vector3(x, y, z);
 
             //When
-            var screenPosition = virtualScreen.WorldPositionToVirtualScreen(worldPosition, out var planeHitWorldPosition);
+            var screenPosition = virtualScreen.WorldPositionToVirtualScreen(worldPositionM, out _);
 
             //Then
-            Assert.AreEqual(expectedX, screenPosition.X, 0.001);
-            Assert.AreEqual(expectedY, screenPosition.Y, 0.001);
-            Assert.AreEqual(expectedZ, screenPosition.Z, 0.001);
+            Assert.AreEqual(expectedScreenPosition.X, screenPosition.X, 0.001);
+            Assert.AreEqual(expectedScreenPosition.Y, screenPosition.Y, 0.001);
+            Assert.AreEqual(expectedScreenPosition.Z, screenPosition.Z, 0.001);
         }
     }
 }
