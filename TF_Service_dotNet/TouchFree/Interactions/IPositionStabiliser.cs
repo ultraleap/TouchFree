@@ -9,8 +9,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
         void StartShrinkingDeadzone(float speed);
         void StopShrinkingDeadzone();
         Vector2 ApplyDeadzoneSized(Vector2 previous, Vector2 current, float radius);
-        void SetDeadzoneOffset();
-        void ReduceDeadzoneOffset();
 
         float defaultDeadzoneRadius { get; set; }
         float currentDeadzoneRadius { get; set; }
