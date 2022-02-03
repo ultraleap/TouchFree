@@ -482,9 +482,10 @@ TF_Service::dotNet::ARMLinux::package:
 
     # Combine services into one directory
     - mkdir ./TouchFree_Extension
-    - mkdir ./TouchFree_Extension/Tracking
     - mkdir ./TouchFree_Extension/TouchFree
-    - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking
+    - mkdir ./TouchFree_Extension/Tracking
+    - mkdir ./TouchFree_Extension/Tracking/bin
+    - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build/* ./TouchFree_Extension/TouchFree
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
