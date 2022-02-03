@@ -25,7 +25,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public void SetDeadzoneOffset()
         {
-            deadzoneOffset = previousPositionDeadzoneCurrentSize - lastRawPos;
+            if (defaultDeadzoneRadius > 0)
+            {
+                deadzoneOffset = previousPositionDeadzoneCurrentSize - lastRawPos;
+            }
         }
 
         public void ReduceDeadzoneOffset()
