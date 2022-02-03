@@ -102,16 +102,30 @@ namespace Ultraleap.TouchFree.Library
                 VirtualScreen.DegreesToRadians(xAngleDegree + _config.ScreenRotationD),
                 VirtualScreen.DegreesToRadians(_config.LeapRotationD.Z));
 
-            var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomM.Y, -_config.LeapPositionRelativeToScreenBottomM.Z).Magnitude;
-            var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomM.Z / _config.LeapPositionRelativeToScreenBottomM.Y);
-            var angleWithScreenRotation = VirtualScreen.DegreesToRadians(_config.ScreenRotationD) + angle;
+            if (_config.ScreenRotationD != 0)
+            {
+                var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomM.Y, _config.LeapPositionRelativeToScreenBottomM.Z).Magnitude;
+                var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomM.Z / _config.LeapPositionRelativeToScreenBottomM.Y);
+                var angleWithScreenRotation = VirtualScreen.DegreesToRadians(_config.ScreenRotationD) + angle;
 
-            var translatedUsingScreenPosition = new Vector(_config.LeapPositionRelativeToScreenBottomM.X,
-                (float)(distanceFromScreenBottom * Math.Cos(angleWithScreenRotation)),
-                (float)(distanceFromScreenBottom * Math.Sin(angleWithScreenRotation)));
+                var translatedYPosition = (float)(distanceFromScreenBottom * Math.Cos(angleWithScreenRotation));
+                if (_config.LeapPositionRelativeToScreenBottomM.Z < 0 && _config.LeapPositionRelativeToScreenBottomM.Y < 0) {
+                    translatedYPosition = -translatedYPosition;
+                }
 
-            trackingTransform = new LeapTransform(translatedUsingScreenPosition * 1000, new
-                LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
+                var translatedUsingScreenPosition = new Vector(_config.LeapPositionRelativeToScreenBottomM.X, translatedYPosition,
+                    (float)(distanceFromScreenBottom * Math.Sin(angleWithScreenRotation)));
+
+                trackingTransform = new LeapTransform(translatedUsingScreenPosition * 1000, new
+                    LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
+            }
+            else
+            {
+                trackingTransform = new LeapTransform(new Vector(_config.LeapPositionRelativeToScreenBottomM.X,
+                    _config.LeapPositionRelativeToScreenBottomM.Y,
+                    -_config.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
+                    LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
+            }
         }
 
         public void Update(object sender, FrameEventArgs e)
