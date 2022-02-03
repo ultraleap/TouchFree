@@ -6,7 +6,7 @@ TRK_PIDFILE=/var/run/Ultraleap_Tracking_Service.pid
 TRK_DAEMON="./Tracking/bin/libtrack_server"
 
 if [[ $1 == "start" ]]; then
-    export LD_LIBRARY_PATH=./Tracking
+    export LD_LIBRARY_PATH=./Tracking/bin/
     start-stop-daemon --start \
         --pidfile $TRK_PIDFILE --make-pidfile \
         --background --exec $TRK_DAEMON
