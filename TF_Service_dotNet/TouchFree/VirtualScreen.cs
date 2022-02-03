@@ -42,11 +42,6 @@ namespace Ultraleap.TouchFree.Library
             MetersToPixelsConversion = Height_VirtualPx / Height_PhysicalMeters;
         }
 
-        public float DistanceFromScreenPlane(Vector3 worldPosition)
-        {
-            return worldPosition.Z;
-        }
-
         /// <summary>
         /// Return value is a screen position whose origin (0,0) is in bottom left corner.
         /// X-axis is positive right.
@@ -55,8 +50,6 @@ namespace Ultraleap.TouchFree.Library
         /// This is the distance from the virtual screen where positive is further away from it and negative is when through or inside the virtual screen.
         /// </summary>
         /// <param name="worldPosition">Input world position to convert to a screen point + distance.</param>
-        /// <param name="planeHitWorldPosition">Out param to provide computed world space plane hit point.</param>
-        /// <param name="isRaycastParallelToScreenNormal">Whether the raycast direction is parallel to the screen normal, or parallel to the ground (straight forwards).</param>
         /// <returns>Vector3 whose X and Y are screen pixels, and Z is the physical distance from the virtual touch plane in meters.</returns>
         public Vector3 WorldPositionToVirtualScreen(Vector3 worldPosition)
         {
@@ -64,7 +57,7 @@ namespace Ultraleap.TouchFree.Library
 
             screenPos.X = (worldPosition.X + (Width_PhysicalMeters / 2.0f)) * MetersToPixelsConversion; // World X = 0 is middle of screen, so shift everything over by half width (w/2).
             screenPos.Y = worldPosition.Y * MetersToPixelsConversion; // World Y = 0 is bottom of the screen, so this is linear.
-            screenPos.Z = DistanceFromScreenPlane(worldPosition);
+            screenPos.Z = worldPosition.Z;
 
             return screenPos;
         }

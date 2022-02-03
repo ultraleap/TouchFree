@@ -111,7 +111,7 @@ namespace TouchFreeTests
             PositioningModule positioningModule = CreatePositioningModule(new IPositionTracker[] {
                     new IndexTipTracker(),
                     new IndexStableTracker(),
-                    new NearestTracker(mockVirtualScreen.Object),
+                    new NearestTracker(),
                     new WristTracker()
                 });
 

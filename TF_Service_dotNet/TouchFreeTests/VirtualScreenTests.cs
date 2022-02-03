@@ -110,26 +110,6 @@ namespace TouchFreeTests
             Assert.AreEqual(expectedPositionPx, pixelPosition, 0.0001);
         }
 
-        private static object[] distanceFromScreenPlaneCases = new object[]
-        {
-            new object[] { new Vector3(1, 0, 1), 1 },
-            new object[] { new Vector3(1, 1, 1), 1 },
-            new object[] { new Vector3(0, 1, 1), 1 }
-        };
-
-        [TestCaseSource(nameof(distanceFromScreenPlaneCases))]
-        public void DistanceFromScreenPlane_IsPositiveDistanceFromScreenPlane_ReturnsDistance(Vector3 worldPositionM, float expectedDistanceM)
-        {
-            //Given
-            VirtualScreen virtualScreen = CreateVirtualScreen();
-
-            //When
-            var distance = virtualScreen.DistanceFromScreenPlane(worldPositionM);
-
-            //Then
-            Assert.AreEqual(expectedDistanceM, distance, 0.001);
-        }
-
         [Test]
         public void WorldPositionToVirtualScreen_ZeroedCoordinates_ReturnsCenterBottomOfScreen()
         {

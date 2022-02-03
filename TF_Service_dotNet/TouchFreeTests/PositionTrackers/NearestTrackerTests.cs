@@ -12,9 +12,7 @@ namespace TouchFreeTests.PositionTrackers
 
         public NearestTrackerTests()
         {
-            var mockVirtualScreen = new Mock<IVirtualScreen>();
-            mockVirtualScreen.Setup(x => x.DistanceFromScreenPlane(It.IsAny<Vector3>())).Returns<Vector3>(worldPos => worldPos.Z);
-            sut = new NearestTracker(mockVirtualScreen.Object);
+            sut = new NearestTracker();
         }
 
         [Test]
