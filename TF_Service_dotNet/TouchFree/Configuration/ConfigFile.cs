@@ -66,10 +66,26 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
 
             string data = File.ReadAllText(_ConfigFilePath);
-            TData config = JsonConvert.DeserializeObject<TData>(data);
+            TData config = DeserialiseRawText(data);
             _OnConfigFileUpdated?.Invoke();
 
             return config;
+        }
+
+        protected TData DeserialiseRawText(string rawText)
+        {
+            TData config = JsonConvert.DeserializeObject<TData>(rawText, new JsonSerializerSettings()
+            {
+                Error = HandleDeserialisationError
+            });
+            return config;
+        }
+
+        private void HandleDeserialisationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
+        {
+            var currentError = errorArgs.ErrorContext.Error.Message;
+            errorArgs.ErrorContext.Handled = false;
+            //TODO: Handle Errors, set "Handled" to true when the errors are handled
         }
 
         private bool DoesConfigFileExist()
