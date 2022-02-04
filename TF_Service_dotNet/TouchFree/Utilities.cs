@@ -1,7 +1,17 @@
+using System;
+
 namespace Ultraleap.TouchFree.Library
 {
     public static class Utilities
     {
+        public const float RADTODEG = (float)(180f / Math.PI);
+        public const float DEGTORAD = (float)(Math.PI / 180f);
+
+        public static float DegreesToRadians(float angle)
+        {
+            return Utilities.DEGTORAD * angle;
+        }
+
         internal static BitmaskFlags GetInteractionFlags(
             InteractionType _interactionType,
             HandType _handType,

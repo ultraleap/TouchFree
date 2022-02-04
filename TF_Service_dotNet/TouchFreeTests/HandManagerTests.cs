@@ -36,9 +36,9 @@ namespace TouchFreeTests
             HandManager handManger = new (null, null);
             System.Numerics.Vector3 topDownRotation = new (45, 0, 180);
             System.Numerics.Quaternion topDownQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
-                VirtualScreen.DegreesToRadians(topDownRotation.Y), 
-                VirtualScreen.DegreesToRadians(topDownRotation.X),
-                VirtualScreen.DegreesToRadians(topDownRotation.Z));
+                Utilities.DegreesToRadians(topDownRotation.Y), 
+                Utilities.DegreesToRadians(topDownRotation.X),
+                Utilities.DegreesToRadians(topDownRotation.Z));
 
             PhysicalConfig testConfig = new () { LeapRotationD = topDownRotation };
 
@@ -63,9 +63,9 @@ namespace TouchFreeTests
             HandManager handManger = new (null, null);
             System.Numerics.Vector3 bottomRotation = new (45, 0, 0);
             System.Numerics.Quaternion bottomQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
-                VirtualScreen.DegreesToRadians(bottomRotation.Y),
-                VirtualScreen.DegreesToRadians(-bottomRotation.X),
-                VirtualScreen.DegreesToRadians(bottomRotation.Z));
+                Utilities.DegreesToRadians(bottomRotation.Y),
+                Utilities.DegreesToRadians(-bottomRotation.X),
+                Utilities.DegreesToRadians(bottomRotation.Z));
 
             PhysicalConfig testConfig = new () { LeapRotationD = bottomRotation };
 

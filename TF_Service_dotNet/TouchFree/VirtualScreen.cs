@@ -17,10 +17,6 @@ namespace Ultraleap.TouchFree.Library
         /// <summary>
         ///
         /// </summary>
-        /// <param name="widthPx"></param>
-        /// <param name="heightPx"></param>
-        /// <param name="heightPhysicalMeters"></param>
-        /// <param name="physicalScreenAngleDegrees">The angle or tilt of the physical screen in degrees, where 0 would be a vertical screen facing the user, and 90 would be a flat screen facing the ceiling.</param>
         /// <param name="configManager"></param>
         public VirtualScreen(IConfigManager configManager)
         {
@@ -116,38 +112,6 @@ namespace Ultraleap.TouchFree.Library
         public static int GetActualScreenHeight()
         {
             return GetSystemMetrics(1);
-        }
-
-        public static float DegreesToRadians(float angle)
-        {
-            return ((float)Math.PI / 180) * angle;
-        }
-    }
-
-    public struct Ray
-    {
-        Vector3 m_Origin;
-        Vector3 m_Direction;
-
-        // Creates a ray starting at /origin/ along /direction/.
-        public Ray(Vector3 origin, Vector3 direction)
-        {
-            m_Origin = origin;
-            m_Direction = Vector3.Normalize(direction);
-        }
-
-        // The origin point of the ray.
-        public Vector3 origin
-        {
-            get { return m_Origin; }
-            set { m_Origin = value; }
-        }
-
-        // The direction of the ray.
-        public Vector3 direction
-        {
-            get { return m_Direction; }
-            set { m_Direction = Vector3.Normalize(value); }
         }
     }
 }

@@ -98,15 +98,15 @@ namespace Ultraleap.TouchFree.Library
             var isTopMounted = ((_config.LeapRotationD.Z > 179.9f) && (_config.LeapRotationD.Z < 180.1f));
             float xAngleDegree = isTopMounted ? _config.LeapRotationD.X : -_config.LeapRotationD.X;
 
-            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(VirtualScreen.DegreesToRadians(_config.LeapRotationD.Y),
-                VirtualScreen.DegreesToRadians(xAngleDegree + _config.ScreenRotationD),
-                VirtualScreen.DegreesToRadians(_config.LeapRotationD.Z));
+            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(Utilities.DegreesToRadians(_config.LeapRotationD.Y),
+                Utilities.DegreesToRadians(xAngleDegree + _config.ScreenRotationD),
+                Utilities.DegreesToRadians(_config.LeapRotationD.Z));
 
             if (_config.ScreenRotationD != 0)
             {
                 var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomM.Y, _config.LeapPositionRelativeToScreenBottomM.Z).Magnitude;
                 var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomM.Z / _config.LeapPositionRelativeToScreenBottomM.Y);
-                var angleWithScreenRotation = VirtualScreen.DegreesToRadians(_config.ScreenRotationD) + angle;
+                var angleWithScreenRotation = Utilities.DegreesToRadians(_config.ScreenRotationD) + angle;
 
                 var translatedYPosition = (float)(distanceFromScreenBottom * Math.Cos(angleWithScreenRotation));
                 if (_config.LeapPositionRelativeToScreenBottomM.Z < 0 && _config.LeapPositionRelativeToScreenBottomM.Y < 0) {
