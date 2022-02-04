@@ -101,6 +101,20 @@ namespace TouchFreeTests
             Assert.AreEqual(expectedPositionPx.Y, pixelPosition.Y, 0.0001);
         }
 
+        [TestCase(0.1f, 480)]
+        [TestCase(0, 0)]
+        public void MetersToPixels_ConvertsMeterPositionToPixels(float positionM, float expectedPositionPx)
+        {
+            //Given
+            VirtualScreen virtualScreen = CreateVirtualScreen(0);
+
+            //When
+            float pixelPosition = virtualScreen.MetersToPixels(positionM);
+
+            //Then
+            Assert.AreEqual(expectedPositionPx, pixelPosition, 0.0001);
+        }
+
         private static object[] distanceFromScreenPlaneCases = new object[]
         {
             new object[] { new Vector3(1, 0, 1), 0, 1 },

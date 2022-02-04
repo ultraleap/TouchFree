@@ -20,6 +20,22 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private Vector2 previousPositionDeadzoneDefaultSize;
         private Vector2 previousPositionDeadzoneCurrentSize;
 
+        private Vector2 deadzoneOffset;
+        Vector2 lastRawPos;
+
+        public void SetDeadzoneOffset()
+        {
+            if (defaultDeadzoneRadius > 0)
+            {
+                deadzoneOffset = previousPositionDeadzoneCurrentSize - lastRawPos;
+            }
+        }
+
+        public void ReduceDeadzoneOffset()
+        {
+            deadzoneOffset *= 0.9f;
+        }
+
         public PositionStabiliser(IConfigManager _configManager)
         {
             _configManager.OnInteractionConfigUpdated += OnSettingsUpdated;
@@ -29,6 +45,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public Vector2 ApplyDeadzone(Vector2 position)
         {
+            lastRawPos = position;
+            position += deadzoneOffset;
+
             if (defaultDeadzoneRadius == 0)
             {
                 return position;

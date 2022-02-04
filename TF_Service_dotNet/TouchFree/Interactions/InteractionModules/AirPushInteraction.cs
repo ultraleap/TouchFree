@@ -28,6 +28,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         // If a hand moves between the two angles, this is "horizontal" to the screen
 
         public float unclickThreshold = 0.85f;
+        public float unclickThresholdDrag = 0.85f;
         public bool decayForceOnClick = true;
         public float forceDecayTime = 0.1f;
         bool decayingForce;
@@ -121,7 +122,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Determine whether to send any other events
                 if (pressing)
                 {
-                    if (appliedForce < unclickThreshold || ignoreDragging)
+                    if ((!isDragging && appliedForce < unclickThreshold) || (isDragging && appliedForce < unclickThresholdDrag) || ignoreDragging)
                     {
                         pressing = false;
                         isDragging = false;
@@ -132,19 +133,14 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     {
                         if (isDragging)
                         {
-                            if (!dragDeadzoneShrinkTriggered && CheckForStartDragDeadzoneShrink(cursorPressPosition, positions.CursorPosition))
-                            {
-                                positioningStabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
-                                dragDeadzoneShrinkTriggered = true;
-                            }
-
                             SendInputAction(InputType.MOVE, positions, appliedForce);
+                            positioningModule.Stabiliser.ReduceDeadzoneOffset();
                         }
                         else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
                             isDragging = true;
-                            dragDeadzoneShrinkTriggered = false;
                             SendInputAction(InputType.MOVE, positions, appliedForce);
+                            positioningModule.Stabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
                         }
                         else
                         {
@@ -167,11 +163,15 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     {
                         decayingForce = true;
                     }
+
+                    positioningModule.Stabiliser.SetDeadzoneOffset();
+                    positioningModule.Stabiliser.currentDeadzoneRadius = dragStartDistanceThresholdM;
                 }
                 else if (positions.CursorPosition != previousScreenPos || positions.DistanceFromScreen != previousScreenDistance)
                 {
                     // Send the move event
                     SendInputAction(InputType.MOVE, positions, appliedForce);
+                    positioningModule.Stabiliser.ReduceDeadzoneOffset();
                 }
 
                 if (decayingForce && (appliedForce <= unclickThreshold - 0.1f))
@@ -193,24 +193,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).Length();
+            float distFromStartPosPx = (_startPos - _currentPos).Length();
 
-            if (distFromStartPos > dragStartDistanceThresholdM)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool CheckForStartDragDeadzoneShrink(Vector2 _startPos, Vector2 _currentPos)
-        {
-            Vector2 startPosM = virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).Length();
-            return (distFromStartPos > dragDeadzoneShrinkDistanceThresholdM);
+            return distFromStartPosPx > virtualScreen.MetersToPixels(dragStartDistanceThresholdM);
         }
 
         private void AdjustDeadzoneSize(float _df)

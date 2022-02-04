@@ -11,6 +11,9 @@ namespace Ultraleap.TouchFree.Library
         public float Height_VirtualPx { get; private set; }
         public float Width_PhysicalMeters { get; private set; }
         public float Height_PhysicalMeters { get; private set; }
+
+        public float MetersToPixelsConversion { get; private set; }
+
         /// <summary>
         /// The angle or tilt of the physical screen in degrees, where 0 would be a vertical screen facing the user, and 90 would be a flat screen facing the ceiling.
         /// </summary>
@@ -42,6 +45,8 @@ namespace Ultraleap.TouchFree.Library
             // May not be correct if screen resolution doesn't fill entire physical screen (e.g. 16:9 resolution on a physical 16:10 screen).
             var aspectRatio = (float)_config.ScreenWidthPX / (float)_config.ScreenHeightPX;
             Width_PhysicalMeters = _config.ScreenHeightM * aspectRatio;
+
+            MetersToPixelsConversion = Height_VirtualPx / Height_PhysicalMeters;
 
             AngleOfPhysicalScreen_Degrees = _config.ScreenRotationD;
             var planeNormal = new Vector3(0f, (float)Math.Sin(DegreesToRadians(AngleOfPhysicalScreen_Degrees)), (float)Math.Cos(DegreesToRadians(AngleOfPhysicalScreen_Degrees)));
@@ -106,12 +111,9 @@ namespace Ultraleap.TouchFree.Library
         //
         // This does not give the "worldPosition", but can be used to calculate distances in pixels
         // instead of metres.
-        public Vector2 PixelsToMeters(Vector2 position)
+        public Vector2 PixelsToMeters(Vector2 positionPx)
         {
-            Vector2 positionInMeters = new Vector2(
-                position.X * Width_PhysicalMeters / Width_VirtualPx,
-                position.Y * Height_PhysicalMeters / Height_VirtualPx);
-            return positionInMeters;
+            return positionPx / MetersToPixelsConversion;
         }
 
         // Perform a unit conversion from meters to pixels
@@ -120,12 +122,20 @@ namespace Ultraleap.TouchFree.Library
         //
         // This does not give the "worldPosition", but can be used to calculate distances in metres
         // instead of pixels.
-        public Vector2 MetersToPixels(Vector2 position)
+        public Vector2 MetersToPixels(Vector2 positionM)
         {
-            Vector2 positionInPixels = new Vector2(
-                position.X * Width_VirtualPx / Width_PhysicalMeters,
-                position.Y * Height_VirtualPx / Height_PhysicalMeters);
-            return positionInPixels;
+            return positionM * MetersToPixelsConversion;
+        }
+
+        // Perform a unit conversion from meters to pixels
+        //
+        // Do not rotate or offset the axes
+        //
+        // This does not give the "worldPosition", but can be used to calculate distances in metres
+        // instead of pixels.
+        public float MetersToPixels(float distanceM)
+        {
+            return distanceM * MetersToPixelsConversion;
         }
 
         [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
