@@ -24,8 +24,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             interactionWatcher = new FileSystemWatcher();
             interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            interactionWatcher.NotifyFilter = NotifyFilters.LastWrite;
-            interactionWatcher.NotifyFilter = NotifyFilters.LastAccess;
+            interactionWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
             interactionWatcher.Filter = InteractionConfigFile.ConfigFileName;
             interactionWatcher.Changed += new FileSystemEventHandler(FileUpdated);
             interactionWatcher.IncludeSubdirectories = true;
@@ -33,8 +32,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             physicalWatcher = new FileSystemWatcher();
             physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            physicalWatcher.NotifyFilter = NotifyFilters.LastWrite;
-            physicalWatcher.NotifyFilter = NotifyFilters.LastAccess;
+            physicalWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
             physicalWatcher.Filter = PhysicalConfigFile.ConfigFileName;
             physicalWatcher.Changed += new FileSystemEventHandler(FileUpdated);
             physicalWatcher.IncludeSubdirectories = true;
