@@ -189,6 +189,22 @@ TF_Service::dotNet::ARMLinux::build:
     - unity
     - win10
 
+Tracking::ARMLinux::download_package:
+  stage: build
+  when: always
+  script:
+    - cd ./Scripts/BrightSign_Scripts
+    - python ./Download_Tracking.py -t ${env:GITLAB_TOKEN}
+  after_script:
+    - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
+  artifacts:
+    paths:
+    - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/*.tar.gz
+    expire_in: 1 hour
+  tags:
+    - unity
+    - win10
+
 TF_Service::dotNet::test:
   stage: test
   when: always
@@ -441,23 +457,43 @@ TF_Service::dotNet::ARMLinux::package:
   stage: package
   image: ubuntu:20.04
   dependencies:
+    - Tracking::ARMLinux::download_package
     - TF_Service::dotNet::ARMLinux::build
-  needs: [ "TF_Service::dotNet::ARMLinux::build" ]
+  needs: [
+    "Tracking::ARMLinux::download_package",
+    "TF_Service::dotNet::ARMLinux::build"
+  ]
   script:
+    - apt-get update
+    - apt-get --assume-yes install squashfs-tools
+
+    # Uncompress & chmod TouchFree Service
     - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
     - ln ./Service_dotNet_Build/libLeapC.so.5 ./Service_dotNet_Build/libLeapC.so
     - ln ./Service_dotNet_Build/libstdc++.so.6.0.28 ./Service_dotNet_Build/libstdc++.so.6
     - chmod +x ./Service_dotNet_Build/TouchFree_Service
 
+    # Uncompress & chmod tracking service
+    - cd $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/
+    - tar -xzf ./Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_*.tar.gz
+    - chmod +x ./TrackingService/bin/libtrack_server
+
+    # Combine services into one directory
+    - mkdir ./TouchFree_Extension
+    - mkdir ./TouchFree_Extension/TouchFree
+    - mkdir ./TouchFree_Extension/Tracking
+    - mkdir ./TouchFree_Extension/Tracking/bin
+    - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
+    - cp -R $CI_PROJECT_DIR/Service_dotNet_Build/* ./TouchFree_Extension/TouchFree
+
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
-    - apt-get update
-    - apt-get --assume-yes install squashfs-tools
-    - ./make-extension-ubi "$CI_PROJECT_DIR/Service_dotNet_Build/" TF_Service_BS
+    - ./make-extension-ubi ./TouchFree_Extension/ TF_Service_BS
+
     - mkdir $CI_PROJECT_DIR/TF_Service_BS/
     - cp ./build-TF_Service_BS/*.tar.gz $CI_PROJECT_DIR/TF_Service_BS/
   artifacts:
-    name: "TouchFree_Service_Extension"
+    name: "TouchFree_Service_Extension_$CI_COMMIT_SHORT_SHA"
     paths:
       - "$CI_PROJECT_DIR/TF_Service_BS/*"
     expire_in: 2 weeks
