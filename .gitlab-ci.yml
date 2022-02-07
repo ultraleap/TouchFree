@@ -477,7 +477,7 @@ TF_Service::dotNet::ARMLinux::package:
 
     # Uncompress & chmod tracking service
     - cd $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/
-    - tar -xzf ./Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_5.3.4.tar.gz
+    - tar -xzf ./Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_*.tar.gz
     - chmod +x ./TrackingService/bin/libtrack_server
 
     # Combine services into one directory
