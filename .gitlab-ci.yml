@@ -201,7 +201,7 @@ Tracking::ARMLinux::download_package:
     - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
   artifacts:
     paths:
-    - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_5.3.4.tar.gz
+    - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/*.tar.gz
     expire_in: 1 hour
   tags:
     - unity
