@@ -48,7 +48,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
 
             Vector3 worldPos = TrackerToUse.GetTrackedPosition(hand);
-            Vector3 screenPos = virtualScreen.WorldPositionToVirtualScreen(worldPos, out _);
+            Vector3 screenPos = virtualScreen.WorldPositionToVirtualScreen(worldPos);
             Vector2 screenPosM = virtualScreen.PixelsToMeters(new Vector2(screenPos.X, screenPos.Y));
             float distanceFromScreen = screenPos.Z;
 
