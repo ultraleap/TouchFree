@@ -1,3 +1,9 @@
+' How to use:
+' Set the width and height to match your monitor resolution
+' Rotate the content to portrait by uncommenting the "transform" if required
+' Rename the file to "autorun.brs"
+' Copy to the root of the SD card along with the "Tooling-Package"
+
 Sub Main()
 	x = 0
 	y = 0
@@ -14,6 +20,7 @@ Sub Main()
 		inspector_server: {
 			port:2999
 		}
+		' transform: "rot90", ' Uncomment to rotate for portrait screens
 	}
 	
 	html = CreateObject("roHtmlWidget", rect, config)
