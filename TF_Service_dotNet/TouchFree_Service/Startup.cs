@@ -22,12 +22,14 @@ namespace Ultraleap.TouchFree.Service
 
             services.AddTrackingConnectionManager();
             services.AddHandManager();
-            services.AddVirtualScreenManager();
+            services.AddVirtualScreen();
+
+            services.AddPositioning();
 
             services.AddClientConnectionManager();
             services.AddWebSocketReceiver();
 
-            services.AddInteractionManager();
+            services.AddInteractions();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

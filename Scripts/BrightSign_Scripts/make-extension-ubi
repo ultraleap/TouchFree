@@ -1,0 +1,151 @@
+#!/bin/bash
+set -e
+
+if [ $# -ne 2 ]; then
+    echo  "Usage: $0 PackageName ComponentName" >&2
+    exit 1
+fi
+
+name=UL_TouchFree_Service
+srcdir=$1
+packagename=$2
+workdir=extension-temp-$componentname/
+builddir=build-$packagename/
+
+rm -rf "${workdir}"
+mkdir -p "${workdir}"
+
+rm -rf "${builddir}"
+mkdir -p "${builddir}"
+
+if [ -d "${srcdir}" ]; then
+    echo "Adding files from ${srcdir} ..."
+    cp -rf ${srcdir}* "${workdir}"
+fi
+
+cp bsext_init ${workdir}bsext_init
+
+chmod +x ${workdir}bsext_init
+rm -f ext_${name}.squashfs
+mksquashfs ${workdir} ext_${name}.squashfs
+
+# Now generate the install script
+
+bsfw_find_ubi_volume() {
+    vol_name="$2"
+    vol_var="$1"
+    echo "${vol_var}="
+    echo "for d in /sys/class/ubi/ubi0/ubi0_*/; do"
+    echo "    [ \"\`cat \${d}name\`\" != \"${vol_name}\" ] || ${vol_var}=/dev/\`basename \${d}\`"
+    echo "done"
+    echo "echo ${vol_var}=\${${vol_var}}"
+}
+
+bsfw_write_extension_ubi() {
+    file="$1"
+    vol="$2"
+
+    image_size="`stat --dereference --format=%s ${file}`"
+    sha256="`sha256sum ${file} | cut -c-64`"
+
+    if [ "${image_size}" -eq 0 ]; then
+       echo Image size for ${vol} would be zero
+       exit 1
+    fi
+
+    if [ -z "${image_size}" ]; then
+    echo Failed to determine image size for ${vol}
+    exit 1
+    fi
+
+    # When verifying that the image has been read we must read only
+    # the size of the volume file. When doing that we use a block size
+    # of 4096 bytes for efficiency. For this to work the file size has
+    # to be a multiple of the block size.
+    image_size_pages="`expr ${image_size} / 4096`"
+    if [ "`expr ${image_size_pages} '*' 4096`" != "${image_size}" ]; then
+        echo "Image size is not a multiple of 4096" 1>&2
+        echo "image_size=${image_size}" 1>&2
+        echo "image_size_pages=${image_size_pages}" 1>&2
+        echo "`expr ${image_size_pages} '*' 4096`" 1>&2
+        exit 1
+    fi
+
+    (
+    # This shouldn't be necessary when this install script is
+    # incorporated into a standard BrightSign upgrade script but
+    # can be useful during development. It doesn't matter if it
+    # fails.
+    echo "echo \"Trying to unmount ${name} UBI\""
+    echo "umount /var/volatile/bsext/ext_${name}"
+    echo "rmdir /var/volatile/bsext/ext_${name}"
+
+    bsfw_find_ubi_volume vol_ubi ${vol}
+
+    # Remove old volume. It might be the wrong size
+    echo "if [ -n \"\${vol_ubi}\" ]; then"
+    echo "    echo Removing old ${vol} volume..."
+    echo "    ubirmvol /dev/ubi0 -N ${vol}"
+    echo "fi"
+
+    # Remove a temporary volume if it happens to be lying around
+    bsfw_find_ubi_volume vol_ubi tmp_${vol}
+    echo "if [ -n \"\${vol_ubi}\" ]; then"
+    echo "    echo Removing old tmp_${vol} volume..."
+    echo "    ubirmvol /dev/ubi0 -N tmp_${vol}"
+    echo "fi"
+
+    # Create a new volume.
+    echo "ubimkvol /dev/ubi0 -N tmp_${vol} -s ${image_size} || exit 8"
+
+    bsfw_find_ubi_volume vol_ubi tmp_${vol}
+
+    echo "[ -n \"\${vol_ubi}\" ]"
+    echo "echo Writing image to ${vol} volume \${vol_ubi}..."
+    echo "ubiupdatevol -s ${image_size} \${vol_ubi} - < ${file} || exit 3"
+
+    # Verify that the image was written properly by reading it
+    # back and calculating its SHA256.
+    echo "check=\"\`dd if=\${vol_ubi} bs=4096 count=${image_size_pages}|sha256sum|cut -c-64\`\""
+    echo "if [ \"\${check}\" != \"${sha256}\" ]; then"
+    echo "    echo \"VERIFY FAILURE for ${vol}\""
+    echo "    ubirmvol /dev/ubi0 -N tmp_${vol} || true"
+    echo "    exit 4"
+    echo "fi"
+
+    # Now we know that the volume is correct we can rename it so
+    # it can be used.
+    echo "ubirename /dev/ubi0 tmp_${vol} ${vol}"
+
+    echo "echo Finished installing extension"
+    )
+}
+
+install_script="ext_${name}_install.sh"
+
+(
+    echo "#!/bin/sh"
+    echo "# This install script is only useful during development."
+    echo "set -x"
+    bsfw_write_extension_ubi ext_${name}.squashfs ext_${name}
+) > ${install_script}
+
+chmod +x ${install_script}
+
+rm -rf ${workdir}
+echo
+echo "Extension ${name} squashfs: ext_${name}.squashfs"
+echo "Development install script: ${install_script}"
+
+# Move artifacts around
+mv ext_${name}.squashfs ${builddir}/
+mv ${install_script} ${builddir}/
+
+# Package up
+cd ${builddir}
+filename=${packagename}_`date +%Y%m%dT%H%M%S`.tar.gz
+tar zcf ${filename} ext_${name}.squashfs ${install_script}
+
+echo "==="
+echo "Finished making extension, package: ${filename}"
+echo "==="

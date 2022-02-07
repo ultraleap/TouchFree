@@ -20,9 +20,24 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private Vector2 previousPositionDeadzoneDefaultSize;
         private Vector2 previousPositionDeadzoneCurrentSize;
 
+        private Vector2 deadzoneOffset;
+        Vector2 lastRawPos;
+
+        public void SetDeadzoneOffset()
+        {
+            if (defaultDeadzoneRadius > 0)
+            {
+                deadzoneOffset = previousPositionDeadzoneCurrentSize - lastRawPos;
+            }
+        }
+
+        public void ReduceDeadzoneOffset()
+        {
+            deadzoneOffset *= 0.9f;
+        }
+
         public PositionStabiliser(IConfigManager _configManager)
         {
-            internalShrinkFactor = 2f;
             _configManager.OnInteractionConfigUpdated += OnSettingsUpdated;
             OnSettingsUpdated(_configManager.InteractionConfig);
             ResetValues();
@@ -30,6 +45,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public Vector2 ApplyDeadzone(Vector2 position)
         {
+            lastRawPos = position;
+            position += deadzoneOffset;
+
             if (defaultDeadzoneRadius == 0)
             {
                 return position;
@@ -111,13 +129,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             Vector2 defaultPositionChange = (constrainedPositionDefault - previousPositionDeadzoneDefaultSize);
             Vector2 previousConstraintVector = (previousPositionDeadzoneDefaultSize - previousPositionDeadzoneCurrentSize);
 
-            float internalConstraintVariable = previousConstraintVector.Length() + internalShrinkFactor * defaultDeadzoneRadius;
-
-            if (internalConstraintVariable < currentDeadzoneRadius)
-            {
-                currentDeadzoneRadius = internalConstraintVariable;
-            }
-            else if (previousConstraintVector != Vector2.Zero)
+            if (previousConstraintVector != Vector2.Zero)
             {
                 float distanceAwayFromConstraint = Vector2.Dot(defaultPositionChange, previousConstraintVector) / previousConstraintVector.Length();
                 distanceAwayFromConstraint = Math.Max(0, distanceAwayFromConstraint);
@@ -133,11 +145,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
         }
 
-        public void ScaleDeadzoneByProgress(float _progressToClick)
+        public void ScaleDeadzoneByProgress(float _progressToClick, float _maxDeadzoneIncrease)
         {
             // Assumes _progressToClick is clamped.
             var scaledValue = _progressToClick * _progressToClick;
-            var deadZoneRadius = defaultDeadzoneRadius * scaledValue;
+            var deadZoneRadius = Utilities.Lerp(defaultDeadzoneRadius, defaultDeadzoneRadius + _maxDeadzoneIncrease, scaledValue);
 
             currentDeadzoneRadius = deadZoneRadius;
         }
