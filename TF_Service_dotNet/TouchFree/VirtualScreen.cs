@@ -51,8 +51,11 @@ namespace Ultraleap.TouchFree.Library
         {
             Vector3 screenPos = Vector3.Zero;
 
-            screenPos.X = (worldPosition.X + (Width_PhysicalMeters / 2.0f)) * MetersToPixelsConversion; // World X = 0 is middle of screen, so shift everything over by half width (w/2).
-            screenPos.Y = worldPosition.Y * MetersToPixelsConversion; // World Y = 0 is bottom of the screen, so this is linear.
+            // World X = 0 is middle of screen, so shift everything over by half width (w/2).
+            screenPos.X = (worldPosition.X + (Width_PhysicalMeters / 2.0f)) * MetersToPixelsConversion;
+            // World Y = 0 is bottom of the screen, so this is linear.
+            screenPos.Y = worldPosition.Y * MetersToPixelsConversion;
+
             screenPos.Z = worldPosition.Z;
 
             return screenPos;
