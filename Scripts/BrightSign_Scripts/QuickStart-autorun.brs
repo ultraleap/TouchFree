@@ -1,7 +1,10 @@
 ' How to use:
+
 ' Set the width and height to match your monitor resolution
+' NOTE: 2560x1440 resolution is unsupported, use 1280x720 for full screen display
+
 ' Rotate the content to portrait by uncommenting the "transform" if required
-' Rename the file to "autorun.brs"
+' Make sure the file is called "autorun.brs"
 ' Copy to the root of the SD card along with the "Tooling-Package"
 
 Sub Main()
