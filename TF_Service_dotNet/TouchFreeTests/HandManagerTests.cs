@@ -2,6 +2,7 @@
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using System;
+using Leap;
 
 namespace TouchFreeTests
 {
@@ -127,5 +128,133 @@ namespace TouchFreeTests
             Assert.AreEqual(positionTranslation.Z, handManger.TrackingTransform().translation.z, 0.01);
         }
 
+        [Test]
+        public void Update_NoHandsInFrame_HandsAreNull()
+        {
+            //Given
+            Frame frame = new Frame();
+            FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
+            HandManager handManger = new(null, null);
+
+            //When
+            handManger.Update(this, frameEventArgs);
+
+            //Then
+            Assert.IsNull(handManger.PrimaryHand);
+            Assert.IsNull(handManger.SecondaryHand);
+        }
+
+        [Test]
+        public void Update_LeftHandInFrame_LeftHandSetToPrimaryAndSecondaryIsNull()
+        {
+            //Given
+            Hand hand = new Hand() { IsLeft = true };
+            Frame frame = new Frame();
+            frame.Hands.Add(hand);
+            FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
+            HandManager handManger = new(null, null);
+
+            //When
+            handManger.Update(this, frameEventArgs);
+
+            //Then
+            Assert.IsNotNull(handManger.PrimaryHand);
+            Assert.AreEqual(true, handManger.PrimaryHand.IsLeft);
+            Assert.IsNull(handManger.SecondaryHand);
+        }
+
+        [Test]
+        public void Update_RightHandInFrame_RightHandSetToPrimaryAndSecondaryIsNull()
+        {
+            //Given
+            Hand hand = new Hand() { IsLeft = false };
+            Frame frame = new Frame();
+            frame.Hands.Add(hand);
+            FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
+            HandManager handManger = new(null, null);
+
+            //When
+            handManger.Update(this, frameEventArgs);
+
+            //Then
+            Assert.IsNotNull(handManger.PrimaryHand);
+            Assert.AreEqual(false, handManger.PrimaryHand.IsLeft);
+            Assert.IsNull(handManger.SecondaryHand);
+        }
+
+        [Test]
+        public void Update_BothHandsInFrame_RightHandSetToPrimaryAndLeftHandSetToSecondary()
+        {
+            //Given
+            Hand leftHand = new Hand() { IsLeft = true };
+            Hand rightHand = new Hand() { IsLeft = false };
+            Frame frame = new Frame();
+            frame.Hands.Add(leftHand);
+            frame.Hands.Add(rightHand);
+            FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
+            HandManager handManger = new(null, null);
+
+            //When
+            handManger.Update(this, frameEventArgs);
+
+            //Then
+            Assert.IsNotNull(handManger.PrimaryHand);
+            Assert.AreEqual(false, handManger.PrimaryHand.IsLeft);
+            Assert.IsNotNull(handManger.SecondaryHand);
+            Assert.AreEqual(true, handManger.SecondaryHand.IsLeft);
+        }
+
+        [Test]
+        public void Update_LeftHandAlreadyInFrameAndThenRightHandAddedToFrame_LeftHandPrimaryAndRightHandSecondary()
+        {
+            //Given
+            Hand leftHand = new Hand() { IsLeft = true };
+            Hand rightHand = new Hand() { IsLeft = false };
+            Frame firstFrame = new Frame();
+            firstFrame.Hands.Add(leftHand);
+            FrameEventArgs firstFrameEventArgs = new FrameEventArgs(firstFrame);
+            HandManager handManger = new(null, null);
+            handManger.Update(this, firstFrameEventArgs);
+
+            Frame secondFrame = new Frame();
+            FrameEventArgs secondFrameEventArgs = new FrameEventArgs(secondFrame);
+            secondFrame.Hands.Add(leftHand);
+            secondFrame.Hands.Add(rightHand);
+
+            //When
+            handManger.Update(this, secondFrameEventArgs);
+
+            //Then
+            Assert.IsNotNull(handManger.PrimaryHand);
+            Assert.AreEqual(true, handManger.PrimaryHand.IsLeft);
+            Assert.IsNotNull(handManger.SecondaryHand);
+            Assert.AreEqual(false, handManger.SecondaryHand.IsLeft);
+        }
+
+        [Test]
+        public void Update_RightHandPrimaryLeftSecondaryThenRightLostFromFrame_LeftHandSetToPrimaryAndRightIsNull()
+        {
+            //Given
+            Hand leftHand = new Hand() { IsLeft = true };
+            Hand rightHand = new Hand() { IsLeft = false };
+            Frame firstFrame = new Frame();
+            firstFrame.Hands.Add(leftHand);
+            firstFrame.Hands.Add(rightHand);
+            FrameEventArgs firstFrameEventArgs = new FrameEventArgs(firstFrame);
+            HandManager handManger = new(null, null);
+            handManger.Update(this, firstFrameEventArgs);
+
+            Frame secondFrame = new Frame();
+            secondFrame.Hands.Add(leftHand);
+            FrameEventArgs secondFrameEventArgs = new FrameEventArgs(secondFrame);
+
+            //When
+            handManger.Update(this, secondFrameEventArgs);
+
+            //Then
+            Assert.IsNotNull(handManger.PrimaryHand);
+            Assert.AreEqual(true, handManger.PrimaryHand.IsLeft);
+            Assert.IsNull(handManger.SecondaryHand);
+        }
     }
 }
