@@ -453,6 +453,29 @@ TF_Service::package:
     - unity
     - win10
 
+TF_Service::dotNet::Brightsign::example:
+  stage: package
+  dependencies:
+    - TF_Tooling::Web::package
+  needs: [
+    "TF_Tooling::Web::package"
+  ]
+  script:
+    # Run innosetup
+    - mkdir ./BS_Example_Package
+    - cp ./Scripts/BrightSign_Scripts/QuickStart-autorun.brs ./BS_Example_package
+    - mv ./BS_Example_package/QuickStart-autorun.brs ./BS_Example_package/autorun.brs 
+    - cp -r ./Tooling_Package* ./BS_Example_package
+
+  artifacts:
+    name: "BrightSign_Example_Package_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - ./BS_Example_Package
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - win10
+
 TF_Service::dotNet::ARMLinux::package:
   stage: package
   image: ubuntu:20.04
