@@ -169,20 +169,20 @@ TF_Service::dotNet::ARMLinux::build:
     - dotnet build -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
-    - if (Test-Path -Path "./Service_dotNet_Build") {
-        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
-        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
+    - if (Test-Path -Path "./Service_dotNet_Build_ARMLinux") {
+        Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
+        Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
       }
-    - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build
+    - mkdir ./Service_dotNet_Build_ARMLinux
+    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build_ARMLinux
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    # - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree_Service" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+    # - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/TouchFree_Service" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "TouchFree_Service_dotNet"
+    name: "TouchFree_Service_dotNet_ARMLinux"
     paths:
-    - ./Service_dotNet_Build/**
+    - ./Service_dotNet_Build_ARMLinux/**
     expire_in: 2 weeks
     when: always
   tags:
