@@ -421,11 +421,13 @@ TF_Tooling::Unity::package:
 TF_Service::package:
   stage: package
   dependencies:
+    - TF_Service::build
     - TF_Service::dotNet::Windows::build
     - TF_Service::Wrapper::build
     - TF_Service::Tray::build
   needs: [
     "TF_Service::dotNet::Windows::build",
+    "TF_Service::build",
     "TF_Service::Wrapper::build",
     "TF_Service::Tray::build"
   ]
