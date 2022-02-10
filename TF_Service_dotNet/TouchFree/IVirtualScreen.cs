@@ -6,8 +6,8 @@ namespace Ultraleap.TouchFree.Library
     {
         Vector3 VirtualScreenPositionToWorld(Vector2 screenPos, float distanceFromVirtualScreen);
         Vector3 WorldPositionToVirtualScreen(Vector3 worldPosition);
-        Vector2 MetersToPixels(Vector2 position);
-        Vector2 PixelsToMeters(Vector2 position);
-        float MetersToPixels(float distanceM);
+        Vector2 MillimetersToPixels(Vector2 position);
+        Vector2 PixelsToMillimeters(Vector2 position);
+        float MillimetersToPixels(float distanceM);
     }
 }

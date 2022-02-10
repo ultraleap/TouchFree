@@ -9,10 +9,10 @@ namespace Ultraleap.TouchFree.Library
     {
         public float Width_VirtualPx { get; private set; }
         public float Height_VirtualPx { get; private set; }
-        public float Width_PhysicalMeters { get; private set; }
-        public float Height_PhysicalMeters { get; private set; }
+        public float Width_PhysicalMillimeters { get; private set; }
+        public float Height_PhysicalMillimeters { get; private set; }
 
-        public float MetersToPixelsConversion { get; private set; }
+        public float MillimetersToPixelsConversion { get; private set; }
 
         /// <summary>
         ///
@@ -29,13 +29,13 @@ namespace Ultraleap.TouchFree.Library
             Width_VirtualPx = _config.ScreenWidthPX;
             Height_VirtualPx = _config.ScreenHeightPX;
 
-            Height_PhysicalMeters = _config.ScreenHeightM;
+            Height_PhysicalMillimeters = _config.ScreenHeightMm;
             // Calc screen physical width from the physical height and resolution ratio.
             // May not be correct if screen resolution doesn't fill entire physical screen (e.g. 16:9 resolution on a physical 16:10 screen).
             var aspectRatio = (float)_config.ScreenWidthPX / (float)_config.ScreenHeightPX;
-            Width_PhysicalMeters = _config.ScreenHeightM * aspectRatio;
+            Width_PhysicalMillimeters = _config.ScreenHeightMm * aspectRatio;
 
-            MetersToPixelsConversion = Height_VirtualPx / Height_PhysicalMeters;
+            MillimetersToPixelsConversion = Height_VirtualPx / Height_PhysicalMillimeters;
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace Ultraleap.TouchFree.Library
             Vector3 screenPos = Vector3.Zero;
 
             // World X = 0 is middle of screen, so shift everything over by half width (w/2).
-            screenPos.X = (worldPosition.X + (Width_PhysicalMeters / 2.0f)) * MetersToPixelsConversion;
+            screenPos.X = (worldPosition.X + (Width_PhysicalMillimeters / 2.0f)) * MillimetersToPixelsConversion;
             // World Y = 0 is bottom of the screen, so this is linear.
-            screenPos.Y = worldPosition.Y * MetersToPixelsConversion;
+            screenPos.Y = worldPosition.Y * MillimetersToPixelsConversion;
 
             screenPos.Z = worldPosition.Z;
 
@@ -65,8 +65,8 @@ namespace Ultraleap.TouchFree.Library
         {
             Vector3 worldPos = Vector3.Zero;
 
-            worldPos.X = (screenPos.X / MetersToPixelsConversion) - (Width_PhysicalMeters / 2.0f);
-            worldPos.Y = (screenPos.Y / MetersToPixelsConversion);
+            worldPos.X = (screenPos.X / MillimetersToPixelsConversion) - (Width_PhysicalMillimeters / 2.0f);
+            worldPos.Y = (screenPos.Y / MillimetersToPixelsConversion);
             worldPos.Z = distanceFromVirtualScreen;
 
             return worldPos;
@@ -78,9 +78,9 @@ namespace Ultraleap.TouchFree.Library
         //
         // This does not give the "worldPosition", but can be used to calculate distances in pixels
         // instead of metres.
-        public Vector2 PixelsToMeters(Vector2 positionPx)
+        public Vector2 PixelsToMillimeters(Vector2 positionPx)
         {
-            return positionPx / MetersToPixelsConversion;
+            return positionPx / MillimetersToPixelsConversion;
         }
 
         // Perform a unit conversion from meters to pixels
@@ -89,9 +89,9 @@ namespace Ultraleap.TouchFree.Library
         //
         // This does not give the "worldPosition", but can be used to calculate distances in metres
         // instead of pixels.
-        public Vector2 MetersToPixels(Vector2 positionM)
+        public Vector2 MillimetersToPixels(Vector2 positionM)
         {
-            return positionM * MetersToPixelsConversion;
+            return positionM * MillimetersToPixelsConversion;
         }
 
         // Perform a unit conversion from meters to pixels
@@ -100,9 +100,9 @@ namespace Ultraleap.TouchFree.Library
         //
         // This does not give the "worldPosition", but can be used to calculate distances in metres
         // instead of pixels.
-        public float MetersToPixels(float distanceM)
+        public float MillimetersToPixels(float distanceM)
         {
-            return distanceM * MetersToPixelsConversion;
+            return distanceM * MillimetersToPixelsConversion;
         }
 
         [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]

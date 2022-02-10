@@ -15,7 +15,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
             {
                 if (_interactions == null)
                 {
-                    _interactions = InteractionConfigFile.LoadConfig();
+                    InteractionConfigForFile fromFile = InteractionConfigFile.LoadConfig();
+                    _interactions = new InteractionConfig(fromFile);
                 }
 
                 return _interactions;
@@ -32,7 +33,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
             {
                 if (_physical == null)
                 {
-                    _physical = PhysicalConfigFile.LoadConfig();
+                    PhysicalConfigForFile fromFile = PhysicalConfigFile.LoadConfig();
+                    _physical = new PhysicalConfig(fromFile);
                 }
 
                 return _physical;
@@ -45,8 +47,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public void LoadConfigsFromFiles()
         {
-            _interactions = InteractionConfigFile.LoadConfig();
-            _physical = PhysicalConfigFile.LoadConfig();
+            InteractionConfigForFile intFromFile = InteractionConfigFile.LoadConfig();
+            _interactions = new InteractionConfig(intFromFile);
+
+            PhysicalConfigForFile physFromFile = PhysicalConfigFile.LoadConfig();
+            _physical = new PhysicalConfig(physFromFile);
 
             InteractionConfigWasUpdated();
             PhysicalConfigWasUpdated();
