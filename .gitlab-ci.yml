@@ -421,11 +421,11 @@ TF_Tooling::Unity::package:
 TF_Service::package:
   stage: package
   dependencies:
-    - TF_Service::build
+    - TF_Service::dotNet::Windows::build
     - TF_Service::Wrapper::build
     - TF_Service::Tray::build
   needs: [
-    "TF_Service::build",
+    "TF_Service::dotNet::Windows::build",
     "TF_Service::Wrapper::build",
     "TF_Service::Tray::build"
   ]
@@ -437,7 +437,7 @@ TF_Service::package:
     - mkdir ./Service_Package/SettingsUI/
     - mkdir ./Service_Package/Wrapper/
     - mkdir ./Service_Package/Tray/
-    - cp -r ./Build/* ./Service_Package/Service/
+    - cp -r ./Service_dotNet_Build/* ./Service_Package/Service/
     - cp -r ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -r ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./Service_Tray_Build/* ./Service_Package/Tray/
