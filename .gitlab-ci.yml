@@ -344,8 +344,8 @@ TF_Service::test:
   stage: test
 
   dependencies:
-    - TF_Service::build
-  needs: ["TF_Service::build"]
+    - TF_Service::dotNet::Windows::build
+  needs: ["TF_Service::dotNet::Windows::build"]
 
   script:
     - cd ./Testing/ServiceSocketTests/
