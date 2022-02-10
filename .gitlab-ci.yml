@@ -245,7 +245,7 @@ TF_Service::Tray::build:
     - unity
     - win10
 
-TF_Service::build:
+TF_Settings::Windows::build:
   stage: build
   when: always
   script:
@@ -266,30 +266,22 @@ TF_Service::build:
 
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SRV_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
-    - mkdir $CI_PROJECT_DIR/Build
-    - cp ${env:TF_SRV_PATH}/Version.txt $CI_PROJECT_DIR/Build
     - mkdir $CI_PROJECT_DIR/UIBuild
     - cp ${env:TF_SRV_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
 
-    # Update ProjectSettings file with correct version & build service
+    # Update ProjectSettings file with correct version & build settings
     - cd ./Scripts
     - python ./UpdateUnityProjVer.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
-    - "& ./build_service.bat $UNITY_EXE"
     - python ./UpdateBuildSettings_Service.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/EditorBuildSettings.asset
     - "& ./build_settingsUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
-    - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Build/TouchFree_Service.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
-
-    - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/UIBuild/TouchFreeSettingsUI.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
   artifacts:
-    name: "TouchFree_Service_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
+    name: "TouchFree_Settings_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
-    - Build/**
     - UIBuild/**
-    - ./Service_build.log
     - ./SettingsUI_build.log
     expire_in: 2 weeks
     when: always
@@ -418,16 +410,16 @@ TF_Tooling::Unity::package:
   tags:
     - docker
 
-TF_Service::package:
+TF_Service::Windows::package:
   stage: package
   dependencies:
-    - TF_Service::build
+    - TF_Settings::Windows::build
     - TF_Service::dotNet::Windows::build
     - TF_Service::Wrapper::build
     - TF_Service::Tray::build
   needs: [
     "TF_Service::dotNet::Windows::build",
-    "TF_Service::build",
+    "TF_Settings::Windows::build",
     "TF_Service::Wrapper::build",
     "TF_Service::Tray::build"
   ]
@@ -493,10 +485,10 @@ TF_Service::dotNet::ARMLinux::package:
     - apt-get --assume-yes install squashfs-tools
 
     # Uncompress & chmod TouchFree Service
-    - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
-    - ln ./Service_dotNet_Build/libLeapC.so.5 ./Service_dotNet_Build/libLeapC.so
-    - ln ./Service_dotNet_Build/libstdc++.so.6.0.28 ./Service_dotNet_Build/libstdc++.so.6
-    - chmod +x ./Service_dotNet_Build/TouchFree_Service
+    - ln ./Service_dotNet_Build_ARMLinux/libatomic.so.1.2.0 ./Service_dotNet_Build_ARMLinux/libatomic.so.1
+    - ln ./Service_dotNet_Build_ARMLinux/libLeapC.so.5 ./Service_dotNet_Build_ARMLinux/libLeapC.so
+    - ln ./Service_dotNet_Build_ARMLinux/libstdc++.so.6.0.28 ./Service_dotNet_Build_ARMLinux/libstdc++.so.6
+    - chmod +x ./Service_dotNet_Build_ARMLinux/TouchFree_Service
 
     # Uncompress & chmod tracking service
     - cd $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/
@@ -509,7 +501,7 @@ TF_Service::dotNet::ARMLinux::package:
     - mkdir ./TouchFree_Extension/Tracking
     - mkdir ./TouchFree_Extension/Tracking/bin
     - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
-    - cp -R $CI_PROJECT_DIR/Service_dotNet_Build/* ./TouchFree_Extension/TouchFree
+    - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
@@ -529,10 +521,10 @@ TF_Service::dotNet::ARMLinux::package:
 TouchFree::installer:
   stage: installer
   dependencies:
-    - TF_Service::package
+    - TF_Service::Windows::package
     - TouchFree::build
   needs: [
-    "TF_Service::package",
+    "TF_Service::Windows::package",
     "TouchFree::build"
   ]
   script:
