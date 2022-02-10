@@ -31,8 +31,8 @@ function cucumberXmlReport(opts) {
 
 gulp.task('buildServerGrab', function () {
     return gulp.src([
-        '../../Build/**',
-        '../../Build/*',
+        '../../Service_dotNet_Build/**',
+        '../../Service_dotNet_Build/*',
     ])
         .pipe(gulp.dest('./PUT_TEST_BUILD_IN_HERE'));
 })
