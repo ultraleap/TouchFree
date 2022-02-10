@@ -340,7 +340,7 @@ TouchFree::build:
     - unity
     - win10
 
-TF_Service::test:
+.TF_Service::test:
   stage: test
 
   dependencies:
