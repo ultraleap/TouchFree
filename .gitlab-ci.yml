@@ -1,6 +1,6 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  TF_SERVICE_PROJECT_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity
+  TF_SETTINGS_PROJECT_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity
   TF_PROJECT_PATH: $CI_PROJECT_DIR/TF_Application
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
 
@@ -25,7 +25,7 @@ TF_Tooling::Unity::build:
   when: always
   script:
     # Get Unity version and changeset from the project.
-    - $line = Get-Content  $TF_SERVICE_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $TF_SETTINGS_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
     # Check whether the required Unity version is installed. If not, install it.
@@ -250,7 +250,7 @@ TF_Settings::Windows::build:
   when: always
   script:
     # Get Unity version and changeset from the project.
-    - $line = Get-Content  $TF_SERVICE_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
+    - $line = Get-Content  $TF_SETTINGS_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
     - $UNITY_VERSION = $line -Split " " | Select -Index 1
     - $UNITY_CHANGESET = $line -Match '\((.+)\)' | ForEach-Object { $Matches[1] }
     # Check whether the required Unity version is installed. If not, install it.
@@ -272,7 +272,6 @@ TF_Settings::Windows::build:
     # Update ProjectSettings file with correct version & build settings
     - cd ./Scripts
     - python ./UpdateUnityProjVer.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
-    - python ./UpdateBuildSettings_Service.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/EditorBuildSettings.asset
     - "& ./build_settingsUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
