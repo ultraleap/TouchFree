@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
+
 using UnityEngine;
 using Ultraleap.TouchFree.ServiceShared;
 
@@ -8,7 +11,9 @@ namespace Ultraleap.TouchFree.ServiceUI
     {
         public static ScreenManager Instance;
 
-        public GameObject clientRootObj;
+        public GameObject clientCursorObj;
+        public InputActionBlockerPlugin inputActionBlocker;
+
         public GameObject[] stateRoots;
         public GameObject homeScreen;
         GameObject currentScreen;
@@ -18,6 +23,13 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private PhysicalConfig defaultConfig = null;
         bool cursorStateOverridden = false;
+
+        [RuntimeInitializeOnLoadMethod]
+        void EnsureCorrectLanguageCulture()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+        }
 
         public void ChangeScreen(GameObject _newScreenRoot, bool _movingBack = false)
         {
@@ -49,12 +61,18 @@ namespace Ultraleap.TouchFree.ServiceUI
             // Never use TrackingTransform in UI scene, tracking is only used for
             // Quick Setup here
             HandManager.Instance.useTrackingTransform = false;
+            EnsureCorrectLanguageCulture();
         }
 
-        public void SetCursorState(bool _state)
+        public void SetCursorState(bool _state, bool _andForce = false)
         {
-            clientRootObj.SetActive(_state);
-            cursorStateOverridden = !_state;
+            clientCursorObj.SetActive(_state);
+            inputActionBlocker.SetBlocking(!_state);
+
+            if (_andForce)
+            {
+                cursorStateOverridden = !_state;
+            }
         }
 
         void OnApplicationFocus(bool hasFocus)
@@ -65,7 +83,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             }
             else
             {
-                clientRootObj.SetActive(hasFocus);
+                SetCursorState(false);
             }
         }
 
@@ -85,11 +103,11 @@ namespace Ultraleap.TouchFree.ServiceUI
             if (ConfigManager.PhysicalConfig.ScreenHeightM == defaultConfig.ScreenHeightM &&
                 ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM == defaultConfig.LeapPositionRelativeToScreenBottomM)
             {
-                clientRootObj.SetActive(false);
+                SetCursorState(false);
             }
             else
             {
-                clientRootObj.SetActive(true);
+                SetCursorState(true);
             }
         }
 

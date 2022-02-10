@@ -8,7 +8,7 @@ using Leap.Unity;
 
 namespace Ultraleap.TouchFree.ServiceShared
 {
-    [RequireComponent(typeof(LeapServiceProvider)), DefaultExecutionOrder(-1)]
+    [DefaultExecutionOrder(-1)]
     public class HandManager : MonoBehaviour
     {
         public static HandManager Instance;
@@ -115,7 +115,7 @@ namespace Ultraleap.TouchFree.ServiceShared
         /// <summary>
         /// Used directly and via a callback to trigger tracking transform and mode changes
         /// </summary>
-        void UpdateTrackingTransformAndMode()
+        public void UpdateTrackingTransformAndMode()
         {
             UpdateTrackingMode();
             UpdateTrackingTransform();
@@ -170,13 +170,14 @@ namespace Ultraleap.TouchFree.ServiceShared
             {
                 case MountingType.NONE:
                 case MountingType.BELOW:
-                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.Desktop);
+                    trackingProvider.ChangeTrackingMode(LeapServiceProvider.TrackingOptimizationMode.Desktop);
                     break;
                 case MountingType.ABOVE_FACING_USER:
-                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.ScreenTop);
+                    trackingProvider.ChangeTrackingMode(LeapServiceProvider.TrackingOptimizationMode.Screentop);
+
                     break;
                 case MountingType.ABOVE_FACING_SCREEN:
-                    trackingProvider.changeTrackingMode(LeapServiceProvider.TrackingMode.HeadMounted);
+                    trackingProvider.ChangeTrackingMode(LeapServiceProvider.TrackingOptimizationMode.HMD);
                     break;
             }
         }
