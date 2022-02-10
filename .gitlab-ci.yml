@@ -1,12 +1,12 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  TF_SETTINGS_PROJECT_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity
+  TF_SETTINGS_PROJECT_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity
   TF_PROJECT_PATH: $CI_PROJECT_DIR/TF_Application
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
 
   TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
-  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling
-  TF_SRV_PATH: $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/Assets/TouchFree/Service
+  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling
+  TF_SETTINGS_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/SettingsUI
 
   TF_TFU_VERSION: '1.0.0'
   TF_TFW_VERSION: '1.0.0'
@@ -47,7 +47,7 @@ TF_Tooling::Unity::build:
         Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
     - mkdir ./Tooling_Release
-    - cp ${env:CI_PROJECT_DIR}/TF_Service_and_Tooling_Unity/Assets/TouchFree/Tooling/Version.txt ./Tooling_Release
+    - cp ${env:CI_PROJECT_DIR}/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling/Version.txt ./Tooling_Release
 
     # Package Tooling
     - cd ./Scripts
@@ -100,7 +100,7 @@ TF_Tooling::Docs::build:
   when: always
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
   script:
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Service_and_Tooling_Unity/NaturalDocs_Config
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/NaturalDocs_Config
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Tooling_Web/NaturalDocs_Config
   artifacts:
     name: "TouchFree_Tooling_Documentation"
@@ -265,13 +265,13 @@ TF_Settings::Windows::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SRV_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SETTINGS_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
     - mkdir $CI_PROJECT_DIR/UIBuild
-    - cp ${env:TF_SRV_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
+    - cp ${env:TF_SETTINGS_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
 
     # Update ProjectSettings file with correct version & build settings
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../TF_Service_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Settings_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
     - "& ./build_settingsUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
