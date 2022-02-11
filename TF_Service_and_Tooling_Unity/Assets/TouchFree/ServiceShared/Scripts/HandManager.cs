@@ -92,6 +92,8 @@ namespace Ultraleap.TouchFree.ServiceShared
 
             trackingProvider = (LeapServiceProvider)Hands.Provider;
             PhysicalConfig.OnConfigUpdated += UpdateTrackingTransformAndMode;
+
+            Debug.Log("start  update tracking mode coroutine");
             StartCoroutine(UpdateTrackingAfterLeapInit());
         }
 
@@ -109,8 +111,17 @@ namespace Ultraleap.TouchFree.ServiceShared
                 yield return null;
             }
 
-            yield return new WaitForSeconds(5);
+            Debug.Log("got leap controller");
 
+            trackingProvider.GetLeapController().Connect += TrackingConnected;
+
+            Debug.Log("Controller get");
+            UpdateTrackingTransformAndMode();
+        }
+
+        private void TrackingConnected(object sender, ConnectionEventArgs e)
+        {
+            Debug.Log("TrackingConnected");
             UpdateTrackingTransformAndMode();
         }
 
@@ -125,27 +136,36 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         void UpdateTrackingMode()
         {
+            Debug.Log("UpdateTrackingMode step 1");
+
             if (lockTrackingMode)
             {
                 return;
             }
+
+            Debug.Log("UpdateTrackingMode step 2");
 
             // leap is looking down
             if (Mathf.Abs(ConfigManager.PhysicalConfig.LeapRotationD.z) > 90f)
             {
                 if (ConfigManager.PhysicalConfig.LeapRotationD.x <= 0f)
                 {
+                    Debug.Log("UpdateTrackingMode step 3 _ ST");
                     //Screentop
                     SetTrackingMode(MountingType.ABOVE_FACING_USER);
                 }
                 else
                 {
+                    Debug.Log("UpdateTrackingMode step 3 _ HMD");
+
                     //HMD
                     SetTrackingMode(MountingType.ABOVE_FACING_SCREEN);
                 }
             }
             else
             {
+                Debug.Log("UpdateTrackingMode step 3 _ D");
+
                 //Desktop
                 SetTrackingMode(MountingType.BELOW);
             }

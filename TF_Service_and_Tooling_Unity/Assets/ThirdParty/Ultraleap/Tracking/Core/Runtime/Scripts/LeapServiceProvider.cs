@@ -671,7 +671,11 @@ namespace Leap.Unity
         {
             _trackingOptimization = trackingMode;
 
+            Debug.Log("UpdateTrackingMode step 4");
+
             if (_leapController == null) return;
+
+            Debug.Log("UpdateTrackingMode step 5 " + trackingMode);
 
             switch (trackingMode)
             {
