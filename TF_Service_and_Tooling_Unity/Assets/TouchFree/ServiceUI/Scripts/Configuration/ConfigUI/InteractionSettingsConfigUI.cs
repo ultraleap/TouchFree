@@ -1,9 +1,6 @@
-﻿using System.Globalization;
-using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using Ultraleap.TouchFree.ServiceShared;
-using System.Collections;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -19,14 +16,6 @@ namespace Ultraleap.TouchFree.ServiceUI
         #region Bounds
         public const float CursorDeadzone_Min = 0f;
         public const float CursorDeadzone_Max = 0.015f;
-
-        public const float HoverCursorStartTime_Min = 0.1f;
-        public const float HoverCursorStartTime_Max = 2f;
-        public const float HoverCursorCompleteTime_Min = 0.1f;
-        public const float HoverCursorCompleteTime_Max = 2f;
-
-        public const float TouchPlaneDistance_Min = 0f;
-        public const float TouchPlaneDistance_Max = 20f;
         #endregion
 
         // UI elements
@@ -36,14 +25,12 @@ namespace Ultraleap.TouchFree.ServiceUI
         public Slider cursorDeadzoneSlider;
 
         [Header("Hover&Hold")]
-        public InputField HoverStartTime;
-        public Slider HoverStartTimeSlider;
-        public InputField HoverCompleteTime;
-        public Slider HoverCompleteTimeSlider;
+        public SliderInputFieldCombiner hoverStartInputSlider;
+        public SliderInputFieldCombiner hoverCompleteInputSlider;
 
         [Header("TouchPlane")]
-        public InputField TouchPlaneDistance;
-        public Slider TouchPlaneDistanceSlider;
+        public SliderInputFieldCombiner touchPlaneDistanceInputSlider;
+
         public Toggle trackingBoneNearestToggle;
         public Toggle trackingBoneIndexTipToggle;
 
@@ -70,13 +57,9 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Space, Tooltip("List all Settings elements that relate to the interactionType.")]
         public InteractionTypeElements[] interactionTypeElements;
 
-        float sliderValueChangedDelay = 0;
-
         private void Awake()
         {
             InitialiseUI();
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
             resetToDefaultWarning.SetActive(false);
         }
 
@@ -84,14 +67,6 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             cursorDeadzoneSlider.minValue = CursorDeadzone_Min;
             cursorDeadzoneSlider.maxValue = CursorDeadzone_Max;
-
-            HoverStartTimeSlider.minValue = HoverCursorStartTime_Min;
-            HoverStartTimeSlider.maxValue = HoverCursorStartTime_Max;
-            HoverCompleteTimeSlider.minValue = HoverCursorCompleteTime_Min;
-            HoverCompleteTimeSlider.maxValue = HoverCursorCompleteTime_Max;
-
-            TouchPlaneDistanceSlider.minValue = TouchPlaneDistance_Min;
-            TouchPlaneDistanceSlider.maxValue = TouchPlaneDistance_Max;
         }
 
         public void ResetToDefaultValues()
@@ -105,15 +80,13 @@ namespace Ultraleap.TouchFree.ServiceUI
         protected override void AddValueChangedListeners()
         {
             scrollingOrDraggingTog.onValueChanged.AddListener(OnValueChanged);
-            cursorDeadzoneSlider.onValueChanged.AddListener(OnSliderValueChange);
+            cursorDeadzoneSlider.onValueChanged.AddListener(OnValueChanged);
 
-            HoverStartTime.onEndEdit.AddListener(OnValueChanged);
-            HoverStartTimeSlider.onValueChanged.AddListener(OnSliderValueChange);
-            HoverCompleteTime.onEndEdit.AddListener(OnValueChanged);
-            HoverCompleteTimeSlider.onValueChanged.AddListener(OnSliderValueChange);
+            hoverStartInputSlider.onValueChanged.AddListener(OnValueChanged);
+            hoverCompleteInputSlider.onValueChanged.AddListener(OnValueChanged);
 
-            TouchPlaneDistance.onEndEdit.AddListener(OnValueChanged);
-            TouchPlaneDistanceSlider.onValueChanged.AddListener(OnSliderValueChange);
+            touchPlaneDistanceInputSlider.onValueChanged.AddListener(OnValueChanged);
+
             trackingBoneNearestToggle.onValueChanged.AddListener(OnValueChanged);
             trackingBoneIndexTipToggle.onValueChanged.AddListener(OnValueChanged);
 
@@ -125,22 +98,20 @@ namespace Ultraleap.TouchFree.ServiceUI
             // Interaction Zone Events
             EnableInteractionZoneToggle.onValueChanged.AddListener(OnValueChanged);
             EnableInteractionZoneToggle.onValueChanged.AddListener(ShowHideInteractionZoneControls);
-            InteractionMinDistanceField.onValueChanged.AddListener(OnValueChanged);
-            InteractionMaxDistanceField.onValueChanged.AddListener(OnValueChanged);
+            InteractionMinDistanceField.onEndEdit.AddListener(OnValueChanged);
+            InteractionMaxDistanceField.onEndEdit.AddListener(OnValueChanged);
         }
 
         protected override void RemoveValueChangedListeners()
         {
             scrollingOrDraggingTog.onValueChanged.RemoveListener(OnValueChanged);
-            cursorDeadzoneSlider.onValueChanged.RemoveListener(OnSliderValueChange);
+            cursorDeadzoneSlider.onValueChanged.RemoveListener(OnValueChanged);
 
-            HoverStartTime.onEndEdit.RemoveListener(OnValueChanged);
-            HoverStartTimeSlider.onValueChanged.RemoveListener(OnSliderValueChange);
-            HoverCompleteTime.onEndEdit.RemoveListener(OnValueChanged);
-            HoverCompleteTimeSlider.onValueChanged.RemoveListener(OnSliderValueChange);
+            hoverStartInputSlider.onValueChanged.RemoveListener(OnValueChanged);
+            hoverCompleteInputSlider.onValueChanged.RemoveListener(OnValueChanged);
 
-            TouchPlaneDistance.onEndEdit.RemoveListener(OnValueChanged);
-            TouchPlaneDistanceSlider.onValueChanged.RemoveListener(OnSliderValueChange);
+            touchPlaneDistanceInputSlider.onValueChanged.RemoveListener(OnValueChanged);
+
             trackingBoneNearestToggle.onValueChanged.RemoveListener(OnValueChanged);
             trackingBoneIndexTipToggle.onValueChanged.RemoveListener(OnValueChanged);
 
@@ -152,8 +123,8 @@ namespace Ultraleap.TouchFree.ServiceUI
             // Interaction Zone Events
             EnableInteractionZoneToggle.onValueChanged.RemoveListener(OnValueChanged);
             EnableInteractionZoneToggle.onValueChanged.RemoveListener(ShowHideInteractionZoneControls);
-            InteractionMinDistanceField.onValueChanged.RemoveListener(OnValueChanged);
-            InteractionMaxDistanceField.onValueChanged.RemoveListener(OnValueChanged);
+            InteractionMinDistanceField.onEndEdit.RemoveListener(OnValueChanged);
+            InteractionMaxDistanceField.onEndEdit.RemoveListener(OnValueChanged);
         }
 
         protected override void LoadConfigValuesIntoFields()
@@ -162,13 +133,10 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             scrollingOrDraggingTog.SetIsOnWithoutNotify(ConfigManager.InteractionConfig.UseScrollingOrDragging);
 
-            HoverStartTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS.ToString("#0.00#"));
-            HoverStartTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS);
-            HoverCompleteTime.SetTextWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS.ToString("#0.00#"));
-            HoverCompleteTimeSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS);
+            hoverStartInputSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS);
+            hoverCompleteInputSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS);
 
-            TouchPlaneDistance.SetTextWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM.ToString("#0.00#"));
-            TouchPlaneDistanceSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM);
+            touchPlaneDistanceInputSlider.SetValueWithoutNotify(ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM);
 
             trackingBoneNearestToggle.SetIsOnWithoutNotify(false);
             trackingBoneIndexTipToggle.SetIsOnWithoutNotify(false);
@@ -212,50 +180,15 @@ namespace Ultraleap.TouchFree.ServiceUI
             DisplayIntractionPreview();
         }
 
-        void OnSliderValueChange(float _)
-        {
-            if (sliderValueChangedDelay <= 0)
-            {
-                sliderValueChangedDelay = 0.1f;
-                StartCoroutine(SetValueChangedAfterDelay());
-            }
-            else
-            {
-                sliderValueChangedDelay = 0.1f;
-            }
-        }
-
-        /// <summary>
-        /// Used to delay slider-based file saving to ensure we don't write too many
-        /// file changes in a short period of time
-        /// </summary>
-        IEnumerator SetValueChangedAfterDelay()
-        {
-            while (sliderValueChangedDelay > 0)
-            {
-                sliderValueChangedDelay -= Time.deltaTime;
-                yield return null;
-            }
-
-            OnValueChanged();
-        }
-
         protected override void ValidateValues()
         {
             var deadzoneRadius = Mathf.Clamp(cursorDeadzoneSlider.value, CursorDeadzone_Min, CursorDeadzone_Max);
             cursorDeadzoneSlider.SetValueWithoutNotify(deadzoneRadius);
 
-            var hoverStartTime = Mathf.Clamp(HoverStartTimeSlider.value, HoverCursorStartTime_Min, HoverCursorStartTime_Max);
-            HoverStartTime.SetTextWithoutNotify(hoverStartTime.ToString("#0.00#"));
-            HoverStartTimeSlider.SetValueWithoutNotify(hoverStartTime);
-
-            var hoverCompleteTime = Mathf.Clamp(HoverCompleteTimeSlider.value, HoverCursorCompleteTime_Min, HoverCursorCompleteTime_Max);
-            HoverCompleteTime.SetTextWithoutNotify(hoverCompleteTime.ToString("#0.00#"));
-            HoverCompleteTimeSlider.SetValueWithoutNotify(hoverCompleteTime);
-
-            var touchPlaneDistance = Mathf.Clamp(TouchPlaneDistanceSlider.value, TouchPlaneDistance_Min, TouchPlaneDistance_Max);
-            TouchPlaneDistance.SetTextWithoutNotify(touchPlaneDistance.ToString("#0.00#"));
-            TouchPlaneDistanceSlider.SetValueWithoutNotify(touchPlaneDistance);
+            InteractionMinDistanceField.SetTextWithoutNotify(
+                ServiceUtility.TryParseNewStringToFloat(ConfigManager.InteractionConfig.InteractionMinDistanceCm, InteractionMinDistanceField.text).ToString());
+            InteractionMaxDistanceField.SetTextWithoutNotify(
+                ServiceUtility.TryParseNewStringToFloat(ConfigManager.InteractionConfig.InteractionMaxDistanceCm, InteractionMaxDistanceField.text).ToString());
         }
 
         void DisplayIntractionPreview()
@@ -322,9 +255,9 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             ConfigManager.InteractionConfig.DeadzoneRadius = cursorDeadzoneSlider.value;
             ConfigManager.InteractionConfig.UseScrollingOrDragging = scrollingOrDraggingTog.isOn;
-            ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = HoverStartTimeSlider.value;
-            ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = HoverCompleteTimeSlider.value;
-            ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM = TouchPlaneDistanceSlider.value;
+            ConfigManager.InteractionConfig.HoverAndHold.HoverStartTimeS = hoverStartInputSlider.Value;
+            ConfigManager.InteractionConfig.HoverAndHold.HoverCompleteTimeS = hoverCompleteInputSlider.Value;
+            ConfigManager.InteractionConfig.TouchPlane.TouchPlaneActivationDistanceCM = touchPlaneDistanceInputSlider.Value;
 
             if(trackingBoneIndexTipToggle.isOn)
             {

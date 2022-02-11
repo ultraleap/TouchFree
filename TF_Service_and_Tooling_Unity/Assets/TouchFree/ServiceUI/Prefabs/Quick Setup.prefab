@@ -541,8 +541,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: PreviousScreen
+      - m_Target: {fileID: 1909507515042368741}
+        m_MethodName: CancelQuickSetup
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1800,8 +1800,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 837ec28d12b48074193cf1286e6d4a7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  permissionsBlockers: []
   step1: {fileID: 5174546310713933365}
   step2: {fileID: 203991000610859730}
+  target1: {fileID: 0}
+  target2: {fileID: 0}
   trackingLost: {fileID: 8714437742167643618}
   setupGuideButton: {fileID: 5762826026026973875}
   trackingFailsToSetupGuide: 3

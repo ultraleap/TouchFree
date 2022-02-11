@@ -37,7 +37,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             SetTargetPositions();
             step1.SetActive(true);
             step2.SetActive(false);
-            ScreenManager.Instance.SetCursorState(false);
+            ScreenManager.Instance.SetCursorState(false, true);
             HandManager.Instance.useTrackingTransform = false;
             HandManager.Instance.lockTrackingMode = true;
             DisplayTrackingLost(false);
@@ -49,7 +49,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             HandManager.Instance.useTrackingTransform = true;
             HandManager.Instance.lockTrackingMode = false;
-            ScreenManager.Instance.SetCursorState(true);
+            ScreenManager.Instance.SetCursorState(true, true);
         }
 
         private void Update()
@@ -224,6 +224,14 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             target1.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, verticalDistance, 0f);
             target2.GetComponent<RectTransform>().anchoredPosition = new Vector3(0f, -1f * verticalDistance, 0f);
+        }
+
+        public void CancelQuickSetup()
+        {
+            HandManager.Instance.lockTrackingMode = false;
+            HandManager.Instance.useTrackingTransform = true;
+            HandManager.Instance.UpdateTrackingTransformAndMode();
+            ScreenManager.Instance.PreviousScreen();
         }
     }
 }

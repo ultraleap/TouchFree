@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using System.Collections;
+using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -12,8 +12,6 @@ namespace Ultraleap.TouchFree.ServiceUI
         public InputField InputField;
         public string InputFieldValueFormat = "#0.00#";
         public OnChangeEvent onValueChanged = new OnChangeEvent();
-
-        float valueChangedDelay = 0;
 
         public float Value
         {
@@ -27,60 +25,36 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private void Awake()
         {
-            InputField.onValueChanged.AddListener(OnInputFieldValueChanged);
+            InputField.onEndEdit.AddListener(OnInputFieldValueChanged);
             Slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
 
         private void OnDestroy()
         {
-            InputField.onValueChanged.RemoveListener(OnInputFieldValueChanged);
+            InputField.onEndEdit.RemoveListener(OnInputFieldValueChanged);
             Slider.onValueChanged.RemoveListener(OnSliderValueChanged);
         }
 
         void OnInputFieldValueChanged(string val)
         {
-            if (float.TryParse(val, NumberStyles.Number, CultureInfo.CurrentCulture, out float result))
-            {
-                Mathf.Clamp(result, Slider.minValue, Slider.maxValue);
-                Slider.SetValueWithoutNotify(result);
-                onValueChanged?.Invoke(result);
-            }
+            float newVal = ServiceUtility.TryParseNewStringToFloat(Slider.value, val);
+            newVal = Mathf.Clamp(newVal, Slider.minValue, Slider.maxValue);
+
+            InputField.SetTextWithoutNotify(newVal.ToString(InputFieldValueFormat));
+            Slider.SetValueWithoutNotify(newVal);
+            onValueChanged?.Invoke(newVal);
         }
 
         void OnSliderValueChanged(float val)
         {
             InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
-
-            if (valueChangedDelay <= 0)
-            {
-                valueChangedDelay = 0.1f;
-                StartCoroutine(SetValueChangedAfterDelay());
-            }
-            else
-            {
-                valueChangedDelay = 0.1f;
-            }
+            onValueChanged?.Invoke(val);
         }
 
         public void SetValueWithoutNotify(float val)
         {
             Slider.SetValueWithoutNotify(val);
             InputField.SetTextWithoutNotify(val.ToString(InputFieldValueFormat));
-        }
-
-        /// <summary>
-        /// Used to delay slider-based file saving to ensure we don't write too many
-        /// file changes in a short period of time
-        /// </summary>
-        IEnumerator SetValueChangedAfterDelay()
-        {
-            while(valueChangedDelay > 0)
-            {
-                valueChangedDelay -= Time.deltaTime;
-                yield return null;
-            }
-
-            OnInputFieldValueChanged(InputField.text);
         }
 
         public class OnChangeEvent : UnityEvent<float> { }

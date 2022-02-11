@@ -29,13 +29,18 @@ namespace Ultraleap.TouchFree.ServiceShared
                                          bool _convertToStorageUnits = false,
                                          bool _convertToDisplayUnits = false)
         {
+            // ensure decimal commas are replaced with decimal points
+            _newText = _newText.Replace(',', '.');
+
             // Match any character that is not period (.), hypen (-), or numbers 0 to 9, and strip them out.
             _newText = Regex.Replace(_newText, "[^.0-9-]", "");
 
             float val;
 
             if (!float.TryParse(_newText, NumberStyles.Number, CultureInfo.CurrentCulture, out val))
+            {
                 val = _original; // string was not compatible!
+            }
 
             if (_convertToDisplayUnits)
             {
