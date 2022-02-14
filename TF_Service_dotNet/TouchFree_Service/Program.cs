@@ -1,3 +1,7 @@
+#if !DEBUG
+using System;
+using System.IO;
+#endif
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -7,6 +11,14 @@ namespace Ultraleap.TouchFree.Service
     {
         static void Main(string[] args)
         {
+#if !DEBUG
+            FileStream filestream = new FileStream("log.txt", FileMode.Create);
+            StreamWriter streamwriter = new StreamWriter(filestream)
+            {
+                AutoFlush = true
+            };
+            Console.SetOut(streamwriter);
+#endif
             CreateHostBuilder(args).Build().Run();
         }
 
