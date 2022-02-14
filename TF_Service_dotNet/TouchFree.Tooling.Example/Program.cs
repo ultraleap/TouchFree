@@ -14,7 +14,7 @@ namespace Ultraleap.TouchFree.Tooling.Example
             inputActionManager.Awake();
             InputActionManager.TransmitInputAction += TransmitInputAction;
 
-            var connectionManager = new ConnectionManager();
+            using var connectionManager = new ConnectionManager();
 
             ConnectionManager.HandFound += ConnectionManager_HandFound;
             ConnectionManager.HandsLost += ConnectionManager_HandsLost;

@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Tooling
     // This represents a connection to a TouchFree Service. It should be created by a
     // <ConnectionManager> to ensure there is only one active connection at a time. The sending
     // and receiving of data to the client is handled here.
-    public class ServiceConnection
+    public class ServiceConnection : IDisposable
     {
         // Group: Variables
 
@@ -63,16 +63,6 @@ namespace Ultraleap.TouchFree.Tooling
             if (response.status != "Success")
             {
                 Debug.WriteLine($"Connection to Service failed. Details:\n{response.message}");
-            }
-        }
-
-        // Function: Disconnect
-        // Can be used to force the connection to the <webSocket> to be closed.
-        public void Disconnect()
-        {
-            if (webSocket != null)
-            {
-                webSocket.Close();
             }
         }
 
@@ -159,6 +149,15 @@ namespace Ultraleap.TouchFree.Tooling
             }
 
             webSocket.Send(jsonMessage);
+        }
+
+        public void Dispose()
+        {
+            if (webSocket != null)
+            {
+                webSocket.Close();
+                webSocket = null;
+            }
         }
     }
 }

@@ -121,9 +121,11 @@ namespace Ultraleap.TouchFree.Tooling
             }
         }
 
-        // Function: HandleConfigState
-        // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
-        // match, calls the callback action in the matching <ConfigStateCallback>.
+        /// <summary>
+        /// Checks the dictionary of <cref>configStateCallbacks</cref> for a matching request ID. If there is a
+        /// match, calls the callback action in the matching <cref>ConfigStateCallback</cref>.
+        /// </summary>
+        /// <param name="_configState">The configuration state received from the websocket</param>
         void HandleConfigState(ConfigState _configState)
         {
             foreach (KeyValuePair<string, ConfigStateCallback> callback in configStateCallbacks)
@@ -137,13 +139,14 @@ namespace Ultraleap.TouchFree.Tooling
             }
         }
 
-        // Function: CheckForAction
-        // Checks <actionQueue> for valid <ClientInputActions>. If there are too many in the queue,
-        // clears out non-essential <ClientInputActions> down to the number specified by
-        // <actionCullToCount>. If any remain, sends the oldest <ClientInputAction> to
-        // <ClientInputActionManager> to distribute the action.
-        // UP <InputType>s have their positions set to the last known position to ensure
-        // input events trigger correctly.
+        /// <summary>
+        /// Checks <cref>actionQueue</cref> for valid <cref>ClientInputAction</cref>s. If there are too many in the queue,
+        /// clears out non-essential <cref>ClientInputActions</cref> down to the number specified by
+        /// <cref>actionCullToCount</cref>. If any remain, sends the oldest <cref>ClientInputAction</cref> to
+        /// <cref>ClientInputActionManager</cref> to distribute the action.
+        /// UP <cref>InputType</cref>s have their positions set to the last known position to ensure
+        /// input events trigger correctly.
+        /// </summary>
         void CheckForAction()
         {
             ClientInputAction action = new ClientInputAction();

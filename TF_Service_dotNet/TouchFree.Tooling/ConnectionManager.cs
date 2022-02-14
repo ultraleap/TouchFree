@@ -3,7 +3,7 @@ using Ultraleap.TouchFree.Library;
 
 namespace Ultraleap.TouchFree.Tooling
 {
-    public class ConnectionManager
+    public class ConnectionManager : IDisposable
     {
         // Group: Variables
 
@@ -81,7 +81,7 @@ namespace Ultraleap.TouchFree.Tooling
         {
             if (currentServiceConnection != null)
             {
-                currentServiceConnection.Disconnect();
+                currentServiceConnection.Dispose();
                 currentServiceConnection = null;
             }
         }
@@ -112,29 +112,7 @@ namespace Ultraleap.TouchFree.Tooling
             Connect();
         }
 
-        // Function: OnEnable
-        // Unity's OnEnable function for handling when the behaviour is enabled. Connects
-        // to SC Service if not already connected.
-        private void OnEnable()
-        {
-            if (currentServiceConnection == null)
-            {
-                Connect();
-            }
-        }
-
-        // Function: OnDisable
-        // Unity's OnDisable function for handling when the behaviour is disabled. Disconnects
-        // from SC Service to prevent caching any new incoming inputs.
-        private void OnDisable()
-        {
-            Disconnect();
-        }
-
-        // Function: OnDestroy
-        // Unity's Destroy function for handling the deconstruction of a MonoBehaviour.
-        // Ensures <Disconnect> is called.
-        private void OnDestroy()
+        public void Dispose()
         {
             Disconnect();
         }
