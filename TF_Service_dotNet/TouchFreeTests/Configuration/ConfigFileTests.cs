@@ -39,7 +39,7 @@ namespace TouchFreeTests.Configuration
         }
 
         [Test]
-        public void DeserialiseRawText_OpenBracesMissing_ThrowsSerialisationException()
+        public void DeserialiseRawText_OpenBracesMissing_ErrorHandledAndNullReturnedSoDefaultConfigCreated()
         {
             //Given
             TestConfig testConfig = new TestConfig();
@@ -48,8 +48,11 @@ namespace TouchFreeTests.Configuration
             ImplementedConfigFile configFile = new ImplementedConfigFile();
             jsonConfig = jsonConfig.TrimStart(new char[] { '{', ' ' });
 
-            //When & Then
-            Assert.Throws<JsonSerializationException>(() => configFile.DeserialiseText(jsonConfig));
+            //When
+            var result = configFile.DeserialiseText(jsonConfig);
+
+            //Then
+            Assert.IsNull(result);
         }
 
         [Test]
@@ -102,6 +105,19 @@ namespace TouchFreeTests.Configuration
 
             //Then
             Assert.IsNull(result);
+        }
+
+        [Test]
+        public void DeserialiseRawText_EmptyObject_ReturnsDefaultConfig()
+        {
+            //Given
+            ImplementedConfigFile configFile = new ImplementedConfigFile();
+
+            //When
+            TestConfig result = configFile.DeserialiseText("{}");
+
+            //Then
+            Assert.AreEqual(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(new TestConfig()));
         }
 
         [Test]

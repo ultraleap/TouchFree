@@ -67,6 +67,16 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             string data = File.ReadAllText(_ConfigFilePath);
             TData config = DeserialiseRawText(data);
+
+            if (config == null)
+            {
+                // If the config is null after deserialisation then create a default config
+                CreateDefaultConfigFile();
+            }
+
+            data = File.ReadAllText(_ConfigFilePath);
+            config = DeserialiseRawText(data);
+
             _OnConfigFileUpdated?.Invoke();
 
             return config;
@@ -84,8 +94,18 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private void HandleDeserialisationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
         {
             var currentError = errorArgs.ErrorContext.Error.Message;
-            errorArgs.ErrorContext.Handled = false;
-            //TODO: Handle Errors, set "Handled" to true when the errors are handled
+            if (errorArgs.ErrorContext.Member == null && errorArgs.ErrorContext.OriginalObject == null)
+            {
+                // In this case the config has failed during the initial deserialisation
+                // so we should return null from the deserialisation and create a default config
+                errorArgs.ErrorContext.Handled = true;
+            }
+            else
+            {
+                //TODO: Handle Errors, set "Handled" to true when the errors are handled
+                errorArgs.ErrorContext.Handled = false;
+            }
+
         }
 
         private bool DoesConfigFileExist()
