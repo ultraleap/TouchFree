@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 
 using Leap;
@@ -32,6 +33,30 @@ namespace Ultraleap.TouchFree.Library
             CursorPosition = _positions.CursorPosition;
             DistanceFromScreen = _positions.DistanceFromScreen;
             ProgressToClick = _progressToClick;
+        }
+    }
+
+    public struct ClientInputAction
+    {
+        public readonly long Timestamp;
+        public readonly InteractionType InteractionType;
+        public readonly HandType HandType;
+        public readonly HandChirality Chirality;
+        public readonly InputType InputType;
+        public WebSocketVector2 CursorPosition;
+        public readonly float DistanceFromScreen;
+        public readonly float ProgressToClick;
+
+        public ClientInputAction(WebsocketInputAction _wsInput)
+        {
+            Timestamp = _wsInput.Timestamp;
+            InteractionType = FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags);
+            HandType = FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags);
+            Chirality = FlagUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags);
+            InputType = FlagUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags);
+            CursorPosition = _wsInput.CursorPosition;
+            DistanceFromScreen = _wsInput.DistanceFromScreen;
+            ProgressToClick = _wsInput.ProgressToClick;
         }
     }
 
@@ -162,6 +187,199 @@ namespace Ultraleap.TouchFree.Library
         {
             x = _x;
             y = _y;
+        }
+    }
+
+    // Class: FlagUtilities
+    // A collection of Utilities to be used when working with <BitmaskFlags>.
+    public static class FlagUtilities
+    {
+        // Group: Functions
+
+        // Function: GetInteractionFlags
+        // Used to convert a collection of interaction enums to flags for sending
+        // to the Service.
+        internal static BitmaskFlags GetInteractionFlags(
+            InteractionType _interactionType,
+            HandType _handType,
+            HandChirality _chirality,
+            InputType _inputType)
+        {
+            BitmaskFlags returnVal = BitmaskFlags.NONE;
+
+            switch (_handType)
+            {
+                case HandType.PRIMARY:
+                    returnVal ^= BitmaskFlags.PRIMARY;
+                    break;
+
+                case HandType.SECONDARY:
+                    returnVal ^= BitmaskFlags.SECONDARY;
+                    break;
+            }
+
+            switch (_chirality)
+            {
+                case HandChirality.LEFT:
+                    returnVal ^= BitmaskFlags.LEFT;
+                    break;
+
+                case HandChirality.RIGHT:
+                    returnVal ^= BitmaskFlags.RIGHT;
+                    break;
+            }
+
+            switch (_inputType)
+            {
+                case InputType.NONE:
+                    returnVal ^= BitmaskFlags.NONE_INPUT;
+                    break;
+
+                case InputType.CANCEL:
+                    returnVal ^= BitmaskFlags.CANCEL;
+                    break;
+
+                case InputType.MOVE:
+                    returnVal ^= BitmaskFlags.MOVE;
+                    break;
+
+                case InputType.UP:
+                    returnVal ^= BitmaskFlags.UP;
+                    break;
+
+                case InputType.DOWN:
+                    returnVal ^= BitmaskFlags.DOWN;
+                    break;
+            }
+
+            switch (_interactionType)
+            {
+                case InteractionType.PUSH:
+                    returnVal ^= BitmaskFlags.PUSH;
+                    break;
+
+                case InteractionType.HOVER:
+                    returnVal ^= BitmaskFlags.HOVER;
+                    break;
+
+                case InteractionType.GRAB:
+                    returnVal ^= BitmaskFlags.GRAB;
+                    break;
+
+                case InteractionType.TOUCHPLANE:
+                    returnVal ^= BitmaskFlags.TOUCHPLANE;
+                    break;
+            }
+
+            return returnVal;
+        }
+
+        // Function: GetChiralityFromFlags
+        // Used to find which <HandChirality> _flags contains. Favours RIGHT if none or both are found.
+        internal static HandChirality GetChiralityFromFlags(BitmaskFlags _flags)
+        {
+            HandChirality chirality = HandChirality.RIGHT;
+
+            if (_flags.HasFlag(BitmaskFlags.RIGHT))
+            {
+                chirality = HandChirality.RIGHT;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.LEFT))
+            {
+                chirality = HandChirality.LEFT;
+            }
+            else
+            {
+                Debug.WriteLine("InputActionData missing: No Chirality found. Defaulting to 'RIGHT'");
+            }
+
+            return chirality;
+        }
+
+        // Function: GetHandTypeFromFlags
+        // Used to find which <HandType> _flags contains. Favours PRIMARY if none or both are found.
+        internal static HandType GetHandTypeFromFlags(BitmaskFlags _flags)
+        {
+            HandType handType = HandType.PRIMARY;
+
+            if (_flags.HasFlag(BitmaskFlags.PRIMARY))
+            {
+                handType = HandType.PRIMARY;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.SECONDARY))
+            {
+                handType = HandType.SECONDARY;
+            }
+            else
+            {
+                Debug.WriteLine("InputActionData missing: No HandData found. Defaulting to 'PRIMARY'");
+            }
+
+            return handType;
+        }
+
+        // Function: GetInputTypeFromFlags
+        // Used to find which <InputType> _flags contains. Favours NONE if none are found.
+        internal static InputType GetInputTypeFromFlags(BitmaskFlags _flags)
+        {
+            InputType inputType = InputType.NONE;
+
+            if (_flags.HasFlag(BitmaskFlags.NONE_INPUT))
+            {
+                inputType = InputType.NONE;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.CANCEL))
+            {
+                inputType = InputType.CANCEL;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.UP))
+            {
+                inputType = InputType.UP;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.DOWN))
+            {
+                inputType = InputType.DOWN;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.MOVE))
+            {
+                inputType = InputType.MOVE;
+            }
+            else
+            {
+                Debug.WriteLine("InputActionData missing: No InputType found. Defaulting to 'NONE'");
+            }
+
+            return inputType;
+        }
+
+        // Function: GetInteractionTypeFromFlags
+        // Used to find which <InteractionType> _flags contains. Favours PUSH if none are found.
+        internal static InteractionType GetInteractionTypeFromFlags(BitmaskFlags _flags)
+        {
+            InteractionType interactionType = InteractionType.PUSH;
+
+            if (_flags.HasFlag(BitmaskFlags.PUSH))
+            {
+                interactionType = InteractionType.PUSH;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.HOVER))
+            {
+                interactionType = InteractionType.HOVER;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.GRAB))
+            {
+                interactionType = InteractionType.GRAB;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.TOUCHPLANE))
+            {
+                interactionType = InteractionType.TOUCHPLANE;
+            }
+            else
+            {
+                Debug.WriteLine("InputActionData missing: No InteractionType found. Defaulting to 'PUSH'");
+            }
+
+            return interactionType;
         }
     }
 }

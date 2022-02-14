@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
+using Ultraleap.TouchFree.Library;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {

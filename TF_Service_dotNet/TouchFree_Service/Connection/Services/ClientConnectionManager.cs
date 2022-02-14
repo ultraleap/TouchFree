@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.WebSockets;
 
 using Ultraleap.TouchFree.Library;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 
 namespace Ultraleap.TouchFree.Service.Connection

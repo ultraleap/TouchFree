@@ -8,7 +8,6 @@ using System.Threading;
 using System.Text;
 
 using Ultraleap.TouchFree.Library;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
