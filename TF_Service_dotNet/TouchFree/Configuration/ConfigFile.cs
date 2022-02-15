@@ -93,19 +93,9 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         private void HandleDeserialisationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
         {
-            var currentError = errorArgs.ErrorContext.Error.Message;
-            if (errorArgs.ErrorContext.Member == null && errorArgs.ErrorContext.OriginalObject == null)
-            {
-                // In this case the config has failed during the initial deserialisation
-                // so we should return null from the deserialisation and create a default config
-                errorArgs.ErrorContext.Handled = true;
-            }
-            else
-            {
-                //TODO: Handle Errors, set "Handled" to true when the errors are handled
-                errorArgs.ErrorContext.Handled = false;
-            }
-
+            //TODO: Handle Errors, set "Handled" to true when the errors are handled
+            errorArgs.ErrorContext.Handled = false;
+            Console.WriteLine($"Unable to load settings from config {typeof(TData)}");
         }
 
         private bool DoesConfigFileExist()
