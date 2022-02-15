@@ -72,10 +72,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
             {
                 // If the config is null after deserialisation then create a default config
                 CreateDefaultConfigFile();
-            }
 
-            data = File.ReadAllText(_ConfigFilePath);
-            config = DeserialiseRawText(data);
+                data = File.ReadAllText(_ConfigFilePath);
+                config = DeserialiseRawText(data);
+            }
 
             _OnConfigFileUpdated?.Invoke();
 
