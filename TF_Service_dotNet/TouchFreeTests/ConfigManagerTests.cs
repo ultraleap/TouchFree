@@ -19,7 +19,7 @@ namespace TouchFreeTests
         public void UpdateEventPassesPhysicalConfig()
         {
             // Given
-            PhysicalConfig testConfig = new PhysicalConfig { ScreenHeightM = 0.5f };
+            PhysicalConfig testConfig = new PhysicalConfig { ScreenHeightMm = 50f };
             configManager.OnPhysicalConfigUpdated += OnPhysicalConfig;
 
             // When
@@ -28,7 +28,7 @@ namespace TouchFreeTests
 
             // Then
             Assert.IsNotNull(physicalConfig);
-            Assert.AreEqual(0.5f, physicalConfig.ScreenHeightM);
+            Assert.AreEqual(50f, physicalConfig.ScreenHeightMm);
         }
 
         [Test]

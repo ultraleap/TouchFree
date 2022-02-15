@@ -104,27 +104,31 @@ namespace Ultraleap.TouchFree.Library
 
             if (_config.ScreenRotationD != 0)
             {
-                var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomM.Y, _config.LeapPositionRelativeToScreenBottomM.Z).Magnitude;
-                var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomM.Z / _config.LeapPositionRelativeToScreenBottomM.Y);
+                var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomMm.Y, _config.LeapPositionRelativeToScreenBottomMm.Z).Magnitude;
+                var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomMm.Z / _config.LeapPositionRelativeToScreenBottomMm.Y);
                 var angleWithScreenRotation = Utilities.DegreesToRadians(_config.ScreenRotationD) + angle;
 
                 var translatedYPosition = (float)(distanceFromScreenBottom * Math.Cos(angleWithScreenRotation));
-                if (_config.LeapPositionRelativeToScreenBottomM.Z < 0 && _config.LeapPositionRelativeToScreenBottomM.Y < 0) {
+                if (_config.LeapPositionRelativeToScreenBottomMm.Z < 0 && _config.LeapPositionRelativeToScreenBottomMm.Y < 0) {
                     translatedYPosition = -translatedYPosition;
                 }
 
-                var translatedUsingScreenPosition = new Vector(_config.LeapPositionRelativeToScreenBottomM.X, translatedYPosition,
+                var translatedUsingScreenPosition = new Vector(
+                    _config.LeapPositionRelativeToScreenBottomMm.X,
+                    translatedYPosition,
                     (float)(distanceFromScreenBottom * Math.Sin(angleWithScreenRotation)));
 
-                trackingTransform = new LeapTransform(translatedUsingScreenPosition * 1000, new
-                    LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
+                trackingTransform = new LeapTransform(translatedUsingScreenPosition,
+                    new LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
             }
             else
             {
-                trackingTransform = new LeapTransform(new Vector(_config.LeapPositionRelativeToScreenBottomM.X,
-                    _config.LeapPositionRelativeToScreenBottomM.Y,
-                    -_config.LeapPositionRelativeToScreenBottomM.Z) * 1000, new
-                    LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
+                trackingTransform = new LeapTransform(
+                    new Vector(
+                        _config.LeapPositionRelativeToScreenBottomMm.X,
+                        _config.LeapPositionRelativeToScreenBottomMm.Y,
+                        -_config.LeapPositionRelativeToScreenBottomMm.Z),
+                    new LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
             }
         }
 

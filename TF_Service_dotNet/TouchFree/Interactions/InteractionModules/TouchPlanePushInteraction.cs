@@ -9,10 +9,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
     {
         public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
 
-        // The distance from the touchPlane at which the progressToClick is 0
+        // The distance from the touchPlane (in m) at which the progressToClick is 0
         private const float touchPlaneZeroProgress = 0.1f;
 
-        // The distance from screen at which the progressToClick is 1
+        // The distance from screen (in m) at which the progressToClick is 1
         private float touchPlaneDistance = 0.05f;
 
         private bool pressing = false;
@@ -59,11 +59,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             Vector2 currentCursorPosition = positions.CursorPosition;
             float distanceFromScreen = positions.DistanceFromScreen;
+            float touchPlaneDistanceMm = touchPlaneDistance * 1000f;
+            float touchPlaneZeroProgressMm = touchPlaneZeroProgress * 1000f;
 
-            float progressToClick = Math.Clamp(1f - Utilities.InverseLerp(touchPlaneDistance, touchPlaneDistance + touchPlaneZeroProgress, distanceFromScreen), 0f, 1f);
+            float progressToClick = Math.Clamp(1f - Utilities.InverseLerp(touchPlaneDistanceMm, touchPlaneDistanceMm + touchPlaneZeroProgressMm, distanceFromScreen), 0f, 1f);
 
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
-            if (distanceFromScreen < touchPlaneDistance)
+            if (distanceFromScreen < touchPlaneDistanceMm)
             {
                 if (handReady)
                 {
@@ -121,9 +123,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosM = virtualScreen.PixelsToMeters(_startPos);
-            Vector2 currentPosM = virtualScreen.PixelsToMeters(_currentPos);
-            float distFromStartPos = (startPosM - currentPosM).Length();
+            Vector2 startPosMm = virtualScreen.PixelsToMillimeters(_startPos);
+            Vector2 currentPosMm = virtualScreen.PixelsToMillimeters(_currentPos);
+            float distFromStartPos = (startPosMm - currentPosMm).Length();
 
             if (distFromStartPos > dragStartDistanceThresholdM)
             {
@@ -137,8 +139,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             base.OnInteractionSettingsUpdated(_config);
 
-            // Convert from CM to M
-            touchPlaneDistance = _config.TouchPlane.TouchPlaneActivationDistanceCM / 100;
+            // Convert from Mm to M
+            touchPlaneDistance = _config.TouchPlane.TouchPlaneActivationDistanceMm / 1000;
             positioningModule.TrackedPosition = _config.TouchPlane.TouchPlaneTrackedPosition;
         }
     }

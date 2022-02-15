@@ -53,17 +53,17 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return;
             }
 
-            Vector2 cursorPositionM = virtualScreen.PixelsToMeters(positions.CursorPosition);
-            Vector2 hoverPosM = ApplyHoverzone(cursorPositionM);
-            positions.CursorPosition = virtualScreen.MetersToPixels(hoverPosM);
+            Vector2 cursorPositionMm = virtualScreen.PixelsToMillimeters(positions.CursorPosition);
+            Vector2 hoverPosMm = ApplyHoverzone(cursorPositionMm);
+            positions.CursorPosition = virtualScreen.MillimetersToPixels(hoverPosMm);
 
             HandleInteractions();
         }
 
-        private Vector2 ApplyHoverzone(Vector2 _screenPosM)
+        private Vector2 ApplyHoverzone(Vector2 _screenPosMm)
         {
             float deadzoneRad = positioningStabiliser.defaultDeadzoneRadius + hoverDeadzoneEnlargementDistance;
-            previousHoverPosDeadzone = positioningStabiliser.ApplyDeadzoneSized(previousHoverPosDeadzone, _screenPosM, deadzoneRad);
+            previousHoverPosDeadzone = positioningStabiliser.ApplyDeadzoneSized(previousHoverPosDeadzone, _screenPosMm, deadzoneRad);
             return previousHoverPosDeadzone;
         }
 
