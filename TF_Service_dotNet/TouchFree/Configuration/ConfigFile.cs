@@ -58,6 +58,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private event Action _OnConfigFileUpdated;
         protected virtual string _ConfigFilePath => Path.Combine(ConfigFileUtils.ConfigFileDirectory, ConfigFileName);
 
+        private bool ErrorLoadingConfig = false;
+
         protected TData LoadConfig_Internal()
         {
             if (!DoesConfigFileExist())
@@ -68,7 +70,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
             string data = File.ReadAllText(_ConfigFilePath);
             TData config = DeserialiseRawText(data);
 
-            if (config == null)
+            if (ErrorLoadingConfig)
+            {
+                // If we have errored then use a default config but don't overwrite the file
+                config = new TData();
+            }
+            else if (config == null)
             {
                 // If the config is null after deserialisation then create a default config
                 CreateDefaultConfigFile();
@@ -93,8 +100,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         private void HandleDeserialisationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
         {
-            //TODO: Handle Errors, set "Handled" to true when the errors are handled
-            errorArgs.ErrorContext.Handled = false;
+            ErrorLoadingConfig = true;
+            errorArgs.ErrorContext.Handled = true;
             Console.WriteLine($"Unable to load settings from config {typeof(TData)}");
         }
 
