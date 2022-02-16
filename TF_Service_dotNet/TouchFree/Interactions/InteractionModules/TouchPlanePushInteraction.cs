@@ -58,7 +58,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private void HandleInteractions()
         {
             Vector2 currentCursorPosition = positions.CursorPosition;
-            float distanceFromScreen = positions.DistanceFromScreen;
+            float distanceFromScreen = positions.DistanceFromScreen * 1000f;
             float touchPlaneDistanceMm = touchPlaneDistance * 1000f;
             float touchPlaneZeroProgressMm = touchPlaneZeroProgress * 1000f;
 
