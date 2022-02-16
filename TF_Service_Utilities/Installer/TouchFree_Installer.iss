@@ -48,6 +48,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}\Tracking_Build\Tracking_for_TouchFree_{#AppVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -60,14 +61,16 @@ Root: HKA64; Subkey: "Software\Ultraleap"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletekey
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
+Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall" ValueType: dword; ValueName: "VisualiserInStartMenu"; ValueData: 0
+Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall" ValueType: dword; ValueName: "ControlPanelOnStartup"; ValueData: 0
+Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall" ValueType: dword; ValueName: "ControlPanelInStartMenu"; ValueData: 0
 
 [Run]
-; Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "{cm:LaunchProgram,{#StringChange(SettingsUIName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "Configure TouchFree"; Flags: runascurrentuser nowait postinstall skipifsilent
-; Filename: "{app}\TouchFree\{#TouchFreeAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(TouchFreeAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
+Filename: "{app}\Tracking\Tracking_for_TouchFree_{#AppVersion}.exe" Parameters: "/S" Flags: runhidden
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
