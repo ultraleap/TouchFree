@@ -48,7 +48,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SourcePath}\Tracking_Build\Tracking_for_TouchFree_{#AppVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion
+Source: "{#SourcePath}\Tracking_Build\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -70,7 +70,7 @@ Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "Configure Touch
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
-Filename: "{app}\Tracking\Tracking_for_TouchFree_{#AppVersion}.exe" Parameters: "/S" Flags: runhidden
+Filename: "{app}\Tracking\Tracking_for_TouchFree_{#TouchFreeVersion}.exe" Parameters: "/S" Flags: runhidden
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
