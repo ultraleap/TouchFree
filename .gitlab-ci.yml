@@ -258,6 +258,21 @@ TouchFree::build:
     - unity
     - win10
 
+Tracking::download:
+  stage: build
+  when: always
+  script:
+    - cd ./Scripts/
+    - python ./Download_Tracking.py -t ${env:GITLAB_TOKEN}
+  after_script:
+    - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
+  artifacts:
+    paths:
+    - ./Scripts/libtrack*/Ultraleap_Tracking_Installer*_win64.exe
+    expire_in: 1 hour
+  tags:
+    - unity
+
 TF_Service::test:
   stage: test
 
