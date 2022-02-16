@@ -61,9 +61,9 @@ Root: HKA64; Subkey: "Software\Ultraleap"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree"; Flags: uninsdeletekeyifempty
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service"; Flags: uninsdeletekey
 Root: HKA64; Subkey: "Software\Ultraleap\TouchFree\Service\Settings"; ValueType: string; ValueName: "WrapperExePath"; ValueData: "{app}\Wrapper\{#WrapperExeName}"
-Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall" ValueType: dword; ValueName: "VisualiserInStartMenu"; ValueData: 0
-Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall" ValueType: dword; ValueName: "ControlPanelOnStartup"; ValueData: 0
-Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall" ValueType: dword; ValueName: "ControlPanelInStartMenu"; ValueData: 0
+Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall"; ValueType: dword; ValueName: "VisualiserInStartMenu"; ValueData: 0
+Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall"; ValueType: dword; ValueName: "ControlPanelOnStartup"; ValueData: 0
+Root: HKA64; Subkey: "SOFTWARE\WOW6432Node\Ultraleap\TrackingServiceInstall"; ValueType: dword; ValueName: "ControlPanelInStartMenu"; ValueData: 0
 
 [Run]
 Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "Configure TouchFree"; Flags: runascurrentuser nowait postinstall skipifsilent
