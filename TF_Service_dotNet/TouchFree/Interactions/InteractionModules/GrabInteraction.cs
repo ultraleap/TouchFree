@@ -77,7 +77,7 @@ namespace Ultraleap.TouchFree.Service
         private void HandleInteractions(Leap.Hand hand, float _velocity)
         {
             // If already pressing, continue regardless of velocity
-            if (grabDetector.IsGrabbing(hand) && (pressing || _velocity < maxHandVelocity))
+            if (grabDetector.IsGrabbing(hand) && (pressing || _velocity < (maxHandVelocity * 1000f)))
             {
                 HandleInvoke();
             }
@@ -195,7 +195,7 @@ namespace Ultraleap.TouchFree.Service
             var b = virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
             var distFromStartPos = (a - b).Length();
 
-            if (distFromStartPos > dragStartDistanceThresholdM)
+            if (distFromStartPos > (dragStartDistanceThresholdM * 1000f))
             {
                 return true;
             }

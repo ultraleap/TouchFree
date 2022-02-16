@@ -43,15 +43,15 @@ namespace TouchFreeTests
             //Given
             Vector3 worldPosition = new Vector3(1, 2, 3);
             Vector3 screenPosition = new Vector3(4, 5, 6);
-            Vector2 screenPositionM = new Vector2(7, 8);
+            Vector2 screenPositionMm = new Vector2(7, 8);
 
             SetTrackerPosition(TrackedPosition.INDEX_TIP, worldPosition);
 
             PositioningModule positioningModule = CreatePositioningModule(new[] { mockTracker.Object });
 
             mockVirtualScreen.Setup(x => x.WorldPositionToVirtualScreen(worldPosition)).Returns(screenPosition);
-            mockVirtualScreen.Setup(x => x.PixelsToMeters(It.Is<Vector2>(v => v.X == screenPosition.X && v.Y == screenPosition.Y))).Returns(screenPositionM);
-            mockVirtualScreen.Setup(x => x.MetersToPixels(screenPositionM)).Returns(new Vector2(screenPosition.X, screenPosition.Y));
+            mockVirtualScreen.Setup(x => x.PixelsToMillimeters(It.Is<Vector2>(v => v.X == screenPosition.X && v.Y == screenPosition.Y))).Returns(screenPositionMm);
+            mockVirtualScreen.Setup(x => x.MillimetersToPixels(screenPositionMm)).Returns(new Vector2(screenPosition.X, screenPosition.Y));
 
             Vector2 expectedHandPositionPx = new Vector2(4, 5);
             float expectedDistanceFromScreenM = 6;
@@ -71,15 +71,15 @@ namespace TouchFreeTests
             //Given
             Vector3 worldPosition = new Vector3(1, 2, 3);
             Vector3 screenPosition = new Vector3(4, 5, 6);
-            Vector2 screenPositionM = new Vector2(7, 8);
+            Vector2 screenPositionMm = new Vector2(7, 8);
 
             SetTrackerPosition(TrackedPosition.INDEX_TIP, worldPosition);
 
             PositioningModule positioningModule = CreatePositioningModule(new[] { mockTracker.Object });
 
             mockVirtualScreen.Setup(x => x.WorldPositionToVirtualScreen(worldPosition)).Returns(screenPosition);
-            mockVirtualScreen.Setup(x => x.PixelsToMeters(It.Is<Vector2>(v => v.X == screenPosition.X && v.Y == screenPosition.Y))).Returns(screenPositionM);
-            mockVirtualScreen.Setup(x => x.MetersToPixels(screenPositionM)).Returns(new Vector2(screenPosition.X, screenPosition.Y));
+            mockVirtualScreen.Setup(x => x.PixelsToMillimeters(It.Is<Vector2>(v => v.X == screenPosition.X && v.Y == screenPosition.Y))).Returns(screenPositionMm);
+            mockVirtualScreen.Setup(x => x.MillimetersToPixels(screenPositionMm)).Returns(new Vector2(screenPosition.X, screenPosition.Y));
 
             Ultraleap.TouchFree.Library.Positions oldPosition = positioningModule.CalculatePositions(new Leap.Hand());
 
@@ -93,12 +93,12 @@ namespace TouchFreeTests
             Ultraleap.TouchFree.Library.Positions position = positioningModule.CalculatePositions(null);
 
             //Then
-            Assert.AreEqual(oldPosition.CursorPosition.X, position.CursorPosition.X, 0.001);
-            Assert.AreEqual(oldPosition.CursorPosition.Y, position.CursorPosition.Y, 0.001);
-            Assert.AreEqual(oldPosition.DistanceFromScreen, position.DistanceFromScreen, 0.001);
-            Assert.AreEqual(expectedHandPositionPx.X, position.CursorPosition.X, 0.001);
-            Assert.AreEqual(expectedHandPositionPx.Y, position.CursorPosition.Y, 0.001);
-            Assert.AreEqual(expectedDistanceFromScreenM, position.DistanceFromScreen, 0.001);
+            Assert.AreEqual(oldPosition.CursorPosition.X, position.CursorPosition.X, 0.01);
+            Assert.AreEqual(oldPosition.CursorPosition.Y, position.CursorPosition.Y, 0.01);
+            Assert.AreEqual(oldPosition.DistanceFromScreen, position.DistanceFromScreen, 0.01);
+            Assert.AreEqual(expectedHandPositionPx.X, position.CursorPosition.X, 0.01);
+            Assert.AreEqual(expectedHandPositionPx.Y, position.CursorPosition.Y, 0.01);
+            Assert.AreEqual(expectedDistanceFromScreenM, position.DistanceFromScreen, 0.01);
         }
 
         [TestCase(TrackedPosition.INDEX_TIP, typeof(IndexTipTracker))]

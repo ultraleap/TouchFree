@@ -47,14 +47,14 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return positions;
             }
 
-            Vector3 worldPos = TrackerToUse.GetTrackedPosition(hand);
-            Vector3 screenPos = virtualScreen.WorldPositionToVirtualScreen(worldPos);
-            Vector2 screenPosM = virtualScreen.PixelsToMeters(new Vector2(screenPos.X, screenPos.Y));
+            Vector3 worldPosM = TrackerToUse.GetTrackedPosition(hand);
+            Vector3 screenPos = virtualScreen.WorldPositionToVirtualScreen(worldPosM);
+            Vector2 screenPosMm = virtualScreen.PixelsToMillimeters(new Vector2(screenPos.X, screenPos.Y));
             float distanceFromScreen = screenPos.Z;
 
-            screenPosM = stabiliser.ApplyDeadzone(screenPosM);
+            screenPosMm = stabiliser.ApplyDeadzone(screenPosMm);
 
-            Vector2 oneToOnePosition = virtualScreen.MetersToPixels(screenPosM);
+            Vector2 oneToOnePosition = virtualScreen.MillimetersToPixels(screenPosMm);
 
             // float distanceFromScreen (measured in meters)
             positions.DistanceFromScreen = distanceFromScreen;

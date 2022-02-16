@@ -55,7 +55,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private bool isDragging = false;
 
         public AirPushInteraction(
-            HandManager _handManager, 
+            HandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IPositioningModule _positioningModule) : base(_handManager, _virtualScreen, _configManager, _positioningModule, TrackedPosition.INDEX_STABLE)
@@ -103,7 +103,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 float currentVelocity = dz / dt;    // m/s
 
                 Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
-                Vector2 dPerp = virtualScreen.PixelsToMeters(dPerpPx);
+                Vector2 dPerp = virtualScreen.PixelsToMillimeters(dPerpPx);
 
                 // Update AppliedForce, which is the crux of the AirPush algorithm
                 float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, positions.DistanceFromScreen);
@@ -192,7 +192,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             float distFromStartPosPx = (_startPos - _currentPos).Length();
 
-            return distFromStartPosPx > virtualScreen.MetersToPixels(dragStartDistanceThresholdM);
+            return distFromStartPosPx > virtualScreen.MillimetersToPixels(dragStartDistanceThresholdM * 1000);
         }
 
         private void AdjustDeadzoneSize(float _df)

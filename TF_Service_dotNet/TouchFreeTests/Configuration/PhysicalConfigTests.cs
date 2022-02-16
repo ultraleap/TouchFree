@@ -15,10 +15,10 @@ namespace TouchFreeTests.Configuration
             config = new PhysicalConfig();
 
             //Then
-            Assert.AreEqual(0.33f, config.ScreenHeightM);
-            Assert.AreEqual(0f, config.LeapPositionRelativeToScreenBottomM.X);
-            Assert.AreEqual(-0.12f, config.LeapPositionRelativeToScreenBottomM.Y);
-            Assert.AreEqual(-0.25f, config.LeapPositionRelativeToScreenBottomM.Z);
+            Assert.AreEqual(330f, config.ScreenHeightMm);
+            Assert.AreEqual(0f, config.LeapPositionRelativeToScreenBottomMm.X);
+            Assert.AreEqual(-120f, config.LeapPositionRelativeToScreenBottomMm.Y);
+            Assert.AreEqual(-250f, config.LeapPositionRelativeToScreenBottomMm.Z);
             Assert.AreEqual(0f, config.LeapRotationD.X);
             Assert.AreEqual(0f, config.LeapRotationD.Y);
             Assert.AreEqual(0f, config.LeapRotationD.Z);
