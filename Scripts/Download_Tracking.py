@@ -13,8 +13,8 @@ parser.add_argument("-v", "--verbose", required=False, action='store_true', help
 
 args = parser.parse_args()
 
-trackingZip         = "./Build_ARM64_Linux_release.zip"
-trackingUnzippedDir = "./Build_ARM64_Linux_release"
+trackingZip         = "./Tracking_Build.zip"
+trackingUnzippedDir = "./Tracking_Build"
 
 searchCount = 500
 
