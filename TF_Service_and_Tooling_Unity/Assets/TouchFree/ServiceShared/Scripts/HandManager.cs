@@ -93,7 +93,6 @@ namespace Ultraleap.TouchFree.ServiceShared
             trackingProvider = (LeapServiceProvider)Hands.Provider;
             PhysicalConfig.OnConfigUpdated += UpdateTrackingTransformAndMode;
 
-            Debug.Log("start  update tracking mode coroutine");
             StartCoroutine(UpdateTrackingAfterLeapInit());
         }
 
