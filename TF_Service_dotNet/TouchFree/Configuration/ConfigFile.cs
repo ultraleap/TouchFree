@@ -58,7 +58,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private event Action _OnConfigFileUpdated;
         protected virtual string _ConfigFilePath => Path.Combine(ConfigFileUtils.ConfigFileDirectory, ConfigFileName);
 
-        private bool ErrorLoadingConfig = false;
+        public bool ErrorLoadingConfig { get; private set; } = false;
 
         protected TData LoadConfig_Internal()
         {
@@ -91,6 +91,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         protected TData DeserialiseRawText(string rawText)
         {
+            ErrorLoadingConfig = false;
             TData config = JsonConvert.DeserializeObject<TData>(rawText, new JsonSerializerSettings()
             {
                 Error = HandleDeserialisationError
