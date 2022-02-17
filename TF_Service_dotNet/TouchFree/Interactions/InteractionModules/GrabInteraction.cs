@@ -11,13 +11,13 @@ namespace Ultraleap.TouchFree.Service
     {
         public override InteractionType InteractionType { get; } = InteractionType.GRAB;
 
-        public float deadzoneEnlargementDistance = 0.02f;
+        public float deadzoneEnlargementDistance = 20f;
         public float deadzoneShrinkSpeed = 0.3f;
 
-        public float maxHandVelocity = 0.15f;
+        public float maxHandVelocity = 150f;
 
         public GeneralisedGrabDetector grabDetector;
-        public float dragStartDistanceThresholdM = 0.01f;
+        public float dragStartDistanceThresholdMm = 10f;
 
         private bool pressing = false;
         private bool requireHold = false;
@@ -195,7 +195,7 @@ namespace Ultraleap.TouchFree.Service
             var b = virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
             var distFromStartPos = (a - b).Length();
 
-            if (distFromStartPos > (dragStartDistanceThresholdM * 1000f))
+            if (distFromStartPos > dragStartDistanceThresholdMm)
             {
                 return true;
             }

@@ -49,7 +49,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public InteractionConfig(InteractionConfigForFile fromFile)
         {
-            this.InteractionMinDistanceMm = fromFile.InteractionMaxDistanceCm * 10f;
+            this.InteractionMinDistanceMm = fromFile.InteractionMinDistanceCm * 10f;
             this.InteractionMaxDistanceMm = fromFile.InteractionMaxDistanceCm * 10f;
 
             this.UseScrollingOrDragging = fromFile.UseScrollingOrDragging;
