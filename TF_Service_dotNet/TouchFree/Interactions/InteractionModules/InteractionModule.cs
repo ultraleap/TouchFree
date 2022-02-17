@@ -115,8 +115,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             if (_hand != null && configManager.InteractionConfig.InteractionZoneEnabled)
             {
-                if (positions.DistanceFromScreen < configManager.InteractionConfig.InteractionMinDistanceMm / 1000 ||
-                    positions.DistanceFromScreen > configManager.InteractionConfig.InteractionMaxDistanceMm / 1000)
+                if (distanceFromScreenMm < configManager.InteractionConfig.InteractionMinDistanceMm ||
+                    distanceFromScreenMm > configManager.InteractionConfig.InteractionMaxDistanceMm)
                 {
                     return null;
                 }
@@ -132,12 +132,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
         /// <returns>Returns whether the hand is within the interaction zone.</returns>
         public bool IsHandInInteractionZone()
         {
-            float minInteractionDistanceMeters = configManager.InteractionConfig.InteractionMinDistanceMm / 1000;
-            float maxInteractionDistanceMeters = configManager.InteractionConfig.InteractionMaxDistanceMm / 1000;
-
             return !configManager.InteractionConfig.InteractionZoneEnabled ||
-                (positions.DistanceFromScreen >= minInteractionDistanceMeters &&
-                 positions.DistanceFromScreen <= maxInteractionDistanceMeters);
+                (distanceFromScreenMm >= configManager.InteractionConfig.InteractionMinDistanceMm &&
+                 distanceFromScreenMm <= configManager.InteractionConfig.InteractionMaxDistanceMm);
         }
     }
 }
