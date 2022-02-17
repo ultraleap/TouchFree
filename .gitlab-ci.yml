@@ -269,7 +269,7 @@ Tracking::download:
     - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
   artifacts:
     paths:
-    - ./Scripts/Tracking_Build/Tracking_for_TouchFree_*_win64.exe
+    - ./Scripts/Tracking_Build/Tracking_for_TouchFree_*.exe
     expire_in: 1 hour
   tags:
     - unity
