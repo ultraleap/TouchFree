@@ -285,7 +285,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         // Change force based on horizontal velocity and a horizontal decay distance
                         float vPerp = _dPerp.Length() / _dt;
 
-                        float stiffness = 0.001f / horizontalDecayDistMm;
+                        float stiffness = 1f / horizontalDecayDistMm;
                         forceChange = -1f * stiffness * vPerp * _dt;
                     }
                 }
