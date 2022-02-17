@@ -17,6 +17,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         protected Positions positions;
 
+        protected float distanceFromScreenMm;
+
         protected long latestTimestamp;
 
         protected bool hadHandLastFrame = false;
@@ -72,6 +74,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
 
                 positions = positioningModule.CalculatePositions(hand);
+                distanceFromScreenMm = positions.DistanceFromScreen * 1000f;
                 hand = CheckHandInInteractionZone(hand);
             }
 

@@ -64,9 +64,9 @@ namespace Ultraleap.TouchFree.Service
                 //
                 // I find that this velocity is quite similar to hand.PalmVelocity.Magnitude, but (as expected)
                 // this velocity calculation gets much closer to 0 when the hand is more still.
-                Vector3 previousWorldPos = virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen);
-                Vector3 currentWorldPos = virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen);
-                float changeInPos = (currentWorldPos - previousWorldPos).Length();
+                Vector3 previousWorldPosMm = virtualScreen.VirtualScreenPositionToWorld(previousPosition.Item2.CursorPosition, previousPosition.Item2.DistanceFromScreen * 1000);
+                Vector3 currentWorldPosMm = virtualScreen.VirtualScreenPositionToWorld(positions.CursorPosition, positions.DistanceFromScreen * 1000);
+                float changeInPos = (currentWorldPosMm - previousWorldPosMm).Length();
                 float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
                 velocity = changeInPos / changeInTime;
             }
@@ -191,8 +191,8 @@ namespace Ultraleap.TouchFree.Service
 
         bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            var a = virtualScreen.VirtualScreenPositionToWorld(_startPos, 0f);
-            var b = virtualScreen.VirtualScreenPositionToWorld(_currentPos, 0f);
+            var a = virtualScreen.PixelsToMillimeters(_startPos);
+            var b = virtualScreen.PixelsToMillimeters(_currentPos);
             var distFromStartPos = (a - b).Length();
 
             if (distFromStartPos > dragStartDistanceThresholdMm)

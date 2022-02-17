@@ -94,8 +94,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 handAppearedCooldown.Stop();
             }
 
-            float distanceFromScreenMm = positions.DistanceFromScreen * 1000f;
-
             // If not ignoring clicks...
             if ((previousTime != 0f) && !handAppearedCooldown.IsRunning)
             {

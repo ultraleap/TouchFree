@@ -58,12 +58,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private void HandleInteractions()
         {
             Vector2 currentCursorPosition = positions.CursorPosition;
-            float distanceFromScreen = positions.DistanceFromScreen * 1000f;
 
-            float progressToClick = Math.Clamp(1f - Utilities.InverseLerp(touchPlaneDistanceMm, touchPlaneDistanceMm + touchPlaneZeroProgressMm, distanceFromScreen), 0f, 1f);
+            float progressToClick = Math.Clamp(1f - Utilities.InverseLerp(touchPlaneDistanceMm, touchPlaneDistanceMm + touchPlaneZeroProgressMm, distanceFromScreenMm), 0f, 1f);
 
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
-            if (distanceFromScreen < touchPlaneDistanceMm)
+            if (distanceFromScreenMm < touchPlaneDistanceMm)
             {
                 if (handReady)
                 {
@@ -93,7 +92,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     }
                     else if (!pressComplete)
                     {
-                        Positions downPositions = new Positions(downPos, distanceFromScreen);
+                        Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
                         SendInputAction(InputType.UP, downPositions, progressToClick);
 
                         pressComplete = true;
@@ -104,7 +103,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 if (pressing && !pressComplete)
                 {
-                    Positions downPositions = new Positions(downPos, distanceFromScreen);
+                    Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
                     SendInputAction(InputType.UP, downPositions, progressToClick);
                 }
                 else
