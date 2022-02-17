@@ -25,7 +25,7 @@ namespace TouchFreeTests.Configuration
         }
 
         [Test]
-        public void DeserialiseRawText_CloseBracesMissing_ThrowsSerialisationException()
+        public void DeserialiseRawText_CloseBracesMissing_ErrorLoadingConfigSetToTrue()
         {
             //Given
             TestConfig testConfig = new TestConfig();
@@ -34,12 +34,15 @@ namespace TouchFreeTests.Configuration
             ImplementedConfigFile configFile = new ImplementedConfigFile();
             jsonConfig = jsonConfig.TrimEnd(new char[] { '}', ' ' });
 
-            //When & Then
-            Assert.Throws<JsonSerializationException>(() => configFile.DeserialiseText(jsonConfig));
+            //When
+            configFile.DeserialiseText(jsonConfig);
+
+            //Then
+            Assert.AreEqual(true, configFile.ErrorLoadingConfig);
         }
 
         [Test]
-        public void DeserialiseRawText_OpenBracesMissing_ThrowsSerialisationException()
+        public void DeserialiseRawText_OpenBracesMissing_ErrorHandledAndNullReturnedSoDefaultConfigCreated()
         {
             //Given
             TestConfig testConfig = new TestConfig();
@@ -48,8 +51,11 @@ namespace TouchFreeTests.Configuration
             ImplementedConfigFile configFile = new ImplementedConfigFile();
             jsonConfig = jsonConfig.TrimStart(new char[] { '{', ' ' });
 
-            //When & Then
-            Assert.Throws<JsonSerializationException>(() => configFile.DeserialiseText(jsonConfig));
+            //When
+            var result = configFile.DeserialiseText(jsonConfig);
+
+            //Then
+            Assert.IsNull(result);
         }
 
         [Test]
@@ -105,7 +111,20 @@ namespace TouchFreeTests.Configuration
         }
 
         [Test]
-        public void DeserialiseRawText_MissingCloseQuote_ThrowsReaderException()
+        public void DeserialiseRawText_EmptyObject_ReturnsDefaultConfig()
+        {
+            //Given
+            ImplementedConfigFile configFile = new ImplementedConfigFile();
+
+            //When
+            TestConfig result = configFile.DeserialiseText("{}");
+
+            //Then
+            Assert.AreEqual(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(new TestConfig()));
+        }
+
+        [Test]
+        public void DeserialiseRawText_MissingCloseQuote_ErrorLoadingConfigSetToTrue()
         {
             //Given
             TestConfig testConfig = new TestConfig();
@@ -115,8 +134,11 @@ namespace TouchFreeTests.Configuration
             int indexOfLastCloseQuote = jsonConfig.LastIndexOf('"');
             jsonConfig = jsonConfig.Remove(indexOfLastCloseQuote, 1);
 
-            //When & Then
-            Assert.Throws<JsonReaderException>(() => configFile.DeserialiseText(jsonConfig));
+            //When
+            configFile.DeserialiseText(jsonConfig);
+
+            //Then
+            Assert.AreEqual(true, configFile.ErrorLoadingConfig);
         }
 
         private class TestConfigWithExtraEntries : TestConfig
