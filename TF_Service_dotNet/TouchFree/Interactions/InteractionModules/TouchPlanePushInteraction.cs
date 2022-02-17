@@ -9,11 +9,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
     {
         public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
 
-        // The distance from the touchPlane (in m) at which the progressToClick is 0
-        private const float touchPlaneZeroProgress = 0.1f;
+        // The distance from the touchPlane (in mm) at which the progressToClick is 0
+        private const float touchPlaneZeroProgressMm = 100f;
 
-        // The distance from screen (in m) at which the progressToClick is 1
-        private float touchPlaneDistance = 0.05f;
+        // The distance from screen (in mm) at which the progressToClick is 1
+        private float touchPlaneDistanceMm = 50f;
 
         private bool pressing = false;
         bool pressComplete = false;
@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         // Particularly for those that are cancelled by InteractionZones
         bool handReady = false;
 
-        public float dragStartDistanceThresholdM = 0.01f;
+        public float dragStartDistanceThresholdMm = 10f;
         bool isDragging = false;
 
         public TouchPlanePushInteraction(
@@ -59,8 +59,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             Vector2 currentCursorPosition = positions.CursorPosition;
             float distanceFromScreen = positions.DistanceFromScreen * 1000f;
-            float touchPlaneDistanceMm = touchPlaneDistance * 1000f;
-            float touchPlaneZeroProgressMm = touchPlaneZeroProgress * 1000f;
 
             float progressToClick = Math.Clamp(1f - Utilities.InverseLerp(touchPlaneDistanceMm, touchPlaneDistanceMm + touchPlaneZeroProgressMm, distanceFromScreen), 0f, 1f);
 
@@ -127,7 +125,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             Vector2 currentPosMm = virtualScreen.PixelsToMillimeters(_currentPos);
             float distFromStartPos = (startPosMm - currentPosMm).Length();
 
-            if (distFromStartPos > dragStartDistanceThresholdM)
+            if (distFromStartPos > dragStartDistanceThresholdMm)
             {
                 return true;
             }
@@ -139,8 +137,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             base.OnInteractionSettingsUpdated(_config);
 
-            // Convert from Mm to M
-            touchPlaneDistance = _config.TouchPlane.TouchPlaneActivationDistanceMm / 1000;
+            touchPlaneDistanceMm = _config.TouchPlane.TouchPlaneActivationDistanceMm;
             positioningModule.TrackedPosition = _config.TouchPlane.TouchPlaneTrackedPosition;
         }
     }
