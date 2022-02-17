@@ -70,12 +70,13 @@ Filename: "{app}\SettingsUI\{#SettingsUIExeName}"; Description: "Configure Touch
 Filename: "{app}\Tray\{#TrayAppExeName}"; Flags: runhidden nowait;
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "install"; Flags: runhidden
 Filename: "net.exe"; Parameters: "start ""TouchFree Service"""; Flags: runhidden
-Filename: "{app}\Tracking\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; Parameters: "/S"; Flags: runhidden
+Filename: "{app}\Tracking\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; Parameters: "/S /D={app}\Tracking"; Flags: runhidden
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
 Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopService"; Flags: runhidden
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
+Filename: "{app}\Tracking\Uninstall.exe"; Parameters: "/S"; Flags: runhidden
 
 [Code]
 function GetWrapperPath: string;
