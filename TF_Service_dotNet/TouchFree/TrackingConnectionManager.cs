@@ -6,12 +6,20 @@ namespace Ultraleap.TouchFree.Library
     public class TrackingConnectionManager
     {
         public Leap.Controller controller;
+        IConfigManager configManager;
 
         public TrackingConnectionManager(IConfigManager _configManager)
         {
+            configManager = _configManager;
             controller = new Leap.Controller();
+            controller.Connect += Controller_Connect;
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
+        }
+
+        private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
+        {
+            UpdateTrackingMode(configManager.PhysicalConfig);
         }
 
         public void UpdateTrackingMode(PhysicalConfig _config)
