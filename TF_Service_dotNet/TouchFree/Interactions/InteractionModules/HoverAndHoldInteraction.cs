@@ -12,8 +12,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public ProgressTimer progressTimer;
 
-        public float hoverDeadzoneEnlargementDistance = 15f;
-        public float timerDeadzoneEnlargementDistance = 15f;
+        public float hoverDeadzoneEnlargementDistance = 5f;
+        public float timerDeadzoneEnlargementDistance = 5f;
 
         public float deadzoneShrinkSpeed = 0.3f;
 

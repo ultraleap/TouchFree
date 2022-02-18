@@ -41,7 +41,7 @@ namespace TouchFreeTests
 
         private int ScreenWidthInPixels = 1080;
         private int ScreenHeightInPixels = 1920;
-        private float ScreenHeightInMilimeters = 400f;
+        private float ScreenHeightInMillimeters = 400f;
 
         private VirtualScreen CreateVirtualScreen()
         {
@@ -49,21 +49,21 @@ namespace TouchFreeTests
             {
                 ScreenWidthPX = ScreenWidthInPixels,
                 ScreenHeightPX = ScreenHeightInPixels,
-                ScreenHeightMm = ScreenHeightInMilimeters
+                ScreenHeightMm = ScreenHeightInMillimeters
             };
             IConfigManager configManager = CreateMockedConfigManager(physicalConfig);
 
             return new VirtualScreen(configManager);
         }
 
-        private static object[] pixelsToMilimetersCases = new object[]
+        private static object[] pixelsToMillimetersCases = new object[]
         {
             new[] { new Vector2 (480, 960), new Vector2 (100f, 200f) },
             new[] { new Vector2 (0, 540), new Vector2 (0f, 112.5f) }
         };
 
-        [TestCaseSource(nameof(pixelsToMilimetersCases))]
-        public void PixelsToMilimeters_ConvertsPixelPositionToMilimeters(Vector2 positionPx, Vector2 expectedPositionM)
+        [TestCaseSource(nameof(pixelsToMillimetersCases))]
+        public void PixelsToMillimeters_ConvertsPixelPositionToMillimeters(Vector2 positionPx, Vector2 expectedPositionM)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen();
@@ -76,14 +76,14 @@ namespace TouchFreeTests
             Assert.AreEqual(expectedPositionM.Y, meterPosition.Y, 0.01);
         }
 
-        private static object[] milimetersToPixelsCases = new object[]
+        private static object[] millimetersToPixelsCases = new object[]
         {
             new[] { new Vector2 (100f, 200f), new Vector2 (480, 960) },
             new[] { new Vector2(0f, 112.5f), new Vector2 (0, 540) }
         };
 
-        [TestCaseSource(nameof(milimetersToPixelsCases))]
-        public void MilimetersToPixels_ConvertsMilimeterPositionToPixels(Vector2 positionMm, Vector2 expectedPositionPx)
+        [TestCaseSource(nameof(millimetersToPixelsCases))]
+        public void MillimetersToPixels_ConvertsMillimeterPositionToPixels(Vector2 positionMm, Vector2 expectedPositionPx)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen();
@@ -98,7 +98,7 @@ namespace TouchFreeTests
 
         [TestCase(100f, 480)]
         [TestCase(0, 0)]
-        public void MilimetersToPixels_ConvertsMilimeterPositionToPixels(float positionMm, float expectedPositionPx)
+        public void MillimetersToPixels_ConvertsMillimeterPositionToPixels(float positionMm, float expectedPositionPx)
         {
             //Given
             VirtualScreen virtualScreen = CreateVirtualScreen();

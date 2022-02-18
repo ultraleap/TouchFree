@@ -15,7 +15,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public double millisecondsCooldownOnEntry = 300.0;
         Stopwatch handAppearedCooldown = new Stopwatch();
 
-        // Speed in milimeters per second
+        // Speed in millimeters per second
         public float speedMin = 150f;
         public float speedMax = 500f;
         public float distAtSpeedMinMm = 30f;
@@ -100,7 +100,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Calculate important variables needed in determining the key events
                 long dtMicroseconds = (currentTimestamp - previousTime);
                 float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
-                float dz = (-1f) * (distanceFromScreenMm - previousScreenDistanceMm);   // Milimetres +ve = towards screen
+                float dz = (-1f) * (distanceFromScreenMm - previousScreenDistanceMm);   // Millimetres +ve = towards screen
                 float currentVelocity = dz / dt;    // mm/s
 
                 Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
