@@ -8,7 +8,8 @@ import zipfile
 from subprocess import call
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-t", "--token",  required=True,  help="Provide a GitLab Authentication Token")
+parser.add_argument("-t", "--token", required=True, help="Provide a GitLab Authentication Token")
+parser.add_argument("-j", "--jobid", required=True, help="Provide a GitLab Authentication Token")
 parser.add_argument("-v", "--verbose", required=False, action='store_true', help="If used, this script will list the builds it's examining along with their status for users to check what was available")
 
 args = parser.parse_args()
@@ -19,6 +20,7 @@ trackingUnzippedDir = "./Tracking_Build"
 searchCount = 500
 
 gitlabToken = args.token
+gitlabJobID = args.jobid
 
 gl = gitlab.Gitlab('https://gitlab.ultrahaptics.com', private_token=gitlabToken)
 
@@ -33,11 +35,10 @@ if os.path.isdir(trackingUnzippedDir):
 print("Downloading Artifacts from GitLab")
 
 # Tracking Project ID: 455
-# 5.4 Windows Production Release Job ID: 501756
 
 TrackingProject = gl.projects.get(455)
 
-ArtefactJob = TrackingProject.jobs.get(501756)
+ArtefactJob = TrackingProject.jobs.get(gitlabJobID)
 
 with open(trackingZip, "wb") as trackingFile:
 	ArtefactJob.artifacts(streamed=True, action=trackingFile.write)
