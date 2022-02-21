@@ -12,7 +12,10 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         REQUEST_CONFIGURATION_STATE,
         VERSION_HANDSHAKE,
         VERSION_HANDSHAKE_RESPONSE,
-        HAND_PRESENCE_EVENT
+        HAND_PRESENCE_EVENT,
+        GET_STATUS,
+        GET_STATUS_RESPONSE,
+        STATUS
     }
 
     public enum HandPresenceState
@@ -40,6 +43,23 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
             requestID = _id;
             interaction = _interaction;
             physical = _physical;
+        }
+    }
+
+    [Serializable]
+    public struct ServiceStatus
+    {
+        public string requestID;
+        public bool cameraConnected;
+        public bool trackingServiceRunning;
+        public bool configurationStatus;
+
+        public ServiceStatus(string _id, bool _cameraConnected, bool _trackingServiceRunning, bool _configurationStatus)
+        {
+            requestID = _id;
+            cameraConnected = _cameraConnected;
+            trackingServiceRunning = _trackingServiceRunning;
+            configurationStatus = _configurationStatus;
         }
     }
 

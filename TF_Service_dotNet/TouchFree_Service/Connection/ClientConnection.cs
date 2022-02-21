@@ -101,6 +101,26 @@ namespace Ultraleap.TouchFree.Service.Connection
                 CancellationToken.None);
         }
 
+        public void SendStatusResponse(ResponseToClient _response)
+        {
+            CommunicationWrapper<ResponseToClient> message =
+                new CommunicationWrapper<ResponseToClient>(ActionCode.GET_STATUS_RESPONSE.ToString(), _response);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
+        public void SendStatus(ServiceStatus _status)
+        {
+            CommunicationWrapper<ServiceStatus> message =
+                new CommunicationWrapper<ServiceStatus>(ActionCode.STATUS.ToString(), _status);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
         private void SendInitialHandState()
         {
             this.SendHandPresenceEvent(clientMgr.missedHandPresenceEvent);
