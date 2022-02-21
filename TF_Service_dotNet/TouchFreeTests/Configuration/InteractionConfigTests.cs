@@ -17,7 +17,7 @@ namespace TouchFreeTests.Configuration
 
             //Then
             Assert.AreEqual(false, config.UseScrollingOrDragging);
-            Assert.AreEqual(0.003f, config.DeadzoneRadius);
+            Assert.AreEqual(3f, config.DeadzoneRadiusMm);
             Assert.AreEqual(false, config.InteractionZoneEnabled);
             Assert.AreEqual(0.0f, config.InteractionMinDistanceMm);
             Assert.AreEqual(250.0f, config.InteractionMaxDistanceMm);

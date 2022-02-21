@@ -20,7 +20,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
     public class InteractionConfig
     {
         public bool UseScrollingOrDragging = false;
-        public float DeadzoneRadius = 0.003f;
+        public float DeadzoneRadiusMm = 3f;
 
         public bool InteractionZoneEnabled = false;
         public float InteractionMinDistanceMm = 0.0f;
@@ -35,7 +35,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public InteractionConfig()
         {
             this.UseScrollingOrDragging = false;
-            this.DeadzoneRadius = 0.003f;
+            this.DeadzoneRadiusMm = 3f;
 
             this.InteractionZoneEnabled = false;
             this.InteractionMinDistanceMm = 0.0f;
@@ -49,11 +49,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public InteractionConfig(InteractionConfigForFile fromFile)
         {
-            this.InteractionMinDistanceMm = fromFile.InteractionMaxDistanceCm * 10f;
+            this.InteractionMinDistanceMm = fromFile.InteractionMinDistanceCm * 10f;
             this.InteractionMaxDistanceMm = fromFile.InteractionMaxDistanceCm * 10f;
 
             this.UseScrollingOrDragging = fromFile.UseScrollingOrDragging;
-            this.DeadzoneRadius = fromFile.DeadzoneRadius;
+            this.DeadzoneRadiusMm = fromFile.DeadzoneRadius * 1000;
 
             this.InteractionZoneEnabled = fromFile.InteractionZoneEnabled;
 
