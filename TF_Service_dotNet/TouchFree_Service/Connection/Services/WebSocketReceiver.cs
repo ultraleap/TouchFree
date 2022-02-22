@@ -280,9 +280,9 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             ServiceStatus currentConfig = new ServiceStatus(
                 contentObj.GetValue("requestID").ToString(),
-                clientMgr.handManager.CameraConnected(),
-                clientMgr.handManager.TrackingServiceConnected(),
-                !configManager.ErrorLoadingConfigFiles);
+                clientMgr.handManager.CameraConnected() ? CameraState.CONNECTED : CameraState.NOT_CONNECTED,
+                clientMgr.handManager.TrackingServiceConnected() ? TrackingServiceState.RUNNING : TrackingServiceState.UNAVAILABLE,
+                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
 
 
             clientMgr.SendStatus(currentConfig);

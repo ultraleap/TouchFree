@@ -104,7 +104,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendStatusResponse(ResponseToClient _response)
         {
             CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(ActionCode.GET_STATUS_RESPONSE.ToString(), _response);
+                new CommunicationWrapper<ResponseToClient>(ActionCode.SERVICE_STATUS_RESPONSE.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
