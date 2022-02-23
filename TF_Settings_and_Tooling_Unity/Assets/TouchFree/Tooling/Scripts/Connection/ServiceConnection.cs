@@ -105,8 +105,13 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     HandPresenceEvent handEvent = JsonUtility.FromJson<HandPresenceEvent>(content);
                     ConnectionManager.messageReceiver.handState = handEvent.state;
                     break;
+                case ActionCode.SERVICE_STATUS:
+                    ServiceStatus serviceStatus = JsonUtility.FromJson<ServiceStatus>(content);
+                    ConnectionManager.messageReceiver.serviceStatusQueue.Enqueue(serviceStatus);
+                    break;
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
+                case ActionCode.SERVICE_STATUS_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
@@ -155,6 +160,27 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             if (_callback != null)
             {
                 ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _callback));
+            }
+
+            webSocket.Send(jsonMessage);
+        }
+
+        // Function: RequestServiceStatus
+        // Used internally to request a <ServiceStatus> from the Service via the <webSocket>.
+        // Provides an asynchronous <ServiceStatus> via the _callback parameter.
+        internal void RequestServiceStatus(Action<ServiceStatus> _callback)
+        {
+            string requestID = Guid.NewGuid().ToString();
+            ServiceStatusRequest request = new ServiceStatusRequest(requestID);
+
+            CommunicationWrapper<ServiceStatusRequest> message =
+                new CommunicationWrapper<ServiceStatusRequest>(ActionCode.REQUEST_SERVICE_STATUS.ToString(), request);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.serviceStatusCallbacks.Add(requestID, new ServiceStatusCallback(DateTime.Now.Millisecond, _callback));
             }
 
             webSocket.Send(jsonMessage);
