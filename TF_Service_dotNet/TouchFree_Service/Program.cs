@@ -1,4 +1,4 @@
-#if !DEBUG
+#if !DEBUG && !ARM64
 using System;
 using System.IO;
 #endif
@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Service
     {
         static void Main(string[] args)
         {
-#if !DEBUG
+#if !DEBUG && !ARM64
             FileStream filestream = new FileStream("log.txt", FileMode.Create);
             StreamWriter streamwriter = new StreamWriter(filestream)
             {

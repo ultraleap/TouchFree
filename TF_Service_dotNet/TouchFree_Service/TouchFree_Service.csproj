@@ -1,13 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>TouchFree_Service</RootNamespace>
     <AssemblyName>TouchFree_Service</AssemblyName>
     <Platforms>AnyCPU;ARM64</Platforms>
+    <PlatformTarget>ARM64</PlatformTarget>
+    </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'!='Release|ARM64'">
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <DefineConstants>$(DefineConstants)TRACE;ARM64</DefineConstants>
+  </PropertyGroup>
+
+	<ItemGroup>
     <ProjectReference Include="..\TouchFree\TouchFreeLib.csproj" />
   </ItemGroup>
 </Project>
