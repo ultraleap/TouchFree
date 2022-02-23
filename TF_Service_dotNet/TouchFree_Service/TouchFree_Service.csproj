@@ -5,7 +5,6 @@
     <RootNamespace>TouchFree_Service</RootNamespace>
     <AssemblyName>TouchFree_Service</AssemblyName>
     <Platforms>AnyCPU;ARM64</Platforms>
-    <PlatformTarget>ARM64</PlatformTarget>
     </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'!='Release|ARM64'">
