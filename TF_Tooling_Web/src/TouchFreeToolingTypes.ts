@@ -104,6 +104,32 @@ export enum InteractionType {
     TOUCHPLANE,
 }
 
+// Enum: CameraState
+// NOT_CONNECTED - There is not a camera connected
+// CONNECTED - There is a camera connected
+export enum CameraState {
+    NOT_CONNECTED,
+    CONNECTED,
+}
+
+// Enum: TrackingServiceState
+// UNAVAILABLE - The TouchFree services is not connected to the tracking service
+// CONNECTED - The TouchFree service is connected to the tracking service
+export enum TrackingServiceState {
+    UNAVAILABLE,
+    CONNECTED,
+}
+
+// Enum: ConfigurationState
+// NOT_LOADED - The TouchFree configuration has not been loaded
+// LOADED - The TouchFree configuration has successfully been loaded
+// ERRORED - The TouchFree configuration errored on load
+export enum ConfigurationState {
+    NOT_LOADED,
+    LOADED,
+    ERRORED
+}
+
 // Enum: BitmaskFlags
 // This is used to request any combination of the <HandChiralities>, <HandTypes>, <InputTypes>,
 // and <InteractionTypes> flags from the Service at once.

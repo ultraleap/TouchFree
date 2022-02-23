@@ -13,7 +13,7 @@ namespace Ultraleap.TouchFree.Service.Connection
     {
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
-        public ConcurrentQueue<string> getStatusRequestQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> requestServiceStatusQueue = new ConcurrentQueue<string>();
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
@@ -254,10 +254,10 @@ namespace Ultraleap.TouchFree.Service.Connection
         void CheckGetStatusRequestQueue()
         {
             string content;
-            if (getStatusRequestQueue.TryPeek(out content))
+            if (requestServiceStatusQueue.TryPeek(out content))
             {
                 // Parse newly received messages
-                getStatusRequestQueue.TryDequeue(out content);
+                requestServiceStatusQueue.TryDequeue(out content);
                 HandleGetStatusRequest(content);
             }
         }
@@ -281,7 +281,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             ServiceStatus currentConfig = new ServiceStatus(
                 contentObj.GetValue("requestID").ToString(),
                 clientMgr.handManager.CameraConnected() ? CameraState.CONNECTED : CameraState.NOT_CONNECTED,
-                clientMgr.handManager.TrackingServiceConnected() ? TrackingServiceState.RUNNING : TrackingServiceState.UNAVAILABLE,
+                clientMgr.handManager.TrackingServiceConnected() ? TrackingServiceState.CONNECTED : TrackingServiceState.UNAVAILABLE,
                 configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
 
 

@@ -114,7 +114,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendStatus(ServiceStatus _status)
         {
             CommunicationWrapper<ServiceStatus> message =
-                new CommunicationWrapper<ServiceStatus>(ActionCode.STATUS.ToString(), _status);
+                new CommunicationWrapper<ServiceStatus>(ActionCode.SERVICE_STATUS.ToString(), _status);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -178,6 +178,9 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 case ActionCode.SET_CONFIGURATION_STATE:
                     receiver.configChangeQueue.Enqueue(content);
+                    break;
+                case ActionCode.REQUEST_SERVICE_STATUS:
+                    receiver.requestServiceStatusQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
                     receiver.configStateRequestQueue.Enqueue(content);

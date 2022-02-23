@@ -13,9 +13,9 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         VERSION_HANDSHAKE,
         VERSION_HANDSHAKE_RESPONSE,
         HAND_PRESENCE_EVENT,
-        SERVICE_STATUS,
+        REQUEST_SERVICE_STATUS,
         SERVICE_STATUS_RESPONSE,
-        STATUS
+        SERVICE_STATUS
     }
 
     public enum HandPresenceState
@@ -40,7 +40,7 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
     public enum TrackingServiceState
     {
         UNAVAILABLE,
-        RUNNING
+        CONNECTED
     }
 
     public enum ConfigurationState

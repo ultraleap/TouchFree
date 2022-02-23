@@ -10,6 +10,9 @@ import {
     ConfigStateCallback,
     HandPresenceEvent,
     ResponseCallback,
+    ServiceStatus,
+    ServiceStatusCallback,
+    ServiceStatusRequest,
     WebSocketResponse
 } from './TouchFreeServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
@@ -110,8 +113,14 @@ export class ServiceConnection {
                 ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
                 break;
 
+            case ActionCode.SERVICE_STATUS:
+                let serviceStatus: ServiceStatus = looseData.content;
+                ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
+                break;
+
             case ActionCode.VERSION_HANDSHAKE_RESPONSE:
             case ActionCode.CONFIGURATION_RESPONSE:
+            case ActionCode.SERVICE_STATUS_RESPONSE:
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
@@ -166,6 +175,28 @@ export class ServiceConnection {
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =
             new ConfigStateCallback(Date.now(), _callback);
+
+        this.webSocket.send(message);
+    }
+
+    // Function: RequestServiceStatus
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <ServiceStatus> via the _callback parameter.
+    //
+    // If your _callBack requires context it should be bound to that context via .bind()
+    RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        let guid: string = uuidgen();
+        let request: ServiceStatusRequest = new ServiceStatusRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
+        let message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] =
+            new ServiceStatusCallback(Date.now(), _callback);
 
         this.webSocket.send(message);
     }

@@ -97,7 +97,7 @@ namespace Ultraleap.TouchFree.Library
 
         public bool CameraConnected()
         {
-            return trackingProvider?.controller?.Devices?.ActiveDevice?.IsStreaming ?? false;
+            return trackingProvider?.controller?.Devices?.ActiveDevice != null;
         }
 
         public void UpdateTrackingTransform(PhysicalConfig _config)
