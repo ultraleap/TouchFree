@@ -13,7 +13,6 @@ namespace Ultraleap.TouchFree.Service
         static void Main(string[] args)
         {
 #if !DEBUG
-
             FileStream filestream = new FileStream(ConfigFileUtils.ConfigFileDirectory + "/log.txt", FileMode.Create);
             StreamWriter streamwriter = new StreamWriter(filestream)
             {
