@@ -28,7 +28,9 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
     {
         COMPATIBLE,
         SERVICE_OUTDATED,
-        CLIENT_OUTDATED
+        CLIENT_OUTDATED,
+        SERVICE_OUTDATED_WARNING,
+        CLIENT_OUTDATED_WARNING
     }
 
     public enum CameraState

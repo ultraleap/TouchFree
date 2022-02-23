@@ -141,16 +141,16 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             else if (clientVersionParsed.Minor < _coreVersion.Minor)
             {
-                return Compatibility.CLIENT_OUTDATED;
+                return Compatibility.CLIENT_OUTDATED_WARNING;
             }
             else if (clientVersionParsed.Minor > _coreVersion.Minor)
             {
-                return Compatibility.SERVICE_OUTDATED;
+                return Compatibility.SERVICE_OUTDATED_WARNING;
             }
 
             if (clientVersionParsed.Build > _coreVersion.Build)
             {
-                return Compatibility.SERVICE_OUTDATED;
+                return Compatibility.SERVICE_OUTDATED_WARNING;
             }
 
             return Compatibility.COMPATIBLE;
@@ -243,6 +243,22 @@ namespace Ultraleap.TouchFree.Service.Connection
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Successful";
+                    Console.WriteLine(response.message);
+                    SendHandshakeResponse(response);
+                    SendInitialHandState();
+                    return;
+                case Compatibility.CLIENT_OUTDATED_WARNING:
+                    HandshakeCompleted = true;
+                    response.status = "Success";
+                    response.message = "Handshake Warning: Client is outdated relative to Service.";
+                    Console.WriteLine(response.message);
+                    SendHandshakeResponse(response);
+                    SendInitialHandState();
+                    return;
+                case Compatibility.SERVICE_OUTDATED_WARNING:
+                    HandshakeCompleted = true;
+                    response.status = "Success";
+                    response.message = "Handshake Warning: Service is outdated relative to Client.";
                     Console.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
