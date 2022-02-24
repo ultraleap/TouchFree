@@ -59,6 +59,15 @@
 <body style="overflow:hidden">
     <div>
         <div class="verticalScroll">
+            <button class="buttonVertical snappable" onpointerdown="getConfigurationStatus()">
+                Configuration Status
+            </button>
+            <button class="buttonVertical snappable" onpointerdown="getTrackingStatus()">
+                Tracking Status
+            </button>
+            <button class="buttonVertical snappable" onpointerdown="getCameraStatus()">
+                Camera Status
+            </button>
             <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
                 Button 1
             </button>
@@ -105,8 +114,7 @@
         };
 
         var resetText = function () {
-            var textToChange = document.getElementById("Text to change");
-            textToChange.textContent = "";
+            changeText("");
         }
 
         var resetTextColor = function () {
@@ -117,6 +125,24 @@
         var textColor = function (content) {
             var textToChange = document.getElementById("Text to change");
             textToChange.style.color = content;
+        }
+
+        var getConfigurationStatus = function () {
+            TouchFree.Connection.ConnectionManager.RequestServiceStatus((status) => {
+                changeText(TouchFree.TouchFreeToolingTypes.ConfigurationState[status.configurationState]);
+            });
+        }
+
+        var getTrackingStatus = function () {
+            TouchFree.Connection.ConnectionManager.RequestServiceStatus((status) => {
+                changeText(TouchFree.TouchFreeToolingTypes.TrackingServiceState[status.trackingServiceState]);
+            });
+        }
+
+        var getCameraStatus = function () {
+            TouchFree.Connection.ConnectionManager.RequestServiceStatus((status) => {
+                changeText(TouchFree.TouchFreeToolingTypes.CameraState[status.cameraState]);
+            });
         }
     </script>
 
