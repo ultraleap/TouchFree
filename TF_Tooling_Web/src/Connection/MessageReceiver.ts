@@ -3,6 +3,8 @@ import {
     ConfigStateCallback,
     HandPresenceState,
     ResponseCallback,
+    ServiceStatus,
+    ServiceStatusCallback,
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 import {
@@ -58,6 +60,14 @@ export class MessageReceiver {
     // A dictionary of unique request IDs and <ConfigStateCallback> that represent requests that are awaiting response from the Service.
     configStateCallbacks: { [id: string]: ConfigStateCallback; } = {};
 
+    // Variable: serviceStatusQueue
+    // A queue of <ServiceStatus> that have been received from the Service.
+    serviceStatusQueue: Array<ServiceStatus> = [];
+
+    // Variable: serviceStatusCallbacks
+    // A dictionary of unique request IDs and <ServiceStatusCallback> that represent requests that are awaiting response from the Service.
+    serviceStatusCallbacks: { [id: string]: ServiceStatusCallback; } = {};
+
     lastStateUpdate: HandPresenceState;
 
     // Variable: callbackClearInterval
@@ -98,6 +108,7 @@ export class MessageReceiver {
     Update(): void {
         this.CheckForResponse();
         this.CheckForConfigState();
+        this.CheckForServiceStatus();
         this.CheckForAction();
     }
 
@@ -151,6 +162,31 @@ export class MessageReceiver {
                 if (key === _configState.requestID) {
                     this.configStateCallbacks[key].callback(_configState);
                     delete this.configStateCallbacks[key];
+                    return;
+                }
+            };
+        }
+    }
+
+    // Function: CheckForServiceStatus
+    // Used to check the <serviceStatusQueue> for a <ServiceStatus>. Sends it to <HandleServiceStatus> if there is one.
+    CheckForServiceStatus(): void {
+        let serviceStatus: ServiceStatus | undefined = this.serviceStatusQueue.shift();
+
+        if (serviceStatus !== undefined) {
+            this.HandleServiceStatus(serviceStatus);
+        }
+    }
+
+    // Function: HandleServiceStatus
+    // Checks the dictionary of <serviceStatusCallbacks> for a matching request ID. If there is a
+    // match, calls the callback action in the matching <ServiceStatusCallback>.
+    HandleServiceStatus(_serviceStatus: ServiceStatus): void {
+        if (this.serviceStatusCallbacks !== undefined) {
+            for (let key in this.serviceStatusCallbacks) {
+                if (key === _serviceStatus.requestID) {
+                    this.serviceStatusCallbacks[key].callback(_serviceStatus);
+                    delete this.serviceStatusCallbacks[key];
                     return;
                 }
             };

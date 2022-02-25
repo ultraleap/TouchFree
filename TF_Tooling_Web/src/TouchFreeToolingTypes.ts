@@ -6,7 +6,7 @@ export class VersionInfo
 
     // Variable: ApiVersion
     // The current API version of the Tooling.
-    public static readonly ApiVersion: string = "1.1.0";
+    public static readonly ApiVersion: string = "1.2.0";
 
     // Variable: API_HEADER_NAME
     // The name of the header we wish the Service to compare our version with.
@@ -102,6 +102,32 @@ export enum InteractionType {
     HOVER,
     PUSH,
     TOUCHPLANE,
+}
+
+// Enum: CameraState
+// NOT_CONNECTED - There is not a camera connected
+// CONNECTED - There is a camera connected
+export enum CameraState {
+    NOT_CONNECTED,
+    CONNECTED,
+}
+
+// Enum: TrackingServiceState
+// UNAVAILABLE - The TouchFree services is not connected to the tracking service
+// CONNECTED - The TouchFree service is connected to the tracking service
+export enum TrackingServiceState {
+    UNAVAILABLE,
+    CONNECTED,
+}
+
+// Enum: ConfigurationState
+// NOT_LOADED - The TouchFree configuration has not been loaded
+// LOADED - The TouchFree configuration has successfully been loaded
+// ERRORED - The TouchFree configuration errored on load
+export enum ConfigurationState {
+    NOT_LOADED,
+    LOADED,
+    ERRORED
 }
 
 // Enum: BitmaskFlags

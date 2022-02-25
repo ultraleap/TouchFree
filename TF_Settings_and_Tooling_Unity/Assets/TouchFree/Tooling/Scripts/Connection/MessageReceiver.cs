@@ -44,6 +44,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ConfigStateCallback> configStateCallbacks = new Dictionary<string, ConfigStateCallback>();
 
+        // Variable: serviceStatusQueue
+        // A queue of <ServiceStatus> that have been received from the Service.
+        public ConcurrentQueue<ServiceStatus> serviceStatusQueue = new ConcurrentQueue<ServiceStatus>();
+
+        // Variable: serviceStatusCallbacks
+        // A dictionary of unique request IDs and <ServiceStatusCallback> that represent requests that are awaiting response from the Service.
+        public Dictionary<string, ServiceStatusCallback> serviceStatusCallbacks = new Dictionary<string, ServiceStatusCallback>();
+
         // Used to store HandPresenceState changes as they are recieved and emit messages
         // appropriately. "PROCESSED" when there are no unprocessed changes.
         internal HandPresenceState handState = HandPresenceState.PROCESSED;
@@ -68,6 +76,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         {
             CheckForResponse();
             CheckForConfigState();
+            CheckForServiceStatus();
             CheckForAction();
         }
 
@@ -130,7 +139,37 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 if (callback.Key == _configState.requestID)
                 {
                     callback.Value.callback.Invoke(_configState);
-                    responseCallbacks.Remove(callback.Key);
+                    configStateCallbacks.Remove(callback.Key);
+                    break;
+                }
+            }
+        }
+
+        // Function: CheckForServiceStatus
+        // Used to check the <serviceStatusQueue> for a <ServiceStatus>. Sends it to <HandleServiceStatus> if there is one.
+        void CheckForServiceStatus()
+        {
+            ServiceStatus serviceStatus;
+
+            if (serviceStatusQueue.TryPeek(out serviceStatus))
+            {
+                // Parse newly received messages
+                serviceStatusQueue.TryDequeue(out serviceStatus);
+                HandleServiceStatus(serviceStatus);
+            }
+        }
+
+        // Function: HandleServiceStatus
+        // Checks the dictionary of <serviceStatusCallbacks> for a matching request ID. If there is a
+        // match, calls the callback action in the matching <ServiceStatusCallback>.
+        void HandleServiceStatus(ServiceStatus _serviceStatus)
+        {
+            foreach (KeyValuePair<string, ServiceStatusCallback> callback in serviceStatusCallbacks)
+            {
+                if (callback.Key == _serviceStatus.requestID)
+                {
+                    callback.Value.callback.Invoke(_serviceStatus);
+                    serviceStatusCallbacks.Remove(callback.Key);
                     break;
                 }
             }
@@ -192,7 +231,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Function: ClearUnresponsiveCallbacks
         // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
         // expired from <responseCallbacks>. Also clears all <ConfigStateCallback> that are
-        // expired from <configStateCallbacks>.
+        // expired from <configStateCallbacks>. Also clears all <ServiceStatusCallback> that are
+        // expired from <serviceStatusCallbacks>.
         IEnumerator ClearUnresponsiveCallbacks()
         {
             WaitForSeconds waitTime = new WaitForSeconds(callbackClearTimer);
@@ -224,6 +264,20 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     if (configStateCallbacks[key].timestamp < lastClearTime)
                     {
                         configStateCallbacks.Remove(key);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                keys = new List<string>(serviceStatusCallbacks.Keys);
+
+                foreach (string key in keys)
+                {
+                    if (serviceStatusCallbacks[key].timestamp < lastClearTime)
+                    {
+                        serviceStatusCallbacks.Remove(key);
                     }
                     else
                     {

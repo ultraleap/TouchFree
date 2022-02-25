@@ -11,5 +11,6 @@
         void PhysicalConfigWasUpdated();
         void InteractionConfigWasUpdated();
         void LoadConfigsFromFiles();
+        bool ErrorLoadingConfigFiles { get; }
     }
 }
