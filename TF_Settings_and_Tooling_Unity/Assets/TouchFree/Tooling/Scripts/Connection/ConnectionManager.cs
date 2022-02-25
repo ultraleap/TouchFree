@@ -147,7 +147,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Function: RequestServiceStatus
         // Used to request a <ServiceStatus> from the Service via the <webSocket>.
         // Provides an asynchronous <ServiceStatus> via the _callback parameter.
-        public static void RequestConfigState(Action<ServiceStatus> _callback)
+        public static void RequestServiceStatus(Action<ServiceStatus> _callback)
         {
             ConnectionManager.serviceConnection.RequestServiceStatus(_callback);
         }
