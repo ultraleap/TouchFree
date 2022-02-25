@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import logo from './logo.svg';
+
 import './App.css';
+
+import { ScreenManager } from './Components/ScreenManager';
 
 // Load tooling here & use throughout
 
@@ -10,25 +13,21 @@ import './App.css';
     // Literally just put a red box here called InteractionSetup (background?)
 // </ScreenManager>
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+    private containerStyle : CSSProperties = {
+        display: 'flex',
+        flexDirection: 'column',
+
+        height: '100%'
+    }
+
+    render() {
+        return (
+            <div className="App" style={this.containerStyle}>
+                <ScreenManager/>
+            </div>
+        );
+    }
 }
 
 export default App;
