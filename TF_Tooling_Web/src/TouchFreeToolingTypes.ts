@@ -106,7 +106,7 @@ export enum InteractionType {
 
 // Enum: TrackingServiceState
 // UNAVAILABLE - The TouchFree service is not connected to the tracking service
-// NOT_CONNECTED - The TouchFree service is connected to the tracking service but there is not a camera connected
+// NO_CAMERA - The TouchFree service is connected to the tracking service but there is not a camera connected
 // CONNECTED - The TouchFree service is connected to the tracking service
 export enum TrackingServiceState {
     UNAVAILABLE,
