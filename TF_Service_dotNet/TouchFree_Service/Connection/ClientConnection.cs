@@ -145,7 +145,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
             else if (clientVersionParsed.Minor > _coreVersion.Minor)
             {
-                return Compatibility.SERVICE_OUTDATED_WARNING;
+                return Compatibility.SERVICE_OUTDATED;
             }
 
             if (clientVersionParsed.Build > _coreVersion.Build)

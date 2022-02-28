@@ -59,15 +59,6 @@
 <body style="overflow:hidden">
     <div>
         <div class="verticalScroll">
-            <button class="buttonVertical snappable" onpointerdown="getConfigurationStatus()">
-                Configuration Status
-            </button>
-            <button class="buttonVertical snappable" onpointerdown="getTrackingStatus()">
-                Tracking Status
-            </button>
-            <button class="buttonVertical snappable" onpointerdown="getCameraStatus()">
-                Camera Status
-            </button>
             <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
                 Button 1
             </button>
@@ -91,6 +82,12 @@
             </button>
             <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
                 Ω Button
+            </button>
+            <button class="buttonVertical snappable" onpointerdown="getConfigurationStatus()">
+                Configuration Status
+            </button>
+            <button class="buttonVertical snappable" onpointerdown="getTrackingStatus()">
+                Tracking Status
             </button>
         </div>
         <div style="display: inline-block; width: 70vw; height: 80vh;">
@@ -136,12 +133,6 @@
         var getTrackingStatus = function () {
             TouchFree.Connection.ConnectionManager.RequestServiceStatus((status) => {
                 changeText(TouchFree.TouchFreeToolingTypes.TrackingServiceState[status.trackingServiceState]);
-            });
-        }
-
-        var getCameraStatus = function () {
-            TouchFree.Connection.ConnectionManager.RequestServiceStatus((status) => {
-                changeText(TouchFree.TouchFreeToolingTypes.CameraState[status.cameraState]);
             });
         }
     </script>

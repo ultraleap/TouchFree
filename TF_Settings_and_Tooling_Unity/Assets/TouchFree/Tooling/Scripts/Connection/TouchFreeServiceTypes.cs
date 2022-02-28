@@ -53,21 +53,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         CLIENT_OUTDATED
     }
 
-    // Enum: CameraState
-    // NOT_CONNECTED - There is not a camera connected
-    // CONNECTED - There is a camera connected
-    public enum CameraState
-    {
-        NOT_CONNECTED,
-        CONNECTED
-    }
-
     // Enum: TrackingServiceState
     // UNAVAILABLE - The TouchFree services is not connected to the tracking service
+    // NO_CAMERA - The TouchFree service is connected to the tracking service but there is not a camera connected
     // CONNECTED - The TouchFree service is connected to the tracking service
     public enum TrackingServiceState
     {
         UNAVAILABLE,
+        NO_CAMERA,
         CONNECTED
     }
 
@@ -123,17 +116,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     {
         // Variable: requestID
         public string requestID;
-        // Variable: cameraState
-        public CameraState cameraState;
         // Variable: trackingServiceState
         public TrackingServiceState trackingServiceState;
         // Variable: configurationState
         public ConfigurationState configurationState;
 
-        public ServiceStatus(string _id, CameraState _cameraState, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
+        public ServiceStatus(string _id, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
         {
             requestID = _id;
-            cameraState = _cameraState;
             trackingServiceState = _trackingServiceState;
             configurationState = _configurationState;
         }

@@ -104,19 +104,13 @@ export enum InteractionType {
     TOUCHPLANE,
 }
 
-// Enum: CameraState
-// NOT_CONNECTED - There is not a camera connected
-// CONNECTED - There is a camera connected
-export enum CameraState {
-    NOT_CONNECTED,
-    CONNECTED,
-}
-
 // Enum: TrackingServiceState
-// UNAVAILABLE - The TouchFree services is not connected to the tracking service
+// UNAVAILABLE - The TouchFree service is not connected to the tracking service
+// NOT_CONNECTED - The TouchFree service is connected to the tracking service but there is not a camera connected
 // CONNECTED - The TouchFree service is connected to the tracking service
 export enum TrackingServiceState {
     UNAVAILABLE,
+    NO_CAMERA,
     CONNECTED,
 }
 

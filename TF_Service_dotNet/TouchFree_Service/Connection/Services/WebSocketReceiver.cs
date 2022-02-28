@@ -278,10 +278,15 @@ namespace Ultraleap.TouchFree.Service.Connection
                 return;
             }
 
+            TrackingServiceState trackingServiceState = TrackingServiceState.UNAVAILABLE;
+            if (clientMgr.handManager.TrackingServiceConnected())
+            {
+                trackingServiceState = clientMgr.handManager.CameraConnected() ? TrackingServiceState.CONNECTED : TrackingServiceState.NO_CAMERA;
+            }
+
             ServiceStatus currentConfig = new ServiceStatus(
                 contentObj.GetValue("requestID").ToString(),
-                clientMgr.handManager.CameraConnected() ? CameraState.CONNECTED : CameraState.NOT_CONNECTED,
-                clientMgr.handManager.TrackingServiceConnected() ? TrackingServiceState.CONNECTED : TrackingServiceState.UNAVAILABLE,
+                trackingServiceState,
                 configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
 
 
