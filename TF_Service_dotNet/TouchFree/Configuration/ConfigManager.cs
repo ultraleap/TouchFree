@@ -6,17 +6,17 @@ namespace Ultraleap.TouchFree.Library.Configuration
     {
         public event IConfigManager.InteractionConfigEvent OnInteractionConfigUpdated;
         public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
-        private InteractionConfig _interactions;
-        private PhysicalConfig _physical;
+        private InteractionConfigInternal _interactions;
+        private PhysicalConfigInternal _physical;
 
-        public InteractionConfig InteractionConfig
+        public InteractionConfigInternal InteractionConfig
         {
             get
             {
                 if (_interactions == null)
                 {
-                    InteractionConfigForFile fromFile = InteractionConfigFile.LoadConfig();
-                    _interactions = new InteractionConfig(fromFile);
+                    InteractionConfig fromFile = InteractionConfigFile.LoadConfig();
+                    _interactions = new InteractionConfigInternal(fromFile);
                 }
 
                 return _interactions;
@@ -27,14 +27,22 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
-        public PhysicalConfig PhysicalConfig
+        public InteractionConfig InteractionConfigFromApi
+        {
+            set
+            {
+                _interactions = new InteractionConfigInternal(value);
+            }
+        }
+
+        public PhysicalConfigInternal PhysicalConfig
         {
             get
             {
                 if (_physical == null)
                 {
-                    PhysicalConfigForFile fromFile = PhysicalConfigFile.LoadConfig();
-                    _physical = new PhysicalConfig(fromFile);
+                    PhysicalConfig fromFile = PhysicalConfigFile.LoadConfig();
+                    _physical = new PhysicalConfigInternal(fromFile);
                 }
 
                 return _physical;
@@ -45,13 +53,21 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
+        public PhysicalConfig PhysicalConfigFromApi
+        {
+            set
+            {
+                _physical = new PhysicalConfigInternal(value);
+            }
+        }
+
         public void LoadConfigsFromFiles()
         {
-            InteractionConfigForFile intFromFile = InteractionConfigFile.LoadConfig();
-            _interactions = new InteractionConfig(intFromFile);
+            InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
+            _interactions = new InteractionConfigInternal(intFromFile);
 
-            PhysicalConfigForFile physFromFile = PhysicalConfigFile.LoadConfig();
-            _physical = new PhysicalConfig(physFromFile);
+            PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
+            _physical = new PhysicalConfigInternal(physFromFile);
 
             InteractionConfigWasUpdated();
             PhysicalConfigWasUpdated();

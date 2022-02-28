@@ -2,27 +2,27 @@
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
-    public class InteractionConfigFile : ConfigFile<InteractionConfigForFile, InteractionConfigFile>
+    public class InteractionConfigFile : ConfigFile<InteractionConfig, InteractionConfigFile>
     {
         protected override string _ConfigFileName => "InteractionConfig.json";
     }
 
     [Serializable]
-    public class HoverAndHoldInteractionSettingsForFile
+    public class HoverAndHoldInteractionSettings
     {
         public float HoverStartTimeS = 0.5f;
         public float HoverCompleteTimeS = 0.6f;
     }
 
     [Serializable]
-    public class TouchPlaneInteractionSettingsForFile
+    public class TouchPlaneInteractionSettings
     {
         public float TouchPlaneActivationDistanceCm = 5f;
         public TrackedPosition TouchPlaneTrackedPosition = TrackedPosition.NEAREST;
     }
 
     [Serializable]
-    public class InteractionConfigForFile
+    public class InteractionConfig
     {
         public bool UseScrollingOrDragging = false;
         public float DeadzoneRadius = 0.003f;
@@ -34,7 +34,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public InteractionType InteractionType = InteractionType.PUSH;
 
         // Interaction-specific settings
-        public HoverAndHoldInteractionSettingsForFile HoverAndHold = new HoverAndHoldInteractionSettingsForFile();
-        public TouchPlaneInteractionSettingsForFile TouchPlane = new TouchPlaneInteractionSettingsForFile();
+        public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
+        public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
     }
 }

@@ -64,8 +64,8 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             ConfigState currentConfig = new ConfigState(
                 contentObj.GetValue("requestID").ToString(),
-                configManager.InteractionConfig,
-                configManager.PhysicalConfig);
+                configManager.InteractionConfig.ForApi(),
+                configManager.PhysicalConfig.ForApi());
 
 
             clientMgr.SendConfigState(currentConfig);
@@ -235,12 +235,12 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void ChangeConfig(string _content)
         {
-            ConfigState combinedData = new ConfigState("", configManager.InteractionConfig, configManager.PhysicalConfig);
+            ConfigState combinedData = new ConfigState("", configManager.InteractionConfig.ForApi(), configManager.PhysicalConfig.ForApi());
 
             JsonConvert.PopulateObject(_content, combinedData);
 
-            configManager.InteractionConfig = combinedData.interaction;
-            configManager.PhysicalConfig = combinedData.physical;
+            configManager.InteractionConfigFromApi = combinedData.interaction;
+            configManager.PhysicalConfigFromApi = combinedData.physical;
 
             configManager.PhysicalConfigWasUpdated();
             configManager.InteractionConfigWasUpdated();
