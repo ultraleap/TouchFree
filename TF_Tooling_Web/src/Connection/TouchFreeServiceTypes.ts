@@ -3,7 +3,6 @@ import {
     PhysicalConfig
 } from '../Configuration/ConfigurationTypes';
 import {
-    CameraState,
     ConfigurationState,
     TrackingServiceState
 } from '../TouchFreeToolingTypes';
@@ -123,16 +122,13 @@ export class ConfigStateCallback {
 export class ServiceStatus {
     // Variable: requestID
     requestID: string;
-    // Variable: cameraState
-    cameraState: CameraState | null;
     // Variable: trackingServiceState
     trackingServiceState: TrackingServiceState | null;
     // Variable: configurationState
     configurationState: ConfigurationState | null;
 
-    constructor(_id: string, _cameraState: CameraState | null, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null){
+    constructor(_id: string, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null){
         this.requestID = _id;
-        this.cameraState = _cameraState;
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
     }

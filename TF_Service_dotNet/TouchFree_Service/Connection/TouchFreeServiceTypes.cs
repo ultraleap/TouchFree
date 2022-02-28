@@ -33,15 +33,10 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         CLIENT_OUTDATED_WARNING
     }
 
-    public enum CameraState
-    {
-        NOT_CONNECTED,
-        CONNECTED
-    }
-
     public enum TrackingServiceState
     {
         UNAVAILABLE,
+        NO_CAMERA,
         CONNECTED
     }
 
@@ -71,14 +66,12 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
     public struct ServiceStatus
     {
         public string requestID;
-        public CameraState cameraState;
         public TrackingServiceState trackingServiceState;
         public ConfigurationState configurationState;
 
-        public ServiceStatus(string _id, CameraState _cameraState, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
+        public ServiceStatus(string _id, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
         {
             requestID = _id;
-            cameraState = _cameraState;
             trackingServiceState = _trackingServiceState;
             configurationState = _configurationState;
         }
