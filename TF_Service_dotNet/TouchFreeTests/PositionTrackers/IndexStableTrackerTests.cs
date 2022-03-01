@@ -29,7 +29,7 @@ namespace TouchFreeTests.PositionTrackers
             Leap.Hand hand = new Leap.Hand();
             hand.Fingers.Add(finger);
 
-            Vector3 expectedPositionM = new Vector3(1, 2, 3.0533f);
+            Vector3 expectedPositionM = new Vector3(1, 2, 2.9467f);
             // Note there is an offset of 0.0533 for the Z position from the average
 
             //When

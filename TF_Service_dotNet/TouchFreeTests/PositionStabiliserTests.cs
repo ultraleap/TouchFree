@@ -11,7 +11,7 @@ namespace TouchFreeTests
         private IConfigManager CreateMockedConfigManager()
         {
             Mock<IConfigManager> mockConfigManager = new Mock<IConfigManager>();
-            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfig());
+            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfigInternal());
             return mockConfigManager.Object;
         }
 

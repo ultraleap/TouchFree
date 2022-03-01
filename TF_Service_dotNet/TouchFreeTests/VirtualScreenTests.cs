@@ -9,10 +9,10 @@ namespace TouchFreeTests
     public class VirtualScreenTests
     {
 
-        private IConfigManager CreateMockedConfigManager(PhysicalConfig physicalConfig)
+        private IConfigManager CreateMockedConfigManager(PhysicalConfigInternal physicalConfig)
         {
             Mock<IConfigManager> mockConfigManager = new Mock<IConfigManager>();
-            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfig());
+            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfigInternal());
             mockConfigManager.SetupGet(x => x.PhysicalConfig).Returns(physicalConfig);
             return mockConfigManager.Object;
         }
@@ -21,7 +21,7 @@ namespace TouchFreeTests
         public void Constructor_ValidInputs_ReturnsInstance()
         {
             //Given
-            IConfigManager configManager = CreateMockedConfigManager(new PhysicalConfig()
+            IConfigManager configManager = CreateMockedConfigManager(new PhysicalConfigInternal()
             {
                 ScreenWidthPX = 1080,
                 ScreenHeightPX = 1920,
@@ -45,7 +45,7 @@ namespace TouchFreeTests
 
         private VirtualScreen CreateVirtualScreen()
         {
-            var physicalConfig = new PhysicalConfig()
+            var physicalConfig = new PhysicalConfigInternal()
             {
                 ScreenWidthPX = ScreenWidthInPixels,
                 ScreenHeightPX = ScreenHeightInPixels,

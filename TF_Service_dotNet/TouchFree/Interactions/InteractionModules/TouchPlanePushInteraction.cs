@@ -132,7 +132,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return false;
         }
 
-        protected override void OnInteractionSettingsUpdated(InteractionConfig _config)
+        protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             base.OnInteractionSettingsUpdated(_config);
 

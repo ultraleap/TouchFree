@@ -1,9 +1,11 @@
 #if !DEBUG
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 #endif
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -12,7 +14,8 @@ namespace Ultraleap.TouchFree.Service
         static void Main(string[] args)
         {
 #if !DEBUG
-            FileStream filestream = new FileStream("log.txt", FileMode.Create);
+            var loggingFileDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? ConfigFileUtils.ConfigFileDirectory : "";
+            FileStream filestream = new FileStream(loggingFileDirectory + "log.txt", FileMode.Create);
             StreamWriter streamwriter = new StreamWriter(filestream)
             {
                 AutoFlush = true
