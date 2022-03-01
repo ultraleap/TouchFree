@@ -40,7 +40,7 @@ namespace Ultraleap.TouchFree.Service
             OnInteractionSettingsUpdated(_configManager.InteractionConfig);
         }
 
-        protected void OnInteractionSettingsUpdated(InteractionConfig _config)
+        protected void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             switch(lastInteraction)
             {

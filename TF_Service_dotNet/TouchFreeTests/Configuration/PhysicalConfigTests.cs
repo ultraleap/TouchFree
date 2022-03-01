@@ -9,10 +9,10 @@ namespace TouchFreeTests.Configuration
         public void NewPhysicalConfig_CreatedWithDefaults_DefaultsAreSet()
         {
             //Given
-            PhysicalConfig config = null;
+            PhysicalConfigInternal config = null;
 
             //When
-            config = new PhysicalConfig();
+            config = new PhysicalConfigInternal();
 
             //Then
             Assert.AreEqual(330f, config.ScreenHeightMm);

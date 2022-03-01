@@ -2,10 +2,12 @@
 {
     public interface IConfigManager
     {
-        InteractionConfig InteractionConfig { get; set; }
-        PhysicalConfig PhysicalConfig { get; set; }
-        delegate void InteractionConfigEvent(InteractionConfig config = null);
-        delegate void PhysicalConfigEvent(PhysicalConfig config = null);
+        InteractionConfigInternal InteractionConfig { get; set; }
+        PhysicalConfigInternal PhysicalConfig { get; set; }
+        InteractionConfig InteractionConfigFromApi { set; }
+        PhysicalConfig PhysicalConfigFromApi { set; }
+        delegate void InteractionConfigEvent(InteractionConfigInternal config = null);
+        delegate void PhysicalConfigEvent(PhysicalConfigInternal config = null);
         event InteractionConfigEvent OnInteractionConfigUpdated;
         event PhysicalConfigEvent OnPhysicalConfigUpdated;
         void PhysicalConfigWasUpdated();

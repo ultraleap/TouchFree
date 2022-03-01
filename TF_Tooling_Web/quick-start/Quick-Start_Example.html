@@ -83,12 +83,6 @@
             <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
                 Ω Button
             </button>
-            <button class="buttonVertical snappable" onpointerdown="getConfigurationStatus()">
-                Configuration Status
-            </button>
-            <button class="buttonVertical snappable" onpointerdown="getTrackingStatus()">
-                Tracking Status
-            </button>
         </div>
         <div style="display: inline-block; width: 70vw; height: 80vh;">
             <div class="horizontalScroll">
@@ -122,18 +116,6 @@
         var textColor = function (content) {
             var textToChange = document.getElementById("Text to change");
             textToChange.style.color = content;
-        }
-
-        var getConfigurationStatus = function () {
-            TouchFree.Connection.ConnectionManager.RequestServiceStatus((status) => {
-                changeText(TouchFree.TouchFreeToolingTypes.ConfigurationState[status.configurationState]);
-            });
-        }
-
-        var getTrackingStatus = function () {
-            TouchFree.Connection.ConnectionManager.RequestServiceStatus((status) => {
-                changeText(TouchFree.TouchFreeToolingTypes.TrackingServiceState[status.trackingServiceState]);
-            });
         }
     </script>
 

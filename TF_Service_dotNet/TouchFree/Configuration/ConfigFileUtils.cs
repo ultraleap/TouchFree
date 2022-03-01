@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         }
 
         static readonly string DefaultConfigDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-            Path.GetFullPath("/storage/sd/ultraleap/touchfree/configuration") :
+            Path.GetFullPath("/storage/sd/ultraleap/touchfree/configuration/") :
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\TouchFree\\Configuration\\");
 
         public static void CheckForConfigDirectoryChange()
