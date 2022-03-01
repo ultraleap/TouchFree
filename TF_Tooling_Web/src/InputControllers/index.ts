@@ -1,7 +1,9 @@
 import { BaseInputController } from './BaseInputController'
 import { WebInputController } from './WebInputController'
 
-module.exports = {
+let InputControllers = {
     BaseInputController: BaseInputController,
     WebInputController: WebInputController
 }
+
+export default InputControllers;

@@ -1,7 +1,9 @@
 import { InputActionManager } from './InputActionManager';
 import { InputActionPlugin } from './InputActionPlugin';
 
-module.exports = {
+let Plugins = {
     InputActionManager: InputActionManager,
     InputActionPlugin: InputActionPlugin
 }
+
+export default Plugins;
