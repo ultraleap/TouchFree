@@ -10,10 +10,10 @@ namespace TouchFreeTests.Configuration
         public void NewInteractionConfig_CreatedWithDefaults_DefaultsAreSet()
         {
             //Given
-            InteractionConfig config = null;
+            InteractionConfigInternal config = null;
 
             //When
-            config = new InteractionConfig();
+            config = new InteractionConfigInternal();
 
             //Then
             Assert.AreEqual(false, config.UseScrollingOrDragging);

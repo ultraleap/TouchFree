@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Library
             configManager.OnPhysicalConfigUpdated += PhysicalConfigUpdated;
         }
 
-        void PhysicalConfigUpdated(PhysicalConfig _config)
+        void PhysicalConfigUpdated(PhysicalConfigInternal _config)
         {
             Width_VirtualPx = _config.ScreenWidthPX;
             Height_VirtualPx = _config.ScreenHeightPX;

@@ -90,7 +90,7 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        public void UpdateTrackingTransform(PhysicalConfig _config)
+        public void UpdateTrackingTransform(PhysicalConfigInternal _config)
         {
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
             // Therefore, we must convert to the real values before using them.

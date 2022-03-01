@@ -22,7 +22,7 @@ namespace Ultraleap.TouchFree.Library
             UpdateTrackingMode(configManager.PhysicalConfig);
         }
 
-        public void UpdateTrackingMode(PhysicalConfig _config)
+        public void UpdateTrackingMode(PhysicalConfigInternal _config)
         {
             // leap is looking down
             if (Math.Abs(_config.LeapRotationD.Z) > 90f)

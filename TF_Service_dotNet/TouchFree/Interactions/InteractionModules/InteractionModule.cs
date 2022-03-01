@@ -99,7 +99,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             HandleInputAction?.Invoke(actionData);
         }
 
-        protected virtual void OnInteractionSettingsUpdated(InteractionConfig _config)
+        protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             ignoreDragging = !_config.UseScrollingOrDragging;
             positioningStabiliser.ResetValues();

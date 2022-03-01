@@ -4,7 +4,7 @@ using System.Numerics;
 namespace Ultraleap.TouchFree.Library.Configuration
 {
     [Serializable]
-    public class PhysicalConfig
+    public class PhysicalConfigInternal
     {
         public float ScreenHeightMm = 330f;
         public Vector3 LeapPositionRelativeToScreenBottomMm = new Vector3(0f, -120f, -250f);
@@ -14,7 +14,20 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public int ScreenWidthPX = 0;
         public int ScreenHeightPX = 0;
 
-        public PhysicalConfig()
+        public PhysicalConfig ForApi()
+        {
+            return new PhysicalConfig()
+            {
+                LeapPositionRelativeToScreenBottomM = LeapPositionRelativeToScreenBottomMm / 1000f,
+                LeapRotationD = LeapRotationD,
+                ScreenHeightM = ScreenHeightMm / 1000f,
+                ScreenHeightPX = ScreenHeightPX,
+                ScreenRotationD = ScreenRotationD,
+                ScreenWidthPX = ScreenWidthPX
+            };
+        }
+
+        public PhysicalConfigInternal()
         {
             this.ScreenHeightMm = 330f;
             this.LeapPositionRelativeToScreenBottomMm = new Vector3(0f, -120f, -250f);
@@ -25,7 +38,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             this.ScreenHeightPX = 0;
         }
 
-        public PhysicalConfig(PhysicalConfigForFile fromFile)
+        public PhysicalConfigInternal(PhysicalConfig fromFile)
         {
             this.ScreenHeightMm = fromFile.ScreenHeightM * 1000f;
             this.LeapPositionRelativeToScreenBottomMm = fromFile.LeapPositionRelativeToScreenBottomM * 1000f;
