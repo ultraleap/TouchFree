@@ -4,6 +4,7 @@
 
 import React, { Component, CSSProperties } from "react";
 import { ControlBar } from "./ControlBar";
+import { CursorManager } from "./CursorManager";
 import { CameraPage } from "./Pages/CameraPage";
 import { InteractionsPage } from "./Pages/InteractionsPage";
 
@@ -29,6 +30,9 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
 
     private timerID: number;
 
+    private cursorManager: CursorManager;
+    private addCursorsToDoc: (element: HTMLDivElement) => void;
+
     // TouchFree objects
     private inputSystem: any;
     private connectionManager: any;
@@ -36,11 +40,16 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     constructor(props: {}) {
         super(props);
 
+        this.timerID = -1;
+
         TouchFree.Connection.ConnectionManager.init();
         this.inputSystem = new TouchFree.InputControllers.WebInputController();
-
-        this.timerID = -1;
         this.connectionManager = TouchFree.Connection.ConnectionManager;
+
+        this.cursorManager = new CursorManager();
+        this.addCursorsToDoc = (element: HTMLDivElement) => {
+            this.cursorManager.setElement(element);
+        }
 
         let state = {
             atTopLevel: true,
@@ -90,7 +99,8 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         let ThisPage = pages[this.state.activeTabName];
 
         return (
-            <div style={this.containerStyle}>
+            <div style={this.containerStyle}
+                 ref={this.addCursorsToDoc}>
                 <ControlBar manager={this}
                             atTopLevel={this.state.atTopLevel}
                             status={this.state.tfState}

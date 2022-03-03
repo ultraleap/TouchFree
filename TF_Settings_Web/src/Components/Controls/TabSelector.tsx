@@ -19,7 +19,9 @@ export class TabSelector extends React.Component<{name: string, manager: ScreenM
         }
 
         return (
-            <button className={className} onClick={this.onClick.bind(this)}>
+            <button className={className}
+                    onClick={this.onClick.bind(this)}
+                    onPointerUp={this.onClick.bind(this)}>
                 {this.props.name}
             </button>
         );
