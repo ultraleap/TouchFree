@@ -444,18 +444,18 @@ TF_Service::Windows::package:
   script:
     # Package Service up neatly
     - mkdir ./Service_Package/
-    - mkdir ./Service_Package/Licenses/
     - mkdir ./Service_Package/Service/
     - mkdir ./Service_Package/SettingsUI/
     - mkdir ./Service_Package/Wrapper/
+    - mkdir ./Service_Package/Wrapper/wwwroot/
     - mkdir ./Service_Package/Tray/
-    - mkdir ./Service_Package/Service/wwwroot/
+    - mkdir ./Service_Package/Licenses/
     - cp -r ./Service_dotNet_Build/* ./Service_Package/Service/
     - cp -r ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -r ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
+    - cp -r ./TF_Settings_Web/build/* ./Service_Package/Wrapper/wwwroot
     - cp -r ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
-    - cp -r ./TF_Settings_Web/build/* ./Service_Package/Service/wwwroot/
 
   artifacts:
     name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
