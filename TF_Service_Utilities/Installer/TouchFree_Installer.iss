@@ -28,6 +28,7 @@ DefaultDirName={autopf64}\Ultraleap\{#ProductName}
 DisableProgramGroupPage=yes
 LicenseFile={#SourcePath}..\..\EULA.rtf
 SetupIconFile={#SourcePath}..\..\TF_Service_Utilities\TouchFree_Icon.ico
+InfoBeforeFile={#SourcePath}..\..\PrivacyPolicy.rtf
 UninstallDisplayIcon={app}\TouchFree\{#TouchFreeAppExeName}
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
