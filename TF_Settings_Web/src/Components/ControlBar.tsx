@@ -1,26 +1,3 @@
-// New UI Design:
-
-// Row 1 (L -> R):
-
-// Connected Status Indicator if on main page
-// Back Button if not
-
-// Logo (centred)
-//     Does this exist already?
-
-// Row 2:
-// L -> R Tabs:
-// Camera
-// ScreenManager.SetScreen("Camera")
-// Interaction
-// ScreenManager.SetScreen("Interaction")
-
-// BG of selected tab is #222222FF
-// BG of unselected tabs is transparent
-// Text of tabs has drop shadow (text-shadow property)
-
-// BG is a gradient from #3B3B3BFF to #282828FF
-
 import React from "react";
 import { CSSProperties } from "react";
 
@@ -57,7 +34,7 @@ export class ControlBar extends React.Component<{ manager: ScreenManager,
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        height: '5rem',
+        height: '4rem',
         minWidth: '0',
         minHeight: '0',
     };
@@ -71,8 +48,8 @@ export class ControlBar extends React.Component<{ manager: ScreenManager,
         alignSelf: 'center',
         minHeight: '0',
         minWidth: '0',
-        maxHeight: '5rem',
-        maxWidth: '30rem'
+        maxHeight: '4rem',
+        maxWidth: '26.1rem'
     };
 
     private emptyContainer: CSSProperties = {
@@ -90,7 +67,7 @@ export class ControlBar extends React.Component<{ manager: ScreenManager,
             topLeftItem =
                 <button
                     onClick={this.props.manager.goToTopLevel}
-                    className="backButton"
+                    className="tfButton"
                     >
                     Back
                 </button>;

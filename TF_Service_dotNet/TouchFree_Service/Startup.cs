@@ -30,33 +30,13 @@ namespace Ultraleap.TouchFree.Service
             services.AddWebSocketReceiver();
 
             services.AddInteractions();
-
-            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseWebSockets();
-            app.UseRouting();
-
             app.UseStaticFiles("/settings");
-
-            app.UseCors(policy =>
-            {
-                policy.WithOrigins("http://localhost:9739")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader().Build();
-            });
-
-            app.UseEndpoints(
-                endpoints =>
-                {
-                    endpoints.MapControllers()
-                        //.RequireHost("*:9740")
-                        ;
-                }
-                );
 
             app.UseTouchFreeRouter();
 

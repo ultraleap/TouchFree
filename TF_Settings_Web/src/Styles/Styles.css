@@ -1,4 +1,4 @@
-button.backButton {
+button.tfButton {
     justify-self: left;
     flex: 1 2 auto;
     padding: 1rem;
@@ -18,14 +18,14 @@ button.backButton {
     min-width: 110px;
 }
 
-button.backButton:hover {
+button.tfButton:hover {
     box-shadow: none;
     background-image: linear-gradient(180deg, #00EB86, #00CDCF), linear-gradient(180deg, #00EB86, #00CDCF);
 }
 
 button.tabButton {
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
+    border-top-left-radius: 1.2rem;
+    border-top-right-radius: 1.2rem;
     background-color: transparent;
     border-color: transparent;
     flex: 1 1 auto;
@@ -34,6 +34,7 @@ button.tabButton {
     font-size: 2rem;
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
+    align-self: stretch;
 }
 
 button.tabButtonActive {
