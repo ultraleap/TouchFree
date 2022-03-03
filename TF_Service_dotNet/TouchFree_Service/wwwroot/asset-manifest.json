@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/settings/static/css/main.62fb5820.css",
+    "main.js": "/settings/static/js/main.82891bd4.js",
+    "static/js/787.44c9ca48.chunk.js": "/settings/static/js/787.44c9ca48.chunk.js",
+    "static/media/Ring.png": "/settings/static/media/Ring.75cceac58048bbb6a340.png",
+    "static/media/Logo.png": "/settings/static/media/Logo.d42df211d6b5267b0f4a.png",
+    "static/media/Dot.png": "/settings/static/media/Dot.ad33e815ad76300c1a8b.png",
+    "index.html": "/settings/index.html",
+    "main.62fb5820.css.map": "/settings/static/css/main.62fb5820.css.map",
+    "main.82891bd4.js.map": "/settings/static/js/main.82891bd4.js.map",
+    "787.44c9ca48.chunk.js.map": "/settings/static/js/787.44c9ca48.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.62fb5820.css",
+    "static/js/main.82891bd4.js"
+  ]
+}
