@@ -5,13 +5,9 @@ import './App.css';
 
 import { ScreenManager } from './Components/ScreenManager';
 
-// Load tooling here & use throughout
-
-// <ControlBar/>
-// <ScreenManager>
-    // Literally just put a blue box here called ManualSetup
-    // Literally just put a red box here called InteractionSetup (background?)
-// </ScreenManager>
+declare global {
+    interface Window { TouchFree: any; }
+}
 
 class App extends React.Component {
     private containerStyle : CSSProperties = {

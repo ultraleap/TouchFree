@@ -25,7 +25,7 @@ import React from "react";
 import { CSSProperties } from "react";
 
 import { StatusIndicator } from './StatusIndicator';
-import { ScreenManager, tfStatus } from "./ScreenManager";
+import { ScreenManager } from "./ScreenManager";
 import { TabSelector } from "./Controls/TabSelector";
 
 import logo from '../Images/Logo.png';
@@ -36,7 +36,7 @@ import '../Styles/Styles.css'
 
 export class ControlBar extends React.Component<{ manager: ScreenManager,
                                                   atTopLevel: Boolean,
-                                                  status: tfStatus,
+                                                  status: number,
                                                   activeTabName: String
                                                 }> {
 

@@ -2,21 +2,16 @@
 // Manages the loading/display of the subscreens
 // Is the place where the active screen/tab is controlled
 
-import React, { Component, CSSProperties, ReactElement } from "react";
+import React, { Component, CSSProperties } from "react";
 import { ControlBar } from "./ControlBar";
 import { CameraPage } from "./Pages/CameraPage";
 import { InteractionsPage } from "./Pages/InteractionsPage";
-import { Page } from "./Pages/Page";
 
-export enum tfStatus {
-    CONNECTED,
-    NO_CAMERA,
-    NO_SERVICE
-}
+const TouchFree = window.TouchFree;
 
-interface ScreenManagerProps {
+interface ScreenManagerState {
     atTopLevel: boolean,
-    status: tfStatus,
+    tfState: number,
     activeTabName: string,
 }
 
@@ -25,23 +20,45 @@ const pages: {[name: string]: typeof Component} = {
     "Interactions": InteractionsPage,
 };
 
-export class ScreenManager extends React.Component<{}, ScreenManagerProps> {
+export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     private containerStyle : CSSProperties = {
         display: 'flex',
         flexDirection: 'column',
         height: '100%'
     }
 
+    private timerID: number;
+
+    // TouchFree objects
+    private inputSystem: any;
+    private connectionManager: any;
+
     constructor(props: {}) {
         super(props);
 
+        TouchFree.Connection.ConnectionManager.init();
+        this.inputSystem = new TouchFree.InputControllers.WebInputController();
+
+        this.timerID = -1;
+        this.connectionManager = TouchFree.Connection.ConnectionManager;
+
         let state = {
             atTopLevel: true,
-            status: tfStatus.CONNECTED,
+            tfState: 0,
             activeTabName: "Camera",
         };
 
         this.state = state;
+    }
+
+    componentDidMount() {
+        this.timerID = window.setInterval(() => {
+            this.RequestStatus()
+        }, 5000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
     }
 
     public goToTopLevel(): void {
@@ -59,16 +76,24 @@ export class ScreenManager extends React.Component<{}, ScreenManagerProps> {
         this.forceUpdate();
     }
 
-    render () {
-        console.log("ActiveChild: " + this.state.activeTabName);
+    private RequestStatus(): void {
+        this.connectionManager.RequestServiceStatus(this.UpdateStatus.bind(this));
+    }
 
+    private UpdateStatus(detail: any) {
+        this.setState(() => ({
+            tfState: detail.trackingServiceState
+        }));
+    }
+
+    render () {
         let ThisPage = pages[this.state.activeTabName];
 
         return (
             <div style={this.containerStyle}>
                 <ControlBar manager={this}
                             atTopLevel={this.state.atTopLevel}
-                            status={this.state.status}
+                            status={this.state.tfState}
                             activeTabName={this.state.activeTabName}/>
                 <ThisPage />
             </div>

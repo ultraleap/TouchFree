@@ -5,28 +5,68 @@
     // All have tooltips
 
 import React, { CSSProperties } from "react";
-import { tfStatus } from "./ScreenManager";
 
-export class StatusIndicator extends React.Component<{status: tfStatus}> {
+import camStatusIcon from '../Images/Camera_Status_Icon.png';
+import svcStatusIcon from '../Images/Tracking_Status_Icon.png';
+
+const TouchFree = window.TouchFree;
+
+const trackingState = TouchFree.TouchFreeToolingTypes.TrackingServiceState;
+
+export class StatusIndicator extends React.Component<{status: number}> {
     private indicatorStyle: CSSProperties = {
-        display: 'flex 1 1 auto',
+        alignSelf: 'center',
+        height: "100%",
+        minWidth: '6rem',
+        maxWidth: '30rem',
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: 'space-between',
+        paddingLeft: "2rem",
     };
 
-    render () {
-        let message = "Connected";
+    private statusIconStyle: CSSProperties = {
+        alignSelf: 'center',
+        minHeight: '0',
+        minWidth: '0',
+        maxHeight: '5rem',
+        maxWidth: '30rem',
+        position: "relative",
+    };
 
-        switch (this.props.status) {
-            case tfStatus.NO_CAMERA:
-                message = "No Camera found connected!";
-                break;
-            case tfStatus.NO_SERVICE:
-                message = "TouchFree Service not found";
-                break;
-        }
+    private statusDotStyleOK: CSSProperties = {
+        position: "absolute",
+        right: "-15%",
+        top: "-.5rem",
+        height: "1rem",
+        width: "1rem",
+        borderRadius: ".5rem",
+        backgroundColor: "green"
+    }
+
+    private statusDotStyleBad: CSSProperties = {
+        position: "absolute",
+        right: "-15%",
+        top: "-.5rem",
+        height: "1rem",
+        width: "1rem",
+        borderRadius: ".5rem",
+        backgroundColor: "red"
+    }
+
+    render () {
+        console.log(`status was: ${trackingState[this.props.status]}`)
 
         return (
             <div style={this.indicatorStyle}>
-                {message}
+                <div style={this.statusIconStyle}>
+                    <img src={camStatusIcon} alt="Camera Status Icon" style={this.statusIconStyle}/>
+                    <div style={(this.props.status === trackingState.CONNECTED) ? this.statusDotStyleOK : this.statusDotStyleBad}/>
+                </div>
+                <div style={this.statusIconStyle}>
+                    <img src={svcStatusIcon} alt="Tracking Service Status Icon" style={this.statusIconStyle}/>
+                    <div style={(this.props.status === trackingState.UNAVAILABLE) ? this.statusDotStyleBad : this.statusDotStyleOK}/>
+                </div>
             </div>
         );
     }
