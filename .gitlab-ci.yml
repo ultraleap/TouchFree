@@ -288,6 +288,23 @@ TF_Settings::Windows::build:
     - unity
     - win10
 
+TF_Settings::Web::build:
+  stage: build
+  when: always
+  script:
+    - cd ./TF_Settings_Web
+    - npm install
+    - npm run build
+  artifacts:
+    name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
+    paths:
+    - ./TF_Settings_Web/build/*
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - unity
+    - win10
+
 TouchFree::build:
   stage: build
   when: always
@@ -413,11 +430,13 @@ TF_Service::Windows::package:
   stage: package
   dependencies:
     - TF_Settings::Windows::build
+    - TF_Settings::Web::build
     - TF_Service::dotNet::Windows::build
     - TF_Service::Wrapper::build
     - TF_Service::Tray::build
   needs: [
     "TF_Service::dotNet::Windows::build",
+    "TF_Settings::Web::build",
     "TF_Settings::Windows::build",
     "TF_Service::Wrapper::build",
     "TF_Service::Tray::build"
@@ -430,11 +449,13 @@ TF_Service::Windows::package:
     - mkdir ./Service_Package/SettingsUI/
     - mkdir ./Service_Package/Wrapper/
     - mkdir ./Service_Package/Tray/
+    - mkdir ./Service_Package/Service/wwwroot/
     - cp -r ./Service_dotNet_Build/* ./Service_Package/Service/
     - cp -r ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -r ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -r ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -r ./Third_Party_Licenses/* ./Service_Package/Licenses/
+    - cp -r ./TF_Settings_Web/build/* ./Service_Package/Service/wwwroot/
 
   artifacts:
     name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
@@ -457,7 +478,7 @@ TF_Service::dotNet::Brightsign::example:
     # Run innosetup
     - mkdir ./BS_Example_Package
     - cp ./Scripts/BrightSign_Scripts/QuickStart-autorun.brs ./BS_Example_package
-    - mv ./BS_Example_package/QuickStart-autorun.brs ./BS_Example_package/autorun.brs 
+    - mv ./BS_Example_package/QuickStart-autorun.brs ./BS_Example_package/autorun.brs
     - cp -r ./Tooling_Package* ./BS_Example_package
 
   artifacts:
