@@ -1,9 +1,7 @@
 import { TouchlessCursor } from "./TouchlessCursor";
 import { DotCursor } from "./DotCursor";
 
-let Cursors = {
+module.exports = {
     TouchlessCursor: TouchlessCursor,
     DotCursor: DotCursor
 }
-
-export default Cursors;

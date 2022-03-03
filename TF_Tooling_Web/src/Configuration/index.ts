@@ -1,9 +1,7 @@
 import { ConfigurationManager } from "./ConfigurationManager";
 import * as ConfigurationTypes from "./ConfigurationTypes";
 
-let Configuration = {
+module.exports = {
     ConfigurationManager: ConfigurationManager,
     ConfigurationTypes: ConfigurationTypes,
 }
-
-export default Configuration;

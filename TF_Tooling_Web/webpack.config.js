@@ -1,21 +1,5 @@
 const { Compiler } = require('webpack');
 
-class DtsBundlePlugin {
-    apply(compiler) {
-        compiler.hooks.done.tapAsync('dTSBundle', (compilation) => {
-            var dts = require('dts-bundle');
-
-            dts.bundle({
-                name: 'TouchFree',
-                main: './build/src/index.d.ts',
-                out: '../../dist/TouchFree.d.ts',
-                removeSource: false,
-                // outputAsModuleFolder: true // to use npm in-package typings
-            });
-        });
-    }
-}
-
 module.exports = {
     entry: {
         TouchFree_Tooling: {
@@ -53,6 +37,5 @@ module.exports = {
     },
     output: {
         path: __dirname,
-    },
-    plugins: [new DtsBundlePlugin()],
+    }
 };

@@ -5,7 +5,7 @@ import * as InputControllers from './InputControllers';
 import * as Plugins from './Plugins';
 import * as TouchFreeToolingTypes from './TouchFreeToolingTypes';
 
-let TouchFree = {
+module.exports = {
     Configuration: Configuration,
     Connection: Connection,
     Cursors: Cursors,
@@ -13,5 +13,3 @@ let TouchFree = {
     Plugins: Plugins,
     TouchFreeToolingTypes: TouchFreeToolingTypes,
 }
-
-export default TouchFree;
