@@ -12,6 +12,9 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Header("File Location")]
         public InputField fileLocation;
 
+        [Header("Analytics")]
+        public Toggle EnableAnalyticsToggle;
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -21,6 +24,22 @@ namespace Ultraleap.TouchFree.ServiceUI
             // being able to edit
             fileLocation.interactable = true;
             fileLocation.readOnly = true;
+
+            if (DiagnosticAPIManager.diagnosticAPI == null)
+            {
+                DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
+            }
+
+            DiagnosticAPI.OnGetAnalyticsEnabledResponse += HandleAnalyticsEnabledResponse;
+
+            EnableAnalyticsToggle.onValueChanged.AddListener(OnAnalyticsToggled);
+
+            DiagnosticAPIManager.diagnosticAPI.GetAnalyticsMode();
+        }
+
+        protected virtual void OnDisable()
+        {
+            EnableAnalyticsToggle.onValueChanged.RemoveListener(OnAnalyticsToggled);
         }
 
         public void SetFileLocation()
@@ -35,6 +54,16 @@ namespace Ultraleap.TouchFree.ServiceUI
                     ConfigManager.LoadConfigsFromFiles();
                 }
             }
+        }
+
+        void OnAnalyticsToggled(bool _)
+        {
+            DiagnosticAPIManager.diagnosticAPI.SetAnalyticsMode(EnableAnalyticsToggle.isOn);
+        }
+
+        void HandleAnalyticsEnabledResponse(bool analyticsEnabled)
+        {
+            EnableAnalyticsToggle.isOn = analyticsEnabled;
         }
     }
 }
