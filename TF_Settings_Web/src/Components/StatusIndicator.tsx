@@ -25,6 +25,16 @@ export class StatusIndicator extends React.Component<{status: number}> {
         paddingLeft: "2rem",
     };
 
+    private statusContainerStyle: CSSProperties = {
+        alignSelf: "stretch",
+        minHeight: '0',
+        minWidth: '0',
+        maxHeight: '5rem',
+        maxWidth: '30rem',
+        position: "relative",
+        display: "flex",
+    };
+
     private statusIconStyle: CSSProperties = {
         alignSelf: 'center',
         minHeight: '0',
@@ -37,21 +47,22 @@ export class StatusIndicator extends React.Component<{status: number}> {
     private statusDotStyleOK: CSSProperties = {
         position: "absolute",
         right: "-15%",
-        top: "-.5rem",
+        top: "1.5rem",
         height: "1rem",
         width: "1rem",
         borderRadius: ".5rem",
-        backgroundColor: "green"
+        backgroundImage: "linear-gradient(180deg, #00EB86, #00CDCF)",
     }
 
     private statusDotStyleBad: CSSProperties = {
         position: "absolute",
         right: "-15%",
-        top: "-.5rem",
+        top: "1.5rem",
         height: "1rem",
         width: "1rem",
         borderRadius: ".5rem",
-        backgroundColor: "red"
+        // #E2164D (top) to #D11883 (bottom)
+        backgroundImage: "linear-gradient(180deg, #E2164D, #D11883)",
     }
 
     render () {
@@ -59,11 +70,11 @@ export class StatusIndicator extends React.Component<{status: number}> {
 
         return (
             <div style={this.indicatorStyle}>
-                <div style={this.statusIconStyle}>
+                <div style={this.statusContainerStyle}>
                     <img src={camStatusIcon} alt="Camera Status Icon" style={this.statusIconStyle}/>
                     <div style={(this.props.status === trackingState.CONNECTED) ? this.statusDotStyleOK : this.statusDotStyleBad}/>
                 </div>
-                <div style={this.statusIconStyle}>
+                <div style={this.statusContainerStyle}>
                     <img src={svcStatusIcon} alt="Tracking Service Status Icon" style={this.statusIconStyle}/>
                     <div style={(this.props.status === trackingState.UNAVAILABLE) ? this.statusDotStyleBad : this.statusDotStyleOK}/>
                 </div>

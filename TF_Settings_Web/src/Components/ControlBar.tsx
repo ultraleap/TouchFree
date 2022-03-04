@@ -6,6 +6,7 @@ import { ScreenManager } from "./ScreenManager";
 import { TabSelector } from "./Controls/TabSelector";
 
 import logo from '../Images/Logo.png';
+import backArrow from "../Images/Back_Arrow.png";
 
 // Using this style from the stylesheet as the :hover addon doesn't
 // seem to be supported by the CSSProperties type
@@ -57,6 +58,20 @@ export class ControlBar extends React.Component<{ manager: ScreenManager,
         height: '100%',
     };
 
+    private arrowStyle: CSSProperties = {
+        display: "inline-block",
+        margin: "0",
+        marginRight: "0.3rem",
+        verticalAlign: "middle",
+    }
+
+    private textStyle: CSSProperties = {
+        display: "inline-block",
+        margin: "0",
+        verticalAlign: "middle",
+        fontFamily: "NowRegular, Arial"
+    }
+
     render() {
         let topLeftItem;
 
@@ -69,7 +84,10 @@ export class ControlBar extends React.Component<{ manager: ScreenManager,
                     onClick={this.props.manager.goToTopLevel}
                     className="tfButton"
                     >
-                    Back
+                    <img src={backArrow} alt="Arrow pointing back" style={this.arrowStyle} />
+                    <p style={this.textStyle}>
+                        Back
+                    </p>
                 </button>;
         }
 
