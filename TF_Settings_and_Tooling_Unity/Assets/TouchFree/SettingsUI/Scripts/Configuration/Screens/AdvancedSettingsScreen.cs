@@ -65,5 +65,10 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             EnableAnalyticsToggle.isOn = analyticsEnabled;
         }
+
+        public void PrivacyPolicyPressed()
+        {
+            Application.OpenURL("https://www.ultraleap.com/privacy-policy");
+        }
     }
 }
