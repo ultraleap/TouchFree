@@ -9,9 +9,6 @@ namespace Ultraleap.TouchFree.Service.Connection
 {
     public class ClientConnectionManager
     {
-        // TODO:
-        // * Dependency Inject the InteractionManager reference
-
         private List<ClientConnection> activeConnections = new List<ClientConnection>();
 
         public event Action LostAllConnections;
@@ -22,18 +19,11 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public ClientConnectionManager(HandManager handManager)
         {
-            // InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
-
             handManager.HandFound += OnHandFound;
             handManager.HandsLost += OnHandsLost;
 
             // This is here so the test infrastructure has some sign that the app is ready
             Console.WriteLine("Service Setup Complete");
-        }
-
-        ~ClientConnectionManager()
-        {
-            //InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }
 
         private void OnHandFound()

@@ -61,17 +61,17 @@ namespace Ultraleap.TouchFree.Tooling
 
         // Group: Functions
 
-        // Function: Start
-        // Unity's initialization function. Used to begin the <ClearUnresponsiveCallbacks> coroutine.
+        // Function: MessageReceiver
+        // The class's constructor, used to begin the <ClearUnresponsiveCallbacks> coroutine.
         public MessageReceiver()
         {
             // TODO: call this either on message or on message wrapped in a rate limiter (this looks like it already has some rate limiting)
             ClearUnresponsiveCallbacks();
         }
 
-        // Function: Update
-        // Unity's update function. Checks all queues for messages to handle.
-        public void Update()
+        // Function: CheckQueues
+        // Checks all queues for messages to handle.
+        public void CheckQueues()
         {
             // TODO: call this either on message or on message wrapped in a rate limiter
             CheckForResponse();
@@ -206,10 +206,10 @@ namespace Ultraleap.TouchFree.Tooling
         // expired from <configStateCallbacks>.
         async Task ClearUnresponsiveCallbacks()
         {
-            await Task.Delay(callbackClearTimer * 1000);
-
             while (true)
             {
+                await Task.Delay(callbackClearTimer * 1000);
+
                 int lastClearTime = System.DateTime.Now.Millisecond;
 
                 List<string> keys = new List<string>(responseCallbacks.Keys);

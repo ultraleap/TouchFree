@@ -19,7 +19,7 @@ namespace Ultraleap.TouchFree.Tooling.Example
             while (true)
             {
                 await Task.Delay(1);
-                ConnectionManager.messageReceiver.Update();
+                ConnectionManager.messageReceiver.CheckQueues();
             }
         }
 
