@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
-using System.Threading;
 using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library;
 
@@ -51,6 +49,15 @@ namespace Ultraleap.TouchFree.Tooling
         // MOVE event.
         // This is required due to the culling of events from the actionQueue in CheckForAction.
         WebSocketVector2 lastKnownCursorPosition = new WebSocketVector2();
+
+        // Delegate: InputActionEvent
+        // An Action to distribute a <InputAction> via the <TransmitInputAction> event listener.
+        public delegate void InputActionEvent(ClientInputAction _inputData);
+
+        // Variable: TransmitInputAction
+        // An event for transmitting <InputActions> that have been modified via the active
+        // <plugins>
+        public static event InputActionEvent TransmitInputAction;
 
         // Group: Functions
 
@@ -181,7 +188,7 @@ namespace Ultraleap.TouchFree.Tooling
                     action.CursorPosition = lastKnownCursorPosition;
                 }
 
-                InputActionManager.Instance.SendInputAction(action);
+                TransmitInputAction?.Invoke(action);
             }
 
             if (handState != HandPresenceState.PROCESSED)

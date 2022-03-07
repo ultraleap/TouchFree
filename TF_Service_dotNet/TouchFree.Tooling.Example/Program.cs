@@ -10,12 +10,9 @@ namespace Ultraleap.TouchFree.Tooling.Example
         {
             Console.WriteLine("Hello World!");
 
-            var inputActionManager = new InputActionManager();
-            inputActionManager.Awake();
-            InputActionManager.TransmitInputAction += TransmitInputAction;
-
             using var connectionManager = new ConnectionManager();
 
+            MessageReceiver.TransmitInputAction += TransmitInputAction;
             ConnectionManager.HandFound += ConnectionManager_HandFound;
             ConnectionManager.HandsLost += ConnectionManager_HandsLost;
 
