@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
 namespace TouchFreeTests.PositionTrackers

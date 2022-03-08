@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Ultraleap.TouchFree.Library
+﻿namespace Ultraleap.TouchFree.Library
 {
     public interface IVirtualScreen
     {

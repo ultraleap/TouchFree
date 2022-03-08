@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Leap;
+﻿using Leap;
 
 namespace Ultraleap.TouchFree.Library.Interactions.PositionTrackers
 {

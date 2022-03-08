@@ -1,6 +1,6 @@
-﻿using System.Numerics;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
+using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
 
@@ -142,7 +142,7 @@ namespace TouchFreeTests
             Vector2 result = previousPosition;
             for (var i = 1; i <= cursorMovementCount; i++)
             {
-                Vector2 newPosition = Vector2.Add(previousPosition, new Vector2(0, 2000f * i));
+                Vector2 newPosition = previousPosition + new Vector2(0, 2000f * i);
                 result = positionStabiliser.ApplyDeadzone(newPosition);
             }
 

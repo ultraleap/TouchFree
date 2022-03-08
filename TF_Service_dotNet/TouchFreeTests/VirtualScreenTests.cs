@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;

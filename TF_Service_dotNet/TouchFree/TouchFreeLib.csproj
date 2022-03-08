@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
 		<Platforms>AnyCPU;ARM64</Platforms>
 		
 		<!--Adding the RuntimeIdentifier forces the build of the service to pass down the runtime-->

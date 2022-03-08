@@ -45,7 +45,7 @@ namespace Ultraleap.TouchFree.Service
             }
             else
             {
-                float normalisedGrabStrength = Utilities.MapRangeToRange(Math.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
+                float normalisedGrabStrength = Utilities.MapRangeToRange(Utilities.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
                 GeneralisedGrabStrength = normalisedGrabStrength;
             }
         }

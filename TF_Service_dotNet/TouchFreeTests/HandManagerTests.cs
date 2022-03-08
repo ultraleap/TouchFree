@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using System;
 using Leap;
 
 namespace TouchFreeTests
@@ -19,7 +18,7 @@ namespace TouchFreeTests
         {
             // Given
             HandManager handManger = new (null, null);
-            System.Numerics.Vector3 translationInMillimeters = new (100f, 200f, 300f);
+            Vector3 translationInMillimeters = new (100f, 200f, 300f);
             Leap.Vector translationInLeapSpace = new Leap.Vector(translationInMillimeters.X, translationInMillimeters.Y, -translationInMillimeters.Z);
             PhysicalConfig testConfig = new () { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
 
@@ -35,7 +34,7 @@ namespace TouchFreeTests
         {
             // Given
             HandManager handManger = new (null, null);
-            System.Numerics.Vector3 topDownRotation = new (45, 0, 180);
+            Vector3 topDownRotation = new (45, 0, 180);
             System.Numerics.Quaternion topDownQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(topDownRotation.Y),
                 Utilities.DegreesToRadians(topDownRotation.X),
@@ -54,7 +53,10 @@ namespace TouchFreeTests
                 Z = handManger.TrackingTransform().rotation.z,
                 W = handManger.TrackingTransform().rotation.w
             };
-            Assert.AreEqual(topDownQuaternion, handManagerRotation);
+            Assert.AreEqual(topDownQuaternion.X, handManagerRotation.X, 0.001);
+            Assert.AreEqual(topDownQuaternion.Y, handManagerRotation.Y, 0.001);
+            Assert.AreEqual(topDownQuaternion.Z, handManagerRotation.Z, 0.001);
+            Assert.AreEqual(topDownQuaternion.W, handManagerRotation.W, 0.001);
         }
 
         [Test]
@@ -62,7 +64,7 @@ namespace TouchFreeTests
         {
             // Given
             HandManager handManger = new (null, null);
-            System.Numerics.Vector3 bottomRotation = new (45, 0, 0);
+            Vector3 bottomRotation = new (45, 0, 0);
             System.Numerics.Quaternion bottomQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(bottomRotation.Y),
                 Utilities.DegreesToRadians(-bottomRotation.X),
@@ -81,7 +83,10 @@ namespace TouchFreeTests
                 Z = handManger.TrackingTransform().rotation.z,
                 W = handManger.TrackingTransform().rotation.w
             };
-            Assert.AreEqual(bottomQuaternion, handManagerRotation);
+            Assert.AreEqual(bottomQuaternion.X, handManagerRotation.X, 0.001);
+            Assert.AreEqual(bottomQuaternion.Y, handManagerRotation.Y, 0.001);
+            Assert.AreEqual(bottomQuaternion.Z, handManagerRotation.Z, 0.001);
+            Assert.AreEqual(bottomQuaternion.W, handManagerRotation.W, 0.001);
         }
 
         [Test]
@@ -89,9 +94,9 @@ namespace TouchFreeTests
         {
             // Given
             HandManager handManger = new(null, null);
-            System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
-            System.Numerics.Vector3 relativePosition = new(1000, 2000, 3000);
-            System.Numerics.Vector3 positionTranslation = new(1000, 2000, -3000);
+            Vector3 bottomRotation = new(45, 0, 0);
+            Vector3 relativePosition = new(1000, 2000, 3000);
+            Vector3 positionTranslation = new(1000, 2000, -3000);
 
             PhysicalConfig testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomMm = relativePosition };
 
@@ -99,7 +104,7 @@ namespace TouchFreeTests
             handManger.UpdateTrackingTransform(testConfig);
 
             //Then
-            System.Numerics.Vector3 handManagerRelativePosition = new()
+            Vector3 handManagerRelativePosition = new()
             {
                 X = handManger.TrackingTransform().translation.x,
                 Y = handManger.TrackingTransform().translation.y,
@@ -113,9 +118,9 @@ namespace TouchFreeTests
         {
             // Given
             HandManager handManger = new(null, null);
-            System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
-            System.Numerics.Vector3 relativePosition = new(1000, 1000, 1000);
-            System.Numerics.Vector3 positionTranslation = new(1000, 1158.46f, -811.16f);
+            Vector3 bottomRotation = new(45, 0, 0);
+            Vector3 relativePosition = new(1000, 1000, 1000);
+            Vector3 positionTranslation = new(1000, 1158.46f, -811.16f);
 
             PhysicalConfig testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomMm = relativePosition, ScreenRotationD = 10 };
 

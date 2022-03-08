@@ -78,10 +78,10 @@ namespace Ultraleap.TouchFree.Library
             return returnVal;
         }
 
-        public static System.Numerics.Vector3 LeapVectorToNumerics(Leap.Vector _leap)
+        public static Vector3 LeapVectorToNumerics(Leap.Vector _leap)
         {
             Leap.Vector scaledDown = _leap / 1000;
-            return new System.Numerics.Vector3(scaledDown.x, scaledDown.y, scaledDown.z);
+            return new Vector3(scaledDown.x, scaledDown.y, scaledDown.z);
         }
 
         public static float Lerp(float first, float second, float amount)
@@ -114,6 +114,22 @@ namespace Ultraleap.TouchFree.Library
             }
 
             return newValue;
+        }
+
+        public static float Clamp(float value, float minValue, float maxValue)
+        {
+            if (value < minValue)
+            {
+                return minValue;
+            }
+            else if (value > maxValue)
+            {
+                return maxValue;
+            }
+            else
+            {
+                return value;
+            }
         }
     }
 }

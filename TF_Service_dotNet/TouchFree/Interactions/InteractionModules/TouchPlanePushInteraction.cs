@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 
 using Ultraleap.TouchFree.Library.Configuration;
 
@@ -62,7 +61,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             float touchPlaneDistanceMm = touchPlaneDistance * 1000f;
             float touchPlaneZeroProgressMm = touchPlaneZeroProgress * 1000f;
 
-            float progressToClick = Math.Clamp(1f - Utilities.InverseLerp(touchPlaneDistanceMm, touchPlaneDistanceMm + touchPlaneZeroProgressMm, distanceFromScreen), 0f, 1f);
+            float progressToClick = Utilities.Clamp(1f - Utilities.InverseLerp(touchPlaneDistanceMm, touchPlaneDistanceMm + touchPlaneZeroProgressMm, distanceFromScreen), 0f, 1f);
 
             // determine if the fingertip is across one of the surface thresholds (hover/press) and send event
             if (distanceFromScreen < touchPlaneDistanceMm)

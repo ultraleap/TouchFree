@@ -98,7 +98,7 @@ namespace Ultraleap.TouchFree.Library
             var isTopMounted = ((_config.LeapRotationD.Z > 179.9f) && (_config.LeapRotationD.Z < 180.1f));
             float xAngleDegree = isTopMounted ? _config.LeapRotationD.X : -_config.LeapRotationD.X;
 
-            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(Utilities.DegreesToRadians(_config.LeapRotationD.Y),
+            Quaternion quaternion = Quaternion.CreateFromYawPitchRoll(Utilities.DegreesToRadians(_config.LeapRotationD.Y),
                 Utilities.DegreesToRadians(xAngleDegree + _config.ScreenRotationD),
                 Utilities.DegreesToRadians(_config.LeapRotationD.Z));
 

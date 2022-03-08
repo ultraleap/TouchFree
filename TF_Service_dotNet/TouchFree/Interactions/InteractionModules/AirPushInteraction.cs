@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -108,7 +107,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Update AppliedForce, which is the crux of the AirPush algorithm
                 float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, positions.DistanceFromScreen);
                 appliedForce += forceChange;
-                appliedForce = Math.Clamp(appliedForce, 0f, 1f);
+                appliedForce = Utilities.Clamp(appliedForce, 0f, 1f);
 
                 // Update the deadzone size
                 if (!pressing)
@@ -213,7 +212,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 float deadzoneMaxSize = deadzoneMinSize + deadzoneMaxSizeIncrease;
 
                 float newDeadzoneSize = positioningStabiliser.currentDeadzoneRadius + deadzoneSizeIncrease;
-                newDeadzoneSize = Math.Clamp(newDeadzoneSize, deadzoneMinSize, deadzoneMaxSize);
+                newDeadzoneSize = Utilities.Clamp(newDeadzoneSize, deadzoneMinSize, deadzoneMaxSize);
                 positioningStabiliser.currentDeadzoneRadius = newDeadzoneSize;
             }
         }
@@ -260,7 +259,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     // Adjust force based on spring stiffness
 
                     // Perform a calculation:
-                    float vClamped = Math.Clamp(Math.Abs(_currentVelocity), speedMin, speedMax);
+                    float vClamped = Utilities.Clamp(Math.Abs(_currentVelocity), speedMin, speedMax);
 
                     float stiffnessRatio = (vClamped - speedMin) / (speedMax - speedMin);
 

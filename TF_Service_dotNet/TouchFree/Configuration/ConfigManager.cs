@@ -4,8 +4,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
-        public event IConfigManager.InteractionConfigEvent OnInteractionConfigUpdated;
-        public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
+        public event InteractionConfigEvent OnInteractionConfigUpdated;
+        public event PhysicalConfigEvent OnPhysicalConfigUpdated;
         private InteractionConfig _interactions;
         private PhysicalConfig _physical;
 

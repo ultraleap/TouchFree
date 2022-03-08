@@ -1,6 +1,4 @@
-﻿using System;
-using System.Numerics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library

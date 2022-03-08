@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;

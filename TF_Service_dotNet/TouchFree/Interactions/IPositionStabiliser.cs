@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Ultraleap.TouchFree.Library.Interactions
+﻿namespace Ultraleap.TouchFree.Library.Interactions
 {
     public interface IPositionStabiliser
     {
