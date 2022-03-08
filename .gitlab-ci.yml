@@ -490,14 +490,16 @@ TF_Service::dotNet::Brightsign::example:
   tags:
     - win10
 
-TF_Service::dotNet::ARMLinux::package:
+TF_Service::ARMLinux::package:
   stage: package
   image: ubuntu:20.04
   dependencies:
     - Tracking::ARMLinux::download_package
+    - TF_Settings::Web::build
     - TF_Service::dotNet::ARMLinux::build
   needs: [
     "Tracking::ARMLinux::download_package",
+    "TF_Settings::Web::build",
     "TF_Service::dotNet::ARMLinux::build"
   ]
   script:
@@ -518,10 +520,12 @@ TF_Service::dotNet::ARMLinux::package:
     # Combine services into one directory
     - mkdir ./TouchFree_Extension
     - mkdir ./TouchFree_Extension/TouchFree
+    - mkdir ./TouchFree_Extension/TouchFree/wwwroot
     - mkdir ./TouchFree_Extension/Tracking
     - mkdir ./TouchFree_Extension/Tracking/bin
     - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
+    - cp -r ./TF_Settings_Web/build/* ./TouchFree_Extension/TouchFree/wwwroot
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
