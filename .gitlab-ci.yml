@@ -10,9 +10,11 @@ variables:
 
   TF_TFU_VERSION: '1.0.0'
   TF_TFW_VERSION: '1.0.0'
-  TOUCHFREE_VERSION: '2.2.0'
+  TOUCHFREE_VERSION: '2.2.1'
 
   TF_TOOLING_API_VERSION: '1.1.0'
+
+  TARGET_TRACKING_JOBID_WIN: 512860
 
 stages:
   - build
@@ -339,6 +341,22 @@ TouchFree::build:
     - unity
     - win10
 
+Tracking::download:
+  stage: build
+  when: always
+  script:
+    - cd ./Scripts/
+    - python ./Download_Tracking.py -t ${env:GITLAB_TOKEN} -j ${TARGET_TRACKING_JOBID_WIN}
+    - mv ./Tracking_Build/Ultraleap_Tracking_Installer*_win64.exe ./Tracking_Build/Tracking_for_TouchFree_${TOUCHFREE_VERSION}.exe
+  after_script:
+    - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
+  artifacts:
+    paths:
+    - ./Scripts/Tracking_Build/Tracking_for_TouchFree_*.exe
+    expire_in: 1 hour
+  tags:
+    - unity
+
 TF_Service::Integration::test:
   stage: test
 
@@ -521,9 +539,11 @@ TouchFree::installer:
   stage: installer
   dependencies:
     - TF_Service::Windows::package
+    - Tracking::download
     - TouchFree::build
   needs: [
     "TF_Service::Windows::package",
+    "Tracking::download",
     "TouchFree::build"
   ]
   script:
