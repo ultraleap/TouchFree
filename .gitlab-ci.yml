@@ -447,13 +447,13 @@ TF_Service::Windows::package:
     - mkdir ./Service_Package/Service/
     - mkdir ./Service_Package/SettingsUI/
     - mkdir ./Service_Package/Wrapper/
-    - mkdir ./Service_Package/Wrapper/wwwroot/
+    - mkdir ./Service_Package/wwwroot/
     - mkdir ./Service_Package/Tray/
     - mkdir ./Service_Package/Licenses/
     - cp -R ./Service_dotNet_Build/* ./Service_Package/Service/
     - cp -R ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -R ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
-    - cp -R ./TF_Settings_Web/build/* ./Service_Package/Wrapper/wwwroot
+    - cp -R ./TF_Settings_Web/build/* ./Service_Package/wwwroot
     - cp -R ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -R ./Third_Party_Licenses/* ./Service_Package/Licenses/
 
