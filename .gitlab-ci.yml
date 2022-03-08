@@ -82,9 +82,9 @@ TF_Tooling::Web::build:
     # Package Tooling
     - mkdir ./Tooling_Release
     - cp ${env:TF_TFW_PATH}/Version.txt ./Tooling_Release
-    - cp -r ${env:TF_TFW_PATH}/dist ./Tooling_Release
-    - cp -r ${env:TF_TFW_PATH}/Plugins ./Tooling_Release
-    - cp -r ${env:TF_TFW_PATH}/quick-start ./Tooling_Release
+    - cp -R ${env:TF_TFW_PATH}/dist ./Tooling_Release
+    - cp -R ${env:TF_TFW_PATH}/Plugins ./Tooling_Release
+    - cp -R ${env:TF_TFW_PATH}/quick-start ./Tooling_Release
   artifacts:
     name: "Tooling_for_Web_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
@@ -118,7 +118,7 @@ TF_Service::Wrapper::build:
     - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper.sln /p:Configuration=Release /p:Platform=x64
     # Move the built wrapper to the root directory
     - mkdir ./Service_Wrapper_Build
-    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/x64/Release/* ./Service_Wrapper_Build
+    - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/x64/Release/* ./Service_Wrapper_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -146,7 +146,7 @@ TF_Service::dotNet::Windows::build:
         Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/win-x64/*" ./Service_dotNet_Build
+    - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/win-x64/*" ./Service_dotNet_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -174,7 +174,7 @@ TF_Service::dotNet::ARMLinux::build:
         Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build_ARMLinux
-    - cp -r "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build_ARMLinux
+    - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/*" ./Service_dotNet_Build_ARMLinux
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -230,7 +230,7 @@ TF_Service::Tray::build:
     - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release /p:Platform=x64
     # Move the built tray app to the root directory
     - mkdir ./Service_Tray_Build
-    - cp -r $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/x64/Release/* ./Service_Tray_Build
+    - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/x64/Release/* ./Service_Tray_Build
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -392,8 +392,8 @@ TF_Tooling::Web::package:
   ]
   script:
     - mkdir ./Tooling_Package/
-    - cp -r ./Tooling_Release/* ./Tooling_Package/
-    - cp -r "./Documentation/Tooling for Web/" ./Tooling_Package/Documentation/
+    - cp -R ./Tooling_Release/* ./Tooling_Package/
+    - cp -R "./Documentation/Tooling for Web/" ./Tooling_Package/Documentation/
   artifacts:
     name: "TouchFree_Tooling_for_Web_${TF_TFW_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -415,8 +415,8 @@ TF_Tooling::Unity::package:
   ]
   script:
     - mkdir ./Tooling_Package/
-    - cp -r ./Tooling_Release/* ./Tooling_Package/
-    - cp -r "./Documentation/Tooling for Unity/" ./Tooling_Package/Documentation/
+    - cp -R ./Tooling_Release/* ./Tooling_Package/
+    - cp -R "./Documentation/Tooling for Unity/" ./Tooling_Package/Documentation/
   artifacts:
     name: "TouchFree_Tooling_for_Unity_${TF_TFU_VERSION}_${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -479,7 +479,7 @@ TF_Service::dotNet::Brightsign::example:
     - mkdir ./BS_Example_Package
     - cp ./Scripts/BrightSign_Scripts/QuickStart-autorun.brs ./BS_Example_package
     - mv ./BS_Example_package/QuickStart-autorun.brs ./BS_Example_package/autorun.brs
-    - cp -r ./Tooling_Package* ./BS_Example_package
+    - cp -R ./Tooling_Package* ./BS_Example_package
 
   artifacts:
     name: "BrightSign_Example_Package_${CI_COMMIT_SHORT_SHA}"
