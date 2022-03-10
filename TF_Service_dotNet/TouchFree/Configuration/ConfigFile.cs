@@ -46,6 +46,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
             return Instance.LoadConfig_Internal();
         }
 
+        public static void SaveConfig(TData newConfig)
+        {
+            Instance.SaveConfig_Internal(newConfig);
+        }
+
         public static TData GetDefaultValues()
         {
             return new TData();
@@ -92,6 +97,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
             _OnConfigFileUpdated?.Invoke();
 
             return config;
+        }
+
+        protected void SaveConfig_Internal(TData config)
+        {
+            File.WriteAllText(_ConfigFilePath, JsonConvert.SerializeObject(config, Formatting.Indented));
         }
 
         protected TData DeserialiseRawText(string rawText)

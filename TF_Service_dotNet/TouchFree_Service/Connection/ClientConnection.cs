@@ -51,9 +51,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendHandPresenceEvent(HandPresenceEvent _response)
         {
             CommunicationWrapper<HandPresenceEvent> message =
-                new CommunicationWrapper<HandPresenceEvent>(
-                    ActionCode.HAND_PRESENCE_EVENT.ToString(),
-                    _response);
+                new CommunicationWrapper<HandPresenceEvent>( ActionCode.HAND_PRESENCE_EVENT.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -63,9 +61,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendHandshakeResponse(ResponseToClient _response)
         {
             CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(
-                    ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(),
-                    _response);
+                new CommunicationWrapper<ResponseToClient>(ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -82,6 +78,16 @@ namespace Ultraleap.TouchFree.Service.Connection
             Send(jsonMessage);
         }
 
+        public void SendConfigFileChangeResponse(ResponseToClient _response)
+        {
+            CommunicationWrapper<ResponseToClient> message =
+                new CommunicationWrapper<ResponseToClient>(ActionCode.CONFIGURATION_FILE_RESPONSE.ToString(), _response);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
         public void SendConfigState(ConfigState _configState)
         {
             CommunicationWrapper<ConfigState> message =
@@ -90,15 +96,6 @@ namespace Ultraleap.TouchFree.Service.Connection
             string jsonMessage = JsonConvert.SerializeObject(message);
 
             Send(jsonMessage);
-        }
-
-        private void Send(string message)
-        {
-            socket.SendAsync(
-                Encoding.UTF8.GetBytes(message),
-                WebSocketMessageType.Text,
-                true,
-                CancellationToken.None);
         }
 
         public void SendStatusResponse(ResponseToClient _response)
@@ -119,6 +116,15 @@ namespace Ultraleap.TouchFree.Service.Connection
             string jsonMessage = JsonConvert.SerializeObject(message);
 
             Send(jsonMessage);
+        }
+
+        private void Send(string message)
+        {
+            socket.SendAsync(
+                Encoding.UTF8.GetBytes(message),
+                WebSocketMessageType.Text,
+                true,
+                CancellationToken.None);
         }
 
         private void SendInitialHandState()
