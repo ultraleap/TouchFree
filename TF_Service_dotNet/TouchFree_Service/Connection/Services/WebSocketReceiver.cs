@@ -144,7 +144,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 {
                     // Return some response indicating access authorisation issues
                     String errorMsg = "Did not have appropriate file access to modify the config file(s).";
-                    response = new ResponseToClient(response.requestID, "Failed", errorMsg);
+                    response = new ResponseToClient(response.requestID, "Failed", errorMsg, _content);
                 }
             }
 
