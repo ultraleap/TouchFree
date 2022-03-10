@@ -20,7 +20,7 @@ export class ConfigurationManager {
 
     // Function: RequestConfigChange
     // Optionally takes in an <InteractionConfig> or a <PhysicalConfig> and sends them through the <ConnectionManager>
-    // 
+    //
     // Provide a _callBack if you require confirmation that your settings were used correctly.
     // If your _callBack requires context it should be bound to that context via .bind().
     //
@@ -50,10 +50,35 @@ export class ConfigurationManager {
     // If your _callBack requires context it should be bound to that context via .bind()
     public static RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Config state request failed. This call requires a callback.");
             return;
         }
 
         ConnectionManager.serviceConnection()?.RequestConfigState(_callback);
+    }
+
+    public static RequestConfigFileChange(
+        _interaction: Partial<InteractionConfig> | null,
+        _physical: Partial<PhysicalConfig> | null,
+        _callback: (detail: WebSocketResponse) => void): void {
+
+        let action = ActionCode.SET_CONFIGURATION_FILE;
+        let requestID = Guid.create().toString();
+
+        let content = new ConfigState(requestID, _interaction, _physical);
+        let request = new CommunicationWrapper(action, content);
+
+        let jsonContent = JSON.stringify(request);
+
+        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
+    }
+
+    public static RequestConfigFileState(_callback: (detail: ConfigState) => void): void {
+        if (_callback === null) {
+            console.error("Config file state request failed. This call requires a callback.");
+            return;
+        }
+
+        ConnectionManager.serviceConnection()?.RequestConfigFile(_callback);
     }
 }

@@ -20,16 +20,25 @@ import {
 // SERVICE_STATUS - Represents information about the current state of the Service
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
+
     CONFIGURATION_STATE = "CONFIGURATION_STATE",
     CONFIGURATION_RESPONSE = "CONFIGURATION_RESPONSE",
     SET_CONFIGURATION_STATE = "SET_CONFIGURATION_STATE",
     REQUEST_CONFIGURATION_STATE = "REQUEST_CONFIGURATION_STATE",
+
     VERSION_HANDSHAKE = "VERSION_HANDSHAKE",
     VERSION_HANDSHAKE_RESPONSE = "VERSION_HANDSHAKE_RESPONSE",
+
     HAND_PRESENCE_EVENT = "HAND_PRESENCE_EVENT",
+
     REQUEST_SERVICE_STATUS = "REQUEST_SERVICE_STATUS",
     SERVICE_STATUS_RESPONSE = "SERVICE_STATUS_RESPONSE",
     SERVICE_STATUS = "SERVICE_STATUS",
+
+    REQUEST_CONFIGURATION_FILE = "REQUEST_CONFIGURATION_FILE",
+    CONFIGURATION_FILE_STATE = "CONFIGURATION_FILE_STATE",
+    SET_CONFIGURATION_FILE = "SET_CONFIGURATION_FILE",
+    CONFIGURATION_FILE_RESPONSE = "CONFIGURATION_FILE_RESPONSE",
 }
 
 // Enum: HandPresenceState
@@ -89,7 +98,7 @@ export class ConfigState {
 // Used to request the current state of the configuration on the Service. This is received as
 // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
 // use of the data received.
-export class ConfigChangeRequest {
+export class Request {
     // Variable: requestID
     requestID: string;
 

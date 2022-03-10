@@ -5,7 +5,7 @@ import {
 import {
     ActionCode,
     CommunicationWrapper,
-    ConfigChangeRequest,
+    Request,
     ConfigState,
     ConfigStateCallback,
     HandPresenceEvent,
@@ -118,9 +118,15 @@ export class ServiceConnection {
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
                 break;
 
-            case ActionCode.VERSION_HANDSHAKE_RESPONSE:
+            case ActionCode.CONFIGURATION_FILE_STATE:
+                let configFileState: ConfigState = looseData.content;
+                ConnectionManager.messageReceiver.configStateQueue.push(configFileState);
+                break;
+
             case ActionCode.CONFIGURATION_RESPONSE:
+            case ActionCode.VERSION_HANDSHAKE_RESPONSE:
             case ActionCode.SERVICE_STATUS_RESPONSE:
+            case ActionCode.CONFIGURATION_FILE_RESPONSE:
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
@@ -169,8 +175,8 @@ export class ServiceConnection {
         }
 
         let guid: string = uuidgen();
-        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        let request: Request = new Request(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
         let message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =
@@ -192,11 +198,28 @@ export class ServiceConnection {
 
         let guid: string = uuidgen();
         let request: ServiceStatusRequest = new ServiceStatusRequest(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<Request>(ActionCode.REQUEST_SERVICE_STATUS, request);
         let message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] =
             new ServiceStatusCallback(Date.now(), _callback);
+
+        this.webSocket.send(message);
+    }
+
+    RequestConfigFile(_callback: (detail: ConfigState) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        let guid: string = uuidgen();
+        let request: Request = new Request(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
+        let message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.configStateCallbacks[guid] =
+            new ConfigStateCallback(Date.now(), _callback);
 
         this.webSocket.send(message);
     }

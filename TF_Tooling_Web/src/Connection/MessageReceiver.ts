@@ -68,6 +68,14 @@ export class MessageReceiver {
     // A dictionary of unique request IDs and <ServiceStatusCallback> that represent requests that are awaiting response from the Service.
     serviceStatusCallbacks: { [id: string]: ServiceStatusCallback; } = {};
 
+    // Variable: configFileStateQueue
+    // A queue of <ConfigState> representing the states of config files that have been received from the Service.
+    configFileStateQueue: Array<ConfigState> = [];
+
+    // Variable: configFileStateCallbacks
+    // A dictionary of unique request IDs and <ConfigStateCallback> that represent requests that are awaiting response from the Service.
+    configFileStateCallbacks: { [id: string]: ConfigStateCallback; } = {};
+
     lastStateUpdate: HandPresenceState;
 
     // Variable: callbackClearInterval
