@@ -165,6 +165,17 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
+        public void SendConfigFile(ConfigState _config)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.socket.State == WebSocketState.Open)
+                {
+                    connection.SendConfigFile(_config);
+                }
+            }
+        }
+
         public void SendStatusResponse(ResponseToClient _response)
         {
             foreach (ClientConnection connection in activeConnections)

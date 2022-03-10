@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         REQUEST_CONFIGURATION_FILE,
         CONFIGURATION_FILE_STATE,
         SET_CONFIGURATION_FILE,
-        CONFIGURATION_FILE_RESPONSE,
+        CONFIGURATION_FILE_CHANGE_RESPONSE,
     }
 
     public enum HandPresenceState
