@@ -287,39 +287,8 @@ MonoBehaviour:
   positioningModule: {fileID: 2125932745}
   isTouching: 0
   dragStartDistanceThresholdM: 0.02
-  progressCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.2
-      value: 1
-      inSlope: -0
-      outSlope: -1.25
-      tangentMode: 69
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -1.25
-      outSlope: -1.4285715
-      tangentMode: 5
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  maxAngleChange: 30
+  minAngleChangePerSecond: 200
 --- !u!114 &2125932745 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3616744418239270202, guid: ebc87c879d5115749a6a9a0aa75e16dd,
@@ -421,9 +390,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
-      propertyPath: hybridInteractions.Array.size
+      propertyPath: activeInteractions.Array.size
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: hybridInteractions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: activeInteractions.Array.data[0]
+      value: 
+      objectReference: {fileID: 2125932744}
+    - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
+        type: 3}
+      propertyPath: activeInteractions.Array.data[1]
+      value: 
+      objectReference: {fileID: 1005315312}
     - target: {fileID: 5469846204484489577, guid: ebc87c879d5115749a6a9a0aa75e16dd,
         type: 3}
       propertyPath: hybridInteractions.Array.data[0]
