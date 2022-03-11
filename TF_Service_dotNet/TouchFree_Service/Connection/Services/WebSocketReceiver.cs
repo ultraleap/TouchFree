@@ -94,12 +94,9 @@ namespace Ultraleap.TouchFree.Service.Connection
                 return;
             }
 
-            InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
-            InteractionConfigInternal interactions = new InteractionConfigInternal(intFromFile);
-
-            PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
-            PhysicalConfigInternal physical = new PhysicalConfigInternal(physFromFile);
-
+            InteractionConfig interactions = InteractionConfigFile.LoadConfig();
+            PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
+            
             ConfigState currentConfig = new ConfigState(
                 contentObj.GetValue("requestID").ToString(),
                 interactions,
@@ -139,9 +136,9 @@ namespace Ultraleap.TouchFree.Service.Connection
             clientMgr.SendStatus(currentConfig);
         }
 
-        private boolean RequestIdExists(JObject _content)
+        private Boolean RequestIdExists(JObject _content)
         {
-            if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
+            if (!_content.ContainsKey("requestID") || _content.GetValue("requestID").ToString() == "")
             {
                 return false;
             }
@@ -177,7 +174,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 {
                     ChangeConfigFile(_content);
                 }
-                catch (UnauthorizedAccessException e)
+                catch (UnauthorizedAccessException _)
                 {
                     // Return some response indicating access authorisation issues
                     String errorMsg = "Did not have appropriate file access to modify the config file(s).";
