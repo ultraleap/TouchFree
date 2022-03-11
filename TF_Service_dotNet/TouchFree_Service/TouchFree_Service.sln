@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchFreeTests", "..\TouchF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchFree.Tooling", "..\TouchFree.Tooling\TouchFree.Tooling.csproj", "{A38B8D03-2C22-4FC5-8BF1-6BA0ED1A14DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchFree.Tooling.Example", "..\TouchFree.Tooling.Example\TouchFree.Tooling.Example.csproj", "{FC14D942-36D1-401F-AC2A-078D54CC005C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchFree.Tooling.Example", "..\TouchFree.Tooling.Example\TouchFree.Tooling.Example.csproj", "{FC14D942-36D1-401F-AC2A-078D54CC005C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchFree.Tooling.Wpf.Example", "..\TouchFree.Tooling.Wpf.Example\TouchFree.Tooling.Wpf.Example.csproj", "{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,18 @@ Global
 		{FC14D942-36D1-401F-AC2A-078D54CC005C}.Release|ARM64.Build.0 = Release|Any CPU
 		{FC14D942-36D1-401F-AC2A-078D54CC005C}.Release|x64.ActiveCfg = Release|Any CPU
 		{FC14D942-36D1-401F-AC2A-078D54CC005C}.Release|x64.Build.0 = Release|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Debug|x64.Build.0 = Debug|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Release|ARM64.Build.0 = Release|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Release|x64.ActiveCfg = Release|Any CPU
+		{86707F5D-09CD-4D5D-ADA8-5E3B8D5ADD69}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
