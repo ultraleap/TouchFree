@@ -17,7 +17,7 @@ namespace Ultraleap.TouchFree.Service
         public static Dictionary<InteractionType, InteractionModule> interactions =
                   new Dictionary<InteractionType, InteractionModule>();
 
-        public InteractionModule[] hybridInteractions;
+        public InteractionModule[] activeInteractions;
 
         private static InteractionManager instance = null;
         public static InteractionManager Instance
@@ -82,17 +82,17 @@ namespace Ultraleap.TouchFree.Service
             int dominantInteractionIndex = 0;
             float dominantInteractionProgress = 0;
 
-            if (lastDominantHybridInteraciton != -1 && !hybridInteractions[lastDominantHybridInteraciton].isTouching)
+            if (lastDominantHybridInteraciton != -1 && !activeInteractions[lastDominantHybridInteraciton].isTouching)
             {
                 lastDominantHybridInteraciton = -1;
             }
 
-            for (int index = 0; index < hybridInteractions.Length; index++)
+            for (int index = 0; index < activeInteractions.Length; index++)
             {
-                if(hybridInteractions[index].isTouching && (lastDominantHybridInteraciton == index || lastDominantHybridInteraciton == -1))
+                if(activeInteractions[index].isTouching && (lastDominantHybridInteraciton == index || lastDominantHybridInteraciton == -1))
                 {
                     dominantInteractionIndex = index;
-                    dominantInteractionProgress = hybridInteractions[index].CalculateProgress(hand);
+                    dominantInteractionProgress = activeInteractions[index].CalculateProgress(hand);
 
                     if(lastDominantHybridInteraciton == -1)
                     {
@@ -102,7 +102,7 @@ namespace Ultraleap.TouchFree.Service
                     continue;
                 }
 
-                float progress = hybridInteractions[index].CalculateProgress(hand);
+                float progress = activeInteractions[index].CalculateProgress(hand);
 
                 if(progress > dominantInteractionProgress)
                 {
@@ -111,11 +111,11 @@ namespace Ultraleap.TouchFree.Service
                 }
             }
 
-            hybridInteractions[dominantInteractionIndex].RunInteraction(hand, dominantInteractionProgress);
+            activeInteractions[dominantInteractionIndex].RunInteraction(hand, dominantInteractionProgress);
 
-            for (int index = 0; index < hybridInteractions.Length; index++)
+            for (int index = 0; index < activeInteractions.Length; index++)
             {
-                hybridInteractions[index].RunPostProgressNonInteraction();
+                activeInteractions[index].RunPostProgressNonInteraction();
             }
 
             hadHandLastFrame = hand != null;

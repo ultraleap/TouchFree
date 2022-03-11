@@ -17,31 +17,6 @@ namespace Ultraleap.TouchFree.ServiceShared
     }
 
     [Serializable]
-    public class AirPushInteractionSettings
-    {
-        // distance to drag start
-        public float AirPushTriggerDistanceAtMaxSpeedM = 0.005f;
-        public float AirPushTriggerDistanceAtMinSpeedM = 0.015f;
-
-        // Angles before click cancel
-        public float AirPushApproachAngleDeg = 40f;
-        // thetaOne
-        public float AirPushExitAngleDeg = 135f;
-        // thetaTwo
-
-        // If a hand moves an angle less than ApproachAngle, this is "towards" the screen
-        // If a hand moves an angle greater than ExitAngle, this is "backwards" from the screen
-        // If a hand moves between the two angles, this is "horizontal" to the screen
-
-        public float AirPushReleaseThreshold = 0.9f;
-        // unclickThreshold
-        public float AirPushDraggingReleaseThreshold = 0.8f;
-
-        public float AirPushDragDistanceThresholdM = 0.013f;
-        public float AirPushDragDeadzoneShrinkRate = 0.9f;
-    }
-
-    [Serializable]
     public class InteractionConfig : BaseSettings
     {
         public bool UseScrollingOrDragging = false;
@@ -56,7 +31,6 @@ namespace Ultraleap.TouchFree.ServiceShared
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
         public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
-        public AirPushInteractionSettings AirPush = new AirPushInteractionSettings();
 
         public override void SetAllValuesToDefault()
         {
@@ -75,14 +49,6 @@ namespace Ultraleap.TouchFree.ServiceShared
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
             TouchPlane.TouchPlaneActivationDistanceCM = defaults.TouchPlane.TouchPlaneActivationDistanceCM;
             TouchPlane.TouchPlaneTrackedPosition = defaults.TouchPlane.TouchPlaneTrackedPosition;
-            AirPush.AirPushTriggerDistanceAtMaxSpeedM = defaults.AirPush.AirPushTriggerDistanceAtMaxSpeedM;
-            AirPush.AirPushTriggerDistanceAtMinSpeedM = defaults.AirPush.AirPushTriggerDistanceAtMinSpeedM;
-            AirPush.AirPushApproachAngleDeg = defaults.AirPush.AirPushApproachAngleDeg;
-            AirPush.AirPushExitAngleDeg = defaults.AirPush.AirPushExitAngleDeg;
-            AirPush.AirPushReleaseThreshold = defaults.AirPush.AirPushReleaseThreshold;
-            AirPush.AirPushDraggingReleaseThreshold = defaults.AirPush.AirPushDraggingReleaseThreshold;
-            AirPush.AirPushDragDistanceThresholdM = defaults.AirPush.AirPushDragDistanceThresholdM;
-            AirPush.AirPushDragDeadzoneShrinkRate = defaults.AirPush.AirPushDragDeadzoneShrinkRate;
         }
 
         public void SaveConfig()

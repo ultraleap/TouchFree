@@ -22,8 +22,8 @@ namespace Ultraleap.TouchFree.Service
         float prevAngle;
         float startAngle;
         float endAngle;
-        float maxAngleChange = 25;
-        float minAngleChangePerSecond = 180;
+        public float maxAngleChange = 30;
+        public float minAngleChangePerSecond = 180;
         bool progressHit1 = false;
 
         public override float CalculateProgress(Hand _hand)
@@ -139,7 +139,6 @@ namespace Ultraleap.TouchFree.Service
                 }
                 else if (!touchComplete)
                 {
-                    Positions downPositions = new Positions(downPos, _progress);
                     SendInputAction(InputType.UP, positions, _progress);
 
                     touchComplete = true;
@@ -151,7 +150,6 @@ namespace Ultraleap.TouchFree.Service
 
                 if (isTouching && !touchComplete)
                 {
-                    Positions downPositions = new Positions(downPos, _progress);
                     SendInputAction(InputType.UP, positions, _progress);
                 }
                 else
