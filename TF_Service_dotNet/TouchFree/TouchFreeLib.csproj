@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<Platforms>AnyCPU;ARM64</Platforms>
+		
+		<!--Adding the RuntimeIdentifier forces the build of the service to pass down the runtime-->
+		<RuntimeIdentifiers>win-x64;linux-arm64</RuntimeIdentifiers>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ContentWithTargetPath Condition="'$(PlatformTarget)'!='ARM64'" Include="Plugins\LeapC\AnyCPU\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>%(Filename)%(Extension)</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ContentWithTargetPath Condition="'$(PlatformTarget)'=='ARM64'" Include="Plugins\LeapC\ARM64\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>%(Filename)%(Extension)</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
+	</ItemGroup>
+
+</Project>
