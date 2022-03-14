@@ -338,26 +338,24 @@ namespace Ultraleap.TouchFree.Service.Connection
         {
             // Get the current state of the config file(s)
             InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
-            InteractionConfigInternal interactions = new InteractionConfigInternal(intFromFile);
-
             PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
-            PhysicalConfigInternal physical = new PhysicalConfigInternal(physFromFile);
 
             var contentJson = JObject.Parse(_content);
 
             string physicalChanges = contentJson["physical"].ToString();
             string interactionChanges = contentJson["interaction"].ToString();
 
-            JsonConvert.PopulateObject(physicalChanges, physical);
-            PhysicalConfig newPhysFile = new PhysicalConfig(physical);
+            if (physicalChanges != "")
+            {
+                JsonConvert.PopulateObject(physicalChanges, physFromFile);
+                PhysicalConfigFile.SaveConfig(physFromFile);
+            }    
 
-            JsonConvert.PopulateObject(interactionChanges, interactions);
-            InteractionConfig newIntFile = new InteractionConfig(interactions);
-
-            PhysicalConfigFile.SaveConfig(newPhysFile);
-            InteractionConfigFile.SaveConfig(newIntFile);
-
-            // (if the above doesn't also force the current status to be the adjusted status, make that so)
+            if (interactionChanges != "")
+            {
+                JsonConvert.PopulateObject(interactionChanges, intFromFile);
+                InteractionConfigFile.SaveConfig(intFromFile);
+            }
         }
 
         #endregion
