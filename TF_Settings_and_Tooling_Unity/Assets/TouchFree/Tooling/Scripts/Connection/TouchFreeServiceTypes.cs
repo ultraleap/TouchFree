@@ -10,6 +10,11 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
     // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
     // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
+    // VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service, attempting to compare API versions for compatibility
+    // HAND_PRESENCE_EVENT - Represents the result coming in from the Service
+    // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
+    // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
+    // SERVICE_STATUS - Represents information about the current state of the Service
     internal enum ActionCode
     {
         INPUT_ACTION,
@@ -19,7 +24,10 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         REQUEST_CONFIGURATION_STATE,
         VERSION_HANDSHAKE,
         VERSION_HANDSHAKE_RESPONSE,
-        HAND_PRESENCE_EVENT
+        HAND_PRESENCE_EVENT,
+        REQUEST_SERVICE_STATUS,
+        SERVICE_STATUS_RESPONSE,
+        SERVICE_STATUS
     }
 
     // Enum: HandPresenceState
@@ -43,6 +51,28 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         COMPATIBLE,
         SERVICE_OUTDATED,
         CLIENT_OUTDATED
+    }
+
+    // Enum: TrackingServiceState
+    // UNAVAILABLE - The TouchFree services is not connected to the tracking service
+    // NO_CAMERA - The TouchFree service is connected to the tracking service but there is not a camera connected
+    // CONNECTED - The TouchFree service is connected to the tracking service
+    public enum TrackingServiceState
+    {
+        UNAVAILABLE,
+        NO_CAMERA,
+        CONNECTED
+    }
+
+    // Enum: ConfigurationState
+    // NOT_LOADED - The TouchFree configuration has not been loaded
+    // LOADED - The TouchFree configuration has successfully been loaded
+    // ERRORED - The TouchFree configuration errored on load
+    public enum ConfigurationState
+    {
+        NOT_LOADED,
+        LOADED,
+        ERRORED
     }
 
     // Struct HandPresenceEvent
@@ -74,6 +104,28 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             requestID = _id;
             interaction = _interaction;
             physical = _physical;
+        }
+    }
+
+    // Class: ServiceStatus
+    // This data structure is used to receive service status.
+    //
+    // When receiving a configuration from the Service this structure contains ALL status data
+    [Serializable]
+    public struct ServiceStatus
+    {
+        // Variable: requestID
+        public string requestID;
+        // Variable: trackingServiceState
+        public TrackingServiceState trackingServiceState;
+        // Variable: configurationState
+        public ConfigurationState configurationState;
+
+        public ServiceStatus(string _id, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
+        {
+            requestID = _id;
+            trackingServiceState = _trackingServiceState;
+            configurationState = _configurationState;
         }
     }
 
@@ -141,6 +193,38 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         public Action<ConfigState> callback;
 
         public ConfigStateCallback(int _timestamp, Action<ConfigState> _callback)
+        {
+            timestamp = _timestamp;
+            callback = _callback;
+        }
+    }
+
+    // Struct: ServiceStatusRequest
+    // Used to request the current state of the configuration on the Service. This is received as
+    // a <ServiceStatus> which should be linked to a <ServiceStatusCallback> via requestID to make
+    // use of the data received.
+    [Serializable]
+    public struct ServiceStatusRequest
+    {
+        public string requestID;
+
+        public ServiceStatusRequest(string _id)
+        {
+            requestID = _id;
+        }
+    }
+
+    // Struct: ServiceStatusCallback
+    // Used by <MessageReceiver> to wait for a <ServiceStatus> from the Service. Owns an action
+    // with a <ServiceStatus> as a parameter to allow users to make use of the new
+    // <ServiceStatus>. Stores a timestamp of its creation so the response has the ability to
+    // timeout if not seen within a reasonable timeframe.
+    public struct ServiceStatusCallback
+    {
+        public int timestamp;
+        public Action<ServiceStatus> callback;
+
+        public ServiceStatusCallback(int _timestamp, Action<ServiceStatus> _callback)
         {
             timestamp = _timestamp;
             callback = _callback;

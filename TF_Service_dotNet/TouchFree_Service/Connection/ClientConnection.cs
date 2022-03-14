@@ -101,6 +101,26 @@ namespace Ultraleap.TouchFree.Service.Connection
                 CancellationToken.None);
         }
 
+        public void SendStatusResponse(ResponseToClient _response)
+        {
+            CommunicationWrapper<ResponseToClient> message =
+                new CommunicationWrapper<ResponseToClient>(ActionCode.SERVICE_STATUS_RESPONSE.ToString(), _response);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
+        public void SendStatus(ServiceStatus _status)
+        {
+            CommunicationWrapper<ServiceStatus> message =
+                new CommunicationWrapper<ServiceStatus>(ActionCode.SERVICE_STATUS.ToString(), _status);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
         private void SendInitialHandState()
         {
             this.SendHandPresenceEvent(clientMgr.missedHandPresenceEvent);
@@ -121,7 +141,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             else if (clientVersionParsed.Minor < _coreVersion.Minor)
             {
-                return Compatibility.CLIENT_OUTDATED;
+                return Compatibility.CLIENT_OUTDATED_WARNING;
             }
             else if (clientVersionParsed.Minor > _coreVersion.Minor)
             {
@@ -130,7 +150,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             if (clientVersionParsed.Build > _coreVersion.Build)
             {
-                return Compatibility.SERVICE_OUTDATED;
+                return Compatibility.SERVICE_OUTDATED_WARNING;
             }
 
             return Compatibility.COMPATIBLE;
@@ -158,6 +178,9 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 case ActionCode.SET_CONFIGURATION_STATE:
                     receiver.configChangeQueue.Enqueue(content);
+                    break;
+                case ActionCode.REQUEST_SERVICE_STATUS:
+                    receiver.requestServiceStatusQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
                     receiver.configStateRequestQueue.Enqueue(content);
@@ -220,6 +243,22 @@ namespace Ultraleap.TouchFree.Service.Connection
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Successful";
+                    Console.WriteLine(response.message);
+                    SendHandshakeResponse(response);
+                    SendInitialHandState();
+                    return;
+                case Compatibility.CLIENT_OUTDATED_WARNING:
+                    HandshakeCompleted = true;
+                    response.status = "Success";
+                    response.message = "Handshake Warning: Client is outdated relative to Service.";
+                    Console.WriteLine(response.message);
+                    SendHandshakeResponse(response);
+                    SendInitialHandState();
+                    return;
+                case Compatibility.SERVICE_OUTDATED_WARNING:
+                    HandshakeCompleted = true;
+                    response.status = "Success";
+                    response.message = "Handshake Warning: Service is outdated relative to Client.";
                     Console.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();

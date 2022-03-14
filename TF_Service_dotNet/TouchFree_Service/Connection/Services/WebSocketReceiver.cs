@@ -13,6 +13,7 @@ namespace Ultraleap.TouchFree.Service.Connection
     {
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> requestServiceStatusQueue = new ConcurrentQueue<string>();
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
@@ -31,6 +32,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         {
             CheckConfigChangeQueue();
             CheckConfigStateRequestQueue();
+            CheckGetStatusRequestQueue();
         }
 
         #region Config State Request
@@ -244,6 +246,51 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             configManager.PhysicalConfigWasUpdated();
             configManager.InteractionConfigWasUpdated();
+        }
+        #endregion
+
+        #region Config State Request
+
+        void CheckGetStatusRequestQueue()
+        {
+            string content;
+            if (requestServiceStatusQueue.TryPeek(out content))
+            {
+                // Parse newly received messages
+                requestServiceStatusQueue.TryDequeue(out content);
+                HandleGetStatusRequest(content);
+            }
+        }
+
+        void HandleGetStatusRequest(string _content)
+        {
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+
+            // Explicitly check for requestID because it is the only required key
+            if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
+            {
+                ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
+                response.message = "Config state request failed. This is due to a missing or invalid requestID";
+
+                // This is a failed request, do not continue with sendingthe status,
+                // the Client will have no way to handle the config state
+                clientMgr.SendStatusResponse(response);
+                return;
+            }
+
+            TrackingServiceState trackingServiceState = TrackingServiceState.UNAVAILABLE;
+            if (clientMgr.handManager.TrackingServiceConnected())
+            {
+                trackingServiceState = clientMgr.handManager.CameraConnected() ? TrackingServiceState.CONNECTED : TrackingServiceState.NO_CAMERA;
+            }
+
+            ServiceStatus currentConfig = new ServiceStatus(
+                contentObj.GetValue("requestID").ToString(),
+                trackingServiceState,
+                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
+
+
+            clientMgr.SendStatus(currentConfig);
         }
         #endregion
     }

@@ -9,6 +9,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
 
+        public bool ErrorLoadingConfigFiles { get; private set; }
+
         public InteractionConfigInternal InteractionConfig
         {
             get
@@ -71,6 +73,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             InteractionConfigWasUpdated();
             PhysicalConfigWasUpdated();
+
+            ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
 
         public void PhysicalConfigWasUpdated()

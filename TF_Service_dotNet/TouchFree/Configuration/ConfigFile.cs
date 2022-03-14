@@ -51,6 +51,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
             return new TData();
         }
 
+        public static bool ErrorLoadingConfiguration()
+        {
+            return Instance.ErrorLoadingConfig;
+        }
+
         #endregion
 
         #region Internal

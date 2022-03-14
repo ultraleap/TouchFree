@@ -90,6 +90,16 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
+        public bool TrackingServiceConnected()
+        {
+            return trackingProvider?.controller?.IsServiceConnected ?? false;
+        }
+
+        public bool CameraConnected()
+        {
+            return trackingProvider?.controller?.Devices?.ActiveDevice != null;
+        }
+
         public void UpdateTrackingTransform(PhysicalConfigInternal _config)
         {
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.

@@ -6,7 +6,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 {
     public static class VersionInfo
     {
-        public static readonly Version ApiVersion = new Version("1.1.0");
+        public static readonly Version ApiVersion = new Version("1.2.0");
         public const string API_HEADER_NAME = "TfApiVersion";
     }
 

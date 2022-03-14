@@ -2,6 +2,10 @@ import {
     InteractionConfig,
     PhysicalConfig
 } from '../Configuration/ConfigurationTypes';
+import {
+    ConfigurationState,
+    TrackingServiceState
+} from '../TouchFreeToolingTypes';
 
 // Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data
@@ -10,7 +14,10 @@ import {
 // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
 // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
 // VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service, attempting to compare API versions for compatibility
-// REQUEST_CONFIGURATION_STATE - Represents the result coming in from the Service
+// HAND_PRESENCE_EVENT - Represents the result coming in from the Service
+// REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
+// SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
+// SERVICE_STATUS - Represents information about the current state of the Service
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
     CONFIGURATION_STATE = "CONFIGURATION_STATE",
@@ -20,6 +27,9 @@ export enum ActionCode {
     VERSION_HANDSHAKE = "VERSION_HANDSHAKE",
     VERSION_HANDSHAKE_RESPONSE = "VERSION_HANDSHAKE_RESPONSE",
     HAND_PRESENCE_EVENT = "HAND_PRESENCE_EVENT",
+    REQUEST_SERVICE_STATUS = "REQUEST_SERVICE_STATUS",
+    SERVICE_STATUS_RESPONSE = "SERVICE_STATUS_RESPONSE",
+    SERVICE_STATUS = "SERVICE_STATUS",
 }
 
 // Enum: HandPresenceState
@@ -100,6 +110,55 @@ export class ConfigStateCallback {
     callback: (detail: ConfigState) => void;
 
     constructor(_timestamp: number, _callback: (detail: ConfigState) => void) {
+        this.timestamp = _timestamp;
+        this.callback = _callback;
+    }
+}
+
+// Class: ServiceStatus
+// This data structure is used to receive service status.
+//
+// When receiving a configuration from the Service this structure contains ALL status data
+export class ServiceStatus {
+    // Variable: requestID
+    requestID: string;
+    // Variable: trackingServiceState
+    trackingServiceState: TrackingServiceState | null;
+    // Variable: configurationState
+    configurationState: ConfigurationState | null;
+
+    constructor(_id: string, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null){
+        this.requestID = _id;
+        this.trackingServiceState = _trackingServiceState;
+        this.configurationState = _configurationState;
+    }
+}
+
+// class: ServiceStatusRequest
+// Used to request the current state of the status of the Service. This is received as
+// a <ServiceStatus> which should be linked to a <ServiceStatusCallback> via requestID to make
+// use of the data received.
+export class ServiceStatusRequest {
+    // Variable: requestID
+    requestID: string;
+
+    constructor(_id: string) {
+        this.requestID = _id;
+    }
+}
+
+// Class: ServiceStatusCallback
+// Used by <MessageReceiver> to wait for a <ServiceStatus> from the Service. Owns a callback
+// with a <ServiceStatus> as a parameter to allow users to make use of the new
+// <ServiceStatusResponse>. Stores a timestamp of its creation so the response has the ability to
+// timeout if not seen within a reasonable timeframe.
+export class ServiceStatusCallback {
+    // Variable: timestamp
+    timestamp: number;
+    // Variable: callback
+    callback: (detail: ServiceStatus) => void;
+
+    constructor(_timestamp: number, _callback: (detail: ServiceStatus) => void) {
         this.timestamp = _timestamp;
         this.callback = _callback;
     }
