@@ -58,6 +58,9 @@ namespace Ultraleap.TouchFree
                 _cursorSize, 0.1f, 1f, minCursorWindowSize, maxCursorWindowSize);
 
             CursorWindowSize = newWindowSize;
+
+            CursorWindowSize = 2000;
+
             CursorWindowMiddle = Vector2.one * (CursorWindowSize / 2);
         }
 
