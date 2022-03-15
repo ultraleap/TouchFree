@@ -138,7 +138,7 @@ export class ServiceConnection {
     // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
     // via the _callback parameter.
     //
-    // If your _callBack requires context it should be bound to that context via .bind()
+    // If your _callback requires context it should be bound to that context via .bind()
     SendMessage(
         _message: string, _requestID: string,
         _callback: (detail: WebSocketResponse) => void): void {
@@ -167,7 +167,7 @@ export class ServiceConnection {
     // Used internally to request information from the Service via the <webSocket>.
     // Provides an asynchronous <ConfigState> via the _callback parameter.
     //
-    // If your _callBack requires context it should be bound to that context via .bind()
+    // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
             console.error("Request failed. This is due to a missing callback");
@@ -189,7 +189,7 @@ export class ServiceConnection {
     // Used internally to request information from the Service via the <webSocket>.
     // Provides an asynchronous <ServiceStatus> via the _callback parameter.
     //
-    // If your _callBack requires context it should be bound to that context via .bind()
+    // If your _callback requires context it should be bound to that context via .bind()
     RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
         if (_callback === null) {
             console.error("Request failed. This is due to a missing callback");
@@ -207,6 +207,11 @@ export class ServiceConnection {
         this.webSocket.send(message);
     }
 
+    // Function: RequestServiceStatus
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <ServiceStatus> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigFile(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
             console.error("Request failed. This is due to a missing callback");
