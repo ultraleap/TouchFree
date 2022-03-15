@@ -52,7 +52,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         }
 
         let state = {
-            atTopLevel: false,
+            atTopLevel: true,
             tfState: 0,
             activeTabName: "Camera",
         };
