@@ -111,7 +111,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     break;
                 case ActionCode.CONFIGURATION_FILE_STATE:
                     ConfigState configFileState = JsonUtility.FromJson<ConfigState>(content);
-                    ConnectionManager.messageReceiver.configFileStateQueue.Enqueue(configFileState);
+                    ConnectionManager.messageReceiver.configStateQueue.Enqueue(configFileState);
                     break;
 
                 case ActionCode.CONFIGURATION_RESPONSE:

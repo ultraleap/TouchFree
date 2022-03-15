@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using UnityEngine;
+using System;
 
 namespace Ultraleap.TouchFree.Tooling.Connection
 {
@@ -44,14 +45,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ConfigStateCallback> configStateCallbacks = new Dictionary<string, ConfigStateCallback>();
 
-        // Variable: configStateQueue
-        // A queue of <ConfigState> that have been received from the Service.
-        public ConcurrentQueue<ConfigState> configFileStateQueue = new ConcurrentQueue<ConfigState>();
-
-        // Variable: configStateCallbacks
-        // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
-        public Dictionary<string, ConfigStateCallback> configFileStateCallbacks = new Dictionary<string, ConfigStateCallback>();
-
         // Variable: serviceStatusQueue
         // A queue of <ServiceStatus> that have been received from the Service.
         public ConcurrentQueue<ServiceStatus> serviceStatusQueue = new ConcurrentQueue<ServiceStatus>();
@@ -82,23 +75,20 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Unity's update function. Checks all queues for messages to handle.
         void Update()
         {
-            CheckForResponse();
-            CheckForConfigState();
-            CheckForServiceStatus();
+            CheckQueue<WebSocketResponse>(responseQueue, HandleResponse);
+            CheckQueue<ConfigState>(configStateQueue, HandleConfigState);
+
             CheckForAction();
         }
 
-        // Function: CheckForResponse
-        // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to <HandleResponse> if there is one.
-        void CheckForResponse()
+        void CheckQueue<T>(ConcurrentQueue<T> queue, Action<T> handler)
         {
-            WebSocketResponse response;
+            T queueItem;
 
-            if (responseQueue.TryPeek(out response))
+            if (queue.TryPeek(out queueItem))
             {
-                // Parse newly received messages
-                responseQueue.TryDequeue(out response);
-                HandleResponse(response);
+                queue.TryDequeue(out queueItem);
+                handler.Invoke(queueItem);
             }
         }
 
@@ -123,20 +113,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 "\n Original request - " + _response.originalRequest);
         }
 
-        // Function: CheckForConfigState
-        // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleConfigState> if there is one.
-        void CheckForConfigState()
-        {
-            ConfigState configState;
-
-            if (configStateQueue.TryPeek(out configState))
-            {
-                // Parse newly received messages
-                configStateQueue.TryDequeue(out configState);
-                HandleConfigState(configState);
-            }
-        }
-
         // Function: HandleConfigState
         // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
         // match, calls the callback action in the matching <ConfigStateCallback>.
@@ -150,20 +126,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     configStateCallbacks.Remove(callback.Key);
                     break;
                 }
-            }
-        }
-
-        // Function: CheckForServiceStatus
-        // Used to check the <serviceStatusQueue> for a <ServiceStatus>. Sends it to <HandleServiceStatus> if there is one.
-        void CheckForServiceStatus()
-        {
-            ServiceStatus serviceStatus;
-
-            if (serviceStatusQueue.TryPeek(out serviceStatus))
-            {
-                // Parse newly received messages
-                serviceStatusQueue.TryDequeue(out serviceStatus);
-                HandleServiceStatus(serviceStatus);
             }
         }
 
