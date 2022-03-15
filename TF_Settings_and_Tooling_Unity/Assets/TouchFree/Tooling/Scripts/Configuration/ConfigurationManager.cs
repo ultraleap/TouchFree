@@ -18,6 +18,11 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             ConnectionManager.serviceConnection.RequestConfigState(_callback);
         }
 
+        public static void RequestConfigFileState(Action<ConfigState> _callback)
+        {
+            ConnectionManager.serviceConnection.RequestConfigFile(_callback);
+        }
+
         #region Request Config Change
 
         // Function: RequestConfigChange
@@ -30,6 +35,31 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
         public static void RequestConfigChange(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
         {
             string action = ActionCode.SET_CONFIGURATION_STATE.ToString();
+            Guid requestGUID = Guid.NewGuid();
+            string requestID = requestGUID.ToString();
+
+            string jsonContent = "";
+            jsonContent += "{\"action\":\"";
+            jsonContent += action + "\",\"content\":{\"requestID\":\"";
+            jsonContent += requestID + "\"";
+
+            if (_interaction != null)
+            {
+                jsonContent += SerializeInteractionConfig(_interaction);
+            }
+
+            if (_physical != null)
+            {
+                jsonContent += SerializePhysicalConfig(_physical);
+            }
+
+            jsonContent += "}}";
+
+            ConnectionManager.serviceConnection.SendMessage(jsonContent, requestID, _callback);
+        }
+        public static void RequestConfigFileChange(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
+        {
+            string action = ActionCode.SET_CONFIGURATION_FILE.ToString();
             Guid requestGUID = Guid.NewGuid();
             string requestID = requestGUID.ToString();
 

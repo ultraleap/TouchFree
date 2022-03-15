@@ -18,16 +18,25 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     internal enum ActionCode
     {
         INPUT_ACTION,
+
         CONFIGURATION_STATE,
         CONFIGURATION_RESPONSE,
         SET_CONFIGURATION_STATE,
         REQUEST_CONFIGURATION_STATE,
+
         VERSION_HANDSHAKE,
         VERSION_HANDSHAKE_RESPONSE,
+
         HAND_PRESENCE_EVENT,
+
         REQUEST_SERVICE_STATUS,
         SERVICE_STATUS_RESPONSE,
-        SERVICE_STATUS
+        SERVICE_STATUS,
+
+        REQUEST_CONFIGURATION_FILE,
+        CONFIGURATION_FILE_STATE,
+        SET_CONFIGURATION_FILE,
+        CONFIGURATION_FILE_RESPONSE,
     }
 
     // Enum: HandPresenceState
@@ -172,11 +181,11 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
     // use of the data received.
     [Serializable]
-    public struct ConfigChangeRequest
+    public struct Request
     {
         public string requestID;
 
-        public ConfigChangeRequest(string _id)
+        public Request(string _id)
         {
             requestID = _id;
         }

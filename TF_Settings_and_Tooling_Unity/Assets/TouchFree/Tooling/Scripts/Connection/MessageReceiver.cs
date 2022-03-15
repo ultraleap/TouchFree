@@ -44,6 +44,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ConfigStateCallback> configStateCallbacks = new Dictionary<string, ConfigStateCallback>();
 
+        // Variable: configStateQueue
+        // A queue of <ConfigState> that have been received from the Service.
+        public ConcurrentQueue<ConfigState> configFileStateQueue = new ConcurrentQueue<ConfigState>();
+
+        // Variable: configStateCallbacks
+        // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
+        public Dictionary<string, ConfigStateCallback> configFileStateCallbacks = new Dictionary<string, ConfigStateCallback>();
+
         // Variable: serviceStatusQueue
         // A queue of <ServiceStatus> that have been received from the Service.
         public ConcurrentQueue<ServiceStatus> serviceStatusQueue = new ConcurrentQueue<ServiceStatus>();

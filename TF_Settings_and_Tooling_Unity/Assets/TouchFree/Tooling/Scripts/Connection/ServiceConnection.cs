@@ -109,9 +109,15 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     ServiceStatus serviceStatus = JsonUtility.FromJson<ServiceStatus>(content);
                     ConnectionManager.messageReceiver.serviceStatusQueue.Enqueue(serviceStatus);
                     break;
+                case ActionCode.CONFIGURATION_FILE_STATE:
+                    ConfigState configFileState = JsonUtility.FromJson<ConfigState>(content);
+                    ConnectionManager.messageReceiver.configFileStateQueue.Enqueue(configFileState);
+                    break;
+
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
                 case ActionCode.SERVICE_STATUS_RESPONSE:
+                case ActionCode.CONFIGURATION_FILE_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
@@ -150,10 +156,28 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         internal void RequestConfigState(Action<ConfigState> _callback)
         {
             string requestID = Guid.NewGuid().ToString();
-            ConfigChangeRequest request = new ConfigChangeRequest(requestID);
+            Request request = new Request(requestID);
 
-            CommunicationWrapper<ConfigChangeRequest> message =
-                new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
+            CommunicationWrapper<Request> message =
+                new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _callback));
+            }
+
+            webSocket.Send(jsonMessage);
+        }
+
+        internal void RequestConfigFile(Action<ConfigState> _callback)
+        {
+            string requestID = Guid.NewGuid().ToString();
+            Request request = new Request(requestID);
+
+            CommunicationWrapper<Request> message =
+                new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_FILE.ToString(), request);
 
             string jsonMessage = JsonUtility.ToJson(message);
 
