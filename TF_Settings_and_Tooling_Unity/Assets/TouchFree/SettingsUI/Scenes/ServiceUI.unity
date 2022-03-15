@@ -2132,7 +2132,7 @@ Transform:
   - {fileID: 1859993775}
   - {fileID: 600173977}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -90, y: 180, z: 0}
 --- !u!1 &2124978200
 GameObject:
@@ -2307,11 +2307,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5898236633391820984}
     m_Modifications:
-    - target: {fileID: 622360720662005162, guid: dc0e884672fe42e49b02672301208def,
-        type: 3}
-      propertyPath: handsCameraObject
-      value: 
-      objectReference: {fileID: 2093597948}
     - target: {fileID: 1050801409045883431, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2377,16 +2372,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4541549585632794220, guid: dc0e884672fe42e49b02672301208def,
-        type: 3}
-      propertyPath: clientInput
-      value: 
-      objectReference: {fileID: 2383233282618138341}
-    - target: {fileID: 4541549585632794220, guid: dc0e884672fe42e49b02672301208def,
-        type: 3}
-      propertyPath: clientRootObj
-      value: 
-      objectReference: {fileID: 2213489624497495665}
     - target: {fileID: 4541549585632794220, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: clientCursorObj
@@ -2554,7 +2539,7 @@ Transform:
   m_Children:
   - {fileID: 5846096576921452456}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5898236633391820990
 GameObject:
