@@ -17,6 +17,7 @@ public class DiagnosticAPI : IDisposable
 
     public static event MaskingDataDelegate OnGetMaskingResponse;
     public static event Action<bool> OnMaskingVersionCheck;
+    public static event Action<bool> OnGetAnalyticsEnabledResponse;
 
     public uint connectedDeviceID;
     public bool maskingAllowed = false;
@@ -140,6 +141,21 @@ public class DiagnosticAPI : IDisposable
                 Debug.Log("DiagnosticAPI - Could not parse Version data: " + _message);
             }
         }
+        else if (_message.Contains("\"type\"") && _message.Contains("\"payload\""))
+        {
+            try
+            {
+                var data = JsonUtility.FromJson<AnalyticsRequest>(_message);
+                if (data.type == "GetAnalyticsEnabled")
+                {
+                    OnGetAnalyticsEnabledResponse?.Invoke(data.payload);
+                }
+            }
+            catch
+            {
+                Debug.Log("DiagnosticAPI - Could not parse V3 API response: " + _message);
+            }
+        }
     }
 
     public void HandleDiagnosticAPIVersion(string _version)
@@ -173,6 +189,18 @@ public class DiagnosticAPI : IDisposable
         }
     }
 
+    public void RequestV3(object payload)
+    {
+        if (status == Status.Connected)
+        {
+            webSocket.Send(JsonUtility.ToJson(payload, true));
+        }
+        else
+        {
+            Connect();
+        }
+    }
+
     public void SetMasking(float _left, float _right, float _top, float _bottom)
     {
         ImageMaskData maskingData = new ImageMaskData();
@@ -183,6 +211,16 @@ public class DiagnosticAPI : IDisposable
         maskingData.lower = _bottom;
 
         Request("SetImageMask:" + JsonUtility.ToJson(maskingData));
+    }
+
+    public void GetAnalyticsMode()
+    {
+        RequestV3(new AnalyticsRequest() { type = "GetAnalyticsEnabled"} );
+    }
+
+    public void SetAnalyticsMode(bool enabled)
+    {
+        RequestV3(new AnalyticsRequest() { type = "SetAnalyticsEnabled", status = 0, payload = enabled });
     }
 
     void IDisposable.Dispose ()
@@ -235,5 +273,12 @@ public class DiagnosticAPI : IDisposable
     struct VersionContainer
     {
         public string version;
+    }
+
+    [Serializable]
+    public struct AnalyticsRequest {
+        public bool payload;
+        public int status;
+        public string type;
     }
 }
