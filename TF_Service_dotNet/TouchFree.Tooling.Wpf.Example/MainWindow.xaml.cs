@@ -57,7 +57,6 @@ namespace TouchFree.Tooling.Wpf.Example
                 xPosition -= this.Left;
                 yPosition -= this.Top;
             }
-            this.PositionRectangle.Margin = new Thickness(xPosition, yPosition, 0, 0);
 
             switch (_inputData.InputType)
             {
@@ -92,6 +91,13 @@ namespace TouchFree.Tooling.Wpf.Example
                     }
                     break;
             }
+
+            var cursorSize = (1 - _inputData.ProgressToClick) * 20;
+
+            this.PositionRectangle.Width = cursorSize;
+            this.PositionRectangle.Height = cursorSize;
+
+            this.PositionRectangle.Margin = new Thickness(xPosition - (cursorSize/2), yPosition - (cursorSize/2), 0, 0);
         }
 
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
