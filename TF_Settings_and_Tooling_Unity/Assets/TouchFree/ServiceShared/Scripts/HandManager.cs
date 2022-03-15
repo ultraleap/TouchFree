@@ -92,6 +92,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
             trackingProvider = (LeapServiceProvider)Hands.Provider;
             PhysicalConfig.OnConfigUpdated += UpdateTrackingTransformAndMode;
+
             StartCoroutine(UpdateTrackingAfterLeapInit());
         }
 
@@ -109,6 +110,13 @@ namespace Ultraleap.TouchFree.ServiceShared
                 yield return null;
             }
 
+            // Ensure the leap controller has its tracking mode set after it connects
+            trackingProvider.GetLeapController().Connect += TrackingConnected;
+            UpdateTrackingTransformAndMode();
+        }
+
+        private void TrackingConnected(object sender, ConnectionEventArgs e)
+        {
             UpdateTrackingTransformAndMode();
         }
 

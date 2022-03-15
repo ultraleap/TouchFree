@@ -58,8 +58,6 @@ namespace ServiceUITray
                     touchFreeMenuItem,
                     new MenuItem("-"),
                     new MenuItem("Settings", Settings),
-                    new MenuItem("-"),
-                    new MenuItem("Exit", Exit),
                 }),
                 Visible = true
             };
@@ -102,28 +100,6 @@ namespace ServiceUITray
             {
                 startedSettingsProcess = LaunchApplication(Path.GetFullPath(SERVICE_SETTINGS_PATH));
             }
-        }
-
-        private void Exit(object sender, EventArgs e)
-        {
-            if (startedSettingsProcess != null && !startedSettingsProcess.HasExited)
-            {
-                startedSettingsProcess.Kill();
-            }
-
-            if (startedAppProcess != null && !startedAppProcess.HasExited)
-            {
-                startedAppProcess.Kill();
-            }
-
-            statusCheckTimer.Elapsed -= CheckForServiceActivity;
-            statusCheckTimer.Elapsed -= CheckForTouchFree;
-            statusCheckTimer.Stop();
-
-            // Hide tray icon, otherwise it will remain shown until user mouses over it
-            trayIcon.Visible = false;
-            Application.Exit();
-            Environment.Exit(0);
         }
 
         private void CheckForServiceActivity(object sender, ElapsedEventArgs e)
