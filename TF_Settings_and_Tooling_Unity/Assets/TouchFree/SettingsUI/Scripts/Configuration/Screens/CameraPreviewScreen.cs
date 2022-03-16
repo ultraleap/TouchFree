@@ -42,9 +42,9 @@ public class CameraPreviewScreen : MonoBehaviour
         maskingSiderT.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
-        DiagnosticAPIManager.diagnosticAPI.Request("GetImageMask:" + DiagnosticAPIManager.diagnosticAPI.connectedDeviceID);
+        DiagnosticAPIManager.diagnosticAPI.GetImageMask();
 
-        HandleMaskingVersionCheck(DiagnosticAPIManager.maskngAvailable);
+        HandleMaskingVersionCheck(DiagnosticAPIManager.maskingAvailable);
     }
 
     void OnDisable()
