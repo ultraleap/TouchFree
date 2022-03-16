@@ -156,10 +156,10 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         internal void RequestConfigState(Action<ConfigState> _callback)
         {
             string requestID = Guid.NewGuid().ToString();
-            Request request = new Request(requestID);
+            ConfigChangeRequest request = new ConfigChangeRequest(requestID);
 
-            CommunicationWrapper<Request> message =
-                new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
+            CommunicationWrapper<ConfigChangeRequest> message =
+                new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE.ToString(), request);
 
             string jsonMessage = JsonUtility.ToJson(message);
 
@@ -174,10 +174,10 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         internal void RequestConfigFile(Action<ConfigState> _callback)
         {
             string requestID = Guid.NewGuid().ToString();
-            Request request = new Request(requestID);
+            ConfigChangeRequest request = new ConfigChangeRequest(requestID);
 
-            CommunicationWrapper<Request> message =
-                new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_FILE.ToString(), request);
+            CommunicationWrapper<ConfigChangeRequest> message =
+                new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE.ToString(), request);
 
             string jsonMessage = JsonUtility.ToJson(message);
 
