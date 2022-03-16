@@ -181,12 +181,13 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
     // use of the data received.
     [Serializable]
-    public struct Request
+    public struct ConfigChangeRequest
     {
         public string requestID;
 
-        public Request(string _id)
+        public ConfigChangeRequest(string _id)
         {
+            requestID = _id;
             requestID = _id;
         }
     }

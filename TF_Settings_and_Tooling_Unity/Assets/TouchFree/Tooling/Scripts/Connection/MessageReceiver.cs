@@ -81,6 +81,9 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             CheckForAction();
         }
 
+        // Function: CheckQueue
+        // Checks a provided <ConcurrentQueue> for a <T> item & executes a provided <handler> with it.
+        // Used in <Update> to cover several queue systems.
         void CheckQueue<T>(ConcurrentQueue<T> queue, Action<T> handler)
         {
             T queueItem;

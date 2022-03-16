@@ -5,7 +5,7 @@ import {
 import {
     ActionCode,
     CommunicationWrapper,
-    Request,
+    ConfigChangeRequest,
     ConfigState,
     ConfigStateCallback,
     HandPresenceEvent,
@@ -175,8 +175,8 @@ export class ServiceConnection {
         }
 
         let guid: string = uuidgen();
-        let request: Request = new Request(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
         let message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =
@@ -198,7 +198,7 @@ export class ServiceConnection {
 
         let guid: string = uuidgen();
         let request: ServiceStatusRequest = new ServiceStatusRequest(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<Request>(ActionCode.REQUEST_SERVICE_STATUS, request);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
         let message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] =
@@ -207,7 +207,7 @@ export class ServiceConnection {
         this.webSocket.send(message);
     }
 
-    // Function: RequestServiceStatus
+    // Function: RequestConfigFile
     // Used internally to request information from the Service via the <webSocket>.
     // Provides an asynchronous <ServiceStatus> via the _callback parameter.
     //
@@ -219,8 +219,8 @@ export class ServiceConnection {
         }
 
         let guid: string = uuidgen();
-        let request: Request = new Request(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<Request>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
+        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
         let message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =

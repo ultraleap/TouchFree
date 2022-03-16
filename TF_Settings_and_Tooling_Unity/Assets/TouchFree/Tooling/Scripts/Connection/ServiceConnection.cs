@@ -189,8 +189,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             webSocket.Send(jsonMessage);
         }
 
-        // Function: RequestServiceStatus
-        // Used internally to request a <ServiceStatus> from the Service via the <webSocket>.
+        // Function: RequestConfigFile
+        // Used internally to request information from the Service via the <webSocket>.
         // Provides an asynchronous <ServiceStatus> via the _callback parameter.
         internal void RequestServiceStatus(Action<ServiceStatus> _callback)
         {
