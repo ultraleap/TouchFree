@@ -10,4 +10,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\TouchFree\TouchFreeLib.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
 </Project>

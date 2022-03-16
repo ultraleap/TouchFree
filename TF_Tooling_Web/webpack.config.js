@@ -1,4 +1,4 @@
-const path = require('path');
+const { Compiler } = require('webpack');
 
 module.exports = {
     entry: {
@@ -37,5 +37,5 @@ module.exports = {
     },
     output: {
         path: __dirname,
-    },
+    }
 };
