@@ -18,11 +18,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // A reference to the websocket we are connected to.
         WebSocket webSocket;
 
-        // Variable: handshakeCompleted
-        // Used internally in this class to know if the Version compatibility handshake with
-        // the server has successfully completed.
-        private Boolean handshakeCompleted;
-
         // Group: Functions
 
         // Function: ServiceConnection
@@ -33,7 +28,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // until this handshake is completed succesfully.
         internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
         {
-            handshakeCompleted = false;
             webSocket = new WebSocket($"ws://{_ip}:{_port}/connect");
 
             webSocket.OnMessage += (sender, e) =>
@@ -65,12 +59,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         private void ConnectionResultCallback(WebSocketResponse response)
         {
             // if failed, console log
-            // if succeeded, "complete" connecting and allow message sending/recieving
-            if (response.status == "Success")
-            {
-                handshakeCompleted = true;
-            }
-            else
+            if (response.status != "Success")
             {
                 Debug.Log($"Connection to Service failed. Details:\n{response.message}");
             }
@@ -116,8 +105,19 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     HandPresenceEvent handEvent = JsonUtility.FromJson<HandPresenceEvent>(content);
                     ConnectionManager.messageReceiver.handState = handEvent.state;
                     break;
+                case ActionCode.SERVICE_STATUS:
+                    ServiceStatus serviceStatus = JsonUtility.FromJson<ServiceStatus>(content);
+                    ConnectionManager.messageReceiver.serviceStatusQueue.Enqueue(serviceStatus);
+                    break;
+                case ActionCode.CONFIGURATION_FILE_STATE:
+                    ConfigState configFileState = JsonUtility.FromJson<ConfigState>(content);
+                    ConnectionManager.messageReceiver.configStateQueue.Enqueue(configFileState);
+                    break;
+
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
+                case ActionCode.SERVICE_STATUS_RESPONSE:
+                case ActionCode.CONFIGURATION_FILE_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
@@ -166,6 +166,45 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             if (_callback != null)
             {
                 ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _callback));
+            }
+
+            webSocket.Send(jsonMessage);
+        }
+
+        internal void RequestConfigFile(Action<ConfigState> _callback)
+        {
+            string requestID = Guid.NewGuid().ToString();
+            ConfigChangeRequest request = new ConfigChangeRequest(requestID);
+
+            CommunicationWrapper<ConfigChangeRequest> message =
+                new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE.ToString(), request);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _callback));
+            }
+
+            webSocket.Send(jsonMessage);
+        }
+
+        // Function: RequestConfigFile
+        // Used internally to request information from the Service via the <webSocket>.
+        // Provides an asynchronous <ServiceStatus> via the _callback parameter.
+        internal void RequestServiceStatus(Action<ServiceStatus> _callback)
+        {
+            string requestID = Guid.NewGuid().ToString();
+            ServiceStatusRequest request = new ServiceStatusRequest(requestID);
+
+            CommunicationWrapper<ServiceStatusRequest> message =
+                new CommunicationWrapper<ServiceStatusRequest>(ActionCode.REQUEST_SERVICE_STATUS.ToString(), request);
+
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.serviceStatusCallbacks.Add(requestID, new ServiceStatusCallback(DateTime.Now.Millisecond, _callback));
             }
 
             webSocket.Send(jsonMessage);
