@@ -43,7 +43,6 @@ namespace Ultraleap.TouchFree.Library
 
                 if (!controller.IsServiceConnected)
                 {
-                    Console.WriteLine($"Attempting reconnect after {waitTimeSeconds} seconds");
                     controller.StartConnection();
                 }
                 else
