@@ -34,7 +34,7 @@ public class DiagnosticAPI : IDisposable
 
     IEnumerator MessageQueueReader()
     {
-        while(true)
+        while (true)
         {
             if (newMessages.TryDequeue(out var message))
             {
@@ -64,15 +64,18 @@ public class DiagnosticAPI : IDisposable
 
             webSocket = new WebSocket(uri);
             webSocket.OnMessage += onMessage;
-            webSocket.OnOpen += (sender, e) => {
+            webSocket.OnOpen += (sender, e) =>
+            {
                 Debug.Log("DiagnosticAPI open... ");
                 status = Status.Connected;
             };
-            webSocket.OnError += (sender, e) => {
-                Debug.Log("DiagnosticAPI error! " + e.Message + "\n" + e.Exception.ToString() );
+            webSocket.OnError += (sender, e) =>
+            {
+                Debug.Log("DiagnosticAPI error! " + e.Message + "\n" + e.Exception.ToString());
                 status = Status.Expired;
             };
-            webSocket.OnClose += (sender, e) => {
+            webSocket.OnClose += (sender, e) =>
+            {
                 Debug.Log("DiagnosticAPI closed. " + e.Reason);
                 status = Status.Closed;
             };
@@ -83,13 +86,13 @@ public class DiagnosticAPI : IDisposable
             webSocket.Connect();
         }
         catch (Exception ex)
-        { 
-            Debug.Log("DiagnosticAPI connection exception... " + "\n" + ex.ToString() );
+        {
+            Debug.Log("DiagnosticAPI connection exception... " + "\n" + ex.ToString());
             status = Status.Expired;
         }
     }
 
-    private void onMessage (object sender, MessageEventArgs e)
+    private void onMessage(object sender, MessageEventArgs e)
     {
         if (e.IsText)
         {
@@ -99,62 +102,65 @@ public class DiagnosticAPI : IDisposable
 
     void HandleMessage(string _message)
     {
-        if (_message.Contains("GetImageMask"))
+        var response = JsonUtility.FromJson<DiagnosticApiResponse>(_message);
+
+        switch (response.type)
         {
-            try
-            {
-                GetImageMaskResponse maskResponse = JsonUtility.FromJson<GetImageMaskResponse>(_message);
-                OnGetMaskingResponse?.Invoke(
-                    (float)maskResponse.value.left,
-                    (float)maskResponse.value.right,
-                    (float)maskResponse.value.upper,
-                    (float)maskResponse.value.lower);
-            }
-            catch
-            {
-                Debug.Log("DiagnosticAPI - Could not parse GetImageMask data: " + _message);
-            }
-        }
-        else if(_message.Contains("GetDevices"))
-        {
-            try
-            {
-                GetDevicesResponse devicesResponse = JsonUtility.FromJson<GetDevicesResponse>(_message);
-                connectedDeviceID = devicesResponse.value[0].id;
-                Request("GetImageMask:" + connectedDeviceID);
-            }
-            catch
-            {
-                Debug.Log("DiagnosticAPI - Could not parse GetDevices data: " + _message);
-            }
-        }
-        else if(_message.Contains("Version"))
-        {
-            try
-            {
-                string version = _message.Split('=')[1]; // Split the string (version=X.X.X) and get the 2nd half (X.X.X)
-                // GetVersionResponse versionResponse = JsonUtility.FromJson<GetVersionResponse>(_message); TODO: Change to this for next API version?
-                HandleDiagnosticAPIVersion(version);
-            }
-            catch
-            {
-                Debug.Log("DiagnosticAPI - Could not parse Version data: " + _message);
-            }
-        }
-        else if (_message.Contains("\"type\"") && _message.Contains("\"payload\""))
-        {
-            try
-            {
-                var data = JsonUtility.FromJson<AnalyticsRequest>(_message);
-                if (data.type == "GetAnalyticsEnabled")
+            case "GetImageMask":
+                try
                 {
+                    var maskingResponse = JsonUtility.FromJson<GetImageMaskResponse>(_message);
+                    OnGetMaskingResponse?.Invoke(
+                        (float)maskingResponse.payload.left,
+                        (float)maskingResponse.payload.right,
+                        (float)maskingResponse.payload.upper,
+                        (float)maskingResponse.payload.lower);
+                }
+                catch
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse GetImageMask data: " + _message);
+                }
+                break;
+            case "GetDevices":
+                try
+                {
+                    GetDevicesResponse devicesResponse = JsonUtility.FromJson<GetDevicesResponse>(_message);
+                    connectedDeviceID = devicesResponse.payload[0].id;
+                    Request("GetImageMask:" + connectedDeviceID);
+                }
+                catch
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse GetDevices data: " + _message);
+                }
+                break;
+            case "GetVersion":
+                try
+                {
+                    GetVersionResponse versionResponse = JsonUtility.FromJson<GetVersionResponse>(_message);
+                    HandleDiagnosticAPIVersion(versionResponse.payload);
+                }
+                catch
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse Version data: " + _message);
+                }
+                break;
+            case "GetAnalyticsEnabled":
+                try
+                {
+                    var data = JsonUtility.FromJson<GetAnalyticsEnabledResponse>(_message);
                     OnGetAnalyticsEnabledResponse?.Invoke(data.payload);
                 }
-            }
-            catch
-            {
-                Debug.Log("DiagnosticAPI - Could not parse V3 API response: " + _message);
-            }
+                catch
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse analytics response: " + _message);
+                }
+                break;
+            case "SetAnalyticsEnabled":
+                // No current use for this
+                break;
+            default:
+                Debug.Log("DiagnosticAPI - Could not parse analytics response of type: " + response.type + " with message: " + _message);
+                break;
         }
     }
 
@@ -177,19 +183,7 @@ public class DiagnosticAPI : IDisposable
         OnMaskingVersionCheck?.Invoke(maskingAllowed);
     }
 
-    public void Request(string key)
-    {
-        if (status == Status.Connected)
-        {
-            webSocket.Send(key);
-        }
-        else
-        {
-            Connect();
-        }
-    }
-
-    public void RequestV3(object payload)
+    public void Request(object payload)
     {
         if (status == Status.Connected)
         {
@@ -203,30 +197,151 @@ public class DiagnosticAPI : IDisposable
 
     public void SetMasking(float _left, float _right, float _top, float _bottom)
     {
-        ImageMaskData maskingData = new ImageMaskData();
-        maskingData.device_id = connectedDeviceID;
-        maskingData.left = _left;
-        maskingData.right = _right;
-        maskingData.upper = _top;
-        maskingData.lower = _bottom;
-
-        Request("SetImageMask:" + JsonUtility.ToJson(maskingData));
+        Request(new SetImageMaskRequest()
+        {
+            payload = new ImageMaskData()
+            {
+                device_id = connectedDeviceID,
+                left = _left,
+                right = _right,
+                upper = _top,
+                lower = _bottom
+            }
+        });
     }
 
     public void GetAnalyticsMode()
     {
-        RequestV3(new AnalyticsRequest() { type = "GetAnalyticsEnabled"} );
+        Request(new GetAnalyticsEnabledRequest());
+    }
+
+    public void GetImageMask()
+    {
+        Request(new GetImageMaskRequest() { payload = new DeviceIdPayload { device_id = connectedDeviceID } });
     }
 
     public void SetAnalyticsMode(bool enabled)
     {
-        RequestV3(new AnalyticsRequest() { type = "SetAnalyticsEnabled", status = 0, payload = enabled });
+        Request(new SetAnalyticsEnabledRequest() { payload = enabled });
     }
 
-    void IDisposable.Dispose ()
+    public void GetDevices()
+    {
+        Request(new GetDevicesRequest());
+    }
+
+    public void GetVersion()
+    {
+        Request(new GetVersionRequest());
+    }
+
+    void IDisposable.Dispose()
     {
         status = Status.Expired;
         webSocket.Close();
+    }
+
+    [Serializable]
+    class DiagnosticApiRequest
+    {
+        public DiagnosticApiRequest() { }
+        protected DiagnosticApiRequest(string _type)
+        {
+            type = _type;
+        }
+        public string type;
+    }
+
+    [Serializable]
+    class DiagnosticApiResponse
+    {
+        public DiagnosticApiResponse() { }
+        protected DiagnosticApiResponse(string _type)
+        {
+            type = _type;
+        }
+        public string type;
+        public int? status;
+    }
+
+    [Serializable]
+    class SetImageMaskRequest : DiagnosticApiRequest
+    {
+        public SetImageMaskRequest() : base("SetImageMask") { }
+        public ImageMaskData payload;
+    }
+
+    [Serializable]
+    class SetImageMaskResponse : DiagnosticApiResponse
+    {
+        public SetImageMaskResponse() : base("SetImageMask") { }
+        public ImageMaskData payload;
+    }
+
+    [Serializable]
+    class GetImageMaskRequest : DiagnosticApiRequest
+    {
+        public GetImageMaskRequest() : base("GetImageMask") { }
+        public DeviceIdPayload payload;
+    }
+
+    [Serializable]
+    class GetImageMaskResponse : DiagnosticApiResponse
+    {
+        public GetImageMaskResponse() : base("GetImageMask") { }
+        public ImageMaskData payload;
+    }
+
+    [Serializable]
+    class GetVersionRequest : DiagnosticApiRequest
+    {
+        public GetVersionRequest() : base("GetVersion") { }
+    }
+
+    [Serializable]
+    class GetVersionResponse : DiagnosticApiResponse
+    {
+        public GetVersionResponse() : base("GetVersion") { }
+        public string payload;
+    }
+
+    [Serializable]
+    class GetAnalyticsEnabledRequest : DiagnosticApiRequest
+    {
+        public GetAnalyticsEnabledRequest() : base("GetAnalyticsEnabled") { }
+    }
+
+    [Serializable]
+    class GetAnalyticsEnabledResponse : DiagnosticApiResponse
+    {
+        public GetAnalyticsEnabledResponse() : base("GetAnalyticsEnabled") { }
+        public bool payload;
+    }
+
+    [Serializable]
+    class SetAnalyticsEnabledRequest : DiagnosticApiRequest
+    {
+        public SetAnalyticsEnabledRequest() : base("SetAnalyticsEnabled") { }
+        public bool payload;
+    }
+
+    [Serializable]
+    class GetDevicesRequest : DiagnosticApiRequest
+    {
+        public GetDevicesRequest() : base("GetDevices") { }
+    }
+
+    [Serializable]
+    class GetDevicesResponse : DiagnosticApiResponse
+    {
+        public GetDevicesResponse() : base("GetDevices") { }
+        public DiagnosticDevice[] payload;
+    }
+
+    [Serializable]
+    struct DeviceIdPayload
+    {
+        public uint device_id;
     }
 
     [Serializable]
@@ -239,20 +354,6 @@ public class DiagnosticAPI : IDisposable
         public uint device_id;
     }
 
-    struct GetImageMaskResponse
-    {
-        public string request;
-        public int status;
-        public ImageMaskData value;
-    }
-
-    struct GetDevicesResponse
-    {
-        public int status;
-        public DiagnosticDevice[] value;
-        public string request;
-    }
-
     [Serializable]
     struct DiagnosticDevice
     {
@@ -260,25 +361,5 @@ public class DiagnosticAPI : IDisposable
         public string type;
         public uint clients;
         public bool streaming;
-    }
-
-    struct GetVersionResponse
-    {
-        public string request;
-        public int status;
-        public VersionContainer value;
-    }
-
-    [Serializable]
-    struct VersionContainer
-    {
-        public string version;
-    }
-
-    [Serializable]
-    public struct AnalyticsRequest {
-        public bool payload;
-        public int status;
-        public string type;
     }
 }
