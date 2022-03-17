@@ -188,7 +188,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         public ConfigChangeRequest(string _id)
         {
             requestID = _id;
-            requestID = _id;
         }
     }
 
