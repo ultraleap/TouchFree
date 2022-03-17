@@ -1923,12 +1923,9 @@ MonoBehaviour:
   - {fileID: 4633970468187725260}
   scrollingOrDraggingTog: {fileID: 2568356942406001928}
   cursorDeadzoneSlider: {fileID: 7499528153589715912}
-  HoverStartTime: {fileID: 1266090116895339956}
-  HoverStartTimeSlider: {fileID: 9152434881168527688}
-  HoverCompleteTime: {fileID: 1211164984990165420}
-  HoverCompleteTimeSlider: {fileID: 6761357609489506077}
-  TouchPlaneDistance: {fileID: 587443054030037791}
-  TouchPlaneDistanceSlider: {fileID: 3456911357223157654}
+  hoverStartInputSlider: {fileID: 655195115}
+  hoverCompleteInputSlider: {fileID: 89400466}
+  touchPlaneDistanceInputSlider: {fileID: 1150704155}
   trackingBoneNearestToggle: {fileID: 789622941064912546}
   trackingBoneIndexTipToggle: {fileID: 789622940944965851}
   interactionTypeTogglePush: {fileID: 3404174050571467755}
@@ -2952,8 +2949,8 @@ GameObject:
   - component: {fileID: 6350064246939839308}
   - component: {fileID: 8209075945964094216}
   - component: {fileID: 8216653279643102537}
-  - component: {fileID: 1158084609731843645}
   - component: {fileID: 1862729419361048174}
+  - component: {fileID: 655195115}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -3014,21 +3011,6 @@ MonoBehaviour:
   m_Spacing: {x: 100, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!114 &1158084609731843645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1417986070452335294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39301d1b9742d69429f99e3866f7bea9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Slider: {fileID: 9152434881168527688}
-  InputField: {fileID: 1266090116895339956}
-  InputFieldValueFormat: '#0.00#'
 --- !u!114 &1862729419361048174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3043,6 +3025,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 1
+--- !u!114 &655195115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417986070452335294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb2e9b19e1f4a764fb1a2d129fc94d91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Slider: {fileID: 9152434881168527688}
+  InputField: {fileID: 1266090116895339956}
+  InputFieldValueFormat: '#0.00#'
 --- !u!1 &1501676416330262296
 GameObject:
   m_ObjectHideFlags: 0
@@ -8195,8 +8192,8 @@ GameObject:
   - component: {fileID: 7528012302925954999}
   - component: {fileID: 5518629936599207627}
   - component: {fileID: 445778715631237668}
-  - component: {fileID: 5332601208954495464}
   - component: {fileID: 5635836208464091389}
+  - component: {fileID: 1150704155}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -8257,21 +8254,6 @@ MonoBehaviour:
   m_Spacing: {x: 100, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!114 &5332601208954495464
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4371043643052409181}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39301d1b9742d69429f99e3866f7bea9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Slider: {fileID: 3456911357223157654}
-  InputField: {fileID: 587443054030037791}
-  InputFieldValueFormat: '#0.00#'
 --- !u!114 &5635836208464091389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8286,6 +8268,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 1
+--- !u!114 &1150704155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4371043643052409181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb2e9b19e1f4a764fb1a2d129fc94d91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Slider: {fileID: 3456911357223157654}
+  InputField: {fileID: 587443054030037791}
+  InputFieldValueFormat: '#0.00#'
 --- !u!1 &4379009168305005691
 GameObject:
   m_ObjectHideFlags: 0
@@ -8693,8 +8690,8 @@ GameObject:
   - component: {fileID: 1052636248969971029}
   - component: {fileID: 8710564981508260685}
   - component: {fileID: 5662983127803689487}
-  - component: {fileID: 463929664316560844}
   - component: {fileID: 2062364017744541524}
+  - component: {fileID: 89400466}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -8755,21 +8752,6 @@ MonoBehaviour:
   m_Spacing: {x: 100, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!114 &463929664316560844
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4584201485753091171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39301d1b9742d69429f99e3866f7bea9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Slider: {fileID: 6761357609489506077}
-  InputField: {fileID: 1211164984990165420}
-  InputFieldValueFormat: '#0.00#'
 --- !u!114 &2062364017744541524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8784,6 +8766,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 1
+--- !u!114 &89400466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4584201485753091171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb2e9b19e1f4a764fb1a2d129fc94d91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Slider: {fileID: 6761357609489506077}
+  InputField: {fileID: 1211164984990165420}
+  InputFieldValueFormat: '#0.00#'
 --- !u!1 &4609582840487186074
 GameObject:
   m_ObjectHideFlags: 0

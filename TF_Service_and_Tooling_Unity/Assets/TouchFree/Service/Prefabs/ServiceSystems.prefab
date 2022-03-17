@@ -150,6 +150,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 518956833299686219}
     m_Modifications:
+    - target: {fileID: 692204400246079015, guid: c5b4c0e5e3491214d9ed6595740d844b,
+        type: 3}
+      propertyPath: _preventInitializingTrackingMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6039750954658645881, guid: c5b4c0e5e3491214d9ed6595740d844b,
         type: 3}
       propertyPath: m_Name

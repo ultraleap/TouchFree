@@ -5,8 +5,6 @@ using System.IO;
 
 using HSVPicker;
 using SFB;
-using System.Threading;
-using System.Globalization;
 using Ultraleap.TouchFree.ServiceShared;
 
 namespace Ultraleap.TouchFree.ServiceUI
@@ -58,12 +56,6 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public static readonly string[] VIDEO_EXTENSIONS = new string[] { ".webm", ".mp4" };
         public static readonly string[] IMAGE_EXTENSIONS = new string[] { ".png" };
-
-        private void Awake()
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-        }
 
         protected override void OnEnable()
         {
@@ -132,7 +124,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             EnableCTIToggle.onValueChanged.AddListener(ShowHideCtiControls);
             CTIHideOnInteractionToggle.onValueChanged.AddListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.AddListener(OnValueChanged);
-            CTIShowDelayField.onValueChanged.AddListener(OnValueChanged);
+            CTIShowDelayField.onEndEdit.AddListener(OnValueChanged);
         }
 
         private void RemoveValueChangedListeners()
@@ -165,7 +157,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             EnableCTIToggle.onValueChanged.RemoveListener(ShowHideCtiControls);
             CTIHideOnInteractionToggle.onValueChanged.RemoveListener(OnValueChanged);
             CTIHideOnPresenceToggle.onValueChanged.RemoveListener(OnValueChanged);
-            CTIShowDelayField.onValueChanged.RemoveListener(OnValueChanged);
+            CTIShowDelayField.onEndEdit.RemoveListener(OnValueChanged);
         }
 
         public void SetFileLocation()
@@ -331,6 +323,12 @@ namespace Ultraleap.TouchFree.ServiceUI
         #endregion
 
         #region ConfigFile Methods
+        private void ValidateValues()
+        {
+            CTIShowDelayField.SetTextWithoutNotify(ServiceUtility.TryParseNewStringToFloat(TFAppConfig.Config.ctiShowAfterTimer,
+                CTIShowDelayField.text).ToString("##0.0"));
+        }
+
         private void LoadConfigValuesIntoFields()
         {
             // Cursor settings
@@ -455,6 +453,7 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         protected void OnValueChanged()
         {
+            ValidateValues();
             SaveValuesToConfig();
             SetColorsToCorrectPreset();
         }

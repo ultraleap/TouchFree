@@ -115,28 +115,24 @@ namespace Ultraleap.TouchFree.ServiceUI
         protected override void ValidateValues()
         {
             PhysicalScreenTiltAngle.SetTextWithoutNotify(
-                TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.ScreenRotationD,
+                ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.ScreenRotationD,
                 PhysicalScreenTiltAngle.text).ToString("##0.0"));
 
             ScreenHeight.SetTextWithoutNotify(
-                ServiceUtility.ToDisplayUnits(
-                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.ScreenHeightM, ScreenHeight.text, true)
-                ).ToString("#0.00#"));
+                    ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.ScreenHeightM,
+                    ScreenHeight.text).ToString("#0.00#"));
 
             TrackingOriginX.SetTextWithoutNotify(
-                ServiceUtility.ToDisplayUnits(
-                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x, TrackingOriginX.text, true)
-                ).ToString("#0.00#"));
+                    ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x,
+                    TrackingOriginX.text).ToString("#0.00#"));
 
             TrackingOriginY.SetTextWithoutNotify(
-                ServiceUtility.ToDisplayUnits(
-                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, TrackingOriginY.text, true)
-                ).ToString("#0.00#"));
+                    ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y,
+                    TrackingOriginY.text).ToString("#0.00#"));
 
             TrackingOriginZ.SetTextWithoutNotify(
-                ServiceUtility.ToDisplayUnits(
-                    TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, TrackingOriginZ.text, true)
-                ).ToString("#0.00#"));
+                    ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z,
+                    TrackingOriginZ.text).ToString("#0.00#"));
 
 
             // Convert from screen rotaitons to a readable format
@@ -147,22 +143,22 @@ namespace Ultraleap.TouchFree.ServiceUI
             }
 
             TrackingRotationX.SetTextWithoutNotify(ServiceUtility.CentreRotationAroundZero(
-                TryParseNewStringToFloat(ref backupLeapX,
+                ServiceUtility.TryParseNewStringToFloat(backupLeapX,
                 TrackingRotationX.text)).ToString("##0.0"));
         }
 
         protected override void SaveValuesToConfig()
         {
-            ConfigManager.PhysicalConfig.ScreenRotationD = TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.ScreenRotationD, PhysicalScreenTiltAngle.text);
-            ConfigManager.PhysicalConfig.ScreenHeightM = TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.ScreenHeightM, ScreenHeight.text, true);
+            ConfigManager.PhysicalConfig.ScreenRotationD = ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.ScreenRotationD, PhysicalScreenTiltAngle.text);
+            ConfigManager.PhysicalConfig.ScreenHeightM = ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.ScreenHeightM, ScreenHeight.text, true);
             ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM = new Vector3(
-                TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x, TrackingOriginX.text, true),
-                TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, TrackingOriginY.text, true),
-                -TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, TrackingOriginZ.text, true)
+                ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.x, TrackingOriginX.text, true),
+                ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.y, TrackingOriginY.text, true),
+                -ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.LeapPositionRelativeToScreenBottomM.z, TrackingOriginZ.text, true)
             );
 
             // Convert from readable format to usable rotations
-            float usableLeapX = TryParseNewStringToFloat(ref ConfigManager.PhysicalConfig.LeapRotationD.x, TrackingRotationX.text);
+            float usableLeapX = ServiceUtility.TryParseNewStringToFloat(ConfigManager.PhysicalConfig.LeapRotationD.x, TrackingRotationX.text);
             float usableLeapZ = ConfigManager.PhysicalConfig.LeapRotationD.z;
 
             if(Mathf.Abs(usableLeapX) > 90)

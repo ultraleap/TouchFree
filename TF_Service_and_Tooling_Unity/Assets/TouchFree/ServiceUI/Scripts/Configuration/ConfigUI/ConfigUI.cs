@@ -28,28 +28,6 @@ namespace Ultraleap.TouchFree.ServiceUI
         protected abstract void SaveValuesToConfig();
         protected abstract void CommitValuesToFile();
 
-        protected float TryParseNewStringToFloat(ref float _original, string _newText, bool _convertToStorageUnits = false, bool _convertToDisplayUnits = false)
-        {
-            // Match any character that is not period (.), hypen (-), or numbers 0 to 9, and strip them out.
-            _newText = Regex.Replace(_newText, "[^.0-9-]", "");
-
-            float val;
-
-            if (!float.TryParse(_newText, NumberStyles.Number, CultureInfo.CurrentCulture, out val))
-                val = _original; // string was not compatible!
-
-            if (_convertToDisplayUnits)
-            {
-                val = ServiceUtility.ToDisplayUnits(val);
-            }
-            else if (_convertToStorageUnits)
-            {
-                val = ServiceUtility.FromDisplayUnits(val);
-            }
-
-            return val;
-        }
-
         protected void OnValueChanged(string _)
         {
             OnValueChanged();
