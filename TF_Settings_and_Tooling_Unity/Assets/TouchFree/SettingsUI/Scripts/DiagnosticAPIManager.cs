@@ -3,7 +3,7 @@
 public class DiagnosticAPIManager : MonoBehaviour
 {
     public static DiagnosticAPI diagnosticAPI;
-    public static bool maskngAvailable = false;
+    public static bool maskingAvailable = false;
 
     private void Awake()
     {
@@ -14,12 +14,12 @@ public class DiagnosticAPIManager : MonoBehaviour
 
         DiagnosticAPI.OnMaskingVersionCheck += HandleMaskingVersionCheck;
 
-        diagnosticAPI.Request("GetDevices"); // get the connected device ID
-        diagnosticAPI.Request("GetVersion");
+        diagnosticAPI.GetDevices(); // get the connected device ID
+        diagnosticAPI.GetVersion();
     }
 
     void HandleMaskingVersionCheck(bool _maskingAvailable)
     {
-        maskngAvailable = _maskingAvailable;
+        maskingAvailable = _maskingAvailable;
     }
 }
