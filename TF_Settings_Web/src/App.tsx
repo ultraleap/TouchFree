@@ -1,8 +1,9 @@
 import React, { CSSProperties } from 'react';
 
-import './App.css';
-
 import { ScreenManager } from './Components/ScreenManager';
+
+import './App.css';
+import './Styles/Styles.css';
 
 declare global {
     interface Window { TouchFree: any; }
