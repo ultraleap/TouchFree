@@ -42,7 +42,7 @@ public class MiniCTI : MonoBehaviour
 
     IEnumerator ShowMiniCTIAfterWait()
     {
-        yield return new WaitForSeconds(6);
+        yield return new WaitForSeconds(5);
 
         miniCTI.SetActive(true);
         currentCTIWait = null;
