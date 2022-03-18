@@ -24,8 +24,6 @@ namespace Ultraleap.TouchFree.ServiceUI
             {
                 DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
             }
-
-            DiagnosticAPIManager.diagnosticAPI.GetDevices();
         }
 
         protected override void OnEnable()

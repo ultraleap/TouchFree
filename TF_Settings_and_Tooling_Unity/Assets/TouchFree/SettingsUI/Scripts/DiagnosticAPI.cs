@@ -76,6 +76,7 @@ public class DiagnosticAPI : IDisposable
                 status = Status.Connected;
                 GetServerInfo();
                 GetDevices();
+                GetVersion();
             };
             webSocket.OnError += (sender, e) =>
             {
@@ -110,6 +111,8 @@ public class DiagnosticAPI : IDisposable
 
     void HandleMessage(string _message)
     {
+        Debug.Log("Request recieved: " + _message);
+
         var response = JsonUtility.FromJson<DiagnosticApiResponse>(_message);
 
         switch (response.type)
@@ -136,8 +139,7 @@ public class DiagnosticAPI : IDisposable
                     GetDevicesResponse devicesResponse = JsonUtility.FromJson<GetDevicesResponse>(_message);
                     if (devicesResponse.payload.Length > 0)
                     {
-                        connectedDeviceID = devicesResponse.payload[0].device_id;
-                        Request("GetImageMask:" + connectedDeviceID);
+                        connectedDeviceID = devicesResponse.payload[0].id;
                     }
                 }
                 catch
@@ -225,7 +227,9 @@ public class DiagnosticAPI : IDisposable
     {
         if (status == Status.Connected)
         {
-            webSocket.Send(JsonUtility.ToJson(payload, true));
+            var requestMessage = JsonUtility.ToJson(payload, true);
+            Debug.Log("Request sent: " + requestMessage);
+            webSocket.Send(requestMessage);
         }
         else
         {
@@ -435,7 +439,7 @@ public class DiagnosticAPI : IDisposable
     [Serializable]
     struct DiagnosticDevice
     {
-        public uint device_id;
+        public uint id;
         public string type;
         public uint clients;
         public bool streaming;

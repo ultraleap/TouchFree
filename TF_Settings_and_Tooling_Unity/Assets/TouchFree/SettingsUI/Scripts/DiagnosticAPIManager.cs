@@ -10,8 +10,5 @@ public class DiagnosticAPIManager : MonoBehaviour
         {
             diagnosticAPI = new DiagnosticAPI(this);
         }
-
-        diagnosticAPI.GetDevices(); // get the connected device ID
-        diagnosticAPI.GetVersion();
     }
 }
