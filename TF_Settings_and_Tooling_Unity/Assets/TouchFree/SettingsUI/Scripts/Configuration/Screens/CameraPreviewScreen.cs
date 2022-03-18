@@ -34,7 +34,7 @@ public class CameraPreviewScreen : MonoBehaviour
             DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
         }
 
-        DiagnosticAPI.OnGetMaskingResponse += SetSliders;
+        DiagnosticAPI.OnGetMaskingResponse += HandleMaskingResponse;
         DiagnosticAPI.OnTrackingApiVersionResponse += HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.AddListener(OnSliderChanged);
@@ -43,15 +43,13 @@ public class CameraPreviewScreen : MonoBehaviour
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
-
-        HandleMaskingVersionCheck();
     }
 
     void OnDisable()
     {
         handsCameraObject.SetActive(false);
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
-        DiagnosticAPI.OnGetMaskingResponse -= SetSliders;
+        DiagnosticAPI.OnGetMaskingResponse -= HandleMaskingResponse;
         DiagnosticAPI.OnTrackingApiVersionResponse -= HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.RemoveListener(OnSliderChanged);
@@ -105,6 +103,12 @@ public class CameraPreviewScreen : MonoBehaviour
             currentMaskRight,
             currentMaskTop,
             currentMaskBottom);
+    }
+
+    private void HandleMaskingResponse(float _left, float _right, float _top, float _bottom)
+    {
+        HandleMaskingVersionCheck();
+        SetSliders(_left, _right, _top, _bottom);
     }
 
     public void SetSliders(float _left, float _right, float _top, float _bottom)

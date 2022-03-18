@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -35,19 +36,18 @@ public class DiagnosticAPI : IDisposable
     public DiagnosticAPI(MonoBehaviour _creatorMonobehaviour)
     {
         Connect();
-        _creatorMonobehaviour.StartCoroutine(MessageQueueReader());
+        MessageQueueReader();
     }
 
-    IEnumerator MessageQueueReader()
+    async Task MessageQueueReader()
     {
         while (true)
         {
+            await Task.Delay(10);
             if (newMessages.TryDequeue(out var message))
             {
                 HandleMessage(message);
             }
-
-            yield return null;
         }
     }
 
@@ -111,8 +111,6 @@ public class DiagnosticAPI : IDisposable
 
     void HandleMessage(string _message)
     {
-        Debug.Log("Request recieved: " + _message);
-
         var response = JsonUtility.FromJson<DiagnosticApiResponse>(_message);
 
         switch (response.type)
@@ -135,11 +133,10 @@ public class DiagnosticAPI : IDisposable
             case "GetDevices":
                 try
                 {
-                    Debug.Log("DiagnosticAPI - GetDevices data: " + _message);
                     GetDevicesResponse devicesResponse = JsonUtility.FromJson<GetDevicesResponse>(_message);
                     if (devicesResponse.payload.Length > 0)
                     {
-                        connectedDeviceID = devicesResponse.payload[0].id;
+                        connectedDeviceID = devicesResponse.payload[0].device_id;
                     }
                 }
                 catch
@@ -184,7 +181,6 @@ public class DiagnosticAPI : IDisposable
             case "GetDeviceInfo":
                 try
                 {
-                    Debug.Log("DiagnosticAPI - GetDeviceInfo data: " + _message);
                     var data = JsonUtility.FromJson<GetDeviceInfoResponse>(_message);
                     connectedDeviceFirmware = data?.payload.device_firmware ?? connectedDeviceFirmware;
                     connectedDeviceSerial = data?.payload.device_serial ?? connectedDeviceSerial;
@@ -228,7 +224,6 @@ public class DiagnosticAPI : IDisposable
         if (status == Status.Connected)
         {
             var requestMessage = JsonUtility.ToJson(payload, true);
-            Debug.Log("Request sent: " + requestMessage);
             webSocket.Send(requestMessage);
         }
         else
@@ -284,7 +279,6 @@ public class DiagnosticAPI : IDisposable
 
     public void GetDeviceInfo()
     {
-        Debug.Log($"Device ID: {connectedDeviceID}");
         Request(new GetDeviceInfoRequest() { 
             payload = new DeviceIdPayload() { device_id = connectedDeviceID }
         });
@@ -439,7 +433,7 @@ public class DiagnosticAPI : IDisposable
     [Serializable]
     struct DiagnosticDevice
     {
-        public uint id;
+        public uint device_id;
         public string type;
         public uint clients;
         public bool streaming;
