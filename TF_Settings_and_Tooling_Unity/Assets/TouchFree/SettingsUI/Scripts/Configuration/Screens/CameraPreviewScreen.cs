@@ -35,7 +35,7 @@ public class CameraPreviewScreen : MonoBehaviour
         }
 
         DiagnosticAPI.OnGetMaskingResponse += SetSliders;
-        DiagnosticAPI.OnMaskingVersionCheck += HandleMaskingVersionCheck;
+        DiagnosticAPI.OnTrackingApiVersionResponse += HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderR.onValueChanged.AddListener(OnSliderChanged);
@@ -44,7 +44,7 @@ public class CameraPreviewScreen : MonoBehaviour
 
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
 
-        HandleMaskingVersionCheck(DiagnosticAPIManager.maskingAvailable);
+        HandleMaskingVersionCheck();
     }
 
     void OnDisable()
@@ -52,7 +52,7 @@ public class CameraPreviewScreen : MonoBehaviour
         handsCameraObject.SetActive(false);
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
         DiagnosticAPI.OnGetMaskingResponse -= SetSliders;
-        DiagnosticAPI.OnMaskingVersionCheck -= HandleMaskingVersionCheck;
+        DiagnosticAPI.OnTrackingApiVersionResponse -= HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.RemoveListener(OnSliderChanged);
         maskingSiderR.onValueChanged.RemoveListener(OnSliderChanged);
@@ -69,13 +69,14 @@ public class CameraPreviewScreen : MonoBehaviour
         }
     }
 
-    public void HandleMaskingVersionCheck(bool _maskingAvailable)
+    public void HandleMaskingVersionCheck()
     {
-        maskingSiderL.gameObject.SetActive(_maskingAvailable);
-        maskingSiderR.gameObject.SetActive(_maskingAvailable);
-        maskingSiderT.gameObject.SetActive(_maskingAvailable);
-        maskingSiderB.gameObject.SetActive(_maskingAvailable);
-        maskingDiabledWarningObject.SetActive(!_maskingAvailable);
+        bool maskingAvailable = DiagnosticAPIManager.diagnosticAPI.maskingAllowed;
+        maskingSiderL.gameObject.SetActive(maskingAvailable);
+        maskingSiderR.gameObject.SetActive(maskingAvailable);
+        maskingSiderT.gameObject.SetActive(maskingAvailable);
+        maskingSiderB.gameObject.SetActive(maskingAvailable);
+        maskingDiabledWarningObject.SetActive(!maskingAvailable);
     }
 
     void OnOverExposureValueChanged(bool state)

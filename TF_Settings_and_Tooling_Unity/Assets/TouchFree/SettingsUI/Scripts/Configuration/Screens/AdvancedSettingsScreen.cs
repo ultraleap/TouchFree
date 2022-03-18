@@ -15,6 +15,13 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Header("Analytics")]
         public Toggle EnableAnalyticsToggle;
 
+        public Text versionText;
+        public Text trackingVersionText;
+        public Text cameraDeviceIdText;
+        public Text cameraDeviceFirmwareText;
+
+        string versionPath;
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -35,11 +42,30 @@ namespace Ultraleap.TouchFree.ServiceUI
             EnableAnalyticsToggle.onValueChanged.AddListener(OnAnalyticsToggled);
 
             DiagnosticAPIManager.diagnosticAPI.GetAnalyticsMode();
+
+            versionPath = Path.Combine(Application.dataPath, "../Version.txt");
+            PopulateVersion();
+
+            DiagnosticAPI.OnTrackingServerInfoResponse += HandleVersionCheck;
+            DiagnosticAPI.OnTrackingDeviceInfoResponse += HandleDeviceCheck;
+
+            DiagnosticAPIManager.diagnosticAPI.GetDeviceInfo();
+
+            if (!string.IsNullOrWhiteSpace(DiagnosticAPIManager.diagnosticAPI.trackingServiceVersion))
+            {
+                HandleVersionCheck();
+            }
+            else
+            {
+                DiagnosticAPIManager.diagnosticAPI.GetServerInfo();
+            }
         }
 
         protected virtual void OnDisable()
         {
             EnableAnalyticsToggle.onValueChanged.RemoveListener(OnAnalyticsToggled);
+            DiagnosticAPI.OnTrackingServerInfoResponse -= HandleVersionCheck;
+            DiagnosticAPI.OnTrackingDeviceInfoResponse -= HandleDeviceCheck;
         }
 
         public void SetFileLocation()
@@ -69,6 +95,36 @@ namespace Ultraleap.TouchFree.ServiceUI
         public void PrivacyPolicyPressed()
         {
             Application.OpenURL("https://www.ultraleap.com/privacy-policy");
+        }
+
+        void PopulateVersion()
+        {
+            string version = "N/A";
+
+            if (File.Exists(versionPath))
+            {
+                var fileLines = File.ReadAllLines(versionPath);
+                foreach (var line in fileLines)
+                {
+                    if (line.Contains("TouchFree Service Version"))
+                    {
+                        version = line.Replace("TouchFree Service Version: ", "");
+                        break;
+                    }
+                }
+            }
+            versionText.text = "Version " + version;
+        }
+
+        private void HandleVersionCheck()
+        {
+            trackingVersionText.text = DiagnosticAPIManager.diagnosticAPI.trackingServiceVersion?.Split('-')?[0];
+        }
+
+        private void HandleDeviceCheck()
+        {
+            cameraDeviceIdText.text = DiagnosticAPIManager.diagnosticAPI.connectedDeviceSerial;
+            cameraDeviceFirmwareText.text = DiagnosticAPIManager.diagnosticAPI.connectedDeviceFirmware;
         }
     }
 }
