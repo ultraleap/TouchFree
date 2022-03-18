@@ -18,18 +18,18 @@ namespace Ultraleap.TouchFree.Library.Interactions
         // Speed in millimeters per second
         public float speedMin = 150f;
         public float speedMax = 500f;
-        public float distAtSpeedMinMm = 30f;
-        public float distAtSpeedMaxMm = 5f;
+        public float distAtSpeedMinMm = 42f;
+        public float distAtSpeedMaxMm = 8f;
         public float horizontalDecayDistMm = 50f;
 
-        public float thetaOne = 15f;
+        public float thetaOne = 65f;
         public float thetaTwo = 135f;
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
         // If a hand moves between the two angles, this is "horizontal" to the screen
 
-        public float unclickThreshold = 0.85f;
-        public float unclickThresholdDrag = 0.85f;
+        public float unclickThreshold = 0.97f;
+        public float unclickThresholdDrag = 0.97f;
         public bool decayForceOnClick = true;
         public float forceDecayTime = 0.1f;
         bool decayingForce;
@@ -37,8 +37,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public bool useTouchPlaneForce = true;
         public float distPastTouchPlaneMm = 20f;
 
-        public float dragStartDistanceThresholdMm = 10f;
-        public float dragDeadzoneShrinkRate = 0.5f;
+        public float dragStartDistanceThresholdMm = 30f;
+        public float dragDeadzoneShrinkRate = 0.9f;
         public float dragDeadzoneShrinkDistanceThresholdMm = 10f;
 
         public float deadzoneMaxSizeIncreaseMm = 20f;

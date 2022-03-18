@@ -41,4 +41,4 @@ The TouchFree Tooling is available for two integration environments at the momen
 
 * Web (JavaScript)
   * The JavaScript version of TouchFree Tooling can be found at
-  `./TF_Tooling_Web`. Built in TypeScript, it available in JavaScript form.
+  `./TF_Tooling_Web`. Built in TypeScript, it available in JavaScript form
