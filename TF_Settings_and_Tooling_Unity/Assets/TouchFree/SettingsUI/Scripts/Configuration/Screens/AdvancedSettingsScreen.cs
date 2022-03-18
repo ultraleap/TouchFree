@@ -113,7 +113,11 @@ namespace Ultraleap.TouchFree.ServiceUI
                     }
                 }
             }
-            versionText.text = "Version " + version;
+            if (version != "N/A")
+            {
+                version = "v" + version;
+            }
+            versionText.text = version;
         }
 
         private void HandleVersionCheck()
@@ -124,7 +128,12 @@ namespace Ultraleap.TouchFree.ServiceUI
         private void HandleDeviceCheck()
         {
             cameraDeviceIdText.text = DiagnosticAPIManager.diagnosticAPI.connectedDeviceSerial;
-            cameraDeviceFirmwareText.text = DiagnosticAPIManager.diagnosticAPI.connectedDeviceFirmware;
+            string firmwareVersion = DiagnosticAPIManager.diagnosticAPI.connectedDeviceFirmware;
+            if (!string.IsNullOrWhiteSpace(firmwareVersion) && !firmwareVersion.StartsWith("v"))
+            {
+                firmwareVersion = "v" + firmwareVersion;
+            }
+            cameraDeviceFirmwareText.text = firmwareVersion;
         }
     }
 }
