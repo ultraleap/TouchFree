@@ -2,7 +2,7 @@
 // Manages the loading/display of the subscreens
 // Is the place where the active screen/tab is controlled
 
-import React, { Component, CSSProperties } from "react";
+import React, { Component, CSSProperties, RefObject } from "react";
 import { ControlBar } from "./ControlBar";
 import { CursorManager } from "./CursorManager";
 import { CameraPage } from "./Pages/CameraPage";
@@ -31,7 +31,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     private timerID: number;
 
     private cursorManager: CursorManager;
-    private addCursorsToDoc: (element: HTMLDivElement) => void;
+    private cursorParent: RefObject<HTMLDivElement>;
 
     // TouchFree objects
     private inputSystem: any;
@@ -47,9 +47,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         this.connectionManager = TouchFree.Connection.ConnectionManager;
 
         this.cursorManager = new CursorManager();
-        this.addCursorsToDoc = (element: HTMLDivElement) => {
-            this.cursorManager.setElement(element);
-        }
+        this.cursorParent = React.createRef();
 
         let state = {
             atTopLevel: true,
@@ -61,6 +59,11 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     }
 
     componentDidMount() {
+        if (this.cursorParent.current !== null)
+        {
+            this.cursorManager.setElement(this.cursorParent.current);
+        }
+
         this.timerID = window.setInterval(() => {
             this.RequestStatus()
         }, 5000);
@@ -100,7 +103,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
 
         return (
             <div style={this.containerStyle}
-                 ref={this.addCursorsToDoc}>
+                 ref={this.cursorParent}>
                 <ControlBar manager={this}
                             atTopLevel={this.state.atTopLevel}
                             status={this.state.tfState}
