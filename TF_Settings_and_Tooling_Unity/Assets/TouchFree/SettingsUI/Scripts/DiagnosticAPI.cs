@@ -198,7 +198,6 @@ public class DiagnosticAPI : IDisposable
             case "GetAllowImages":
                 try
                 {
-                    Debug.Log("DiagnosticAPI - GetAllowImages: " + _message);
                     GetAllowImagesResponse data = JsonUtility.FromJson<GetAllowImagesResponse>(_message);
                     allowImages = data?.payload ?? false;
                     OnAllowImagesResponse?.Invoke();
