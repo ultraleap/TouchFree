@@ -34,7 +34,7 @@ export abstract class TouchlessCursor {
     // Sets the position of the cursor, should be run after <HandleInputAction>.
     UpdateCursor(_inputAction: TouchFreeInputAction): void {
         this.cursor.style.left = (_inputAction.CursorPosition[0] - (this.cursor.clientWidth / 2)) + "px";
-        this.cursor.style.top = (window.innerHeight - (_inputAction.CursorPosition[1] + (this.cursor.clientHeight / 2))) + "px";
+        this.cursor.style.top = (_inputAction.CursorPosition[1] - (this.cursor.clientHeight / 2)) + "px";
     }
 
     // Function: HandleInputAction

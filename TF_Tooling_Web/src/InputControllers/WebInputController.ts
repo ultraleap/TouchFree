@@ -100,7 +100,7 @@ export class WebInputController extends BaseInputController {
     // Parameters:
     //     _inputData - The latest Action to arrive via the <ServiceConnection>.
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
-        let invertedCursorPos = [_inputData.CursorPosition[0], window.innerHeight - _inputData.CursorPosition[1]];
+        let invertedCursorPos = [_inputData.CursorPosition[0], _inputData.CursorPosition[1]];
         super.HandleInputAction(_inputData);
 
         let elementAtPos: Element | null = this.GetTopNonCursorElement(invertedCursorPos);
