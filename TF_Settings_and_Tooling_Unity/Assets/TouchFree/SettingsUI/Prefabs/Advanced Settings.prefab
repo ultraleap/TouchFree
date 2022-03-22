@@ -847,7 +847,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1.0.0
+  m_Text: N/A
 --- !u!1 &1752084490104403570
 GameObject:
   m_ObjectHideFlags: 0
@@ -1601,7 +1601,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1.0.0
+  m_Text: N/A
 --- !u!1 &2800126753051007288
 GameObject:
   m_ObjectHideFlags: 0
@@ -3454,7 +3454,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6007504105610650467
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5091,7 +5091,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1.0.0
+  m_Text: N/A
 --- !u!1 &7114848466517767783
 GameObject:
   m_ObjectHideFlags: 0
