@@ -1216,7 +1216,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Areas that may adversely affect tracking quality will be highlighted
+  m_Text: Reverse the camera orientation, hands should come into the frame from the
+    bottom
 --- !u!1 &3836350545942988650
 GameObject:
   m_ObjectHideFlags: 0
