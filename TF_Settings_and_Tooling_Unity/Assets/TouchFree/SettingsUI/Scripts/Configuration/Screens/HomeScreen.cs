@@ -18,13 +18,12 @@ namespace Ultraleap.TouchFree.ServiceUI
         public GameObject overlayVisualsScreen;
         public GameObject advancedSettingsScreen;
 
-        public Text versionText;
-        string versionPath;
-
         private void Awake()
         {
-            versionPath = Path.Combine(Application.dataPath, "../Version.txt");
-            PopulateVersion();
+            if (DiagnosticAPIManager.diagnosticAPI == null)
+            {
+                DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
+            }
         }
 
         protected override void OnEnable()
@@ -57,25 +56,6 @@ namespace Ultraleap.TouchFree.ServiceUI
                     lastFrameServiceConnected = false;
                 }
             }
-        }
-
-        void PopulateVersion()
-        {
-            string version = "N/A";
-
-            if (File.Exists(versionPath))
-            {
-                var fileLines = File.ReadAllLines(versionPath);
-                foreach (var line in fileLines)
-                {
-                    if (line.Contains("TouchFree Service Version"))
-                    {
-                        version = line.Replace("TouchFree Service Version: ", "");
-                        break;
-                    }
-                }
-            }
-            versionText.text = "Version " + version;
         }
 
         public void ChangeToSetupCamera()

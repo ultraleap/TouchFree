@@ -34,8 +34,8 @@ public class CameraPreviewScreen : MonoBehaviour
             DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
         }
 
-        DiagnosticAPI.OnGetMaskingResponse += SetSliders;
-        DiagnosticAPI.OnMaskingVersionCheck += HandleMaskingVersionCheck;
+        DiagnosticAPI.OnGetMaskingResponse += HandleMaskingResponse;
+        DiagnosticAPI.OnTrackingApiVersionResponse += HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderR.onValueChanged.AddListener(OnSliderChanged);
@@ -43,16 +43,14 @@ public class CameraPreviewScreen : MonoBehaviour
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
-
-        HandleMaskingVersionCheck(DiagnosticAPIManager.maskingAvailable);
     }
 
     void OnDisable()
     {
         handsCameraObject.SetActive(false);
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
-        DiagnosticAPI.OnGetMaskingResponse -= SetSliders;
-        DiagnosticAPI.OnMaskingVersionCheck -= HandleMaskingVersionCheck;
+        DiagnosticAPI.OnGetMaskingResponse -= HandleMaskingResponse;
+        DiagnosticAPI.OnTrackingApiVersionResponse -= HandleMaskingVersionCheck;
 
         maskingSiderL.onValueChanged.RemoveListener(OnSliderChanged);
         maskingSiderR.onValueChanged.RemoveListener(OnSliderChanged);
@@ -69,13 +67,14 @@ public class CameraPreviewScreen : MonoBehaviour
         }
     }
 
-    public void HandleMaskingVersionCheck(bool _maskingAvailable)
+    public void HandleMaskingVersionCheck()
     {
-        maskingSiderL.gameObject.SetActive(_maskingAvailable);
-        maskingSiderR.gameObject.SetActive(_maskingAvailable);
-        maskingSiderT.gameObject.SetActive(_maskingAvailable);
-        maskingSiderB.gameObject.SetActive(_maskingAvailable);
-        maskingDiabledWarningObject.SetActive(!_maskingAvailable);
+        bool maskingAvailable = DiagnosticAPIManager.diagnosticAPI.maskingAllowed;
+        maskingSiderL.gameObject.SetActive(maskingAvailable);
+        maskingSiderR.gameObject.SetActive(maskingAvailable);
+        maskingSiderT.gameObject.SetActive(maskingAvailable);
+        maskingSiderB.gameObject.SetActive(maskingAvailable);
+        maskingDiabledWarningObject.SetActive(!maskingAvailable);
     }
 
     void OnOverExposureValueChanged(bool state)
@@ -104,6 +103,12 @@ public class CameraPreviewScreen : MonoBehaviour
             currentMaskRight,
             currentMaskTop,
             currentMaskBottom);
+    }
+
+    private void HandleMaskingResponse(float _left, float _right, float _top, float _bottom)
+    {
+        HandleMaskingVersionCheck();
+        SetSliders(_left, _right, _top, _bottom);
     }
 
     public void SetSliders(float _left, float _right, float _top, float _bottom)
