@@ -1,15 +1,22 @@
 #!/bin/sh
 
+TF_PIDFILE=/var/run/TouchFree_Service.pid
+TF_DAEMON="./TouchFree/TouchFree_Service"
+TRK_PIDFILE=/var/run/Ultraleap_Tracking_Service.pid
+TRK_DAEMON="./Tracking/bin/libtrack_server"
+
+cd $(dirname $(readlink -f $0))
+
 if [[ $1 == "start" ]]; then
-    echo "Running Tracking Service"
-    cd "Tracking/bin/"
-    export LD_LIBRARY_PATH=.
-    ./libtrack_server &
-    echo "Running TouchFree Service"
-    cd "../../TouchFree/"
-    export LD_LIBRARY_PATH=.
-    ./TouchFree_Service &
+    export LD_LIBRARY_PATH=./Tracking/bin/
+    start-stop-daemon --start \
+        --pidfile $TRK_PIDFILE --make-pidfile \
+        --background --exec $TRK_DAEMON
+    export LD_LIBRARY_PATH=./TouchFree
+    start-stop-daemon --start \
+        --pidfile $TF_PIDFILE --make-pidfile \
+        --background --exec $TF_DAEMON
 elif [[ $1 == "stop" ]]; then
-    killall libtrack_server
-    killall TouchFree_Service
+    start-stop-daemon --stop --exec $TRK_DAEMON --pidfile $TRK_PIDFILE
+    start-stop-daemon --stop --exec $TF_DAEMON --pidfile $TF_PIDFILE
 fi
