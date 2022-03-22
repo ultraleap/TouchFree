@@ -5589,8 +5589,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Allow the tracking service to broadcast images. This is necessary for the
-    masking visualisation.
+  m_Text: Allow the tracking service to broadcast images (necessary for Camera Feeds
+    and Masking)
 --- !u!1 &8041783783281812810
 GameObject:
   m_ObjectHideFlags: 0
