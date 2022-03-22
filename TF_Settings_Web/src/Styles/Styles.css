@@ -23,7 +23,7 @@ button.tfButton {
 
 button.tfButton:hover {
     box-shadow: none;
-    background-image: linear-gradient(180deg, #00EB86, #00CDCF), linear-gradient(180deg, #00EB86, #00CDCF);
+    background-image: linear-gradient(180deg, #00EB85, #00CCCE), linear-gradient(180deg, #00EB86, #00CDCF);
 }
 
 button.tabButton {

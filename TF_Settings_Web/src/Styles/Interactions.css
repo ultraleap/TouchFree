@@ -46,18 +46,23 @@ video.InteractionPreview {
 .verticalContainer {
     flex: 1 1 auto;
 
-    min-width: 33.5rem;
-    max-width: 33.5rem;
-
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     align-items: left;
 }
 
-.horizontalContainer {
-    margin-left: 1.5rem;
+.halfWidth {
+    min-width: 33.5rem;
+    max-width: 33.5rem;
+}
 
+.sideSpacing {
+    margin-left: 1.5rem;
+    user-select: none;
+}
+
+.horizontalContainer {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -65,17 +70,7 @@ video.InteractionPreview {
     justify-content: space-between;
 }
 
-input {
-    min-height: 2rem;
-    max-height: 3.5rem;
-    min-width: 2rem;
-    max-width: 3.5rem;
-
-    margin-left: 1rem;
-    margin-right: 1rem;
-}
-
-label {
+.backgroundLabel {
     text-align: left;
     font-size: 1.5rem;
     font-family: "Museo Sans", NowRegular, Arial;
@@ -88,8 +83,8 @@ label {
     margin: .75rem;
 
     box-shadow: 0 2px 10px 0 #00000099;
-    background-image: linear-gradient(180deg, #373737, #2C2C2C);
-    border: 0px;
+    background: transparent linear-gradient(180deg, #373737 0%, #2C2C2C 100%) 0% 0% no-repeat padding-box;
+    border: 1px solid #FFFFFF1A;
     border-radius: 0.5rem;
 
     min-height: 5rem;
