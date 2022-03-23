@@ -1,3 +1,4 @@
+"use strict";
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -13,7 +14,6 @@ return (self["webpackChunktouchfree_tooling_for_web"] = self["webpackChunktouchf
 /***/ 356:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Ray = void 0;
@@ -99,7 +99,6 @@ exports.Ray = Ray;
 /***/ 862:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SnappableElement = void 0;
@@ -137,7 +136,6 @@ exports.SnappableElement = SnappableElement;
 /***/ 901:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SnappingPlugin = exports.SnapMode = void 0;
@@ -160,7 +158,7 @@ class SnappingPlugin extends InputActionPlugin_1.InputActionPlugin {
         var _a;
         const cursorPos = {
             x: _inputAction.CursorPosition[0],
-            y: window.innerHeight - _inputAction.CursorPosition[1]
+            y: _inputAction.CursorPosition[1]
         };
         // Build a list of snappable elements
         let elements = [...document.getElementsByClassName("snappable")].map((value, index, array) => {
@@ -188,12 +186,12 @@ class SnappingPlugin extends InputActionPlugin_1.InputActionPlugin {
                         y: this.lerp(elements[0].center.y, cursorPos.y, softSnapT),
                     };
                     _inputAction.CursorPosition[0] = finalPos.x;
-                    _inputAction.CursorPosition[1] = (window.innerHeight - finalPos.y);
+                    _inputAction.CursorPosition[1] = finalPos.y;
                 }
                 else {
                     if (!elements[0].hovered) {
                         _inputAction.CursorPosition[0] = elements[0].closest_point.x;
-                        _inputAction.CursorPosition[1] = (window.innerHeight - elements[0].closest_point.y);
+                        _inputAction.CursorPosition[1] = elements[0].closest_point.y;
                     }
                 }
             }
@@ -226,7 +224,6 @@ SnappingPlugin.MIN_SOFTNESS = 0;
 /***/ 161:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Vector2 = void 0;
@@ -249,8 +246,6 @@ exports.Vector2 = Vector2;
 
 },
 /******/ __webpack_require__ => { // webpackRuntimeModules
-/******/ "use strict";
-/******/ 
 /******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
 /******/ var __webpack_exports__ = (__webpack_exec__(901));
 /******/ return __webpack_exports__;

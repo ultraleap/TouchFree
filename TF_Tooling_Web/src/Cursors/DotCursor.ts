@@ -74,7 +74,7 @@ export class DotCursor extends TouchlessCursor {
         this.cursorRing.style.height = this.cursor.clientHeight * ringScaler + "px";
 
         this.cursorRing.style.left = (_inputAction.CursorPosition[0] - (this.cursorRing.clientWidth / 2)) + "px";
-        this.cursorRing.style.top = (window.innerHeight - (_inputAction.CursorPosition[1] + (this.cursorRing.clientHeight / 2))) + "px";
+        this.cursorRing.style.top = (_inputAction.CursorPosition[1] - (this.cursorRing.clientHeight / 2)) + "px";
 
         super.UpdateCursor(_inputAction);
     }
