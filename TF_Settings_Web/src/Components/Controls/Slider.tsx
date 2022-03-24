@@ -10,16 +10,21 @@ interface SliderProps {
     rightLabel: string,
     value: number,
     onChange: ChangeEventHandler<HTMLInputElement>
+    increment?: number,
 }
 
 export class Slider extends React.Component<SliderProps, {}> {
+    public static defaultProps = {
+        increment: 0.1
+    };
+
     render() {
         return(
             <label className="backgroundLabel">
                 <p className="sliderLabel">{this.props.name}</p>
                 <div className="sliderContainer">
                     <input type="range"
-                        step={0.05}
+                        step={this.props.increment}
                         min={this.props.rangeMin}
                         max={this.props.rangeMax}
                         className="slider"
