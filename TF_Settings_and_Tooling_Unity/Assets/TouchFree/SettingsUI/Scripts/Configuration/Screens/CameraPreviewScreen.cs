@@ -27,8 +27,8 @@ public class CameraPreviewScreen : MonoBehaviour
 
     void OnEnable()
     {
-        Camera.main.gameObject.GetComponent<Leap.Unity.LeapImageRetriever>().enabled = false;
-        Camera.main.gameObject.GetComponent<Leap.Unity.LeapImageRetriever>().enabled = true;
+        leapImageRetriever.enabled = false;
+        leapImageRetriever.enabled = true;
         leapImageRetriever.Reconstruct();
         if (DiagnosticAPIManager.diagnosticAPI.allowImages.HasValue && DiagnosticAPIManager.diagnosticAPI.allowImages.Value)
         {
@@ -53,6 +53,7 @@ public class CameraPreviewScreen : MonoBehaviour
         maskingSiderT.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
+        DiagnosticAPIManager.diagnosticAPI.GetDevices();
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
         DiagnosticAPIManager.diagnosticAPI.GetCameraOrientation();
     }

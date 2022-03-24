@@ -222,7 +222,7 @@ public class DiagnosticAPI : IDisposable
             case "SetAnalyticsEnabled":
             case "SetCameraOrientation":
             case "SetAllowImages":
-                // No current use for this
+                // We are expecting responses from these requests but do not need to consume them
                 break;
             default:
                 Debug.Log("DiagnosticAPI - Could not parse response of type: " + response.type + " with message: " + _message);
@@ -346,6 +346,8 @@ public class DiagnosticAPI : IDisposable
         status = Status.Expired;
         webSocket.Close();
     }
+
+    #region "Diagnostic API Messages"
 
     [Serializable]
     class DiagnosticApiRequest
@@ -558,4 +560,6 @@ public class DiagnosticAPI : IDisposable
         public uint device_id;
         public string camera_orientation;
     }
+
+    #endregion
 }
