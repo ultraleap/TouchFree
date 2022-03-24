@@ -1,4 +1,4 @@
-import { InteractionConfigFull, TouchPlaneInteractionSettings, TrackedPosition } from "../../TouchFree/Configuration/ConfigurationTypes";
+import { InteractionConfigFull, TrackedPosition } from "../../TouchFree/Configuration/ConfigurationTypes";
 import { ConfigurationManager } from "../../TouchFree/Configuration/ConfigurationManager";
 import { ConfigState, WebSocketResponse } from "../../TouchFree/Connection/TouchFreeServiceTypes";
 

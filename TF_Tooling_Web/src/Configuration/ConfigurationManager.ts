@@ -1,14 +1,12 @@
 import {
     InteractionConfig,
     PhysicalConfig,
-    HoverAndHoldInteractionSettings
 } from "./ConfigurationTypes";
 import {
     ActionCode,
     CommunicationWrapper,
     ConfigState,
     PartialConfigState,
-    ResponseCallback,
     WebSocketResponse
 } from '../Connection/TouchFreeServiceTypes';
 import { ConnectionManager } from '../Connection/ConnectionManager';

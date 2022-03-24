@@ -221,7 +221,7 @@ export class MessageReceiver {
             let converted: TouchFreeInputAction = ConvertInputAction(action);
 
             //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
-            if (converted.InputType != InputType.UP) {
+            if (converted.InputType !== InputType.UP) {
                 this.lastKnownCursorPosition = Array.from(converted.CursorPosition);
             }
             else {
@@ -231,7 +231,7 @@ export class MessageReceiver {
             InputActionManager.HandleInputAction(converted);
         }
 
-        if (this.lastStateUpdate != HandPresenceState.PROCESSED) {
+        if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
             ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
             this.lastStateUpdate = HandPresenceState.PROCESSED;
         }

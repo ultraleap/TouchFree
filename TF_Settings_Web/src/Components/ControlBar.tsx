@@ -1,5 +1,4 @@
 import React from "react";
-import { CSSProperties } from "react";
 
 import { StatusIndicator } from './StatusIndicator';
 import { ScreenManager } from "./ScreenManager";
