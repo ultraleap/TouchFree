@@ -18,16 +18,25 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     internal enum ActionCode
     {
         INPUT_ACTION,
+
         CONFIGURATION_STATE,
         CONFIGURATION_RESPONSE,
         SET_CONFIGURATION_STATE,
         REQUEST_CONFIGURATION_STATE,
+
         VERSION_HANDSHAKE,
         VERSION_HANDSHAKE_RESPONSE,
+
         HAND_PRESENCE_EVENT,
+
         REQUEST_SERVICE_STATUS,
         SERVICE_STATUS_RESPONSE,
-        SERVICE_STATUS
+        SERVICE_STATUS,
+
+        REQUEST_CONFIGURATION_FILE,
+        CONFIGURATION_FILE_STATE,
+        SET_CONFIGURATION_FILE,
+        CONFIGURATION_FILE_RESPONSE,
     }
 
     // Enum: HandPresenceState

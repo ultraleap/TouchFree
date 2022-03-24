@@ -75,9 +75,9 @@ namespace Ultraleap.TouchFree.Library.Configuration
             this.InteractionMinDistanceMm = fromFile.InteractionMinDistanceCm * 10f;
             this.InteractionMaxDistanceMm = fromFile.InteractionMaxDistanceCm * 10f;
 
-            this.UseScrollingOrDragging = fromFile.UseScrollingOrDragging;
             this.DeadzoneRadiusMm = fromFile.DeadzoneRadius * 1000;
 
+            this.UseScrollingOrDragging = fromFile.UseScrollingOrDragging;
             this.InteractionZoneEnabled = fromFile.InteractionZoneEnabled;
 
             this.InteractionType = fromFile.InteractionType;

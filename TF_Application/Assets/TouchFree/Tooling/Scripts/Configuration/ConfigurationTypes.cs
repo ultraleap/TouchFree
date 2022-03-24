@@ -68,6 +68,75 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             }
         }
 
+        // Property: interactionZoneEnabled
+        // Changes whether the Interaction Zone values will be used
+        public bool interactionZoneEnabled
+        {
+            get
+            {
+                return InteractionZoneEnabled;
+            }
+            set
+            {
+                if (configValues.ContainsKey("InteractionZoneEnabled"))
+                {
+                    configValues["InteractionZoneEnabled"] = value;
+                }
+                else
+                {
+                    configValues.Add("InteractionZoneEnabled", value);
+                }
+
+                InteractionZoneEnabled = value;
+            }
+        }
+
+        // Property: interactionMinDistanceCm
+        // The minimum distance from the screen that users can interact within
+        public float interactionMinDistanceCm
+        {
+            get
+            {
+                return InteractionMinDistanceCm;
+            }
+            set
+            {
+                if (configValues.ContainsKey("InteractionMinDistanceCm"))
+                {
+                    configValues["InteractionMinDistanceCm"] = value;
+                }
+                else
+                {
+                    configValues.Add("InteractionMinDistanceCm", value);
+                }
+
+                InteractionMinDistanceCm = value;
+            }
+        }
+
+        // Property: interactionMaxDistanceCm
+        // The maximum distance from the screen that users can interact within
+        public float interactionMaxDistanceCm
+        {
+            get
+            {
+                return InteractionMaxDistanceCm;
+            }
+            set
+            {
+                if (configValues.ContainsKey("InteractionMaxDistanceCm"))
+                {
+                    configValues["InteractionMaxDistanceCm"] = value;
+                }
+                else
+                {
+                    configValues.Add("InteractionMaxDistanceCm", value);
+                }
+
+                InteractionMaxDistanceCm = value;
+            }
+        }
+
         // Property: interactionType
         // This represents the type of interaction currently selected
         public InteractionType interactionType
@@ -103,6 +172,9 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
         [SerializeField] private bool UseScrollingOrDragging;
         [SerializeField] private float DeadzoneRadius;
+        [SerializeField] private bool InteractionZoneEnabled;
+        [SerializeField] private float InteractionMinDistanceCm;
+        [SerializeField] private float InteractionMaxDistanceCm;
         [SerializeField] private InteractionType InteractionType;
     }
 
@@ -215,27 +287,26 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             }
         }
 
-        // Property: touchPlaneStartDistanceCM
-        // This determines how far (in cm) from the TouchPlane that the interaction will begin to progress.
-        // The progress can be used to show a cursor that shows users how close they are to the TouchPlane.
-        public float touchPlaneStartDistanceCM
+        // Property: touchPlaneTrackedPosition
+        // This determines which bone position will be tracked when performing the interaction.
+        public TrackedPosition touchPlaneTrackedPosition
         {
             get
             {
-                return TouchPlaneStartDistanceCM;
+                return TouchPlaneTrackedPosition;
             }
             set
             {
-                if (configValues.ContainsKey("TouchPlaneStartDistanceCM"))
+                if (configValues.ContainsKey("TouchPlaneTrackedPosition"))
                 {
-                    configValues["TouchPlaneStartDistanceCM"] = value;
+                    configValues["TouchPlaneTrackedPosition"] = value;
                 }
                 else
                 {
-                    configValues.Add("TouchPlaneStartDistanceCM", value);
+                    configValues.Add("TouchPlaneTrackedPosition", value);
                 }
 
-                TouchPlaneStartDistanceCM = value;
+                TouchPlaneTrackedPosition = value;
             }
         }
 
@@ -247,7 +318,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
 
         [SerializeField] private float TouchPlaneActivationDistanceCM;
-        [SerializeField] private float TouchPlaneStartDistanceCM;
+        [SerializeField] private TrackedPosition TouchPlaneTrackedPosition;
     }
 
     // Class: PhysicalConfig
@@ -371,5 +442,19 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
         [SerializeField] private Vector3 LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
         [SerializeField] private Vector3 LeapRotationD = Vector3.zero;
         [SerializeField] private float ScreenRotationD = 0f;
+    }
+
+    // Enum: TrackedPosition
+    // INDEX_STABLE - Towards the screen from the proximal knuckle position of the index finger 
+    // INDEX_TIP - The index finger tip position
+    // WRIST - The wrist position
+    // NEAREST - The nearest bone to the screen
+    [System.Serializable]
+    public enum TrackedPosition
+    {
+        INDEX_STABLE,
+        INDEX_TIP,
+        WRIST,
+        NEAREST
     }
 }

@@ -51,9 +51,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendHandPresenceEvent(HandPresenceEvent _response)
         {
             CommunicationWrapper<HandPresenceEvent> message =
-                new CommunicationWrapper<HandPresenceEvent>(
-                    ActionCode.HAND_PRESENCE_EVENT.ToString(),
-                    _response);
+                new CommunicationWrapper<HandPresenceEvent>( ActionCode.HAND_PRESENCE_EVENT.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -63,9 +61,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendHandshakeResponse(ResponseToClient _response)
         {
             CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(
-                    ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(),
-                    _response);
+                new CommunicationWrapper<ResponseToClient>(ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -82,6 +78,16 @@ namespace Ultraleap.TouchFree.Service.Connection
             Send(jsonMessage);
         }
 
+        public void SendConfigFileChangeResponse(ResponseToClient _response)
+        {
+            CommunicationWrapper<ResponseToClient> message =
+                new CommunicationWrapper<ResponseToClient>(ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE.ToString(), _response);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
         public void SendConfigState(ConfigState _configState)
         {
             CommunicationWrapper<ConfigState> message =
@@ -92,13 +98,14 @@ namespace Ultraleap.TouchFree.Service.Connection
             Send(jsonMessage);
         }
 
-        private void Send(string message)
+        public void SendConfigFile(ConfigState _configState)
         {
-            socket.SendAsync(
-                Encoding.UTF8.GetBytes(message),
-                WebSocketMessageType.Text,
-                true,
-                CancellationToken.None);
+            CommunicationWrapper<ConfigState> message =
+                new CommunicationWrapper<ConfigState>(ActionCode.CONFIGURATION_FILE_STATE.ToString(), _configState);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
         }
 
         public void SendStatusResponse(ResponseToClient _response)
@@ -119,6 +126,15 @@ namespace Ultraleap.TouchFree.Service.Connection
             string jsonMessage = JsonConvert.SerializeObject(message);
 
             Send(jsonMessage);
+        }
+
+        private void Send(string message)
+        {
+            socket.SendAsync(
+                Encoding.UTF8.GetBytes(message),
+                WebSocketMessageType.Text,
+                true,
+                CancellationToken.None);
         }
 
         private void SendInitialHandState()
@@ -174,20 +190,36 @@ namespace Ultraleap.TouchFree.Service.Connection
                 return;
             }
 
+            // We don't handle after-the-fact Handshake Requests here. We may wish to
+            // if / when we anticipate externals building their own Tooling clients.
+
             switch (action)
             {
                 case ActionCode.SET_CONFIGURATION_STATE:
                     receiver.configChangeQueue.Enqueue(content);
                     break;
-                case ActionCode.REQUEST_SERVICE_STATUS:
-                    receiver.requestServiceStatusQueue.Enqueue(content);
-                    break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
                     receiver.configStateRequestQueue.Enqueue(content);
                     break;
+                case ActionCode.REQUEST_SERVICE_STATUS:
+                    receiver.requestServiceStatusQueue.Enqueue(content);
+                    break;
+                case ActionCode.SET_CONFIGURATION_FILE:
+                    receiver.configFileChangeQueue.Enqueue(content);
+                    break;
+                case ActionCode.REQUEST_CONFIGURATION_FILE:
+                    receiver.configFileRequestQueue.Enqueue(content);
+                    break;
+
                 case ActionCode.INPUT_ACTION:
                 case ActionCode.CONFIGURATION_STATE:
                 case ActionCode.CONFIGURATION_RESPONSE:
+                case ActionCode.VERSION_HANDSHAKE_RESPONSE:
+                case ActionCode.HAND_PRESENCE_EVENT:
+                case ActionCode.SERVICE_STATUS_RESPONSE:
+                case ActionCode.SERVICE_STATUS:
+                case ActionCode.CONFIGURATION_FILE_STATE:
+                case ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE:
                     Console.Error.WriteLine("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:

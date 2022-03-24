@@ -97,3 +97,4 @@ Testing/ServiceSocketTests/results/**
 
 !/TF_Service_dotNet/**/*.csproj
 !/TF_Service_dotNet/**/*.sln
+!/TF_Service_dotNet/**/launchSettings.json

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using UnityEngine;
+using System;
 
 namespace Ultraleap.TouchFree.Tooling.Connection
 {
@@ -74,23 +75,23 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Unity's update function. Checks all queues for messages to handle.
         void Update()
         {
-            CheckForResponse();
-            CheckForConfigState();
-            CheckForServiceStatus();
+            CheckQueue<WebSocketResponse>(responseQueue, HandleResponse);
+            CheckQueue<ConfigState>(configStateQueue, HandleConfigState);
+
             CheckForAction();
         }
 
-        // Function: CheckForResponse
-        // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to <HandleResponse> if there is one.
-        void CheckForResponse()
+        // Function: CheckQueue
+        // Checks a provided <ConcurrentQueue> for a <T> item & executes a provided <handler> with it.
+        // Used in <Update> to cover several queue systems.
+        void CheckQueue<T>(ConcurrentQueue<T> queue, Action<T> handler)
         {
-            WebSocketResponse response;
+            T queueItem;
 
-            if (responseQueue.TryPeek(out response))
+            if (queue.TryPeek(out queueItem))
             {
-                // Parse newly received messages
-                responseQueue.TryDequeue(out response);
-                HandleResponse(response);
+                queue.TryDequeue(out queueItem);
+                handler.Invoke(queueItem);
             }
         }
 
@@ -115,20 +116,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 "\n Original request - " + _response.originalRequest);
         }
 
-        // Function: CheckForConfigState
-        // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleConfigState> if there is one.
-        void CheckForConfigState()
-        {
-            ConfigState configState;
-
-            if (configStateQueue.TryPeek(out configState))
-            {
-                // Parse newly received messages
-                configStateQueue.TryDequeue(out configState);
-                HandleConfigState(configState);
-            }
-        }
-
         // Function: HandleConfigState
         // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
         // match, calls the callback action in the matching <ConfigStateCallback>.
@@ -142,20 +129,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     configStateCallbacks.Remove(callback.Key);
                     break;
                 }
-            }
-        }
-
-        // Function: CheckForServiceStatus
-        // Used to check the <serviceStatusQueue> for a <ServiceStatus>. Sends it to <HandleServiceStatus> if there is one.
-        void CheckForServiceStatus()
-        {
-            ServiceStatus serviceStatus;
-
-            if (serviceStatusQueue.TryPeek(out serviceStatus))
-            {
-                // Parse newly received messages
-                serviceStatusQueue.TryDequeue(out serviceStatus);
-                HandleServiceStatus(serviceStatus);
             }
         }
 
