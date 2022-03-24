@@ -2307,6 +2307,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5898236633391820984}
     m_Modifications:
+    - target: {fileID: 1050801407411402531, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -51.000244
+      objectReference: {fileID: 0}
+    - target: {fileID: 1050801407834595107, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30.02533
+      objectReference: {fileID: 0}
     - target: {fileID: 1050801409045883431, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2352,6 +2362,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2236490374530006350, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -7.999878
+      objectReference: {fileID: 0}
     - target: {fileID: 3583977272332702842, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2371,6 +2386,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386619895323746095, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -8.0008545
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386619896264297197, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -3.6065674
       objectReference: {fileID: 0}
     - target: {fileID: 4541549585632794220, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
@@ -2492,11 +2517,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6391408716743117184, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -7.999878
+      objectReference: {fileID: 0}
+    - target: {fileID: 6671760981836861544, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -7.999878
+      objectReference: {fileID: 0}
     - target: {fileID: 7125972924714312439, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: handsCameraObject
       value: 
       objectReference: {fileID: 2093597948}
+    - target: {fileID: 7125972924714312439, guid: dc0e884672fe42e49b02672301208def,
+        type: 3}
+      propertyPath: leapImageRetriever
+      value: 
+      objectReference: {fileID: 169355410}
     - target: {fileID: 7364053366511253776, guid: dc0e884672fe42e49b02672301208def,
         type: 3}
       propertyPath: m_AnchorMax.y

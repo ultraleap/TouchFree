@@ -150,7 +150,7 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private void HandleAllowImagesCheck()
         {
-            AllowImagesToggle.isOn = DiagnosticAPIManager.diagnosticAPI.allowImages;
+            AllowImagesToggle.isOn = DiagnosticAPIManager.diagnosticAPI.allowImages ?? false;
         }
     }
 }

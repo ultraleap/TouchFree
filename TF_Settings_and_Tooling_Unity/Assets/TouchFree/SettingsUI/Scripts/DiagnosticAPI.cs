@@ -29,7 +29,7 @@ public class DiagnosticAPI : IDisposable
     public string connectedDeviceSerial;
     public bool maskingAllowed = false;
     public bool cameraReversed = false;
-    public bool allowImages = false;
+    public bool? allowImages;
     public Version version { get; private set; }
     public string trackingServiceVersion { get; private set; }
 

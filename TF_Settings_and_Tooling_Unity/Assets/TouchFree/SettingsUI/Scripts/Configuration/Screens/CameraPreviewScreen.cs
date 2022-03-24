@@ -8,6 +8,7 @@ public class CameraPreviewScreen : MonoBehaviour
     public Material leftCameraMat;
     public Material rightCameraMat;
     public Toggle cameraReversedToggle;
+    public Leap.Unity.LeapImageRetriever leapImageRetriever;
 
     [SerializeField]
     private float exposureThresholdValue = 0.5f;
@@ -26,6 +27,13 @@ public class CameraPreviewScreen : MonoBehaviour
 
     void OnEnable()
     {
+        Camera.main.gameObject.GetComponent<Leap.Unity.LeapImageRetriever>().enabled = false;
+        Camera.main.gameObject.GetComponent<Leap.Unity.LeapImageRetriever>().enabled = true;
+        leapImageRetriever.Reconstruct();
+        if (DiagnosticAPIManager.diagnosticAPI.allowImages.HasValue && DiagnosticAPIManager.diagnosticAPI.allowImages.Value)
+        {
+            Leap.Unity.LeapImageRetriever.EyeTextureData.ResetGlobalShaderValues();
+        }
         handsCameraObject.SetActive(true);
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
         cameraReversedToggle.onValueChanged.AddListener(OnCameraReversedChanged);
