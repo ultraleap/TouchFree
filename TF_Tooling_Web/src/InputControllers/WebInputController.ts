@@ -30,7 +30,7 @@ export class WebInputController extends BaseInputController {
 
     // Function: constructor
     // Sets up the basic event properties for all events transmitted from this InputController.
-    protected constructor() {
+    constructor() {
         super();
 
         this.baseEventProps = {

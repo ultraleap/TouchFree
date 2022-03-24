@@ -1,3 +1,5 @@
+import { InteractionType } from "../TouchFreeToolingTypes";
+
 // Class: InteractionConfig
 // This class is a container for all of the settings related to the interactions being processed
 // by the TouchFree Service. The settings at the root of this object will affect all
@@ -9,9 +11,6 @@
 //
 // Like all of the Settings classes found in this file, all members are optional. If you do
 // not modify a member of this class, its value will not change when the instance is sent to
-
-import { InteractionType } from "../TouchFreeToolingTypes";
-
 // TouchFree Service.
 export interface InteractionConfig {
     // Property: UseScrollingOrDragging
@@ -45,6 +44,27 @@ export interface InteractionConfig {
     // Interaction-specific settings
     HoverAndHold: Partial<HoverAndHoldInteractionSettings>;
     TouchPlane: Partial<TouchPlaneInteractionSettings>;
+}
+
+// Class: InteractionConfig
+// This class is duplicate of <InteractionConfigPartial> without the Interactions data being optional
+// This form of <InteractionConfigPartial> is used in the <ConfigState> object returned when requsting
+// the current state of the Service's config or its config files.
+export interface InteractionConfigFull {
+    UseScrollingOrDragging: boolean;
+
+    DeadzoneRadius: number;
+
+    InteractionZoneEnabled: boolean;
+
+    InteractionMinDistanceCm: number;
+
+    InteractionMaxDistanceCm: number;
+
+    InteractionType: InteractionType;
+
+    HoverAndHold: HoverAndHoldInteractionSettings;
+    TouchPlane: TouchPlaneInteractionSettings;
 }
 
 // Class: HoverAndHoldInteractionSettings
@@ -128,7 +148,7 @@ export interface PhysicalConfig {
 }
 
 // Enum: TrackedPosition
-// INDEX_STABLE - Towards the screen from the proximal knuckle position of the index finger 
+// INDEX_STABLE - Towards the screen from the proximal knuckle position of the index finger
 // INDEX_TIP - The index finger tip position
 // WRIST - The wrist position
 // NEAREST - The nearest bone to the screen

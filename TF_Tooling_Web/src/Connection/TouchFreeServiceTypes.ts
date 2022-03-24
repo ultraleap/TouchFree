@@ -1,4 +1,5 @@
 import {
+    InteractionConfigFull,
     InteractionConfig,
     PhysicalConfig
 } from '../Configuration/ConfigurationTypes';
@@ -46,8 +47,7 @@ export enum ActionCode {
 // HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
 // PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
 //             use in <MessageReciever> for more details.
-export enum HandPresenceState
-{
+export enum HandPresenceState {
     HAND_FOUND,
     HANDS_LOST,
     PROCESSED,
@@ -63,23 +63,19 @@ export enum Compatibility {
     TOOLING_OUTDATED
 }
 
-export class HandPresenceEvent
-{
+export class HandPresenceEvent {
     state: HandPresenceState;
 
-    constructor(_state: HandPresenceState)
-    {
+    constructor(_state: HandPresenceState) {
         this.state = _state;
     }
 }
 
-// Class: ConfigState
-// This data structure is used in both sending and receiving configuration data.
+// Class: PartialConfigState
+// This data structure is used to send requests for changes to configuration or to configuration files.
 //
-// When sending a configuration to the Service the structure can comprise of either partial or complete objects.
-//
-// When receiving a configuration from the Service this structure contains ALL configuration data
-export class ConfigState {
+// When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
+export class PartialConfigState {
     // Variable: requestID
     requestID: string;
     // Variable: interaction
@@ -87,7 +83,27 @@ export class ConfigState {
     // Variable: physical
     physical: Partial<PhysicalConfig> | null;
 
-    constructor(_id: string, _interaction: Partial<InteractionConfig> | null, _physical: Partial<PhysicalConfig> | null){
+    constructor(_id: string, _interaction: Partial<InteractionConfig> | null, _physical: Partial<PhysicalConfig> | null) {
+        this.requestID = _id;
+        this.interaction = _interaction;
+        this.physical = _physical;
+    }
+}
+
+// Class: ConfigState
+// This data structure is used when receiving configuration data representing the state of the service
+// or its config files.
+//
+// When receiving a configuration from the Service this structure contains ALL configuration data
+export class ConfigState {
+    // Variable: requestID
+    requestID: string;
+    // Variable: interaction
+    interaction: InteractionConfigFull;
+    // Variable: physical
+    physical: PhysicalConfig;
+
+    constructor(_id: string, _interaction: InteractionConfigFull, _physical: PhysicalConfig) {
         this.requestID = _id;
         this.interaction = _interaction;
         this.physical = _physical;
@@ -136,7 +152,7 @@ export class ServiceStatus {
     // Variable: configurationState
     configurationState: ConfigurationState | null;
 
-    constructor(_id: string, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null){
+    constructor(_id: string, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null) {
         this.requestID = _id;
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
