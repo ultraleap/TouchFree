@@ -7,11 +7,12 @@ import {
     ActionCode,
     CommunicationWrapper,
     ConfigState,
+    PartialConfigState,
     ResponseCallback,
     WebSocketResponse
 } from '../Connection/TouchFreeServiceTypes';
 import { ConnectionManager } from '../Connection/ConnectionManager';
-import { Guid } from "guid-typescript";
+import { v4 as uuidgen } from 'uuid';
 
 // Class: ConfigurationManager
 // This class provides a method for changing the configuration of the TouchFree
@@ -33,9 +34,9 @@ export class ConfigurationManager {
         _callback: (detail: WebSocketResponse) => void): void {
 
         let action = ActionCode.SET_CONFIGURATION_STATE;
-        let requestID = Guid.create().toString();
+        let requestID = uuidgen();
 
-        let content = new ConfigState(requestID, _interaction, _physical);
+        let content = new PartialConfigState(requestID, _interaction, _physical);
         let request = new CommunicationWrapper(action, content);
 
         let jsonContent = JSON.stringify(request);
@@ -75,9 +76,9 @@ export class ConfigurationManager {
         _callback: (detail: WebSocketResponse) => void): void {
 
         let action = ActionCode.SET_CONFIGURATION_FILE;
-        let requestID = Guid.create().toString();
+        let requestID = uuidgen();
 
-        let content = new ConfigState(requestID, _interaction, _physical);
+        let content = new PartialConfigState(requestID, _interaction, _physical);
         let request = new CommunicationWrapper(action, content);
 
         let jsonContent = JSON.stringify(request);
