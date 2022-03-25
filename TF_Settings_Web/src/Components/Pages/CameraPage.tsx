@@ -9,6 +9,12 @@ import { ConfigState, WebSocketResponse } from "../../TouchFree/Connection/Touch
 import { ConnectionManager } from "../../TouchFree/Connection/ConnectionManager";
 
 interface physicalState {
+    screenHeight: number;
+    cameraHeight: number;
+    cameraLeftToRight: number;
+    screenTilt: number;
+    cameraRotation: number;
+    cameraDistanceFromScreen: number;
     physicalConfig: PhysicalConfig;
     selectedView: string;
 };
@@ -18,20 +24,13 @@ export class CameraPage extends Page<{}, physicalState> {
         super(props);
 
         let state: physicalState = {
-            physicalConfig: {
-                LeapPositionRelativeToScreenBottomM: {
-                    X:0,
-                    Y:0,
-                    Z:0
-                }, 
-                LeapRotationD: {
-                    X:0,
-                    Y:0,
-                    Z:0
-                }, 
-                ScreenHeightM: 0, 
-                ScreenRotationD: 0
-            },
+            screenHeight: 0,
+            cameraHeight: 0,
+            cameraLeftToRight: 0,
+            screenTilt: 0,
+            cameraRotation: 0,
+            cameraDistanceFromScreen: 0,
+            physicalConfig: {LeapPositionRelativeToScreenBottomM:{X:0,Y:0,Z:0}, LeapRotationD:{X:0,Y:0,Z:0}, ScreenHeightM:0, ScreenRotationD:0},
             selectedView: "screenHeight"
         };
 
@@ -50,16 +49,13 @@ export class CameraPage extends Page<{}, physicalState> {
 
     setStateFromFile(config: ConfigState): void {
         this.setState(() => ({
-            physicalConfig: {
-                LeapPositionRelativeToScreenBottomM: {
-                    X: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
-                    Y: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
-                    Z: this.roundToFiveDecimals(-config.physical.LeapPositionRelativeToScreenBottomM.Z * 100)
-                },
-                LeapRotationD: config.physical.LeapRotationD,
-                ScreenHeightM: this.roundToFiveDecimals(config.physical.ScreenHeightM * 100),
-                ScreenRotationD: config.physical.ScreenRotationD
-            }
+            screenHeight: this.roundToFiveDecimals(config.physical.ScreenHeightM * 100),
+            cameraHeight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
+            cameraLeftToRight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Z * 100),
+            cameraDistanceFromScreen: this.roundToFiveDecimals(-config.physical.LeapPositionRelativeToScreenBottomM.Z * 100),
+            cameraRotation: config.physical.LeapRotationD.X,
+            physicalConfig: config.physical,
+            screenTilt: config.physical.ScreenRotationD
         }));
     }
 
@@ -71,14 +67,18 @@ export class CameraPage extends Page<{}, physicalState> {
         if (this.state !== null &&
             this.state !== prevState) {
             let physicalConfigState: PhysicalConfig = {
+                ...this.state.physicalConfig,
                 LeapPositionRelativeToScreenBottomM: {
-                    X: this.state.physicalConfig.LeapPositionRelativeToScreenBottomM.X / 100,
-                    Y: this.state.physicalConfig.LeapPositionRelativeToScreenBottomM.Y / 100,
-                    Z: -this.state.physicalConfig.LeapPositionRelativeToScreenBottomM.Z / 100
+                    X: this.state.cameraLeftToRight / 100,
+                    Y: this.state.cameraHeight / 100,
+                    Z: -this.state.cameraDistanceFromScreen / 100
                 },
-                LeapRotationD: this.state.physicalConfig.LeapRotationD,
-                ScreenHeightM: this.state.physicalConfig.ScreenHeightM / 100,
-                ScreenRotationD: this.state.physicalConfig.ScreenRotationD
+                LeapRotationD: {
+                    ...this.state.physicalConfig.LeapRotationD,
+                    X: this.state.cameraRotation
+                },
+                ScreenHeightM: this.state.screenHeight / 100,
+                ScreenRotationD: this.state.screenTilt
             }
             ConfigurationManager.RequestConfigFileChange(null, physicalConfigState, this.configChangeCbHandler.bind(this));
         }
@@ -92,57 +92,33 @@ export class CameraPage extends Page<{}, physicalState> {
 
 
     onScreenHeightChanged(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.physicalConfig;
-
-        newConf.ScreenHeightM = parseFloat(e.currentTarget.value);
-
         this.setState(() => ({
-            physicalConfig: newConf
+            screenHeight: parseFloat(e.currentTarget.value)
         }));
     }
     onCameraHeightChanged(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.physicalConfig;
-
-        newConf.LeapPositionRelativeToScreenBottomM.Y = parseFloat(e.currentTarget.value);
-
         this.setState(() => ({
-            physicalConfig: newConf
+            cameraHeight: parseFloat(e.currentTarget.value)
         }));
     }
     onCameraLeftToRightChanged(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.physicalConfig;
-
-        newConf.LeapPositionRelativeToScreenBottomM.X = parseFloat(e.currentTarget.value);
-
         this.setState(() => ({
-            physicalConfig: newConf
+            cameraLeftToRight: parseFloat(e.currentTarget.value)
         }));
     }
     onScreenTiltChanged(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.physicalConfig;
-
-        newConf.ScreenRotationD = parseFloat(e.currentTarget.value);
-
         this.setState(() => ({
-            physicalConfig: newConf
+            screenTilt: parseFloat(e.currentTarget.value)
         }));
     }
     onCameraRotationChanged(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.physicalConfig;
-
-        newConf.LeapRotationD.X = parseFloat(e.currentTarget.value);
-
         this.setState(() => ({
-            physicalConfig: newConf
+            cameraRotation: parseFloat(e.currentTarget.value)
         }));
     }
     onCameraDistanceFromScreenChanged(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.physicalConfig;
-
-        newConf.LeapPositionRelativeToScreenBottomM.Z = parseFloat(e.currentTarget.value);
-
         this.setState(() => ({
-            physicalConfig: newConf
+            cameraDistanceFromScreen: parseFloat(e.currentTarget.value)
         }));
     }
 
@@ -180,44 +156,43 @@ export class CameraPage extends Page<{}, physicalState> {
                 <div className="horizontalContainer sideSpacing">
                     <div className="verticalContainer">
                         <TextEntry name="Screen Height (cm)"
-                                    value={this.state.physicalConfig.ScreenHeightM}
+                                    value={this.state.screenHeight}
                                     onChange={this.onScreenHeightChanged.bind(this)}
                                     onClick={this.onScreenHeightClicked.bind(this)}
                                     onPointerDown={this.onScreenHeightClicked.bind(this)}
                                     selected={this.state.selectedView === "screenHeight"}/>
                         <TextEntry name="Camera Height (cm)"
-                                    value={this.state.physicalConfig.LeapPositionRelativeToScreenBottomM.Y}
+                                    value={this.state.cameraHeight}
                                     onChange={this.onCameraHeightChanged.bind(this)}
                                     onClick={this.onCameraHeightClicked.bind(this)}
                                     onPointerDown={this.onCameraHeightClicked.bind(this)}
                                     selected={this.state.selectedView === "cameraHeight"}/>
                         <TextEntry name="Camera Left to Right (cm)"
-                                    value={this.state.physicalConfig.LeapPositionRelativeToScreenBottomM.X}
+                                    value={this.state.cameraLeftToRight}
                                     onChange={this.onCameraLeftToRightChanged.bind(this)}
                                     onClick={this.onCameraLeftToRightClicked.bind(this)}
                                     onPointerDown={this.onCameraLeftToRightClicked.bind(this)}
                                     selected={this.state.selectedView === "cameraLeftToRight"}/>
                         <div className="cameraPageDivider"></div>
                         <TextEntry name="Screen Tilt (degrees)"
-                                    value={this.state.physicalConfig.ScreenRotationD}
+                                    value={this.state.screenTilt}
                                     onChange={this.onScreenTiltChanged.bind(this)}
                                     onClick={this.onScreenTiltClicked.bind(this)}
                                     onPointerDown={this.onScreenTiltClicked.bind(this)}
                                     selected={this.state.selectedView === "screenTilt"}/>
                         <TextEntry name="Camera Rotation (degrees)"
-                                    value={this.state.physicalConfig.LeapRotationD.X}
+                                    value={this.state.cameraRotation}
                                     onChange={this.onCameraRotationChanged.bind(this)}
                                     onClick={this.onCameraRotationClicked.bind(this)}
                                     onPointerDown={this.onCameraRotationClicked.bind(this)}
                                     selected={this.state.selectedView === "cameraRotation"}/>
                         <TextEntry name="Camera Distance from Screen (cm)"
-                                    value={this.state.physicalConfig.LeapPositionRelativeToScreenBottomM.Z}
+                                    value={this.state.cameraDistanceFromScreen}
                                     onChange={this.onCameraDistanceFromScreenChanged.bind(this)}
                                     onClick={this.onCameraDistanceFromScreenClicked.bind(this)}
                                     onPointerDown={this.onCameraDistanceFromScreenClicked.bind(this)}
                                     selected={this.state.selectedView === "cameraDistanceFromScreen"}/>
                     </div>
-
 
                     <div className="verticalContainer">
                         <div className="screenFrontWrapper">
