@@ -5,6 +5,7 @@ import '../../Styles/Controls/TextEntry.css';
 interface TextEntryProps {
     name: string,
     value: number,
+    selected: boolean,
     onChange: (ChangeEventHandler<HTMLInputElement>),
     onClick: (MouseEventHandler<HTMLElement>),
     onPointerDown: (PointerEventHandler<HTMLElement>)
@@ -13,7 +14,7 @@ interface TextEntryProps {
 export class TextEntry extends React.Component<TextEntryProps, {}> {
     render() {
         return(
-            <label onClick={this.props.onClick.bind(this)} onPointerDown={this.props.onPointerDown.bind(this)} className="backgroundLabel">
+            <label onClick={this.props.onClick.bind(this)} onPointerDown={this.props.onPointerDown.bind(this)} className={"textEntryBackgroundLabel " + (this.props.selected ? "textEntryBackgroundLabelSelected" : "")}>
                 <p className="textEntryLabel">{this.props.name}</p>
                 <label className="textEntryContainer">
                     <input type="number"

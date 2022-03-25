@@ -39,7 +39,7 @@ export class CameraPage extends Page<{}, phyiscalState> {
                 screenWidthPX: 507,
                 screenHeightPX: 285
             },
-            selectedView: ""
+            selectedView: "screenHeight"
         };
 
         this.state = state;
@@ -84,23 +84,44 @@ export class CameraPage extends Page<{}, phyiscalState> {
                 </div>
 
                 <div className="horizontalContainer sideSpacing">
-
                     <div className="verticalContainer">
                         <TextEntry name="Screen Height (cm)"
-                                                value={this.state.physicalConfig.screenHeightM}
-                                                onChange={this.onScreenHeightChanged.bind(this)}
-                                                onClick={this.onScreenHeightClicked.bind(this)}
-                                                onPointerDown={this.onScreenHeightClicked.bind(this)}/>
+                                    value={this.state.physicalConfig.screenHeightM}
+                                    onChange={this.onScreenHeightChanged.bind(this)}
+                                    onClick={this.onScreenHeightClicked.bind(this)}
+                                    onPointerDown={this.onScreenHeightClicked.bind(this)}
+                                    selected={this.state.selectedView === "screenHeight"}/>
                         <TextEntry name="Camera Height (cm)"
-                                                value={this.state.physicalConfig.leapPositionRelativeToScreenBottomM.y}
-                                                onChange={this.onCameraHeightChanged.bind(this)}
-                                                onClick={this.onCameraHeightClicked.bind(this)}
-                                                onPointerDown={this.onCameraHeightClicked.bind(this)}/>
+                                    value={this.state.physicalConfig.leapPositionRelativeToScreenBottomM.y}
+                                    onChange={this.onCameraHeightChanged.bind(this)}
+                                    onClick={this.onCameraHeightClicked.bind(this)}
+                                    onPointerDown={this.onCameraHeightClicked.bind(this)}
+                                    selected={this.state.selectedView === "cameraHeight"}/>
                         <TextEntry name="Camera Left to Right (cm)"
-                                                value={this.state.physicalConfig.leapPositionRelativeToScreenBottomM.x}
-                                                onChange={this.onCameraLeftToRightChanged.bind(this)}
-                                                onClick={this.onCameraLeftToRightClicked.bind(this)}
-                                                onPointerDown={this.onCameraLeftToRightClicked.bind(this)}/>
+                                    value={this.state.physicalConfig.leapPositionRelativeToScreenBottomM.x}
+                                    onChange={this.onCameraLeftToRightChanged.bind(this)}
+                                    onClick={this.onCameraLeftToRightClicked.bind(this)}
+                                    onPointerDown={this.onCameraLeftToRightClicked.bind(this)}
+                                    selected={this.state.selectedView === "cameraLeftToRight"}/>
+                                    
+                        <TextEntry name="Screen Tilt (degrees)"
+                                    value={this.state.physicalConfig.screenRotationD}
+                                    onChange={this.onScreenHeightChanged.bind(this)}
+                                    onClick={this.onScreenTiltClicked.bind(this)}
+                                    onPointerDown={this.onScreenTiltClicked.bind(this)}
+                                    selected={this.state.selectedView === "screenTilt"}/>
+                        <TextEntry name="Camera Rotation (degrees)"
+                                    value={this.state.physicalConfig.leapRotationD.x}
+                                    onChange={this.onCameraHeightChanged.bind(this)}
+                                    onClick={this.onCameraRotationClicked.bind(this)}
+                                    onPointerDown={this.onCameraRotationClicked.bind(this)}
+                                    selected={this.state.selectedView === "cameraRotation"}/>
+                        <TextEntry name="Camera Distance from Screen (cm)"
+                                    value={this.state.physicalConfig.leapPositionRelativeToScreenBottomM.z}
+                                    onChange={this.onCameraLeftToRightChanged.bind(this)}
+                                    onClick={this.onCameraDistanceFromScreenClicked.bind(this)}
+                                    onPointerDown={this.onCameraDistanceFromScreenClicked.bind(this)}
+                                    selected={this.state.selectedView === "cameraDistanceFromScreen"}/>
                     </div>
 
 
@@ -118,31 +139,7 @@ export class CameraPage extends Page<{}, phyiscalState> {
                                 <div className="screenFrontBottomLine"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className="horizontalContainer sideSpacing">
-
-                    <div className="verticalContainer">
-                        <TextEntry name="Screen Tilt (degrees)"
-                                                value={this.state.physicalConfig.screenRotationD}
-                                                onChange={this.onScreenHeightChanged.bind(this)}
-                                                onClick={this.onScreenTiltClicked.bind(this)}
-                                                onPointerDown={this.onScreenTiltClicked.bind(this)}/>
-                        <TextEntry name="Camera Rotation (degrees)"
-                                                value={this.state.physicalConfig.leapRotationD.x}
-                                                onChange={this.onCameraHeightChanged.bind(this)}
-                                                onClick={this.onCameraRotationClicked.bind(this)}
-                                                onPointerDown={this.onCameraRotationClicked.bind(this)}/>
-                        <TextEntry name="Camera Distance from Screen (cm)"
-                                                value={this.state.physicalConfig.leapPositionRelativeToScreenBottomM.z}
-                                                onChange={this.onCameraLeftToRightChanged.bind(this)}
-                                                onClick={this.onCameraDistanceFromScreenClicked.bind(this)}
-                                                onPointerDown={this.onCameraDistanceFromScreenClicked.bind(this)}/>
-                    </div>
-
-
-                    <div className="verticalContainer">
                         <div className="screenSideWrapper">
                             <div className="screenSideMock">
                                 <div className="screenSideCamera">
