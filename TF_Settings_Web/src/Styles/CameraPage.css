@@ -16,6 +16,18 @@
     margin-left: -550px;
 }
 
+.screenFrontLabel {
+    top: 638px;
+    left: 624px;
+    width: 337px;
+    height: 24px;
+
+    text-align: center;
+    color: #FFFFFF;
+    position: absolute;
+    opacity: 0.5;
+}
+
 .screenFrontOutside {
     top: 284px;
     left: 678px;
@@ -159,7 +171,19 @@
     height: 500px;
     position: relative;
     margin-top: -710px;
-    margin-left: -600px;
+    margin-left: -550px;
+}
+
+.screenSideLabel {
+    top: 1119px;
+    left: 624px;
+    width: 337px;
+    height: 24px;
+    
+    text-align: center;
+    color: #FFFFFF;
+    position: absolute;
+    opacity: 0.5;
 }
 
 .screenSideOutside {

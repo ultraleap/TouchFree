@@ -206,6 +206,7 @@ export class CameraPage extends Page<{}, physicalState> {
                                 <div className="screenFrontCenterLineVert"></div>
                                 <div className="screenFrontTopLine"></div>
                                 <div className="screenFrontBottomLine"></div>
+                                <p className="screenFrontLabel">Front View</p>
                             </div>
                         </div>
 
@@ -222,6 +223,7 @@ export class CameraPage extends Page<{}, physicalState> {
                                 <div className="screenSideTopLine"></div>
                                 <div className="screenSideBottomLine"></div>
                                 <div className="screenSideTiltBox"></div>
+                                <p className="screenSideLabel">Side View</p>
                             </div>
                         </div>
                     </div>
