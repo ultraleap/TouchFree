@@ -23,7 +23,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         long previousTime = 0;
 
-        Axis lockAxisToOnly = Axis.Y;
+        Axis lockAxisToOnly = Axis.NONE;
 
         public VelocitySwipeInteraction(
             HandManager _handManager,
