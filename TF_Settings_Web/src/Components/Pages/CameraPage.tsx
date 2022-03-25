@@ -152,6 +152,7 @@ export class CameraPage extends Page<{}, phyiscalState> {
                                 <div className="screenSideOutside"></div>
                                 <div className="screenSideInside"></div>
                                 <div className="screenSideCenterLineVert"></div>
+                                <div className="screenSideExtraLineVert"></div>
                                 <div className="screenSideTopLine"></div>
                                 <div className="screenSideBottomLine"></div>
                                 <div className="screenSideTiltBox"></div>

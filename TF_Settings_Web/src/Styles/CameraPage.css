@@ -1,13 +1,14 @@
 .screenFrontWrapper, .screenSideWrapper {
     width: 450px;
     height: 500px;
+    overflow: hidden;
 }
 
 .screenFrontMock {
     width: 450px;
     height: 500px;
     position: relative;
-    margin-top: -260px;
+    margin-top: -210px;
     margin-left: -550px;
 }
 
@@ -87,6 +88,16 @@
     display: none;
 }
 
+.cameraDistanceFromScreen .screenFrontCenterLineVert {
+    top: 598px;
+    left: 718px;
+    width: 20px;
+    height: 20px;
+
+    border: 3px solid #00EB85;
+    border-radius: 20px;
+}
+
 .screenFrontTopLine {
     top: 296px;
     left: 652px;
@@ -117,7 +128,8 @@
 }
 
 .screenTilt .screenFrontTopLine,
-.cameraRotation .screenFrontTopLine {
+.cameraRotation .screenFrontTopLine,
+.cameraDistanceFromScreen .screenFrontTopLine {
     display: none;
 }
 
@@ -133,7 +145,8 @@
 
 .cameraLeftToRight .screenFrontBottomLine,
 .screenTilt .screenFrontBottomLine,
-.cameraRotation .screenFrontBottomLine {
+.cameraRotation .screenFrontBottomLine,
+.cameraDistanceFromScreen .screenFrontBottomLine {
     display: none;
 }
 
@@ -141,7 +154,7 @@
     width: 450px;
     height: 500px;
     position: relative;
-    margin-top: -760px;
+    margin-top: -710px;
     margin-left: -600px;
 }
 
@@ -223,6 +236,25 @@
     transform: rotate(15deg);
 }
 
+.cameraDistanceFromScreen .screenSideCenterLineVert {
+    top: 750px;
+    left: 890px;
+    width: 0px;
+    height: 348px;
+
+    border-left: 3px solid #00EB85;
+}
+
+.cameraDistanceFromScreen .screenSideExtraLineVert {
+    top: 1077px;
+    left: 810px;
+    width: 0px;
+    height: 21px;
+
+    border-left: 3px solid #00EB85;
+    position: absolute;
+}
+
 .screenSideTopLine {
     top: 775px;
     left: 814px;
@@ -241,7 +273,8 @@
 
 .cameraLeftToRight .screenSideTopLine,
 .screenTilt .screenSideTopLine,
-.cameraRotation .screenSideTopLine {
+.cameraRotation .screenSideTopLine,
+.cameraDistanceFromScreen .screenSideTopLine {
     display: none;
 }
 
@@ -264,6 +297,14 @@
 .screenTilt .screenSideBottomLine,
 .cameraRotation .screenSideBottomLine {
     display: none;
+}
+
+.cameraDistanceFromScreen .screenSideBottomLine {
+    top: 1086px;
+    left: 816px;
+    width: 70px;
+
+    border-top: 4px dotted #00EB85;
 }
 
 .screenSideCamera {
