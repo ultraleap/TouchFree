@@ -3,12 +3,16 @@
 // Is the place where the active screen/tab is controlled
 
 import React, { Component, CSSProperties, RefObject } from "react";
+import { ConnectionManager } from "../TouchFree/Connection/ConnectionManager";
+import { BaseInputController } from "../TouchFree/InputControllers/BaseInputController";
+import { WebInputController } from "../TouchFree/InputControllers/WebInputController";
+
 import { ControlBar } from "./ControlBar";
 import { CursorManager } from "./CursorManager";
 import { CameraPage } from "./Pages/CameraPage";
 import { InteractionsPage } from "./Pages/InteractionsPage";
 
-const TouchFree = window.TouchFree;
+// const TouchFree = window.TouchFree;
 
 interface ScreenManagerState {
     atTopLevel: boolean,
@@ -34,17 +38,15 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     private cursorParent: RefObject<HTMLDivElement>;
 
     // TouchFree objects
-    private inputSystem: any;
-    private connectionManager: any;
+    private inputSystem: BaseInputController;
 
     constructor(props: {}) {
         super(props);
 
         this.timerID = -1;
 
-        TouchFree.Connection.ConnectionManager.init();
-        this.inputSystem = new TouchFree.InputControllers.WebInputController();
-        this.connectionManager = TouchFree.Connection.ConnectionManager;
+        ConnectionManager.init();
+        this.inputSystem = new WebInputController();
 
         this.cursorManager = new CursorManager();
         this.cursorParent = React.createRef();
@@ -89,7 +91,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     }
 
     private RequestStatus(): void {
-        this.connectionManager.RequestServiceStatus(this.UpdateStatus.bind(this));
+        ConnectionManager.RequestServiceStatus(this.UpdateStatus.bind(this));
     }
 
     private UpdateStatus(detail: any) {
