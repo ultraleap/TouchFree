@@ -37,7 +37,7 @@ print("Downloading Artifacts from GitLab")
 
 TrackingProject = gl.projects.get(455)
 
-ArtefactJob = TrackingProject.jobs.get(497207)
+ArtefactJob = TrackingProject.jobs.get(540830)
 
 with open(trackingZip, "wb") as picklerFile:
 	ArtefactJob.artifacts(streamed=True, action=picklerFile.write)
