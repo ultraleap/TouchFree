@@ -12,6 +12,7 @@ namespace Ultraleap.TouchFree.Service
         private readonly GrabInteraction grab;
         private readonly HoverAndHoldInteraction hoverAndHold;
         private readonly TouchPlanePushInteraction touchPlane;
+        private readonly VelocitySwipeInteraction velocitySwipe;
 
         private InteractionType lastInteraction;
 
@@ -25,6 +26,7 @@ namespace Ultraleap.TouchFree.Service
             GrabInteraction _grab,
             HoverAndHoldInteraction _hoverAndHold,
             TouchPlanePushInteraction _touchPlane,
+            VelocitySwipeInteraction _velocitySwipe,
             IConfigManager _configManager)
         {
             updateBehaviour = _updateBehaviour;
@@ -34,6 +36,7 @@ namespace Ultraleap.TouchFree.Service
             grab = _grab;
             hoverAndHold = _hoverAndHold;
             touchPlane = _touchPlane;
+            velocitySwipe = _velocitySwipe;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
@@ -45,7 +48,8 @@ namespace Ultraleap.TouchFree.Service
             switch(lastInteraction)
             {
                 case InteractionType.TOUCHPLANE:
-                    DisableInteraction(touchPlane);
+                    //DisableInteraction(touchPlane);
+                    DisableInteraction(velocitySwipe);
                     break;
 
                 case InteractionType.PUSH:
@@ -64,7 +68,8 @@ namespace Ultraleap.TouchFree.Service
             switch(_config.InteractionType)
             {
                 case InteractionType.TOUCHPLANE:
-                    EnableInteraction(touchPlane);
+                    //EnableInteraction(touchPlane);
+                    EnableInteraction(velocitySwipe);
                     break;
 
                 case InteractionType.PUSH:

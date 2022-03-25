@@ -66,6 +66,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<GrabInteraction>();
             services.AddSingleton<HoverAndHoldInteraction>();
             services.AddSingleton<TouchPlanePushInteraction>();
+            services.AddSingleton<VelocitySwipeInteraction>();
 
             return services;
         }
