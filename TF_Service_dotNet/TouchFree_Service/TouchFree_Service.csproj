@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>link</TrimMode>
 		<TargetFramework>net5.0</TargetFramework>
 		<RootNamespace>TouchFree_Service</RootNamespace>
 		<AssemblyName>TouchFree_Service</AssemblyName>
