@@ -150,6 +150,7 @@ TF_Service::dotNet::Windows::build:
       }
     - mkdir ./Service_dotNet_Build
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/win-x64/publish/*" ./Service_dotNet_Build
+    
 
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -178,6 +179,10 @@ TF_Service::dotNet::ARMLinux::build:
       }
     - mkdir ./Service_dotNet_Build_ARMLinux
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/publish/*" ./Service_dotNet_Build_ARMLinux
+
+    - mkdir ./Service_dotNet_Build_ARMLinux/ThirdParty
+    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
+    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Newtonsoft.JSON.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
