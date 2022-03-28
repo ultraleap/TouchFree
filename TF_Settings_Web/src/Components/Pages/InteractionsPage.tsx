@@ -1,4 +1,4 @@
-import { InteractionConfig, InteractionConfigFull, TrackedPosition } from "../../TouchFree/Configuration/ConfigurationTypes";
+import { InteractionConfigFull, TrackedPosition } from "../../TouchFree/Configuration/ConfigurationTypes";
 import { ConfigurationManager } from "../../TouchFree/Configuration/ConfigurationManager";
 import { ConfigState, WebSocketResponse } from "../../TouchFree/Connection/TouchFreeServiceTypes";
 import { InteractionType } from "../../TouchFree/TouchFreeToolingTypes";
@@ -57,9 +57,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     setStateFromFile(config: ConfigState): void {
-        this.setState(() => ({
+        this.setState({
             interactionConfig: config.interaction
-        }));
+        });
     }
 
     // Radio Control Logic
@@ -68,14 +68,16 @@ export class InteractionsPage extends Page<{}, interactionsState> {
             console.error(`Could not change interaction type; did not recognise the "${e.currentTarget.value}" interaction`);
         }
 
-        let newConf: InteractionConfigFull = {
-            ...this.state.interactionConfig,
-            InteractionType: InteractionTranslator[e.currentTarget.value]
-        };
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                InteractionType: InteractionTranslator[e.currentTarget.value]
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     onTrackingPosChange(e: React.FormEvent<HTMLInputElement>): void {
@@ -83,107 +85,124 @@ export class InteractionsPage extends Page<{}, interactionsState> {
             console.error(`Could not Touch Plane tracking target type; did not recognise "${e.currentTarget.value}"`);
         }
 
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = state.interactionConfig;
 
-        newConf.TouchPlane.TouchPlaneTrackedPosition = TouchPlaneTrackingOptions[e.currentTarget.value];
+            newConf.TouchPlane.TouchPlaneTrackedPosition = TouchPlaneTrackingOptions[e.currentTarget.value];
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     // Toggle Control Logic
     onScrollDragChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = {
-            ...this.state.interactionConfig,
-            UseScrollingOrDragging: e.currentTarget.checked
-        };
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                UseScrollingOrDragging: e.currentTarget.checked
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     interactionZoneToggled(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = {
-            ...this.state.interactionConfig,
-            InteractionZoneEnabled: e.currentTarget.checked
-        };
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                InteractionZoneEnabled: e.currentTarget.checked
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     // Slider Control Logic
     onCursorMovementChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = {
-            ...this.state.interactionConfig,
-            DeadzoneRadius: parseFloat(e.currentTarget.value)
-        };
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                DeadzoneRadius: parseFloat(e.currentTarget.value)
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     onTouchPlaneDistanceChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+        this.setState((state) => {
+            let newConf = state.interactionConfig;
 
-        newConf.TouchPlane.TouchPlaneActivationDistanceCM = parseFloat(e.currentTarget.value);
-
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            newConf.TouchPlane.TouchPlaneActivationDistanceCM = parseFloat(e.currentTarget.value);
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     onHoverStartTimeChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+        this.setState((state) => {
+            let newConf = state.interactionConfig;
 
-        newConf.HoverAndHold.HoverStartTimeS = parseFloat(e.currentTarget.value);
+            newConf.HoverAndHold.HoverStartTimeS = parseFloat(e.currentTarget.value);
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     onHoverCompleteTimeChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+        this.setState((state) => {
+            let newConf = state.interactionConfig;
 
-        newConf.HoverAndHold.HoverCompleteTimeS = parseFloat(e.currentTarget.value);
+            newConf.HoverAndHold.HoverCompleteTimeS = parseFloat(e.currentTarget.value);
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     onInteractionMinDistChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = {
-            ...this.state.interactionConfig,
-            InteractionMinDistanceCm: parseFloat(e.currentTarget.value)
-        };
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                InteractionMinDistanceCm: parseFloat(e.currentTarget.value)
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     onInteractionMaxDistChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull =
-        {
-            ...this.state.interactionConfig,
-            InteractionMaxDistanceCm: parseFloat(e.currentTarget.value)
-        };
+        this.setState((state) => {
+            let newConf: InteractionConfigFull =
+            {
+                ...state.interactionConfig,
+                InteractionMaxDistanceCm: parseFloat(e.currentTarget.value)
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     resetToDefaults(): void {
-        this.setState(() => ({
+        this.setState({
             interactionConfig: DefaultInteractionConfig
-        }));
+        });
     }
 
     render(): JSX.Element {
