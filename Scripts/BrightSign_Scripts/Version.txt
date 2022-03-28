@@ -1,0 +1,2 @@
+TouchFree Extension Version: 1.0.0-alpha1
+TouchFree Service Version: 2.3.0-alpha1

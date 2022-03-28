@@ -97,7 +97,7 @@ export class ConnectionManager extends EventTarget {
                 handPresenceEvent = new CustomEvent('HandsLost');
                 ConnectionManager.instance.dispatchEvent(handPresenceEvent);
                 ConnectionManager.instance.handEventTimeout = -1;
-            }, 1500);
+            }, 500);
         }
     }
 

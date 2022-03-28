@@ -10,7 +10,8 @@ variables:
 
   TF_TFU_VERSION: '1.0.0'
   TF_TFW_VERSION: '1.0.0'
-  TOUCHFREE_VERSION: '2.2.1'
+  TOUCHFREE_VERSION: '2.3.0-alpha1'
+  BS_EXTENSION_VERSION: '1.0.0-alpha1'
 
   TF_TOOLING_API_VERSION: '1.1.0'
 
@@ -544,6 +545,8 @@ TF_Service::ARMLinux::package:
     - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
     - cp -R $CI_PROJECT_DIR/TF_Settings_Web/build/* ./TouchFree_Extension/wwwroot
+    
+    - cp $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Version.txt ./TouchFree_Extension
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
