@@ -12,13 +12,18 @@ interface TextEntryProps {
 }
 
 export class TextEntry extends React.Component<TextEntryProps, {}> {
+    getClassName(): string {
+        return "textEntryBackgroundLabel " + (this.props.selected ? "textEntryBackgroundLabelSelected" : "");
+    }
+
     render() {
         return(
-            <label onClick={this.props.onClick.bind(this)} onPointerDown={this.props.onPointerDown.bind(this)} className={"textEntryBackgroundLabel " + (this.props.selected ? "textEntryBackgroundLabelSelected" : "")}>
+            <label onClick={this.props.onClick.bind(this)}
+                    onPointerDown={this.props.onPointerDown.bind(this)}
+                    className={this.getClassName()}>
                 <p className="textEntryLabel">{this.props.name}</p>
                 <label className="textEntryContainer">
                     <input type="number"
-                           step={0.01}
                            className="textEntryText"
                            value={this.props.value}
                            onChange={this.props.onChange.bind(this)}/>
