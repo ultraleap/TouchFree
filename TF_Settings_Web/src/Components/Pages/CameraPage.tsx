@@ -129,27 +129,27 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     onScreenHeightClicked(): void {
-        this.setState({ ...this.state, selectedView: "screenHeight" });
+        this.setState({ selectedView: "screenHeight" });
     }
 
     onCameraHeightClicked(): void {
-        this.setState({ ...this.state, selectedView: "cameraHeight" });
+        this.setState({ selectedView: "cameraHeight" });
     }
 
     onCameraLeftToRightClicked(): void {
-        this.setState({ ...this.state, selectedView: "cameraLeftToRight" });
+        this.setState({ selectedView: "cameraLeftToRight" });
     }
 
     onScreenTiltClicked(): void {
-        this.setState({ ...this.state, selectedView: "screenTilt" });
+        this.setState({ selectedView: "screenTilt" });
     }
 
     onCameraRotationClicked(): void {
-        this.setState({ ...this.state, selectedView: "cameraRotation" });
+        this.setState({ selectedView: "cameraRotation" });
     }
 
     onCameraDistanceFromScreenClicked(): void {
-        this.setState({ ...this.state, selectedView: "cameraDistanceFromScreen" });
+        this.setState({ selectedView: "cameraDistanceFromScreen" });
     }
 
     render() {
