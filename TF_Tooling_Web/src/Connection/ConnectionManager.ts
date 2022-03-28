@@ -89,10 +89,9 @@ export class ConnectionManager extends EventTarget {
         if (_state === HandPresenceState.HAND_FOUND) {
             if (ConnectionManager.instance.handEventTimeout !== -1) {
                 clearTimeout(ConnectionManager.instance.handEventTimeout);
-            } else {
-                handPresenceEvent = new CustomEvent('HandFound');
-                ConnectionManager.instance.dispatchEvent(handPresenceEvent);
-            }
+            } 
+            handPresenceEvent = new CustomEvent('HandFound');
+            ConnectionManager.instance.dispatchEvent(handPresenceEvent);
         } else {
             ConnectionManager.instance.handEventTimeout = window.setTimeout(() => {
                 handPresenceEvent = new CustomEvent('HandsLost');
