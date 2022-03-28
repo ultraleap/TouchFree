@@ -184,14 +184,16 @@ export class DotCursor extends TouchlessCursor {
     }
 
     private SetCursorSize(_newWidth: number, _newHeight: number, _cursorToChange: HTMLElement): void {
-        let cursorPosX = _cursorToChange.offsetLeft + (_cursorToChange.clientWidth / 2);
-        let cursorPosY = _cursorToChange.offsetTop + (_cursorToChange.clientHeight / 2);
+        let deltaX = Math.round((_cursorToChange.clientWidth - _newWidth) * 5) / 10;
+        let deltaY = Math.round((_cursorToChange.clientHeight - _newHeight) * 5) / 10;
+        let cursorPosX = _cursorToChange.offsetLeft + deltaX;
+        let cursorPosY = _cursorToChange.offsetTop + deltaY;
 
         _cursorToChange.style.width = _newWidth + "px";
-        _cursorToChange.style.left = (cursorPosX - (_newWidth / 2)) + "px";
+        _cursorToChange.style.left = cursorPosX + "px";
 
         _cursorToChange.style.height = _newHeight + "px";
-        _cursorToChange.style.top = (cursorPosY - (_newHeight / 2)) + "px";
+        _cursorToChange.style.top = cursorPosY + "px";
     }
 
     // Function: ShowCursor
