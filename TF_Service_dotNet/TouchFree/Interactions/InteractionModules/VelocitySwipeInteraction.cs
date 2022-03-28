@@ -24,6 +24,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         long previousTime = 0;
 
         Axis lockAxisToOnly = Axis.NONE;
+        bool allowBidirectional = true;
 
         public VelocitySwipeInteraction(
             HandManager _handManager,
@@ -125,10 +126,20 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return false;
             }
 
-            if(((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxReleaseVelocity_mmps) && lockAxisToOnly != Axis.Y) || 
-                ((_absPerp.Y > minScrollVelocity_mmps) && (_absPerp.X < maxReleaseVelocity_mmps) && lockAxisToOnly != Axis.X))
+            if (allowBidirectional)
             {
-                return true;
+                if (_absPerp.X > minScrollVelocity_mmps || _absPerp.Y > minScrollVelocity_mmps)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxReleaseVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
+                    ((_absPerp.Y > minScrollVelocity_mmps) && (_absPerp.X < maxReleaseVelocity_mmps) && lockAxisToOnly != Axis.X))
+                {
+                    return true;
+                }
             }
 
             return false;
