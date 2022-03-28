@@ -1,6 +1,7 @@
-import { InteractionConfigFull, TrackedPosition } from "../../TouchFree/Configuration/ConfigurationTypes";
+import { InteractionConfig, InteractionConfigFull, TrackedPosition } from "../../TouchFree/Configuration/ConfigurationTypes";
 import { ConfigurationManager } from "../../TouchFree/Configuration/ConfigurationManager";
 import { ConfigState, WebSocketResponse } from "../../TouchFree/Connection/TouchFreeServiceTypes";
+import { InteractionType } from "../../TouchFree/TouchFreeToolingTypes";
 
 import { Page } from "./Page";
 import { RadioGroup } from "../Controls/RadioGroup";
@@ -8,14 +9,13 @@ import { RadioLine } from "../Controls/RadioLine";
 import { ToggleSwitch } from "../Controls/ToggleSwitch";
 import { Slider } from "../Controls/Slider";
 import { TextSlider } from "../Controls/TextSlider";
+import { DefaultInteractionConfig } from "../SettingsTypes";
 
 import '../../Styles/Interactions.css';
 
 import AirPushPreview from '../../Videos/AirPush_Preview.webm';
 import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
 import HoverPreview from '../../Videos/Hover_Preview.webm';
-
-import { InteractionType } from "../../TouchFree/TouchFreeToolingTypes";
 
 const InteractionTranslator: Record<string, InteractionType> = {
     "AirPush": InteractionType.PUSH,
@@ -68,9 +68,10 @@ export class InteractionsPage extends Page<{}, interactionsState> {
             console.error(`Could not change interaction type; did not recognise the "${e.currentTarget.value}" interaction`);
         }
 
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
-
-        newConf.InteractionType = InteractionTranslator[e.currentTarget.value];
+        let newConf: InteractionConfigFull = {
+            ...this.state.interactionConfig,
+            InteractionType: InteractionTranslator[e.currentTarget.value]
+        };
 
         this.setState(() => ({
             interactionConfig: newConf
@@ -93,9 +94,10 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
     // Toggle Control Logic
     onScrollDragChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
-
-        newConf.UseScrollingOrDragging = e.currentTarget.checked;
+        let newConf: InteractionConfigFull = {
+            ...this.state.interactionConfig,
+            UseScrollingOrDragging: e.currentTarget.checked
+        };
 
         this.setState(() => ({
             interactionConfig: newConf
@@ -103,9 +105,10 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     interactionZoneToggled(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
-
-        newConf.InteractionZoneEnabled = e.currentTarget.checked;
+        let newConf: InteractionConfigFull = {
+            ...this.state.interactionConfig,
+            InteractionZoneEnabled: e.currentTarget.checked
+        };
 
         this.setState(() => ({
             interactionConfig: newConf
@@ -114,9 +117,10 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
     // Slider Control Logic
     onCursorMovementChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
-
-        newConf.DeadzoneRadius = parseFloat(e.currentTarget.value);
+        let newConf: InteractionConfigFull = {
+            ...this.state.interactionConfig,
+            DeadzoneRadius: parseFloat(e.currentTarget.value)
+        };
 
         this.setState(() => ({
             interactionConfig: newConf
@@ -154,9 +158,10 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     onInteractionMinDistChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
-
-        newConf.InteractionMinDistanceCm = parseFloat(e.currentTarget.value);
+        let newConf: InteractionConfigFull = {
+            ...this.state.interactionConfig,
+            InteractionMinDistanceCm: parseFloat(e.currentTarget.value)
+        };
 
         this.setState(() => ({
             interactionConfig: newConf
@@ -164,9 +169,11 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     onInteractionMaxDistChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
-
-        newConf.InteractionMaxDistanceCm = parseFloat(e.currentTarget.value);
+        let newConf: InteractionConfigFull =
+        {
+            ...this.state.interactionConfig,
+            InteractionMaxDistanceCm: parseFloat(e.currentTarget.value)
+        };
 
         this.setState(() => ({
             interactionConfig: newConf
@@ -174,8 +181,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     resetToDefaults(): void {
-        // ???????
-        // How to get an "Defaults?"
+        this.setState(() => ({
+            interactionConfig: DefaultInteractionConfig
+        }));
     }
 
     render(): JSX.Element {
