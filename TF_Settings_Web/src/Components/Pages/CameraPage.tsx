@@ -44,7 +44,7 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     setStateFromFile(config: ConfigState): void {
-        this.setState(() => ({
+        this.setState({
             screenHeight: this.roundToFiveDecimals(config.physical.ScreenHeightM * 100),
             cameraHeight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
             cameraLeftToRight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
@@ -52,7 +52,7 @@ export class CameraPage extends Page<{}, physicalState> {
             cameraRotation: config.physical.LeapRotationD.X,
             physicalConfig: config.physical,
             screenTilt: config.physical.ScreenRotationD
-        }));
+        });
     }
 
     roundToFiveDecimals(numberIn: number): number {
@@ -88,44 +88,32 @@ export class CameraPage extends Page<{}, physicalState> {
 
     onScreenHeightChanged(e: React.FormEvent<HTMLInputElement>): void {
         const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState(() => ({
-            screenHeight: value
-        }));
+        this.setState({ screenHeight: value });
     }
 
     onCameraHeightChanged(e: React.FormEvent<HTMLInputElement>): void {
         const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState(() => ({
-            cameraHeight: value
-        }));
+        this.setState({ cameraHeight: value });
     }
 
     onCameraLeftToRightChanged(e: React.FormEvent<HTMLInputElement>): void {
         const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState(() => ({
-            cameraLeftToRight: value
-        }));
+        this.setState({ cameraLeftToRight: value });
     }
 
     onScreenTiltChanged(e: React.FormEvent<HTMLInputElement>): void {
         const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState(() => ({
-            screenTilt: value
-        }));
+        this.setState({ screenTilt: value });
     }
 
     onCameraRotationChanged(e: React.FormEvent<HTMLInputElement>): void {
         const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState(() => ({
-            cameraRotation: value
-        }));
+        this.setState({ cameraRotation: value });
     }
 
     onCameraDistanceFromScreenChanged(e: React.FormEvent<HTMLInputElement>): void {
         const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState(() => ({
-            cameraDistanceFromScreen: value
-        }));
+        this.setState({ cameraDistanceFromScreen: value });
     }
 
     onScreenHeightClicked(): void {
