@@ -12,9 +12,11 @@ namespace Ultraleap.TouchFree.ServiceUI
         [Header("File Location")]
         public InputField fileLocation;
 
-        [Header("Analytics")]
+        [Header("Tracking Settings")]
         public Toggle EnableAnalyticsToggle;
+        public Toggle AllowImagesToggle;
 
+        [Header("About")]
         public Text versionText;
         public Text trackingVersionText;
         public Text cameraDeviceIdText;
@@ -40,14 +42,17 @@ namespace Ultraleap.TouchFree.ServiceUI
             DiagnosticAPI.OnGetAnalyticsEnabledResponse += HandleAnalyticsEnabledResponse;
 
             EnableAnalyticsToggle.onValueChanged.AddListener(OnAnalyticsToggled);
+            AllowImagesToggle.onValueChanged.AddListener(OnAllowImagesToggled);
 
             DiagnosticAPIManager.diagnosticAPI.GetAnalyticsMode();
+            DiagnosticAPIManager.diagnosticAPI.GetAllowImages();
 
             versionPath = Path.Combine(Application.dataPath, "../Version.txt");
             PopulateVersion();
 
             DiagnosticAPI.OnTrackingServerInfoResponse += HandleVersionCheck;
             DiagnosticAPI.OnTrackingDeviceInfoResponse += HandleDeviceCheck;
+            DiagnosticAPI.OnAllowImagesResponse += HandleAllowImagesCheck;
 
             DiagnosticAPIManager.diagnosticAPI.GetDeviceInfo();
 
@@ -64,8 +69,10 @@ namespace Ultraleap.TouchFree.ServiceUI
         protected virtual void OnDisable()
         {
             EnableAnalyticsToggle.onValueChanged.RemoveListener(OnAnalyticsToggled);
+            AllowImagesToggle.onValueChanged.RemoveListener(OnAllowImagesToggled);
             DiagnosticAPI.OnTrackingServerInfoResponse -= HandleVersionCheck;
             DiagnosticAPI.OnTrackingDeviceInfoResponse -= HandleDeviceCheck;
+            DiagnosticAPI.OnAllowImagesResponse -= HandleAllowImagesCheck;
         }
 
         public void SetFileLocation()
@@ -85,6 +92,11 @@ namespace Ultraleap.TouchFree.ServiceUI
         void OnAnalyticsToggled(bool _)
         {
             DiagnosticAPIManager.diagnosticAPI.SetAnalyticsMode(EnableAnalyticsToggle.isOn);
+        }
+
+        void OnAllowImagesToggled(bool _)
+        {
+            DiagnosticAPIManager.diagnosticAPI.SetAllowImages(AllowImagesToggle.isOn);
         }
 
         void HandleAnalyticsEnabledResponse(bool analyticsEnabled)
@@ -134,6 +146,11 @@ namespace Ultraleap.TouchFree.ServiceUI
                 firmwareVersion = "v" + firmwareVersion;
             }
             cameraDeviceFirmwareText.text = firmwareVersion;
+        }
+
+        private void HandleAllowImagesCheck()
+        {
+            AllowImagesToggle.isOn = DiagnosticAPIManager.diagnosticAPI.allowImages ?? false;
         }
     }
 }

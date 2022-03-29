@@ -20,12 +20,16 @@ public class DiagnosticAPI : IDisposable
     public static event Action OnTrackingApiVersionResponse;
     public static event Action OnTrackingServerInfoResponse;
     public static event Action OnTrackingDeviceInfoResponse;
+    public static event Action OnAllowImagesResponse;
+    public static event Action OnCameraOrientationResponse;
     public static event Action<bool> OnGetAnalyticsEnabledResponse;
 
     public uint connectedDeviceID;
     public string connectedDeviceFirmware;
     public string connectedDeviceSerial;
     public bool maskingAllowed = false;
+    public bool cameraReversed = false;
+    public bool? allowImages;
     public Version version { get; private set; }
     public string trackingServiceVersion { get; private set; }
 
@@ -191,8 +195,34 @@ public class DiagnosticAPI : IDisposable
                     Debug.Log("DiagnosticAPI - Could not parse device info response: " + _message);
                 }
                 break;
+            case "GetAllowImages":
+                try
+                {
+                    GetAllowImagesResponse data = JsonUtility.FromJson<GetAllowImagesResponse>(_message);
+                    allowImages = data?.payload ?? false;
+                    OnAllowImagesResponse?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse allow images response: " + _message);
+                }
+                break;
+            case "GetCameraOrientation":
+                try
+                {
+                    GetCameraOrientationResponse data = JsonUtility.FromJson<GetCameraOrientationResponse>(_message);
+                    cameraReversed = data?.payload.camera_orientation == "fixed-inverted";
+                    OnCameraOrientationResponse?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse camera orientation response: " + _message);
+                }
+                break;
             case "SetAnalyticsEnabled":
-                // No current use for this
+            case "SetCameraOrientation":
+            case "SetAllowImages":
+                // We are expecting responses from these requests but do not need to consume them
                 break;
             default:
                 Debug.Log("DiagnosticAPI - Could not parse response of type: " + response.type + " with message: " + _message);
@@ -279,8 +309,35 @@ public class DiagnosticAPI : IDisposable
 
     public void GetDeviceInfo()
     {
-        Request(new GetDeviceInfoRequest() { 
+        Request(new GetDeviceInfoRequest()
+        {
             payload = new DeviceIdPayload() { device_id = connectedDeviceID }
+        });
+    }
+
+    public void GetAllowImages()
+    {
+        Request(new GetAllowImagesRequest());
+    }
+
+    public void SetAllowImages(bool enabled)
+    {
+        Request(new SetAllowImagesRequest() { payload = enabled });
+    }
+
+    public void GetCameraOrientation()
+    {
+        Request(new GetCameraOrientationRequest()
+        {
+            payload = new DeviceIdPayload() { device_id = connectedDeviceID }
+        });
+    }
+
+    public void SetCameraOrientation(bool reverseOrientation)
+    {
+        Request(new SetCameraOrientationRequest()
+        {
+            payload = new CameraOrientationPayload() { device_id = connectedDeviceID, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" }
         });
     }
 
@@ -289,6 +346,8 @@ public class DiagnosticAPI : IDisposable
         status = Status.Expired;
         webSocket.Close();
     }
+
+    #region "Diagnostic API Messages"
 
     [Serializable]
     class DiagnosticApiRequest
@@ -413,7 +472,48 @@ public class DiagnosticAPI : IDisposable
         public GetServerInfoResponse() : base("GetServerInfo") { }
         public ServiceInfoPayload payload;
     }
-    
+
+    [Serializable]
+    class GetAllowImagesRequest : DiagnosticApiRequest
+    {
+        public GetAllowImagesRequest() : base("GetAllowImages") { }
+    }
+
+    [Serializable]
+    class GetAllowImagesResponse : DiagnosticApiResponse
+    {
+        public GetAllowImagesResponse() : base("GetAllowImages") { }
+        public bool payload;
+    }
+
+    [Serializable]
+    class SetAllowImagesRequest : DiagnosticApiRequest
+    {
+        public SetAllowImagesRequest() : base("SetAllowImages") { }
+        public bool payload;
+    }
+
+    [Serializable]
+    class GetCameraOrientationRequest : DiagnosticApiRequest
+    {
+        public GetCameraOrientationRequest() : base("GetCameraOrientation") { }
+        public DeviceIdPayload payload;
+    }
+
+    [Serializable]
+    class GetCameraOrientationResponse : DiagnosticApiResponse
+    {
+        public GetCameraOrientationResponse() : base("GetCameraOrientation") { }
+        public CameraOrientationPayload payload;
+    }
+
+    [Serializable]
+    class SetCameraOrientationRequest : DiagnosticApiRequest
+    {
+        public SetCameraOrientationRequest() : base("SetCameraOrientation") { }
+        public CameraOrientationPayload payload;
+    }
+
     [Serializable]
     struct DeviceIdPayload
     {
@@ -453,4 +553,13 @@ public class DiagnosticAPI : IDisposable
     {
         public string server_version;
     }
+
+    [Serializable]
+    struct CameraOrientationPayload
+    {
+        public uint device_id;
+        public string camera_orientation;
+    }
+
+    #endregion
 }
