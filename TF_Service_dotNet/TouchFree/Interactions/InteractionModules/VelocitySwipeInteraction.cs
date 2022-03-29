@@ -12,8 +12,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private Vector2 previousScreenPos = Vector2.Zero;
 
-        float minScrollVelocity_mmps = 700f;
-        float maxReleaseVelocity_mmps = 150f;
+        float minScrollVelocity_mmps = 500f;
+        float maxReleaseVelocity_mmps = 0f;
+
+        float maxOpposingVelocity_mmps = 150f;
 
         bool pressing = false;
         Direction currentDirection;
@@ -24,7 +26,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         long previousTime = 0;
 
         Axis lockAxisToOnly = Axis.NONE;
-        bool allowBidirectional = true;
+        bool allowBidirectional = false;
 
         public VelocitySwipeInteraction(
             HandManager _handManager,
@@ -135,8 +137,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
             else
             {
-                if (((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxReleaseVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
-                    ((_absPerp.Y > minScrollVelocity_mmps) && (_absPerp.X < maxReleaseVelocity_mmps) && lockAxisToOnly != Axis.X))
+                if (((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxOpposingVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
+                    ((_absPerp.Y > minScrollVelocity_mmps) && (_absPerp.X < maxOpposingVelocity_mmps) && lockAxisToOnly != Axis.X))
                 {
                     return true;
                 }
