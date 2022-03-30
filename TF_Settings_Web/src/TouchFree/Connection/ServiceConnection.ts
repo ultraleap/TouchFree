@@ -1,4 +1,5 @@
 import {
+    BitmaskFlags,
     VersionInfo,
     WebsocketInputAction
 } from '../TouchFreeToolingTypes';
@@ -90,17 +91,23 @@ export class ServiceConnection {
         }
     }
 
+
     // Function: OnMessage
     // The first point of contact for new messages received, these are sorted into appropriate
     // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
     // <MessageReceiver>.
     OnMessage(_message: MessageEvent): void {
         let looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
+        let TestFlag: BitmaskFlags = BitmaskFlags.PUSH ^ BitmaskFlags.RIGHT ^ BitmaskFlags.PRIMARY ^ BitmaskFlags.DOWN;
 
         switch (looseData.action as ActionCode) {
             case ActionCode.INPUT_ACTION:
                 let wsInput: WebsocketInputAction = looseData.content;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
+
+                if (wsInput.InteractionFlags === TestFlag) {
+                    console.log(`got a raw inputaction with flags ${wsInput.InteractionFlags} and timestamp ${wsInput.Timestamp}`);
+                }
                 break;
 
             case ActionCode.CONFIGURATION_STATE:

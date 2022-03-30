@@ -47,4 +47,11 @@ export abstract class BaseInputController {
                 break;
         }
     }
+
+    disconnect() {
+        InputActionManager.instance.removeEventListener('TransmitInputAction',
+            ((e: CustomEvent<TouchFreeInputAction>) => {
+                this.HandleInputAction(e.detail);
+            }) as EventListener);
+    }
 }

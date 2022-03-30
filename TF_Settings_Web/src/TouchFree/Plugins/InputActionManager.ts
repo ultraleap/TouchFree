@@ -1,4 +1,4 @@
-import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
+import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { InputActionPlugin } from "./InputActionPlugin";
 
 // Class: InputActionManager
@@ -67,6 +67,13 @@ export class InputActionManager extends EventTarget {
             { detail: action }
         );
 
-        InputActionManager.instance.dispatchEvent(inputActionEvent);
+        // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+        setTimeout(() => {
+            InputActionManager.instance.dispatchEvent(inputActionEvent);
+        }, 0);
+
+        if (_action.InputType === InputType.DOWN) {
+            console.log("Dispatched DOWN InputAction from InputActionManager")
+        }
     }
 }

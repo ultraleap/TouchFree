@@ -67,7 +67,6 @@ input[type=number] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    cursor: pointer;
 
     width: 1.5rem;
     height: 1.5rem;
@@ -78,8 +77,6 @@ input[type=number] {
 }
 
 .slider::-moz-range-thumb {
-    cursor: pointer;
-
     width: 1.5rem;
     height: 1.5rem;
 

@@ -3,6 +3,7 @@
 // Is the place where the active screen/tab is controlled
 
 import React, { Component, CSSProperties, RefObject } from "react";
+
 import { ConnectionManager } from "../TouchFree/Connection/ConnectionManager";
 import { BaseInputController } from "../TouchFree/InputControllers/BaseInputController";
 import { WebInputController } from "../TouchFree/InputControllers/WebInputController";
@@ -73,6 +74,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
 
     componentWillUnmount() {
         clearInterval(this.timerID);
+        this.inputSystem.disconnect();
     }
 
     public goToTopLevel(): void {

@@ -10,9 +10,6 @@ interface RadioProps {
 }
 
 export class RadioGroup extends React.Component<RadioProps, {}> {
-    // To get the value:
-    // document.querySelector('input[name = this.props.name]:checked').value;
-
     render() {
         return(
             <div className="verticalContainer halfWidth">

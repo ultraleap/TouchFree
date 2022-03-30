@@ -228,7 +228,15 @@ export class MessageReceiver {
                 converted.CursorPosition = Array.from(this.lastKnownCursorPosition);
             }
 
-            InputActionManager.HandleInputAction(converted);
+            // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+            setTimeout(() => {
+                InputActionManager.HandleInputAction(converted);
+            });
+
+            if (converted.InputType === InputType.DOWN)
+            {
+                console.log(`MessageReceiver acting on a DOWN with timestamp ${converted.Timestamp}`);
+            }
         }
 
         if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
