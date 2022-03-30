@@ -145,6 +145,14 @@ export interface PhysicalConfig {
     // The rotation of the physical screen relative to the unity world space, measured in
     // degrees
     ScreenRotationD: number;
+
+    // Property: ScreenWidthPX
+    // The width in pixels of the screen
+    ScreenWidthPX: number;
+
+    // Property: ScreenHeightPX
+    // The height in pixels of the screen
+    ScreenHeightPX: number;
 }
 
 // Class: Vector

@@ -30,7 +30,7 @@ export class CameraPage extends Page<{}, physicalState> {
             screenTilt: 0,
             cameraRotation: 0,
             cameraDistanceFromScreen: 0,
-            physicalConfig: { LeapPositionRelativeToScreenBottomM: { X: 0, Y: 0, Z: 0 }, LeapRotationD: { X: 0, Y: 0, Z: 0 }, ScreenHeightM: 0, ScreenRotationD: 0 },
+            physicalConfig: { LeapPositionRelativeToScreenBottomM: { X: 0, Y: 0, Z: 0 }, LeapRotationD: { X: 0, Y: 0, Z: 0 }, ScreenHeightM: 0, ScreenRotationD: 0, ScreenHeightPX: 0, ScreenWidthPX:0 },
             selectedView: "screenHeight"
         };
 
@@ -74,7 +74,9 @@ export class CameraPage extends Page<{}, physicalState> {
                     X: this.state.cameraRotation
                 },
                 ScreenHeightM: this.state.screenHeight / 100,
-                ScreenRotationD: this.state.screenTilt
+                ScreenRotationD: this.state.screenTilt,
+                ScreenHeightPX: window.screen.height * window.devicePixelRatio,
+                ScreenWidthPX: window.screen.width * window.devicePixelRatio
             }
             ConfigurationManager.RequestConfigFileChange(null, physicalConfigState, this.configChangeCbHandler.bind(this));
         }
