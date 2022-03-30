@@ -49,6 +49,16 @@ namespace Ultraleap.TouchFree.Tooling.InputControllers
         public override int touchCount => isTouching ? 1 : base.touchCount;
         public override Touch GetTouch(int index) => isTouching ? CheckForTouch(index) : base.GetTouch(index);
 
+        public override bool GetMouseButtonDown(int button)
+        {
+            if (base.GetMouseButtonDown(button))
+            {
+                HandleMouseMoved();
+            }
+
+            return base.GetMouseButtonDown(button);
+        }
+
         // Group: Methods
 
         // Function: Start
