@@ -32,6 +32,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public HoverAndHoldInteractionSettingsInternal HoverAndHold = new HoverAndHoldInteractionSettingsInternal();
         public TouchPlaneInteractionSettingsInternal TouchPlane = new TouchPlaneInteractionSettingsInternal();
 
+        public float minScrollVelocity_mmps = 500f;
+        public float maxReleaseVelocity_mmps = 0f;
+        public float maxOpposingVelocity_mmps = 150f;
+        public int lockAxisToOnly = 0;
+        public bool allowBidirectional = false;
+
         public InteractionConfig ForApi()
         {
             return new InteractionConfig()
@@ -68,7 +74,13 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             this.HoverAndHold = new HoverAndHoldInteractionSettingsInternal();
             this.TouchPlane = new TouchPlaneInteractionSettingsInternal();
-        }
+
+            minScrollVelocity_mmps = 500f;
+            maxReleaseVelocity_mmps = 0f;
+            maxOpposingVelocity_mmps = 150f;
+            lockAxisToOnly = 0;
+            allowBidirectional = false;
+    }
 
         public InteractionConfigInternal(InteractionConfig fromFile)
         {
@@ -92,6 +104,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             this.HoverAndHold = intermedHH;
             this.TouchPlane = intermedTP;
+
+            minScrollVelocity_mmps = fromFile.minScrollVelocity_mmps;
+            maxReleaseVelocity_mmps = fromFile.maxReleaseVelocity_mmps;
+            maxOpposingVelocity_mmps = fromFile.maxOpposingVelocity_mmps;
+            lockAxisToOnly = fromFile.lockAxisToOnly;
+            allowBidirectional = fromFile.allowBidirectional;
         }
     }
 }
