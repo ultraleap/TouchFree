@@ -17,6 +17,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         protected Positions positions;
 
+        protected float distanceFromScreenMm;
+
         protected long latestTimestamp;
 
         protected bool hadHandLastFrame = false;
@@ -72,6 +74,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
 
                 positions = positioningModule.CalculatePositions(hand);
+                distanceFromScreenMm = positions.DistanceFromScreen * 1000f;
                 hand = CheckHandInInteractionZone(hand);
             }
 
@@ -96,7 +99,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             HandleInputAction?.Invoke(actionData);
         }
 
-        protected virtual void OnInteractionSettingsUpdated(InteractionConfig _config)
+        protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             ignoreDragging = !_config.UseScrollingOrDragging;
             positioningStabiliser.ResetValues();
@@ -112,8 +115,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             if (_hand != null && configManager.InteractionConfig.InteractionZoneEnabled)
             {
-                if (positions.DistanceFromScreen < configManager.InteractionConfig.InteractionMinDistanceMm / 1000 ||
-                    positions.DistanceFromScreen > configManager.InteractionConfig.InteractionMaxDistanceMm / 1000)
+                if (distanceFromScreenMm < configManager.InteractionConfig.InteractionMinDistanceMm ||
+                    distanceFromScreenMm > configManager.InteractionConfig.InteractionMaxDistanceMm)
                 {
                     return null;
                 }
@@ -129,12 +132,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
         /// <returns>Returns whether the hand is within the interaction zone.</returns>
         public bool IsHandInInteractionZone()
         {
-            float minInteractionDistanceMeters = configManager.InteractionConfig.InteractionMinDistanceMm / 1000;
-            float maxInteractionDistanceMeters = configManager.InteractionConfig.InteractionMaxDistanceMm / 1000;
-
             return !configManager.InteractionConfig.InteractionZoneEnabled ||
-                (positions.DistanceFromScreen >= minInteractionDistanceMeters &&
-                 positions.DistanceFromScreen <= maxInteractionDistanceMeters);
+                (distanceFromScreenMm >= configManager.InteractionConfig.InteractionMinDistanceMm &&
+                 distanceFromScreenMm <= configManager.InteractionConfig.InteractionMaxDistanceMm);
         }
     }
 }

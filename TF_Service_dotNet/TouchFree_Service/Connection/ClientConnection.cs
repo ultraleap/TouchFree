@@ -51,9 +51,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendHandPresenceEvent(HandPresenceEvent _response)
         {
             CommunicationWrapper<HandPresenceEvent> message =
-                new CommunicationWrapper<HandPresenceEvent>(
-                    ActionCode.HAND_PRESENCE_EVENT.ToString(),
-                    _response);
+                new CommunicationWrapper<HandPresenceEvent>( ActionCode.HAND_PRESENCE_EVENT.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -63,9 +61,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendHandshakeResponse(ResponseToClient _response)
         {
             CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(
-                    ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(),
-                    _response);
+                new CommunicationWrapper<ResponseToClient>(ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -82,10 +78,50 @@ namespace Ultraleap.TouchFree.Service.Connection
             Send(jsonMessage);
         }
 
+        public void SendConfigFileChangeResponse(ResponseToClient _response)
+        {
+            CommunicationWrapper<ResponseToClient> message =
+                new CommunicationWrapper<ResponseToClient>(ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE.ToString(), _response);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
         public void SendConfigState(ConfigState _configState)
         {
             CommunicationWrapper<ConfigState> message =
                 new CommunicationWrapper<ConfigState>(ActionCode.CONFIGURATION_STATE.ToString(), _configState);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
+        public void SendConfigFile(ConfigState _configState)
+        {
+            CommunicationWrapper<ConfigState> message =
+                new CommunicationWrapper<ConfigState>(ActionCode.CONFIGURATION_FILE_STATE.ToString(), _configState);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
+        public void SendStatusResponse(ResponseToClient _response)
+        {
+            CommunicationWrapper<ResponseToClient> message =
+                new CommunicationWrapper<ResponseToClient>(ActionCode.SERVICE_STATUS_RESPONSE.ToString(), _response);
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            Send(jsonMessage);
+        }
+
+        public void SendStatus(ServiceStatus _status)
+        {
+            CommunicationWrapper<ServiceStatus> message =
+                new CommunicationWrapper<ServiceStatus>(ActionCode.SERVICE_STATUS.ToString(), _status);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
@@ -121,7 +157,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             else if (clientVersionParsed.Minor < _coreVersion.Minor)
             {
-                return Compatibility.CLIENT_OUTDATED;
+                return Compatibility.CLIENT_OUTDATED_WARNING;
             }
             else if (clientVersionParsed.Minor > _coreVersion.Minor)
             {
@@ -130,7 +166,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             if (clientVersionParsed.Build > _coreVersion.Build)
             {
-                return Compatibility.SERVICE_OUTDATED;
+                return Compatibility.SERVICE_OUTDATED_WARNING;
             }
 
             return Compatibility.COMPATIBLE;
@@ -154,6 +190,9 @@ namespace Ultraleap.TouchFree.Service.Connection
                 return;
             }
 
+            // We don't handle after-the-fact Handshake Requests here. We may wish to
+            // if / when we anticipate externals building their own Tooling clients.
+
             switch (action)
             {
                 case ActionCode.SET_CONFIGURATION_STATE:
@@ -162,9 +201,25 @@ namespace Ultraleap.TouchFree.Service.Connection
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
                     receiver.configStateRequestQueue.Enqueue(content);
                     break;
+                case ActionCode.REQUEST_SERVICE_STATUS:
+                    receiver.requestServiceStatusQueue.Enqueue(content);
+                    break;
+                case ActionCode.SET_CONFIGURATION_FILE:
+                    receiver.configFileChangeQueue.Enqueue(content);
+                    break;
+                case ActionCode.REQUEST_CONFIGURATION_FILE:
+                    receiver.configFileRequestQueue.Enqueue(content);
+                    break;
+
                 case ActionCode.INPUT_ACTION:
                 case ActionCode.CONFIGURATION_STATE:
                 case ActionCode.CONFIGURATION_RESPONSE:
+                case ActionCode.VERSION_HANDSHAKE_RESPONSE:
+                case ActionCode.HAND_PRESENCE_EVENT:
+                case ActionCode.SERVICE_STATUS_RESPONSE:
+                case ActionCode.SERVICE_STATUS:
+                case ActionCode.CONFIGURATION_FILE_STATE:
+                case ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE:
                     Console.Error.WriteLine("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:
@@ -220,6 +275,22 @@ namespace Ultraleap.TouchFree.Service.Connection
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Successful";
+                    Console.WriteLine(response.message);
+                    SendHandshakeResponse(response);
+                    SendInitialHandState();
+                    return;
+                case Compatibility.CLIENT_OUTDATED_WARNING:
+                    HandshakeCompleted = true;
+                    response.status = "Success";
+                    response.message = "Handshake Warning: Client is outdated relative to Service.";
+                    Console.WriteLine(response.message);
+                    SendHandshakeResponse(response);
+                    SendInitialHandState();
+                    return;
+                case Compatibility.SERVICE_OUTDATED_WARNING:
+                    HandshakeCompleted = true;
+                    response.status = "Success";
+                    response.message = "Handshake Warning: Service is outdated relative to Client.";
                     Console.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();

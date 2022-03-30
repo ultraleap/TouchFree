@@ -10,6 +10,9 @@ import {
     ConfigStateCallback,
     HandPresenceEvent,
     ResponseCallback,
+    ServiceStatus,
+    ServiceStatusCallback,
+    ServiceStatusRequest,
     WebSocketResponse
 } from './TouchFreeServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
@@ -110,8 +113,20 @@ export class ServiceConnection {
                 ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
                 break;
 
-            case ActionCode.VERSION_HANDSHAKE_RESPONSE:
+            case ActionCode.SERVICE_STATUS:
+                let serviceStatus: ServiceStatus = looseData.content;
+                ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
+                break;
+
+            case ActionCode.CONFIGURATION_FILE_STATE:
+                let configFileState: ConfigState = looseData.content;
+                ConnectionManager.messageReceiver.configStateQueue.push(configFileState);
+                break;
+
             case ActionCode.CONFIGURATION_RESPONSE:
+            case ActionCode.VERSION_HANDSHAKE_RESPONSE:
+            case ActionCode.SERVICE_STATUS_RESPONSE:
+            case ActionCode.CONFIGURATION_FILE_RESPONSE:
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
@@ -123,7 +138,7 @@ export class ServiceConnection {
     // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
     // via the _callback parameter.
     //
-    // If your _callBack requires context it should be bound to that context via .bind()
+    // If your _callback requires context it should be bound to that context via .bind()
     SendMessage(
         _message: string, _requestID: string,
         _callback: (detail: WebSocketResponse) => void): void {
@@ -152,7 +167,7 @@ export class ServiceConnection {
     // Used internally to request information from the Service via the <webSocket>.
     // Provides an asynchronous <ConfigState> via the _callback parameter.
     //
-    // If your _callBack requires context it should be bound to that context via .bind()
+    // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
             console.error("Request failed. This is due to a missing callback");
@@ -162,6 +177,50 @@ export class ServiceConnection {
         let guid: string = uuidgen();
         let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
         let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        let message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.configStateCallbacks[guid] =
+            new ConfigStateCallback(Date.now(), _callback);
+
+        this.webSocket.send(message);
+    }
+
+    // Function: RequestServiceStatus
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <ServiceStatus> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
+    RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        let guid: string = uuidgen();
+        let request: ServiceStatusRequest = new ServiceStatusRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
+        let message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] =
+            new ServiceStatusCallback(Date.now(), _callback);
+
+        this.webSocket.send(message);
+    }
+
+    // Function: RequestConfigFile
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <ServiceStatus> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
+    RequestConfigFile(_callback: (detail: ConfigState) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        let guid: string = uuidgen();
+        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
         let message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =

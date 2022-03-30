@@ -6,7 +6,7 @@ export class VersionInfo
 
     // Variable: ApiVersion
     // The current API version of the Tooling.
-    public static readonly ApiVersion: string = "1.1.0";
+    public static readonly ApiVersion: string = "1.2.0";
 
     // Variable: API_HEADER_NAME
     // The name of the header we wish the Service to compare our version with.
@@ -51,13 +51,16 @@ export class TouchFreeInputAction {
 // Used to translate the raw actions that come across the websocket (<WebsocketInputActions>) and
 // convert them into the Tooling-friendly <TouchFreeInputAction> format.
 export function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInputAction {
+    const yPosition = window.innerHeight - (_wsInput.CursorPosition.y / window.devicePixelRatio);
+    const xPosition = _wsInput.CursorPosition.x / window.devicePixelRatio;
+
     return new TouchFreeInputAction(
         _wsInput.Timestamp,
         FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags),
-        [_wsInput.CursorPosition.x, _wsInput.CursorPosition.y],
+        [xPosition, yPosition],
         _wsInput.DistanceFromScreen,
         _wsInput.ProgressToClick,
     );
@@ -102,6 +105,26 @@ export enum InteractionType {
     HOVER,
     PUSH,
     TOUCHPLANE,
+}
+
+// Enum: TrackingServiceState
+// UNAVAILABLE - The TouchFree service is not connected to the tracking service
+// NO_CAMERA - The TouchFree service is connected to the tracking service but there is not a camera connected
+// CONNECTED - The TouchFree service is connected to the tracking service
+export enum TrackingServiceState {
+    UNAVAILABLE,
+    NO_CAMERA,
+    CONNECTED,
+}
+
+// Enum: ConfigurationState
+// NOT_LOADED - The TouchFree configuration has not been loaded
+// LOADED - The TouchFree configuration has successfully been loaded
+// ERRORED - The TouchFree configuration errored on load
+export enum ConfigurationState {
+    NOT_LOADED,
+    LOADED,
+    ERRORED
 }
 
 // Enum: BitmaskFlags

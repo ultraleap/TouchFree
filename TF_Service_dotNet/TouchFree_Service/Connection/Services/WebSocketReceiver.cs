@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
+using System;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -13,6 +14,9 @@ namespace Ultraleap.TouchFree.Service.Connection
     {
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> requestServiceStatusQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> configFileChangeQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> configFileRequestQueue = new ConcurrentQueue<string>();
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
@@ -29,20 +33,23 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void Update()
         {
-            CheckConfigChangeQueue();
-            CheckConfigStateRequestQueue();
+            CheckQueue(configStateRequestQueue, HandleConfigStateRequest);
+            CheckQueue(configChangeQueue, HandleConfigChange);
+
+            CheckQueue(requestServiceStatusQueue, HandleGetStatusRequest);
+
+            CheckQueue(configFileChangeQueue, HandleConfigFileChange);
+            CheckQueue(configFileRequestQueue, HandleConfigFileRequest);
         }
 
-        #region Config State Request
-
-        void CheckConfigStateRequestQueue()
+        void CheckQueue(ConcurrentQueue<string> queue, Action<string> handler)
         {
             string content;
-            if (configStateRequestQueue.TryPeek(out content))
+            if (queue.TryPeek(out content))
             {
                 // Parse newly received messages
-                configStateRequestQueue.TryDequeue(out content);
-                HandleConfigStateRequest(content);
+                queue.TryDequeue(out content);
+                handler.Invoke(content);
             }
         }
 
@@ -51,7 +58,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
             // Explicitly check for requestID because it is the only required key
-            if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
+            if (!RequestIdExists(contentObj))
             {
                 ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
                 response.message = "Config state request failed. This is due to a missing or invalid requestID";
@@ -64,26 +71,82 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             ConfigState currentConfig = new ConfigState(
                 contentObj.GetValue("requestID").ToString(),
-                configManager.InteractionConfig,
-                configManager.PhysicalConfig);
+                configManager.InteractionConfig.ForApi(),
+                configManager.PhysicalConfig.ForApi());
 
 
             clientMgr.SendConfigState(currentConfig);
         }
-        #endregion
 
-        #region Config Change
-
-        void CheckConfigChangeQueue()
+        void HandleConfigFileRequest(string _content)
         {
-            string content;
-            if (configChangeQueue.TryPeek(out content))
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+
+            // Explicitly check for requestID because it is the only required key
+            if (!RequestIdExists(contentObj))
             {
-                // Parse newly received messages
-                configChangeQueue.TryDequeue(out content);
-                HandleConfigChange(content);
+                ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
+                response.message = "Config state request failed. This is due to a missing or invalid requestID";
+
+                // This is a failed request, do not continue with sending the configuration,
+                // the Client will have no way to handle the config state
+                clientMgr.SendConfigChangeResponse(response);
+                return;
             }
+
+            InteractionConfig interactions = InteractionConfigFile.LoadConfig();
+            PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
+            
+            ConfigState currentConfig = new ConfigState(
+                contentObj.GetValue("requestID").ToString(),
+                interactions,
+                physical);
+
+            clientMgr.SendConfigFile(currentConfig);
         }
+
+        void HandleGetStatusRequest(string _content)
+        {
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+
+            // Explicitly check for requestID because it is the only required key
+            if (!RequestIdExists(contentObj))
+            {
+                ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
+            response.message = "Config state request failed. This is due to a missing or invalid requestID";
+
+                // This is a failed request, do not continue with sending the status,
+                // the Client will have no way to handle the config state
+                clientMgr.SendStatusResponse(response);
+                return;
+            }
+
+            TrackingServiceState trackingServiceState = TrackingServiceState.UNAVAILABLE;
+            if (clientMgr.handManager.TrackingServiceConnected())
+            {
+                trackingServiceState = clientMgr.handManager.CameraConnected() ? TrackingServiceState.CONNECTED : TrackingServiceState.NO_CAMERA;
+            }
+
+            ServiceStatus currentConfig = new ServiceStatus(
+                contentObj.GetValue("requestID").ToString(),
+                trackingServiceState,
+                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
+
+
+            clientMgr.SendStatus(currentConfig);
+        }
+
+        private Boolean RequestIdExists(JObject _content)
+        {
+            if (!_content.ContainsKey("requestID") || _content.GetValue("requestID").ToString() == "")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        #region Config Changes
 
         void HandleConfigChange(string _content)
         {
@@ -95,6 +158,31 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
 
             clientMgr.SendConfigChangeResponse(response);
+        }
+
+        void HandleConfigFileChange(string _content)
+        {
+            // Validate the incoming change
+            ResponseToClient response = ValidateConfigChange(_content);
+
+            if (response.status == "Success")
+            {
+                // Try saving config
+                // If not work, return error
+                // If work, send response from above
+                try
+                {
+                    ChangeConfigFile(_content);
+                }
+                catch (UnauthorizedAccessException _)
+                {
+                    // Return some response indicating access authorisation issues
+                    String errorMsg = "Did not have appropriate file access to modify the config file(s).";
+                    response = new ResponseToClient(response.requestID, "Failed", errorMsg, _content);
+                }
+            }
+
+            clientMgr.SendConfigFileChangeResponse(response);
         }
 
         /// <summary>
@@ -109,7 +197,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
 
             // Explicitly check for requestID because it is the only required key
-            if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
+            if (!RequestIdExists(contentObj))
             {
                 // Validation has failed because there is no valid requestID
                 response.status = "Failure";
@@ -235,16 +323,41 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void ChangeConfig(string _content)
         {
-            ConfigState combinedData = new ConfigState("", configManager.InteractionConfig, configManager.PhysicalConfig);
+            ConfigState combinedData = new ConfigState("", configManager.InteractionConfig.ForApi(), configManager.PhysicalConfig.ForApi());
 
             JsonConvert.PopulateObject(_content, combinedData);
 
-            configManager.InteractionConfig = combinedData.interaction;
-            configManager.PhysicalConfig = combinedData.physical;
+            configManager.InteractionConfigFromApi = combinedData.interaction;
+            configManager.PhysicalConfigFromApi = combinedData.physical;
 
             configManager.PhysicalConfigWasUpdated();
             configManager.InteractionConfigWasUpdated();
         }
+
+        void ChangeConfigFile(string _content)
+        {
+            // Get the current state of the config file(s)
+            InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
+            PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
+
+            var contentJson = JObject.Parse(_content);
+
+            string physicalChanges = contentJson["physical"].ToString();
+            string interactionChanges = contentJson["interaction"].ToString();
+
+            if (physicalChanges != "")
+            {
+                JsonConvert.PopulateObject(physicalChanges, physFromFile);
+                PhysicalConfigFile.SaveConfig(physFromFile);
+            }    
+
+            if (interactionChanges != "")
+            {
+                JsonConvert.PopulateObject(interactionChanges, intFromFile);
+                InteractionConfigFile.SaveConfig(intFromFile);
+            }
+        }
+
         #endregion
     }
 }

@@ -1,7 +1,7 @@
 
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
-import { HandPresenceState } from "./TouchFreeServiceTypes";
+import { HandPresenceState, ServiceStatus } from "./TouchFreeServiceTypes";
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -102,5 +102,19 @@ export class ConnectionManager extends EventTarget {
             ConnectionManager.currentServiceConnection.Disconnect();
             ConnectionManager.currentServiceConnection = null;
         }
+    }
+
+    // Function: RequestServiceStatus
+    // Used to request information from the Service via the <ConnectionManager>. Provides an asynchronous
+    // <ServiceStatus> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
+    public static RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
+        if (_callback === null) {
+            console.error("Request failed. This is due to a missing callback");
+            return;
+        }
+
+        ConnectionManager.serviceConnection()?.RequestServiceStatus(_callback);
     }
 }

@@ -22,7 +22,7 @@ export class SnappingPlugin extends InputActionPlugin {
 
         const cursorPos: { x: number, y: number } = {
             x: _inputAction.CursorPosition[0],
-            y: window.innerHeight - _inputAction.CursorPosition[1]
+            y: _inputAction.CursorPosition[1]
         }
 
         // Build a list of snappable elements
@@ -70,11 +70,11 @@ export class SnappingPlugin extends InputActionPlugin {
                     };
 
                     _inputAction.CursorPosition[0] = finalPos.x;
-                    _inputAction.CursorPosition[1] = (window.innerHeight - finalPos.y);
+                    _inputAction.CursorPosition[1] = finalPos.y;
                 } else {
                     if (!elements[0].hovered) {
                         _inputAction.CursorPosition[0] = elements[0].closest_point.x;
-                        _inputAction.CursorPosition[1] = (window.innerHeight - elements[0].closest_point.y);
+                        _inputAction.CursorPosition[1] = elements[0].closest_point.y;
                     }
                 }
             }

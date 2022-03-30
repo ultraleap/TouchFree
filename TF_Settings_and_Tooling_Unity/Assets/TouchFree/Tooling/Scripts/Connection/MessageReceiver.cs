@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using UnityEngine;
+using System;
 
 namespace Ultraleap.TouchFree.Tooling.Connection
 {
@@ -44,6 +45,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // A dictionary of unique request IDs and <ConfigStateCallbacks> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ConfigStateCallback> configStateCallbacks = new Dictionary<string, ConfigStateCallback>();
 
+        // Variable: serviceStatusQueue
+        // A queue of <ServiceStatus> that have been received from the Service.
+        public ConcurrentQueue<ServiceStatus> serviceStatusQueue = new ConcurrentQueue<ServiceStatus>();
+
+        // Variable: serviceStatusCallbacks
+        // A dictionary of unique request IDs and <ServiceStatusCallback> that represent requests that are awaiting response from the Service.
+        public Dictionary<string, ServiceStatusCallback> serviceStatusCallbacks = new Dictionary<string, ServiceStatusCallback>();
+
         // Used to store HandPresenceState changes as they are recieved and emit messages
         // appropriately. "PROCESSED" when there are no unprocessed changes.
         internal HandPresenceState handState = HandPresenceState.PROCESSED;
@@ -66,22 +75,23 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Unity's update function. Checks all queues for messages to handle.
         void Update()
         {
-            CheckForResponse();
-            CheckForConfigState();
+            CheckQueue<WebSocketResponse>(responseQueue, HandleResponse);
+            CheckQueue<ConfigState>(configStateQueue, HandleConfigState);
+
             CheckForAction();
         }
 
-        // Function: CheckForResponse
-        // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to <HandleResponse> if there is one.
-        void CheckForResponse()
+        // Function: CheckQueue
+        // Checks a provided <ConcurrentQueue> for a <T> item & executes a provided <handler> with it.
+        // Used in <Update> to cover several queue systems.
+        void CheckQueue<T>(ConcurrentQueue<T> queue, Action<T> handler)
         {
-            WebSocketResponse response;
+            T queueItem;
 
-            if (responseQueue.TryPeek(out response))
+            if (queue.TryPeek(out queueItem))
             {
-                // Parse newly received messages
-                responseQueue.TryDequeue(out response);
-                HandleResponse(response);
+                queue.TryDequeue(out queueItem);
+                handler.Invoke(queueItem);
             }
         }
 
@@ -106,20 +116,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 "\n Original request - " + _response.originalRequest);
         }
 
-        // Function: CheckForConfigState
-        // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleConfigState> if there is one.
-        void CheckForConfigState()
-        {
-            ConfigState configState;
-
-            if (configStateQueue.TryPeek(out configState))
-            {
-                // Parse newly received messages
-                configStateQueue.TryDequeue(out configState);
-                HandleConfigState(configState);
-            }
-        }
-
         // Function: HandleConfigState
         // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
         // match, calls the callback action in the matching <ConfigStateCallback>.
@@ -130,7 +126,23 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 if (callback.Key == _configState.requestID)
                 {
                     callback.Value.callback.Invoke(_configState);
-                    responseCallbacks.Remove(callback.Key);
+                    configStateCallbacks.Remove(callback.Key);
+                    break;
+                }
+            }
+        }
+
+        // Function: HandleServiceStatus
+        // Checks the dictionary of <serviceStatusCallbacks> for a matching request ID. If there is a
+        // match, calls the callback action in the matching <ServiceStatusCallback>.
+        void HandleServiceStatus(ServiceStatus _serviceStatus)
+        {
+            foreach (KeyValuePair<string, ServiceStatusCallback> callback in serviceStatusCallbacks)
+            {
+                if (callback.Key == _serviceStatus.requestID)
+                {
+                    callback.Value.callback.Invoke(_serviceStatus);
+                    serviceStatusCallbacks.Remove(callback.Key);
                     break;
                 }
             }
@@ -192,7 +204,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Function: ClearUnresponsiveCallbacks
         // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
         // expired from <responseCallbacks>. Also clears all <ConfigStateCallback> that are
-        // expired from <configStateCallbacks>.
+        // expired from <configStateCallbacks>. Also clears all <ServiceStatusCallback> that are
+        // expired from <serviceStatusCallbacks>.
         IEnumerator ClearUnresponsiveCallbacks()
         {
             WaitForSeconds waitTime = new WaitForSeconds(callbackClearTimer);
@@ -224,6 +237,20 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     if (configStateCallbacks[key].timestamp < lastClearTime)
                     {
                         configStateCallbacks.Remove(key);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                keys = new List<string>(serviceStatusCallbacks.Keys);
+
+                foreach (string key in keys)
+                {
+                    if (serviceStatusCallbacks[key].timestamp < lastClearTime)
+                    {
+                        serviceStatusCallbacks.Remove(key);
                     }
                     else
                     {

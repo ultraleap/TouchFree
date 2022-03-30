@@ -21,7 +21,7 @@ namespace TouchFreeTests
             HandManager handManger = new (null, null);
             System.Numerics.Vector3 translationInMillimeters = new (100f, 200f, 300f);
             Leap.Vector translationInLeapSpace = new Leap.Vector(translationInMillimeters.X, translationInMillimeters.Y, -translationInMillimeters.Z);
-            PhysicalConfig testConfig = new () { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
+            PhysicalConfigInternal testConfig = new () { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
 
             // When
             handManger.UpdateTrackingTransform(testConfig);
@@ -41,7 +41,7 @@ namespace TouchFreeTests
                 Utilities.DegreesToRadians(topDownRotation.X),
                 Utilities.DegreesToRadians(topDownRotation.Z));
 
-            PhysicalConfig testConfig = new () { LeapRotationD = topDownRotation };
+            PhysicalConfigInternal testConfig = new () { LeapRotationD = topDownRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
@@ -68,7 +68,7 @@ namespace TouchFreeTests
                 Utilities.DegreesToRadians(-bottomRotation.X),
                 Utilities.DegreesToRadians(bottomRotation.Z));
 
-            PhysicalConfig testConfig = new () { LeapRotationD = bottomRotation };
+            PhysicalConfigInternal testConfig = new () { LeapRotationD = bottomRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
@@ -93,7 +93,7 @@ namespace TouchFreeTests
             System.Numerics.Vector3 relativePosition = new(1000, 2000, 3000);
             System.Numerics.Vector3 positionTranslation = new(1000, 2000, -3000);
 
-            PhysicalConfig testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomMm = relativePosition };
+            PhysicalConfigInternal testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomMm = relativePosition };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
@@ -117,7 +117,7 @@ namespace TouchFreeTests
             System.Numerics.Vector3 relativePosition = new(1000, 1000, 1000);
             System.Numerics.Vector3 positionTranslation = new(1000, 1158.46f, -811.16f);
 
-            PhysicalConfig testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomMm = relativePosition, ScreenRotationD = 10 };
+            PhysicalConfigInternal testConfig = new() { LeapRotationD = bottomRotation, LeapPositionRelativeToScreenBottomMm = relativePosition, ScreenRotationD = 10 };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);

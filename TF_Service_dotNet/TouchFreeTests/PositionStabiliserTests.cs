@@ -11,7 +11,7 @@ namespace TouchFreeTests
         private IConfigManager CreateMockedConfigManager()
         {
             Mock<IConfigManager> mockConfigManager = new Mock<IConfigManager>();
-            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfig());
+            mockConfigManager.SetupGet(x => x.InteractionConfig).Returns(new InteractionConfigInternal());
             return mockConfigManager.Object;
         }
 
@@ -61,7 +61,7 @@ namespace TouchFreeTests
         {
             //Given
             Vector2 previousPosition = new Vector2(1000, 1000);
-            float deadzoneRadius = 0.1f;
+            float deadzoneRadius = 100f;
             PositionStabiliser positionStabiliser = CreatePositionStabiliser();
 
             //When
@@ -123,18 +123,18 @@ namespace TouchFreeTests
             Assert.AreEqual(previousPosition.Y, result.Y);
         }
 
-        [TestCase(1, 1.6000f,  2400f)]
-        [TestCase(2, 1.4000f,  4600f)]
-        [TestCase(3, 1.2000f,  6800f)]
-        [TestCase(4, 1.0000f,  9000f)]
-        [TestCase(5, 0.8000f, 11200f)]
+        [TestCase(1, 1600f,  2400f)]
+        [TestCase(2, 1400f,  4600f)]
+        [TestCase(3, 1200f,  6800f)]
+        [TestCase(4, 1000f,  9000f)]
+        [TestCase(5, 800f, 11200f)]
         public void ApplyDeadzone_StartShrinkingDeadzone_CurrentDeadzoneRadiusDecreases(int cursorMovementCount, float expectedDeadzoneSize, float expectedCursorY)
         {
             //Given
             Vector2 previousPosition = new Vector2(1000f, 2000f);
             PositionStabiliser positionStabiliser = CreatePositionStabiliser();
-            positionStabiliser.defaultDeadzoneRadius = 0.2f;
-            positionStabiliser.currentDeadzoneRadius = 1.6f;
+            positionStabiliser.defaultDeadzoneRadius = 200f;
+            positionStabiliser.currentDeadzoneRadius = 1600f;
             positionStabiliser.ApplyDeadzone(previousPosition);
             positionStabiliser.StartShrinkingDeadzone(0.1f);
 
@@ -160,10 +160,10 @@ namespace TouchFreeTests
         public void ApplyDeadzone_StartShrinkingDeadzoneNoMovement_DeadzoneDoesNotShrink(int cursorMovementCount)
         {
             //Given
-            Vector2 previousPosition = new Vector2(1, 2);
+            Vector2 previousPosition = new Vector2(1000, 2000);
             PositionStabiliser positionStabiliser = CreatePositionStabiliser();
-            positionStabiliser.defaultDeadzoneRadius = 0.2f;
-            positionStabiliser.currentDeadzoneRadius = 1.6f;
+            positionStabiliser.defaultDeadzoneRadius = 200f;
+            positionStabiliser.currentDeadzoneRadius = 1600f;
             positionStabiliser.ApplyDeadzone(previousPosition);
             positionStabiliser.StartShrinkingDeadzone(0.1f);
 
@@ -175,9 +175,9 @@ namespace TouchFreeTests
             }
 
             //Then
-            Assert.AreEqual(1f, result.X, 0.001);
-            Assert.AreEqual(2f, result.Y, 0.001);
-            Assert.AreEqual(1.6f, positionStabiliser.currentDeadzoneRadius, 0.0001);
+            Assert.AreEqual(1000f, result.X, 0.001);
+            Assert.AreEqual(2000f, result.Y, 0.001);
+            Assert.AreEqual(1600f, positionStabiliser.currentDeadzoneRadius, 0.0001);
         }
 
         [Test]
@@ -186,8 +186,8 @@ namespace TouchFreeTests
             //Given
             Vector2 previousPosition = new Vector2(1000f, 2000f);
             PositionStabiliser positionStabiliser = CreatePositionStabiliser();
-            positionStabiliser.defaultDeadzoneRadius = 0.2f;
-            positionStabiliser.currentDeadzoneRadius = 1f;
+            positionStabiliser.defaultDeadzoneRadius = 200f;
+            positionStabiliser.currentDeadzoneRadius = 1000f;
             positionStabiliser.ApplyDeadzone(previousPosition);
             positionStabiliser.ApplyDeadzone(new Vector2(1000, 2500f));
             positionStabiliser.SetDeadzoneOffset();
@@ -198,7 +198,7 @@ namespace TouchFreeTests
             //Then
             Assert.AreEqual(1000f, result.X, 0.001);
             Assert.AreEqual(3500f, result.Y, 0.001);
-            Assert.AreEqual(1f, positionStabiliser.currentDeadzoneRadius, 0.0001);
+            Assert.AreEqual(1000f, positionStabiliser.currentDeadzoneRadius, 0.0001);
         }
 
         [Test]
@@ -207,8 +207,8 @@ namespace TouchFreeTests
             //Given
             Vector2 previousPosition = new Vector2(1000, 2000);
             PositionStabiliser positionStabiliser = CreatePositionStabiliser();
-            positionStabiliser.defaultDeadzoneRadius = 0.2f;
-            positionStabiliser.currentDeadzoneRadius = 1f;
+            positionStabiliser.defaultDeadzoneRadius = 200f;
+            positionStabiliser.currentDeadzoneRadius = 1000f;
             positionStabiliser.ApplyDeadzone(previousPosition);
             positionStabiliser.ApplyDeadzone(new Vector2(1000, 2500f));
             positionStabiliser.SetDeadzoneOffset();
@@ -220,7 +220,7 @@ namespace TouchFreeTests
             //Then
             Assert.AreEqual(1000f, result.X, 0.001);
             Assert.AreEqual(3550f, result.Y, 0.001);
-            Assert.AreEqual(1f, positionStabiliser.currentDeadzoneRadius, 0.0001);
+            Assert.AreEqual(1000f, positionStabiliser.currentDeadzoneRadius, 0.0001);
         }
     }
 }

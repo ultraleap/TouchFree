@@ -15,7 +15,7 @@ namespace Ultraleap.TouchFree.Library.Interactions.PositionTrackers
             var bones = hand.Fingers.First(finger => (finger.Type == Finger.FingerType.TYPE_INDEX)).bones;
 
             Vector3 trackedJointVector = (Utilities.LeapVectorToNumerics(bones[0].NextJoint) + Utilities.LeapVectorToNumerics(bones[1].NextJoint)) / 2;
-            trackedJointVector.Z += trackedJointDistanceOffset;
+            trackedJointVector.Z -= trackedJointDistanceOffset;
             return trackedJointVector;
         }
     }

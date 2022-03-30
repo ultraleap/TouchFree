@@ -81,10 +81,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return constrainedPositionCurrent;
         }
 
-        public Vector2 ApplyDeadzoneSized(Vector2 previous, Vector2 current, float radiusM)
+        public Vector2 ApplyDeadzoneSized(Vector2 previous, Vector2 current, float radiusMm)
         {
             Vector2 constrainedPosition;
-            float radiusMm = radiusM * 1000f;
 
             float distance = Vector2.Distance(previous, current);
             if (distance > radiusMm)
@@ -133,7 +132,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             if (previousConstraintVector != Vector2.Zero)
             {
                 float distanceAwayFromConstraint = Vector2.Dot(defaultPositionChange, previousConstraintVector) / previousConstraintVector.Length();
-                distanceAwayFromConstraint = Math.Max(0, distanceAwayFromConstraint) / 1000;
+                distanceAwayFromConstraint = Math.Max(0, distanceAwayFromConstraint);
 
                 float shrinkDistance = distanceAwayFromConstraint * shrinkingSpeed;
                 currentDeadzoneRadius -= shrinkDistance;
@@ -155,9 +154,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
             currentDeadzoneRadius = deadZoneRadius;
         }
 
-        void OnSettingsUpdated(InteractionConfig _config)
+        void OnSettingsUpdated(InteractionConfigInternal _config)
         {
-            defaultDeadzoneRadius = _config.DeadzoneRadius;
+            defaultDeadzoneRadius = _config.DeadzoneRadiusMm;
         }
     }
 }

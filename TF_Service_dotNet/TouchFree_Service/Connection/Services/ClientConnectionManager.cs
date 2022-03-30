@@ -21,10 +21,12 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-        public ClientConnectionManager(HandManager handManager)
+        public HandManager handManager;
+
+        public ClientConnectionManager(HandManager _handManager)
         {
             // InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
-
+            handManager = _handManager;
             handManager.HandFound += OnHandFound;
             handManager.HandsLost += OnHandsLost;
 
@@ -141,6 +143,16 @@ namespace Ultraleap.TouchFree.Service.Connection
                 }
             }
         }
+        public void SendConfigFileChangeResponse(ResponseToClient _response)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.socket.State == WebSocketState.Open)
+                {
+                    connection.SendConfigFileChangeResponse(_response);
+                }
+            }
+        }
 
         public void SendConfigState(ConfigState _config)
         {
@@ -149,6 +161,39 @@ namespace Ultraleap.TouchFree.Service.Connection
                 if (connection.socket.State == WebSocketState.Open)
                 {
                     connection.SendConfigState(_config);
+                }
+            }
+        }
+
+        public void SendConfigFile(ConfigState _config)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.socket.State == WebSocketState.Open)
+                {
+                    connection.SendConfigFile(_config);
+                }
+            }
+        }
+
+        public void SendStatusResponse(ResponseToClient _response)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.socket.State == WebSocketState.Open)
+                {
+                    connection.SendStatusResponse(_response);
+                }
+            }
+        }
+
+        public void SendStatus(ServiceStatus _response)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.socket.State == WebSocketState.Open)
+                {
+                    connection.SendStatus(_response);
                 }
             }
         }

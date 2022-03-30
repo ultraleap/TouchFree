@@ -12,8 +12,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public ProgressTimer progressTimer;
 
-        public float hoverDeadzoneEnlargementDistance = 0.015f;
-        public float timerDeadzoneEnlargementDistance = 0.015f;
+        public float hoverDeadzoneEnlargementDistance = 5f;
+        public float timerDeadzoneEnlargementDistance = 5f;
 
         public float deadzoneShrinkSpeed = 0.3f;
 
@@ -149,7 +149,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             previousScreenPos = positions.CursorPosition;
         }
 
-        protected override void OnInteractionSettingsUpdated(InteractionConfig _config)
+        protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             base.OnInteractionSettingsUpdated(_config);
             hoverTriggerTime = _config.HoverAndHold.HoverStartTimeS * 1000; // s to ms

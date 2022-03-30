@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Library
             configManager.OnPhysicalConfigUpdated += PhysicalConfigUpdated;
         }
 
-        void PhysicalConfigUpdated(PhysicalConfig _config)
+        void PhysicalConfigUpdated(PhysicalConfigInternal _config)
         {
             Width_VirtualPx = _config.ScreenWidthPX;
             Height_VirtualPx = _config.ScreenHeightPX;
@@ -52,9 +52,9 @@ namespace Ultraleap.TouchFree.Library
             Vector3 screenPos = Vector3.Zero;
 
             // World X = 0 is middle of screen, so shift everything over by half width (w/2).
-            screenPos.X = (worldPosition.X + (Width_PhysicalMillimeters / 2.0f)) * MillimetersToPixelsConversion;
+            screenPos.X = (worldPosition.X * 1000 + (Width_PhysicalMillimeters / 2.0f)) * MillimetersToPixelsConversion;
             // World Y = 0 is bottom of the screen, so this is linear.
-            screenPos.Y = worldPosition.Y * MillimetersToPixelsConversion;
+            screenPos.Y = worldPosition.Y * 1000 * MillimetersToPixelsConversion;
 
             screenPos.Z = worldPosition.Z;
 
