@@ -276,7 +276,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             if (!configManager.AreConfigsInGoodState())
             {
-                configurationWarning = " Configuration is in a bad state. Please update the settings via the Settings UI";
+                configurationWarning = " Configuration is in a bad state. Please update the configuration via TouchFree Settings";
             }
 
             switch (compatibility)
