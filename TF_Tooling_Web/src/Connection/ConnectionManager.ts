@@ -46,7 +46,6 @@ export class ConnectionManager extends EventTarget {
     // This value is settable in the Inspector.
     static port: string = "9739";
 
-
     // Group: Functions
 
     // Function: init
@@ -90,7 +89,7 @@ export class ConnectionManager extends EventTarget {
         } else {
             handPresenceEvent = new CustomEvent('HandsLost');
         }
-    
+
         ConnectionManager.instance.dispatchEvent(handPresenceEvent);
     }
 
