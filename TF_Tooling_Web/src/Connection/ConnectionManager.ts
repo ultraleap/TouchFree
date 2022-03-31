@@ -46,6 +46,8 @@ export class ConnectionManager extends EventTarget {
     // This value is settable in the Inspector.
     static port: string = "9739";
 
+    private handEventTimeout: number = -1;
+
     // Group: Functions
 
     // Function: init
@@ -85,13 +87,19 @@ export class ConnectionManager extends EventTarget {
         let handPresenceEvent: CustomEvent;
 
         if (_state === HandPresenceState.HAND_FOUND) {
+            if (ConnectionManager.instance.handEventTimeout !== -1) {
+                clearTimeout(ConnectionManager.instance.handEventTimeout);
+            } 
             handPresenceEvent = new CustomEvent('HandFound');
-        }
-        else {
-            handPresenceEvent = new CustomEvent('HandsLost');
+            ConnectionManager.instance.dispatchEvent(handPresenceEvent);
+        } else {
+            ConnectionManager.instance.handEventTimeout = window.setTimeout(() => {
+                handPresenceEvent = new CustomEvent('HandsLost');
+                ConnectionManager.instance.dispatchEvent(handPresenceEvent);
+                ConnectionManager.instance.handEventTimeout = -1;
+            }, 500);
         }
 
-        ConnectionManager.instance.dispatchEvent(handPresenceEvent);
     }
 
     // Function: Disconnect
