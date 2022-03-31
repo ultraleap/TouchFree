@@ -20,8 +20,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
         bool pressing = false;
         Direction currentDirection;
 
-        double scrollDelayMs = 300;
+        double scrollDelayMs = 500;
         Stopwatch scrollDelayStopwatch = new Stopwatch();
+        bool scrollDisallowed = false;
 
         long previousTime = 0;
 
@@ -76,6 +77,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             else if (pressing && CheckIfChangedDirection(dPerp))
             {
                 scrollDelayStopwatch.Restart();
+                scrollDisallowed = true;
                 pressing = false;
                 SendInputAction(InputType.UP, positions, 0);
             }
@@ -123,7 +125,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         bool CheckIfScrollStart(Vector2 _absPerp)
         {
-            if(scrollDelayStopwatch.IsRunning && scrollDelayStopwatch.ElapsedMilliseconds < scrollDelayMs)
+            if(!CheckIfScrollAllowed(_absPerp))
             {
                 return false;
             }
@@ -145,6 +147,24 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
 
             return false;
+        }
+
+        bool CheckIfScrollAllowed(Vector2 _absPerp)
+        {
+            if (scrollDisallowed)
+            {
+                if (scrollDelayStopwatch.IsRunning && scrollDelayStopwatch.ElapsedMilliseconds > scrollDelayMs)
+                {
+                    if (_absPerp.X < maxOpposingVelocity_mmps && _absPerp.Y < maxOpposingVelocity_mmps)
+                    {
+                        scrollDisallowed = false;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         bool CheckIfChangedDirection(Vector2 _dPerp)
