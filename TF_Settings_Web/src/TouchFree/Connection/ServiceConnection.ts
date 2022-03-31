@@ -31,6 +31,7 @@ export class ServiceConnection {
     // A reference to the websocket we are connected to.
     webSocket: WebSocket;
 
+    private handshakeRequested: boolean;
     private handshakeCompleted: boolean;
 
     // Group: Functions
@@ -42,13 +43,29 @@ export class ServiceConnection {
     // request is sent with this Tooling's API version number. The service will not send data over
     // an open connection until this handshake is completed succesfully.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
+        console.log("Constructing a Svc Connection");
+
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
 
-        this.webSocket.addEventListener('message', this.OnMessage);
+        this.webSocket.addEventListener('message', this.OnMessage.bind(this));
 
+        this.handshakeRequested = false;
         this.handshakeCompleted = false;
 
-        this.webSocket.addEventListener('open', (event) => {
+        this.webSocket.addEventListener('open', this.RequestHandshake.bind(this), {once: true});
+    }
+
+    // Function: Disconnect
+    // Can be used to force the connection to the <webSocket> to be closed.
+    Disconnect(): void {
+        if (this.webSocket !== null) {
+            this.webSocket.close();
+        }
+    }
+
+    private RequestHandshake() {
+        console.log(`got a websocket open message`);
+        if (!this.handshakeCompleted) {
             let guid: string = uuidgen();
 
             // construct message
@@ -61,18 +78,13 @@ export class ServiceConnection {
 
             handshakeRequest.content[VersionInfo.API_HEADER_NAME] = VersionInfo.ApiVersion;
 
-            console.log("Trying to send Handshake Request");
-            // send message
-            this.SendMessage(JSON.stringify(handshakeRequest), guid,
-                this.ConnectionResultCallback);
-        });
-    }
-
-    // Function: Disconnect
-    // Can be used to force the connection to the <webSocket> to be closed.
-    Disconnect(): void {
-        if (this.webSocket !== null) {
-            this.webSocket.close();
+            if (!this.handshakeRequested) {
+                console.log("Trying to send Handshake Request");
+                this.handshakeRequested = true;
+                // send message
+                this.SendMessage(JSON.stringify(handshakeRequest), guid,
+                    this.ConnectionResultCallback);
+            }
         }
     }
 
@@ -98,16 +110,11 @@ export class ServiceConnection {
     // <MessageReceiver>.
     OnMessage(_message: MessageEvent): void {
         let looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
-        let TestFlag: BitmaskFlags = BitmaskFlags.PUSH ^ BitmaskFlags.RIGHT ^ BitmaskFlags.PRIMARY ^ BitmaskFlags.DOWN;
 
         switch (looseData.action as ActionCode) {
             case ActionCode.INPUT_ACTION:
                 let wsInput: WebsocketInputAction = looseData.content;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
-
-                if (wsInput.InteractionFlags === TestFlag) {
-                    console.log(`got a raw inputaction with flags ${wsInput.InteractionFlags} and timestamp ${wsInput.Timestamp}`);
-                }
                 break;
 
             case ActionCode.CONFIGURATION_STATE:
