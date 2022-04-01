@@ -4,6 +4,8 @@ using SFB;
 
 using Ultraleap.TouchFree.ServiceShared;
 using System.IO;
+using UnityEditor;
+using System;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -87,6 +89,18 @@ namespace Ultraleap.TouchFree.ServiceUI
                     ConfigManager.LoadConfigsFromFiles();
                 }
             }
+        }
+
+        public void OpenTouchFreeLogFileLocation()
+        {
+            var logFileName = Path.Combine(fileLocation.text, "log.txt");
+            EditorUtility.RevealInFinder(logFileName);
+        }
+
+        public void OpenTrackingLogFileLocation()
+        {
+            var programDataLocation = Environment.GetEnvironmentVariable("PROGRAMDATA");
+            EditorUtility.RevealInFinder(programDataLocation + "/Ultraleap/HandTracker/Logs/tracker_log.txt");
         }
 
         void OnAnalyticsToggled(bool _)
