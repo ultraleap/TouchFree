@@ -93,14 +93,21 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public void OpenTouchFreeLogFileLocation()
         {
-            var logFileName = Path.Combine(fileLocation.text, "log.txt");
-            EditorUtility.RevealInFinder(logFileName);
+            OpenFolderInFileExplorer(fileLocation.text);
         }
 
         public void OpenTrackingLogFileLocation()
         {
             var programDataLocation = Environment.GetEnvironmentVariable("PROGRAMDATA");
-            EditorUtility.RevealInFinder(programDataLocation + "/Ultraleap/HandTracker/Logs/tracker_log.txt");
+            OpenFolderInFileExplorer(programDataLocation + "\\Ultraleap\\HandTracker\\Logs\\");
+        }
+
+        private void OpenFolderInFileExplorer(string folderLocation)
+        {
+            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            p.StartInfo = new System.Diagnostics.ProcessStartInfo("explorer.exe");
+            p.StartInfo.Arguments = folderLocation;
+            p.Start();
         }
 
         void OnAnalyticsToggled(bool _)
