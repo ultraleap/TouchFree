@@ -4,8 +4,8 @@ using SFB;
 
 using Ultraleap.TouchFree.ServiceShared;
 using System.IO;
-using UnityEditor;
 using System;
+using System.Diagnostics;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -104,9 +104,8 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private void OpenFolderInFileExplorer(string folderLocation)
         {
-            System.Diagnostics.Process p = new System.Diagnostics.Process();
-            p.StartInfo = new System.Diagnostics.ProcessStartInfo("explorer.exe");
-            p.StartInfo.Arguments = folderLocation;
+            Process p = new Process();
+            p.StartInfo = new ProcessStartInfo("explorer.exe") { Arguments = folderLocation };
             p.Start();
         }
 
