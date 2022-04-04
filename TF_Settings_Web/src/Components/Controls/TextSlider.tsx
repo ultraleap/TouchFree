@@ -25,6 +25,9 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
         super(props);
 
         this.inputElement = React.createRef();
+
+        document.body.addEventListener('pointerup', this.onUpCancel.bind(this));
+        document.body.addEventListener('pointercancel', this.onUpCancel.bind(this));
     }
 
     private onChange() {
@@ -35,7 +38,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
         this.props.onChange(hoverStartTime);
     }
 
-    private onUpOut() {
+    private onUpCancel() {
         this.dragging = false
     }
 
@@ -51,10 +54,14 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
     }
 
     private setValueByPos(xPos: number) {
-        // call onChange with the horizontal position
         if (this.inputElement.current !== null) {
             let posInRange: number = xPos / this.inputElement.current.clientWidth;
-            this.props.onChange(this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange));
+            let outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
+
+            if (this.props.rangeMin < outputValue &&
+                outputValue < this.props.rangeMax) {
+                this.props.onChange(outputValue);
+            }
         }
     }
 
@@ -76,7 +83,8 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                         onChange={this.onChange}
                         onPointerMove={this.onMove.bind(this)}
                         onPointerDown={this.onDown.bind(this)}
-                        onPointerUp={this.onUpOut.bind(this)}
+                        onPointerUp={this.onUpCancel.bind(this)}
+                        onPointerCancel={this.onUpCancel.bind(this)}
                         id="myRange"
                         ref={this.inputElement}/>
                     <div className="sliderLabelContainer">

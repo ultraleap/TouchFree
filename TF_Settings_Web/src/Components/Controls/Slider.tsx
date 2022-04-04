@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React, { PointerEvent, RefObject } from "react";
 
 import '../../Styles/Controls/Sliders.css';
 
@@ -26,33 +26,39 @@ export class Slider extends React.Component<SliderProps, {}> {
         super(props);
 
         this.inputElement = React.createRef();
-        document.body.addEventListener('pointerup', this.onUp.bind(this));
+
+        document.body.addEventListener('pointerup', this.onUpCancel.bind(this));
+        document.body.addEventListener('pointercancel', this.onUpCancel.bind(this));
     }
 
     private onChange() {
         // this function is here purely to pass to the input, preventing it becoming ReadOnly
     }
 
-    private onUp() {
+    private onUpCancel() {
         this.dragging = false
     }
 
-    private onDown(event: React.PointerEvent<HTMLInputElement>) {
+    private onDown(event: PointerEvent<HTMLInputElement>) {
         this.dragging = true;
         this.setValueByPos(event.nativeEvent.offsetX);
     }
 
-    private onMove(event: React.PointerEvent<HTMLInputElement>) {
+    private onMove(event: PointerEvent<HTMLInputElement>) {
         if (this.dragging) {
             this.setValueByPos(event.nativeEvent.offsetX);
         }
     }
 
     private setValueByPos(xPos: number) {
-        // call onChange with the horizontal position
         if (this.inputElement.current !== null) {
             let posInRange: number = xPos / this.inputElement.current.clientWidth;
-            this.props.onChange(this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange));
+            let outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
+
+            if (this.props.rangeMin < outputValue &&
+                outputValue < this.props.rangeMax) {
+                this.props.onChange(outputValue);
+            }
         }
     }
 
@@ -73,7 +79,8 @@ export class Slider extends React.Component<SliderProps, {}> {
                         onChange={this.onChange}
                         onPointerMove={this.onMove.bind(this)}
                         onPointerDown={this.onDown.bind(this)}
-                        onPointerUp={this.onUp.bind(this)}
+                        onPointerUp={this.onUpCancel.bind(this)}
+                        onPointerCancel={this.onUpCancel.bind(this)}
                         value={this.props.value}
                         id="myRange"
                         ref={this.inputElement} />
