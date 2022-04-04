@@ -1,4 +1,4 @@
-import React, { PointerEvent, RefObject } from "react";
+import React, { RefObject } from "react";
 
 import '../../Styles/Controls/Sliders.css';
 
@@ -26,22 +26,23 @@ export class Slider extends React.Component<SliderProps, {}> {
         super(props);
 
         this.inputElement = React.createRef();
+        document.body.addEventListener('pointerup', this.onUp.bind(this));
     }
 
     private onChange() {
         // this function is here purely to pass to the input, preventing it becoming ReadOnly
     }
 
-    private onUpOut() {
+    private onUp() {
         this.dragging = false
     }
 
-    private onDown(event: PointerEvent<HTMLInputElement>) {
+    private onDown(event: React.PointerEvent<HTMLInputElement>) {
         this.dragging = true;
         this.setValueByPos(event.nativeEvent.offsetX);
     }
 
-    private onMove(event: PointerEvent<HTMLInputElement>) {
+    private onMove(event: React.PointerEvent<HTMLInputElement>) {
         if (this.dragging) {
             this.setValueByPos(event.nativeEvent.offsetX);
         }
@@ -72,7 +73,7 @@ export class Slider extends React.Component<SliderProps, {}> {
                         onChange={this.onChange}
                         onPointerMove={this.onMove.bind(this)}
                         onPointerDown={this.onDown.bind(this)}
-                        onPointerUp={this.onUpOut.bind(this)}
+                        onPointerUp={this.onUp.bind(this)}
                         value={this.props.value}
                         id="myRange"
                         ref={this.inputElement} />

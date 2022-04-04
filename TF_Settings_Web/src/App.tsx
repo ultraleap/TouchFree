@@ -16,10 +16,12 @@ declare global {
 
 class App extends React.Component {
     private containerStyle : CSSProperties = {
-        display: 'flex',
-        flexDirection: 'column',
-
-        height: '100%'
+        top: '0px',
+        bottom: '0px',
+        position: 'absolute',
+        height: '100%',
+        width: '1080px',
+        backgroundColor: '#222222',
     }
 
     private cursorManager: CursorManager;
