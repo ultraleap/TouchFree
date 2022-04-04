@@ -67,6 +67,9 @@ export class InputActionManager extends EventTarget {
             { detail: action }
         );
 
-        InputActionManager.instance.dispatchEvent(inputActionEvent);
+        // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+        setTimeout(() => {
+            InputActionManager.instance.dispatchEvent(inputActionEvent);
+        }, 0);
     }
 }

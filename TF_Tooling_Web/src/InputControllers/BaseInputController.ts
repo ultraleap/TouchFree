@@ -12,15 +12,21 @@ import { TouchFreeInputAction, InputType } from "../TouchFreeToolingTypes";
 export abstract class BaseInputController {
     // Group: MonoBehaviour Overrides
 
+    private static Instantiated: boolean = false;
+
     // Function: constructor
     // Adds a listener to <InputActionManager> to invoke <HandleInputAction> with <TouchFreeInputActions> as they
     // are received.
     constructor() {
-        InputActionManager.instance.addEventListener('TransmitInputAction',
-            ((e: CustomEvent<TouchFreeInputAction>) => {
-                this.HandleInputAction(e.detail);
-            }) as EventListener);
+        if (!BaseInputController.Instantiated) {
+            BaseInputController.Instantiated = true;
+            InputActionManager.instance.addEventListener('TransmitInputAction',
+                ((e: CustomEvent<TouchFreeInputAction>) => {
+                    this.HandleInputAction(e.detail);
+                }) as EventListener);
+        }
     }
+
 
     // Functions:
 
@@ -46,5 +52,13 @@ export abstract class BaseInputController {
             case InputType.CANCEL:
                 break;
         }
+    }
+
+    disconnect() {
+        InputActionManager.instance.removeEventListener('TransmitInputAction',
+            ((e: CustomEvent<TouchFreeInputAction>) => {
+                this.HandleInputAction(e.detail);
+            }) as EventListener);
+        BaseInputController.Instantiated = false;
     }
 }

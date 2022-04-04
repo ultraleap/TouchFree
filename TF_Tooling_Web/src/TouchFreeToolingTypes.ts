@@ -51,13 +51,16 @@ export class TouchFreeInputAction {
 // Used to translate the raw actions that come across the websocket (<WebsocketInputActions>) and
 // convert them into the Tooling-friendly <TouchFreeInputAction> format.
 export function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInputAction {
+    const yPosition = window.innerHeight - (_wsInput.CursorPosition.y / window.devicePixelRatio);
+    const xPosition = _wsInput.CursorPosition.x / window.devicePixelRatio;
+
     return new TouchFreeInputAction(
         _wsInput.Timestamp,
         FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags),
-        [_wsInput.CursorPosition.x, _wsInput.CursorPosition.y],
+        [xPosition, yPosition],
         _wsInput.DistanceFromScreen,
         _wsInput.ProgressToClick,
     );
