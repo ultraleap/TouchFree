@@ -35,8 +35,6 @@ class App extends React.Component {
 
         this.cursorManager = new CursorManager();
         this.cursorParent = React.createRef();
-
-        console.log("App Constructor called");
     }
 
     componentDidMount() {

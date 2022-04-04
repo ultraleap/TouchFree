@@ -109,7 +109,6 @@ export class WebInputController extends BaseInputController {
 
         switch (_inputData.InputType) {
             case InputType.CANCEL:
-                // console.log(`Got a CANCEL InputAction`);
                 let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
 
                 if (elementAtPos !== null) {
@@ -128,13 +127,11 @@ export class WebInputController extends BaseInputController {
                 break;
 
             case InputType.DOWN:
-                console.log(`Got a DOWN InputAction`);
                 let downEvent: PointerEvent = new PointerEvent("pointerdown", this.activeEventProps);
                 this.DispatchToTarget(downEvent, elementAtPos);
                 break;
 
             case InputType.UP:
-                // console.log(`Got a UP InputAction`);
                 let upEvent: PointerEvent = new PointerEvent("pointerup", this.activeEventProps);
                 this.DispatchToTarget(upEvent, elementAtPos);
                 break;
@@ -226,13 +223,8 @@ export class WebInputController extends BaseInputController {
     // Checks if the target element is null and correctly dispatches the provided event to the
     // element or document body appropriately
     private DispatchToTarget(event: PointerEvent, target: Element | null) {
-        // console.log(`Target was null? ${target === null}`)
-        // console.log(`Dispatching ${event.type} to ${target?.nodeName}`);
-
         if (target !== null) {
             target.dispatchEvent(event);
-
-            // console.log(`Sending event to ${target.tagName}`);
         } else {
             document.dispatchEvent(event);
         }

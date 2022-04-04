@@ -232,11 +232,6 @@ export class MessageReceiver {
             setTimeout(() => {
                 InputActionManager.HandleInputAction(converted);
             });
-
-            if (converted.InputType === InputType.DOWN)
-            {
-                console.log(`MessageReceiver acting on a DOWN with timestamp ${converted.Timestamp}`);
-            }
         }
 
         if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
