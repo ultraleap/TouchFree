@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, RefObject } from "react";
+import React from "react";
 
 import '../../Styles/Controls/ToggleSwitch.css';
 
@@ -9,43 +9,22 @@ interface ToggleProps {
 }
 
 export class ToggleSwitch extends React.Component<ToggleProps, {}> {
-    private inputElem: RefObject<HTMLInputElement>;
-
-    constructor(props: ToggleProps) {
-        super(props);
-
-        this.inputElem = React.createRef();
-    }
-
-    onChange() {
-        console.log("GOT A CHANGE?");
+    private onChange() {
+        // this function is here purely to pass to the input, preventing it becoming ReadOnly
     }
 
     render() {
         return (
             <label className="backgroundLabel"
                 onPointerDown={() => {
-                    // console.log(`Got an onPointerDown on the outer label`);
-                    this.props.onChange.bind(this)(!this.props.value);
-                }}
-                htmlFor={`ToggleSwitch_for_${this.props.name}`}>
+                    this.props.onChange(!this.props.value);
+                }}>
                 <p className="switchLabel">{this.props.name}</p>
-                <label className="switch"
-                    onPointerDown={() => {
-                        // console.log(`Got an onPointerDown on the label`);
-                    }}>
+                <label className="switch">
                     <input type="checkbox"
                         checked={this.props.value}
-                        id={`ToggleSwitch_for_${this.props.name}`}
-                        ref={this.inputElem}
-                        onChange={this.onChange.bind(this)}
-                        // onChange={this.props.onChange.bind(this)}
-                         />
-                    <span className="toggle round"
-                        onPointerDown={() => {
-                            // console.log(`Got an onPointerDown on the span`);
-                        }}
-                        ></span>
+                        onChange={this.onChange}/>
+                    <span className="toggle round"/>
                 </label>
             </label>
         );

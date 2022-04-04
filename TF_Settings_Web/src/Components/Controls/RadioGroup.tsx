@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler } from "react";
+import React from "react";
 
 import '../../Styles/Controls/RadioButtons.css';
 
@@ -6,20 +6,27 @@ interface RadioProps {
     name: string,
     options: string[],
     selected: number,
-    onChange: ChangeEventHandler<HTMLInputElement>
+    onChange: (newValue: string) => void,
 }
 
 export class RadioGroup extends React.Component<RadioProps, {}> {
+    private onChange() {
+        // this function is here purely to pass to the input, preventing it becoming ReadOnly
+    }
+
     render() {
         return(
             <div className="verticalContainer halfWidth">
                 {this.props.options.map((option, index) => (
-                    <label key={index} className="backgroundLabel">
+                    <label key={index} className="backgroundLabel"
+                        onPointerDown={() => {
+                            this.props.onChange(option);
+                        }}>
                         <input
                             type="radio"
                             name={this.props.name}
                             value={option}
-                            onChange={this.props.onChange}
+                            onChange={this.onChange}
                             checked={this.props.selected === index}/>
                         <span className="checkmark"/>
                         <p> {option} </p>
