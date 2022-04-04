@@ -7,6 +7,8 @@ public class CameraPreviewScreen : MonoBehaviour
     public Toggle enableOverexposureHighlighting;
     public Material leftCameraMat;
     public Material rightCameraMat;
+    public Toggle cameraReversedToggle;
+    public Leap.Unity.LeapImageRetriever leapImageRetriever;
 
     [SerializeField]
     private float exposureThresholdValue = 0.5f;
@@ -25,34 +27,45 @@ public class CameraPreviewScreen : MonoBehaviour
 
     void OnEnable()
     {
+        leapImageRetriever.enabled = false;
+        leapImageRetriever.enabled = true;
+        leapImageRetriever.Reconstruct();
+        if (DiagnosticAPIManager.diagnosticAPI.allowImages.HasValue && !DiagnosticAPIManager.diagnosticAPI.allowImages.Value)
+        {
+            Leap.Unity.LeapImageRetriever.EyeTextureData.ResetGlobalShaderValues();
+        }
         handsCameraObject.SetActive(true);
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
+        cameraReversedToggle.onValueChanged.AddListener(OnCameraReversedChanged);
         OnOverExposureValueChanged(enableOverexposureHighlighting.isOn);
 
-        if(DiagnosticAPIManager.diagnosticAPI == null)
+        if (DiagnosticAPIManager.diagnosticAPI == null)
         {
             DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
         }
 
-        DiagnosticAPI.OnGetMaskingResponse += SetSliders;
-        DiagnosticAPI.OnMaskingVersionCheck += HandleMaskingVersionCheck;
+        DiagnosticAPI.OnGetMaskingResponse += HandleMaskingResponse;
+        DiagnosticAPI.OnTrackingApiVersionResponse += HandleMaskingVersionCheck;
+        DiagnosticAPI.OnCameraOrientationResponse += HandleCameraOrientationCheck;
 
         maskingSiderL.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderR.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderT.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
+        DiagnosticAPIManager.diagnosticAPI.GetDevices();
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
-
-        HandleMaskingVersionCheck(DiagnosticAPIManager.maskingAvailable);
+        DiagnosticAPIManager.diagnosticAPI.GetCameraOrientation();
     }
 
     void OnDisable()
     {
         handsCameraObject.SetActive(false);
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
-        DiagnosticAPI.OnGetMaskingResponse -= SetSliders;
-        DiagnosticAPI.OnMaskingVersionCheck -= HandleMaskingVersionCheck;
+        cameraReversedToggle.onValueChanged.RemoveListener(OnCameraReversedChanged);
+        DiagnosticAPI.OnGetMaskingResponse -= HandleMaskingResponse;
+        DiagnosticAPI.OnTrackingApiVersionResponse -= HandleMaskingVersionCheck;
+        DiagnosticAPI.OnCameraOrientationResponse -= HandleCameraOrientationCheck;
 
         maskingSiderL.onValueChanged.RemoveListener(OnSliderChanged);
         maskingSiderR.onValueChanged.RemoveListener(OnSliderChanged);
@@ -62,20 +75,21 @@ public class CameraPreviewScreen : MonoBehaviour
 
     private void Update()
     {
-        if(newMaskDataReceived)
+        if (newMaskDataReceived)
         {
             SetSliders(currentMaskLeft, currentMaskRight, currentMaskTop, currentMaskBottom);
             newMaskDataReceived = false;
         }
     }
 
-    public void HandleMaskingVersionCheck(bool _maskingAvailable)
+    public void HandleMaskingVersionCheck()
     {
-        maskingSiderL.gameObject.SetActive(_maskingAvailable);
-        maskingSiderR.gameObject.SetActive(_maskingAvailable);
-        maskingSiderT.gameObject.SetActive(_maskingAvailable);
-        maskingSiderB.gameObject.SetActive(_maskingAvailable);
-        maskingDiabledWarningObject.SetActive(!_maskingAvailable);
+        bool maskingAvailable = DiagnosticAPIManager.diagnosticAPI.maskingAllowed;
+        maskingSiderL.gameObject.SetActive(maskingAvailable);
+        maskingSiderR.gameObject.SetActive(maskingAvailable);
+        maskingSiderT.gameObject.SetActive(maskingAvailable);
+        maskingSiderB.gameObject.SetActive(maskingAvailable);
+        maskingDiabledWarningObject.SetActive(!maskingAvailable);
     }
 
     void OnOverExposureValueChanged(bool state)
@@ -106,6 +120,12 @@ public class CameraPreviewScreen : MonoBehaviour
             currentMaskBottom);
     }
 
+    private void HandleMaskingResponse(float _left, float _right, float _top, float _bottom)
+    {
+        HandleMaskingVersionCheck();
+        SetSliders(_left, _right, _top, _bottom);
+    }
+
     public void SetSliders(float _left, float _right, float _top, float _bottom)
     {
         maskingSiderL.SetValueWithoutNotify(_left / sliderRatio);
@@ -117,5 +137,15 @@ public class CameraPreviewScreen : MonoBehaviour
     public void OnSliderChanged(float _)
     {
         SetMasking();
+    }
+
+    private void HandleCameraOrientationCheck()
+    {
+        cameraReversedToggle.isOn = DiagnosticAPIManager.diagnosticAPI.cameraReversed;
+    }
+
+    void OnCameraReversedChanged(bool state)
+    {
+        DiagnosticAPIManager.diagnosticAPI.SetCameraOrientation(cameraReversedToggle.isOn);
     }
 }

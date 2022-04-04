@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,11 +17,21 @@ public class DiagnosticAPI : IDisposable
     public delegate void MaskingDataDelegate(float _left, float _right, float _top, float _bottom);
 
     public static event MaskingDataDelegate OnGetMaskingResponse;
-    public static event Action<bool> OnMaskingVersionCheck;
+    public static event Action OnTrackingApiVersionResponse;
+    public static event Action OnTrackingServerInfoResponse;
+    public static event Action OnTrackingDeviceInfoResponse;
+    public static event Action OnAllowImagesResponse;
+    public static event Action OnCameraOrientationResponse;
     public static event Action<bool> OnGetAnalyticsEnabledResponse;
 
     public uint connectedDeviceID;
+    public string connectedDeviceFirmware;
+    public string connectedDeviceSerial;
     public bool maskingAllowed = false;
+    public bool cameraReversed = false;
+    public bool? allowImages;
+    public Version version { get; private set; }
+    public string trackingServiceVersion { get; private set; }
 
     const string minimumMaskingAPIVerison = "2.1.0";
 
@@ -29,19 +40,18 @@ public class DiagnosticAPI : IDisposable
     public DiagnosticAPI(MonoBehaviour _creatorMonobehaviour)
     {
         Connect();
-        _creatorMonobehaviour.StartCoroutine(MessageQueueReader());
+        MessageQueueReader();
     }
 
-    IEnumerator MessageQueueReader()
+    async Task MessageQueueReader()
     {
         while (true)
         {
+            await Task.Delay(10);
             if (newMessages.TryDequeue(out var message))
             {
                 HandleMessage(message);
             }
-
-            yield return null;
         }
     }
 
@@ -68,6 +78,9 @@ public class DiagnosticAPI : IDisposable
             {
                 Debug.Log("DiagnosticAPI open... ");
                 status = Status.Connected;
+                GetServerInfo();
+                GetDevices();
+                GetVersion();
             };
             webSocket.OnError += (sender, e) =>
             {
@@ -125,8 +138,10 @@ public class DiagnosticAPI : IDisposable
                 try
                 {
                     GetDevicesResponse devicesResponse = JsonUtility.FromJson<GetDevicesResponse>(_message);
-                    connectedDeviceID = devicesResponse.payload[0].id;
-                    Request("GetImageMask:" + connectedDeviceID);
+                    if (devicesResponse.payload.Length > 0)
+                    {
+                        connectedDeviceID = devicesResponse.payload[0].device_id;
+                    }
                 }
                 catch
                 {
@@ -155,11 +170,62 @@ public class DiagnosticAPI : IDisposable
                     Debug.Log("DiagnosticAPI - Could not parse analytics response: " + _message);
                 }
                 break;
+            case "GetServerInfo":
+                try
+                {
+                    var data = JsonUtility.FromJson<GetServerInfoResponse>(_message);
+                    trackingServiceVersion = data.payload.server_version ?? trackingServiceVersion;
+                    OnTrackingServerInfoResponse?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse server info response: " + _message);
+                }
+                break;
+            case "GetDeviceInfo":
+                try
+                {
+                    var data = JsonUtility.FromJson<GetDeviceInfoResponse>(_message);
+                    connectedDeviceFirmware = data?.payload.device_firmware ?? connectedDeviceFirmware;
+                    connectedDeviceSerial = data?.payload.device_serial ?? connectedDeviceSerial;
+                    OnTrackingDeviceInfoResponse?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse device info response: " + _message);
+                }
+                break;
+            case "SetAllowImages":
+            case "GetAllowImages":
+                try
+                {
+                    GetAllowImagesResponse data = JsonUtility.FromJson<GetAllowImagesResponse>(_message);
+                    allowImages = data?.payload ?? false;
+                    OnAllowImagesResponse?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse allow images response: " + _message);
+                }
+                break;
+            case "GetCameraOrientation":
+            case "SetCameraOrientation":
+                try
+                {
+                    GetCameraOrientationResponse data = JsonUtility.FromJson<GetCameraOrientationResponse>(_message);
+                    cameraReversed = data?.payload.camera_orientation == "fixed-inverted";
+                    OnCameraOrientationResponse?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log("DiagnosticAPI - Could not parse camera orientation response: " + _message);
+                }
+                break;
             case "SetAnalyticsEnabled":
-                // No current use for this
+                // We are expecting responses from these requests but do not need to consume them
                 break;
             default:
-                Debug.Log("DiagnosticAPI - Could not parse analytics response of type: " + response.type + " with message: " + _message);
+                Debug.Log("DiagnosticAPI - Could not parse response of type: " + response.type + " with message: " + _message);
                 break;
         }
     }
@@ -168,6 +234,7 @@ public class DiagnosticAPI : IDisposable
     {
         Version curVersion = new Version(_version);
         Version minVersion = new Version(minimumMaskingAPIVerison);
+        version = curVersion;
 
         if (curVersion.CompareTo(minVersion) >= 0)
         {
@@ -179,15 +246,15 @@ public class DiagnosticAPI : IDisposable
             // Version does not allow masking
             maskingAllowed = false;
         }
-
-        OnMaskingVersionCheck?.Invoke(maskingAllowed);
+        OnTrackingApiVersionResponse?.Invoke();
     }
 
     public void Request(object payload)
     {
         if (status == Status.Connected)
         {
-            webSocket.Send(JsonUtility.ToJson(payload, true));
+            var requestMessage = JsonUtility.ToJson(payload, true);
+            webSocket.Send(requestMessage);
         }
         else
         {
@@ -235,11 +302,52 @@ public class DiagnosticAPI : IDisposable
         Request(new GetVersionRequest());
     }
 
+    public void GetServerInfo()
+    {
+        Request(new GetServerInfoRequest());
+    }
+
+    public void GetDeviceInfo()
+    {
+        Request(new GetDeviceInfoRequest()
+        {
+            payload = new DeviceIdPayload() { device_id = connectedDeviceID }
+        });
+    }
+
+    public void GetAllowImages()
+    {
+        Request(new GetAllowImagesRequest());
+    }
+
+    public void SetAllowImages(bool enabled)
+    {
+        Request(new SetAllowImagesRequest() { payload = enabled });
+    }
+
+    public void GetCameraOrientation()
+    {
+        Request(new GetCameraOrientationRequest()
+        {
+            payload = new DeviceIdPayload() { device_id = connectedDeviceID }
+        });
+    }
+
+    public void SetCameraOrientation(bool reverseOrientation)
+    {
+        Request(new SetCameraOrientationRequest()
+        {
+            payload = new CameraOrientationPayload() { device_id = connectedDeviceID, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" }
+        });
+    }
+
     void IDisposable.Dispose()
     {
         status = Status.Expired;
         webSocket.Close();
     }
+
+    #region "Diagnostic API Messages"
 
     [Serializable]
     class DiagnosticApiRequest
@@ -339,6 +447,74 @@ public class DiagnosticAPI : IDisposable
     }
 
     [Serializable]
+    class GetDeviceInfoRequest : DiagnosticApiRequest
+    {
+        public GetDeviceInfoRequest() : base("GetDeviceInfo") { }
+        public DeviceIdPayload payload;
+    }
+
+    [Serializable]
+    class GetDeviceInfoResponse : DiagnosticApiResponse
+    {
+        public GetDeviceInfoResponse() : base("GetDeviceInfo") { }
+        public DiagnosticDeviceInformation payload;
+    }
+
+    [Serializable]
+    class GetServerInfoRequest : DiagnosticApiRequest
+    {
+        public GetServerInfoRequest() : base("GetServerInfo") { }
+    }
+
+    [Serializable]
+    class GetServerInfoResponse : DiagnosticApiResponse
+    {
+        public GetServerInfoResponse() : base("GetServerInfo") { }
+        public ServiceInfoPayload payload;
+    }
+
+    [Serializable]
+    class GetAllowImagesRequest : DiagnosticApiRequest
+    {
+        public GetAllowImagesRequest() : base("GetAllowImages") { }
+    }
+
+    [Serializable]
+    class GetAllowImagesResponse : DiagnosticApiResponse
+    {
+        public GetAllowImagesResponse() : base("GetAllowImages") { }
+        public bool payload;
+    }
+
+    [Serializable]
+    class SetAllowImagesRequest : DiagnosticApiRequest
+    {
+        public SetAllowImagesRequest() : base("SetAllowImages") { }
+        public bool payload;
+    }
+
+    [Serializable]
+    class GetCameraOrientationRequest : DiagnosticApiRequest
+    {
+        public GetCameraOrientationRequest() : base("GetCameraOrientation") { }
+        public DeviceIdPayload payload;
+    }
+
+    [Serializable]
+    class GetCameraOrientationResponse : DiagnosticApiResponse
+    {
+        public GetCameraOrientationResponse() : base("GetCameraOrientation") { }
+        public CameraOrientationPayload payload;
+    }
+
+    [Serializable]
+    class SetCameraOrientationRequest : DiagnosticApiRequest
+    {
+        public SetCameraOrientationRequest() : base("SetCameraOrientation") { }
+        public CameraOrientationPayload payload;
+    }
+
+    [Serializable]
     struct DeviceIdPayload
     {
         public uint device_id;
@@ -357,9 +533,33 @@ public class DiagnosticAPI : IDisposable
     [Serializable]
     struct DiagnosticDevice
     {
-        public uint id;
+        public uint device_id;
         public string type;
         public uint clients;
         public bool streaming;
     }
+
+    [Serializable]
+    struct DiagnosticDeviceInformation
+    {
+        public string device_hardware;
+        public string device_serial;
+        public string device_firmware;
+        public uint device_id;
+    }
+
+    [Serializable]
+    struct ServiceInfoPayload
+    {
+        public string server_version;
+    }
+
+    [Serializable]
+    struct CameraOrientationPayload
+    {
+        public uint device_id;
+        public string camera_orientation;
+    }
+
+    #endregion
 }
