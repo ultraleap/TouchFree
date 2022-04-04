@@ -1,5 +1,4 @@
 import {
-    BitmaskFlags,
     VersionInfo,
     WebsocketInputAction
 } from '../TouchFreeToolingTypes';

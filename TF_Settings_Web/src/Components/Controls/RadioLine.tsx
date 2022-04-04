@@ -18,12 +18,13 @@ export class RadioLine extends React.Component<RadioProps, {}> {
                 <p className="sliderLabel"> {this.props.name} </p>
                 {this.props.options.map((option, index) => (
                     <div className="horizontalRadioContainer"
+                        key={option}
                         onPointerDown={() => {
                             this.props.onChange(option);
                         }}>
                         <input
                             type="radio"
-                            key={index}
+                            key={option}
                             name={this.props.name}
                             value={option}
                             onChange={this.onChange}

@@ -149,7 +149,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         this.setState((state) => {
             let newConf = state.interactionConfig;
 
-            newConf.TouchPlane.TouchPlaneActivationDistanceCM = newValue;
+            newConf.TouchPlane.TouchPlaneActivationDistanceCm = newValue;
 
             return {
                 interactionConfig: newConf
@@ -231,6 +231,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
             switch (this.state.interactionConfig.InteractionType) {
                 case InteractionType.HOVER:
                     interactionControls.push(<TextSlider name="Hover & Hold Start Time"
+                        key="Hover & Hold Start Time"
                         rangeMin={.1}
                         rangeMax={1}
                         leftLabel="0.1s"
@@ -238,6 +239,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         value={this.state.interactionConfig.HoverAndHold.HoverStartTimeS}
                         onChange={this.onHoverStartTimeChange.bind(this)} />);
                     interactionControls.push(<TextSlider name="Hover & Hold Complete Time"
+                        key="Hover & Hold Complete Time"
                         rangeMin={.1}
                         rangeMax={1}
                         leftLabel="0.1s"
@@ -247,22 +249,26 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     break;
                 case InteractionType.TOUCHPLANE:
                     interactionControls.push(<ToggleSwitch name="Scroll and Drag"
+                        key="Scroll and Drag"
                         value={this.state.interactionConfig.UseScrollingOrDragging}
                         onChange={this.onScrollDragChange.bind(this)} />);
                     interactionControls.push(<TextSlider name="TouchPlane Distance(cm)"
+                        key="TouchPlane Distance(cm)"
                         rangeMin={0}
                         rangeMax={20}
                         leftLabel="0cm"
                         rightLabel="20cm"
-                        value={this.state.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCM}
+                        value={this.state.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCm}
                         onChange={this.onTouchPlaneDistanceChange.bind(this)} />);
                     interactionControls.push(<RadioLine name="Tracking Position"
+                        key="Tracking Position"
                         selected={activePlaneTracking}
                         options={Object.keys(TouchPlaneTrackingOptions)}
                         onChange={this.onTrackingPosChange.bind(this)} />);
                     break;
                 case InteractionType.PUSH:
                     interactionControls.push(<ToggleSwitch name="Scroll and Drag"
+                        key="Scroll and Drag"
                         value={this.state.interactionConfig.UseScrollingOrDragging}
                         onChange={this.onScrollDragChange.bind(this)} />);
                     break;
@@ -270,6 +276,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
             if (this.state.interactionConfig.InteractionZoneEnabled) {
                 zoneControls.push(<TextSlider name="Minimum Active Distance"
+                    key="Minimum Active Distance"
                     rangeMin={0}
                     rangeMax={30}
                     leftLabel="0cm"
@@ -277,6 +284,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     value={this.state.interactionConfig.InteractionMinDistanceCm}
                     onChange={this.onInteractionMinDistChange.bind(this)} />);
                 zoneControls.push(<TextSlider name="Maximum Active Distance"
+                    key="Maximum Active Distance"
                     rangeMin={0}
                     rangeMax={30}
                     leftLabel="0cm"
