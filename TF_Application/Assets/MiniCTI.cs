@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Ultraleap.TouchFree.Tooling;
+using UnityEngine.Video;
 
 public class MiniCTI : MonoBehaviour
 {
     public GameObject miniCTI;
+    public VideoPlayer player;
 
     private void Awake()
     {
@@ -13,6 +15,8 @@ public class MiniCTI : MonoBehaviour
         miniCTI.SetActive(false);
 
         currentCTIWait = StartCoroutine(ShowMiniCTIAfterWait());
+
+        player.url = Application.streamingAssetsPath + "/Mini CTI.mp4";
     }
 
     private void HandleInputAction(InputAction _inputData)
