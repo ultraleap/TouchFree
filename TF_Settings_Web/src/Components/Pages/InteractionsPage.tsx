@@ -338,6 +338,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     <h1> Interaction Type </h1>
                     <button
                         onClick={this.resetToDefaults.bind(this)}
+                        onPointerUp={this.resetToDefaults.bind(this)}
                         className="tfButton" >
                         <p> Reset to Default </p>
                     </button>
