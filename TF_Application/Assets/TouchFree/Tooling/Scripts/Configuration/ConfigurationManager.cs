@@ -11,11 +11,21 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
     public static class ConfigurationManager
     {
         // Function: RequestConfigState
-        // Used to request a <ConfigState> from the Service via the <webSocket>.
-        // Provides an asynchronous <ConfigState> via the _callback parameter.
+        // Used to request a <ConfigState> representing the config currently in use by the Service
+        // via the <webSocket>.
+        // Provides a <ConfigState> asynchronously via the _callback parameter.
         public static void RequestConfigState(Action<ConfigState> _callback)
         {
             ConnectionManager.serviceConnection.RequestConfigState(_callback);
+        }
+
+        // Function: RequestConfigState
+        // Used to request a <ConfigState> representing the current state of the Service's config
+        // files from the Service via the <webSocket>.
+        // Provides a <ConfigState> asynchronously via the _callback parameter.
+        public static void RequestConfigFileState(Action<ConfigState> _callback)
+        {
+            ConnectionManager.serviceConnection.RequestConfigFile(_callback);
         }
 
         #region Request Config Change
@@ -36,9 +46,9 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             string jsonContent = "";
             jsonContent += "{\"action\":\"";
             jsonContent += action + "\",\"content\":{\"requestID\":\"";
-            jsonContent += requestID + "\",";
+            jsonContent += requestID + "\"";
 
-            if(_interaction != null)
+            if (_interaction != null)
             {
                 jsonContent += SerializeInteractionConfig(_interaction);
             }
@@ -48,8 +58,43 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
                 jsonContent += SerializePhysicalConfig(_physical);
             }
 
-            // last element added was final so remove the comma
-            jsonContent = jsonContent.Remove(jsonContent.Length - 1);
+            jsonContent += "}}";
+
+            ConnectionManager.serviceConnection.SendMessage(jsonContent, requestID, _callback);
+        }
+
+        // Function: RequestConfigFileChange
+        // Requests a modification to the configuration **files** used by the Service. Takes in an
+        // <InteractionConfig> and/or a <PhysicalConfig> representing the desired changes & sends
+        // them through the <ConnectionManager>
+        //
+        // Provide a _callback if you require confirmation that your settings were used correctly.
+        //
+        // WARNING!
+        // Any changes that have been made using <RequestConfigChange> by *any* connected client will be
+        // lost when changing these files. The change will be applied **to the current config files directly,**
+        // disregarding current active confiag state, and the config will be loaded from files.
+        public static void RequestConfigFileChange(InteractionConfig _interaction, PhysicalConfig _physical, Action<WebSocketResponse> _callback = null)
+        {
+            string action = ActionCode.SET_CONFIGURATION_FILE.ToString();
+            Guid requestGUID = Guid.NewGuid();
+            string requestID = requestGUID.ToString();
+
+            string jsonContent = "";
+            jsonContent += "{\"action\":\"";
+            jsonContent += action + "\",\"content\":{\"requestID\":\"";
+            jsonContent += requestID + "\"";
+
+            if (_interaction != null)
+            {
+                jsonContent += SerializeInteractionConfig(_interaction);
+            }
+
+            if (_physical != null)
+            {
+                jsonContent += SerializePhysicalConfig(_physical);
+            }
+
             jsonContent += "}}";
 
             ConnectionManager.serviceConnection.SendMessage(jsonContent, requestID, _callback);
@@ -65,6 +110,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
             if (_interaction.configValues.Count > 0 || _interaction.HoverAndHold.configValues.Count > 0)
             {
+                newContent += ",";
                 newContent += "\"interaction\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.configValues)
@@ -73,11 +119,12 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
                     newContent += ",";
                 }
 
-                newContent += SerializeInteractionSpecificConfigs(_interaction);
-
                 // last element added was last in the list so remove the comma
                 newContent = newContent.Remove(newContent.Length - 1);
-                newContent += "},";
+
+                newContent += SerializeInteractionSpecificConfigs(_interaction);
+
+                newContent += "}";
             }
 
             return newContent;
@@ -89,6 +136,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
             if (_interaction.HoverAndHold.configValues.Count > 0)
             {
+                newContent += ",";
                 newContent += "\"HoverAndHold\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.HoverAndHold.configValues)
@@ -99,11 +147,12 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
                 // last element added was last in the list so remove the comma
                 newContent = newContent.Remove(newContent.Length - 1);
-                newContent += "},";
+                newContent += "}";
             }
 
             if (_interaction.TouchPlane.configValues.Count > 0)
             {
+                newContent += ",";
                 newContent += "\"TouchPlane\":{";
 
                 foreach (KeyValuePair<string, object> value in _interaction.TouchPlane.configValues)
@@ -114,7 +163,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
                 // last element added was last in the list so remove the comma
                 newContent = newContent.Remove(newContent.Length - 1);
-                newContent += "},";
+                newContent += "}";
             }
 
             return newContent;
@@ -128,7 +177,8 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             {
                 if (_physical.configValues.Count > 0)
                 {
-                    newContent += ",\"physical\":{";
+                    newContent += ",";
+                    newContent += "\"physical\":{";
 
                     foreach (KeyValuePair<string, object> value in _physical.configValues)
                     {
@@ -138,7 +188,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
 
                     // last element added was last in the list so remove the comma
                     newContent = newContent.Remove(newContent.Length - 1);
-                    newContent += "},";
+                    newContent += "}";
                 }
             }
 

@@ -13,23 +13,26 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public override InteractionType InteractionType { get; } = InteractionType.PUSH;
 
         public double millisecondsCooldownOnEntry = 300.0;
+        public double clickHoldTimerMs = 800.0;
+
         Stopwatch handAppearedCooldown = new Stopwatch();
+        Stopwatch clickHoldStopwatch = new Stopwatch();
 
         // Speed in millimeters per second
         public float speedMin = 150f;
         public float speedMax = 500f;
-        public float distAtSpeedMinMm = 30f;
-        public float distAtSpeedMaxMm = 5f;
+        public float distAtSpeedMinMm = 42f;
+        public float distAtSpeedMaxMm = 8f;
         public float horizontalDecayDistMm = 50f;
 
-        public float thetaOne = 15f;
+        public float thetaOne = 65f;
         public float thetaTwo = 135f;
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
         // If a hand moves between the two angles, this is "horizontal" to the screen
 
-        public float unclickThreshold = 0.85f;
-        public float unclickThresholdDrag = 0.85f;
+        public float unclickThreshold = 0.97f;
+        public float unclickThresholdDrag = 0.97f;
         public bool decayForceOnClick = true;
         public float forceDecayTime = 0.1f;
         bool decayingForce;
@@ -37,8 +40,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public bool useTouchPlaneForce = true;
         public float distPastTouchPlaneMm = 20f;
 
-        public float dragStartDistanceThresholdMm = 10f;
-        public float dragDeadzoneShrinkRate = 0.5f;
+        public float dragStartDistanceThresholdMm = 30f;
+        public float dragDeadzoneShrinkRate = 0.9f;
         public float dragDeadzoneShrinkDistanceThresholdMm = 10f;
 
         public float deadzoneMaxSizeIncreaseMm = 20f;
@@ -120,12 +123,18 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Determine whether to send any other events
                 if (pressing)
                 {
-                    if ((!isDragging && appliedForce < unclickThreshold) || (isDragging && appliedForce < unclickThresholdDrag) || ignoreDragging)
+                    if ((!isDragging && appliedForce < unclickThreshold) || 
+                        (isDragging && appliedForce < unclickThresholdDrag) || 
+                        ignoreDragging ||
+                        (clickHoldStopwatch.IsRunning && clickHoldStopwatch.ElapsedMilliseconds >= clickHoldTimerMs))
                     {
                         pressing = false;
                         isDragging = false;
                         cursorPressPosition = Vector2.Zero;
                         SendInputAction(InputType.UP, positions, appliedForce);
+                        clickHoldStopwatch.Stop();
+
+                        decayingForce = true;
                     }
                     else
                     {
@@ -139,6 +148,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                             isDragging = true;
                             SendInputAction(InputType.MOVE, positions, appliedForce);
                             positioningModule.Stabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
+                            clickHoldStopwatch.Stop();
                         }
                         else
                         {
@@ -150,16 +160,14 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 else if (!decayingForce && appliedForce >= 1f)
                 {
                     // Need the !decayingForce check here to eliminate the risk of double-clicks
-                    // when ignoring dragging and moving past the touch-plane.
 
                     pressing = true;
                     SendInputAction(InputType.DOWN, positions, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
 
-                    // If dragging is off, we want to decay the force after a click back to the unclick threshold
-                    if (decayForceOnClick && ignoreDragging)
+                    if(!ignoreDragging)
                     {
-                        decayingForce = true;
+                        clickHoldStopwatch.Restart();
                     }
 
                     positioningModule.Stabiliser.SetDeadzoneOffset();

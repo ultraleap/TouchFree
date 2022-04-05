@@ -1403,7 +1403,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Check hands are tracking correctly in the Leap Motion Control Panel
+  m_Text: 'Check hands are tracking correctly in the
+
+    ''Camera Feeds and Masking''
+    screen'
 --- !u!1 &6623992533434911427
 GameObject:
   m_ObjectHideFlags: 0

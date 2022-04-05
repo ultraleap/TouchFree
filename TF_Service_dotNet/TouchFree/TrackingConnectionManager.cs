@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
@@ -8,18 +9,50 @@ namespace Ultraleap.TouchFree.Library
         public Leap.Controller controller;
         IConfigManager configManager;
 
+        private int maximumWaitTimeSeconds = 30;
+        private int initialWaitTimeSeconds = 1;
+        private int waitTimeSeconds = 1;
+
         public TrackingConnectionManager(IConfigManager _configManager)
         {
             configManager = _configManager;
             controller = new Leap.Controller();
             controller.Connect += Controller_Connect;
+            controller.Disconnect += Controller_Disconnect;
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
+            CheckConnectionAndRetryOnFailure();
         }
 
         private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
         {
             UpdateTrackingMode(configManager.PhysicalConfig);
+        }
+
+        private void Controller_Disconnect(object sender, Leap.ConnectionLostEventArgs e)
+        {
+            waitTimeSeconds = initialWaitTimeSeconds;
+            CheckConnectionAndRetryOnFailure();
+        }
+
+        private async Task CheckConnectionAndRetryOnFailure()
+        {
+            while (true)
+            {
+                await Task.Delay(1000 * waitTimeSeconds);
+
+                if (!controller.IsServiceConnected)
+                {
+                    controller.StartConnection();
+                }
+                else
+                {
+                    break;
+                }
+
+                waitTimeSeconds *= 2;
+                waitTimeSeconds = waitTimeSeconds > maximumWaitTimeSeconds ? maximumWaitTimeSeconds : waitTimeSeconds;
+            }
         }
 
         public void UpdateTrackingMode(PhysicalConfigInternal _config)

@@ -15,6 +15,11 @@ namespace Ultraleap.TouchFree.Service
         {
 #if !DEBUG
             var loggingFileDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? ConfigFileUtils.ConfigFileDirectory : "";
+
+            if (loggingFileDirectory != "") {
+                Directory.CreateDirectory(loggingFileDirectory);
+            }
+
             FileStream filestream = new FileStream(loggingFileDirectory + "log.txt", FileMode.Create);
             StreamWriter streamwriter = new StreamWriter(filestream)
             {

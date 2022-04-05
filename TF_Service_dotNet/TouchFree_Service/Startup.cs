@@ -36,6 +36,8 @@ namespace Ultraleap.TouchFree.Service
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseWebSockets();
+            app.UseStaticFiles("/settings");
+
             app.UseTouchFreeRouter();
 
             interactionManager = app.ApplicationServices.GetService<InteractionManager>();

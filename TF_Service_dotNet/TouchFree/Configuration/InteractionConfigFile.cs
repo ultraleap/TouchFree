@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
     [Serializable]
     public class InteractionConfig
     {
-        public bool UseScrollingOrDragging = false;
+        public bool UseScrollingOrDragging = true;
         public float DeadzoneRadius = 0.003f;
 
         public bool InteractionZoneEnabled = false;
@@ -36,5 +36,45 @@ namespace Ultraleap.TouchFree.Library.Configuration
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
         public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
+
+        public InteractionConfig()
+        {
+            this.UseScrollingOrDragging = true;
+            this.DeadzoneRadius = 0.003f;
+
+            this.InteractionZoneEnabled = false;
+            this.InteractionMinDistanceCm = 0.0f;
+            this.InteractionMaxDistanceCm = 25.0f;
+
+            this.InteractionType = InteractionType.PUSH;
+
+            // Interaction-specific settings
+            this.HoverAndHold = new HoverAndHoldInteractionSettings();
+            this.TouchPlane = new TouchPlaneInteractionSettings();
+        }
+
+        public InteractionConfig(InteractionConfigInternal _internal)
+        {
+            this.InteractionMinDistanceCm = _internal.InteractionMinDistanceMm / 10f;
+            this.InteractionMaxDistanceCm = _internal.InteractionMaxDistanceMm / 10f;
+
+            this.DeadzoneRadius = _internal.DeadzoneRadiusMm / 1000f;
+
+            this.UseScrollingOrDragging = _internal.UseScrollingOrDragging;
+            this.InteractionZoneEnabled = _internal.InteractionZoneEnabled;
+
+            this.InteractionType = _internal.InteractionType;
+
+            HoverAndHoldInteractionSettings intermedHH = new HoverAndHoldInteractionSettings();
+            intermedHH.HoverStartTimeS = _internal.HoverAndHold.HoverStartTimeS;
+            intermedHH.HoverCompleteTimeS = _internal.HoverAndHold.HoverCompleteTimeS;
+
+            TouchPlaneInteractionSettings intermedTP = new TouchPlaneInteractionSettings();
+            intermedTP.TouchPlaneActivationDistanceCm = _internal.TouchPlane.TouchPlaneActivationDistanceMm / 10f;
+            intermedTP.TouchPlaneTrackedPosition = _internal.TouchPlane.TouchPlaneTrackedPosition;
+
+            this.HoverAndHold = intermedHH;
+            this.TouchPlane = intermedTP;
+        }
     }
 }
