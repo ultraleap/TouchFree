@@ -55,7 +55,11 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
 
     private setValueByPos(xPos: number) {
         if (this.inputElement.current !== null) {
-            let posInRange: number = xPos / this.inputElement.current.clientWidth;
+            // Slider height is currently 0.75rem
+            let remValue = this.inputElement.current.clientHeight;
+
+            // Slider control is 1.5rem wide, so half is 1x remValue, full is 2x remValue
+            let posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth -  (2 * remValue));
             let outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
 
             if (this.props.rangeMin < outputValue &&
