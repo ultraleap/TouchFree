@@ -30,7 +30,7 @@ public class CameraPreviewScreen : MonoBehaviour
         leapImageRetriever.enabled = false;
         leapImageRetriever.enabled = true;
         leapImageRetriever.Reconstruct();
-        if (DiagnosticAPIManager.diagnosticAPI.allowImages.HasValue && DiagnosticAPIManager.diagnosticAPI.allowImages.Value)
+        if (DiagnosticAPIManager.diagnosticAPI.allowImages.HasValue && !DiagnosticAPIManager.diagnosticAPI.allowImages.Value)
         {
             Leap.Unity.LeapImageRetriever.EyeTextureData.ResetGlobalShaderValues();
         }

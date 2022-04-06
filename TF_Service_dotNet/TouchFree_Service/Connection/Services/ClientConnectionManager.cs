@@ -83,6 +83,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 activeConnections.Add(_connection);
                 Console.WriteLine("Connection set up");
+                handManager.ConnectToTracking();
             }
         }
 
@@ -113,6 +114,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 // there are no connections
                 LostAllConnections?.Invoke();
+                handManager.DisconnectFromTracking();
             }
         }
 

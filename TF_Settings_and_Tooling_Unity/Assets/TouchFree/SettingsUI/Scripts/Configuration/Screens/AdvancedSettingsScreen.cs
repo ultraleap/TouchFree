@@ -4,6 +4,8 @@ using SFB;
 
 using Ultraleap.TouchFree.ServiceShared;
 using System.IO;
+using System;
+using System.Diagnostics;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -87,6 +89,25 @@ namespace Ultraleap.TouchFree.ServiceUI
                     ConfigManager.LoadConfigsFromFiles();
                 }
             }
+        }
+
+        public void OpenTouchFreeLogFileLocation()
+        {
+            var programFilesLocation = Environment.GetEnvironmentVariable("PROGRAMFILES");
+            OpenFolderInFileExplorer(programFilesLocation + "\\Ultraleap\\TouchFree\\Wrapper\\");
+        }
+
+        public void OpenTrackingLogFileLocation()
+        {
+            var programDataLocation = Environment.GetEnvironmentVariable("PROGRAMDATA");
+            OpenFolderInFileExplorer(programDataLocation + "\\Ultraleap\\HandTracker\\Logs\\");
+        }
+
+        private void OpenFolderInFileExplorer(string folderLocation)
+        {
+            Process p = new Process();
+            p.StartInfo = new ProcessStartInfo("explorer.exe") { Arguments = folderLocation };
+            p.Start();
         }
 
         void OnAnalyticsToggled(bool _)

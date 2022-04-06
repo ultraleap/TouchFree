@@ -195,6 +195,7 @@ public class DiagnosticAPI : IDisposable
                     Debug.Log("DiagnosticAPI - Could not parse device info response: " + _message);
                 }
                 break;
+            case "SetAllowImages":
             case "GetAllowImages":
                 try
                 {
@@ -208,6 +209,7 @@ public class DiagnosticAPI : IDisposable
                 }
                 break;
             case "GetCameraOrientation":
+            case "SetCameraOrientation":
                 try
                 {
                     GetCameraOrientationResponse data = JsonUtility.FromJson<GetCameraOrientationResponse>(_message);
@@ -220,8 +222,6 @@ public class DiagnosticAPI : IDisposable
                 }
                 break;
             case "SetAnalyticsEnabled":
-            case "SetCameraOrientation":
-            case "SetAllowImages":
                 // We are expecting responses from these requests but do not need to consume them
                 break;
             default:

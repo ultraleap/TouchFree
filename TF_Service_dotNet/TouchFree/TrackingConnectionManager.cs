@@ -12,6 +12,7 @@ namespace Ultraleap.TouchFree.Library
         private int maximumWaitTimeSeconds = 30;
         private int initialWaitTimeSeconds = 1;
         private int waitTimeSeconds = 1;
+        private bool ShouldConnect = false;
 
         public TrackingConnectionManager(IConfigManager _configManager)
         {
@@ -21,7 +22,22 @@ namespace Ultraleap.TouchFree.Library
             controller.Disconnect += Controller_Disconnect;
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
+            controller.StopConnection();
+        }
+
+        public void Connect()
+        {
+            ShouldConnect = true;
             CheckConnectionAndRetryOnFailure();
+        }
+
+        public void Disconnect()
+        {
+            ShouldConnect = false;
+            if (controller.IsServiceConnected)
+            {
+                controller.StopConnection();
+            }
         }
 
         private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
@@ -32,7 +48,10 @@ namespace Ultraleap.TouchFree.Library
         private void Controller_Disconnect(object sender, Leap.ConnectionLostEventArgs e)
         {
             waitTimeSeconds = initialWaitTimeSeconds;
-            CheckConnectionAndRetryOnFailure();
+            if (ShouldConnect)
+            {
+                CheckConnectionAndRetryOnFailure();
+            }
         }
 
         private async Task CheckConnectionAndRetryOnFailure()
@@ -41,7 +60,7 @@ namespace Ultraleap.TouchFree.Library
             {
                 await Task.Delay(1000 * waitTimeSeconds);
 
-                if (!controller.IsServiceConnected)
+                if (!controller.IsServiceConnected && ShouldConnect)
                 {
                     controller.StartConnection();
                 }
