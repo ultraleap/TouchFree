@@ -5,15 +5,12 @@
     // All have tooltips
 
 import React, { CSSProperties } from "react";
+import { TrackingServiceState } from "../TouchFree/TouchFreeToolingTypes";
 
 import camStatusIcon from '../Images/Camera_Status_Icon.png';
 import svcStatusIcon from '../Images/Tracking_Status_Icon.png';
 
-const TouchFree = window.TouchFree;
-
-const trackingState = TouchFree.TouchFreeToolingTypes.TrackingServiceState;
-
-export class StatusIndicator extends React.Component<{status: number}> {
+export class StatusIndicator extends React.Component<{status: TrackingServiceState}> {
     private indicatorStyle: CSSProperties = {
         alignSelf: 'center',
         height: "100%",
@@ -66,17 +63,15 @@ export class StatusIndicator extends React.Component<{status: number}> {
     }
 
     render () {
-        console.log(`status was: ${trackingState[this.props.status]}`)
-
         return (
             <div style={this.indicatorStyle}>
                 <div style={this.statusContainerStyle}>
                     <img src={camStatusIcon} alt="Camera Status Icon" style={this.statusIconStyle}/>
-                    <div style={(this.props.status === trackingState.CONNECTED) ? this.statusDotStyleOK : this.statusDotStyleBad}/>
+                    <div style={(this.props.status === TrackingServiceState.CONNECTED) ? this.statusDotStyleOK : this.statusDotStyleBad}/>
                 </div>
                 <div style={this.statusContainerStyle}>
                     <img src={svcStatusIcon} alt="Tracking Service Status Icon" style={this.statusIconStyle}/>
-                    <div style={(this.props.status === trackingState.UNAVAILABLE) ? this.statusDotStyleBad : this.statusDotStyleOK}/>
+                    <div style={(this.props.status === TrackingServiceState.UNAVAILABLE) ? this.statusDotStyleBad : this.statusDotStyleOK}/>
                 </div>
             </div>
         );

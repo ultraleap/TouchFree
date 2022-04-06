@@ -100,10 +100,10 @@ export interface HoverAndHoldInteractionSettings {
 // not modify a member of this class, its value will not change when the instance is sent to
 // TouchFree Service.
 export interface TouchPlaneInteractionSettings {
-    // Property: touchPlaneActivationDistanceCm
+    // Property: TouchPlaneActivationDistanceCm
     // This determines how far (in cm) the TouchPlane is from the screen surface. This
     // represents the plane that the user must pass to begin and end a click event.
-    touchPlaneActivationDistanceCm: number;
+    TouchPlaneActivationDistanceCm: number;
 
     // Property: TouchPlaneTrackedPosition
     // This determines which bone position will be tracked when performing the interaction.

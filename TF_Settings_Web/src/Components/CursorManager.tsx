@@ -1,8 +1,7 @@
+import { DotCursor } from '../TouchFree/Cursors/DotCursor';
+
 import dotImage from '../Images/Cursor/Dot.png';
 import ringImage from '../Images/Cursor/Ring.png';
-
-const TouchFree = window.TouchFree;
-const DotCursor = TouchFree.Cursors.DotCursor;
 
 export class CursorManager {
     private ringImage: HTMLImageElement;
