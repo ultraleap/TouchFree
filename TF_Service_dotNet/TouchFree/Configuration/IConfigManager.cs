@@ -14,5 +14,6 @@
         void InteractionConfigWasUpdated();
         void LoadConfigsFromFiles();
         bool ErrorLoadingConfigFiles { get; }
+        bool AreConfigsInGoodState();
     }
 }
