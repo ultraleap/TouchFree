@@ -4,4 +4,6 @@ if not "%1"=="1" (
     exit /b
 )
 
+cd %~dp0
+
 mklink /J "TF_Application/Assets/TouchFree/Tooling" "TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling"

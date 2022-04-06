@@ -338,6 +338,10 @@ TouchFree::build:
     - mkdir ./TouchFree_Build
     - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree_Application/Version.txt ./TouchFree_Build
 
+    # Copy Tooling to TF_Application
+    - mkdir ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree/Tooling
+    - cp -R ${env:CI_PROJECT_DIR}/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling/* ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree/Tooling
+
     # Build TouchFree
     - cd ./Scripts
     - python ./UpdateUnityProjVer.py --path ../TF_Application/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
