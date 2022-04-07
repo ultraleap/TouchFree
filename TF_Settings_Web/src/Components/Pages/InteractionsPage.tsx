@@ -1,6 +1,7 @@
 import { InteractionConfigFull, TrackedPosition } from "../../TouchFree/Configuration/ConfigurationTypes";
 import { ConfigurationManager } from "../../TouchFree/Configuration/ConfigurationManager";
 import { ConfigState, WebSocketResponse } from "../../TouchFree/Connection/TouchFreeServiceTypes";
+import { InteractionType } from "../../TouchFree/TouchFreeToolingTypes";
 
 import { Page } from "./Page";
 import { RadioGroup } from "../Controls/RadioGroup";
@@ -8,6 +9,7 @@ import { RadioLine } from "../Controls/RadioLine";
 import { ToggleSwitch } from "../Controls/ToggleSwitch";
 import { Slider } from "../Controls/Slider";
 import { TextSlider } from "../Controls/TextSlider";
+import { DefaultInteractionConfig } from "../SettingsTypes";
 
 import '../../Styles/Interactions.css';
 
@@ -15,18 +17,16 @@ import AirPushPreview from '../../Videos/AirPush_Preview.webm';
 import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
 import HoverPreview from '../../Videos/Hover_Preview.webm';
 
-import { InteractionType } from "../../TouchFree/TouchFreeToolingTypes";
-
 const InteractionTranslator: Record<string, InteractionType> = {
     "AirPush": InteractionType.PUSH,
+    "Hover": InteractionType.HOVER,
     "Touch Plane": InteractionType.TOUCHPLANE,
-    "Hover": InteractionType.HOVER
-}
+};
 
 const TouchPlaneTrackingOptions: Record<string, TrackedPosition> = {
     "Closest Bone to TouchPlane": TrackedPosition.NEAREST,
     "Index Fingertip": TrackedPosition.INDEX_TIP
-}
+};
 
 interface interactionsState {
     interactionConfig: InteractionConfigFull
@@ -35,8 +35,8 @@ interface interactionsState {
 export class InteractionsPage extends Page<{}, interactionsState> {
     private videoPaths: string[] = [
         AirPushPreview,
-        TouchPlanePreview,
         HoverPreview,
+        TouchPlanePreview,
     ];
 
     componentDidMount(): void {
@@ -57,125 +57,161 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     setStateFromFile(config: ConfigState): void {
-        this.setState(() => ({
+        this.setState({
             interactionConfig: config.interaction
-        }));
+        });
     }
 
     // Radio Control Logic
-    onInteractionChange(e: React.FormEvent<HTMLInputElement>): void {
-        if (!(e.currentTarget.value in InteractionTranslator)) {
-            console.error(`Could not change interaction type; did not recognise the "${e.currentTarget.value}" interaction`);
+    onInteractionChange(newValue: string): void {
+        if (!(newValue in InteractionTranslator)) {
+            console.error(`Could not change interaction type; did not recognise the "${newValue}" interaction`);
         }
 
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
+        let interactionType: InteractionType = InteractionTranslator[newValue];
 
-        newConf.InteractionType = InteractionTranslator[e.currentTarget.value];
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                InteractionType: interactionType
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
-    onTrackingPosChange(e: React.FormEvent<HTMLInputElement>): void {
-        if (!(e.currentTarget.value in TouchPlaneTrackingOptions)) {
-            console.error(`Could not Touch Plane tracking target type; did not recognise "${e.currentTarget.value}"`);
+    onTrackingPosChange(newValue: string): void {
+        if (!(newValue in TouchPlaneTrackingOptions)) {
+            console.error(`Could not Touch Plane tracking target type; did not recognise "${newValue}"`);
         }
 
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
+        let trackedPos: TrackedPosition = TouchPlaneTrackingOptions[newValue];
 
-        newConf.TouchPlane.TouchPlaneTrackedPosition = TouchPlaneTrackingOptions[e.currentTarget.value];
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = state.interactionConfig;
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            newConf.TouchPlane.TouchPlaneTrackedPosition = trackedPos
+
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     // Toggle Control Logic
-    onScrollDragChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
+    onScrollDragChange(e: boolean): void {
+        let useScroll: boolean = e; //.currentTarget.checked;
 
-        newConf.UseScrollingOrDragging = e.currentTarget.checked;
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                UseScrollingOrDragging: useScroll
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
-    interactionZoneToggled(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf: InteractionConfigFull = this.state.interactionConfig;
+    interactionZoneToggled(e: boolean): void {
+        let zoneEnabled: boolean = e; //.currentTarget.checked;
 
-        newConf.InteractionZoneEnabled = e.currentTarget.checked;
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                InteractionZoneEnabled: zoneEnabled
+            };
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     // Slider Control Logic
-    onCursorMovementChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+    onCursorMovementChange(newValue: number): void {
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                DeadzoneRadius: newValue
+            };
 
-        newConf.DeadzoneRadius = parseFloat(e.currentTarget.value);
-
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
-    onTouchPlaneDistanceChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+    onTouchPlaneDistanceChange(newValue: number): void {
+        this.setState((state) => {
+            let newConf = state.interactionConfig;
 
-        newConf.TouchPlane.TouchPlaneActivationDistanceCM = parseFloat(e.currentTarget.value);
+            newConf.TouchPlane.TouchPlaneActivationDistanceCm = newValue;
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
-    onHoverStartTimeChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+    onHoverStartTimeChange(newValue: number): void {
+        this.setState((state) => {
+            let newConf = state.interactionConfig;
 
-        newConf.HoverAndHold.HoverStartTimeS = parseFloat(e.currentTarget.value);
+            newConf.HoverAndHold.HoverStartTimeS = newValue;
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
-    onHoverCompleteTimeChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+    onHoverCompleteTimeChange(newValue: number): void {
+        this.setState((state) => {
+            let newConf = state.interactionConfig;
 
-        newConf.HoverAndHold.HoverCompleteTimeS = parseFloat(e.currentTarget.value);
+            newConf.HoverAndHold.HoverCompleteTimeS = newValue;
 
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
-    onInteractionMinDistChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+    onInteractionMinDistChange(newValue: number): void {
+        this.setState((state) => {
+            let newConf: InteractionConfigFull = {
+                ...state.interactionConfig,
+                InteractionMinDistanceCm: newValue
+            };
 
-        newConf.InteractionMinDistanceCm = parseFloat(e.currentTarget.value);
-
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
-    onInteractionMaxDistChange(e: React.FormEvent<HTMLInputElement>): void {
-        let newConf = this.state.interactionConfig;
+    onInteractionMaxDistChange(newValue: number): void {
+        this.setState((state) => {
+            let newConf: InteractionConfigFull =
+            {
+                ...state.interactionConfig,
+                InteractionMaxDistanceCm: newValue
+            };
 
-        newConf.InteractionMaxDistanceCm = parseFloat(e.currentTarget.value);
-
-        this.setState(() => ({
-            interactionConfig: newConf
-        }));
+            return {
+                interactionConfig: newConf
+            }
+        });
     }
 
     resetToDefaults(): void {
-        // ???????
-        // How to get an "Defaults?"
+        this.setState({
+            interactionConfig: DefaultInteractionConfig
+        });
     }
 
     render(): JSX.Element {
@@ -195,6 +231,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
             switch (this.state.interactionConfig.InteractionType) {
                 case InteractionType.HOVER:
                     interactionControls.push(<TextSlider name="Hover & Hold Start Time"
+                        key="Hover & Hold Start Time"
                         rangeMin={.1}
                         rangeMax={1}
                         leftLabel="0.1s"
@@ -202,6 +239,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         value={this.state.interactionConfig.HoverAndHold.HoverStartTimeS}
                         onChange={this.onHoverStartTimeChange.bind(this)} />);
                     interactionControls.push(<TextSlider name="Hover & Hold Complete Time"
+                        key="Hover & Hold Complete Time"
                         rangeMin={.1}
                         rangeMax={1}
                         leftLabel="0.1s"
@@ -211,22 +249,26 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     break;
                 case InteractionType.TOUCHPLANE:
                     interactionControls.push(<ToggleSwitch name="Scroll and Drag"
+                        key="Scroll and Drag"
                         value={this.state.interactionConfig.UseScrollingOrDragging}
                         onChange={this.onScrollDragChange.bind(this)} />);
                     interactionControls.push(<TextSlider name="TouchPlane Distance(cm)"
+                        key="TouchPlane Distance(cm)"
                         rangeMin={0}
                         rangeMax={20}
                         leftLabel="0cm"
                         rightLabel="20cm"
-                        value={this.state.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCM}
+                        value={this.state.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCm}
                         onChange={this.onTouchPlaneDistanceChange.bind(this)} />);
                     interactionControls.push(<RadioLine name="Tracking Position"
+                        key="Tracking Position"
                         selected={activePlaneTracking}
                         options={Object.keys(TouchPlaneTrackingOptions)}
                         onChange={this.onTrackingPosChange.bind(this)} />);
                     break;
                 case InteractionType.PUSH:
                     interactionControls.push(<ToggleSwitch name="Scroll and Drag"
+                        key="Scroll and Drag"
                         value={this.state.interactionConfig.UseScrollingOrDragging}
                         onChange={this.onScrollDragChange.bind(this)} />);
                     break;
@@ -234,6 +276,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
             if (this.state.interactionConfig.InteractionZoneEnabled) {
                 zoneControls.push(<TextSlider name="Minimum Active Distance"
+                    key="Minimum Active Distance"
                     rangeMin={0}
                     rangeMax={30}
                     leftLabel="0cm"
@@ -241,6 +284,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     value={this.state.interactionConfig.InteractionMinDistanceCm}
                     onChange={this.onInteractionMinDistChange.bind(this)} />);
                 zoneControls.push(<TextSlider name="Maximum Active Distance"
+                    key="Maximum Active Distance"
                     rangeMin={0}
                     rangeMax={30}
                     leftLabel="0cm"
@@ -258,7 +302,6 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                             selected={activeInteraction}
                             options={Object.keys(InteractionTranslator)}
                             onChange={this.onInteractionChange.bind(this)} />
-
                         <video autoPlay loop key={this.state.interactionConfig.InteractionType} className="InteractionPreview">
                             <source src={this.videoPaths[activeInteraction]} type="video/webm" />
                         </video>
@@ -266,9 +309,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
                     <div className="verticalContainer sideSpacing">
                         <Slider name="Cursor Movement"
-                            increment={0.001}
+                            increment={0.0001}
                             rangeMin={0}
-                            rangeMax={1}
+                            rangeMax={0.015}
                             leftLabel="Responsive"
                             rightLabel="Stable"
                             value={this.state.interactionConfig.DeadzoneRadius}
@@ -281,7 +324,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     </div>
 
                     <div className="verticalContainer sideSpacing">
-                        <ToggleSwitch name="Enabled"
+                        <ToggleSwitch name="Enable/Disable"
                             value={this.state.interactionConfig.InteractionZoneEnabled}
                             onChange={this.interactionZoneToggled.bind(this)} />
                         {zoneControls}
@@ -295,6 +338,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     <h1> Interaction Type </h1>
                     <button
                         onClick={this.resetToDefaults.bind(this)}
+                        onPointerUp={this.resetToDefaults.bind(this)}
                         className="tfButton" >
                         <p> Reset to Default </p>
                     </button>

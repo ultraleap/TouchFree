@@ -8,4 +8,4 @@
 ./test/**/*.js
 dist
 
-./Plugins/**/SnappingPlugin.js
+./Plugins/**/Snapping_Plugin.js

@@ -100,13 +100,12 @@ export class WebInputController extends BaseInputController {
     // Parameters:
     //     _inputData - The latest Action to arrive via the <ServiceConnection>.
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
-        let invertedCursorPos = [_inputData.CursorPosition[0], window.innerHeight - _inputData.CursorPosition[1]];
         super.HandleInputAction(_inputData);
 
-        let elementAtPos: Element | null = this.GetTopNonCursorElement(invertedCursorPos);
+        let elementAtPos: Element | null = this.GetTopNonCursorElement(_inputData.CursorPosition);
 
-        this.activeEventProps.clientX = invertedCursorPos[0];
-        this.activeEventProps.clientY = invertedCursorPos[1];
+        this.activeEventProps.clientX = _inputData.CursorPosition[0];
+        this.activeEventProps.clientY = _inputData.CursorPosition[1];
 
         switch (_inputData.InputType) {
             case InputType.CANCEL:
@@ -224,9 +223,6 @@ export class WebInputController extends BaseInputController {
     // Checks if the target element is null and correctly dispatches the provided event to the
     // element or document body appropriately
     private DispatchToTarget(event: PointerEvent, target: Element | null) {
-        // console.log(`Target was null? ${target === null}`)
-        // console.log(`Dispatching ${event.type} to ${target?.nodeName}`);
-
         if (target !== null) {
             target.dispatchEvent(event);
         } else {

@@ -5,6 +5,8 @@ TF_DAEMON="./TouchFree/TouchFree_Service"
 TRK_PIDFILE=/var/run/Ultraleap_Tracking_Service.pid
 TRK_DAEMON="./Tracking/bin/libtrack_server"
 
+cd $(dirname $(readlink -f $0))
+
 if [[ $1 == "start" ]]; then
     export LD_LIBRARY_PATH=./Tracking/bin/
     start-stop-daemon --start \
