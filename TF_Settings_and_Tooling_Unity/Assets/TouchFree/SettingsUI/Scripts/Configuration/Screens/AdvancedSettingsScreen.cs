@@ -94,7 +94,7 @@ namespace Ultraleap.TouchFree.ServiceUI
         public void OpenTouchFreeLogFileLocation()
         {
             var programDataLocation = Environment.GetEnvironmentVariable("PROGRAMDATA");
-            OpenFolderInFileExplorer(programDataLocation + "\\Ultraleap\\TouchFree\\Configuration\\");
+            OpenFolderInFileExplorer(programDataLocation + "\\Ultraleap\\TouchFree\\Logs\\");
         }
 
         public void OpenTrackingLogFileLocation()
