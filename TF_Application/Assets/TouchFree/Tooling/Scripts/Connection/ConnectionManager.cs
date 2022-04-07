@@ -55,7 +55,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // This value is settable in the Inspector.
         [SerializeField] string port = "9739";
 
-        static bool disconnected = true;
+        static bool shouldReconnect = false;
 
         // Group: Functions
 
@@ -77,7 +77,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Also invokes <OnConnected> on all listeners.
         public void Connect()
         {
-            disconnected = false;
+            shouldReconnect = true;
 
             currentServiceConnection = new ServiceConnection(iPAddress, port, RetryConnecting);
             if (currentServiceConnection.IsConnected())
@@ -97,13 +97,15 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
         public async System.Threading.Tasks.Task RetryConnecting(int delay)
         {
-            await System.Threading.Tasks.Task.Delay(delay);
-            if (!currentServiceConnection.IsConnected())
-            {
-                currentServiceConnection.Connect();
-            }
+            if (shouldReconnect) {
+                await System.Threading.Tasks.Task.Delay(delay);
+                if (!currentServiceConnection.IsConnected())
+                {
+                    currentServiceConnection.Connect();
+                }
 
-            RetryConnecting(Math.Max(delay * 2, 30000));
+                RetryConnecting(Math.Max(delay * 2, 30000));
+            }
         }
 
         // Function: Disconnect
@@ -111,7 +113,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // sets it to null.
         public static void Disconnect()
         {
-            disconnected = true;
+            shouldReconnect = false;
 
             if (currentServiceConnection != null)
             {
