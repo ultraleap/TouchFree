@@ -197,11 +197,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             previousScreenPos = positions.CursorPosition;
         }
 
+
+        /// <summary>
+        /// Check if any movement has happened, if it has, we have left the deadzone
+        /// </summary>
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            float distFromStartPosPx = (_startPos - _currentPos).Length();
-
-            return distFromStartPosPx > virtualScreen.MillimetersToPixels(dragStartDistanceThresholdMm);
+            return _startPos != _currentPos;
         }
 
         private void AdjustDeadzoneSize(float _df)
