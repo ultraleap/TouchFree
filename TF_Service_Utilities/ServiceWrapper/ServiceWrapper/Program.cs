@@ -31,7 +31,7 @@ namespace TouchFreeService
     public class ServiceCore
     {
         private Timer _timer = new Timer();
-        private Process _process;
+        //private Process _process;
 
         public void Start()
         {
@@ -59,18 +59,25 @@ namespace TouchFreeService
             _timer.Elapsed -= TimerElapsed;
             _timer.Stop();
 
-            if (_process != null)
+            //if (_process != null)
+            //{
+            //    _process.Kill();
+            //}
+
+            Process[] processes = Process.GetProcessesByName("TouchFree_Service");
+
+            foreach (var p in processes)
             {
-                _process.Kill();
+                p.Kill();
             }
         }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (_process.HasExited) //If Unity crashes restart the application
-            {
-                _process.Start();
-            }
+            //if (_process.HasExited) //If Unity crashes restart the application
+            //{
+            //    _process.Start();
+            //}
         }
     }
 }
