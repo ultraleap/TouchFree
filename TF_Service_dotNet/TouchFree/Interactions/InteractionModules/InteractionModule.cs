@@ -96,11 +96,18 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
 
                 positions = positioningModule.CalculatePositions(hand, positionConfiguration);
+                positions = ApplyAdditionalPositionModifiers(positions);
+                positions = positioningModule.ApplyStabiliation(positions, positionStabiliser);
                 distanceFromScreenMm = positions.DistanceFromScreen * 1000f;
                 hand = CheckHandInInteractionZone(hand);
             }
 
             return hand;
+        }
+
+        protected virtual Positions ApplyAdditionalPositionModifiers(Positions positions)
+        {
+            return positions;
         }
 
         /// <summary>

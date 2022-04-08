@@ -14,7 +14,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public override InteractionType InteractionType { get; } = InteractionType.PUSH;
 
         public double millisecondsCooldownOnEntry = 300.0;
-        public double clickHoldTimerMs = 80000.0;
+        public double clickHoldTimerMs = 2000.0;
 
         Stopwatch handAppearedCooldown = new Stopwatch();
         Stopwatch clickHoldStopwatch = new Stopwatch();
@@ -59,6 +59,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool isDragging = false;
 
+        private ExtrapolationPositionModifier extrapolation = new ExtrapolationPositionModifier();
+        private PositionFilter filter = new PositionFilter();
+
         public AirPushInteraction(
             HandManager _handManager,
             IVirtualScreen _virtualScreen,
@@ -68,8 +71,17 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             positionConfiguration = new[]
             {
-                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
+                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1),
+                new PositionTrackerConfiguration(TrackedPosition.HAND_POINTING, 1)
             };
+        }
+
+        protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
+        {
+            var returnPositions = base.ApplyAdditionalPositionModifiers(positions);
+            returnPositions.CursorPosition = extrapolation.ApplyModification(returnPositions.CursorPosition);
+            returnPositions.CursorPosition = filter.ApplyModification(returnPositions.CursorPosition);
+            return returnPositions;
         }
 
         protected override InputActionResult UpdateData(Leap.Hand hand)

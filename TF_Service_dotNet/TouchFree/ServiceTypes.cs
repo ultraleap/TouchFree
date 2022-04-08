@@ -144,7 +144,8 @@ namespace Ultraleap.TouchFree.Library
         INDEX_STABLE,
         INDEX_TIP,
         WRIST,
-        NEAREST
+        NEAREST,
+        HAND_POINTING
     }
 
     [Serializable]
