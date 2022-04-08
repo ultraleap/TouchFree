@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public float distAtSpeedMaxMm = 8f;
         public float horizontalDecayDistMm = 50f;
 
-        public float thetaOne = 65f;
+        public float thetaOne = 22f;
         public float thetaTwo = 135f;
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
@@ -85,7 +85,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 if(hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    return new InputActionResult(InputType.CANCEL, positions, appliedForce);
+                    return CreateInputActionResult(InputType.CANCEL, positions, appliedForce);
                 }
 
                 return new InputActionResult();
@@ -138,7 +138,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         pressing = false;
                         isDragging = false;
                         cursorPressPosition = Vector2.Zero;
-                        inputActionResult = new InputActionResult(InputType.UP, positions, appliedForce);
+                        inputActionResult = CreateInputActionResult(InputType.UP, positions, appliedForce);
                         clickHoldStopwatch.Stop();
 
                         decayingForce = true;
@@ -147,20 +147,20 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     {
                         if (isDragging)
                         {
-                            inputActionResult = new InputActionResult(InputType.MOVE, positions, appliedForce);
+                            inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                             positionStabiliser.ReduceDeadzoneOffset();
                         }
                         else if (CheckForStartDrag(cursorPressPosition, positions.CursorPosition))
                         {
                             isDragging = true;
-                            inputActionResult = new InputActionResult(InputType.MOVE, positions, appliedForce);
+                            inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                             positionStabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
                             clickHoldStopwatch.Stop();
                         }
                         else
                         {
                             // NONE causes the client to react to data without using Input.
-                            inputActionResult = new InputActionResult(InputType.NONE, positions, appliedForce);
+                            inputActionResult = CreateInputActionResult(InputType.NONE, positions, appliedForce);
                         }
                     }
                 }
@@ -169,7 +169,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     // Need the !decayingForce check here to eliminate the risk of double-clicks
 
                     pressing = true;
-                    inputActionResult = new InputActionResult(InputType.DOWN, positions, appliedForce);
+                    inputActionResult = CreateInputActionResult(InputType.DOWN, positions, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
 
                     if(!ignoreDragging)
@@ -183,7 +183,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 else if (positions.CursorPosition != previousScreenPos || distanceFromScreenMm != previousScreenDistanceMm)
                 {
                     // Send the move event
-                    inputActionResult = new InputActionResult(InputType.MOVE, positions, appliedForce);
+                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                     positionStabiliser.ReduceDeadzoneOffset();
                 }
 
@@ -195,7 +195,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             else
             {
                 // show them they have been seen but send no major events as we have only just discovered the hand
-                inputActionResult = new InputActionResult(InputType.MOVE, positions, appliedForce);
+                inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
             }
 
             // Update stored variables

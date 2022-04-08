@@ -55,6 +55,7 @@ namespace Ultraleap.TouchFree.Service
             if (activeInteractions != null)
             {
                 InputAction? inputAction = null;
+                float currentMaxConfidence = 0;
                 foreach(var interaction in activeInteractions)
                 {
                     if (interactionCurrentlyDown != null && interactionCurrentlyDown != interaction)
@@ -65,7 +66,7 @@ namespace Ultraleap.TouchFree.Service
                     var interactionInputAction = interaction.Update();
                     if (interactionCurrentlyDown != null)
                     {
-                        inputAction = interactionInputAction;
+                        inputAction = interactionInputAction.inputAction;
                         if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
                         {
                             interactionCurrentlyDown = null;
@@ -73,14 +74,17 @@ namespace Ultraleap.TouchFree.Service
                         break;
                     }
 
-                    if (interactionCurrentlyDown == null && interactionInputAction.HasValue && interactionInputAction.Value.InputType == InputType.DOWN)
+                    if (interactionCurrentlyDown == null && interactionInputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.InputType == InputType.DOWN)
                     {
-                        inputAction = interactionInputAction;
+                        inputAction = interactionInputAction.inputAction;
                         interactionCurrentlyDown = interaction;
                         break;
                     }
 
-                    inputAction = interactionInputAction;
+                    if (!inputAction.HasValue || currentMaxConfidence < interactionInputAction.confidence)
+                    {
+                        inputAction = interactionInputAction.inputAction;
+                    }
                 }
 
                 if (inputAction.HasValue)

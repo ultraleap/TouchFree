@@ -53,7 +53,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    return new InputActionResult(InputType.CANCEL, positions, 0);
+                    return CreateInputActionResult(InputType.CANCEL, positions, 0);
                 }
                 return new InputActionResult();
             }
@@ -78,7 +78,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         downPos = currentCursorPosition;
                         pressing = true;
 
-                        return new InputActionResult(InputType.DOWN, positions, progressToClick);
+                        return CreateInputActionResult(InputType.DOWN, positions, progressToClick);
                     }
                     else if (!ignoreDragging)
                     {
@@ -89,12 +89,12 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
                         if (isDragging)
                         {
-                            return new InputActionResult(InputType.MOVE, positions, progressToClick);
+                            return CreateInputActionResult(InputType.MOVE, positions, progressToClick);
                         }
                         else
                         {
                             // NONE causes the client to react to data without using Input.
-                            return new InputActionResult(InputType.NONE, positions, progressToClick);
+                            return CreateInputActionResult(InputType.NONE, positions, progressToClick);
                         }
                     }
                     else if (!pressComplete)
@@ -102,7 +102,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         pressComplete = true;
 
                         Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
-                        return new InputActionResult(InputType.UP, downPositions, progressToClick);
+                        return CreateInputActionResult(InputType.UP, downPositions, progressToClick);
                     }
                 }
             }
@@ -116,11 +116,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     handReady = true;
 
                     Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
-                    return new InputActionResult(InputType.UP, downPositions, progressToClick);
+                    return CreateInputActionResult(InputType.UP, downPositions, progressToClick);
                 }
                 else
                 {
-                    return new InputActionResult(InputType.MOVE, positions, progressToClick);
+                    return CreateInputActionResult(InputType.MOVE, positions, progressToClick);
                 }
             }
 

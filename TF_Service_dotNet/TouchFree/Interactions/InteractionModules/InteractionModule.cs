@@ -43,7 +43,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             OnInteractionSettingsUpdated(configManager.InteractionConfig);
         }
 
-        public InputAction? Update()
+        public InputActionResult Update()
         {
             // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
             latestTimestamp = handManager.Timestamp;
@@ -60,15 +60,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 hadHandLastFrame = false;
             }
 
-            if (inputAction != null && inputAction.actionDetected)
-            {
-                return new InputAction(latestTimestamp, InteractionType, handType, handChirality, inputAction.inputType, inputAction.positions, inputAction.progressToClick);
-            }
-            else
-            {
-                return null;
-            }
-
+            return inputAction;
         }
 
         // This is the main update loop of the interaction module
@@ -79,6 +71,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
             ignoreDragging = !_config.UseScrollingOrDragging;
             positionStabiliser.ResetValues();
         }
+
+        protected InputActionResult CreateInputActionResult(InputType _inputType, Positions _positions, float _progressToClick)
+        {
+            return new InputActionResult(new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick), _progressToClick);
+        } 
 
         Leap.Hand GetHand()
         {

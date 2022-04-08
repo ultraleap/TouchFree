@@ -3,17 +3,15 @@
     public class InputActionResult
     {
         public readonly bool actionDetected = false;
-        public readonly InputType inputType;
-        public readonly Positions positions;
-        public readonly float progressToClick;
+        public readonly InputAction inputAction;
+        public readonly float confidence;
 
         public InputActionResult () { }
 
-        public InputActionResult (InputType _inputType, Positions _positions, float _progressToClick)
+        public InputActionResult (InputAction _inputAction, float _confidence)
         {
-            inputType = _inputType;
-            positions = _positions;
-            progressToClick = _progressToClick;
+            inputAction = _inputAction;
+            confidence = _confidence;
             actionDetected = true;
         }
     }

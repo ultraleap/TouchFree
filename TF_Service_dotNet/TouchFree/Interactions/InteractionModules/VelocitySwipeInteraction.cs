@@ -52,7 +52,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    return new InputActionResult(InputType.CANCEL, positions, 0);
+                    return CreateInputActionResult(InputType.CANCEL, positions, 0);
                 }
                 return new InputActionResult();
             }
@@ -80,24 +80,24 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
                 SetDirection(dPerp, absPerp);
 
-                inputActionResult = new InputActionResult(InputType.DOWN, positions, 0);
+                inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 0);
             }
             else if (pressing && CheckIfChangedDirection(dPerp))
             {
                 scrollDelayStopwatch.Restart();
                 scrollDisallowed = true;
                 pressing = false;
-                inputActionResult = new InputActionResult(InputType.UP, positions, 0);
+                inputActionResult = CreateInputActionResult(InputType.UP, positions, 0);
             }
             else
             {
                 if (pressing)
                 {
-                    inputActionResult = new InputActionResult(InputType.MOVE, positions, 1);
+                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 1);
                 }
                 else
                 {
-                    inputActionResult = new InputActionResult(InputType.MOVE, positions, 0);
+                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 0);
                 }
             }
 

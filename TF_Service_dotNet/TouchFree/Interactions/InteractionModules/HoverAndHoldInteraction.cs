@@ -52,7 +52,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    return new InputActionResult(InputType.CANCEL, positions, 0);
+                    return CreateInputActionResult(InputType.CANCEL, positions, 0);
                 }
 
                 return new InputActionResult();
@@ -107,11 +107,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
                             progressTimer.StopTimer();
                             clickHeld = true;
                             clickingTimer.Restart();
-                            inputActionResult = new InputActionResult(InputType.DOWN, positions, 0f);
+                            inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 0f);
                         }
                         else
                         {
-                            inputActionResult = new InputActionResult(InputType.MOVE, positions, progressTimer.Progress);
+                            inputActionResult = CreateInputActionResult(InputType.MOVE, positions, progressTimer.Progress);
 
                             float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positionStabiliser.defaultDeadzoneRadius;
                             float deadzoneRadius = Utilities.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
@@ -123,7 +123,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     {
                         if (!clickAlreadySent && clickingTimer.ElapsedMilliseconds > clickHoldTime)
                         {
-                            inputActionResult = new InputActionResult(InputType.UP, positions, progressTimer.Progress);
+                            inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.Progress);
                             clickAlreadySent = true;
                         }
                     }
@@ -133,7 +133,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     if (clickHeld && !clickAlreadySent)
                     {
                         // Handle unclick if move before timer's up
-                        inputActionResult = new InputActionResult(InputType.UP, positions, progressTimer.Progress);
+                        inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.Progress);
                     }
 
                     progressTimer.ResetTimer();
@@ -150,7 +150,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
             else
             {
-                inputActionResult = new InputActionResult(InputType.MOVE, positions, progressTimer.Progress);
+                inputActionResult = CreateInputActionResult(InputType.MOVE, positions, progressTimer.Progress);
             }
 
             previousScreenPos = positions.CursorPosition;
