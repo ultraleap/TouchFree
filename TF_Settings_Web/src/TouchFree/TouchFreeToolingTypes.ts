@@ -49,14 +49,25 @@ export class TouchFreeInputAction {
 
 export class InputOverride {
     InputType: InputType;
-    CursorPosition: Array<number>;
+    CursorPosition: Vector2;
 
     constructor(
         _inputType: InputType,
-        _cursorPosition: Array<number>
+        _cursorPosition: Vector2
     ) {
         this.InputType = _inputType;
         this.CursorPosition = _cursorPosition;
+    }
+}
+
+
+export class Vector2 {
+    X: number;
+    Y: number;
+
+    constructor(_x: number, _y: number) {
+        this.X = _x;
+        this.Y = _y;
     }
 }
 
