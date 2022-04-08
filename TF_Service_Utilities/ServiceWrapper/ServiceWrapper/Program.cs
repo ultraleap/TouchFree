@@ -35,6 +35,8 @@ namespace TouchFreeService
 
         public void Start()
         {
+            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
             _process = new Process();
             _process.StartInfo.FileName = @"../Service/TouchFree_Service.exe";
             _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics -logFile C:\\ProgramData\\Ultraleap\\TouchFree\\Service.log";
@@ -43,6 +45,7 @@ namespace TouchFreeService
             _process.StartInfo.RedirectStandardError = true;
             _process.StartInfo.RedirectStandardOutput = true;
             _process.StartInfo.RedirectStandardInput = true;
+            _process.StartInfo.UserName = userName;
             _process.Start();
 
             _timer.Interval = 10000;
