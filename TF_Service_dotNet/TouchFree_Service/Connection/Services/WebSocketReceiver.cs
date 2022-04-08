@@ -8,6 +8,9 @@ using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
 using System;
 
+using Ultraleap.TouchFree.Library;
+using System.Numerics;
+
 namespace Ultraleap.TouchFree.Service.Connection
 {
     public class WebSocketReceiver
@@ -44,16 +47,42 @@ namespace Ultraleap.TouchFree.Service.Connection
             CheckQueue(configFileChangeQueue, HandleConfigFileChange);
             CheckQueue(configFileRequestQueue, HandleConfigFileRequest);
 
-            CheckQueue(inputOverrideQueue, HandleInputOverride);
+            CheckInputOverrideQueue(inputOverrideQueue, HandleInputOverride);
         }
 
         void CheckQueue(ConcurrentQueue<string> queue, Action<string> handler)
         {
             string content;
-            if (queue.TryPeek(out content))
+            if (queue.TryDequeue(out content))
             {
                 // Parse newly received messages
-                queue.TryDequeue(out content);
+                
+                handler.Invoke(content);
+            }
+        }
+
+        void CheckInputOverrideQueue(ConcurrentQueue<string> queue, Action<string> handler)
+        {
+            string content = "";
+
+            while(queue.Count > 2)
+            {
+                if (queue.TryDequeue(out content))
+                {
+                    var contentConverted = JsonConvert.DeserializeObject<JObject>(content);
+                    var contentConverted2 = JsonConvert.DeserializeObject<JObject>(contentConverted.GetValue("inputOverride").ToString());
+
+                    var contentConvertedType = JsonConvert.DeserializeObject<InputType>(contentConverted2.GetValue("InputType").ToString());
+
+                    if (contentConvertedType != InputType.MOVE)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if(content != "")
+            {
                 handler.Invoke(content);
             }
         }
@@ -367,8 +396,17 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         private void HandleInputOverride(string _content)
         {
-            Console.WriteLine(_content);
-            interactionManager.HandleInputOverride(JsonConvert.DeserializeObject<InputOverrideRequest>(_content).inputOverride);
+            var contentConverted = JsonConvert.DeserializeObject<JObject>(_content);
+
+            var contentConverted2 = JsonConvert.DeserializeObject<JObject>(contentConverted.GetValue("inputOverride").ToString());
+
+            var contentConvertedType = JsonConvert.DeserializeObject<InputType>(contentConverted2.GetValue("InputType").ToString());
+            var contentConvertedPosition = JsonConvert.DeserializeObject<Vector2>(contentConverted2.GetValue("CursorPosition").ToString());
+
+            InputOverride inputOverride = new InputOverride(contentConvertedType, contentConvertedPosition);
+
+
+            interactionManager.HandleInputOverride(inputOverride);
         }
     }
 }
