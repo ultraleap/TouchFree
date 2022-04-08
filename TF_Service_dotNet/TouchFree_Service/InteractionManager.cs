@@ -98,7 +98,7 @@ namespace Ultraleap.TouchFree.Service
         {
             updateBehaviour.OnUpdate += target.Update;
             target.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-            target.HandleInputAction += HandleInputAction;
+            //target.HandleInputAction += HandleInputAction;
             target.Enable();
         }
 
@@ -106,7 +106,7 @@ namespace Ultraleap.TouchFree.Service
         {
             updateBehaviour.OnUpdate -= target.Update;
             target.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-            target.HandleInputAction -= HandleInputAction;
+            //target.HandleInputAction -= HandleInputAction;
             target.Disable();
         }
 
@@ -129,6 +129,12 @@ namespace Ultraleap.TouchFree.Service
         bool useMouse = true;
 
         void HandleInputAction(InputAction _inputData)
+        {
+            InputOverride inputOverride = new InputOverride(_inputData.InputType, _inputData.CursorPosition);
+            HandleInputOverride(inputOverride);
+        }
+
+        public void HandleInputOverride(InputOverride _inputData)
         {
             var x = (int)_inputData.CursorPosition.X;
             var y = screenHeight - (int)_inputData.CursorPosition.Y;

@@ -35,6 +35,18 @@ namespace Ultraleap.TouchFree.Library
         }
     }
 
+    public readonly struct InputOverride
+    {
+        public readonly InputType InputType;
+        public readonly Vector2 CursorPosition;
+
+        public InputOverride(InputType _inputType, Vector2 _positions)
+        {
+            InputType = _inputType;
+            CursorPosition = _positions;
+        }
+    }
+
     public enum HandChirality
     {
         LEFT,

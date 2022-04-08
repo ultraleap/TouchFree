@@ -25,6 +25,8 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         CONFIGURATION_FILE_STATE,
         SET_CONFIGURATION_FILE,
         CONFIGURATION_FILE_CHANGE_RESPONSE,
+
+        INPUT_OVERRIDE,
     }
 
     public enum HandPresenceState
@@ -123,6 +125,19 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         {
             action = _actionCode;
             content = _content;
+        }
+    }
+
+    [Serializable]
+    public struct InputOverrideRequest
+    {
+        public string requestID;
+        public Library.InputOverride inputOverride;
+
+        public InputOverrideRequest(string _id, Library.InputOverride _inputOverride)
+        {
+            requestID = _id;
+            inputOverride = _inputOverride;
         }
     }
 }

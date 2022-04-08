@@ -17,16 +17,19 @@ namespace Ultraleap.TouchFree.Service.Connection
         public ConcurrentQueue<string> requestServiceStatusQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configFileChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configFileRequestQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> inputOverrideQueue = new ConcurrentQueue<string>();
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
         private readonly IConfigManager configManager;
+        private InteractionManager interactionManager;
 
-        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr, IConfigManager _configManager)
+        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr, IConfigManager _configManager, InteractionManager _interactionManager)
         {
             clientMgr = _clientMgr;
             updateBehaviour = _updateBehaviour;
             configManager = _configManager;
+            interactionManager = _interactionManager;
 
             updateBehaviour.OnUpdate += Update;
         }
@@ -40,6 +43,8 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             CheckQueue(configFileChangeQueue, HandleConfigFileChange);
             CheckQueue(configFileRequestQueue, HandleConfigFileRequest);
+
+            CheckQueue(inputOverrideQueue, HandleInputOverride);
         }
 
         void CheckQueue(ConcurrentQueue<string> queue, Action<string> handler)
@@ -359,5 +364,11 @@ namespace Ultraleap.TouchFree.Service.Connection
         }
 
         #endregion
+
+        private void HandleInputOverride(string _content)
+        {
+            Console.WriteLine(_content);
+            interactionManager.HandleInputOverride(JsonConvert.DeserializeObject<InputOverrideRequest>(_content).inputOverride);
+        }
     }
 }

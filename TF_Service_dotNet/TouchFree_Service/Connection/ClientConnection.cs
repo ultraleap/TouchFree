@@ -213,6 +213,9 @@ namespace Ultraleap.TouchFree.Service.Connection
                 case ActionCode.REQUEST_CONFIGURATION_FILE:
                     receiver.configFileRequestQueue.Enqueue(content);
                     break;
+                case ActionCode.INPUT_OVERRIDE:
+                    receiver.inputOverrideQueue.Enqueue(content);
+                    break;
 
                 case ActionCode.INPUT_ACTION:
                 case ActionCode.CONFIGURATION_STATE:
