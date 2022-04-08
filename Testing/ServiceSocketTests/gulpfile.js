@@ -2,6 +2,7 @@ const { spawn } = require('child_process');
 const { chmodSync, readFileSync } = require('fs');
 
 const fs = require('fs');
+const path = require('path');
 const Tail = require('tail').Tail;
 
 var del = require('del');
