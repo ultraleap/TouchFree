@@ -38,6 +38,17 @@ namespace Ultraleap.TouchFree.Service
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
             OnInteractionSettingsUpdated(_configManager.InteractionConfig);
+
+
+            InputInjector.Initialize(10, TouchFeedback.NONE);
+            touches = new PointerTouchInfo[1];
+            touches[0].PointerInfo.PointerInputType = PointerInputType.TOUCH;
+            touches[0].TouchFlags = TouchFlags.NONE;
+            touches[0].TouchMasks = TouchMask.NONE;
+            touches[0].PointerInfo.PointerId = 1;
+
+            _configManager.OnPhysicalConfigUpdated += OnPhysicalSettingsUpdated;
+            OnPhysicalSettingsUpdated(_configManager.PhysicalConfig);
         }
 
         protected void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
@@ -87,6 +98,7 @@ namespace Ultraleap.TouchFree.Service
         {
             updateBehaviour.OnUpdate += target.Update;
             target.HandleInputAction += connectionManager.SendInputActionToWebsocket;
+            target.HandleInputAction += HandleInputAction;
             target.Enable();
         }
 
@@ -94,7 +106,97 @@ namespace Ultraleap.TouchFree.Service
         {
             updateBehaviour.OnUpdate -= target.Update;
             target.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
+            target.HandleInputAction -= HandleInputAction;
             target.Disable();
+        }
+
+
+
+
+
+
+        protected void OnPhysicalSettingsUpdated(PhysicalConfigInternal _config)
+        {
+            screenHeight = _config.ScreenHeightPX;
+            screenWidth = _config.ScreenWidthPX;
+        }
+
+        PointerTouchInfo[] touches;
+        bool pressing = false;
+        int screenHeight = 0;
+        int screenWidth = 0;
+
+        bool useMouse = true;
+
+        void HandleInputAction(InputAction _inputData)
+        {
+            var x = (int)_inputData.CursorPosition.X;
+            var y = screenHeight - (int)_inputData.CursorPosition.Y;
+
+            if (!useMouse)
+            {
+                switch (_inputData.InputType)
+                {
+                    case InputType.DOWN:
+                        touches[0].PointerInfo.PointerFlags = PointerFlags.DOWN | PointerFlags.INCONTACT | PointerFlags.INRANGE;
+                        touches[0].PointerInfo.PtPixelLocation.X = x;
+                        touches[0].PointerInfo.PtPixelLocation.Y = y;
+                        InputInjector.SendTouchEvent(touches);
+                        pressing = true;
+                        break;
+                    case InputType.MOVE:
+                        if (pressing)
+                        {
+                            touches[0].PointerInfo.PointerFlags = PointerFlags.UPDATE | PointerFlags.INCONTACT | PointerFlags.INRANGE;
+                        }
+                        else
+                        {
+                            touches[0].PointerInfo.PointerFlags = PointerFlags.UPDATE | PointerFlags.INRANGE;
+                        }
+                        touches[0].PointerInfo.PtPixelLocation.X = x;
+                        touches[0].PointerInfo.PtPixelLocation.Y = y;
+                        InputInjector.SendTouchEvent(touches);
+                        break;
+                    case InputType.UP:
+                        touches[0].PointerInfo.PointerFlags = PointerFlags.UP | PointerFlags.INRANGE;
+                        touches[0].PointerInfo.PtPixelLocation.X = x;
+                        touches[0].PointerInfo.PtPixelLocation.Y = y;
+                        InputInjector.SendTouchEvent(touches);
+                        pressing = false;
+                        break;
+                    case InputType.CANCEL:
+                        touches[0].PointerInfo.PointerFlags = PointerFlags.CANCELLED | PointerFlags.UP;
+                        touches[0].PointerInfo.PtPixelLocation.X = x;
+                        touches[0].PointerInfo.PtPixelLocation.Y = y;
+                        InputInjector.SendTouchEvent(touches);
+                        pressing = false;
+                        break;
+                }
+            }
+            else
+            {
+                switch (_inputData.InputType)
+                {
+                    case InputType.DOWN:
+                        InputInjector.SendMouseEvent(MouseEventFlags.LEFTDOWN, x, y, screenWidth, screenHeight);
+                        pressing = true;
+                        break;
+                    case InputType.MOVE:
+                        InputInjector.SendMouseEvent(MouseEventFlags.MOVE, x, y, screenWidth, screenHeight);
+                        break;
+                    case InputType.UP:
+                        InputInjector.SendMouseEvent(MouseEventFlags.LEFTUP, x, y, screenWidth, screenHeight);
+                        pressing = false;
+                        break;
+                    case InputType.CANCEL:
+                        InputInjector.SendMouseEvent(MouseEventFlags.MOVE, x, y, screenWidth, screenHeight);
+                        pressing = false;
+                        break;
+                    default:
+                        InputInjector.SendMouseEvent(MouseEventFlags.MOVE, x, y, screenWidth, screenHeight);
+                        break;
+                }
+            }
         }
     }
 }
