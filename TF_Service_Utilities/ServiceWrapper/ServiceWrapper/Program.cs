@@ -35,18 +35,20 @@ namespace TouchFreeService
 
         public void Start()
         {
-            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            //var userName = System.Security.Principal.WindowsIdentity.GetCurrent().User. .Token;// .Name;
 
-            _process = new Process();
-            _process.StartInfo.FileName = @"../Service/TouchFree_Service.exe";
-            _process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics -logFile C:\\ProgramData\\Ultraleap\\TouchFree\\Service.log";
-            _process.StartInfo.UseShellExecute = false;
-            _process.StartInfo.CreateNoWindow = true;
-            _process.StartInfo.RedirectStandardError = true;
-            _process.StartInfo.RedirectStandardOutput = true;
-            _process.StartInfo.RedirectStandardInput = true;
-            _process.StartInfo.UserName = userName;
-            _process.Start();
+            //_process = new Process();
+            //_process.StartInfo.FileName = @"../Service/TouchFree_Service.exe";
+            ////_process.StartInfo.Arguments = "-batchmode -silent-crashes -nographics -logFile C:\\ProgramData\\Ultraleap\\TouchFree\\Service.log";
+            //_process.StartInfo.UseShellExecute = false;
+            ////_process.StartInfo.CreateNoWindow = true;
+            //_process.StartInfo.RedirectStandardError = true;
+            //_process.StartInfo.RedirectStandardOutput = true;
+            //_process.StartInfo.RedirectStandardInput = true;
+            ////_process.StartInfo.UserName = "MattGray";
+            //_process.Start();
+
+            ServiceWrapper.ProcessExtensions.StartProcessAsCurrentUser(@"../Service/TouchFree_Service.exe");
 
             _timer.Interval = 10000;
             _timer.Elapsed += TimerElapsed;
