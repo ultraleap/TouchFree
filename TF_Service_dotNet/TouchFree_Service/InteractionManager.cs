@@ -39,6 +39,7 @@ namespace Ultraleap.TouchFree.Service
             var interactionsToUse = new[]
             {
                 InteractionType.VELOCITYSWIPE,
+                InteractionType.AIRCLICK,
                 InteractionType.PUSH
             };
 

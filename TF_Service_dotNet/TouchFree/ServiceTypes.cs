@@ -63,6 +63,7 @@ namespace Ultraleap.TouchFree.Library
         PUSH,
         TOUCHPLANE,
         VELOCITYSWIPE,
+        AIRCLICK,
     }
 
     [Flags]
