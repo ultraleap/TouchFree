@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
     {
         public override InteractionType InteractionType { get; } = InteractionType.HOVER;
 
-        public ProgressTimer progressTimer;
+        public ProgressTimer progressTimer = new ProgressTimer(600f);
 
         public float hoverDeadzoneEnlargementDistance = 5f;
         public float timerDeadzoneEnlargementDistance = 5f;
@@ -39,7 +39,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
-            progressTimer = new ProgressTimer(600f);
             positionConfiguration = new[]
             {
                 new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
@@ -162,8 +161,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             base.OnInteractionSettingsUpdated(_config);
-            hoverTriggerTime = _config.HoverAndHold.HoverStartTimeS * 1000; // s to ms
-            progressTimer.timeLimit = _config.HoverAndHold.HoverCompleteTimeS * 1000; // s to ms
+            if (_config.HoverAndHold != null)
+            {
+                hoverTriggerTime = _config.HoverAndHold.HoverStartTimeS * 1000; // s to ms
+                progressTimer.timeLimit = _config.HoverAndHold.HoverCompleteTimeS * 1000; // s to ms
+            }
         }
     }
 }

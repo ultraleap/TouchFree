@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
@@ -8,35 +10,22 @@ namespace Ultraleap.TouchFree.Service
 {
     public class InteractionManager
     {
-        private readonly AirPushInteraction airPush;
-        private readonly GrabInteraction grab;
-        private readonly HoverAndHoldInteraction hoverAndHold;
-        private readonly TouchPlanePushInteraction touchPlane;
-        private readonly VelocitySwipeInteraction velocitySwipe;
-
+        private readonly IEnumerable<IInteraction> interactions;
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager connectionManager;
 
-        private InteractionModule currentInteraction;
+        private IEnumerable<IInteraction> activeInteractions;
+        private IInteraction interactionCurrentlyDown;
 
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
             ClientConnectionManager _connectionManager,
-            AirPushInteraction _airPush,
-            GrabInteraction _grab,
-            HoverAndHoldInteraction _hoverAndHold,
-            TouchPlanePushInteraction _touchPlane,
-            VelocitySwipeInteraction _velocitySwipe,
+            IEnumerable<IInteraction> _interactions,
             IConfigManager _configManager)
         {
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
-
-            airPush = _airPush;
-            grab = _grab;
-            hoverAndHold = _hoverAndHold;
-            touchPlane = _touchPlane;
-            velocitySwipe = _velocitySwipe;
+            interactions = _interactions;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
@@ -45,28 +34,15 @@ namespace Ultraleap.TouchFree.Service
 
         protected void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
-            var initialisationNotStarted = currentInteraction == null;
+            var initialisationNotStarted = activeInteractions == null;
 
-            switch(_config.InteractionType)
+            var interactionsToUse = new[]
             {
-                case InteractionType.TOUCHPLANE:
-                    currentInteraction = touchPlane;
-                    break;
+                InteractionType.VELOCITYSWIPE,
+                InteractionType.PUSH
+            };
 
-                case InteractionType.PUSH:
-                    currentInteraction = airPush;
-                    break;
-
-                case InteractionType.HOVER:
-                    currentInteraction = hoverAndHold;
-                    break;
-
-                case InteractionType.GRAB:
-                    currentInteraction = grab;
-                    break;
-            }
-
-            currentInteraction.Enable();
+            activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType));
 
             if (initialisationNotStarted)
             {
@@ -76,9 +52,37 @@ namespace Ultraleap.TouchFree.Service
 
         protected void Update()
         {
-            if (currentInteraction != null)
+            if (activeInteractions != null)
             {
-                var inputAction = currentInteraction.Update();
+                InputAction? inputAction = null;
+                foreach(var interaction in activeInteractions)
+                {
+                    if (interactionCurrentlyDown != null && interactionCurrentlyDown != interaction)
+                    {
+                        continue;
+                    }
+
+                    var interactionInputAction = interaction.Update();
+                    if (interactionCurrentlyDown != null)
+                    {
+                        inputAction = interactionInputAction;
+                        if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
+                        {
+                            interactionCurrentlyDown = null;
+                        }
+                        break;
+                    }
+
+                    if (interactionCurrentlyDown == null && interactionInputAction.HasValue && interactionInputAction.Value.InputType == InputType.DOWN)
+                    {
+                        inputAction = interactionInputAction;
+                        interactionCurrentlyDown = interaction;
+                        break;
+                    }
+
+                    inputAction = interactionInputAction;
+                }
+
                 if (inputAction.HasValue)
                 {
                     connectionManager.SendInputActionToWebsocket(inputAction.Value);

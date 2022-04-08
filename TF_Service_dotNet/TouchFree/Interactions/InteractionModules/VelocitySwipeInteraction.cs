@@ -3,12 +3,13 @@ using System.Numerics;
 using System.Diagnostics;
 
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
     public class VelocitySwipeInteraction : InteractionModule
     {
-        public override InteractionType InteractionType { get; } = InteractionType.TOUCHPLANE;
+        public override InteractionType InteractionType { get; } = InteractionType.VELOCITYSWIPE;
 
         private Vector2 previousScreenPos = Vector2.Zero;
 
@@ -33,28 +34,33 @@ namespace Ultraleap.TouchFree.Library.Interactions
             HandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IPositioningModule _positioningModule) : base(_handManager, _virtualScreen, _configManager, _positioningModule, TrackedPosition.INDEX_TIP)
+            IPositioningModule _positioningModule,
+            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
+            positionConfiguration = new[]
+            {
+                new PositionTrackerConfiguration(TrackedPosition.INDEX_TIP, 1)
+            };
         }
 
-        protected override void UpdateData(Leap.Hand hand)
+        protected override InputActionResult UpdateData(Leap.Hand hand)
         {
             if (hand == null)
             {
+                pressing = false;
+
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, 0);
+                    return new InputActionResult(InputType.CANCEL, positions, 0);
                 }
-
-                pressing = false;
-                return;
+                return new InputActionResult();
             }
 
-            HandleInteractions();
+            return HandleInteractions();
         }
 
-        private void HandleInteractions()
+        private InputActionResult HandleInteractions()
         {
             Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
             Vector2 dPerp = virtualScreen.PixelsToMillimeters(dPerpPx);
@@ -66,35 +72,39 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             Vector2 absPerp = Vector2.Abs(dPerp);
 
+            InputActionResult inputActionResult;
+
             if (!pressing && CheckIfScrollStart(absPerp))
             {
                 pressing = true;
 
                 SetDirection(dPerp, absPerp);
 
-                SendInputAction(InputType.DOWN, positions, 0);
+                inputActionResult = new InputActionResult(InputType.DOWN, positions, 0);
             }
             else if (pressing && CheckIfChangedDirection(dPerp))
             {
                 scrollDelayStopwatch.Restart();
                 scrollDisallowed = true;
                 pressing = false;
-                SendInputAction(InputType.UP, positions, 0);
+                inputActionResult = new InputActionResult(InputType.UP, positions, 0);
             }
             else
             {
                 if (pressing)
                 {
-                    SendInputAction(InputType.MOVE, positions, 1);
+                    inputActionResult = new InputActionResult(InputType.MOVE, positions, 1);
                 }
                 else
                 {
-                    SendInputAction(InputType.MOVE, positions, 0);
+                    inputActionResult = new InputActionResult(InputType.MOVE, positions, 0);
                 }
             }
 
             previousScreenPos = positions.CursorPosition;
             previousTime = latestTimestamp;
+
+            return inputActionResult;
         }
 
         void SetDirection(Vector2 _dPerp, Vector2 _absPerp)

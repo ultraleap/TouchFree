@@ -5,7 +5,7 @@ using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
-    public abstract class InteractionModule
+    public abstract class InteractionModule : IInteraction
     {
         public virtual InteractionType InteractionType { get; } = InteractionType.PUSH;
 
@@ -38,10 +38,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             configManager = _configManager;
             positioningModule = _positioningModule;
             positionStabiliser = _positionStabiliser;
-        }
 
-        public virtual void Enable()
-        {
             configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
             OnInteractionSettingsUpdated(configManager.InteractionConfig);
         }

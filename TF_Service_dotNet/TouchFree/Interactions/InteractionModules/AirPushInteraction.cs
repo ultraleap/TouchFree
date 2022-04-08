@@ -14,7 +14,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public override InteractionType InteractionType { get; } = InteractionType.PUSH;
 
         public double millisecondsCooldownOnEntry = 300.0;
-        public double clickHoldTimerMs = 800.0;
+        public double clickHoldTimerMs = 80000.0;
 
         Stopwatch handAppearedCooldown = new Stopwatch();
         Stopwatch clickHoldStopwatch = new Stopwatch();
