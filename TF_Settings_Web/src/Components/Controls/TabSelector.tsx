@@ -1,10 +1,6 @@
 import React from "react";
 import { ScreenManager } from "../ScreenManager";
 
-// Using this style from the stylesheet as the :hover addon doesn't
-// seem to be supported by the CSSProperties type
-import '../../Styles/Styles.css'
-
 export class TabSelector extends React.Component<{name: string, manager: ScreenManager, activeTab: String}> {
 
     onClick(): void {

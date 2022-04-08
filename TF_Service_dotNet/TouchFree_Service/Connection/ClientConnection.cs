@@ -9,6 +9,7 @@ using System.Text;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -18,12 +19,14 @@ namespace Ultraleap.TouchFree.Service.Connection
         private bool HandshakeCompleted;
         private readonly WebSocketReceiver receiver;
         private readonly ClientConnectionManager clientMgr;
+        private readonly IConfigManager configManager;
 
-        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, ClientConnectionManager _clientMgr)
+        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, ClientConnectionManager _clientMgr, IConfigManager _configManager)
         {
             socket = _socket;
             receiver = _receiver;
             clientMgr = _clientMgr;
+            configManager = _configManager;
             HandshakeCompleted = false;
 
             Console.WriteLine("Websocket Connection opened");
@@ -269,12 +272,19 @@ namespace Ultraleap.TouchFree.Service.Connection
             string clientApiVersion = (string)contentObj[VersionInfo.API_HEADER_NAME];
             Compatibility compatibility = GetVersionCompability(clientApiVersion, VersionInfo.ApiVersion);
 
+            string configurationWarning = string.Empty;
+
+            if (!configManager.AreConfigsInGoodState())
+            {
+                configurationWarning = " Configuration is in a bad state. Please update the configuration via TouchFree Settings";
+            }
+
             switch (compatibility)
             {
                 case Compatibility.COMPATIBLE:
                     HandshakeCompleted = true;
                     response.status = "Success";
-                    response.message = "Handshake Successful";
+                    response.message = "Handshake Successful." + configurationWarning;
                     Console.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
@@ -282,7 +292,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 case Compatibility.CLIENT_OUTDATED_WARNING:
                     HandshakeCompleted = true;
                     response.status = "Success";
-                    response.message = "Handshake Warning: Client is outdated relative to Service.";
+                    response.message = "Handshake Warning: Client is outdated relative to Service." + configurationWarning;
                     Console.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
@@ -290,17 +300,17 @@ namespace Ultraleap.TouchFree.Service.Connection
                 case Compatibility.SERVICE_OUTDATED_WARNING:
                     HandshakeCompleted = true;
                     response.status = "Success";
-                    response.message = "Handshake Warning: Service is outdated relative to Client.";
+                    response.message = "Handshake Warning: Service is outdated relative to Client." + configurationWarning;
                     Console.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
                 case Compatibility.CLIENT_OUTDATED:
-                    response.message = "Handshake Failed: Client is outdated relative to Service.";
+                    response.message = "Handshake Failed: Client is outdated relative to Service." + configurationWarning;
                     Console.Error.WriteLine(response.message);
                     break;
                 case Compatibility.SERVICE_OUTDATED:
-                    response.message = "Handshake Failed: Service is outdated relative to Client.";
+                    response.message = "Handshake Failed: Service is outdated relative to Client." + configurationWarning;
                     Console.Error.WriteLine(response.message);
                     break;
             }

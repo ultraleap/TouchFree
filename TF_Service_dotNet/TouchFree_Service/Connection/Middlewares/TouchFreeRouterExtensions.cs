@@ -10,9 +10,9 @@ namespace Ultraleap.TouchFree.Service.Connection
 {
     public static class TouchFreeRouterExtensions
     {
-        public static IApplicationBuilder UseTouchFreeRouter(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseTouchFreeRouter(this IApplicationBuilder builder, IConfigManager configManager)
         {
-            return builder.UseMiddleware<TouchFreeRouter>();
+            return builder.UseMiddleware<TouchFreeRouter>(configManager);
         }
 
         public static IServiceCollection AddClientConnectionManager(this IServiceCollection services)

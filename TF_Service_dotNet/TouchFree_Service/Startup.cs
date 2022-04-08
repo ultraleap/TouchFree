@@ -38,10 +38,11 @@ namespace Ultraleap.TouchFree.Service
             app.UseWebSockets();
             app.UseStaticFiles("/settings");
 
-            app.UseTouchFreeRouter();
+            var configManager = app.ApplicationServices.GetService<IConfigManager>();
+
+            app.UseTouchFreeRouter(configManager);
 
             interactionManager = app.ApplicationServices.GetService<InteractionManager>();
-            var configManager = app.ApplicationServices.GetService<IConfigManager>();
 
             // This is here so the test infrastructure has some sign that the app is ready
             Console.WriteLine("Service Setup Complete");

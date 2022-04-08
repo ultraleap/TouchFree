@@ -72,6 +72,15 @@ namespace Ultraleap.TouchFree.Library
 
         private int handsLastFrame;
 
+        public void ConnectToTracking()
+        {
+            trackingProvider.Connect();
+        }
+
+        public void DisconnectFromTracking()
+        {
+            trackingProvider.Disconnect();
+        }
 
         public HandManager(TrackingConnectionManager _trackingManager, IConfigManager _configManager)
         {

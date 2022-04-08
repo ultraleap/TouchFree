@@ -25,6 +25,8 @@ public class CameraPreviewScreen : MonoBehaviour
 
     public GameObject handsCameraObject;
 
+    public Scrollbar contentScrollbar;
+
     void OnEnable()
     {
         leapImageRetriever.enabled = false;
@@ -56,6 +58,8 @@ public class CameraPreviewScreen : MonoBehaviour
         DiagnosticAPIManager.diagnosticAPI.GetDevices();
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
         DiagnosticAPIManager.diagnosticAPI.GetCameraOrientation();
+
+        contentScrollbar.value = 1;
     }
 
     void OnDisable()
