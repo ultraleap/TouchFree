@@ -47,6 +47,19 @@ export class TouchFreeInputAction {
     }
 }
 
+export class InputOverride {
+    InputType: InputType;
+    CursorPosition: Array<number>;
+
+    constructor(
+        _inputType: InputType,
+        _cursorPosition: Array<number>
+    ) {
+        this.InputType = _inputType;
+        this.CursorPosition = _cursorPosition;
+    }
+}
+
 // Function: ConvertInputAction
 // Used to translate the raw actions that come across the websocket (<WebsocketInputActions>) and
 // convert them into the Tooling-friendly <TouchFreeInputAction> format.

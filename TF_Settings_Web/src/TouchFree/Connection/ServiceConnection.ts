@@ -149,9 +149,9 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     SendMessage(
         _message: string, _requestID: string,
-        _callback: (detail: WebSocketResponse) => void): void {
+        _callback?: (detail: WebSocketResponse) => void): void {
         if (_requestID === "") {
-            if (_callback !== null) {
+            if (_callback !== null && _callback !== undefined) {
                 let response: WebSocketResponse = new WebSocketResponse(
                     "",
                     "Failure",
@@ -163,7 +163,7 @@ export class ServiceConnection {
             return;
         }
 
-        if (_callback != null) {
+        if (_callback != null && _callback !== undefined) {
             ConnectionManager.messageReceiver.responseCallbacks[_requestID] =
                 new ResponseCallback(Date.now(), _callback);
         }

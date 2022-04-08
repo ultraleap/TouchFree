@@ -2,7 +2,6 @@ import React from "react";
 import { ScreenManager } from "../ScreenManager";
 
 export class TabSelector extends React.Component<{name: string, manager: ScreenManager, activeTab: String}> {
-
     onClick(): void {
         this.props.manager.setScreenByName.bind(this.props.manager)(this.props.name);
     }

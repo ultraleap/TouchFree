@@ -9,6 +9,9 @@ import { ScreenManager } from './Components/ScreenManager';
 
 import './App.css';
 import './Styles/Styles.css';
+import { InputActionManager } from './TouchFree/Plugins/InputActionManager';
+import { InputActionPlugin } from './TouchFree/Plugins/InputActionPlugin';
+import { InputPlugin } from './Components/InputPlugin';
 
 declare global {
     interface Window { TouchFree: any; }
@@ -28,12 +31,19 @@ class App extends React.Component {
     private cursorParent: RefObject<HTMLDivElement>;
 
     // TouchFree objects
-    private inputSystem: BaseInputController;
+    private inputPlugins: Array<InputActionPlugin>;
+    // private inputSystem: BaseInputController;
 
     constructor(props: {}) {
         super(props);
         ConnectionManager.init();
-        this.inputSystem = new WebInputController();
+
+        this.inputPlugins = [
+            new InputPlugin()
+        ];
+        InputActionManager.SetPlugins(this.inputPlugins);
+
+        // this.inputSystem = new WebInputController();
 
         this.cursorManager = new CursorManager();
         this.cursorParent = React.createRef();
@@ -47,7 +57,7 @@ class App extends React.Component {
     }
 
     componentWillUnmount() {
-        this.inputSystem.disconnect();
+        // this.inputSystem.disconnect();
     }
 
 

@@ -6,11 +6,13 @@ import {
     ActionCode,
     CommunicationWrapper,
     ConfigState,
+    InputOverrideRequest,
     PartialConfigState,
     WebSocketResponse
 } from '../Connection/TouchFreeServiceTypes';
 import { ConnectionManager } from '../Connection/ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
+import { InputOverride } from "../TouchFreeToolingTypes";
 
 // Class: ConfigurationManager
 // This class provides a method for changing the configuration of the TouchFree
@@ -77,6 +79,18 @@ export class ConfigurationManager {
         let requestID = uuidgen();
 
         let content = new PartialConfigState(requestID, _interaction, _physical);
+        let request = new CommunicationWrapper(action, content);
+
+        let jsonContent = JSON.stringify(request);
+
+        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
+    }
+
+    public static SendInputOverride(_input: InputOverride) {
+        let action = ActionCode.INPUT_OVERRIDE;
+        let requestID = uuidgen();
+
+        let content = new InputOverrideRequest(requestID, _input);
         let request = new CommunicationWrapper(action, content);
 
         let jsonContent = JSON.stringify(request);

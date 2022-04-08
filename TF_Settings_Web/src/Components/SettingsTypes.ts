@@ -9,7 +9,7 @@ const DefaultHoverAndHoldInteractionSettings: HoverAndHoldInteractionSettings =
 
 const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings =
 {
-    TouchPlaneActivationDistanceCm: 5,
+    touchPlaneActivationDistanceCm: 5,
     TouchPlaneTrackedPosition: TrackedPosition.NEAREST,
 };
 

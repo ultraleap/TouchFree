@@ -16,6 +16,7 @@ import '../../Styles/Interactions.css';
 import AirPushPreview from '../../Videos/AirPush_Preview.webm';
 import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
 import HoverPreview from '../../Videos/Hover_Preview.webm';
+import { ChangeEvent } from "react";
 
 const InteractionTranslator: Record<string, InteractionType> = {
     "AirPush": InteractionType.PUSH,
@@ -63,7 +64,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     // Radio Control Logic
-    onInteractionChange(newValue: string): void {
+    onInteractionChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue = e.currentTarget.value;
+
         if (!(newValue in InteractionTranslator)) {
             console.error(`Could not change interaction type; did not recognise the "${newValue}" interaction`);
         }
@@ -82,7 +85,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         });
     }
 
-    onTrackingPosChange(newValue: string): void {
+    onTrackingPosChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue = e.currentTarget.value;
+
         if (!(newValue in TouchPlaneTrackingOptions)) {
             console.error(`Could not Touch Plane tracking target type; did not recognise "${newValue}"`);
         }
@@ -101,8 +106,8 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     // Toggle Control Logic
-    onScrollDragChange(e: boolean): void {
-        let useScroll: boolean = e; //.currentTarget.checked;
+    onScrollDragChange(e: ChangeEvent<HTMLInputElement>): void {
+        let useScroll: boolean = e.currentTarget.checked;
 
         this.setState((state) => {
             let newConf: InteractionConfigFull = {
@@ -116,8 +121,8 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         });
     }
 
-    interactionZoneToggled(e: boolean): void {
-        let zoneEnabled: boolean = e; //.currentTarget.checked;
+    interactionZoneToggled(e: ChangeEvent<HTMLInputElement>): void {
+        let zoneEnabled: boolean = e.currentTarget.checked;
 
         this.setState((state) => {
             let newConf: InteractionConfigFull = {
@@ -132,7 +137,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     // Slider Control Logic
-    onCursorMovementChange(newValue: number): void {
+    onCursorMovementChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue: number = parseFloat(e.currentTarget.value);
+
         this.setState((state) => {
             let newConf: InteractionConfigFull = {
                 ...state.interactionConfig,
@@ -145,11 +152,13 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         });
     }
 
-    onTouchPlaneDistanceChange(newValue: number): void {
+    onTouchPlaneDistanceChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue: number = parseFloat(e.currentTarget.value);
+
         this.setState((state) => {
             let newConf = state.interactionConfig;
 
-            newConf.TouchPlane.TouchPlaneActivationDistanceCm = newValue;
+            newConf.TouchPlane.touchPlaneActivationDistanceCm = newValue;
 
             return {
                 interactionConfig: newConf
@@ -157,7 +166,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         });
     }
 
-    onHoverStartTimeChange(newValue: number): void {
+    onHoverStartTimeChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue: number = parseFloat(e.currentTarget.value);
+
         this.setState((state) => {
             let newConf = state.interactionConfig;
 
@@ -169,7 +180,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         });
     }
 
-    onHoverCompleteTimeChange(newValue: number): void {
+    onHoverCompleteTimeChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue: number = parseFloat(e.currentTarget.value);
+
         this.setState((state) => {
             let newConf = state.interactionConfig;
 
@@ -181,7 +194,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         });
     }
 
-    onInteractionMinDistChange(newValue: number): void {
+    onInteractionMinDistChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue: number = parseFloat(e.currentTarget.value);
+
         this.setState((state) => {
             let newConf: InteractionConfigFull = {
                 ...state.interactionConfig,
@@ -194,7 +209,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         });
     }
 
-    onInteractionMaxDistChange(newValue: number): void {
+    onInteractionMaxDistChange(e: ChangeEvent<HTMLInputElement>): void {
+        let newValue: number = parseFloat(e.currentTarget.value);
+
         this.setState((state) => {
             let newConf: InteractionConfigFull =
             {
@@ -258,7 +275,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         rangeMax={20}
                         leftLabel="0cm"
                         rightLabel="20cm"
-                        value={this.state.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCm}
+                        value={this.state.interactionConfig.TouchPlane.touchPlaneActivationDistanceCm}
                         onChange={this.onTouchPlaneDistanceChange.bind(this)} />);
                     interactionControls.push(<RadioLine name="Tracking Position"
                         key="Tracking Position"

@@ -5,6 +5,7 @@ import {
 } from '../Configuration/ConfigurationTypes';
 import {
     ConfigurationState,
+    InputOverride,
     TrackingServiceState
 } from '../TouchFreeToolingTypes';
 
@@ -40,6 +41,8 @@ export enum ActionCode {
     CONFIGURATION_FILE_STATE = "CONFIGURATION_FILE_STATE",
     SET_CONFIGURATION_FILE = "SET_CONFIGURATION_FILE",
     CONFIGURATION_FILE_RESPONSE = "CONFIGURATION_FILE_RESPONSE",
+
+    INPUT_OVERRIDE = "INPUT_OVERRIDE"
 }
 
 // Enum: HandPresenceState
@@ -107,6 +110,17 @@ export class ConfigState {
         this.requestID = _id;
         this.interaction = _interaction;
         this.physical = _physical;
+    }
+}
+
+export class InputOverrideRequest {
+    requestID: string;
+    inputOverride: InputOverride;
+
+    constructor(_id: string,
+                _input: InputOverride) {
+        this.requestID = _id;
+        this.inputOverride = _input;
     }
 }
 
