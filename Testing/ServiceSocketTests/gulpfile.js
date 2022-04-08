@@ -40,8 +40,7 @@ gulp.task('buildServerGrab', function () {
 
 gulp.task('startServer', function (callback) {
     var serverBinDir = `./PUT_TEST_BUILD_IN_HERE`;
-    var logFileName = `log.txt`;
-    var logFileLoc = path.join(process.env.ProgramData, `Ultraleap`, `TouchFree`, `Logs`);
+    var logFileLoc = path.join(process.env.ProgramData, `Ultraleap`, `TouchFree`, `Logs`, `log.txt`);
 
     var startCommand = "./TouchFree_Service";
 
@@ -81,18 +80,13 @@ gulp.task('startServer', function (callback) {
     }
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
+    console.log(`Looking for server output in  ${logFileLoc}`);
 
-    serverProcess = spawn(startCommand,
-        [
-            '-batchmode',
-            '-logfile',
-            `${logFileName}`
-        ],
-        { 'cwd': serverBinDir });
+    serverProcess = spawn(startCommand, [], { 'cwd': serverBinDir });
 
-        serverProcess.on('close', () => {
-            callback('Server process closed')
-        });
+    serverProcess.on('close', () => {
+        callback('Server process closed')
+    });
 
     checkLogForReady();
 });
