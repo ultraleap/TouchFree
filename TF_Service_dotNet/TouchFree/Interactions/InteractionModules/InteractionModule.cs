@@ -1,6 +1,7 @@
 ﻿using System;
-
+using System.Collections.Generic;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
@@ -13,8 +14,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         public bool ignoreDragging;
 
-        public event Action<InputAction> HandleInputAction;
-
         protected Positions positions;
 
         protected float distanceFromScreenMm;
@@ -23,40 +22,69 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         protected bool hadHandLastFrame = false;
 
-        protected IPositionStabiliser positioningStabiliser { get => positioningModule.Stabiliser; }
         protected IPositioningModule positioningModule;
+        protected IPositionStabiliser positionStabiliser;
 
         protected readonly HandManager handManager;
         protected readonly IVirtualScreen virtualScreen;
         private readonly IConfigManager configManager;
 
-        public InteractionModule(HandManager _handManager, IVirtualScreen _virtualScreen, IConfigManager _configManager, IPositioningModule _positioningModule, TrackedPosition trackedPosition)
+        protected IEnumerable<PositionTrackerConfiguration> positionConfiguration;
+
+        public InteractionModule(HandManager _handManager, IVirtualScreen _virtualScreen, IConfigManager _configManager, IPositioningModule _positioningModule, IPositionStabiliser _positionStabiliser)
         {
             handManager = _handManager;
             virtualScreen = _virtualScreen;
             configManager = _configManager;
-
             positioningModule = _positioningModule;
-            positioningModule.TrackedPosition = trackedPosition;
-
+            positionStabiliser = _positionStabiliser;
         }
+
         public virtual void Enable()
         {
             configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
             OnInteractionSettingsUpdated(configManager.InteractionConfig);
         }
 
-        public virtual void Disable()
-        {
-            configManager.OnInteractionConfigUpdated -= OnInteractionSettingsUpdated;
-
-        }
-
-        public void Update()
+        public InputAction? Update()
         {
             // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
             latestTimestamp = handManager.Timestamp;
 
+            var hand = GetHand();
+            var inputAction = UpdateData(hand);
+
+            if (hand != null)
+            {
+                hadHandLastFrame = true;
+            }
+            else
+            {
+                hadHandLastFrame = false;
+            }
+
+            if (inputAction != null && inputAction.actionDetected)
+            {
+                return new InputAction(latestTimestamp, InteractionType, handType, handChirality, inputAction.inputType, inputAction.positions, inputAction.progressToClick);
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        // This is the main update loop of the interaction module
+        protected abstract InputActionResult UpdateData(Leap.Hand hand);
+
+        protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
+        {
+            ignoreDragging = !_config.UseScrollingOrDragging;
+            positionStabiliser.ResetValues();
+        }
+
+        Leap.Hand GetHand()
+        {
             Leap.Hand hand = null;
 
             switch (handType)
@@ -73,36 +101,12 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
 
-                positions = positioningModule.CalculatePositions(hand);
+                positions = positioningModule.CalculatePositions(hand, positionConfiguration);
                 distanceFromScreenMm = positions.DistanceFromScreen * 1000f;
                 hand = CheckHandInInteractionZone(hand);
             }
 
-            UpdateData(hand);
-
-            if (hand != null)
-            {
-                hadHandLastFrame = true;
-            }
-            else
-            {
-                hadHandLastFrame = false;
-            }
-        }
-
-        // This is the main update loop of the interaction module
-        protected virtual void UpdateData(Leap.Hand hand) { }
-
-        protected void SendInputAction(InputType _inputType, Positions _positions, float _progressToClick)
-        {
-            InputAction actionData = new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick);
-            HandleInputAction?.Invoke(actionData);
-        }
-
-        protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
-        {
-            ignoreDragging = !_config.UseScrollingOrDragging;
-            positioningStabiliser.ResetValues();
+            return hand;
         }
 
         /// <summary>

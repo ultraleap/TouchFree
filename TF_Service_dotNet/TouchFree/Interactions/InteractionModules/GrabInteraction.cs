@@ -4,6 +4,7 @@ using System.Numerics;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
+using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -37,25 +38,28 @@ namespace Ultraleap.TouchFree.Service
             HandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IPositioningModule _positioningModule) : base(_handManager, _virtualScreen, _configManager, _positioningModule, TrackedPosition.INDEX_STABLE)
+            IPositioningModule _positioningModule,
+            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
             grabDetector = new GeneralisedGrabDetector();
+            positionConfiguration = new[]
+            {
+                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
+            };
         }
 
-        protected override void UpdateData(Leap.Hand hand)
+        protected override InputActionResult UpdateData(Leap.Hand hand)
         {
             if (hand == null)
             {
                 if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, 0);
+                    return new InputActionResult(InputType.CANCEL, positions, 0);
                 }
 
-                return;
+                return new InputActionResult();
             }
-
-            positions = positioningModule.CalculatePositions(hand);
 
             float velocity = hand.PalmVelocity.Magnitude;
             if (previousPosition.Item1 != 0)
@@ -70,43 +74,45 @@ namespace Ultraleap.TouchFree.Service
                 float changeInTime = (latestTimestamp - previousPosition.Item1) / (1000f * 1000f);
                 velocity = changeInPos / changeInTime;
             }
-            HandleInteractions(hand, velocity);
+            var inputActionResult = HandleInteractions(hand, velocity);
             previousPosition = new Tuple<long, Positions>(latestTimestamp, positions);
+
+            return inputActionResult;
         }
 
-        private void HandleInteractions(Leap.Hand hand, float _velocity)
+        private InputActionResult HandleInteractions(Leap.Hand hand, float _velocity)
         {
             // If already pressing, continue regardless of velocity
             if (grabDetector.IsGrabbing(hand) && (pressing || _velocity < (maxHandVelocity * 1000f)))
             {
-                HandleInvoke();
+                return HandleInvoke();
             }
             else if (pressing)
             {
-                HandleUnclick();
+                return HandleUnclick();
             }
             else
             {
-                SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
+                return new InputActionResult(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             }
         }
 
-        private void HandleInvoke()
+        private InputActionResult HandleInvoke()
         {
             // we are touching the screen
             if (!pressing)
             {
-                HandlePress();
+                return HandlePress();
             }
             else
             {
-                HandlePressHold();
+                return HandlePressHold();
             }
         }
 
-        private void HandlePress()
+        private InputActionResult HandlePress()
         {
-            SendInputAction(InputType.DOWN, positions, grabDetector.GeneralisedGrabStrength);
+            var inputActionResult = new InputActionResult(InputType.DOWN, positions, grabDetector.GeneralisedGrabStrength);
             pressing = true;
             if (ignoreDragging)
             {
@@ -116,17 +122,19 @@ namespace Ultraleap.TouchFree.Service
             }
 
             // Adjust deadzone
-            positioningStabiliser.StopShrinkingDeadzone();
-            float newDeadzoneRadius = deadzoneEnlargementDistance + positioningStabiliser.defaultDeadzoneRadius;
-            positioningStabiliser.currentDeadzoneRadius = newDeadzoneRadius;
+            positionStabiliser.StopShrinkingDeadzone();
+            float newDeadzoneRadius = deadzoneEnlargementDistance + positionStabiliser.defaultDeadzoneRadius;
+            positionStabiliser.currentDeadzoneRadius = newDeadzoneRadius;
             cursorDownPos = positions.CursorPosition;
+
+            return inputActionResult;
         }
 
-        private void HandlePressHold()
+        private InputActionResult HandlePressHold()
         {
             if (isDragging)
             {
-                SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
+                return new InputActionResult(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
             }
             else
             {
@@ -145,17 +153,17 @@ namespace Ultraleap.TouchFree.Service
                         {
                             heldFrames += 1;
                         }
-                        SendInputAction(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
+                        return new InputActionResult(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
                     }
                     else if (requireClick)
                     {
-                        SendInputAction(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
-                        positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                        positionStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                         requireClick = false;
+                        return new InputActionResult(InputType.UP, downPositions, grabDetector.GeneralisedGrabStrength);
                     }
                     else
                     {
-                        SendInputAction(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
+                        return new InputActionResult(InputType.MOVE, positions, grabDetector.GeneralisedGrabStrength);
                     }
                 }
                 else
@@ -164,29 +172,32 @@ namespace Ultraleap.TouchFree.Service
                     if (CheckForStartDrag(cursorDownPos, positions.CursorPosition) && !ignoreDragging)
                     {
                         isDragging = true;
-                        positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                        positionStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                     }
 
-                    SendInputAction(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
+                    return new InputActionResult(InputType.MOVE, downPositions, grabDetector.GeneralisedGrabStrength);
                 }
             }
         }
 
-        private void HandleUnclick()
+        private InputActionResult HandleUnclick()
         {
+            var inputActionResult = new InputActionResult();
             // Check if an unclick is needed, and perform if so
             if (!ignoreDragging)
             {
                 if (!requireHold && !requireClick)
                 {
-                    SendInputAction(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
+                    inputActionResult = new InputActionResult(InputType.UP, positions, grabDetector.GeneralisedGrabStrength);
                 }
 
-                positioningStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
+                positionStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
             }
 
             pressing = false;
             isDragging = false;
+
+            return inputActionResult;
         }
 
         bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)

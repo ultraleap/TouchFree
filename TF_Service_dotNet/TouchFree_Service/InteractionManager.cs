@@ -13,10 +13,10 @@ namespace Ultraleap.TouchFree.Service
         private readonly HoverAndHoldInteraction hoverAndHold;
         private readonly TouchPlanePushInteraction touchPlane;
 
-        private InteractionType lastInteraction;
-
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager connectionManager;
+
+        private InteractionModule currentInteraction;
 
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
@@ -42,59 +42,45 @@ namespace Ultraleap.TouchFree.Service
 
         protected void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
-            switch(lastInteraction)
-            {
-                case InteractionType.TOUCHPLANE:
-                    DisableInteraction(touchPlane);
-                    break;
-
-                case InteractionType.PUSH:
-                    DisableInteraction(airPush);
-                    break;
-
-                case InteractionType.HOVER:
-                    DisableInteraction(hoverAndHold);
-                    break;
-
-                case InteractionType.GRAB:
-                    DisableInteraction(grab);
-                    break;
-            }
+            var initialisationNotStarted = currentInteraction == null;
 
             switch(_config.InteractionType)
             {
                 case InteractionType.TOUCHPLANE:
-                    EnableInteraction(touchPlane);
+                    currentInteraction = touchPlane;
                     break;
 
                 case InteractionType.PUSH:
-                    EnableInteraction(airPush);
+                    currentInteraction = airPush;
                     break;
 
                 case InteractionType.HOVER:
-                    EnableInteraction(hoverAndHold);
+                    currentInteraction = hoverAndHold;
                     break;
 
                 case InteractionType.GRAB:
-                    EnableInteraction(grab);
+                    currentInteraction = grab;
                     break;
             }
 
-            lastInteraction = _config.InteractionType;
+            currentInteraction.Enable();
+
+            if (initialisationNotStarted)
+            {
+                updateBehaviour.OnUpdate += Update;
+            }
         }
 
-        protected void EnableInteraction(InteractionModule target)
+        protected void Update()
         {
-            updateBehaviour.OnUpdate += target.Update;
-            target.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-            target.Enable();
-        }
-
-        protected void DisableInteraction(InteractionModule target)
-        {
-            updateBehaviour.OnUpdate -= target.Update;
-            target.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-            target.Disable();
+            if (currentInteraction != null)
+            {
+                var inputAction = currentInteraction.Update();
+                if (inputAction.HasValue)
+                {
+                    connectionManager.SendInputActionToWebsocket(inputAction.Value);
+                }
+            }
         }
     }
 }
