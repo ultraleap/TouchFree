@@ -71,7 +71,10 @@ gulp.task('startServer', function (callback) {
 
         ws.onerror = function (err) {
             if (err.error.code === `ECONNREFUSED`) {
-                testWS();
+                console.log('Socket is unavailable. Reconnect will be attempted in 1 second.', e.reason);
+                setTimeout(function () {
+                    testWS();
+                }, 1000);
             } else {
                 callback(`Socket encountered error: ${err.message} Closing socket`);
                 ws.close();
