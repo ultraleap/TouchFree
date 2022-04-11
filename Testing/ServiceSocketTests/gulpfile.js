@@ -42,22 +42,16 @@ gulp.task('buildServerGrab', function () {
 
 gulp.task('startServer', function (callback) {
     var serverBinDir = `./PUT_TEST_BUILD_IN_HERE`;
-    var logFileLoc = path.join(process.env.ProgramData, `Ultraleap`, `TouchFree`, `Logs`, `log.txt`);
 
     var startCommand = "./TouchFree_Service";
 
     if (process.platform === "win32") {
         startCommand = `.\\TouchFree_Service.exe`;
         serverBinDir = serverBinDir.replace(/\//g, '\\');
-        logFileLoc = logFileLoc.replace(/\//g, '\\');
     } else {
         chmodSync(serverBinDir + startCommand, 0o765, (err) => {
             callback("The permissions for the haptic server could not be set!");
         });
-    }
-
-    if (!fs.existsSync(logFileLoc)) {
-        fs.writeFileSync(logFileLoc, ' ');
     }
 
     const ws = new WebSocket('localhost:9739/connect');
@@ -68,7 +62,6 @@ gulp.task('startServer', function (callback) {
     });
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
-    console.log(`Looking for server output in  ${logFileLoc}`);
 
     serverProcess = spawn(startCommand, [], { 'cwd': serverBinDir });
 
