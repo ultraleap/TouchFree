@@ -54,7 +54,7 @@ gulp.task('startServer', function (callback) {
         });
     }
 
-    const ws = new WebSocket('localhost:9739/connect');
+    const ws = new WebSocket('ws://localhost:9739/connect');
 
     ws.on('open', function open() {
         console.log("Successfully connected to Server");
