@@ -57,24 +57,27 @@ gulp.task('startServer', function (callback) {
     function testWS() {
         var ws = new WebSocket('ws://localhost:9739/connect');
 
-        ws.onopen = function() {
+        ws.onopen = function () {
             console.log("Successfully connected to Server");
-          callback();
+            callback();
         };
 
-        ws.onclose = function(e) {
-          console.log('Socket is unavailable. Reconnect will be attempted in 1 second.', e.reason);
-          setTimeout(function() {
-            testWS();
-          }, 1000);
+        ws.onclose = function (e) {
+            console.log('Socket is unavailable. Reconnect will be attempted in 1 second.', e.reason);
+            setTimeout(function () {
+                testWS();
+            }, 1000);
         };
 
-        ws.onerror = function(err) {
-          console.dir(err);
-          callback('Socket encountered error: ', err.message, 'Closing socket');
-          ws.close();
+        ws.onerror = function (err) {
+            if (err.error.code === `ECONNREFUSED`) {
+                testWS();
+            } else {
+                callback(`Socket encountered error: ${err.message} Closing socket`);
+                ws.close();
+            }
         };
-      }
+    }
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
