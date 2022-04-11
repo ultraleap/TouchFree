@@ -1,4 +1,3 @@
-import WebSocket from 'ws';
 
 const { spawn } = require('child_process');
 const { chmodSync, readFileSync } = require('fs');
@@ -6,6 +5,7 @@ const { chmodSync, readFileSync } = require('fs');
 const fs = require('fs');
 const path = require('path');
 const Tail = require('tail').Tail;
+const WebSocket = require('ws');
 
 var del = require('del');
 var gulp = require('gulp');
@@ -60,7 +60,7 @@ gulp.task('startServer', function (callback) {
         fs.writeFileSync(logFileLoc, ' ');
     }
 
-    const ws = new WebSocket('ws://www.host.com/path');
+    const ws = new WebSocket('localhost:9739/connect');
 
     ws.on('open', function open() {
         console.log("Successfully connected to Server");
