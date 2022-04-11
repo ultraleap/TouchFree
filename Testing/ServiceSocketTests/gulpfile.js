@@ -1,3 +1,5 @@
+import WebSocket from 'ws';
+
 const { spawn } = require('child_process');
 const { chmodSync, readFileSync } = require('fs');
 
@@ -58,26 +60,12 @@ gulp.task('startServer', function (callback) {
         fs.writeFileSync(logFileLoc, ' ');
     }
 
-    function checkLogForReady() {
-        return new Promise(function(resolve, reject) {
-            const fileContent = fs.readFileSync(logFileLoc);
-            console.log("Checking file content");
+    const ws = new WebSocket('ws://www.host.com/path');
 
-            if (fileContent.toString().includes("Service Setup Complete")) {
-                console.log("Server ready!");
-                callback();
-                return resolve();
-            }
-
-            console.log("Server not ready");
-
-            return new Promise(() => {
-                setTimeout(() => {
-                    return checkLogForReady();
-                }, 1000);
-            });
-        });
-    }
+    ws.on('open', function open() {
+        console.log("Successfully connected to Server");
+        callback();
+    });
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
     console.log(`Looking for server output in  ${logFileLoc}`);
@@ -87,8 +75,6 @@ gulp.task('startServer', function (callback) {
     serverProcess.on('close', () => {
         callback('Server process closed')
     });
-
-    checkLogForReady();
 });
 
 gulp.task('cucumber', function (callback) {
