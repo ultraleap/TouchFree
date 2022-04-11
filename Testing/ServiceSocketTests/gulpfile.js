@@ -54,30 +54,27 @@ gulp.task('startServer', function (callback) {
         });
     }
 
+    var timerId = -1;
+
     function testWS() {
         var ws = new WebSocket('ws://localhost:9739/connect');
 
         ws.onopen = function () {
             console.log("Successfully connected to Server");
+            clearTimeout(timerId);
             callback();
-        };
-
-        ws.onclose = function (e) {
-            console.log('Socket is unavailable. Reconnect will be attempted in 1 second.', e.reason);
-            setTimeout(function () {
-                testWS();
-            }, 1000);
         };
 
         ws.onerror = function (err) {
             if (err.error.code === `ECONNREFUSED`) {
                 console.log('Socket is unavailable. Reconnect will be attempted in 1 second.');
-                setTimeout(function () {
+                timerId = setTimeout(function () {
                     testWS();
                 }, 1000);
             } else {
-                callback(`Socket encountered error: ${err.message} Closing socket`);
+                clearTimeout(timerId);
                 ws.close();
+                callback(`Socket encountered error: ${err.message} Closing socket`);
             }
         };
     }
