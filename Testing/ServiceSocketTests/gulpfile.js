@@ -54,12 +54,26 @@ gulp.task('startServer', function (callback) {
         });
     }
 
-    const ws = new WebSocket('ws://localhost:9739/connect');
+    function testWS() {
+        var ws = new WebSocket('ws://localhost:9739/connect');
 
-    ws.on('open', function open() {
-        console.log("Successfully connected to Server");
-        callback();
-    });
+        ws.onopen = function() {
+            console.log("Successfully connected to Server");
+          callback();
+        };
+
+        ws.onclose = function(e) {
+          console.log('Socket is unavailable. Reconnect will be attempted in 1 second.', e.reason);
+          setTimeout(function() {
+            testWS();
+          }, 1000);
+        };
+
+        ws.onerror = function(err) {
+          callback('Socket encountered error: ', err.message, 'Closing socket');
+          ws.close();
+        };
+      }
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
@@ -68,6 +82,8 @@ gulp.task('startServer', function (callback) {
     serverProcess.on('close', () => {
         callback('Server process closed')
     });
+
+    testWS();
 });
 
 gulp.task('cucumber', function (callback) {
