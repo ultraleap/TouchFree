@@ -70,6 +70,7 @@ gulp.task('startServer', function (callback) {
         };
 
         ws.onerror = function(err) {
+          console.dir(err);
           callback('Socket encountered error: ', err.message, 'Closing socket');
           ws.close();
         };
