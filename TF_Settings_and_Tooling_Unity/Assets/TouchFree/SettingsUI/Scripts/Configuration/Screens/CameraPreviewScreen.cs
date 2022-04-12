@@ -5,8 +5,7 @@ using UnityEngine.UI;
 public class CameraPreviewScreen : MonoBehaviour
 {
     public Toggle enableOverexposureHighlighting;
-    public Material leftCameraMat;
-    public Material rightCameraMat;
+
     public Toggle cameraReversedToggle;
     public Leap.Unity.LeapImageRetriever leapImageRetriever;
 
@@ -100,13 +99,11 @@ public class CameraPreviewScreen : MonoBehaviour
     {
         if (state)
         {
-            leftCameraMat.SetFloat("_threshold", exposureThresholdValue);
-            rightCameraMat.SetFloat("_threshold", exposureThresholdValue);
+            Shader.SetGlobalFloat("_threshold", exposureThresholdValue);
         }
         else
         {
-            leftCameraMat.SetFloat("_threshold", 1.0f);
-            rightCameraMat.SetFloat("_threshold", 1.0f);
+            Shader.SetGlobalFloat("_threshold", 1.0f);
         }
     }
 
