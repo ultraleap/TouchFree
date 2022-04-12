@@ -257,11 +257,11 @@
 }
 
 .cameraRotation .screenSideCenterLineVert {
-    left: 815px;
+    left: 985px;
     top: 746px;
     height: 358px;
     transform-origin: 0% 100%;
-    transform: rotate(15deg);
+    transform: rotate(-15deg);
 }
 
 .cameraDistanceFromScreen .screenSideCenterLineVert {
@@ -337,19 +337,15 @@
 
 .screenSideCamera {
     top: 721px;
-    left: 873px;
+    left: 869px;
     width: 39px;
     height: 36px;
-    transform: matrix(0.97, 0.24, -0.24, 0.97, 0, 0);
+    transform: matrix(0.97, -0.24, 0.24, 0.97, 0, 0);
 
     background: transparent linear-gradient(90deg, #FFFFFF 0%, #E8E8E8 23%, #E8E8E8 77%, #FFFFFF 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 9px;
     position: absolute;
-}
-
-.cameraRotation .screenSideCamera {
-    left: 894px;
 }
 
 .screenSideCameraBottom {
@@ -389,12 +385,12 @@
 
 .cameraRotation .screenSideTiltBox {
     overflow: hidden;
-    top: 760px;
-    left: 910px;
+    top: 745px;
+    left: 985px;
     width: 350px;
     height: 350px;
     transform-origin: 0% 100%;
-    transform: rotate(270deg) skew(75deg);
+    transform: rotate(255deg) skew(75deg);
 
     position: absolute;
 }
