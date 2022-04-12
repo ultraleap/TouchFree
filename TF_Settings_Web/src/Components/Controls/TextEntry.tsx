@@ -4,7 +4,7 @@ import '../../Styles/Controls/TextEntry.css';
 
 interface TextEntryProps {
     name: string,
-    value: number,
+    value: string,
     selected: boolean,
     onChange: (ChangeEventHandler<HTMLInputElement>),
     onClick: (MouseEventHandler<HTMLElement>),
@@ -23,8 +23,7 @@ export class TextEntry extends React.Component<TextEntryProps, {}> {
                     className={this.getClassName()}>
                 <p className="textEntryLabel">{this.props.name}</p>
                 <label className="textEntryContainer">
-                    <input type="number"
-                           className="textEntryText"
+                    <input className="textEntryText"
                            value={this.props.value}
                            onChange={this.props.onChange.bind(this)}/>
                 </label>

@@ -20,6 +20,14 @@ interface physicalState {
 };
 
 export class CameraPage extends Page<{}, physicalState> {
+    
+    currentScreenHeight: string = '';
+    currentCameraHeight: string = '';
+    currentCameraLeftToRight: string = '';
+    currentScreenTilt: string = '';
+    currentCameraRotation: string = '';
+    currentCameraDistanceFromScreen: string = '';
+
     constructor(props: {}) {
         super(props);
 
@@ -53,6 +61,13 @@ export class CameraPage extends Page<{}, physicalState> {
             physicalConfig: config.physical,
             screenTilt: config.physical.ScreenRotationD
         });
+
+        this.currentScreenHeight = this.state.screenHeight.toString();
+        this.currentCameraHeight = this.state.cameraHeight.toString();
+        this.currentCameraLeftToRight = this.state.cameraLeftToRight.toString();
+        this.currentScreenTilt = this.state.screenTilt.toString();
+        this.currentCameraRotation = this.state.cameraRotation.toString();
+        this.currentCameraDistanceFromScreen = this.state.cameraDistanceFromScreen.toString();
     }
 
     roundToFiveDecimals(numberIn: number): number {
@@ -89,57 +104,93 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     onScreenHeightChanged(e: React.FormEvent<HTMLInputElement>): void {
-        const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState({ screenHeight: value });
+        this.currentScreenHeight = e.currentTarget?.value;
+        const value = parseFloat(e.currentTarget?.value);
+        if (!isNaN(value)) {
+            this.setState({ screenHeight: value });
+        } else {
+            this.setState(this.state);
+        }
     }
 
     onCameraHeightChanged(e: React.FormEvent<HTMLInputElement>): void {
-        const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState({ cameraHeight: value });
+        this.currentCameraHeight = e.currentTarget?.value;
+        const value = parseFloat(e.currentTarget?.value);
+        if (!isNaN(value)) {
+            this.setState({ cameraHeight: value });
+        } else {
+            this.setState(this.state);
+        }
     }
 
     onCameraLeftToRightChanged(e: React.FormEvent<HTMLInputElement>): void {
-        const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState({ cameraLeftToRight: value });
+        this.currentCameraLeftToRight = e.currentTarget?.value;
+        const value = parseFloat(e.currentTarget?.value);
+        if (!isNaN(value)) {
+            this.setState({ cameraLeftToRight: value });
+        } else {
+            this.setState(this.state);
+        }
     }
 
     onScreenTiltChanged(e: React.FormEvent<HTMLInputElement>): void {
-        const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState({ screenTilt: value });
+        this.currentScreenTilt = e.currentTarget?.value;
+        const value = parseFloat(e.currentTarget?.value);
+        if (!isNaN(value)) {
+            this.setState({ screenTilt: value });
+        } else {
+            this.setState(this.state);
+        }
     }
 
     onCameraRotationChanged(e: React.FormEvent<HTMLInputElement>): void {
-        const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState({ cameraRotation: value });
+        this.currentCameraRotation = e.currentTarget?.value;
+        const value = parseFloat(e.currentTarget?.value);
+        if (!isNaN(value)) {
+            this.setState({ cameraRotation: value });
+        } else {
+            this.setState(this.state);
+        }
     }
 
     onCameraDistanceFromScreenChanged(e: React.FormEvent<HTMLInputElement>): void {
-        const value = parseFloat(e.currentTarget?.value) ?? 0;
-        this.setState({ cameraDistanceFromScreen: value });
+        this.currentCameraDistanceFromScreen = e.currentTarget?.value;
+        const value = parseFloat(e.currentTarget?.value);
+        if (!isNaN(value)) {
+            this.setState({ cameraDistanceFromScreen: value });
+        } else {
+            this.setState(this.state);
+        }
     }
 
     onScreenHeightClicked(): void {
-        this.setState({ selectedView: "screenHeight" });
+        this.updateSelectedView("screenHeight");
     }
 
     onCameraHeightClicked(): void {
-        this.setState({ selectedView: "cameraHeight" });
+        this.updateSelectedView("cameraHeight");
     }
 
     onCameraLeftToRightClicked(): void {
-        this.setState({ selectedView: "cameraLeftToRight" });
+        this.updateSelectedView("cameraLeftToRight");
     }
 
     onScreenTiltClicked(): void {
-        this.setState({ selectedView: "screenTilt" });
+        this.updateSelectedView("screenTilt");
     }
 
     onCameraRotationClicked(): void {
-        this.setState({ selectedView: "cameraRotation" });
+        this.updateSelectedView("cameraRotation");
     }
 
     onCameraDistanceFromScreenClicked(): void {
-        this.setState({ selectedView: "cameraDistanceFromScreen" });
+        this.updateSelectedView("cameraDistanceFromScreen");
+    }
+
+    updateSelectedView(selectedView: string) : void {
+        if (this.state.selectedView !== selectedView) {
+            this.setState({ selectedView });
+        }
     }
 
     render() {
@@ -152,38 +203,38 @@ export class CameraPage extends Page<{}, physicalState> {
                 <div className="horizontalContainer sideSpacing">
                     <div className="verticalContainer">
                         <TextEntry name="Screen Height (cm)"
-                            value={this.state.screenHeight}
+                            value={this.currentScreenHeight}
                             onChange={this.onScreenHeightChanged.bind(this)}
                             onClick={this.onScreenHeightClicked.bind(this)}
                             onPointerDown={this.onScreenHeightClicked.bind(this)}
                             selected={this.state.selectedView === "screenHeight"} />
                         <TextEntry name="Camera Height (cm)"
-                            value={this.state.cameraHeight}
+                            value={this.currentCameraHeight}
                             onChange={this.onCameraHeightChanged.bind(this)}
                             onClick={this.onCameraHeightClicked.bind(this)}
                             onPointerDown={this.onCameraHeightClicked.bind(this)}
                             selected={this.state.selectedView === "cameraHeight"} />
                         <TextEntry name="Camera Left to Right (cm)"
-                            value={this.state.cameraLeftToRight}
+                            value={this.currentCameraLeftToRight}
                             onChange={this.onCameraLeftToRightChanged.bind(this)}
                             onClick={this.onCameraLeftToRightClicked.bind(this)}
                             onPointerDown={this.onCameraLeftToRightClicked.bind(this)}
                             selected={this.state.selectedView === "cameraLeftToRight"} />
                         <div className="cameraPageDivider"></div>
                         <TextEntry name="Screen Tilt (degrees)"
-                            value={this.state.screenTilt}
+                            value={this.currentScreenTilt}
                             onChange={this.onScreenTiltChanged.bind(this)}
                             onClick={this.onScreenTiltClicked.bind(this)}
                             onPointerDown={this.onScreenTiltClicked.bind(this)}
                             selected={this.state.selectedView === "screenTilt"} />
                         <TextEntry name="Camera Rotation (degrees)"
-                            value={this.state.cameraRotation}
+                            value={this.currentCameraRotation}
                             onChange={this.onCameraRotationChanged.bind(this)}
                             onClick={this.onCameraRotationClicked.bind(this)}
                             onPointerDown={this.onCameraRotationClicked.bind(this)}
                             selected={this.state.selectedView === "cameraRotation"} />
                         <TextEntry name="Camera Distance from Screen (cm)"
-                            value={this.state.cameraDistanceFromScreen}
+                            value={this.currentCameraDistanceFromScreen}
                             onChange={this.onCameraDistanceFromScreenChanged.bind(this)}
                             onClick={this.onCameraDistanceFromScreenClicked.bind(this)}
                             onPointerDown={this.onCameraDistanceFromScreenClicked.bind(this)}
