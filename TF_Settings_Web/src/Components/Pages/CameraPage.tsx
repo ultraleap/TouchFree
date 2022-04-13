@@ -52,7 +52,7 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     setStateFromFile(config: ConfigState): void {
-        this.setState({
+        const stateUpdate = {
             screenHeight: this.roundToFiveDecimals(config.physical.ScreenHeightM * 100),
             cameraHeight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
             cameraLeftToRight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
@@ -60,14 +60,16 @@ export class CameraPage extends Page<{}, physicalState> {
             cameraRotation: config.physical.LeapRotationD.X,
             physicalConfig: config.physical,
             screenTilt: config.physical.ScreenRotationD
-        });
+        };
 
-        this.currentScreenHeight = this.state.screenHeight.toString();
-        this.currentCameraHeight = this.state.cameraHeight.toString();
-        this.currentCameraLeftToRight = this.state.cameraLeftToRight.toString();
-        this.currentScreenTilt = this.state.screenTilt.toString();
-        this.currentCameraRotation = this.state.cameraRotation.toString();
-        this.currentCameraDistanceFromScreen = this.state.cameraDistanceFromScreen.toString();
+        this.currentScreenHeight = stateUpdate.screenHeight.toString();
+        this.currentCameraHeight = stateUpdate.cameraHeight.toString();
+        this.currentCameraLeftToRight = stateUpdate.cameraLeftToRight.toString();
+        this.currentScreenTilt = stateUpdate.screenTilt.toString();
+        this.currentCameraRotation = stateUpdate.cameraRotation.toString();
+        this.currentCameraDistanceFromScreen = stateUpdate.cameraDistanceFromScreen.toString();
+
+        this.setState(stateUpdate);
     }
 
     roundToFiveDecimals(numberIn: number): number {
