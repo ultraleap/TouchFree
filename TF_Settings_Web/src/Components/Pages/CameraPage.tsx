@@ -52,12 +52,15 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     setStateFromFile(config: ConfigState): void {
+        let cameraRotation = Math.round(config.physical.LeapRotationD.Z) == 180 ? -config.physical.LeapRotationD.X - config.physical.LeapRotationD.Z : config.physical.LeapRotationD.X;
+        cameraRotation = cameraRotation <= -180 ? cameraRotation + 360 : cameraRotation;
+
         const stateUpdate = {
             screenHeight: this.roundToFiveDecimals(config.physical.ScreenHeightM * 100),
             cameraHeight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
             cameraLeftToRight: this.roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
             cameraDistanceFromScreen: this.roundToFiveDecimals(-config.physical.LeapPositionRelativeToScreenBottomM.Z * 100),
-            cameraRotation: config.physical.LeapRotationD.X,
+            cameraRotation,
             physicalConfig: config.physical,
             screenTilt: config.physical.ScreenRotationD
         };
@@ -79,6 +82,10 @@ export class CameraPage extends Page<{}, physicalState> {
     componentDidUpdate(prevProps: {}, prevState: physicalState): void {
         if (this.state !== null &&
             this.state !== prevState) {
+
+            let xRotation = (this.state.cameraRotation % 360);
+            xRotation = xRotation > 90 ? 180 - xRotation : (xRotation < -90 ? -xRotation - 180 : xRotation);
+
             let physicalConfigState: PhysicalConfig = {
                 ...this.state.physicalConfig,
                 LeapPositionRelativeToScreenBottomM: {
@@ -88,7 +95,7 @@ export class CameraPage extends Page<{}, physicalState> {
                 },
                 LeapRotationD: {
                     ...this.state.physicalConfig.LeapRotationD,
-                    X: this.state.cameraRotation,
+                    X: xRotation,
                     Z: this.state.cameraRotation > 90 || this.state.cameraRotation < -90 ? 180 : 0
                 },
                 ScreenHeightM: this.state.screenHeight / 100,
