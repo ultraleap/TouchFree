@@ -88,7 +88,8 @@ export class CameraPage extends Page<{}, physicalState> {
                 },
                 LeapRotationD: {
                     ...this.state.physicalConfig.LeapRotationD,
-                    X: this.state.cameraRotation
+                    X: this.state.cameraRotation,
+                    Z: this.state.cameraRotation > 90 || this.state.cameraRotation < -90 ? 180 : 0
                 },
                 ScreenHeightM: this.state.screenHeight / 100,
                 ScreenRotationD: this.state.screenTilt,
