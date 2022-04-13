@@ -50,7 +50,7 @@ gulp.task('startServer', function (callback) {
         serverBinDir = serverBinDir.replace(/\//g, '\\');
     } else {
         chmodSync(serverBinDir + startCommand, 0o765, (err) => {
-            callback("The permissions for the haptic server could not be set!");
+            callback("The permissions for the TouchFree Service could not be set!");
         });
     }
 
@@ -83,8 +83,12 @@ gulp.task('startServer', function (callback) {
 
     serverProcess = spawn(startCommand, [], { 'cwd': serverBinDir });
 
-    serverProcess.on('close', () => {
-        callback('Server process closed')
+    serverProcess.on('close', (code) => {
+        console.log(`Server process closed with code ${code}`);
+    });
+
+    serverProcess.on('exit', (code) => {
+        callback(`Server process closed with code ${code}`);
     });
 
     testWS();
