@@ -16,6 +16,10 @@ namespace Ultraleap.TouchFree.Service
 
         private IEnumerable<IInteraction> activeInteractions;
         private IInteraction interactionCurrentlyDown;
+        private IInteraction locationInteraction;
+
+        private InputAction lastLocationInputAction;
+        private InputAction nonLocationRelativeInputAction;
 
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
@@ -44,6 +48,7 @@ namespace Ultraleap.TouchFree.Service
             };
 
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType));
+            locationInteraction = interactions.Single(x => x.InteractionType == InteractionType.PUSH);
 
             if (initialisationNotStarted)
             {
@@ -57,6 +62,7 @@ namespace Ultraleap.TouchFree.Service
             {
                 InputAction? inputAction = null;
                 float currentMaxConfidence = 0;
+                InputAction? lastLocationActionToUpdate = null;
                 foreach(var interaction in activeInteractions)
                 {
                     if (interactionCurrentlyDown != null && interactionCurrentlyDown != interaction)
@@ -79,6 +85,7 @@ namespace Ultraleap.TouchFree.Service
                     {
                         inputAction = interactionInputAction.inputAction;
                         interactionCurrentlyDown = interaction;
+                        nonLocationRelativeInputAction = interactionInputAction.inputAction;
                         break;
                     }
 
@@ -86,10 +93,26 @@ namespace Ultraleap.TouchFree.Service
                     {
                         inputAction = interactionInputAction.inputAction;
                     }
+
+                    if (interaction == locationInteraction)
+                    {
+                        lastLocationActionToUpdate = inputAction;
+                    }
+                }
+
+                if (lastLocationActionToUpdate.HasValue)
+                {
+                    lastLocationInputAction = lastLocationActionToUpdate.Value;
                 }
 
                 if (inputAction.HasValue)
                 {
+
+                    if (interactionCurrentlyDown != null)
+                    {
+                        inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
+                            new Positions(lastLocationInputAction.CursorPosition + (inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition), inputAction.Value.DistanceFromScreen), inputAction.Value.ProgressToClick);
+                    }
                     connectionManager.SendInputActionToWebsocket(inputAction.Value);
                 }
             }
