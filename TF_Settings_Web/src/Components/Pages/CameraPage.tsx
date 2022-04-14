@@ -52,7 +52,7 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     setStateFromFile(config: ConfigState): void {
-        let cameraRotation = Math.round(config.physical.LeapRotationD.Z) == 180 ? -config.physical.LeapRotationD.X - config.physical.LeapRotationD.Z : config.physical.LeapRotationD.X;
+        let cameraRotation = Math.round(config.physical.LeapRotationD.Z) === 180 ? -config.physical.LeapRotationD.X - config.physical.LeapRotationD.Z : config.physical.LeapRotationD.X;
         cameraRotation = cameraRotation <= -180 ? cameraRotation + 360 : cameraRotation;
 
         const stateUpdate = {
