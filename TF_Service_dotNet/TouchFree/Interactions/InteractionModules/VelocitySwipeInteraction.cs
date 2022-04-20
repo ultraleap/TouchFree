@@ -30,6 +30,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         Axis lockAxisToOnly = Axis.NONE;
         bool allowBidirectional = false;
 
+        private PositionFilter filter = new PositionFilter();
+
         public VelocitySwipeInteraction(
             HandManager _handManager,
             IVirtualScreen _virtualScreen,
@@ -58,6 +60,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
 
             return HandleInteractions();
+        }
+
+        protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
+        {
+            var returnPositions = base.ApplyAdditionalPositionModifiers(positions);
+            returnPositions.CursorPosition = filter.ApplyModification(returnPositions.CursorPosition);
+            return returnPositions;
         }
 
         private InputActionResult HandleInteractions()

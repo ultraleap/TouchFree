@@ -40,8 +40,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             positionConfiguration = new[]
             {
-                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1),
-                new PositionTrackerConfiguration(TrackedPosition.HAND_POINTING, 1)
+                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
             };
         }
 
@@ -70,7 +69,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             float dot = Vector3.Dot(palmForward, indexForward);
 
-            float angle = Math.Abs(dot - 1) * 90;
+            float angle = (float)(Math.Acos(dot) * 180 / Math.PI);
+
+            float simpleAngle = Math.Abs(dot - 1) * 90;
             float progress = 0;
 
             if (previousTimeStamp != 0)

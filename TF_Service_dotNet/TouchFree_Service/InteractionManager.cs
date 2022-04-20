@@ -40,15 +40,24 @@ namespace Ultraleap.TouchFree.Service
         {
             var initialisationNotStarted = activeInteractions == null;
 
-            var interactionsToUse = new[]
+            InteractionType[] interactionsToUse = new InteractionType[1];
+
+            if (_config.InteractionType == InteractionType.PUSH)
             {
-                InteractionType.VELOCITYSWIPE,
-                InteractionType.AIRCLICK,
-                InteractionType.PUSH
-            };
+                interactionsToUse = new[]
+                {
+                    InteractionType.VELOCITYSWIPE,
+                    InteractionType.AIRCLICK,
+                    InteractionType.PUSH
+                };
+            }
+            else
+            {
+                interactionsToUse[1] = _config.InteractionType;
+            }
 
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType));
-            locationInteraction = interactions.Single(x => x.InteractionType == InteractionType.PUSH);
+            locationInteraction = interactions.Single(x => x.InteractionType == _config.InteractionType);
 
             if (initialisationNotStarted)
             {
@@ -110,8 +119,15 @@ namespace Ultraleap.TouchFree.Service
 
                     if (interactionCurrentlyDown != null)
                     {
+                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + (inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition), inputAction.Value.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
-                            new Positions(lastLocationInputAction.CursorPosition + (inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition), inputAction.Value.DistanceFromScreen), inputAction.Value.ProgressToClick);
+                            updatedPosition, inputAction.Value.ProgressToClick);
+                    }
+                    else
+                    {
+                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition, lastLocationInputAction.DistanceFromScreen);
+                        inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
+                            updatedPosition, inputAction.Value.ProgressToClick);
                     }
                     connectionManager.SendInputActionToWebsocket(inputAction.Value);
                 }
