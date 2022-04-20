@@ -2,13 +2,15 @@
 // Manages the loading/display of the subscreens
 // Is the place where the active screen/tab is controlled
 
-import React, { Component, CSSProperties, RefObject } from "react";
+import React, { Component, CSSProperties,  } from "react";
+
+import { ConnectionManager } from "../TouchFree/Connection/ConnectionManager";
+
 import { ControlBar } from "./ControlBar";
-import { CursorManager } from "./CursorManager";
 import { CameraPage } from "./Pages/CameraPage";
 import { InteractionsPage } from "./Pages/InteractionsPage";
 
-const TouchFree = window.TouchFree;
+// const TouchFree = window.TouchFree;
 
 interface ScreenManagerState {
     atTopLevel: boolean,
@@ -30,24 +32,11 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
 
     private timerID: number;
 
-    private cursorManager: CursorManager;
-    private cursorParent: RefObject<HTMLDivElement>;
-
-    // TouchFree objects
-    private inputSystem: any;
-    private connectionManager: any;
 
     constructor(props: {}) {
         super(props);
 
         this.timerID = -1;
-
-        TouchFree.Connection.ConnectionManager.init();
-        this.inputSystem = new TouchFree.InputControllers.WebInputController();
-        this.connectionManager = TouchFree.Connection.ConnectionManager;
-
-        this.cursorManager = new CursorManager();
-        this.cursorParent = React.createRef();
 
         let state = {
             atTopLevel: true,
@@ -59,11 +48,6 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     }
 
     componentDidMount() {
-        if (this.cursorParent.current !== null)
-        {
-            this.cursorManager.setElement(this.cursorParent.current);
-        }
-
         this.timerID = window.setInterval(() => {
             this.RequestStatus()
         }, 5000);
@@ -89,7 +73,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     }
 
     private RequestStatus(): void {
-        this.connectionManager.RequestServiceStatus(this.UpdateStatus.bind(this));
+        ConnectionManager.RequestServiceStatus(this.UpdateStatus.bind(this));
     }
 
     private UpdateStatus(detail: any) {
@@ -102,8 +86,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         let ThisPage = pages[this.state.activeTabName];
 
         return (
-            <div style={this.containerStyle}
-                 ref={this.cursorParent}>
+            <div style={this.containerStyle}>
                 <ControlBar manager={this}
                             atTopLevel={this.state.atTopLevel}
                             status={this.state.tfState}

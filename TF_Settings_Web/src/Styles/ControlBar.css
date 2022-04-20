@@ -1,0 +1,53 @@
+.topBarStyle {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 5rem;
+    min-width: 0px;
+    min-height: 0px;
+}
+
+.tabBarStyle {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 4rem;
+    min-width: 0;
+    min-height: 0;
+}
+
+.overallContainerStyle {
+    background-image: linear-gradient(270deg, #3C3C3C, #2F2F2F);
+}
+
+.horizElement {
+    flex: 1 2 auto;
+    align-self: center;
+    min-height: 0;
+    min-width: 0;
+    max-height: 4rem;
+    max-width: 26.1rem
+}
+
+.emptyContainer {
+    width: 125px;
+    height: 100%;
+}
+
+.arrowStyle {
+    display: inline-block;
+    margin: 0;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+}
+
+.textStyle {
+    display: inline-block;
+    margin: 0;
+    vertical-align: middle;
+    font-family: "NowRegular; Arial"
+}

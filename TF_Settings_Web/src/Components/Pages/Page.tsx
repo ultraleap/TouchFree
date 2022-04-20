@@ -1,17 +1,22 @@
-import { Property } from "csstype";
-import React, { CSSProperties } from "react";
+import { Component } from "react";
 
-export class Page extends React.Component<{name: string, color: Property.Color}> {
-    private divStyle: CSSProperties = {
-        flex: '1 1 auto',
-        width: '100%',
-        height: '800px',
-        backgroundColor: this.props.color,
-    };
+interface PageProps {
+
+}
+interface PageState {
+
+}
+
+export abstract class Page<TProps extends PageProps = PageProps,
+                  TState extends PageState = PageState>
+                    extends Component<TProps, TState> {
 
     render () {
         return (
-            <div style={this.divStyle}/>
+            <div>
+                This is the base Page Render.
+                You should not be seeing this.
+            </div>
         );
     }
 }
