@@ -165,7 +165,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 if (actionQueue.TryPeek(out action))
                 {
                     // Stop shrinking the queue if we have a 'key' input event
-                    if (action.InputType != InputType.MOVE)
+                    if (action.InputType != InputType.MOVE &&
+                        action.InputType != InputType.NONE)
                     {
                         break;
                     }
