@@ -205,7 +205,7 @@ export class MessageReceiver {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
-                if (this.actionQueue[0].InteractionFlags & InputType.MOVE ||
+                if (this.actionQueue[0].InteractionFlags & InputType.MOVE &&
                     this.actionQueue[0].InteractionFlags & InputType.NONE) {
                     // We want to ignore non-move results
                     this.actionQueue.shift();
