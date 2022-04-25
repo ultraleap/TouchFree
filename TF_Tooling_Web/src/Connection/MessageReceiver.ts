@@ -8,10 +8,11 @@ import {
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 import {
-    TouchFreeInputAction,
+    BitmaskFlags,
     ConvertInputAction,
     InputType,
-    WebsocketInputAction
+    TouchFreeInputAction,
+    WebsocketInputAction,
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
@@ -130,6 +131,7 @@ export class MessageReceiver {
         if (this.responseCallbacks !== undefined) {
             for (let key in this.responseCallbacks) {
                 if (key === _response.requestID) {
+                    console.log(_response.message);
                     this.responseCallbacks[key].callback(_response);
                     delete this.responseCallbacks[key];
                     return;
@@ -204,7 +206,8 @@ export class MessageReceiver {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
-                if (this.actionQueue[0].InteractionFlags & InputType.MOVE) {
+                if (this.actionQueue[0].InteractionFlags & BitmaskFlags.MOVE ||
+                    this.actionQueue[0].InteractionFlags & BitmaskFlags.NONE) {
                     // We want to ignore non-move results
                     this.actionQueue.shift();
                 } else {
@@ -221,17 +224,20 @@ export class MessageReceiver {
             let converted: TouchFreeInputAction = ConvertInputAction(action);
 
             //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
-            if (converted.InputType != InputType.UP) {
+            if (converted.InputType !== InputType.UP) {
                 this.lastKnownCursorPosition = Array.from(converted.CursorPosition);
             }
             else {
                 converted.CursorPosition = Array.from(this.lastKnownCursorPosition);
             }
 
-            InputActionManager.HandleInputAction(converted);
+            // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+            setTimeout(() => {
+                InputActionManager.HandleInputAction(converted);
+            });
         }
 
-        if (this.lastStateUpdate != HandPresenceState.PROCESSED) {
+        if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
             ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
             this.lastStateUpdate = HandPresenceState.PROCESSED;
         }

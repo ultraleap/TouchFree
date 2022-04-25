@@ -86,5 +86,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             OnInteractionConfigUpdated?.Invoke(_interactions);
         }
+
+        public bool AreConfigsInGoodState()
+        {
+            return !ErrorLoadingConfigFiles &&
+                _physical.ScreenWidthPX > 0 &&
+                _physical.ScreenHeightPX > 0;
+        }
     }
 }
