@@ -105,6 +105,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 if (callback.Key == _response.requestID)
                 {
                     callback.Value.callback.Invoke(_response);
+                    Debug.LogWarning(_response.message);
                     responseCallbacks.Remove(callback.Key);
                     return;
                 }

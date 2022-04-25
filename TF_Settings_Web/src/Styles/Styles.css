@@ -2,43 +2,48 @@ button.tfButton {
     justify-self: left;
     flex: 1 2 auto;
     padding: 1rem;
+    margin: 0.5rem;
+
+    height: 4rem;
+    width: 150px;
+    max-width: 200px;
+    min-width: 110px;
+
     font-family: "Museo Sans", NowRegular, Arial;
     font-size: 1.5rem;
-    padding: 0px;
     color: white;
+
     box-shadow: 0 0 6px 0 rgba(157, 96, 212, 0.5);
     background-image: linear-gradient(180deg, #353535, #2D2D2D), linear-gradient(180deg, #00EB86, #00CDCF);
     background-origin: border-box;
     background-clip: content-box, border-box;
     border: double .25rem transparent;
     border-radius: 50px;
-    height: 4rem;
-    width: 150px;
-    max-width: 200px;
-    min-width: 110px;
-    margin: 0.5rem
 }
 
 button.tfButton:hover {
     box-shadow: none;
-    background-image: linear-gradient(180deg, #00EB86, #00CDCF), linear-gradient(180deg, #00EB86, #00CDCF);
+    background-image: linear-gradient(180deg, #00EB85, #00CCCE), linear-gradient(180deg, #00EB86, #00CDCF);
 }
 
 button.tabButton {
+    align-self: stretch;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+
     border-top-left-radius: 1.2rem;
     border-top-right-radius: 1.2rem;
     background-color: transparent;
     border-color: transparent;
+
     flex: 1 1 auto;
+
     font-family: "Museo Sans", NowRegular, Arial;
     color: white;
     font-size: 2rem;
-    padding-top: 0.1rem;
-    padding-bottom: 0.1rem;
-    align-self: stretch;
 }
 
 button.tabButtonActive {
-    background-color: #0000004D;
-    border-top-color: #0000004D;
+    background-color: #222222;
+    border-top-color: #222222;
 }

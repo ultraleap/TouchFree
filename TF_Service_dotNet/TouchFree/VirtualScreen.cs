@@ -32,7 +32,7 @@ namespace Ultraleap.TouchFree.Library
             Height_PhysicalMillimeters = _config.ScreenHeightMm;
             // Calc screen physical width from the physical height and resolution ratio.
             // May not be correct if screen resolution doesn't fill entire physical screen (e.g. 16:9 resolution on a physical 16:10 screen).
-            var aspectRatio = (float)_config.ScreenWidthPX / (float)_config.ScreenHeightPX;
+            var aspectRatio = _config.ScreenHeightPX <= 0 ? 0 : (float)_config.ScreenWidthPX / (float)_config.ScreenHeightPX;
             Width_PhysicalMillimeters = _config.ScreenHeightMm * aspectRatio;
 
             MillimetersToPixelsConversion = Height_VirtualPx / Height_PhysicalMillimeters;
@@ -52,9 +52,9 @@ namespace Ultraleap.TouchFree.Library
             Vector3 screenPos = Vector3.Zero;
 
             // World X = 0 is middle of screen, so shift everything over by half width (w/2).
-            screenPos.X = (worldPosition.X * 1000 + (Width_PhysicalMillimeters / 2.0f)) * MillimetersToPixelsConversion;
+            screenPos.X = MillimetersToPixels(worldPosition.X * 1000 + (Width_PhysicalMillimeters / 2.0f));
             // World Y = 0 is bottom of the screen, so this is linear.
-            screenPos.Y = worldPosition.Y * 1000 * MillimetersToPixelsConversion;
+            screenPos.Y = MillimetersToPixels(worldPosition.Y * 1000);
 
             screenPos.Z = worldPosition.Z;
 
@@ -65,8 +65,8 @@ namespace Ultraleap.TouchFree.Library
         {
             Vector3 worldPos = Vector3.Zero;
 
-            worldPos.X = (screenPos.X / MillimetersToPixelsConversion) - (Width_PhysicalMillimeters / 2.0f);
-            worldPos.Y = (screenPos.Y / MillimetersToPixelsConversion);
+            worldPos.X = PixelsToMillimeters(screenPos.X) - (Width_PhysicalMillimeters / 2.0f);
+            worldPos.Y = PixelsToMillimeters(screenPos.Y);
             worldPos.Z = distanceFromVirtualScreen;
 
             return worldPos;
@@ -80,7 +80,18 @@ namespace Ultraleap.TouchFree.Library
         // instead of metres.
         public Vector2 PixelsToMillimeters(Vector2 positionPx)
         {
-            return positionPx / MillimetersToPixelsConversion;
+            return MillimetersToPixelsConversion <= 0 ? new Vector2(0, 0) : positionPx / MillimetersToPixelsConversion;
+        }
+
+        // Perform a unit conversion from pixels to meters
+        //
+        // Do not rotate or offset the axes
+        //
+        // This does not give the "worldPosition", but can be used to calculate distances in metres
+        // instead of pixels.
+        public float PixelsToMillimeters(float positionPx)
+        {
+            return MillimetersToPixelsConversion <= 0 ? 0 : positionPx / MillimetersToPixelsConversion;
         }
 
         // Perform a unit conversion from meters to pixels

@@ -1,0 +1,112 @@
+
+.sliderLabelContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.sliderLabel {
+    margin-left: 0.75rem;
+    max-width: 17.5rem;
+    max-height: 5rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.leftSliderLabel {
+    margin: 0.5rem;
+}
+
+.rightSliderLabel {
+    margin: 0.5rem;
+    align-self: right;
+    text-justify: right;
+}
+
+.sliderContainer {
+    flex: 1 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 3rem;
+    max-height: 3rem;
+}
+
+.slider {
+    min-width: 80%;
+    min-height: 0.75rem;
+    max-height: 1.5rem;
+
+    border-radius: 0.5rem;
+    background: #262626;
+    box-shadow: inset 0px 2px 4px #00000061;
+    outline: none;
+    opacity: 1;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    -webkit-transition: .2s;
+    -moz-transition: .2s;
+    transition: opacity .2s;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    display: none;
+    -webkit-appearance: textfield;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    width: 1.5rem;
+    height: 1.5rem;
+
+    border-radius: 1.5rem;
+    box-shadow: 0px 2px 9px #000000CB;
+    background-image: linear-gradient(180deg, #00EB85, #00CCCE);
+}
+
+.slider::-moz-range-thumb {
+    width: 1.5rem;
+    height: 1.5rem;
+
+    border-radius: 1.5rem;
+    box-shadow: 0px 2px 9px #000000CB;
+    background-image: linear-gradient(180deg, #00EB85, #00CCCE);
+}
+
+.sliderText {
+    background: transparent;
+    border: none;
+    max-width: 3rem;
+    min-height: 3rem;
+    padding: 0px;
+
+    text-align: center;
+    font-family: "Museo Sans", NowBold, Arial;
+    font-size: 1.5rem;
+    color:white;
+    text-shadow: 0px 2px 6px #0000004D;
+}
+
+.sliderTextContainer {
+    min-height: 3rem;
+    min-width: 3rem;
+    max-width: 3rem;
+    margin-right: 1.5rem;
+
+    background: transparent linear-gradient(180deg, #5C5C5C 0%, #454545 100%) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 2px 5px #00000080;
+    border: 1px solid #FFFFFF1A;
+    border-radius: 10px;
+}
