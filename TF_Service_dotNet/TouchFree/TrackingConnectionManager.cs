@@ -22,13 +22,13 @@ namespace Ultraleap.TouchFree.Library
             controller.Disconnect += Controller_Disconnect;
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
-            controller.StopConnection();
+            //controller.StopConnection();
         }
 
         public void Connect()
         {
             ShouldConnect = true;
-            CheckConnectionAndRetryOnFailure();
+            //CheckConnectionAndRetryOnFailure();
         }
 
         public void Disconnect()
@@ -36,7 +36,7 @@ namespace Ultraleap.TouchFree.Library
             ShouldConnect = false;
             if (controller.IsServiceConnected)
             {
-                controller.StopConnection();
+                //controller.StopConnection();
             }
         }
 
