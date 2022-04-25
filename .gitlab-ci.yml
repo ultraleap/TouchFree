@@ -291,9 +291,16 @@ TF_Settings::Windows::build:
     - win10
 
 TF_Settings::Web::build:
+  dependencies:
+    - TF_Tooling::Web::build
+  needs: [
+    "TF_Tooling::Web::build"
+  ]
   stage: build
   when: always
   script:
+    - mkdir ./TF_Settings_Web/src/TouchFree
+    - cp -R ./TF_Tooling_Web/src/* ./TF_Settings_Web/src/TouchFree/
     - cd ./TF_Settings_Web
     - npm install
     - npm run build
