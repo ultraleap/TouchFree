@@ -14,7 +14,9 @@ namespace Ultraleap.TouchFree.Service
         static void Main(string[] args)
         {
 #if !DEBUG
-            var loggingFileDirectory = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "..\\Logs\\");
+            var loggingFileDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
+                Path.GetFullPath("/storage/sd/ultraleap/touchfree/logs/") :
+                Path.Combine(ConfigFileUtils.ConfigFileDirectory, "..\\Logs\\");
 
             if (loggingFileDirectory != "") {
                 Directory.CreateDirectory(loggingFileDirectory);
