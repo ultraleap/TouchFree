@@ -8,10 +8,11 @@ import {
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 import {
-    TouchFreeInputAction,
+    BitmaskFlags,
     ConvertInputAction,
     InputType,
-    WebsocketInputAction
+    TouchFreeInputAction,
+    WebsocketInputAction,
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
@@ -204,8 +205,8 @@ export class MessageReceiver {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
-                if (this.actionQueue[0].InteractionFlags & InputType.MOVE ||
-                    this.actionQueue[0].InteractionFlags & InputType.NONE) {
+                if (this.actionQueue[0].InteractionFlags & BitmaskFlags.MOVE ||
+                    this.actionQueue[0].InteractionFlags & BitmaskFlags.NONE) {
                     // We want to ignore non-move results
                     this.actionQueue.shift();
                 } else {
