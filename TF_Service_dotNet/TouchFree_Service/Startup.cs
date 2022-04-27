@@ -45,9 +45,9 @@ namespace Ultraleap.TouchFree.Service
             interactionManager = app.ApplicationServices.GetService<InteractionManager>();
 
             // This is here so the test infrastructure has some sign that the app is ready
-            Console.WriteLine("Service Setup Complete");
+            TouchFreeLog.WriteLine("Service Setup Complete");
 
-            Console.WriteLine("TouchFree physical config screen height is: " + configManager.PhysicalConfig.ScreenHeightMm + " mm");
+            TouchFreeLog.WriteLine("TouchFree physical config screen height is: " + configManager.PhysicalConfig.ScreenHeightMm + " mm");
         }
     }
 }
