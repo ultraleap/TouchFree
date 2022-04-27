@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
-    public static class LoggingConfiguration
+    public static class TouchFreeLog
     {
         public static void SetUpLogging()
         {
@@ -38,6 +38,30 @@ namespace Ultraleap.TouchFree.Library.Configuration
             Console.WriteLine();
             Console.WriteLine($"{DateTime.Now} - Starting Service");
             Console.WriteLine();
+        }
+
+        public static void WriteLine(string text)
+        {
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                Console.WriteLine($"{DateTime.Now} - {text}");
+            }
+            else
+            {
+                Console.WriteLine();
+            }
+        }
+
+        public static void ErrorWriteLine(string text)
+        {
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                Console.Error.WriteLine($"{DateTime.Now} - {text}");
+            }
+            else
+            {
+                Console.Error.WriteLine();
+            }
         }
     }
 }

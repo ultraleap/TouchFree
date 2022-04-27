@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Service
         static void Main(string[] args)
         {
 #if !DEBUG
-            LoggingConfiguration.SetUpLogging();
+            TouchFreeLog.SetUpLogging();
 #endif
             CreateHostBuilder(args).Build().Run();
         }

@@ -96,7 +96,7 @@ namespace Ultraleap.TouchFree.Library
 
         void SetTrackingMode(TrackingMode _mode)
         {
-            Console.WriteLine($"Requesting {_mode} tracking mode");
+            TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
 
             switch (_mode)
             {
