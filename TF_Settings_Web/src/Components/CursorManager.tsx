@@ -9,7 +9,7 @@ export class CursorManager {
     private dotCursor: any;
 
     constructor() {
-        this.ringImage = this.constructCursorImg(ringImage, "absolute", 30, "1000", false);
+        this.ringImage = this.constructCursorImg(ringImage, "absolute", 30, "1000", true);
         this.dotImage = this.constructCursorImg(dotImage, "absolute", 30, "1001", false);
 
         this.dotCursor = new DotCursor(this.dotImage, this.ringImage);
