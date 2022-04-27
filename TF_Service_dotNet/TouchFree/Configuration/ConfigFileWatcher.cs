@@ -49,7 +49,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                     interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     configManager.LoadConfigsFromFiles();
-                    Console.WriteLine("A config file was changed. Re-loading configs from files.");
+                    TouchFreeLog.WriteLine("A config file was changed. Re-loading configs from files.");
                     configFileChanged = false;
                 }
                 catch
