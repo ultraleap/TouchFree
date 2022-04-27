@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
@@ -7,7 +8,9 @@ namespace Ultraleap.TouchFree.Library.Configuration
     {
         public static void SetUpLogging()
         {
-            var loggingFileDirectory = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "..\\Logs\\");
+            var loggingFileDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
+                Path.GetFullPath("/storage/sd/ultraleap/touchfree/logs/") :
+                Path.Combine(ConfigFileUtils.ConfigFileDirectory, "..\\Logs\\");
 
             if (loggingFileDirectory != "")
             {
