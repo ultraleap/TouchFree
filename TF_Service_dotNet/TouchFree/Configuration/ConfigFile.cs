@@ -118,7 +118,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             ErrorLoadingConfig = true;
             errorArgs.ErrorContext.Handled = true;
-            Console.WriteLine($"Unable to load settings from config {typeof(TData)}");
+            TouchFreeLog.WriteLine($"Unable to load settings from config {typeof(TData)}");
         }
 
         private bool DoesConfigFileExist()
@@ -141,7 +141,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             Directory.CreateDirectory(ConfigFileUtils.ConfigFileDirectory);
             RequestConfigFilePermissions();
             File.WriteAllText(_ConfigFilePath, JsonConvert.SerializeObject(new TData()));
-            Console.WriteLine($"No {ConfigFileName} file found in {ConfigFileUtils.ConfigFileDirectory}. One has been generated for you with default values.");
+            TouchFreeLog.WriteLine($"No {ConfigFileName} file found in {ConfigFileUtils.ConfigFileDirectory}. One has been generated for you with default values.");
         }
 
         void RequestConfigFilePermissions()
@@ -173,7 +173,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
             catch
             {
-                Console.WriteLine("Did not have permissios to set file access rules");
+                TouchFreeLog.WriteLine("Did not have permissios to set file access rules");
             }
         }
 

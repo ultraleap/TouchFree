@@ -1,11 +1,8 @@
 #if !DEBUG
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
+using Ultraleap.TouchFree.Library.Configuration;
 #endif
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -14,20 +11,7 @@ namespace Ultraleap.TouchFree.Service
         static void Main(string[] args)
         {
 #if !DEBUG
-            var loggingFileDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-                Path.GetFullPath("/storage/sd/ultraleap/touchfree/logs/") :
-                Path.Combine(ConfigFileUtils.ConfigFileDirectory, "..\\Logs\\");
-
-            if (loggingFileDirectory != "") {
-                Directory.CreateDirectory(loggingFileDirectory);
-            }
-
-            FileStream filestream = new FileStream(loggingFileDirectory + "log.txt", FileMode.Create);
-            StreamWriter streamwriter = new StreamWriter(filestream)
-            {
-                AutoFlush = true
-            };
-            Console.SetOut(streamwriter);
+            TouchFreeLog.SetUpLogging();
 #endif
             CreateHostBuilder(args).Build().Run();
         }
