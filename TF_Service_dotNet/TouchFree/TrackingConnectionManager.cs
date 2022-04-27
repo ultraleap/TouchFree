@@ -43,6 +43,32 @@ namespace Ultraleap.TouchFree.Library
         private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
         {
             UpdateTrackingMode(configManager.PhysicalConfig);
+
+            CheckTrackingModeIsCorrectAfterDelay();
+        }
+
+        private async void CheckTrackingModeIsCorrectAfterDelay()
+        {
+            await Task.Delay(5000);
+            if (controller.IsServiceConnected)
+            {
+                var trackingMode = GetTrackingModeFromConfig(configManager.PhysicalConfig);
+
+                var inScreenTop = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                var inHmd = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+
+                if (TrackingModeIsIncorrect(trackingMode, inScreenTop, inHmd))
+                {
+                    UpdateTrackingMode(configManager.PhysicalConfig);
+                }
+            }
+        }
+
+        private bool TrackingModeIsIncorrect(TrackingMode trackingMode, bool inScreenTop, bool inHmd)
+        {
+            return (trackingMode == TrackingMode.SCREENTOP && !inScreenTop) ||
+                (trackingMode == TrackingMode.HMD && !inHmd) ||
+                (trackingMode == TrackingMode.DESKTOP && (inScreenTop || inHmd));
         }
 
         private void Controller_Disconnect(object sender, Leap.ConnectionLostEventArgs e)
@@ -54,7 +80,7 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        private async Task CheckConnectionAndRetryOnFailure()
+        private async void CheckConnectionAndRetryOnFailure()
         {
             while (true)
             {
@@ -76,21 +102,26 @@ namespace Ultraleap.TouchFree.Library
 
         public void UpdateTrackingMode(PhysicalConfigInternal _config)
         {
+            SetTrackingMode(GetTrackingModeFromConfig(_config));
+        }
+
+        TrackingMode GetTrackingModeFromConfig(PhysicalConfigInternal _config)
+        {
             // leap is looking down
             if (Math.Abs(_config.LeapRotationD.Z) > 90f)
             {
                 if (_config.LeapRotationD.X <= 0f)
                 {
-                    SetTrackingMode(TrackingMode.SCREENTOP);
+                    return TrackingMode.SCREENTOP;
                 }
                 else
                 {
-                    SetTrackingMode(TrackingMode.HMD);
+                    return TrackingMode.HMD;
                 }
             }
             else
             {
-                SetTrackingMode(TrackingMode.DESKTOP);
+                return TrackingMode.DESKTOP;
             }
         }
 
