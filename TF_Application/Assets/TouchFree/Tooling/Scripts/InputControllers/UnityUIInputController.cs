@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+using System.Collections;
+
 namespace Ultraleap.TouchFree.Tooling.InputControllers
 {
     // Class: UnityUIInputController
@@ -34,14 +36,28 @@ namespace Ultraleap.TouchFree.Tooling.InputControllers
         private bool isTouching = false;
         private bool isCancelled = true;
 
+        private Vector2 prevBaseMousePos;
+        private bool mouseMoved = false;
+        private Coroutine mouseMoveEndRoutine;
+
         // Group: Inherited Values
         // The remaining variables all come from Unity's <BaseInput: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/UnityEngine.EventSystems.BaseInput.html>
         // and are overridden here so their values can be determined from the TouchFree Service.
-        public override Vector2 mousePosition => (sendHoverEvents && !isCancelled) ? touchPosition : base.mousePosition;
+        public override Vector2 mousePosition => (sendHoverEvents && !isCancelled && !mouseMoved) ? touchPosition : base.mousePosition;
         public override bool mousePresent => (sendHoverEvents && !isCancelled) ? true : base.mousePresent;
         public override bool touchSupported => isTouching ? true : base.touchSupported;
         public override int touchCount => isTouching ? 1 : base.touchCount;
         public override Touch GetTouch(int index) => isTouching ? CheckForTouch(index) : base.GetTouch(index);
+
+        public override bool GetMouseButtonDown(int button)
+        {
+            if (base.GetMouseButtonDown(button))
+            {
+                HandleMouseMoved();
+            }
+
+            return base.GetMouseButtonDown(button);
+        }
 
         // Group: Methods
 
@@ -130,6 +146,50 @@ namespace Ultraleap.TouchFree.Tooling.InputControllers
             isCancelled = true;
 
             base.OnDisable();
+        }
+
+        private void Update()
+        {
+            if (sendHoverEvents)
+            {
+                if (base.mousePosition != prevBaseMousePos)
+                {
+                    HandleMouseMoved();
+                }
+                else
+                {
+                    HandleMouseStoppedMoving();
+                }
+
+                prevBaseMousePos = base.mousePosition;
+            }
+        }
+
+        void HandleMouseMoved()
+        {
+            mouseMoved = true;
+
+            if (mouseMoveEndRoutine != null)
+            {
+                StopCoroutine(mouseMoveEndRoutine);
+                mouseMoveEndRoutine = null;
+            }
+        }
+
+        void HandleMouseStoppedMoving()
+        {
+            if (mouseMoveEndRoutine == null)
+            {
+                mouseMoveEndRoutine = StartCoroutine(DelayedMouseMovedEnd());
+            }
+        }
+
+        IEnumerator DelayedMouseMovedEnd()
+        {
+            yield return new WaitForSeconds(1f);
+
+            mouseMoved = false;
+            mouseMoveEndRoutine = null;
         }
     }
 }

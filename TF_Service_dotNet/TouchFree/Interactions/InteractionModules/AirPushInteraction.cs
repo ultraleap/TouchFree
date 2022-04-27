@@ -14,7 +14,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public override InteractionType InteractionType { get; } = InteractionType.PUSH;
 
         public double millisecondsCooldownOnEntry = 300.0;
-        public double clickHoldTimerMs = 2000.0;
+        public double clickHoldTimerMs = 1500.0;
 
         Stopwatch handAppearedCooldown = new Stopwatch();
         Stopwatch clickHoldStopwatch = new Stopwatch();
@@ -218,11 +218,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return inputActionResult;
         }
 
+
+        /// <summary>
+        /// Check if any movement has happened, if it has, we have left the deadzone
+        /// </summary>
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            float distFromStartPosPx = (_startPos - _currentPos).Length();
-
-            return distFromStartPosPx > virtualScreen.MillimetersToPixels(dragStartDistanceThresholdMm);
+            return _startPos != _currentPos;
         }
 
         private void AdjustDeadzoneSize(float _df)

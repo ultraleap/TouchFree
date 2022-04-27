@@ -5,8 +5,7 @@ using UnityEngine.UI;
 public class CameraPreviewScreen : MonoBehaviour
 {
     public Toggle enableOverexposureHighlighting;
-    public Material leftCameraMat;
-    public Material rightCameraMat;
+
     public Toggle cameraReversedToggle;
     public Leap.Unity.LeapImageRetriever leapImageRetriever;
 
@@ -24,6 +23,8 @@ public class CameraPreviewScreen : MonoBehaviour
     public GameObject maskingDiabledWarningObject;
 
     public GameObject handsCameraObject;
+
+    public Scrollbar contentScrollbar;
 
     void OnEnable()
     {
@@ -56,6 +57,8 @@ public class CameraPreviewScreen : MonoBehaviour
         DiagnosticAPIManager.diagnosticAPI.GetDevices();
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
         DiagnosticAPIManager.diagnosticAPI.GetCameraOrientation();
+
+        contentScrollbar.value = 1;
     }
 
     void OnDisable()
@@ -96,13 +99,11 @@ public class CameraPreviewScreen : MonoBehaviour
     {
         if (state)
         {
-            leftCameraMat.SetFloat("_threshold", exposureThresholdValue);
-            rightCameraMat.SetFloat("_threshold", exposureThresholdValue);
+            Shader.SetGlobalFloat("_threshold", exposureThresholdValue);
         }
         else
         {
-            leftCameraMat.SetFloat("_threshold", 1.0f);
-            rightCameraMat.SetFloat("_threshold", 1.0f);
+            Shader.SetGlobalFloat("_threshold", 1.0f);
         }
     }
 

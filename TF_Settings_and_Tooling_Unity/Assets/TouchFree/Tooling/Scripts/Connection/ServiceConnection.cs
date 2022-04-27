@@ -26,7 +26,12 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // <OnMessage>. Once the websocket connection opens, a handshake request is sent with this
         // Client's API version number. The service will not send data over an open connection
         // until this handshake is completed succesfully.
-        internal ServiceConnection(string _ip = "127.0.0.1", string _port = "9739")
+        internal ServiceConnection(
+            string _ip = "127.0.0.1",
+            string _port = "9739",
+            Action onClose = null,
+            Action onError = null
+        )
         {
             webSocket = new WebSocket($"ws://{_ip}:{_port}/connect");
 
@@ -50,6 +55,26 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 SendMessage(handshakeMessage, guid, ConnectionResultCallback);
             };
 
+            webSocket.Connect();
+
+            webSocket.OnError += (sender, e) =>
+            {
+                onError?.Invoke();
+            };
+
+            webSocket.OnClose += (sender, e) =>
+            {
+                onClose?.Invoke();
+            };
+        }
+
+        public bool IsConnected()
+        {
+            return webSocket.ReadyState == WebSocketState.Open;
+        }
+
+        public void Connect()
+        {
             webSocket.Connect();
         }
 
