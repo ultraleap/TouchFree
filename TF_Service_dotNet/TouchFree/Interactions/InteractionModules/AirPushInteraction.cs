@@ -71,8 +71,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             positionConfiguration = new[]
             {
-                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1),
-                new PositionTrackerConfiguration(TrackedPosition.HAND_POINTING, 1)
+                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
             };
         }
 
