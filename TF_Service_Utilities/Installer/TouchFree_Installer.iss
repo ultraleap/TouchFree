@@ -49,7 +49,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SourcePath}..\..\Scripts\Tracking_Build\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion
+Source: "{#SourcePath}..\..\Scripts\Tracking_Build\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
