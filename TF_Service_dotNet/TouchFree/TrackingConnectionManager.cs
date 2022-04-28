@@ -9,9 +9,8 @@ namespace Ultraleap.TouchFree.Library
         public Leap.Controller controller;
         IConfigManager configManager;
 
-        private int maximumWaitTimeSeconds = 30;
-        private int initialWaitTimeSeconds = 1;
-        private int waitTimeSeconds = 1;
+        private const int maximumWaitTimeSeconds = 30;
+        private const int initialWaitTimeSeconds = 1;
         private bool ShouldConnect = false;
 
         public TrackingConnectionManager(IConfigManager _configManager)
@@ -73,31 +72,40 @@ namespace Ultraleap.TouchFree.Library
 
         private void Controller_Disconnect(object sender, Leap.ConnectionLostEventArgs e)
         {
-            waitTimeSeconds = initialWaitTimeSeconds;
             if (ShouldConnect)
             {
-                CheckConnectionAndRetryOnFailure();
+                CheckConnectionAndRetryOnFailure(true);
             }
         }
 
-        private async void CheckConnectionAndRetryOnFailure()
+        private async void CheckConnectionAndRetryOnFailure(bool includeInitialDelay = false)
         {
-            while (true)
+            var waitTimeSeconds = initialWaitTimeSeconds;
+
+            if (includeInitialDelay)
             {
                 await Task.Delay(1000 * waitTimeSeconds);
-
-                if (!controller.IsServiceConnected && ShouldConnect)
-                {
-                    controller.StartConnection();
-                }
-                else
-                {
-                    break;
-                }
-
-                waitTimeSeconds *= 2;
-                waitTimeSeconds = waitTimeSeconds > maximumWaitTimeSeconds ? maximumWaitTimeSeconds : waitTimeSeconds;
+                waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
             }
+
+            while (!controller.IsServiceConnected && ShouldConnect)
+            {
+                controller.StartConnection();
+
+                await Task.Delay(1000 * waitTimeSeconds);
+                waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
+            }
+        }
+
+        private static int IncreaseWaitTimeSeconds(int currentWaitTime)
+        {
+            if (currentWaitTime == maximumWaitTimeSeconds)
+            {
+                return currentWaitTime;
+            }
+
+            var updatedWaitTime = currentWaitTime * 2;
+            return updatedWaitTime > maximumWaitTimeSeconds ? maximumWaitTimeSeconds : updatedWaitTime;
         }
 
         public void UpdateTrackingMode(PhysicalConfigInternal _config)
