@@ -131,6 +131,8 @@ export class MessageReceiver {
         if (this.responseCallbacks !== undefined) {
             for (let key in this.responseCallbacks) {
                 if (key === _response.requestID) {
+                    // This is logged to aid users in debugging
+                    console.log(_response.message);
                     this.responseCallbacks[key].callback(_response);
                     delete this.responseCallbacks[key];
                     return;
