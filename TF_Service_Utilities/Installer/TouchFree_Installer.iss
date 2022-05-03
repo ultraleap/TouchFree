@@ -76,8 +76,8 @@ Filename: "{app}\Tracking\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; Param
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
 Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopService"; Flags: runhidden
-Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
-Filename: "{app}\Tracking\Uninstall.exe"; Parameters: "/S"; Flags: runhidden
+Filename: "{app}\Tracking\Uninstall.exe"; Parameters: "/S";
+Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService";
 
 [Code]
 function GetWrapperPath: string;
