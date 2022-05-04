@@ -158,7 +158,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         this.setState((state) => {
             let newConf = state.interactionConfig;
 
-            newConf.TouchPlane.touchPlaneActivationDistanceCm = newValue;
+            newConf.TouchPlane.TouchPlaneActivationDistanceCm = newValue;
 
             return {
                 interactionConfig: newConf
@@ -275,7 +275,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         rangeMax={20}
                         leftLabel="0cm"
                         rightLabel="20cm"
-                        value={this.state.interactionConfig.TouchPlane.touchPlaneActivationDistanceCm}
+                        value={this.state.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCm}
                         onChange={this.onTouchPlaneDistanceChange.bind(this)} />);
                     interactionControls.push(<RadioLine name="Tracking Position"
                         key="Tracking Position"
