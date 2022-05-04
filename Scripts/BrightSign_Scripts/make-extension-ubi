@@ -8,7 +8,7 @@ fi
 
 srcdir=$1
 packagename=$2
-name="UL_$packagename"
+name=$packagename
 workdir=extension-temp-$componentname/
 builddir=build-$packagename/
 

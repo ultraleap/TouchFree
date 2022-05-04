@@ -7,6 +7,8 @@ variables:
   TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
   TF_TFU_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling
   TF_SETTINGS_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/SettingsUI
+  
+  BS_EXTENSTION_NAME: ultouchfree
 
   TF_TFU_VERSION: '1.0.0'
   TF_TFW_VERSION: '1.0.0'
@@ -548,6 +550,7 @@ TF_Service::ARMLinux::package:
     - mkdir ./TouchFree_Extension/Tracking
     - mkdir ./TouchFree_Extension/Tracking/bin
     - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
+    - cp -R ./LeapSDK/ThirdPartyNotices.md ./TouchFree_Extension/Tracking
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
     - cp -R $CI_PROJECT_DIR/TF_Settings_Web/build/* ./TouchFree_Extension/wwwroot
     
@@ -555,12 +558,12 @@ TF_Service::ARMLinux::package:
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"
     - chmod +x ./make-extension-ubi
-    - ./make-extension-ubi ./TouchFree_Extension/ TF_Service_BS
+    - ./make-extension-ubi ./TouchFree_Extension/ $BS_EXTENSION_NAME
 
     - mkdir $CI_PROJECT_DIR/TF_Service_BS/
     - cp ./build-TF_Service_BS/*.tar.gz $CI_PROJECT_DIR/TF_Service_BS/
   artifacts:
-    name: "TouchFree_Service_Extension_$CI_COMMIT_SHORT_SHA"
+    name: "TouchFree_BrightSign_$TOUCHFREE_VERSION_$CI_COMMIT_SHORT_SHA"
     paths:
       - "$CI_PROJECT_DIR/TF_Service_BS/*"
     expire_in: 2 weeks
