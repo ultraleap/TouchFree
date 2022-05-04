@@ -98,7 +98,7 @@ namespace Ultraleap.TouchFree.Service
         {
             updateBehaviour.OnUpdate += target.Update;
             target.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-            //target.HandleInputAction += HandleInputAction;
+            target.HandleInputAction += HandleInputAction;
             target.Enable();
         }
 
@@ -106,7 +106,7 @@ namespace Ultraleap.TouchFree.Service
         {
             updateBehaviour.OnUpdate -= target.Update;
             target.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-            //target.HandleInputAction -= HandleInputAction;
+            target.HandleInputAction -= HandleInputAction;
             target.Disable();
         }
 

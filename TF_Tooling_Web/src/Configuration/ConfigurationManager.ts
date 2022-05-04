@@ -95,7 +95,7 @@ export class ConfigurationManager {
 
         let jsonContent = JSON.stringify(request);
 
-        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
+        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, null);
     }
 
     // Function: RequestConfigState
