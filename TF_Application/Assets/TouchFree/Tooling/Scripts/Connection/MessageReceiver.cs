@@ -105,6 +105,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 if (callback.Key == _response.requestID)
                 {
                     callback.Value.callback.Invoke(_response);
+                    Debug.LogWarning(_response.message);
                     responseCallbacks.Remove(callback.Key);
                     return;
                 }
@@ -164,7 +165,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 if (actionQueue.TryPeek(out action))
                 {
                     // Stop shrinking the queue if we have a 'key' input event
-                    if (action.InputType != InputType.MOVE)
+                    if (action.InputType != InputType.MOVE &&
+                        action.InputType != InputType.NONE)
                     {
                         break;
                     }

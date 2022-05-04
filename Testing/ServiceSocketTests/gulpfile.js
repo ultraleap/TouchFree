@@ -1,8 +1,11 @@
+
 const { spawn } = require('child_process');
 const { chmodSync, readFileSync } = require('fs');
 
 const fs = require('fs');
+const path = require('path');
 const Tail = require('tail').Tail;
+const WebSocket = require('ws');
 
 var del = require('del');
 var gulp = require('gulp');
@@ -39,61 +42,56 @@ gulp.task('buildServerGrab', function () {
 
 gulp.task('startServer', function (callback) {
     var serverBinDir = `./PUT_TEST_BUILD_IN_HERE`;
-    var logFileName = `log.txt`;
-    var logFileLoc = path.join(process.env.ProgramData, `Ultraleap`, `TouchFree`, `Logs`);
 
     var startCommand = "./TouchFree_Service";
 
     if (process.platform === "win32") {
         startCommand = `.\\TouchFree_Service.exe`;
         serverBinDir = serverBinDir.replace(/\//g, '\\');
-        logFileLoc = logFileLoc.replace(/\//g, '\\');
     } else {
         chmodSync(serverBinDir + startCommand, 0o765, (err) => {
-            callback("The permissions for the haptic server could not be set!");
+            callback("The permissions for the TouchFree Service could not be set!");
         });
     }
 
-    if (!fs.existsSync(logFileLoc)) {
-        fs.writeFileSync(logFileLoc, ' ');
-    }
+    var timerId = -1;
 
-    function checkLogForReady() {
-        return new Promise(function(resolve, reject) {
-            const fileContent = fs.readFileSync(logFileLoc);
-            console.log("Checking file content");
+    function testWS() {
+        var ws = new WebSocket('ws://localhost:9739/connect');
 
-            if (fileContent.toString().includes("Service Setup Complete")) {
-                console.log("Server ready!");
-                callback();
-                return resolve();
-            }
+        ws.onopen = function () {
+            console.log("Successfully connected to Server");
+            clearTimeout(timerId);
+            callback();
+        };
 
-            console.log("Server not ready");
-
-            return new Promise(() => {
-                setTimeout(() => {
-                    return checkLogForReady();
+        ws.onerror = function (err) {
+            if (err.error.code === `ECONNREFUSED`) {
+                console.log('Socket is unavailable. Reconnect will be attempted in 1 second.');
+                timerId = setTimeout(function () {
+                    testWS();
                 }, 1000);
-            });
-        });
+            } else {
+                clearTimeout(timerId);
+                ws.close();
+                callback(`Socket encountered error: ${err.message} Closing socket`);
+            }
+        };
     }
 
     console.log(`Attempting to run command ${startCommand} in target dir ${serverBinDir}`);
 
-    serverProcess = spawn(startCommand,
-        [
-            '-batchmode',
-            '-logfile',
-            `${logFileName}`
-        ],
-        { 'cwd': serverBinDir });
+    serverProcess = spawn(startCommand, [], { 'cwd': serverBinDir });
 
-        serverProcess.on('close', () => {
-            callback('Server process closed')
-        });
+    serverProcess.on('close', (code) => {
+        console.log(`Server process closed with code ${code}`);
+    });
 
-    checkLogForReady();
+    serverProcess.on('exit', (code) => {
+        callback(`Server process closed with code ${code}`);
+    });
+
+    testWS();
 });
 
 gulp.task('cucumber', function (callback) {
