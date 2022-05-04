@@ -76,7 +76,7 @@ Filename: "{app}\Tracking\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; Param
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
 Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopService"; Flags: runhidden
-Filename: "powershell.exe"; Parameters: "Start-Process {app}\Tracking\Uninstall.exe /S -NoNewWindow -Wait"; WorkingDir: {app}; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -Command ""Start-Process {app}\Tracking\Uninstall.exe /S -NoNewWindow -Wait"""; WorkingDir: {app}; Flags: runhidden waituntilterminated
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
 
 [Code]
