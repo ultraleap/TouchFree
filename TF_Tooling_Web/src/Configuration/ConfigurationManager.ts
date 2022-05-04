@@ -86,17 +86,17 @@ export class ConfigurationManager {
         ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
     }
 
-    public static SendInputOverride(_input: InputOverride) {
-        let action = ActionCode.INPUT_OVERRIDE;
-        let requestID = uuidgen();
+    //public static SendInputOverride(_input: InputOverride) {
+    //    let action = ActionCode.INPUT_OVERRIDE;
+    //    let requestID = uuidgen();
 
-        let content = new InputOverrideRequest(requestID, _input);
-        let request = new CommunicationWrapper(action, content);
+    //    let content = new InputOverrideRequest(requestID, _input);
+    //    let request = new CommunicationWrapper(action, content);
 
-        let jsonContent = JSON.stringify(request);
+    //    let jsonContent = JSON.stringify(request);
 
-        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, null);
-    }
+    //    ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, null);
+    //}
 
     // Function: RequestConfigState
     // Used to request a <ConfigState> representing the current state of the Service's config
