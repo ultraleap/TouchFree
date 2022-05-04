@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
-using System;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -96,7 +97,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             InteractionConfig interactions = InteractionConfigFile.LoadConfig();
             PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
-            
+
             ConfigState currentConfig = new ConfigState(
                 contentObj.GetValue("requestID").ToString(),
                 interactions,
@@ -113,7 +114,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             if (!RequestIdExists(contentObj))
             {
                 ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
-            response.message = "Config state request failed. This is due to a missing or invalid requestID";
+                response.message = "Config state request failed. This is due to a missing or invalid requestID";
 
                 // This is a failed request, do not continue with sending the status,
                 // the Client will have no way to handle the config state
@@ -349,7 +350,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 JsonConvert.PopulateObject(physicalChanges, physFromFile);
                 PhysicalConfigFile.SaveConfig(physFromFile);
-            }    
+            }
 
             if (interactionChanges != "")
             {
