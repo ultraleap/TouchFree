@@ -1,20 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
 
-using Ultraleap.TouchFree.Service.Connection;
-
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library
 {
     public class InteractionManager
     {
         private readonly IEnumerable<IInteraction> interactions;
         private readonly UpdateBehaviour updateBehaviour;
-        private readonly ClientConnectionManager connectionManager;
+        private readonly IClientConnectionManager connectionManager;
 
-        private IEnumerable<IInteraction> activeInteractions;
+        private Dictionary<IInteraction, float> activeInteractions;
         private IInteraction interactionCurrentlyDown;
         private IInteraction locationInteraction;
 
@@ -23,7 +20,7 @@ namespace Ultraleap.TouchFree.Service
 
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
-            ClientConnectionManager _connectionManager,
+            IClientConnectionManager _connectionManager,
             IEnumerable<IInteraction> _interactions,
             IConfigManager _configManager)
         {
@@ -46,8 +43,9 @@ namespace Ultraleap.TouchFree.Service
             {
                 interactionsToUse = new[]
                 {
+                    InteractionType.TOUCHPLANE,
                     InteractionType.VELOCITYSWIPE,
-                    InteractionType.PUSH
+                    //InteractionType.PUSH
                 };
             }
             else
@@ -55,8 +53,8 @@ namespace Ultraleap.TouchFree.Service
                 interactionsToUse[1] = _config.InteractionType;
             }
 
-            activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType));
-            locationInteraction = interactions.Single(x => x.InteractionType == _config.InteractionType);
+            activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
+            locationInteraction = interactions.SingleOrDefault(x => x.InteractionType == interactionsToUse[0]);
 
             if (initialisationNotStarted)
             {
@@ -73,12 +71,12 @@ namespace Ultraleap.TouchFree.Service
                 InputAction? lastLocationActionToUpdate = null;
                 foreach(var interaction in activeInteractions)
                 {
-                    if (interactionCurrentlyDown != null && interactionCurrentlyDown != interaction)
+                    if (interactionCurrentlyDown != null && interactionCurrentlyDown != interaction.Key)
                     {
                         continue;
                     }
 
-                    var interactionInputAction = interaction.Update();
+                    var interactionInputAction = interaction.Key.Update();
                     if (interactionCurrentlyDown != null)
                     {
                         inputAction = interactionInputAction.inputAction;
@@ -92,17 +90,18 @@ namespace Ultraleap.TouchFree.Service
                     if (interactionCurrentlyDown == null && interactionInputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.InputType == InputType.DOWN)
                     {
                         inputAction = interactionInputAction.inputAction;
-                        interactionCurrentlyDown = interaction;
+                        interactionCurrentlyDown = interaction.Key;
                         nonLocationRelativeInputAction = interactionInputAction.inputAction;
                         break;
                     }
 
-                    if (!inputAction.HasValue || currentMaxConfidence < interactionInputAction.confidence)
+                    if (!inputAction.HasValue || currentMaxConfidence < interactionInputAction.confidence * interaction.Value || interactionInputAction.confidence == 1)
                     {
                         inputAction = interactionInputAction.inputAction;
+                        currentMaxConfidence = interactionInputAction.confidence * interaction.Value;
                     }
 
-                    if (interaction == locationInteraction)
+                    if (interaction.Key == locationInteraction)
                     {
                         lastLocationActionToUpdate = inputAction;
                     }

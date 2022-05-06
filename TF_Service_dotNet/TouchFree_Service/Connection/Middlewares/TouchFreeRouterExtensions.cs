@@ -18,6 +18,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public static IServiceCollection AddClientConnectionManager(this IServiceCollection services)
         {
             services.AddSingleton<ClientConnectionManager>();
+            services.AddSingleton<IClientConnectionManager>(x => x.GetService<ClientConnectionManager>());
             return services;
         }
 
