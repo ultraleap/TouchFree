@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
-		<RootNamespace>TouchFree_Service</RootNamespace>
+		<RootNamespace>Ultraleap.TouchFree.Service</RootNamespace>
 		<AssemblyName>TouchFree_Service</AssemblyName>
 		<Platforms>AnyCPU;ARM64</Platforms>
 	</PropertyGroup>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Timers;
 
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library
 {
     public class UpdateBehaviour : IDisposable
     {

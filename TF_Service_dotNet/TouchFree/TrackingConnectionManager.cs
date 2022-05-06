@@ -63,7 +63,7 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        private bool TrackingModeIsIncorrect(TrackingMode trackingMode, bool inScreenTop, bool inHmd)
+        public static bool TrackingModeIsIncorrect(TrackingMode trackingMode, bool inScreenTop, bool inHmd)
         {
             return (trackingMode == TrackingMode.SCREENTOP && !inScreenTop) ||
                 (trackingMode == TrackingMode.HMD && !inHmd) ||
@@ -154,7 +154,7 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        enum TrackingMode
+        public enum TrackingMode
         {
             DESKTOP,
             HMD,
