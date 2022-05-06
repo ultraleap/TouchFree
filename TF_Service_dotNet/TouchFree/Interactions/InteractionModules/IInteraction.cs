@@ -5,6 +5,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
     public interface IInteraction
     {
         InteractionType InteractionType { get; }
-        InputActionResult Update();
+        InputActionResult Update(float confidence);
     }
 }

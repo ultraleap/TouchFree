@@ -41,7 +41,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             };
         }
 
-        protected override InputActionResult UpdateData(Leap.Hand hand)
+        protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
         {
             if (hand == null)
             {

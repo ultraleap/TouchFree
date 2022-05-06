@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -43,18 +44,18 @@ namespace Ultraleap.TouchFree.Library
             {
                 interactionsToUse = new[]
                 {
-                    InteractionType.TOUCHPLANE,
-                    InteractionType.VELOCITYSWIPE,
-                    //InteractionType.PUSH
+                    InteractionType.PUSH,
+                    InteractionType.AIRCLICK,
+                    //InteractionType.VELOCITYSWIPE,
                 };
             }
             else
             {
-                interactionsToUse[1] = _config.InteractionType;
+                interactionsToUse[0] = _config.InteractionType;
             }
 
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
-            locationInteraction = interactions.SingleOrDefault(x => x.InteractionType == interactionsToUse[0]);
+            locationInteraction = interactions.SingleOrDefault(x => x.InteractionType == _config.InteractionType);
 
             if (initialisationNotStarted)
             {
@@ -76,7 +77,7 @@ namespace Ultraleap.TouchFree.Library
                         continue;
                     }
 
-                    var interactionInputAction = interaction.Key.Update();
+                    var interactionInputAction = interaction.Key.Update(interaction.Value);
                     if (interactionCurrentlyDown != null)
                     {
                         inputAction = interactionInputAction.inputAction;
@@ -92,10 +93,20 @@ namespace Ultraleap.TouchFree.Library
                         inputAction = interactionInputAction.inputAction;
                         interactionCurrentlyDown = interaction.Key;
                         nonLocationRelativeInputAction = interactionInputAction.inputAction;
+
+                        activeInteractions[interaction.Key] = (float)Math.Min(1, interaction.Value + 0.05);
+                        foreach(var key in activeInteractions.Keys)
+                        {
+                            if (key != interaction.Key)
+                            {
+                                activeInteractions[key] = (float)Math.Max(0.25, activeInteractions[key] - 0.05);
+                            }
+                        }
+
                         break;
                     }
 
-                    if (!inputAction.HasValue || currentMaxConfidence < interactionInputAction.confidence * interaction.Value || interactionInputAction.confidence == 1)
+                    if (!inputAction.HasValue || currentMaxConfidence < interactionInputAction.confidence * interaction.Value)
                     {
                         inputAction = interactionInputAction.inputAction;
                         currentMaxConfidence = interactionInputAction.confidence * interaction.Value;

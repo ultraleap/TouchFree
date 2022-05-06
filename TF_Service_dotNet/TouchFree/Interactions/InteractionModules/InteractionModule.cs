@@ -43,13 +43,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             OnInteractionSettingsUpdated(configManager.InteractionConfig);
         }
 
-        public InputActionResult Update()
+        public InputActionResult Update(float confidence)
         {
             // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
             latestTimestamp = handManager.Timestamp;
 
             var hand = GetHand();
-            var inputAction = UpdateData(hand);
+            var inputAction = UpdateData(hand, confidence);
 
             if (hand != null)
             {
@@ -64,7 +64,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         }
 
         // This is the main update loop of the interaction module
-        protected abstract InputActionResult UpdateData(Leap.Hand hand);
+        protected abstract InputActionResult UpdateData(Leap.Hand hand, float confidence);
 
         protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {

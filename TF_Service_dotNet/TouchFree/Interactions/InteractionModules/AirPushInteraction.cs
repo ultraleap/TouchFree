@@ -83,7 +83,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return returnPositions;
         }
 
-        protected override InputActionResult UpdateData(Leap.Hand hand)
+        protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
         {
             if (hand == null)
             {
@@ -102,10 +102,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return new InputActionResult();
             }
 
-            return HandleInteractionsAirPush();
+            return HandleInteractionsAirPush(confidence);
         }
 
-        private InputActionResult HandleInteractionsAirPush()
+        private InputActionResult HandleInteractionsAirPush(float confidence)
         {
             var inputActionResult =  new InputActionResult();
             long currentTimestamp = latestTimestamp;
@@ -128,7 +128,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 Vector2 dPerp = virtualScreen.PixelsToMillimeters(dPerpPx);
 
                 // Update AppliedForce, which is the crux of the AirPush algorithm
-                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, distanceFromScreenMm);
+                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, distanceFromScreenMm) * confidence;  // Multiply by confidence to make it harder to use when disused
                 appliedForce += forceChange;
                 appliedForce = Math.Clamp(appliedForce, 0f, 1f);
 

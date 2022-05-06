@@ -45,7 +45,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             };
         }
 
-        protected override InputActionResult UpdateData(Leap.Hand hand)
+        protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
         {
             if (hand == null)
             {
@@ -59,7 +59,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return new InputActionResult();
             }
 
-            return HandleInteractions();
+            return HandleInteractions(confidence);
         }
 
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
@@ -69,7 +69,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return returnPositions;
         }
 
-        private InputActionResult HandleInteractions()
+        private InputActionResult HandleInteractions(float confidence)
         {
             Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
             Vector2 dPerp = virtualScreen.PixelsToMillimeters(dPerpPx);
@@ -77,7 +77,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             long dtMicroseconds = (latestTimestamp - previousTime);
             float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
 
-            dPerp = dPerp / dt;
+            dPerp = dPerp * confidence / dt; // Multiply by confidence to make it harder to use when disused
 
             Vector2 absPerp = Vector2.Abs(dPerp);
 

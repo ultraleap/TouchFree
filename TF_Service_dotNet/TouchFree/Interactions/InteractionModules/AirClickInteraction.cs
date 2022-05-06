@@ -52,7 +52,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return returnPositions;
         }
 
-        public float CalculateProgress(Leap.Hand _hand)
+        public float CalculateProgress(Leap.Hand _hand, float confidence)
         {
             if (_hand == null)
             {
@@ -81,7 +81,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
                 if (!isTouching)
                 {
-                    if (angle - prevAngle > minAngleChangePerSecond * dt)
+                    if ((angle - prevAngle) * confidence > minAngleChangePerSecond * dt)  // Multiply by confidence to make it harder to use when disused
                     {
                         // we are moving fast enough!
                         if (!clickProgressing)
@@ -125,7 +125,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return progress;
         }
 
-        protected override InputActionResult UpdateData(Leap.Hand _hand)
+        protected override InputActionResult UpdateData(Leap.Hand _hand, float confidence)
         {
             if (_hand == null)
             {
@@ -142,7 +142,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return new InputActionResult();
             }
 
-            var _progress = CalculateProgress(_hand);
+            var _progress = CalculateProgress(_hand, confidence);
 
             InputActionResult result = new InputActionResult();
 
