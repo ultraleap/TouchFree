@@ -108,20 +108,23 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
             else
             {
+                InputActionResult result;
                 if (pressing && !pressComplete)
                 {
-                    pressComplete = false;
-                    pressing = false;
-                    isDragging = false;
-                    handReady = true;
-
                     Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
-                    return CreateInputActionResult(InputType.UP, downPositions, progressToClick);
+                    result = CreateInputActionResult(InputType.UP, downPositions, progressToClick);
                 }
                 else
                 {
-                    return CreateInputActionResult(InputType.MOVE, positions, progressToClick);
+                    result = CreateInputActionResult(InputType.MOVE, positions, progressToClick);
                 }
+
+                pressComplete = false;
+                pressing = false;
+                isDragging = false;
+                handReady = true;
+
+                return result;
             }
 
             return new InputActionResult();
