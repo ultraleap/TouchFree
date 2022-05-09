@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Ultraleap.TouchFree.Library;
@@ -69,6 +70,9 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IInteraction, TouchPlanePushInteraction>();
             services.AddSingleton<IInteraction, VelocitySwipeInteraction>();
             services.AddSingleton<IInteraction, AirClickInteraction>();
+
+            var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            services.Configure<InteractionTuning>(configuration.GetSection(nameof(InteractionTuning)));
 
             return services;
         }

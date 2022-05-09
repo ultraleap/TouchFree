@@ -1,0 +1,31 @@
+{
+    "InteractionTuning": {
+        "VelocitySwipeSettings": {
+            "MinScrollVelocity_mmps": 500,
+            "MaxReleaseVelocity_mmps": 0,
+            "MaxOpposingVelocity_mmps": 150,
+            "ScrollDelayMs": 500,
+            "AllowVerticalScroll": true,
+            "AllowHorizontalScroll": true,
+            "AllowBidirectionalScroll": false
+        },
+        "AirPushSettings": {
+            "SpeedMin": 150,
+            "SpeedMax": 500,
+            "DistAtSpeedMinMm": 42,
+            "DistAtSpeedMaxMm": 8,
+            "HorizontalDecayDistMm": 50,
+            "ThetaOne": 22,
+            "ThetaTwo": 135,
+            // If a hand moves an angle less than thetaOne, this is "towards" the screen
+            // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
+            // If a hand moves between the two angles, this is "horizontal" to the screen
+
+            "UnclickThreshold": 0.97,
+            "UnclickThresholdDrag": 0.97
+        },
+        "EnableInteractionConfidence": false,
+        "EnableAirClickWithAirPush": false,
+        "EnableVelocitySwipeWithAirPush": true
+    }
+}

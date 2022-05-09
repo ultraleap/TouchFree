@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
 
@@ -9,6 +11,7 @@ namespace Ultraleap.TouchFree.Library
     public class InteractionManager
     {
         private readonly IEnumerable<IInteraction> interactions;
+        private readonly InteractionTuning interactionTuning;
         private readonly UpdateBehaviour updateBehaviour;
         private readonly IClientConnectionManager connectionManager;
 
@@ -19,15 +22,19 @@ namespace Ultraleap.TouchFree.Library
         private InputAction lastLocationInputAction;
         private InputAction nonLocationRelativeInputAction;
 
+        private Vector2? lastPositionModification;
+
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
             IClientConnectionManager _connectionManager,
             IEnumerable<IInteraction> _interactions,
+            IOptions<InteractionTuning> _interactionTuning,
             IConfigManager _configManager)
         {
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
             interactions = _interactions;
+            interactionTuning = _interactionTuning?.Value;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
@@ -38,20 +45,25 @@ namespace Ultraleap.TouchFree.Library
         {
             var initialisationNotStarted = activeInteractions == null;
 
-            InteractionType[] interactionsToUse = new InteractionType[1];
+            List<InteractionType> interactionsToUse = new List<InteractionType>();
 
             if (_config.InteractionType == InteractionType.PUSH)
             {
-                interactionsToUse = new[]
+                interactionsToUse.Add(InteractionType.PUSH);
+
+                if (interactionTuning?.EnableAirClickWithAirPush == true)
                 {
-                    InteractionType.PUSH,
-                    InteractionType.AIRCLICK,
-                    //InteractionType.VELOCITYSWIPE,
-                };
+                    interactionsToUse.Add(InteractionType.AIRCLICK);
+                }
+
+                if (interactionTuning?.EnableVelocitySwipeWithAirPush == true)
+                {
+                    interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
+                }
             }
             else
             {
-                interactionsToUse[0] = _config.InteractionType;
+                interactionsToUse.Add(_config.InteractionType);
             }
 
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
@@ -94,12 +106,15 @@ namespace Ultraleap.TouchFree.Library
                         interactionCurrentlyDown = interaction.Key;
                         nonLocationRelativeInputAction = interactionInputAction.inputAction;
 
-                        activeInteractions[interaction.Key] = (float)Math.Min(1, interaction.Value + 0.05);
-                        foreach(var key in activeInteractions.Keys)
+                        if (interactionTuning?.EnableInteractionConfidence == true)
                         {
-                            if (key != interaction.Key)
+                            activeInteractions[interaction.Key] = (float)Math.Min(1, interaction.Value + 0.05);
+                            foreach(var key in activeInteractions.Keys)
                             {
-                                activeInteractions[key] = (float)Math.Max(0.25, activeInteractions[key] - 0.05);
+                                if (key != interaction.Key)
+                                {
+                                    activeInteractions[key] = (float)Math.Max(0.25, activeInteractions[key] - 0.05);
+                                }
                             }
                         }
 
@@ -128,13 +143,20 @@ namespace Ultraleap.TouchFree.Library
 
                     if (interactionCurrentlyDown != null)
                     {
-                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + (inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition), inputAction.Value.DistanceFromScreen);
+                        lastPositionModification = inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
+                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + lastPositionModification.Value, inputAction.Value.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
                             updatedPosition, inputAction.Value.ProgressToClick);
                     }
                     else
                     {
-                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition, lastLocationInputAction.DistanceFromScreen);
+                        if (lastPositionModification.HasValue)
+                        {
+                            // Soften moving back to the location cursor position (this should be changed to use time so that it is consistent when we have lower frame rate)
+                            lastPositionModification = lastPositionModification.Value.Length() > 20 ? lastPositionModification.Value / 1.5f : null;
+                        }
+
+                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + (lastPositionModification ?? new Vector2(0, 0)), lastLocationInputAction.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
                             updatedPosition, inputAction.Value.ProgressToClick);
                     }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
+using Microsoft.Extensions.Options;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
@@ -36,9 +37,31 @@ namespace Ultraleap.TouchFree.Library.Interactions
             HandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
+            IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
+            if (_interactionTuning?.Value?.VelocitySwipeSettings != null)
+            {
+                minScrollVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MinScrollVelocity_mmps;
+                maxReleaseVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxReleaseVelocity_mmps;
+                maxOpposingVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxOpposingVelocity_mmps;
+                scrollDelayMs = _interactionTuning.Value.VelocitySwipeSettings.ScrollDelayMs;
+
+                if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll && _interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
+                {
+                    allowBidirectional = _interactionTuning.Value.VelocitySwipeSettings.AllowBidirectionalScroll;
+                }
+                else if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll)
+                {
+                    lockAxisToOnly = Axis.X;
+                }
+                else if (_interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
+                {
+                    lockAxisToOnly = Axis.Y;
+                }
+            }
+
             positionConfiguration = new[]
             {
                 new PositionTrackerConfiguration(TrackedPosition.INDEX_TIP, 1)
@@ -223,11 +246,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             base.OnInteractionSettingsUpdated(_config);
 
-            minScrollVelocity_mmps = _config.minScrollVelocity_mmps;
-            maxReleaseVelocity_mmps = _config.maxReleaseVelocity_mmps;
-            maxOpposingVelocity_mmps = _config.maxOpposingVelocity_mmps;
-            lockAxisToOnly = (Axis)_config.lockAxisToOnly;
-            allowBidirectional = _config.allowBidirectional;
+            //minScrollVelocity_mmps = _config.minScrollVelocity_mmps;
+            //maxReleaseVelocity_mmps = _config.maxReleaseVelocity_mmps;
+            //maxOpposingVelocity_mmps = _config.maxOpposingVelocity_mmps;
+            //lockAxisToOnly = (Axis)_config.lockAxisToOnly;
+            //allowBidirectional = _config.allowBidirectional;
         }
 
         enum Direction
