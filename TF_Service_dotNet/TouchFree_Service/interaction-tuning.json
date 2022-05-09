@@ -26,6 +26,8 @@
         },
         "EnableInteractionConfidence": false,
         "EnableAirClickWithAirPush": false,
-        "EnableVelocitySwipeWithAirPush": true
+        "EnableVelocitySwipeWithAirPush": true,
+        "EnableOneEuroFilter": true,
+        "EnableExtrapolation": true
     }
 }

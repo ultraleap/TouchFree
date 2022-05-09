@@ -10,5 +10,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public bool EnableInteractionConfidence { get; set; }
         public bool EnableAirClickWithAirPush { get; set; }
         public bool EnableVelocitySwipeWithAirPush { get; set; }
+        public bool EnableOneEuroFilter { get; set; }
+        public bool EnableExtrapolation { get; set; }
     }
 }

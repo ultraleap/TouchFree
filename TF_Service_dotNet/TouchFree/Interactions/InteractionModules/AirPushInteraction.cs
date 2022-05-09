@@ -59,8 +59,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool isDragging = false;
 
-        private ExtrapolationPositionModifier extrapolation = new ExtrapolationPositionModifier();
-        private PositionFilter filter = new PositionFilter();
+        private readonly ExtrapolationPositionModifier extrapolation;
+        private readonly PositionFilter filter;
 
         public AirPushInteraction(
             HandManager _handManager,
@@ -82,6 +82,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 unclickThreshold = _interactionTuning.Value.AirPushSettings.UnclickThreshold;
                 unclickThresholdDrag = _interactionTuning.Value.AirPushSettings.UnclickThresholdDrag;
             }
+            extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
+            filter = new PositionFilter(_interactionTuning);
 
             positionConfiguration = new[]
             {

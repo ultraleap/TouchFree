@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
-
+using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
@@ -28,16 +28,20 @@ namespace Ultraleap.TouchFree.Library.Interactions
         bool isTouching = false;
         long previousTimeStamp = 0;
 
-        private ExtrapolationPositionModifier extrapolation = new ExtrapolationPositionModifier();
-        private PositionFilter filter = new PositionFilter();
+        private readonly ExtrapolationPositionModifier extrapolation;
+        private readonly PositionFilter filter;
 
         public AirClickInteraction(
             HandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
+            IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
+            extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
+            filter = new PositionFilter(_interactionTuning);
+
             positionConfiguration = new[]
             {
                 new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
