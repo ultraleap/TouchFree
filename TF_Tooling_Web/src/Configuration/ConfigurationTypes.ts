@@ -100,10 +100,10 @@ export interface HoverAndHoldInteractionSettings {
 // not modify a member of this class, its value will not change when the instance is sent to
 // TouchFree Service.
 export interface TouchPlaneInteractionSettings {
-    // Property: touchPlaneActivationDistanceCm
+    // Property: TouchPlaneActivationDistanceCm
     // This determines how far (in cm) the TouchPlane is from the screen surface. This
     // represents the plane that the user must pass to begin and end a click event.
-    touchPlaneActivationDistanceCm: number;
+    TouchPlaneActivationDistanceCm: number;
 
     // Property: TouchPlaneTrackedPosition
     // This determines which bone position will be tracked when performing the interaction.
@@ -134,17 +134,41 @@ export interface PhysicalConfig {
     // X = left/right (right = positive)
     // Y = up/down (up = positive)
     // Z = forward/backward (forward = positive)
-    LeapPositionRelativeToScreenBottomM: Array<number>;
+    LeapPositionRelativeToScreenBottomM: Vector;
 
     // Property: LeapRotationD
     // The rotation of the Leap Motion Camera relative to the unity world space, measured in
     // degrees
-    LeapRotationD: Array<number>;
+    LeapRotationD: Vector;
 
     // Property: ScreenRotationD
     // The rotation of the physical screen relative to the unity world space, measured in
     // degrees
     ScreenRotationD: number;
+
+    // Property: ScreenWidthPX
+    // The width in pixels of the screen
+    ScreenWidthPX: number;
+
+    // Property: ScreenHeightPX
+    // The height in pixels of the screen
+    ScreenHeightPX: number;
+}
+
+// Class: Vector
+// This class is a container for a simple 3 dimensional vector
+export interface Vector {
+    // Property: X
+    // The X co-ordinate of the vector
+    X: number;
+
+    // Property: Y
+    // The Y co-ordinate of the vector
+    Y: number;
+
+    // Property: Z
+    // The Z co-ordinate of the vector
+    Z: number;
 }
 
 // Enum: TrackedPosition
