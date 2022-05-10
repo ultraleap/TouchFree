@@ -1,31 +1,35 @@
-#if !DEBUG
 using Ultraleap.TouchFree.Library.Configuration;
-#endif
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System;
+using Newtonsoft.Json;
 
 namespace Ultraleap.TouchFree.Service
 {
     public class Program
     {
-        private static string listeningInterface = "localhost";
-        private static string port = "9739";
-
         static void Main(string[] args)
         {
 #if !DEBUG
             TouchFreeLog.SetUpLogging();
 #endif
-            listeningInterface = Environment.GetEnvironmentVariable("TF_INTERFACE") ?? listeningInterface;
-            port = Environment.GetEnvironmentVariable("TF_PORT") ?? port;
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+            Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
                 {
+                    string listeningInterface = "localhost";
+                    string port = "9739";
+
+                    string filePath = ConfigFileUtils.ConfigFileDirectory + "ServiceConfig.json";
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        string json = System.IO.File.ReadAllText(filePath);
+                        ServiceConfig srvConfig = JsonConvert.DeserializeObject<ServiceConfig>(json);
+                        listeningInterface = srvConfig?.Interface ?? "localhost";
+                        port = srvConfig?.Port ?? "9739";
+                    }
+
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls($"http://{listeningInterface}:{port}");
                 });
