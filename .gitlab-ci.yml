@@ -119,7 +119,7 @@ TF_Service::Wrapper::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper.sln /p:Configuration=Release
+    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/ServiceWrapper.csproj"
     # Move the built wrapper to the root directory
     - mkdir ./Service_Wrapper_Build
     - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/net6.0/* ./Service_Wrapper_Build
@@ -237,7 +237,7 @@ TF_Service::Tray::build:
   stage: build
   when: always
   script:
-    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release
+    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/ServiceUITray.csproj"
     # Move the built tray app to the root directory
     - mkdir ./Service_Tray_Build
     - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/Release/net6.0-windows/* ./Service_Tray_Build
