@@ -80,7 +80,7 @@ namespace Ultraleap.TouchFree.Library
             if (activeInteractions != null)
             {
                 InputAction? inputAction = null;
-                float currentMaxConfidence = 0;
+                float currentMaxProgress = 0;
                 InputAction? lastLocationActionToUpdate = null;
                 foreach(var interaction in activeInteractions)
                 {
@@ -90,6 +90,7 @@ namespace Ultraleap.TouchFree.Library
                     }
 
                     var interactionInputAction = interaction.Key.Update(interaction.Value);
+
                     if (interactionCurrentlyDown != null)
                     {
                         inputAction = interactionInputAction.inputAction;
@@ -121,15 +122,15 @@ namespace Ultraleap.TouchFree.Library
                         break;
                     }
 
-                    if (!inputAction.HasValue || currentMaxConfidence < interactionInputAction.confidence * interaction.Value)
-                    {
-                        inputAction = interactionInputAction.inputAction;
-                        currentMaxConfidence = interactionInputAction.confidence * interaction.Value;
-                    }
-
                     if (interaction.Key == locationInteraction)
                     {
+                        inputAction = interactionInputAction.inputAction;
                         lastLocationActionToUpdate = inputAction;
+                    }
+
+                    if (currentMaxProgress < interactionInputAction.inputAction.ProgressToClick)
+                    {
+                        currentMaxProgress = interactionInputAction.inputAction.ProgressToClick;
                     }
                 }
 
@@ -140,13 +141,12 @@ namespace Ultraleap.TouchFree.Library
 
                 if (inputAction.HasValue)
                 {
-
                     if (interactionCurrentlyDown != null)
                     {
                         lastPositionModification = inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
                         var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + lastPositionModification.Value, inputAction.Value.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
-                            updatedPosition, inputAction.Value.ProgressToClick);
+                            updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
                     }
                     else
                     {
@@ -158,7 +158,7 @@ namespace Ultraleap.TouchFree.Library
 
                         var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + (lastPositionModification ?? new Vector2(0, 0)), lastLocationInputAction.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
-                            updatedPosition, inputAction.Value.ProgressToClick);
+                            updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
                     }
                     connectionManager.SendInputActionToWebsocket(inputAction.Value);
                 }

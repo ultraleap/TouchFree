@@ -108,7 +108,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             InputActionResult inputActionResult;
 
-            if (!pressing && CheckIfScrollStart(absPerp))
+            if (!pressing && CheckIfScrollStart(dPerp, absPerp))
             {
                 pressing = true;
 
@@ -167,9 +167,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
         }
 
-        bool CheckIfScrollStart(Vector2 _absPerp)
+        bool CheckIfScrollStart(Vector2 _dPerp, Vector2 _absPerp)
         {
-            if(!CheckIfScrollAllowed(_absPerp))
+            if(!CheckIfScrollAllowed(_dPerp))
             {
                 return false;
             }
@@ -193,15 +193,38 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return false;
         }
 
-        bool CheckIfScrollAllowed(Vector2 _absPerp)
+        bool CheckIfScrollAllowed(Vector2 _dPerp)
         {
             if (scrollDisallowed)
             {
                 if (scrollDelayStopwatch.IsRunning && scrollDelayStopwatch.ElapsedMilliseconds > scrollDelayMs)
                 {
-                    if (_absPerp.X < maxOpposingVelocity_mmps && _absPerp.Y < maxOpposingVelocity_mmps)
+                    switch (currentDirection)
                     {
-                        scrollDisallowed = false;
+                        case Direction.LEFT:
+                            if (_dPerp.X < maxOpposingVelocity_mmps)
+                            {
+                                scrollDisallowed = false;
+                            }
+                            break;
+                        case Direction.RIGHT:
+                            if (_dPerp.X > -maxOpposingVelocity_mmps)
+                            {
+                                scrollDisallowed = false;
+                            }
+                            break;
+                        case Direction.UP:
+                            if (_dPerp.Y > -maxOpposingVelocity_mmps)
+                            {
+                                scrollDisallowed = false;
+                            }
+                            break;
+                        case Direction.DOWN:
+                            if (_dPerp.Y < maxOpposingVelocity_mmps)
+                            {
+                                scrollDisallowed = false;
+                            }
+                            break;
                     }
                 }
 
