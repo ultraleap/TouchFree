@@ -25,7 +25,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             if (lastPosition != null)
             {
                 var changeInPosition = position - lastPosition.Value;
-                extrapolatedPosition = position + changeInPosition;
+                extrapolatedPosition = position + (changeInPosition * 2);
             }
 
             lastPosition = position;
