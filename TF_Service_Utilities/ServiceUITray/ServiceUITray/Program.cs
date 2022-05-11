@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.ServiceProcess;
-using System.Threading;
-using System.Timers;
 using System.Windows.Forms;
+using System.ServiceProcess;
 using Timer = System.Timers.Timer;
+using System.Timers;
+using System.Threading;
+using System.IO;
 
 namespace ServiceUITray
 {
@@ -39,7 +39,7 @@ namespace ServiceUITray
         const string APPLICATION_PATH = "../TouchFree/TouchFree.exe";
 
         private NotifyIcon trayIcon;
-        private ToolStripItem touchFreeMenuItem;
+        private MenuItem touchFreeMenuItem;
 
         Process startedSettingsProcess;
         Process startedAppProcess;
@@ -49,15 +49,16 @@ namespace ServiceUITray
 
         public ServiceUITray()
         {
-            var menuStrip = new ContextMenuStrip();
-            touchFreeMenuItem = menuStrip.Items.Add("Start TouchFree", null, LaunchApp);
-            menuStrip.Items.Add("-");
-            menuStrip.Items.Add("Settings", null, Settings);
+            touchFreeMenuItem = new MenuItem("Start TouchFree", LaunchApp);
 
             trayIcon = new NotifyIcon()
             {
                 Icon = Properties.Resources.IconActive,
-                ContextMenuStrip = menuStrip,
+                ContextMenu = new ContextMenu(new MenuItem[] {
+                    touchFreeMenuItem,
+                    new MenuItem("-"),
+                    new MenuItem("Settings", Settings),
+                }),
                 Visible = true
             };
 

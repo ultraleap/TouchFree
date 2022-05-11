@@ -236,12 +236,12 @@ TF_Service::dotNet::test:
 TF_Service::Tray::build:
   stage: build
   when: always
-  script:
-    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/ServiceUITray.csproj"
+  script:  script:
+    - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release /p:Platform=x64
     # Move the built tray app to the root directory
     - mkdir ./Service_Tray_Build
-    - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/Release/net6.0-windows/* ./Service_Tray_Build
-
+    - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/x64/Release/* ./Service_Tray_Build
+    
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Service_Tray_Build/ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
