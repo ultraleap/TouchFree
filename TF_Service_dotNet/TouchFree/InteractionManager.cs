@@ -22,7 +22,7 @@ namespace Ultraleap.TouchFree.Library
         private InputAction lastLocationInputAction;
         private InputAction nonLocationRelativeInputAction;
 
-        private Vector2? lastPositionModification;
+        private Vector2? lastDownPosition;
 
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
@@ -143,20 +143,21 @@ namespace Ultraleap.TouchFree.Library
                 {
                     if (interactionCurrentlyDown != null)
                     {
-                        lastPositionModification = inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
-                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + lastPositionModification.Value, inputAction.Value.DistanceFromScreen);
+                        lastDownPosition = lastLocationInputAction.CursorPosition + inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
+                        var updatedPosition = new Positions(lastDownPosition.Value, inputAction.Value.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
                             updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
                     }
                     else
                     {
-                        if (lastPositionModification.HasValue)
+                        if (lastDownPosition.HasValue)
                         {
+                            var differenceInLocations = lastDownPosition.Value - lastLocationInputAction.CursorPosition;
                             // Soften moving back to the location cursor position (this should be changed to use time so that it is consistent when we have lower frame rate)
-                            lastPositionModification = lastPositionModification.Value.Length() > 20 ? lastPositionModification.Value / 1.5f : null;
+                            lastDownPosition = differenceInLocations.Length() > 10 ? (differenceInLocations / 1.2f) + lastLocationInputAction.CursorPosition : null;
                         }
 
-                        var updatedPosition = new Positions(lastLocationInputAction.CursorPosition + (lastPositionModification ?? new Vector2(0, 0)), lastLocationInputAction.DistanceFromScreen);
+                        var updatedPosition = new Positions(lastDownPosition ?? lastLocationInputAction.CursorPosition, lastLocationInputAction.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
                             updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
                     }
