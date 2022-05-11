@@ -236,7 +236,7 @@ TF_Service::dotNet::test:
 TF_Service::Tray::build:
   stage: build
   when: always
-  script:  script:
+  script:
     - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release /p:Platform=x64
     # Move the built tray app to the root directory
     - mkdir ./Service_Tray_Build
