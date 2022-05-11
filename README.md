@@ -14,12 +14,17 @@ If you require assistance whilst working with these repositories we recommend ut
 
 ## Contents:
 
-### TouchFree Application
+### TouchFree Overlay
 
-The TouchFree Application allows for a retrofit solution. This application provides
+The TouchFree Overlay application allows for a retrofit solution. This application provides
 a transparent overlay that enables you to use TouchFree interactions with any existing touch-supported application.
 
-The TouchFree Application requires the TouchFree Service to run properly.
+TouchFree Overlay requires the TouchFree Service to run properly.
+
+As TouchFree Overlay depends on TouchFree Tooling, if you intend to work on TouchFree Overlay as a
+devloper, you will need to run the `setup_repository.bat` script in the `Scripts` directory. Ensure
+that if you have previously worked on the Overlay, that you delete the `TF_Application/Assets/TouchFree`
+folder before running this script.
 
 ### TouchFree Service:
 
@@ -36,7 +41,7 @@ both the Ultraleap Tracking service installed to provide data from a camera, and
 The TouchFree Tooling is available for two integration environments at the moment:
 
 * Unity
-  * The Unity version of TouchFree Tooling can be found in the project found at 
+  * The Unity version of TouchFree Tooling can be found in the project found at
   `./TF_Service_and_Tooling_Unity`. Builds can be found on the releases page linked above.
 
 * Web (JavaScript)
