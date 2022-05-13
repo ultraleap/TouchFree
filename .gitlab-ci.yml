@@ -134,8 +134,7 @@ TF_Service::Wrapper::build:
     expire_in: 2 weeks
     when: always
   tags:
-    - unity
-    - win10
+    - docker-windows
 
 TF_Service::dotNet::Windows::build:
   stage: build
@@ -150,7 +149,7 @@ TF_Service::dotNet::Windows::build:
         Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build
-    - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/win-x64/publish/*" ./Service_dotNet_Build
+    - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/win-x64/publish/*" ./Service_dotNet_Build
     
 
     # Sign the executable with the UltraLeap certificate
@@ -163,8 +162,7 @@ TF_Service::dotNet::Windows::build:
     expire_in: 2 weeks
     when: always
   tags:
-    - unity
-    - win10
+    - docker-windows
 
 TF_Service::dotNet::ARMLinux::build:
   stage: build
@@ -179,7 +177,7 @@ TF_Service::dotNet::ARMLinux::build:
         Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build_ARMLinux
-    - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net5.0/linux-arm64/publish/*" ./Service_dotNet_Build_ARMLinux
+    - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/linux-arm64/publish/*" ./Service_dotNet_Build_ARMLinux
 
     - mkdir ./Service_dotNet_Build_ARMLinux/ThirdParty
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
@@ -196,8 +194,7 @@ TF_Service::dotNet::ARMLinux::build:
     expire_in: 2 weeks
     when: always
   tags:
-    - unity
-    - win10
+    - docker-windows
 
 Tracking::ARMLinux::download_package:
   stage: build
