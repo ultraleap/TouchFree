@@ -9,7 +9,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <Copyright>Copyright © Ultraleap, Inc. 2021</Copyright>
-    <AssemblyName>TF_ServiceWrapper</AssemblyName>
+    <AssemblyName>ServiceWrapper</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
