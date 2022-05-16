@@ -216,6 +216,7 @@ Tracking::ARMLinux::download_package:
 TF_Service::dotNet::test:
   stage: test
   when: always
+  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
     # Run unit tests
     - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
@@ -228,8 +229,7 @@ TF_Service::dotNet::test:
     reports:
       junit: $CI_PROJECT_DIR/TestResults/Test_Results.xml
   tags:
-    - unity
-    - win10
+    - docker-windows
 
 TF_Service::Tray::build:
   stage: build
