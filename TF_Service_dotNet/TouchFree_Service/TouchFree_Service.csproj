@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishSingleFile>true</PublishSingleFile>
 		<PublishTrimmed>true</PublishTrimmed>
 		<TrimMode>link</TrimMode>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<RootNamespace>Ultraleap.TouchFree.Service</RootNamespace>
 		<AssemblyName>TouchFree_Service</AssemblyName>
 		<Platforms>AnyCPU;ARM64</Platforms>
