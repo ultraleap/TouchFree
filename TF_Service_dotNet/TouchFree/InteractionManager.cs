@@ -82,55 +82,65 @@ namespace Ultraleap.TouchFree.Library
                 InputAction? inputAction = null;
                 float currentMaxProgress = 0;
                 InputAction? lastLocationActionToUpdate = null;
-                foreach(var interaction in activeInteractions)
+
+                if (interactionCurrentlyDown != null)
                 {
-                    if (interactionCurrentlyDown != null && interactionCurrentlyDown != interaction.Key)
+                    var interactionInputAction = interactionCurrentlyDown.Update(1);
+                    inputAction = interactionInputAction.inputAction;
+                    currentMaxProgress = inputAction?.ProgressToClick ?? 0;
+
+                    if (interactionCurrentlyDown == locationInteraction)
                     {
-                        continue;
+                        lastLocationActionToUpdate = inputAction;
                     }
 
-                    var interactionInputAction = interaction.Key.Update(interaction.Value);
-
-                    if (interactionCurrentlyDown != null)
+                    if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
                     {
-                        inputAction = interactionInputAction.inputAction;
-                        if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
+                        if (interactionCurrentlyDown != locationInteraction)
                         {
-                            interactionCurrentlyDown = null;
+                            lastLocationActionToUpdate = locationInteraction.Update(1).inputAction;
                         }
-                        break;
+                        interactionCurrentlyDown = null;
                     }
-
-                    if (interactionCurrentlyDown == null && interactionInputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.InputType == InputType.DOWN)
+                }
+                else
+                {
+                    foreach (var interaction in activeInteractions)
                     {
-                        inputAction = interactionInputAction.inputAction;
-                        interactionCurrentlyDown = interaction.Key;
-                        nonLocationRelativeInputAction = interactionInputAction.inputAction;
+                        var interactionInputAction = interaction.Key.Update(interaction.Value);
 
-                        if (interactionTuning?.EnableInteractionConfidence == true)
+                        if (interaction.Key == locationInteraction)
                         {
-                            activeInteractions[interaction.Key] = (float)Math.Min(1, interaction.Value + 0.05);
-                            foreach(var key in activeInteractions.Keys)
+                            lastLocationActionToUpdate = interactionInputAction.inputAction;
+                            if (interactionCurrentlyDown == null)
+                            { 
+                                inputAction = interactionInputAction.inputAction;
+                            }
+                        }
+
+                        if (interactionCurrentlyDown == null && interactionInputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.InputType == InputType.DOWN)
+                        {
+                            inputAction = interactionInputAction.inputAction;
+                            interactionCurrentlyDown = interaction.Key;
+                            nonLocationRelativeInputAction = interactionInputAction.inputAction;
+
+                            if (interactionTuning?.EnableInteractionConfidence == true)
                             {
-                                if (key != interaction.Key)
+                                activeInteractions[interaction.Key] = (float)Math.Min(1, interaction.Value + 0.05);
+                                foreach (var key in activeInteractions.Keys)
                                 {
-                                    activeInteractions[key] = (float)Math.Max(0.25, activeInteractions[key] - 0.05);
+                                    if (key != interaction.Key)
+                                    {
+                                        activeInteractions[key] = (float)Math.Max(0.25, activeInteractions[key] - 0.05);
+                                    }
                                 }
                             }
                         }
 
-                        break;
-                    }
-
-                    if (interaction.Key == locationInteraction)
-                    {
-                        inputAction = interactionInputAction.inputAction;
-                        lastLocationActionToUpdate = inputAction;
-                    }
-
-                    if (currentMaxProgress < interactionInputAction.inputAction.ProgressToClick)
-                    {
-                        currentMaxProgress = interactionInputAction.inputAction.ProgressToClick;
+                        if (currentMaxProgress < interactionInputAction.inputAction.ProgressToClick)
+                        {
+                            currentMaxProgress = interactionInputAction.inputAction.ProgressToClick;
+                        }
                     }
                 }
 
@@ -153,8 +163,11 @@ namespace Ultraleap.TouchFree.Library
                         if (lastDownPosition.HasValue)
                         {
                             var differenceInLocations = lastDownPosition.Value - lastLocationInputAction.CursorPosition;
+                            var differenceLength = differenceInLocations.Length();
+                            var decrease = Utilities.MapRangeToRange(differenceLength, 10, Math.Max(300, differenceLength), 10, 50);
+                            var decreaseRatio = decrease / differenceLength;
                             // Soften moving back to the location cursor position (this should be changed to use time so that it is consistent when we have lower frame rate)
-                            lastDownPosition = differenceInLocations.Length() > 10 ? (differenceInLocations / 1.2f) + lastLocationInputAction.CursorPosition : null;
+                            lastDownPosition = differenceLength > 10 ? (differenceInLocations * decreaseRatio) + lastLocationInputAction.CursorPosition : null;
                         }
 
                         var updatedPosition = new Positions(lastDownPosition ?? lastLocationInputAction.CursorPosition, lastLocationInputAction.DistanceFromScreen);
