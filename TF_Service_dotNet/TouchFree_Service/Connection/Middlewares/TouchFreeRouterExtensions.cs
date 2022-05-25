@@ -94,6 +94,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IPositionTracker, NearestTracker>();
             services.AddSingleton<IPositionTracker, WristTracker>();
             services.AddSingleton<IPositionTracker, HandPointingTracker>();
+            services.AddSingleton<IPositionTracker, ProjectionTracker>();
 
             return services;
         }

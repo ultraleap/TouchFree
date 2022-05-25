@@ -237,7 +237,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         /// <summary>
         /// Check if any movement has happened, if it has, we have left the deadzone
         /// </summary>
-        private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
+        private static bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
             return _startPos != _currentPos;
         }
