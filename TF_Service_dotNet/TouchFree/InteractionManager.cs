@@ -89,11 +89,6 @@ namespace Ultraleap.TouchFree.Library
                     inputAction = interactionInputAction.inputAction;
                     currentMaxProgress = inputAction?.ProgressToClick ?? 0;
 
-                    if (interactionCurrentlyDown == locationInteraction)
-                    {
-                        lastLocationActionToUpdate = inputAction;
-                    }
-
                     if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
                     {
                         if (interactionCurrentlyDown != locationInteraction)
