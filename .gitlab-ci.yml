@@ -365,7 +365,7 @@ Tracking::download:
   script:
     - cd ./Scripts/
     - python ./Download_Tracking.py -t ${env:GITLAB_TOKEN} -j ${TARGET_TRACKING_JOBID_WIN}
-    - mv ./Tracking_Build/Ultraleap_Tracking_Installer*_win64.exe ./Tracking_Build/Tracking_for_TouchFree_${TOUCHFREE_VERSION}.exe
+    - mv ./Tracking_Build/Ultraleap_Tracking_Installer*win64.exe ./Tracking_Build/Tracking_for_TouchFree_${TOUCHFREE_VERSION}.exe
   after_script:
     - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
   artifacts:
