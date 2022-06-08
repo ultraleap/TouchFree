@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.WebSockets;
 
 using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 
@@ -31,7 +32,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             handManager.HandsLost += OnHandsLost;
 
             // This is here so the test infrastructure has some sign that the app is ready
-            Console.WriteLine("Service Setup Complete");
+            TouchFreeLog.WriteLine("Service Setup Complete");
         }
 
         ~ClientConnectionManager()
@@ -82,7 +83,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             if (_connection != null)
             {
                 activeConnections.Add(_connection);
-                Console.WriteLine("Connection set up");
+                TouchFreeLog.WriteLine("Connection set up");
+                handManager.ConnectToTracking();
             }
         }
 
@@ -102,17 +104,18 @@ namespace Ultraleap.TouchFree.Service.Connection
             if (connectionToRemove != null)
             {
                 activeConnections.Remove(connectionToRemove);
-                Console.WriteLine("Connection closed");
+                TouchFreeLog.WriteLine("Connection closed");
             }
             else
             {
-                Console.Error.WriteLine("Attempted to close a connection that was no longer active");
+                TouchFreeLog.WriteLine("Attempted to close a connection that was no longer active");
             }
 
             if (activeConnections.Count < 1)
             {
                 // there are no connections
                 LostAllConnections?.Invoke();
+                handManager.DisconnectFromTracking();
             }
         }
 

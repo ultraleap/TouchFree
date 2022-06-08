@@ -31,7 +31,7 @@ export class WebInputController extends BaseInputController {
 
     // Function: constructor
     // Sets up the basic event properties for all events transmitted from this InputController.
-    protected constructor() {
+    constructor() {
         super();
 
         this.baseEventProps = {
@@ -229,9 +229,6 @@ export class WebInputController extends BaseInputController {
     // Checks if the target element is null and correctly dispatches the provided event to the
     // element or document body appropriately
     private DispatchToTarget(event: PointerEvent, target: Element | null) {
-        // console.log(`Target was null? ${target === null}`)
-        // console.log(`Dispatching ${event.type} to ${target?.nodeName}`);
-
         if (target !== null) {
             target.dispatchEvent(event);
         } else {

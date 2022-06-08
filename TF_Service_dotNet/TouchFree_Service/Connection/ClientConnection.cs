@@ -9,6 +9,7 @@ using System.Text;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -18,15 +19,17 @@ namespace Ultraleap.TouchFree.Service.Connection
         private bool HandshakeCompleted;
         private readonly WebSocketReceiver receiver;
         private readonly ClientConnectionManager clientMgr;
+        private readonly IConfigManager configManager;
 
-        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, ClientConnectionManager _clientMgr)
+        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, ClientConnectionManager _clientMgr, IConfigManager _configManager)
         {
             socket = _socket;
             receiver = _receiver;
             clientMgr = _clientMgr;
+            configManager = _configManager;
             HandshakeCompleted = false;
 
-            Console.WriteLine("Websocket Connection opened");
+            TouchFreeLog.WriteLine("Websocket Connection opened");
         }
 
         public void SendInputAction(InputAction _data)
@@ -220,10 +223,10 @@ namespace Ultraleap.TouchFree.Service.Connection
                 case ActionCode.SERVICE_STATUS:
                 case ActionCode.CONFIGURATION_FILE_STATE:
                 case ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE:
-                    Console.Error.WriteLine("Received a " + action + " action. This action is not expected on the Service.");
+                    TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:
-                    Console.Error.WriteLine("Received a " + action + " action. This action is not recognised.");
+                    TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not recognised.");
                     break;
             }
         }
@@ -238,7 +241,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 // Validation has failed because there is no valid requestID
                 response.status = "Failure";
                 response.message = "Handshaking failed. This is due to a missing or invalid requestID";
-                Console.Error.WriteLine(response.message);
+                TouchFreeLog.ErrorWriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -251,7 +254,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 // cannot be processed
                 response.status = "Failure";
                 response.message = "Request Rejected: Requests cannot be processed until handshaking is complete.";
-                Console.Error.WriteLine(response.message);
+                TouchFreeLog.ErrorWriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -261,7 +264,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 // Send back immediate error: Cannot compare version number w/o a version number
                 response.status = "Failure";
                 response.message = "Handshaking Failed: No API Version supplied.";
-                Console.Error.WriteLine(response.message);
+                TouchFreeLog.ErrorWriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -269,39 +272,46 @@ namespace Ultraleap.TouchFree.Service.Connection
             string clientApiVersion = (string)contentObj[VersionInfo.API_HEADER_NAME];
             Compatibility compatibility = GetVersionCompability(clientApiVersion, VersionInfo.ApiVersion);
 
+            string configurationWarning = string.Empty;
+
+            if (!configManager.AreConfigsInGoodState())
+            {
+                configurationWarning = " Configuration is in a bad state. Please update the configuration via TouchFree Settings";
+            }
+
             switch (compatibility)
             {
                 case Compatibility.COMPATIBLE:
                     HandshakeCompleted = true;
                     response.status = "Success";
-                    response.message = "Handshake Successful";
-                    Console.WriteLine(response.message);
+                    response.message = "Handshake Successful." + configurationWarning;
+                    TouchFreeLog.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
                 case Compatibility.CLIENT_OUTDATED_WARNING:
                     HandshakeCompleted = true;
                     response.status = "Success";
-                    response.message = "Handshake Warning: Client is outdated relative to Service.";
-                    Console.WriteLine(response.message);
+                    response.message = "Handshake Warning: Client is outdated relative to Service." + configurationWarning;
+                    TouchFreeLog.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
                 case Compatibility.SERVICE_OUTDATED_WARNING:
                     HandshakeCompleted = true;
                     response.status = "Success";
-                    response.message = "Handshake Warning: Service is outdated relative to Client.";
-                    Console.WriteLine(response.message);
+                    response.message = "Handshake Warning: Service is outdated relative to Client." + configurationWarning;
+                    TouchFreeLog.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
                 case Compatibility.CLIENT_OUTDATED:
-                    response.message = "Handshake Failed: Client is outdated relative to Service.";
-                    Console.Error.WriteLine(response.message);
+                    response.message = "Handshake Failed: Client is outdated relative to Service." + configurationWarning;
+                    TouchFreeLog.ErrorWriteLine(response.message);
                     break;
                 case Compatibility.SERVICE_OUTDATED:
-                    response.message = "Handshake Failed: Service is outdated relative to Client.";
-                    Console.Error.WriteLine(response.message);
+                    response.message = "Handshake Failed: Service is outdated relative to Client." + configurationWarning;
+                    TouchFreeLog.ErrorWriteLine(response.message);
                     break;
             }
 

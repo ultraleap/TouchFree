@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -13,12 +14,14 @@ namespace Ultraleap.TouchFree.Service.Connection
         private readonly RequestDelegate next;
         private readonly ClientConnectionManager clientMgr;
         private readonly WebSocketReceiver receiver;
+        private readonly ConfigManager configManager;
 
-        public TouchFreeRouter(RequestDelegate _next, ClientConnectionManager _clientMgr, WebSocketReceiver _receiver)
+        public TouchFreeRouter(RequestDelegate _next, ClientConnectionManager _clientMgr, WebSocketReceiver _receiver, ConfigManager _configManager)
         {
             next = _next;
             clientMgr = _clientMgr;
             receiver = _receiver;
+            configManager = _configManager;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -27,10 +30,10 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                ClientConnection connection = new ClientConnection(webSocket, receiver, clientMgr);
+                ClientConnection connection = new ClientConnection(webSocket, receiver, clientMgr, configManager);
                 clientMgr.AddConnection(connection);
 
-                Console.WriteLine("WebSocket Connected");
+                TouchFreeLog.WriteLine("WebSocket Connected");
 
                 await Receive(webSocket, async (result, buffer) =>
                 {
@@ -47,7 +50,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
                         await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 
-                        Console.WriteLine("Websocket Connection Closed");
+                        TouchFreeLog.WriteLine("Websocket Connection Closed");
 
                         return;
                     }
@@ -55,7 +58,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
             else
             {
-                Console.WriteLine("A request was made to the server that was not an attempt to conenct to a WebSocket?");
+                TouchFreeLog.WriteLine("A request was made to the server that was not an attempt to connect to a WebSocket?");
                 await next(context);
             }
         }

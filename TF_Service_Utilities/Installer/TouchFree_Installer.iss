@@ -49,7 +49,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SourcePath}..\..\Scripts\Tracking_Build\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion
+Source: "{#SourcePath}..\..\Scripts\Tracking_Build\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -76,8 +76,9 @@ Filename: "{app}\Tracking\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; Param
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /im ServiceUITray.exe /f /t"; RunOnceId: "StopTrayIconApp"; Flags: runhidden
 Filename: "net.exe"; Parameters: "stop ""TouchFree Service"""; RunOnceId: "StopService"; Flags: runhidden
+Filename: "{app}\Tracking\Uninstall.exe"; Parameters: "/S"; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\Tracking\TrackingService\bin\WaitForLeapSvc.ps1"""; WorkingDir: {app}; Flags: runhidden waituntilterminated
 Filename: "{app}\Wrapper\{#WrapperExeName}"; Parameters: "uninstall"; RunOnceId: "UninstallService"; Flags: runhidden
-Filename: "{app}\Tracking\Uninstall.exe"; Parameters: "/S"; Flags: runhidden
 
 [Code]
 function GetWrapperPath: string;

@@ -5,8 +5,9 @@ using UnityEngine.UI;
 public class CameraPreviewScreen : MonoBehaviour
 {
     public Toggle enableOverexposureHighlighting;
-    public Material leftCameraMat;
-    public Material rightCameraMat;
+
+    public Toggle cameraReversedToggle;
+    public Leap.Unity.LeapImageRetriever leapImageRetriever;
 
     [SerializeField]
     private float exposureThresholdValue = 0.5f;
@@ -23,34 +24,51 @@ public class CameraPreviewScreen : MonoBehaviour
 
     public GameObject handsCameraObject;
 
+    public Scrollbar contentScrollbar;
+
     void OnEnable()
     {
+        leapImageRetriever.enabled = false;
+        leapImageRetriever.enabled = true;
+        leapImageRetriever.Reconstruct();
+        if (DiagnosticAPIManager.diagnosticAPI.allowImages.HasValue && !DiagnosticAPIManager.diagnosticAPI.allowImages.Value)
+        {
+            Leap.Unity.LeapImageRetriever.EyeTextureData.ResetGlobalShaderValues();
+        }
         handsCameraObject.SetActive(true);
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
+        cameraReversedToggle.onValueChanged.AddListener(OnCameraReversedChanged);
         OnOverExposureValueChanged(enableOverexposureHighlighting.isOn);
 
-        if(DiagnosticAPIManager.diagnosticAPI == null)
+        if (DiagnosticAPIManager.diagnosticAPI == null)
         {
             DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
         }
 
         DiagnosticAPI.OnGetMaskingResponse += HandleMaskingResponse;
         DiagnosticAPI.OnTrackingApiVersionResponse += HandleMaskingVersionCheck;
+        DiagnosticAPI.OnCameraOrientationResponse += HandleCameraOrientationCheck;
 
         maskingSiderL.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderR.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderT.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
 
+        DiagnosticAPIManager.diagnosticAPI.GetDevices();
         DiagnosticAPIManager.diagnosticAPI.GetImageMask();
+        DiagnosticAPIManager.diagnosticAPI.GetCameraOrientation();
+
+        contentScrollbar.value = 1;
     }
 
     void OnDisable()
     {
         handsCameraObject.SetActive(false);
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
+        cameraReversedToggle.onValueChanged.RemoveListener(OnCameraReversedChanged);
         DiagnosticAPI.OnGetMaskingResponse -= HandleMaskingResponse;
         DiagnosticAPI.OnTrackingApiVersionResponse -= HandleMaskingVersionCheck;
+        DiagnosticAPI.OnCameraOrientationResponse -= HandleCameraOrientationCheck;
 
         maskingSiderL.onValueChanged.RemoveListener(OnSliderChanged);
         maskingSiderR.onValueChanged.RemoveListener(OnSliderChanged);
@@ -60,7 +78,7 @@ public class CameraPreviewScreen : MonoBehaviour
 
     private void Update()
     {
-        if(newMaskDataReceived)
+        if (newMaskDataReceived)
         {
             SetSliders(currentMaskLeft, currentMaskRight, currentMaskTop, currentMaskBottom);
             newMaskDataReceived = false;
@@ -81,13 +99,11 @@ public class CameraPreviewScreen : MonoBehaviour
     {
         if (state)
         {
-            leftCameraMat.SetFloat("_threshold", exposureThresholdValue);
-            rightCameraMat.SetFloat("_threshold", exposureThresholdValue);
+            Shader.SetGlobalFloat("_threshold", exposureThresholdValue);
         }
         else
         {
-            leftCameraMat.SetFloat("_threshold", 1.0f);
-            rightCameraMat.SetFloat("_threshold", 1.0f);
+            Shader.SetGlobalFloat("_threshold", 1.0f);
         }
     }
 
@@ -122,5 +138,15 @@ public class CameraPreviewScreen : MonoBehaviour
     public void OnSliderChanged(float _)
     {
         SetMasking();
+    }
+
+    private void HandleCameraOrientationCheck()
+    {
+        cameraReversedToggle.isOn = DiagnosticAPIManager.diagnosticAPI.cameraReversed;
+    }
+
+    void OnCameraReversedChanged(bool state)
+    {
+        DiagnosticAPIManager.diagnosticAPI.SetCameraOrientation(cameraReversedToggle.isOn);
     }
 }

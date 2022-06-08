@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
     [Serializable]
     public class InteractionConfig
     {
-        public bool UseScrollingOrDragging = false;
+        public bool UseScrollingOrDragging = true;
         public float DeadzoneRadius = 0.003f;
 
         public bool InteractionZoneEnabled = false;
@@ -39,7 +39,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public InteractionConfig()
         {
-            this.UseScrollingOrDragging = false;
+            this.UseScrollingOrDragging = true;
             this.DeadzoneRadius = 0.003f;
 
             this.InteractionZoneEnabled = false;

@@ -11,8 +11,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
     [Serializable]
     public class PhysicalConfig
     {
-        public float ScreenHeightM = 330f;
-        public Vector3 LeapPositionRelativeToScreenBottomM = new Vector3(0f, -120f, -250f);
+        public float ScreenHeightM = 0.33f;
+        public Vector3 LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
         public Vector3 LeapRotationD = Vector3.Zero;
         public float ScreenRotationD = 0f;
 
@@ -21,8 +21,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public PhysicalConfig()
         {
-            this.ScreenHeightM = 330f;
-            this.LeapPositionRelativeToScreenBottomM = new Vector3(0f, -120f, -250f);
+            this.ScreenHeightM = 0.33f;
+            this.LeapPositionRelativeToScreenBottomM = new Vector3(0f, -0.12f, -0.25f);
             this.LeapRotationD = Vector3.Zero;
             this.ScreenRotationD = 0f;
 

@@ -9,9 +9,9 @@ namespace Ultraleap.TouchFree.Library
         public Leap.Controller controller;
         IConfigManager configManager;
 
-        private int maximumWaitTimeSeconds = 30;
-        private int initialWaitTimeSeconds = 1;
-        private int waitTimeSeconds = 1;
+        private const int maximumWaitTimeSeconds = 30;
+        private const int initialWaitTimeSeconds = 1;
+        private bool ShouldConnect = false;
 
         public TrackingConnectionManager(IConfigManager _configManager)
         {
@@ -21,63 +21,121 @@ namespace Ultraleap.TouchFree.Library
             controller.Disconnect += Controller_Disconnect;
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
+            controller.StopConnection();
+        }
+
+        public void Connect()
+        {
+            ShouldConnect = true;
             CheckConnectionAndRetryOnFailure();
+        }
+
+        public void Disconnect()
+        {
+            ShouldConnect = false;
+            if (controller.IsServiceConnected)
+            {
+                controller.StopConnection();
+            }
         }
 
         private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
         {
             UpdateTrackingMode(configManager.PhysicalConfig);
+
+            CheckTrackingModeIsCorrectAfterDelay();
+        }
+
+        private async void CheckTrackingModeIsCorrectAfterDelay()
+        {
+            await Task.Delay(5000);
+            if (controller.IsServiceConnected)
+            {
+                var trackingMode = GetTrackingModeFromConfig(configManager.PhysicalConfig);
+
+                var inScreenTop = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                var inHmd = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+
+                if (TrackingModeIsIncorrect(trackingMode, inScreenTop, inHmd))
+                {
+                    UpdateTrackingMode(configManager.PhysicalConfig);
+                }
+            }
+        }
+
+        public static bool TrackingModeIsIncorrect(TrackingMode trackingMode, bool inScreenTop, bool inHmd)
+        {
+            return (trackingMode == TrackingMode.SCREENTOP && !inScreenTop) ||
+                (trackingMode == TrackingMode.HMD && !inHmd) ||
+                (trackingMode == TrackingMode.DESKTOP && (inScreenTop || inHmd));
         }
 
         private void Controller_Disconnect(object sender, Leap.ConnectionLostEventArgs e)
         {
-            waitTimeSeconds = initialWaitTimeSeconds;
-            CheckConnectionAndRetryOnFailure();
-        }
-
-        private async Task CheckConnectionAndRetryOnFailure()
-        {
-            while (true)
+            if (ShouldConnect)
             {
-                await Task.Delay(1000 * waitTimeSeconds);
-
-                if (!controller.IsServiceConnected)
-                {
-                    controller.StartConnection();
-                }
-                else
-                {
-                    break;
-                }
-
-                waitTimeSeconds *= 2;
-                waitTimeSeconds = waitTimeSeconds > maximumWaitTimeSeconds ? maximumWaitTimeSeconds : waitTimeSeconds;
+                CheckConnectionAndRetryOnFailure(true);
             }
         }
 
+        private async void CheckConnectionAndRetryOnFailure(bool includeInitialDelay = false)
+        {
+            var waitTimeSeconds = initialWaitTimeSeconds;
+
+            if (includeInitialDelay)
+            {
+                await Task.Delay(1000 * waitTimeSeconds);
+                waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
+            }
+
+            while (!controller.IsServiceConnected && ShouldConnect)
+            {
+                controller.StartConnection();
+
+                await Task.Delay(1000 * waitTimeSeconds);
+                waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
+            }
+        }
+
+        private static int IncreaseWaitTimeSeconds(int currentWaitTime)
+        {
+            if (currentWaitTime == maximumWaitTimeSeconds)
+            {
+                return currentWaitTime;
+            }
+
+            var updatedWaitTime = currentWaitTime * 2;
+            return updatedWaitTime > maximumWaitTimeSeconds ? maximumWaitTimeSeconds : updatedWaitTime;
+        }
+
         public void UpdateTrackingMode(PhysicalConfigInternal _config)
+        {
+            SetTrackingMode(GetTrackingModeFromConfig(_config));
+        }
+
+        TrackingMode GetTrackingModeFromConfig(PhysicalConfigInternal _config)
         {
             // leap is looking down
             if (Math.Abs(_config.LeapRotationD.Z) > 90f)
             {
                 if (_config.LeapRotationD.X <= 0f)
                 {
-                    SetTrackingMode(TrackingMode.SCREENTOP);
+                    return TrackingMode.SCREENTOP;
                 }
                 else
                 {
-                    SetTrackingMode(TrackingMode.HMD);
+                    return TrackingMode.HMD;
                 }
             }
             else
             {
-                SetTrackingMode(TrackingMode.DESKTOP);
+                return TrackingMode.DESKTOP;
             }
         }
 
         void SetTrackingMode(TrackingMode _mode)
         {
-            Console.WriteLine($"Requesting {_mode} tracking mode");
+            TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
 
             switch (_mode)
             {
@@ -96,7 +154,7 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        enum TrackingMode
+        public enum TrackingMode
         {
             DESKTOP,
             HMD,
