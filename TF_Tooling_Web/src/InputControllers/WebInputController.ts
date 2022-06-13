@@ -1,3 +1,4 @@
+import { NIL } from 'uuid';
 import {
     TouchFreeInputAction,
     InputType
@@ -106,6 +107,11 @@ export class WebInputController extends BaseInputController {
 
         this.activeEventProps.clientX = _inputData.CursorPosition[0];
         this.activeEventProps.clientY = _inputData.CursorPosition[1];
+
+        if (elementAtPos !== null) {
+            let inputEvent: CustomEvent = new CustomEvent(`InputAction`, {detail: _inputData})
+            elementAtPos.dispatchEvent(inputEvent);
+        }
 
         switch (_inputData.InputType) {
             case InputType.CANCEL:
