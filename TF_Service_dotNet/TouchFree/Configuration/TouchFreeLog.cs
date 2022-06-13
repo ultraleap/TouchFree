@@ -29,13 +29,21 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 }
             }
 
-            FileStream filestream = new FileStream(filename, FileMode.Append);
-            StreamWriter streamwriter = new StreamWriter(filestream)
+            try 
             {
-                AutoFlush = true
-            };
+                FileStream filestream = new FileStream(filename, FileMode.Append);
 
-            Console.SetOut(streamwriter);
+                StreamWriter streamwriter = new StreamWriter(filestream)
+                {
+                    AutoFlush = true
+                };
+
+                Console.SetOut(streamwriter);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Cannot open log file, run as administrator to enable logging.");
+            }
 
             Console.WriteLine();
             Console.WriteLine();
