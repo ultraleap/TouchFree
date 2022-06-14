@@ -1,26 +1,34 @@
 import { DotCursor } from '../TouchFree/Cursors/DotCursor';
+import { SVGCursor } from '../TouchFree/Cursors/SvgCursor';
 
 import dotImage from '../Images/Cursor/Dot.png';
 import ringImage from '../Images/Cursor/Ring.png';
 
 export class CursorManager {
-    private ringImage: HTMLImageElement;
-    private dotImage: HTMLImageElement;
+    private ringImage: HTMLImageElement | undefined = undefined;
+    private dotImage: HTMLImageElement | undefined = undefined;
     private dotCursor: any;
 
     constructor() {
-        this.ringImage = this.constructCursorImg(ringImage, "absolute", 30, "1000", true);
-        this.dotImage = this.constructCursorImg(dotImage, "absolute", 30, "1001", false);
+        // this.ringImage = this.constructCursorImg(ringImage, "absolute", 30, "1000", true);
+        // this.dotImage = this.constructCursorImg(dotImage, "absolute", 30, "1001", false);
 
-        this.dotCursor = new DotCursor(this.dotImage, this.ringImage);
+        // this.dotCursor = new DotCursor(this.dotImage, this.ringImage);
+
+        let svgDot = document.getElementById('svg-cursor');
+        let svgRing = document.getElementById('svg-cursor-ring');
+
+        //var dotCursor = new TouchFree.Cursors.DotCursor(cursor, cursorRing);
+        const svgCursor = new SVGCursor(svgDot, svgRing, 'cx', 'cy');
+
     }
 
     setElement(element_: HTMLDivElement) {
-        if (!element_.contains(this.ringImage)) {
+        if (this.ringImage !== undefined && !element_.contains(this.ringImage)) {
             element_.appendChild(this.ringImage);
         }
 
-        if (!element_.contains(this.dotImage)) {
+        if (this.dotImage !== undefined && !element_.contains(this.dotImage)) {
             element_.appendChild(this.dotImage);
         }
     }
