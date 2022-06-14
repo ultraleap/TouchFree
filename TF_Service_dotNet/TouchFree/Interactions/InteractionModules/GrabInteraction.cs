@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Numerics;
 
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
 
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library
 {
     public class GrabInteraction : InteractionModule
     {

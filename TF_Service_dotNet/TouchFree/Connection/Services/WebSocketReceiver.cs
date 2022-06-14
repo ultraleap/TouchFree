@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
+using Ultraleap.TouchFree.Library.ConnectionTypes;
 
-namespace Ultraleap.TouchFree.Service.Connection
+namespace Ultraleap.TouchFree.Library.Connection
 {
     public class WebSocketReceiver
     {

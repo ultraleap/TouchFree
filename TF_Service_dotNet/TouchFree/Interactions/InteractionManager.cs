@@ -1,10 +1,7 @@
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Library.Interactions;
+using Ultraleap.TouchFree.Library.Connection;
 
-using Ultraleap.TouchFree.Service.Connection;
-
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library.Interactions
 {
     public class InteractionManager
     {

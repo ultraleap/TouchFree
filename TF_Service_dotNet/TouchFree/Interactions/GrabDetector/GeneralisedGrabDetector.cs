@@ -1,8 +1,6 @@
 ﻿using System;
 
-using Ultraleap.TouchFree.Library;
-
-namespace Ultraleap.TouchFree.Service
+namespace Ultraleap.TouchFree.Library
 {
     public class GeneralisedGrabDetector
     {

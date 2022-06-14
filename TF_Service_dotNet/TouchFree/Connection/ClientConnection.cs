@@ -7,13 +7,12 @@ using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Text;
 
-using Ultraleap.TouchFree.Library;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
+using Ultraleap.TouchFree.Library.ConnectionTypes;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Service.Connection
+namespace Ultraleap.TouchFree.Library.Connection
 {
-    internal class ClientConnection
+    public class ClientConnection
     {
         public WebSocket socket;
         private bool HandshakeCompleted;
@@ -175,7 +174,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             return Compatibility.COMPATIBLE;
         }
 
-        internal void OnMessage(string _message)
+        public void OnMessage(string _message)
         {
             // Find key areas of the rawData, the "action" and the "content"
             var match = Regex.Match(_message, "{\\s*?\"action\"\\s*?:\\s*?\"([\\w\\d_]+?)\"\\s*?,\\s*?\"content\"\\s*?:\\s*?({.+?})\\s*?}$");

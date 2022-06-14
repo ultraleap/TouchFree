@@ -25,7 +25,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 var fileSize = fileInfo.Length;
                 if (fileSize > 100000)
                 {
-                    File.Move(filename, filename.Replace("log.txt", "log_old.txt"), true);
+                    File.Move(filename, filename.Replace("log.txt", "log_old.txt"));
                 }
             }
 

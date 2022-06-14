@@ -1,9 +1,9 @@
 using System;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Service.ConnectionTypes
+namespace Ultraleap.TouchFree.Library.ConnectionTypes
 {
-    internal enum ActionCode
+    public enum ActionCode
     {
         INPUT_ACTION,
 

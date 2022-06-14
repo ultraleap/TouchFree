@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
+using Ultraleap.TouchFree.Library.ConnectionTypes;
 
 
-namespace Ultraleap.TouchFree.Service.Connection
+namespace Ultraleap.TouchFree.Library.Connection
 {
     public class ClientConnectionManager
     {
@@ -78,7 +77,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        internal void AddConnection(ClientConnection _connection)
+        public void AddConnection(ClientConnection _connection)
         {
             if (_connection != null)
             {
@@ -88,7 +87,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        internal void RemoveConnection(WebSocket _socket)
+        public void RemoveConnection(WebSocket _socket)
         {
             ClientConnection connectionToRemove = null;
 
@@ -119,7 +118,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        internal void SendInputActionToWebsocket(InputAction _data)
+        public void SendInputActionToWebsocket(InputAction _data)
         {
             if (activeConnections == null ||
                 activeConnections.Count < 1)
