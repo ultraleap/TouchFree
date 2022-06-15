@@ -1,16 +1,21 @@
 ﻿using System;
+using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Configuration;
+#if !DEBUG
 using System.IO;
 using System.Runtime.InteropServices;
+#endif
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Service
 {
-    public static class TouchFreeLog
+    public class TouchFreeLogger : ITouchFreeLogger
     {
-        public static void SetUpLogging()
+        public TouchFreeLogger(IConfigFileLocator configFileLocator)
         {
+#if !DEBUG
             var loggingFileDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
                 Path.GetFullPath("/storage/sd/ultraleap/touchfree/logs/") :
-                Path.Combine(ConfigFileUtils.ConfigFileDirectory, "..\\Logs\\");
+                Path.Combine(configFileLocator.ConfigFileDirectory, "..\\Logs\\");
 
             if (loggingFileDirectory != "")
             {
@@ -44,6 +49,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             {
                 Console.WriteLine("Cannot open log file, run as administrator to enable logging.");
             }
+#endif
 
             Console.WriteLine();
             Console.WriteLine();
@@ -51,7 +57,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             Console.WriteLine();
         }
 
-        public static void WriteLine(string text)
+        public void WriteLine(string text)
         {
             if (!string.IsNullOrWhiteSpace(text))
             {
@@ -63,7 +69,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
-        public static void ErrorWriteLine(string text)
+        public void ErrorWriteLine(string text)
         {
             if (!string.IsNullOrWhiteSpace(text))
             {

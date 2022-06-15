@@ -9,6 +9,25 @@ namespace Ultraleap.TouchFree.Library
 {
     public static class DependencyInitialisationExtensions
     {
+        public static IServiceCollection AddTouchFreeServices(this IServiceCollection services)
+        {
+            services.AddUpdateBehaviour();
+            services.AddConfig();
+
+            services.AddTrackingConnectionManager();
+            services.AddHandManager();
+            services.AddVirtualScreen();
+
+            services.AddPositioning();
+
+            services.AddClientConnectionManager();
+            services.AddWebSocketReceiver();
+
+            services.AddInteractions();
+
+            return services;
+        }
+
         public static IServiceCollection AddClientConnectionManager(this IServiceCollection services)
         {
             services.AddSingleton<ClientConnectionManager>();
@@ -38,7 +57,8 @@ namespace Ultraleap.TouchFree.Library
         {
             var configManager = new ConfigManager();
             services.AddSingleton<IConfigManager>(configManager);
-            var watcher = new ConfigFileWatcher(configManager);
+            services.AddSingleton<ConfigFileWatcher>();
+            var watcher = services.BuildServiceProvider().GetService<ConfigFileWatcher>();
 
             services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
 

@@ -22,16 +22,18 @@ namespace Ultraleap.TouchFree.Library.Connection
         internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
         public HandManager handManager;
+        private readonly ITouchFreeLogger logger;
 
-        public ClientConnectionManager(HandManager _handManager)
+        public ClientConnectionManager(HandManager _handManager, ITouchFreeLogger _logger)
         {
             // InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
             handManager = _handManager;
+            logger = _logger;
             handManager.HandFound += OnHandFound;
             handManager.HandsLost += OnHandsLost;
 
             // This is here so the test infrastructure has some sign that the app is ready
-            TouchFreeLog.WriteLine("Service Setup Complete");
+            logger.WriteLine("Service Setup Complete");
         }
 
         ~ClientConnectionManager()
@@ -82,7 +84,7 @@ namespace Ultraleap.TouchFree.Library.Connection
             if (_connection != null)
             {
                 activeConnections.Add(_connection);
-                TouchFreeLog.WriteLine("Connection set up");
+                logger.WriteLine("Connection set up");
                 handManager.ConnectToTracking();
             }
         }
@@ -103,11 +105,11 @@ namespace Ultraleap.TouchFree.Library.Connection
             if (connectionToRemove != null)
             {
                 activeConnections.Remove(connectionToRemove);
-                TouchFreeLog.WriteLine("Connection closed");
+                logger.WriteLine("Connection closed");
             }
             else
             {
-                TouchFreeLog.WriteLine("Attempted to close a connection that was no longer active");
+                logger.WriteLine("Attempted to close a connection that was no longer active");
             }
 
             if (activeConnections.Count < 1)

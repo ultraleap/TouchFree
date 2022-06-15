@@ -13,20 +13,26 @@ namespace Ultraleap.TouchFree.Library.Connection
         private readonly ClientConnectionManager clientMgr;
         private readonly WebSocketReceiver receiver;
         private readonly ConfigManager configManager;
+        private readonly ITouchFreeLogger logger;
 
-        public WebSocketHandler(ClientConnectionManager _clientMgr, WebSocketReceiver _receiver, ConfigManager _configManager)
+        public WebSocketHandler(
+            ClientConnectionManager _clientMgr,
+            WebSocketReceiver _receiver,
+            ConfigManager _configManager,
+            ITouchFreeLogger _logger)
         {
             clientMgr = _clientMgr;
             receiver = _receiver;
             configManager = _configManager;
+            logger = _logger;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
         {
-            ClientConnection connection = new ClientConnection(webSocket, receiver, clientMgr, configManager);
+            ClientConnection connection = new ClientConnection(webSocket, receiver, clientMgr, configManager, logger);
             clientMgr.AddConnection(connection);
 
-            TouchFreeLog.WriteLine("WebSocket Connected");
+            logger.WriteLine("WebSocket Connected");
 
             await Receive(webSocket, async (result, buffer) =>
             {
@@ -43,7 +49,7 @@ namespace Ultraleap.TouchFree.Library.Connection
 
                     await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 
-                    TouchFreeLog.WriteLine("Websocket Connection Closed");
+                    logger.WriteLine("Websocket Connection Closed");
 
                     return;
                 }

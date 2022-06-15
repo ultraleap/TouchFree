@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
-using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Connection;
 
 namespace Ultraleap.TouchFree.Service.Connection
@@ -10,11 +10,13 @@ namespace Ultraleap.TouchFree.Service.Connection
     {
         private readonly RequestDelegate next;
         private readonly IWebSocketHandler webSocketHandler;
+        private readonly ITouchFreeLogger logger;
 
-        public TouchFreeRouter(RequestDelegate _next, IWebSocketHandler _webSocketHandler)
+        public TouchFreeRouter(RequestDelegate _next, IWebSocketHandler _webSocketHandler, ITouchFreeLogger _logger)
         {
             next = _next;
             webSocketHandler = _webSocketHandler;
+            logger = _logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -26,7 +28,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
             else
             {
-                TouchFreeLog.WriteLine("A request was made to the server that was not an attempt to connect to a WebSocket?");
+                logger.WriteLine("A request was made to the server that was not an attempt to connect to a WebSocket?");
                 await next(context);
             }
         }

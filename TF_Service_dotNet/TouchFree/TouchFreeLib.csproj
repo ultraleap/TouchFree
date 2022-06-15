@@ -7,6 +7,7 @@
 		<!--Adding the RuntimeIdentifier forces the build of the service to pass down the runtime-->
 		<RuntimeIdentifiers>win-x64;linux-arm64</RuntimeIdentifiers>
 		<RootNamespace>Ultraleap.TouchFree.Library</RootNamespace>
+		<UserSecretsId>d88f135b-73e7-481e-bbd3-d8782bbcad0f</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>

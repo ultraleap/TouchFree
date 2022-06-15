@@ -2,13 +2,14 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Service
 {
-    public static class ConfigFileUtils
+    public class ConfigFileLocator : IConfigFileLocator
     {
-        static string configFileDirectory = null;
-        public static string ConfigFileDirectory
+        string configFileDirectory = null;
+        public string ConfigFileDirectory
         {
             get
             {
@@ -26,15 +27,15 @@ namespace Ultraleap.TouchFree.Library.Configuration
         }
 
         static readonly string DefaultConfigDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-            Path.GetFullPath("/storage/sd/ultraleap/touchfree/configuration/") :
+            Path.GetFullPath("/storage/sd/ultraleap/touchfree/configuration/") : 
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ultraleap\\TouchFree\\Configuration\\");
 
-        public static void CheckForConfigDirectoryChange()
+        public void ReloadConfigFileDirectoryFromRegistry()
         {
             GetConfigFileDirectory();
         }
 
-        static void GetConfigFileDirectory()
+        void GetConfigFileDirectory()
         {
             // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Ultraleap\TouchFree\Service\Settings
             // Check registry for override to default directory

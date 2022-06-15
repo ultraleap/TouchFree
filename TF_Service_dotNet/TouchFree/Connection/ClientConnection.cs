@@ -19,16 +19,23 @@ namespace Ultraleap.TouchFree.Library.Connection
         private readonly WebSocketReceiver receiver;
         private readonly ClientConnectionManager clientMgr;
         private readonly IConfigManager configManager;
+        private readonly ITouchFreeLogger logger;
 
-        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, ClientConnectionManager _clientMgr, IConfigManager _configManager)
+        public ClientConnection(
+            WebSocket _socket,
+            WebSocketReceiver _receiver,
+            ClientConnectionManager _clientMgr,
+            IConfigManager _configManager,
+            ITouchFreeLogger _logger)
         {
             socket = _socket;
             receiver = _receiver;
             clientMgr = _clientMgr;
             configManager = _configManager;
+            logger = _logger;
             HandshakeCompleted = false;
 
-            TouchFreeLog.WriteLine("Websocket Connection opened");
+            _logger.WriteLine("Websocket Connection opened");
         }
 
         public void SendInputAction(InputAction _data)
@@ -222,10 +229,10 @@ namespace Ultraleap.TouchFree.Library.Connection
                 case ActionCode.SERVICE_STATUS:
                 case ActionCode.CONFIGURATION_FILE_STATE:
                 case ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE:
-                    TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
+                    logger.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:
-                    TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not recognised.");
+                    logger.ErrorWriteLine("Received a " + action + " action. This action is not recognised.");
                     break;
             }
         }
@@ -240,7 +247,7 @@ namespace Ultraleap.TouchFree.Library.Connection
                 // Validation has failed because there is no valid requestID
                 response.status = "Failure";
                 response.message = "Handshaking failed. This is due to a missing or invalid requestID";
-                TouchFreeLog.ErrorWriteLine(response.message);
+                logger.ErrorWriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -253,7 +260,7 @@ namespace Ultraleap.TouchFree.Library.Connection
                 // cannot be processed
                 response.status = "Failure";
                 response.message = "Request Rejected: Requests cannot be processed until handshaking is complete.";
-                TouchFreeLog.ErrorWriteLine(response.message);
+                logger.ErrorWriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -263,7 +270,7 @@ namespace Ultraleap.TouchFree.Library.Connection
                 // Send back immediate error: Cannot compare version number w/o a version number
                 response.status = "Failure";
                 response.message = "Handshaking Failed: No API Version supplied.";
-                TouchFreeLog.ErrorWriteLine(response.message);
+                logger.ErrorWriteLine(response.message);
                 SendHandshakeResponse(response);
                 return;
             }
@@ -284,7 +291,7 @@ namespace Ultraleap.TouchFree.Library.Connection
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Successful." + configurationWarning;
-                    TouchFreeLog.WriteLine(response.message);
+                    logger.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
@@ -292,7 +299,7 @@ namespace Ultraleap.TouchFree.Library.Connection
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Warning: Client is outdated relative to Service." + configurationWarning;
-                    TouchFreeLog.WriteLine(response.message);
+                    logger.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
@@ -300,17 +307,17 @@ namespace Ultraleap.TouchFree.Library.Connection
                     HandshakeCompleted = true;
                     response.status = "Success";
                     response.message = "Handshake Warning: Service is outdated relative to Client." + configurationWarning;
-                    TouchFreeLog.WriteLine(response.message);
+                    logger.WriteLine(response.message);
                     SendHandshakeResponse(response);
                     SendInitialHandState();
                     return;
                 case Compatibility.CLIENT_OUTDATED:
                     response.message = "Handshake Failed: Client is outdated relative to Service." + configurationWarning;
-                    TouchFreeLog.ErrorWriteLine(response.message);
+                    logger.ErrorWriteLine(response.message);
                     break;
                 case Compatibility.SERVICE_OUTDATED:
                     response.message = "Handshake Failed: Service is outdated relative to Client." + configurationWarning;
-                    TouchFreeLog.ErrorWriteLine(response.message);
+                    logger.ErrorWriteLine(response.message);
                     break;
             }
 

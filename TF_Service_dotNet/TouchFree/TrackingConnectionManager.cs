@@ -8,14 +8,15 @@ namespace Ultraleap.TouchFree.Library
     {
         public Leap.Controller controller;
         IConfigManager configManager;
-
+        private readonly ITouchFreeLogger logger;
         private const int maximumWaitTimeSeconds = 30;
         private const int initialWaitTimeSeconds = 1;
         private bool ShouldConnect = false;
 
-        public TrackingConnectionManager(IConfigManager _configManager)
+        public TrackingConnectionManager(IConfigManager _configManager, ITouchFreeLogger _logger)
         {
             configManager = _configManager;
+            logger = _logger;
             controller = new Leap.Controller();
             controller.Connect += Controller_Connect;
             controller.Disconnect += Controller_Disconnect;
@@ -135,7 +136,7 @@ namespace Ultraleap.TouchFree.Library
 
         void SetTrackingMode(TrackingMode _mode)
         {
-            TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
+            logger.WriteLine($"Requesting {_mode} tracking mode");
 
             switch (_mode)
             {

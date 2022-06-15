@@ -19,19 +19,9 @@ namespace Ultraleap.TouchFree.Service
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddUpdateBehaviour();
-            services.AddConfig();
-
-            services.AddTrackingConnectionManager();
-            services.AddHandManager();
-            services.AddVirtualScreen();
-
-            services.AddPositioning();
-
-            services.AddClientConnectionManager();
-            services.AddWebSocketReceiver();
-
-            services.AddInteractions();
+            services.AddSingleton<IConfigFileLocator, ConfigFileLocator>();
+            services.AddSingleton<ITouchFreeLogger, TouchFreeLogger>();
+            services.AddTouchFreeServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,11 +35,18 @@ namespace Ultraleap.TouchFree.Service
             app.UseTouchFreeRouter(configManager);
 
             interactionManager = app.ApplicationServices.GetService<InteractionManager>();
+            var logger = app.ApplicationServices.GetService<ITouchFreeLogger>();
+            var configFileLocator = app.ApplicationServices.GetService<IConfigFileLocator>();
+
+            InteractionConfigFile.Logger = logger;
+            InteractionConfigFile.ConfigFileLocator = configFileLocator;
+
+            PhysicalConfigFile.Logger = logger;
+            PhysicalConfigFile.ConfigFileLocator = configFileLocator;
 
             // This is here so the test infrastructure has some sign that the app is ready
-            TouchFreeLog.WriteLine("Service Setup Complete");
-
-            TouchFreeLog.WriteLine("TouchFree physical config screen height is: " + configManager.PhysicalConfig.ScreenHeightMm + " mm");
+            logger.WriteLine("Service Setup Complete");
+            logger.WriteLine("TouchFree physical config screen height is: " + configManager.PhysicalConfig.ScreenHeightMm + " mm");
         }
     }
 }
