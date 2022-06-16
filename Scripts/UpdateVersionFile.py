@@ -6,7 +6,7 @@ parser.add_argument('-p', '--path', help="The target Version.txt to be updated")
 parser.add_argument('-s', '--swVer', help="The version of this piece of software")
 parser.add_argument('-a', '--apiVer', help="The version of the TouchFree Tooling API used in this piece of software")
 parser.add_argument('-r', '--ref', help="The reference for this release (usually a commit SHA)")
-parser.add_argument('-b', '--branchName', help="The reference for this release (usually a commit SHA)")
+parser.add_argument('-b', '--branchName', help="The branch reference for this release")
 
 args = parser.parse_args()
 
@@ -17,7 +17,7 @@ target_regex = '^release\/.+?\/\d.\d.\d$'
 with open(file_path, 'r') as file_raw:
     file_content = file_raw.read()
 
-match = re.search(args.branchName, target_regex)
+match = re.search(target_regex, args.branchName)
 if match:
     file_content = file_content.replace(f"{{SOFTWARE_VERSION}}", args.swVer)
 else:
