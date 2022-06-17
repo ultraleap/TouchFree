@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#svg-cursor-dot {
+    transition: transform 200ms, opacity 666ms;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(1);
+}
+
+#svg-cursor-dot.clicked {
+    transform: scale(0.5);
+}
+
+#svg-cursor.hidden {
+    opacity: 0;
+}

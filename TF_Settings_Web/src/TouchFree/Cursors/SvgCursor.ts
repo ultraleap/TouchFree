@@ -6,27 +6,26 @@ import { TouchlessCursor } from "./TouchlessCursor";
 export class SVGCursor extends TouchlessCursor {
     xPositionAttribute: string;
     yPositionAttribute: string;
+    cursorCanvas: any;
     cursorRing: any;
     ringSizeMultiplier: number;
     cursorStartSize: number;
-    animationSpeed: number;
     currentAnimationInterval: NodeJS.Timeout | undefined = undefined;
     animationUpdateDuration: number | undefined;
     growQueued: boolean = false;
     hidingCursor: boolean = false;
     currentFadingInterval: NodeJS.Timeout | undefined = undefined;
 
-    constructor(_cursor: any, _cursorRing: any, _xPositionAttribute = "cx", _yPositionAttribute = "cx", _animationDuration = 0.2, _ringSizeMultiplier = 2) {
-        super(_cursor);
+    constructor(_cursorCanvas: any, _cursorDot: any, _cursorRing: any, _xPositionAttribute = "cx", _yPositionAttribute = "cx", _ringSizeMultiplier = 2) {
+        super(_cursorDot);
 
+        this.cursorCanvas = _cursorCanvas;
         this.xPositionAttribute = _xPositionAttribute;
         this.yPositionAttribute = _yPositionAttribute;
 
         this.cursorRing = _cursorRing;
         this.ringSizeMultiplier = _ringSizeMultiplier;
         this.cursorStartSize = this.GetCurrentCursorRadius();
-
-        this.animationSpeed = (this.cursorStartSize / 2) / (_animationDuration * 30);
 
         ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
         ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
@@ -53,79 +52,14 @@ export class SVGCursor extends TouchlessCursor {
                 break;
             case InputType.DOWN:
                 this.SetCursorSize(0, this.cursorRing);
-
-                if (this.currentAnimationInterval !== undefined) {
-                    clearInterval(this.currentAnimationInterval);
-                }
-
-                this.currentAnimationInterval = setInterval(
-                    this.ShrinkCursor.bind(this),
-                    this.animationUpdateDuration);
+                this.cursor.classList.add('clicked');
                 break;
             case InputType.UP:
-                if (this.currentAnimationInterval !== undefined) {
-                    this.growQueued = true;
-                }
-                else {
-                    this.growQueued = false;
-                    this.currentAnimationInterval = setInterval(
-                        this.GrowCursor.bind(this),
-                        this.animationUpdateDuration);
-                }
+                this.cursor.classList.remove('clicked');
                 break;
 
             case InputType.CANCEL:
                 break;
-        }
-    }
-
-    ShrinkCursor() {
-        let newWidth = this.GetCurrentCursorRadius();
-
-        if (newWidth > this.cursorStartSize / 2) {
-            newWidth = newWidth - this.animationSpeed;
-        }
-
-        if (newWidth > this.cursorStartSize / 2) {
-            this.SetCursorSize(newWidth, this.cursor);
-        } else {
-            if (this.currentAnimationInterval !== undefined) {
-                clearInterval(this.currentAnimationInterval);
-            }
-
-            newWidth = this.cursorStartSize / 2;
-
-            this.SetCursorSize(newWidth, this.cursor);
-
-            if (this.growQueued) {
-                this.growQueued = false;
-                this.currentAnimationInterval = setInterval(
-                    this.GrowCursor.bind(this),
-                    this.animationUpdateDuration);
-            } else {
-                this.currentAnimationInterval = undefined;
-            }
-        }
-    }
-
-    GrowCursor() {
-        let newWidth = this.GetCurrentCursorRadius();
-
-        if (newWidth < this.cursorStartSize) {
-            newWidth = newWidth + this.animationSpeed;
-        }
-
-        if (newWidth < this.cursorStartSize) {
-            this.SetCursorSize(newWidth, this.cursor);
-        } else {
-            if (this.currentAnimationInterval !== undefined) {
-                clearInterval(this.currentAnimationInterval);
-            }
-
-            this.SetCursorSize(this.cursorStartSize, this.cursor);
-
-            this.currentAnimationInterval = undefined;
-            this.growQueued = false;
         }
     }
 
@@ -135,53 +69,13 @@ export class SVGCursor extends TouchlessCursor {
 
     ShowCursor() {
         this.hidingCursor = false;
-        if (this.currentFadingInterval !== undefined) {
-            clearInterval(this.currentFadingInterval);
-        }
-        this.currentFadingInterval = setInterval(
-            this.FadeCursorIn.bind(this),
-            this.animationUpdateDuration);
+        this.cursorCanvas.classList.remove('hidden');
     }
 
     HideCursor() {
         this.hidingCursor = true;
-        if (this.currentFadingInterval !== undefined) {
-            clearInterval(this.currentFadingInterval);
-        }
-        this.currentFadingInterval = setInterval(
-            this.FadeCursorOut.bind(this),
-            this.animationUpdateDuration);
-    }
-
-    FadeCursorIn() {
-        let currentOpacity = this.GetCurrentCursorOpacity(0);
-        currentOpacity += 0.05;
-
-        if (currentOpacity < 1) {
-            this.cursor.setAttribute('opacity', currentOpacity.toString());
-        } else {
-            if (this.currentFadingInterval !== undefined) {
-                clearInterval(this.currentFadingInterval);
-            }
-            this.cursor.setAttribute('opacity', '1');
-            this.currentFadingInterval = undefined;
-        }
-    }
-
-    FadeCursorOut() {
-        let currentOpacity = this.GetCurrentCursorOpacity(1);
-        currentOpacity -= 0.05;
-
-
-        if (currentOpacity > 0) {
-            this.cursor.setAttribute('opacity', currentOpacity.toString());
-        } else {
-            if (this.currentFadingInterval !== undefined) {
-                clearInterval(this.currentFadingInterval);
-            }
-            this.cursor.setAttribute('opacity', '0');
-            this.currentFadingInterval = undefined;
-        }
+        this.cursorCanvas.classList.add('hidden');
+        this.cursor.classList.remove('clicked');
     }
 
     GetCurrentCursorRadius(): number {
@@ -193,16 +87,5 @@ export class SVGCursor extends TouchlessCursor {
         let radiusAsNumber = parseFloat(radius);
 
         return radiusAsNumber;
-    }
-
-    GetCurrentCursorOpacity(defaultValue: number): number {
-        const opacity = this.cursor.getAttribute('opacity');
-        if (!opacity) {
-            return defaultValue;
-        }
-
-        let opacityAsNumber = parseFloat(opacity);
-
-        return opacityAsNumber;
     }
 }
