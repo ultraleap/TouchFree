@@ -39,13 +39,6 @@ class App extends React.Component {
         this.cursorParent = React.createRef();
     }
 
-    componentDidMount() {
-        if (this.cursorParent.current !== null)
-        {
-            this.cursorManager.setElement(this.cursorParent.current);
-        }
-    }
-
     componentWillUnmount() {
         this.inputSystem.disconnect();
     }

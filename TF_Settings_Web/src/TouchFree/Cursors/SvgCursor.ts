@@ -1,5 +1,6 @@
 import { ConnectionManager } from "../Connection/ConnectionManager";
 import { InputType } from "../TouchFreeToolingTypes";
+import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
 export class SVGCursor extends TouchlessCursor {
@@ -32,7 +33,7 @@ export class SVGCursor extends TouchlessCursor {
     }
 
     UpdateCursor(_inputAction: any) {
-        let ringScaler = this.MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
+        let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
         this.cursorRing.setAttribute('opacity', _inputAction.ProgressToClick);
 
@@ -181,19 +182,6 @@ export class SVGCursor extends TouchlessCursor {
             this.cursor.setAttribute('opacity', '0');
             this.currentFadingInterval = undefined;
         }
-    }
-
-    MapRangeToRange(_value: number, _oldMin: number, _oldMax: number, _newMin: number, _newMax: number): number {
-        let oldRange = (_oldMax - _oldMin);
-        let newValue;
-        if (oldRange === 0) {
-            newValue = _newMin;
-        }
-        else {
-            let newRange = (_newMax - _newMin);
-            newValue = (((_value - _oldMin) * newRange) / oldRange) + _newMin;
-        }
-        return newValue;
     }
 
     GetCurrentCursorRadius(): number {
