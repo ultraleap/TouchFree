@@ -58,9 +58,21 @@ namespace Ultraleap.TouchFree.Library
             var configManager = new ConfigManager();
             services.AddSingleton<IConfigManager>(configManager);
             services.AddSingleton<ConfigFileWatcher>();
-            var watcher = services.BuildServiceProvider().GetService<ConfigFileWatcher>();
 
-            services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
+            var provider = services.BuildServiceProvider();
+
+            var logger = provider.GetService<ITouchFreeLogger>();
+            var configFileLocator = provider.GetService<IConfigFileLocator>();
+
+            InteractionConfigFile.Logger = logger;
+            InteractionConfigFile.ConfigFileLocator = configFileLocator;
+
+            PhysicalConfigFile.Logger = logger;
+            PhysicalConfigFile.ConfigFileLocator = configFileLocator;
+
+            var watcher = provider.GetService<ConfigFileWatcher>();
+
+            provider.GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
 
             services.AddSingleton(watcher);
 

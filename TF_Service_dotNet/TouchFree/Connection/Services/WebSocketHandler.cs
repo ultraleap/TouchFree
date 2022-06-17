@@ -12,13 +12,13 @@ namespace Ultraleap.TouchFree.Library.Connection
     {
         private readonly ClientConnectionManager clientMgr;
         private readonly WebSocketReceiver receiver;
-        private readonly ConfigManager configManager;
+        private readonly IConfigManager configManager;
         private readonly ITouchFreeLogger logger;
 
         public WebSocketHandler(
             ClientConnectionManager _clientMgr,
             WebSocketReceiver _receiver,
-            ConfigManager _configManager,
+            IConfigManager _configManager,
             ITouchFreeLogger _logger)
         {
             clientMgr = _clientMgr;

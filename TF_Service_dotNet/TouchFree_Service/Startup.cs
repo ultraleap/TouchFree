@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connection;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Service.Connection;
 
@@ -30,19 +31,14 @@ namespace Ultraleap.TouchFree.Service
             app.UseWebSockets();
             app.UseStaticFiles("/settings");
 
-            var configManager = app.ApplicationServices.GetService<IConfigManager>();
+            var webSocketHandler = app.ApplicationServices.GetService<IWebSocketHandler>();
+            var logger = app.ApplicationServices.GetService<ITouchFreeLogger>();
 
-            app.UseTouchFreeRouter(configManager);
+            app.UseTouchFreeRouter( webSocketHandler, logger);
 
             interactionManager = app.ApplicationServices.GetService<InteractionManager>();
-            var logger = app.ApplicationServices.GetService<ITouchFreeLogger>();
-            var configFileLocator = app.ApplicationServices.GetService<IConfigFileLocator>();
 
-            InteractionConfigFile.Logger = logger;
-            InteractionConfigFile.ConfigFileLocator = configFileLocator;
-
-            PhysicalConfigFile.Logger = logger;
-            PhysicalConfigFile.ConfigFileLocator = configFileLocator;
+            var configManager = app.ApplicationServices.GetService<IConfigManager>();
 
             // This is here so the test infrastructure has some sign that the app is ready
             logger.WriteLine("Service Setup Complete");
