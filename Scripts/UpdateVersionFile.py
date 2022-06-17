@@ -12,16 +12,16 @@ args = parser.parse_args()
 
 file_path = args.path
 file_content = None
-target_regex = '^release\/.+?\/\d.\d.\d$'
+target_regex = '^release\/.+?\/\d+\.\d+\.\d+$'
 
 with open(file_path, 'r') as file_raw:
     file_content = file_raw.read()
 
 match = re.search(target_regex, args.branchName)
-if match:
-    file_content = file_content.replace(f"{{SOFTWARE_VERSION}}", args.swVer)
-else:
+if match is None:
     file_content = file_content.replace(f"{{SOFTWARE_VERSION}}", args.swVer + " dev-" + args.ref)
+else:
+    file_content = file_content.replace(f"{{SOFTWARE_VERSION}}", args.swVer)
 
 file_content = file_content.replace(f"{{API_VERSION}}", args.apiVer)
 file_content = file_content.replace(f"{{RELEASE_REF}}", args.ref)
