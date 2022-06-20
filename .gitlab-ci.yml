@@ -410,7 +410,7 @@ TF_Service::Integration::test:
     - win10
 
 
-sonarqube-check:
+TF_Service::sonarqube-check:
   stage: test
   image: 
     name: sonarsource/sonar-scanner-cli:latest
@@ -425,10 +425,6 @@ sonarqube-check:
   script: 
     - sonar-scanner
   allow_failure: true
-  only:
-    - merge_requests
-    - develop
-
 
 
 TF_Tooling::Web::package:
