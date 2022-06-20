@@ -412,7 +412,7 @@ TF_Service::sonarqube-check:
 
     - dotnet build ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.sln
 
-    - dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}" /d:sonar.host.url="${SONAR_HOST_URL}"
+    - dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
   allow_failure: true
   tags:
     - docker-windows
