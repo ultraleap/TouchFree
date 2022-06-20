@@ -385,7 +385,7 @@ Tracking::download:
   tags:
     - unity
 
-TF_Service::sonarqube-check:
+TF_Tooling::Web::sonarqube-check:
   stage: build
   image: 
     name: sonarsource/sonar-scanner-cli:latest
@@ -402,6 +402,20 @@ TF_Service::sonarqube-check:
   allow_failure: true
   tags:
     - docker
+
+TF_Service::sonarqube-check:
+  stage: build
+  when: always
+  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  script:
+    - dotnet sonarscanner begin /k:"apps_screen-control_AYGAPCWa_gBn6q3MndUx" /d:sonar.login="${SONAR_TOKEN}" /d:sonar.host.url="${SONAR_HOST_URL}"
+
+    - dotnet build ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFree/TouchFree_Service/TouchFree_Service.sln
+
+    - dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}" /d:sonar.host.url="${SONAR_HOST_URL}"
+  allow_failure: true
+  tags:
+    - docker-windows
 
 TF_Service::Integration::test:
   stage: test
