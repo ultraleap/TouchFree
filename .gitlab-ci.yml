@@ -408,6 +408,8 @@ TF_Service::sonarqube-check:
   when: always
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
+    - rm ${CI_PROJECT_DIR}/sonar-project.properties
+
     - dotnet sonarscanner begin /k:"apps_screen-control_AYGAPCWa_gBn6q3MndUx" /d:sonar.login="${SONAR_TOKEN}" /d:sonar.host.url="${SONAR_HOST_URL}"
 
     - dotnet build ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.sln
