@@ -385,6 +385,24 @@ Tracking::download:
   tags:
     - unity
 
+TF_Service::sonarqube-check:
+  stage: build
+  image: 
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script: 
+    - sonar-scanner
+  allow_failure: true
+  tags:
+    - docker
+
 TF_Service::Integration::test:
   stage: test
 
@@ -408,24 +426,6 @@ TF_Service::Integration::test:
   tags:
     - unity
     - win10
-
-
-TF_Service::sonarqube-check:
-  stage: test
-  image: 
-    name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
-  variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
-    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
-  script: 
-    - sonar-scanner
-  allow_failure: true
-
 
 TF_Tooling::Web::package:
   stage: package
