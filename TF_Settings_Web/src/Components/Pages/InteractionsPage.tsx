@@ -28,18 +28,18 @@ const TouchPlaneTrackingOptions: Record<string, TrackedPosition> = {
     'Index Fingertip': TrackedPosition.INDEX_TIP,
 };
 
-interface interactionsState {
+interface InteractionsState {
     interactionConfig: InteractionConfigFull;
 }
 
-export class InteractionsPage extends Page<{}, interactionsState> {
+export class InteractionsPage extends Page<{}, InteractionsState> {
     private videoPaths: string[] = [AirPushPreview, HoverPreview, TouchPlanePreview];
 
     componentDidMount(): void {
         ConfigurationManager.RequestConfigFileState(this.setStateFromFile.bind(this));
     }
 
-    componentDidUpdate(prevProps: {}, prevState: interactionsState): void {
+    componentDidUpdate(_prevProps: {}, prevState: InteractionsState): void {
         if (this.state !== null && this.state !== prevState) {
             ConfigurationManager.RequestConfigFileChange(
                 this.state.interactionConfig,

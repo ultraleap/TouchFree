@@ -8,7 +8,7 @@ import { ConfigurationManager } from '../../TouchFree/Configuration/Configuratio
 import { ConfigState, WebSocketResponse } from '../../TouchFree/Connection/TouchFreeServiceTypes';
 import { ConnectionManager } from '../../TouchFree/Connection/ConnectionManager';
 
-interface physicalState {
+interface PhysicalState {
     screenHeight: number;
     cameraHeight: number;
     cameraLeftToRight: number;
@@ -19,7 +19,7 @@ interface physicalState {
     selectedView: string;
 }
 
-export class CameraPage extends Page<{}, physicalState> {
+export class CameraPage extends Page<{}, PhysicalState> {
     currentScreenHeight = '';
     currentCameraHeight = '';
     currentCameraLeftToRight = '';
@@ -30,7 +30,7 @@ export class CameraPage extends Page<{}, physicalState> {
     constructor(props: {}) {
         super(props);
 
-        const state: physicalState = {
+        const state: PhysicalState = {
             screenHeight: 0,
             cameraHeight: 0,
             cameraLeftToRight: 0,
@@ -90,7 +90,7 @@ export class CameraPage extends Page<{}, physicalState> {
         return Math.round(numberIn * 100000) / 100000;
     }
 
-    componentDidUpdate(prevProps: {}, prevState: physicalState): void {
+    componentDidUpdate(_prevProps: {}, prevState: PhysicalState): void {
         if (this.state !== null && this.state !== prevState) {
             let xRotation = this.state.cameraRotation % 360;
             xRotation = xRotation > 90 ? 180 - xRotation : xRotation < -90 ? -xRotation - 180 : xRotation;
