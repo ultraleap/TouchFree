@@ -17,6 +17,7 @@ code {
     transform-box: fill-box;
     transform-origin: center;
     transform: scale(1);
+    filter: drop-shadow( 0 0 0.5px rgba(255, 255, 255, .7));
 }
 
 #svg-cursor-dot.clicked {
@@ -25,4 +26,8 @@ code {
 
 #svg-cursor.hidden {
     opacity: 0;
+}
+
+#svg-cursor-ring {
+    filter: drop-shadow( 0 0 0.5px rgba(255, 255, 255, .7));
 }
