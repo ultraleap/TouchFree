@@ -1,20 +1,23 @@
-import { HoverAndHoldInteractionSettings, InteractionConfigFull, TouchPlaneInteractionSettings, TrackedPosition } from "../TouchFree/Configuration/ConfigurationTypes";
+import {
+    HoverAndHoldInteractionSettings,
+    InteractionConfigFull,
+    TouchPlaneInteractionSettings,
+    TrackedPosition,
+} from "../TouchFree/Configuration/ConfigurationTypes";
 import { InteractionType } from "../TouchFree/TouchFreeToolingTypes";
 
 const DefaultHoverAndHoldInteractionSettings: HoverAndHoldInteractionSettings =
-{
-    HoverStartTimeS: 0.5,
-    HoverCompleteTimeS: 0.6,
-};
+    {
+        HoverStartTimeS: 0.5,
+        HoverCompleteTimeS: 0.6,
+    };
 
-const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings =
-{
+const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings = {
     TouchPlaneActivationDistanceCm: 5,
     TouchPlaneTrackedPosition: TrackedPosition.NEAREST,
 };
 
-export const DefaultInteractionConfig: InteractionConfigFull =
-{
+export const DefaultInteractionConfig: InteractionConfigFull = {
     UseScrollingOrDragging: false,
     DeadzoneRadius: 0.003,
 

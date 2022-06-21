@@ -1,12 +1,12 @@
 import React from "react";
 
-import '../../Styles/Controls/RadioButtons.css';
+import "../../Styles/Controls/RadioButtons.css";
 
 interface RadioProps {
-    name: string,
-    options: string[],
-    selected: number,
-    onChange: (newValue: string) => void,
+    name: string;
+    options: string[];
+    selected: number;
+    onChange: (newValue: string) => void;
 }
 
 export class RadioGroup extends React.Component<RadioProps, {}> {
@@ -15,20 +15,24 @@ export class RadioGroup extends React.Component<RadioProps, {}> {
     }
 
     render() {
-        return(
+        return (
             <div className="verticalContainer halfWidth">
                 {this.props.options.map((option, index) => (
-                    <label key={index} className="backgroundLabel"
+                    <label
+                        key={index}
+                        className="backgroundLabel"
                         onPointerDown={() => {
                             this.props.onChange(option);
-                        }}>
+                        }}
+                    >
                         <input
                             type="radio"
                             name={this.props.name}
                             value={option}
                             onChange={this.onChange}
-                            checked={this.props.selected === index}/>
-                        <span className="checkmark"/>
+                            checked={this.props.selected === index}
+                        />
+                        <span className="checkmark" />
                         <p> {option} </p>
                     </label>
                 ))}

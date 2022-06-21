@@ -14,7 +14,7 @@
 }
 
 .TitleLine > button.tfButton {
-    border: .1rem transparent;
+    border: 0.1rem transparent;
     padding: 0.3rem;
     width: 230px;
     max-width: 230px;
@@ -22,7 +22,7 @@
 }
 
 .TitleLine > button.tfButton > p {
-    font-family: 'NowBold';
+    font-family: "NowBold";
     display: inline-block;
     margin: 0;
     vertical-align: middle;
@@ -34,7 +34,7 @@ div.page {
 }
 
 video.InteractionPreview {
-    margin: .75rem;
+    margin: 0.75rem;
     margin-right: 1.5rem;
     border-radius: 1rem;
     flex: 1 1 auto;
@@ -80,11 +80,12 @@ video.InteractionPreview {
     flex-direction: row;
     align-items: center;
 
-    margin: .75rem;
+    margin: 0.75rem;
 
     box-shadow: 0 2px 10px 0 #00000099;
-    background: transparent linear-gradient(180deg, #373737 0%, #2C2C2C 100%) 0% 0% no-repeat padding-box;
-    border: 1px solid #FFFFFF1A;
+    background: transparent linear-gradient(180deg, #373737 0%, #2c2c2c 100%) 0%
+        0% no-repeat padding-box;
+    border: 1px solid #ffffff1a;
     border-radius: 0.5rem;
 
     min-height: 5rem;
