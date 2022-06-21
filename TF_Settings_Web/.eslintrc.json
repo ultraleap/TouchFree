@@ -27,7 +27,7 @@
     "rules": {
         "indent": "off",
         "linebreak-style": ["error", "windows"],
-        "quotes": ["error", "double"],
+        "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "react/react-in-jsx-scope": "off",
         "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],

@@ -1,6 +1,6 @@
-import React, { PointerEvent, RefObject } from "react";
+import React, { PointerEvent, RefObject } from 'react';
 
-import "../../Styles/Controls/ToggleSwitch.css";
+import '../../Styles/Controls/ToggleSwitch.css';
 
 interface TextSliderProps {
     name: string;
@@ -26,9 +26,9 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
 
         this.inputElement = React.createRef();
 
-        document.body.addEventListener("pointerup", this.onUpCancel.bind(this));
+        document.body.addEventListener('pointerup', this.onUpCancel.bind(this));
         document.body.addEventListener(
-            "pointercancel",
+            'pointercancel',
             this.onUpCancel.bind(this),
         );
     }

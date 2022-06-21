@@ -1,23 +1,23 @@
-import React, { CSSProperties, RefObject } from "react";
+import React, { CSSProperties, RefObject } from 'react';
 
-import { ConnectionManager } from "./TouchFree/Connection/ConnectionManager";
-import { BaseInputController } from "./TouchFree/InputControllers/BaseInputController";
-import { WebInputController } from "./TouchFree/InputControllers/WebInputController";
+import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
+import { BaseInputController } from './TouchFree/InputControllers/BaseInputController';
+import { WebInputController } from './TouchFree/InputControllers/WebInputController';
 
-import { CursorManager } from "./Components/CursorManager";
-import { ScreenManager } from "./Components/ScreenManager";
+import { CursorManager } from './Components/CursorManager';
+import { ScreenManager } from './Components/ScreenManager';
 
-import "./App.css";
-import "./Styles/Styles.css";
+import './App.css';
+import './Styles/Styles.css';
 
 class App extends React.Component {
     private containerStyle: CSSProperties = {
-        top: "0px",
-        bottom: "0px",
-        position: "absolute",
-        height: "100%",
-        width: "1080px",
-        backgroundColor: "#222222",
+        top: '0px',
+        bottom: '0px',
+        position: 'absolute',
+        height: '100%',
+        width: '1080px',
+        backgroundColor: '#222222',
     };
 
     private cursorManager: CursorManager;

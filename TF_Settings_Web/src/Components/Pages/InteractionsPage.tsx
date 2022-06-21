@@ -1,37 +1,37 @@
 import {
     InteractionConfigFull,
     TrackedPosition,
-} from "../../TouchFree/Configuration/ConfigurationTypes";
-import { ConfigurationManager } from "../../TouchFree/Configuration/ConfigurationManager";
+} from '../../TouchFree/Configuration/ConfigurationTypes';
+import { ConfigurationManager } from '../../TouchFree/Configuration/ConfigurationManager';
 import {
     ConfigState,
     WebSocketResponse,
-} from "../../TouchFree/Connection/TouchFreeServiceTypes";
-import { InteractionType } from "../../TouchFree/TouchFreeToolingTypes";
+} from '../../TouchFree/Connection/TouchFreeServiceTypes';
+import { InteractionType } from '../../TouchFree/TouchFreeToolingTypes';
 
-import { Page } from "./Page";
-import { RadioGroup } from "../Controls/RadioGroup";
-import { RadioLine } from "../Controls/RadioLine";
-import { ToggleSwitch } from "../Controls/ToggleSwitch";
-import { Slider } from "../Controls/Slider";
-import { TextSlider } from "../Controls/TextSlider";
-import { DefaultInteractionConfig } from "../SettingsTypes";
+import { Page } from './Page';
+import { RadioGroup } from '../Controls/RadioGroup';
+import { RadioLine } from '../Controls/RadioLine';
+import { ToggleSwitch } from '../Controls/ToggleSwitch';
+import { Slider } from '../Controls/Slider';
+import { TextSlider } from '../Controls/TextSlider';
+import { DefaultInteractionConfig } from '../SettingsTypes';
 
-import "../../Styles/Interactions.css";
+import '../../Styles/Interactions.css';
 
-import AirPushPreview from "../../Videos/AirPush_Preview.webm";
-import TouchPlanePreview from "../../Videos/TouchPlane_Preview.webm";
-import HoverPreview from "../../Videos/Hover_Preview.webm";
+import AirPushPreview from '../../Videos/AirPush_Preview.webm';
+import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
+import HoverPreview from '../../Videos/Hover_Preview.webm';
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,
     Hover: InteractionType.HOVER,
-    "Touch Plane": InteractionType.TOUCHPLANE,
+    'Touch Plane': InteractionType.TOUCHPLANE,
 };
 
 const TouchPlaneTrackingOptions: Record<string, TrackedPosition> = {
-    "Closest Bone to TouchPlane": TrackedPosition.NEAREST,
-    "Index Fingertip": TrackedPosition.INDEX_TIP,
+    'Closest Bone to TouchPlane': TrackedPosition.NEAREST,
+    'Index Fingertip': TrackedPosition.INDEX_TIP,
 };
 
 interface interactionsState {
@@ -62,7 +62,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     }
 
     configChangeCbHandler(result: WebSocketResponse): void {
-        if (result.status !== "Success") {
+        if (result.status !== 'Success') {
             console.error(
                 `Failed to set config state! Info: ${result.message}`,
             );

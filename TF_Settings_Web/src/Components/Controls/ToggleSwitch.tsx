@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import "../../Styles/Controls/ToggleSwitch.css";
+import '../../Styles/Controls/ToggleSwitch.css';
 
 interface ToggleProps {
     name: string;

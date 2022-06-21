@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface PageProps {}

@@ -1,6 +1,6 @@
-import React, { PointerEvent, RefObject } from "react";
+import React, { PointerEvent, RefObject } from 'react';
 
-import "../../Styles/Controls/Sliders.css";
+import '../../Styles/Controls/Sliders.css';
 
 interface SliderProps {
     name: string;
@@ -27,9 +27,9 @@ export class Slider extends React.Component<SliderProps, {}> {
 
         this.inputElement = React.createRef();
 
-        document.body.addEventListener("pointerup", this.onUpCancel.bind(this));
+        document.body.addEventListener('pointerup', this.onUpCancel.bind(this));
         document.body.addEventListener(
-            "pointercancel",
+            'pointercancel',
             this.onUpCancel.bind(this),
         );
     }

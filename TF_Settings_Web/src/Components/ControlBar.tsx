@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import { StatusIndicator } from "./StatusIndicator";
-import { ScreenManager } from "./ScreenManager";
-import { TabSelector } from "./Controls/TabSelector";
+import { StatusIndicator } from './StatusIndicator';
+import { ScreenManager } from './ScreenManager';
+import { TabSelector } from './Controls/TabSelector';
 
-import logo from "../Images/Logo.png";
-import backArrow from "../Images/Back_Arrow.png";
+import logo from '../Images/Logo.png';
+import backArrow from '../Images/Back_Arrow.png';
 
-import "../Styles/ControlBar.css";
+import '../Styles/ControlBar.css';
 
 export class ControlBar extends React.Component<{
     manager: ScreenManager;

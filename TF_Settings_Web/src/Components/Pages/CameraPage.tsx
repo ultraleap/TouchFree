@@ -1,15 +1,15 @@
-import { TextEntry } from "../Controls/TextEntry";
+import { TextEntry } from '../Controls/TextEntry';
 
-import "../../Styles/CameraPage.css";
+import '../../Styles/CameraPage.css';
 
-import { Page } from "./Page";
-import { PhysicalConfig } from "../../TouchFree/Configuration/ConfigurationTypes";
-import { ConfigurationManager } from "../../TouchFree/Configuration/ConfigurationManager";
+import { Page } from './Page';
+import { PhysicalConfig } from '../../TouchFree/Configuration/ConfigurationTypes';
+import { ConfigurationManager } from '../../TouchFree/Configuration/ConfigurationManager';
 import {
     ConfigState,
     WebSocketResponse,
-} from "../../TouchFree/Connection/TouchFreeServiceTypes";
-import { ConnectionManager } from "../../TouchFree/Connection/ConnectionManager";
+} from '../../TouchFree/Connection/TouchFreeServiceTypes';
+import { ConnectionManager } from '../../TouchFree/Connection/ConnectionManager';
 
 interface physicalState {
     screenHeight: number;
@@ -23,12 +23,12 @@ interface physicalState {
 }
 
 export class CameraPage extends Page<{}, physicalState> {
-    currentScreenHeight = "";
-    currentCameraHeight = "";
-    currentCameraLeftToRight = "";
-    currentScreenTilt = "";
-    currentCameraRotation = "";
-    currentCameraDistanceFromScreen = "";
+    currentScreenHeight = '';
+    currentCameraHeight = '';
+    currentCameraLeftToRight = '';
+    currentScreenTilt = '';
+    currentCameraRotation = '';
+    currentCameraDistanceFromScreen = '';
 
     constructor(props: {}) {
         super(props);
@@ -48,7 +48,7 @@ export class CameraPage extends Page<{}, physicalState> {
                 ScreenHeightPX: 0,
                 ScreenWidthPX: 0,
             },
-            selectedView: "screenHeight",
+            selectedView: 'screenHeight',
         };
 
         this.state = state;
@@ -57,7 +57,7 @@ export class CameraPage extends Page<{}, physicalState> {
     componentDidMount(): void {
         ConnectionManager.AddConnectionListener(() => {
             ConfigurationManager.RequestConfigFileState(
-                this.setStateFromFile.bind(this),
+                this.setStateFromFile.bind(this)
             );
         });
     }
@@ -73,16 +73,16 @@ export class CameraPage extends Page<{}, physicalState> {
 
         const stateUpdate = {
             screenHeight: this.roundToFiveDecimals(
-                config.physical.ScreenHeightM * 100,
+                config.physical.ScreenHeightM * 100
             ),
             cameraHeight: this.roundToFiveDecimals(
-                config.physical.LeapPositionRelativeToScreenBottomM.Y * 100,
+                config.physical.LeapPositionRelativeToScreenBottomM.Y * 100
             ),
             cameraLeftToRight: this.roundToFiveDecimals(
-                config.physical.LeapPositionRelativeToScreenBottomM.X * 100,
+                config.physical.LeapPositionRelativeToScreenBottomM.X * 100
             ),
             cameraDistanceFromScreen: this.roundToFiveDecimals(
-                -config.physical.LeapPositionRelativeToScreenBottomM.Z * 100,
+                -config.physical.LeapPositionRelativeToScreenBottomM.Z * 100
             ),
             cameraRotation,
             physicalConfig: config.physical,
@@ -139,15 +139,15 @@ export class CameraPage extends Page<{}, physicalState> {
             ConfigurationManager.RequestConfigFileChange(
                 null,
                 physicalConfigState,
-                this.configChangeCbHandler.bind(this),
+                this.configChangeCbHandler.bind(this)
             );
         }
     }
 
     configChangeCbHandler(result: WebSocketResponse): void {
-        if (result.status !== "Success") {
+        if (result.status !== 'Success') {
             console.error(
-                `Failed to set config state! Info: ${result.message}`,
+                `Failed to set config state! Info: ${result.message}`
             );
         }
     }
@@ -203,7 +203,7 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     onCameraDistanceFromScreenChanged(
-        e: React.FormEvent<HTMLInputElement>,
+        e: React.FormEvent<HTMLInputElement>
     ): void {
         this.currentCameraDistanceFromScreen = e.currentTarget?.value;
         const value = Number.parseFloat(e.currentTarget?.value);
@@ -215,27 +215,27 @@ export class CameraPage extends Page<{}, physicalState> {
     }
 
     onScreenHeightClicked(): void {
-        this.updateSelectedView("screenHeight");
+        this.updateSelectedView('screenHeight');
     }
 
     onCameraHeightClicked(): void {
-        this.updateSelectedView("cameraHeight");
+        this.updateSelectedView('cameraHeight');
     }
 
     onCameraLeftToRightClicked(): void {
-        this.updateSelectedView("cameraLeftToRight");
+        this.updateSelectedView('cameraLeftToRight');
     }
 
     onScreenTiltClicked(): void {
-        this.updateSelectedView("screenTilt");
+        this.updateSelectedView('screenTilt');
     }
 
     onCameraRotationClicked(): void {
-        this.updateSelectedView("cameraRotation");
+        this.updateSelectedView('cameraRotation');
     }
 
     onCameraDistanceFromScreenClicked(): void {
-        this.updateSelectedView("cameraDistanceFromScreen");
+        this.updateSelectedView('cameraDistanceFromScreen');
     }
 
     updateSelectedView(selectedView: string): void {
@@ -246,7 +246,7 @@ export class CameraPage extends Page<{}, physicalState> {
 
     render() {
         return (
-            <div className={"page " + this.state.selectedView}>
+            <div className={'page ' + this.state.selectedView}>
                 <div className="TitleLine">
                     <h1> Manual Calibration </h1>
                 </div>
@@ -259,10 +259,10 @@ export class CameraPage extends Page<{}, physicalState> {
                             onChange={this.onScreenHeightChanged.bind(this)}
                             onClick={this.onScreenHeightClicked.bind(this)}
                             onPointerDown={this.onScreenHeightClicked.bind(
-                                this,
+                                this
                             )}
                             selected={
-                                this.state.selectedView === "screenHeight"
+                                this.state.selectedView === 'screenHeight'
                             }
                         />
                         <TextEntry
@@ -271,24 +271,24 @@ export class CameraPage extends Page<{}, physicalState> {
                             onChange={this.onCameraHeightChanged.bind(this)}
                             onClick={this.onCameraHeightClicked.bind(this)}
                             onPointerDown={this.onCameraHeightClicked.bind(
-                                this,
+                                this
                             )}
                             selected={
-                                this.state.selectedView === "cameraHeight"
+                                this.state.selectedView === 'cameraHeight'
                             }
                         />
                         <TextEntry
                             name="Camera Left to Right (cm)"
                             value={this.currentCameraLeftToRight}
                             onChange={this.onCameraLeftToRightChanged.bind(
-                                this,
+                                this
                             )}
                             onClick={this.onCameraLeftToRightClicked.bind(this)}
                             onPointerDown={this.onCameraLeftToRightClicked.bind(
-                                this,
+                                this
                             )}
                             selected={
-                                this.state.selectedView === "cameraLeftToRight"
+                                this.state.selectedView === 'cameraLeftToRight'
                             }
                         />
                         <div className="cameraPageDivider"></div>
@@ -298,7 +298,7 @@ export class CameraPage extends Page<{}, physicalState> {
                             onChange={this.onScreenTiltChanged.bind(this)}
                             onClick={this.onScreenTiltClicked.bind(this)}
                             onPointerDown={this.onScreenTiltClicked.bind(this)}
-                            selected={this.state.selectedView === "screenTilt"}
+                            selected={this.state.selectedView === 'screenTilt'}
                         />
                         <TextEntry
                             name="Camera Rotation (degrees)"
@@ -306,27 +306,27 @@ export class CameraPage extends Page<{}, physicalState> {
                             onChange={this.onCameraRotationChanged.bind(this)}
                             onClick={this.onCameraRotationClicked.bind(this)}
                             onPointerDown={this.onCameraRotationClicked.bind(
-                                this,
+                                this
                             )}
                             selected={
-                                this.state.selectedView === "cameraRotation"
+                                this.state.selectedView === 'cameraRotation'
                             }
                         />
                         <TextEntry
                             name="Camera Distance from Screen (cm)"
                             value={this.currentCameraDistanceFromScreen}
                             onChange={this.onCameraDistanceFromScreenChanged.bind(
-                                this,
+                                this
                             )}
                             onClick={this.onCameraDistanceFromScreenClicked.bind(
-                                this,
+                                this
                             )}
                             onPointerDown={this.onCameraDistanceFromScreenClicked.bind(
-                                this,
+                                this
                             )}
                             selected={
                                 this.state.selectedView ===
-                                "cameraDistanceFromScreen"
+                                'cameraDistanceFromScreen'
                             }
                         />
                     </div>

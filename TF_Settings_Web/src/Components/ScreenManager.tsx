@@ -2,14 +2,14 @@
 // Manages the loading/display of the subscreens
 // Is the place where the active screen/tab is controlled
 
-import React, { Component, CSSProperties } from "react";
+import React, { Component, CSSProperties } from 'react';
 
-import { ConnectionManager } from "../TouchFree/Connection/ConnectionManager";
-import { ServiceStatus } from "../TouchFree/Connection/TouchFreeServiceTypes";
+import { ConnectionManager } from '../TouchFree/Connection/ConnectionManager';
+import { ServiceStatus } from '../TouchFree/Connection/TouchFreeServiceTypes';
 
-import { ControlBar } from "./ControlBar";
-import { CameraPage } from "./Pages/CameraPage";
-import { InteractionsPage } from "./Pages/InteractionsPage";
+import { ControlBar } from './ControlBar';
+import { CameraPage } from './Pages/CameraPage';
+import { InteractionsPage } from './Pages/InteractionsPage';
 
 // const TouchFree = window.TouchFree;
 
@@ -26,9 +26,9 @@ const pages: { [name: string]: typeof Component } = {
 
 export class ScreenManager extends React.Component<{}, ScreenManagerState> {
     private containerStyle: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
     };
 
     private timerID: number;
@@ -41,7 +41,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         const state = {
             atTopLevel: true,
             tfState: 0,
-            activeTabName: "Camera",
+            activeTabName: 'Camera',
         };
 
         this.state = state;

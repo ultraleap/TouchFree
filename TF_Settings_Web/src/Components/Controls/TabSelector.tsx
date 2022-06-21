@@ -1,5 +1,5 @@
-import React from "react";
-import { ScreenManager } from "../ScreenManager";
+import React from 'react';
+import { ScreenManager } from '../ScreenManager';
 
 export class TabSelector extends React.Component<{
     name: string;
@@ -13,10 +13,10 @@ export class TabSelector extends React.Component<{
     }
 
     render() {
-        let className = "tabButton";
+        let className = 'tabButton';
 
         if (this.props.name === this.props.activeTab) {
-            className += " tabButtonActive";
+            className += ' tabButtonActive';
         }
 
         return (
