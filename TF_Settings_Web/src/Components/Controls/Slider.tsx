@@ -30,7 +30,7 @@ export class Slider extends React.Component<SliderProps, {}> {
         document.body.addEventListener('pointerup', this.onUpCancel.bind(this));
         document.body.addEventListener(
             'pointercancel',
-            this.onUpCancel.bind(this),
+            this.onUpCancel.bind(this)
         );
     }
 
@@ -65,7 +65,7 @@ export class Slider extends React.Component<SliderProps, {}> {
             const outputValue: number = this.lerp(
                 this.props.rangeMin,
                 this.props.rangeMax,
-                posInRange,
+                posInRange
             );
 
             if (

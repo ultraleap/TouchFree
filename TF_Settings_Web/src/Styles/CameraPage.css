@@ -394,7 +394,7 @@
 }
 
 .screenTilt .screenSideTiltBox::before {
-    content: " ";
+    content: ' ';
     transform-origin: 0% 100%;
     transform: skew(-75deg);
     width: 350px;
@@ -421,7 +421,7 @@
 }
 
 .cameraRotation .screenSideTiltBox::before {
-    content: " ";
+    content: ' ';
     transform-origin: 0% 100%;
     transform: skew(-75deg);
     width: 350px;

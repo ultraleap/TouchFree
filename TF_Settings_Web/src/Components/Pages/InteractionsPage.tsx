@@ -47,7 +47,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
     componentDidMount(): void {
         ConfigurationManager.RequestConfigFileState(
-            this.setStateFromFile.bind(this),
+            this.setStateFromFile.bind(this)
         );
     }
 
@@ -56,7 +56,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
             ConfigurationManager.RequestConfigFileChange(
                 this.state.interactionConfig,
                 null,
-                this.configChangeCbHandler.bind(this),
+                this.configChangeCbHandler.bind(this)
             );
         }
     }
@@ -64,7 +64,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     configChangeCbHandler(result: WebSocketResponse): void {
         if (result.status !== 'Success') {
             console.error(
-                `Failed to set config state! Info: ${result.message}`,
+                `Failed to set config state! Info: ${result.message}`
             );
         }
     }
@@ -79,7 +79,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     onInteractionChange(newValue: string): void {
         if (!(newValue in InteractionTranslator)) {
             console.error(
-                `Could not change interaction type; did not recognise the "${newValue}" interaction`,
+                `Could not change interaction type; did not recognise the "${newValue}" interaction`
             );
         }
 
@@ -101,7 +101,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     onTrackingPosChange(newValue: string): void {
         if (!(newValue in TouchPlaneTrackingOptions)) {
             console.error(
-                `Could not Touch Plane tracking target type; did not recognise "${newValue}"`,
+                `Could not Touch Plane tracking target type; did not recognise "${newValue}"`
             );
         }
 
@@ -238,7 +238,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
         if (this.state !== null) {
             const activeInteraction: number = Object.keys(
-                InteractionTranslator,
+                InteractionTranslator
             ).findIndex((key: string) => {
                 return (
                     InteractionTranslator[key] ===
@@ -247,7 +247,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
             });
 
             const activePlaneTracking: number = Object.keys(
-                TouchPlaneTrackingOptions,
+                TouchPlaneTrackingOptions
             ).findIndex((key: string) => {
                 return (
                     TouchPlaneTrackingOptions[key] ===
@@ -271,7 +271,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                                     .HoverStartTimeS
                             }
                             onChange={this.onHoverStartTimeChange.bind(this)}
-                        />,
+                        />
                     );
                     interactionControls.push(
                         <TextSlider
@@ -286,7 +286,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                                     .HoverCompleteTimeS
                             }
                             onChange={this.onHoverCompleteTimeChange.bind(this)}
-                        />,
+                        />
                     );
                     break;
                 case InteractionType.TOUCHPLANE:
@@ -299,7 +299,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                                     .UseScrollingOrDragging
                             }
                             onChange={this.onScrollDragChange.bind(this)}
-                        />,
+                        />
                     );
                     interactionControls.push(
                         <TextSlider
@@ -314,9 +314,9 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                                     .TouchPlaneActivationDistanceCm
                             }
                             onChange={this.onTouchPlaneDistanceChange.bind(
-                                this,
+                                this
                             )}
-                        />,
+                        />
                     );
                     interactionControls.push(
                         <RadioLine
@@ -325,7 +325,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                             selected={activePlaneTracking}
                             options={Object.keys(TouchPlaneTrackingOptions)}
                             onChange={this.onTrackingPosChange.bind(this)}
-                        />,
+                        />
                     );
                     break;
                 case InteractionType.PUSH:
@@ -338,7 +338,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                                     .UseScrollingOrDragging
                             }
                             onChange={this.onScrollDragChange.bind(this)}
-                        />,
+                        />
                     );
                     break;
             }
@@ -357,7 +357,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                                 .InteractionMinDistanceCm
                         }
                         onChange={this.onInteractionMinDistChange.bind(this)}
-                    />,
+                    />
                 );
                 zoneControls.push(
                     <TextSlider
@@ -372,7 +372,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                                 .InteractionMaxDistanceCm
                         }
                         onChange={this.onInteractionMaxDistChange.bind(this)}
-                    />,
+                    />
                 );
             }
 

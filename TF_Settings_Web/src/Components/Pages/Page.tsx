@@ -7,7 +7,7 @@ interface PageState {}
 
 export abstract class Page<
     TProps extends PageProps = PageProps,
-    TState extends PageState = PageState,
+    TState extends PageState = PageState
 > extends Component<TProps, TState> {
     render() {
         return (

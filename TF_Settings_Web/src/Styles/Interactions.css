@@ -22,7 +22,7 @@
 }
 
 .TitleLine > button.tfButton > p {
-    font-family: "NowBold";
+    font-family: 'NowBold';
     display: inline-block;
     margin: 0;
     vertical-align: middle;
@@ -73,7 +73,7 @@ video.InteractionPreview {
 .backgroundLabel {
     text-align: left;
     font-size: 1.5rem;
-    font-family: "Museo Sans", NowRegular, Arial;
+    font-family: 'Museo Sans', NowRegular, Arial;
     color: white;
 
     display: flex;

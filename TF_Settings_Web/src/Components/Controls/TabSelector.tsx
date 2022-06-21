@@ -8,7 +8,7 @@ export class TabSelector extends React.Component<{
 }> {
     onClick(): void {
         this.props.manager.setScreenByName.bind(this.props.manager)(
-            this.props.name,
+            this.props.name
         );
     }
 

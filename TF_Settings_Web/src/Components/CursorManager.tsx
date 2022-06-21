@@ -13,14 +13,14 @@ export class CursorManager {
             'absolute',
             30,
             '1000',
-            true,
+            true
         );
         this.dotImage = this.constructCursorImg(
             dotImage,
             'absolute',
             30,
             '1001',
-            false,
+            false
         );
 
         new DotCursor(this.dotImage, this.ringImage);
@@ -41,7 +41,7 @@ export class CursorManager {
         position_: string,
         size_: number,
         zIndex_: string,
-        dropShadowColor_: boolean,
+        dropShadowColor_: boolean
     ): HTMLImageElement {
         const returnImage = document.createElement('img');
 

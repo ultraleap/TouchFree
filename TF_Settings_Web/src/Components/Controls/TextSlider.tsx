@@ -29,7 +29,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
         document.body.addEventListener('pointerup', this.onUpCancel.bind(this));
         document.body.addEventListener(
             'pointercancel',
-            this.onUpCancel.bind(this),
+            this.onUpCancel.bind(this)
         );
     }
 
@@ -68,7 +68,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
             const outputValue: number = this.lerp(
                 this.props.rangeMin,
                 this.props.rangeMax,
-                posInRange,
+                posInRange
             );
 
             if (
