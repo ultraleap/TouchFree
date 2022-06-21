@@ -8,20 +8,8 @@ export class CursorManager {
     private dotImage: HTMLImageElement;
 
     constructor() {
-        this.ringImage = this.constructCursorImg(
-            ringImage,
-            'absolute',
-            30,
-            '1000',
-            true
-        );
-        this.dotImage = this.constructCursorImg(
-            dotImage,
-            'absolute',
-            30,
-            '1001',
-            false
-        );
+        this.ringImage = this.constructCursorImg(ringImage, 'absolute', 30, '1000', true);
+        this.dotImage = this.constructCursorImg(dotImage, 'absolute', 30, '1001', false);
 
         new DotCursor(this.dotImage, this.ringImage);
     }

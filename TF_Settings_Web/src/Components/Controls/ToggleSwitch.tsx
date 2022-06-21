@@ -23,11 +23,7 @@ export class ToggleSwitch extends React.Component<ToggleProps, {}> {
             >
                 <p className="switchLabel">{this.props.name}</p>
                 <label className="switch">
-                    <input
-                        type="checkbox"
-                        checked={this.props.value}
-                        onChange={this.onChange}
-                    />
+                    <input type="checkbox" checked={this.props.value} onChange={this.onChange} />
                     <span className="toggle round" />
                 </label>
             </label>

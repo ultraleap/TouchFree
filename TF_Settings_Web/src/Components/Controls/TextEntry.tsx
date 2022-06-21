@@ -1,8 +1,4 @@
-import React, {
-    ChangeEventHandler,
-    MouseEventHandler,
-    PointerEventHandler,
-} from 'react';
+import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
 
 import '../../Styles/Controls/TextEntry.css';
 
@@ -17,10 +13,7 @@ interface TextEntryProps {
 
 export class TextEntry extends React.Component<TextEntryProps, {}> {
     getClassName(): string {
-        return (
-            'textEntryBackgroundLabel ' +
-            (this.props.selected ? 'textEntryBackgroundLabelSelected' : '')
-        );
+        return 'textEntryBackgroundLabel ' + (this.props.selected ? 'textEntryBackgroundLabelSelected' : '');
     }
 
     render() {

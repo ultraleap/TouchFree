@@ -83,8 +83,7 @@ video.InteractionPreview {
     margin: 0.75rem;
 
     box-shadow: 0 2px 10px 0 #00000099;
-    background: transparent linear-gradient(180deg, #373737 0%, #2c2c2c 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, #373737 0%, #2c2c2c 100%) 0% 0% no-repeat padding-box;
     border: 1px solid #ffffff1a;
     border-radius: 0.5rem;
 

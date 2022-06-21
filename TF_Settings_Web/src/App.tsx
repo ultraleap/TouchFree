@@ -47,11 +47,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div
-                className="App"
-                style={this.containerStyle}
-                ref={this.cursorParent}
-            >
+            <div className="App" style={this.containerStyle} ref={this.cursorParent}>
                 <ScreenManager />
             </div>
         );

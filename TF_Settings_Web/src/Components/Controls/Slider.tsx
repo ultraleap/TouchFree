@@ -28,10 +28,7 @@ export class Slider extends React.Component<SliderProps, {}> {
         this.inputElement = React.createRef();
 
         document.body.addEventListener('pointerup', this.onUpCancel.bind(this));
-        document.body.addEventListener(
-            'pointercancel',
-            this.onUpCancel.bind(this)
-        );
+        document.body.addEventListener('pointercancel', this.onUpCancel.bind(this));
     }
 
     private onChange() {
@@ -59,19 +56,10 @@ export class Slider extends React.Component<SliderProps, {}> {
             const remValue = this.inputElement.current.clientHeight;
 
             // Slider control is 1.5rem wide, so half is 1x remValue, full is 2x remValue
-            const posInRange: number =
-                (xPos - remValue) /
-                (this.inputElement.current.clientWidth - 2 * remValue);
-            const outputValue: number = this.lerp(
-                this.props.rangeMin,
-                this.props.rangeMax,
-                posInRange
-            );
+            const posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth - 2 * remValue);
+            const outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
 
-            if (
-                this.props.rangeMin < outputValue &&
-                outputValue < this.props.rangeMax
-            ) {
+            if (this.props.rangeMin < outputValue && outputValue < this.props.rangeMax) {
                 this.props.onChange(outputValue);
             }
         }
@@ -102,12 +90,8 @@ export class Slider extends React.Component<SliderProps, {}> {
                         ref={this.inputElement}
                     />
                     <div className="sliderLabelContainer">
-                        <label className="leftSliderLabel">
-                            {this.props.leftLabel}
-                        </label>
-                        <label className="rightSliderLabel">
-                            {this.props.rightLabel}
-                        </label>
+                        <label className="leftSliderLabel">{this.props.leftLabel}</label>
+                        <label className="rightSliderLabel">{this.props.rightLabel}</label>
                     </div>
                 </div>
             </label>

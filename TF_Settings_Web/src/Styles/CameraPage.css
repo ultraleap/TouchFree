@@ -34,8 +34,7 @@
     left: 678px;
     width: 231px;
     height: 338px;
-    background: transparent linear-gradient(146deg, #535353 0%, #313131 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(146deg, #535353 0%, #313131 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 10px;
     position: absolute;
@@ -47,8 +46,7 @@
     width: 209px;
     height: 314px;
 
-    background: transparent linear-gradient(146deg, #909090 0%, #454545 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(146deg, #909090 0%, #454545 100%) 0% 0% no-repeat padding-box;
     position: absolute;
 }
 
@@ -58,15 +56,8 @@
     width: 66px;
     height: 29px;
 
-    background: transparent
-        linear-gradient(
-            90deg,
-            #ffffff 0%,
-            #e8e8e8 23%,
-            #e8e8e8 77%,
-            #ffffff 100%
-        )
-        0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #ffffff 0%, #e8e8e8 23%, #e8e8e8 77%, #ffffff 100%) 0% 0% no-repeat
+        padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 9px;
     position: absolute;
@@ -79,8 +70,7 @@
 .screenFrontCameraBottom {
     top: 22px;
     position: relative;
-    background: transparent linear-gradient(180deg, #000000 0%, #808080 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, #000000 0%, #808080 100%) 0% 0% no-repeat padding-box;
     border-radius: 0px 0px 9px 9px;
     width: 66px;
     height: 7px;
@@ -204,8 +194,7 @@
     width: 32px;
     height: 338px;
 
-    background: transparent linear-gradient(175deg, #525252 0%, #323232 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(175deg, #525252 0%, #323232 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 10px 0px 0px 10px;
 
@@ -226,8 +215,7 @@
     width: 10px;
     height: 314px;
 
-    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%)
-        0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
     opacity: 0.54;
     position: absolute;
 }
@@ -239,8 +227,7 @@
     height: 306px;
     transform: matrix(0.97, -0.26, 0.26, 0.97, 0, 0);
 
-    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%)
-        0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
     position: absolute;
 }
 
@@ -357,15 +344,8 @@
     height: 36px;
     transform: matrix(0.97, -0.24, 0.24, 0.97, 0, 0);
 
-    background: transparent
-        linear-gradient(
-            90deg,
-            #ffffff 0%,
-            #e8e8e8 23%,
-            #e8e8e8 77%,
-            #ffffff 100%
-        )
-        0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #ffffff 0%, #e8e8e8 23%, #e8e8e8 77%, #ffffff 100%) 0% 0% no-repeat
+        padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 9px;
     position: absolute;
@@ -376,8 +356,7 @@
     width: 39px;
     height: 9px;
 
-    background: transparent linear-gradient(180deg, #000000 0%, #808080 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, #000000 0%, #808080 100%) 0% 0% no-repeat padding-box;
     border-radius: 0px 0px 9px 9px;
 }
 
@@ -400,8 +379,7 @@
     width: 350px;
     height: 350px;
     opacity: 0.17;
-    background: transparent linear-gradient(180deg, #00eb85 0%, #00ccce 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, #00eb85 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
     border-top-left-radius: 350px;
     position: absolute;
     left: 0;
@@ -427,8 +405,7 @@
     width: 350px;
     height: 350px;
     opacity: 0.17;
-    background: transparent linear-gradient(180deg, #00eb85 0%, #00ccce 100%) 0%
-        0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, #00eb85 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
     border-top-left-radius: 350px;
     position: absolute;
     left: 0;

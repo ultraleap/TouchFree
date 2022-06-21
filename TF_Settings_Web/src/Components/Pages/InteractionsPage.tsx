@@ -1,12 +1,6 @@
-import {
-    InteractionConfigFull,
-    TrackedPosition,
-} from '../../TouchFree/Configuration/ConfigurationTypes';
+import { InteractionConfigFull, TrackedPosition } from '../../TouchFree/Configuration/ConfigurationTypes';
 import { ConfigurationManager } from '../../TouchFree/Configuration/ConfigurationManager';
-import {
-    ConfigState,
-    WebSocketResponse,
-} from '../../TouchFree/Connection/TouchFreeServiceTypes';
+import { ConfigState, WebSocketResponse } from '../../TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from '../../TouchFree/TouchFreeToolingTypes';
 
 import { Page } from './Page';
@@ -39,16 +33,10 @@ interface interactionsState {
 }
 
 export class InteractionsPage extends Page<{}, interactionsState> {
-    private videoPaths: string[] = [
-        AirPushPreview,
-        HoverPreview,
-        TouchPlanePreview,
-    ];
+    private videoPaths: string[] = [AirPushPreview, HoverPreview, TouchPlanePreview];
 
     componentDidMount(): void {
-        ConfigurationManager.RequestConfigFileState(
-            this.setStateFromFile.bind(this)
-        );
+        ConfigurationManager.RequestConfigFileState(this.setStateFromFile.bind(this));
     }
 
     componentDidUpdate(prevProps: {}, prevState: interactionsState): void {
@@ -63,9 +51,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
     configChangeCbHandler(result: WebSocketResponse): void {
         if (result.status !== 'Success') {
-            console.error(
-                `Failed to set config state! Info: ${result.message}`
-            );
+            console.error(`Failed to set config state! Info: ${result.message}`);
         }
     }
 
@@ -78,13 +64,10 @@ export class InteractionsPage extends Page<{}, interactionsState> {
     // Radio Control Logic
     onInteractionChange(newValue: string): void {
         if (!(newValue in InteractionTranslator)) {
-            console.error(
-                `Could not change interaction type; did not recognise the "${newValue}" interaction`
-            );
+            console.error(`Could not change interaction type; did not recognise the "${newValue}" interaction`);
         }
 
-        const interactionType: InteractionType =
-            InteractionTranslator[newValue];
+        const interactionType: InteractionType = InteractionTranslator[newValue];
 
         this.setState((state) => {
             const newConf: InteractionConfigFull = {
@@ -100,9 +83,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
 
     onTrackingPosChange(newValue: string): void {
         if (!(newValue in TouchPlaneTrackingOptions)) {
-            console.error(
-                `Could not Touch Plane tracking target type; did not recognise "${newValue}"`
-            );
+            console.error(`Could not Touch Plane tracking target type; did not recognise "${newValue}"`);
         }
 
         const trackedPos: TrackedPosition = TouchPlaneTrackingOptions[newValue];
@@ -237,22 +218,13 @@ export class InteractionsPage extends Page<{}, interactionsState> {
         const zoneControls: JSX.Element[] = [];
 
         if (this.state !== null) {
-            const activeInteraction: number = Object.keys(
-                InteractionTranslator
-            ).findIndex((key: string) => {
-                return (
-                    InteractionTranslator[key] ===
-                    this.state.interactionConfig.InteractionType
-                );
+            const activeInteraction: number = Object.keys(InteractionTranslator).findIndex((key: string) => {
+                return InteractionTranslator[key] === this.state.interactionConfig.InteractionType;
             });
 
-            const activePlaneTracking: number = Object.keys(
-                TouchPlaneTrackingOptions
-            ).findIndex((key: string) => {
+            const activePlaneTracking: number = Object.keys(TouchPlaneTrackingOptions).findIndex((key: string) => {
                 return (
-                    TouchPlaneTrackingOptions[key] ===
-                    this.state.interactionConfig.TouchPlane
-                        .TouchPlaneTrackedPosition
+                    TouchPlaneTrackingOptions[key] === this.state.interactionConfig.TouchPlane.TouchPlaneTrackedPosition
                 );
             });
 
@@ -266,10 +238,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                             rangeMax={1}
                             leftLabel="0.1s"
                             rightLabel="1s"
-                            value={
-                                this.state.interactionConfig.HoverAndHold
-                                    .HoverStartTimeS
-                            }
+                            value={this.state.interactionConfig.HoverAndHold.HoverStartTimeS}
                             onChange={this.onHoverStartTimeChange.bind(this)}
                         />
                     );
@@ -281,10 +250,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                             rangeMax={1}
                             leftLabel="0.1s"
                             rightLabel="1s"
-                            value={
-                                this.state.interactionConfig.HoverAndHold
-                                    .HoverCompleteTimeS
-                            }
+                            value={this.state.interactionConfig.HoverAndHold.HoverCompleteTimeS}
                             onChange={this.onHoverCompleteTimeChange.bind(this)}
                         />
                     );
@@ -294,10 +260,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         <ToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
-                            value={
-                                this.state.interactionConfig
-                                    .UseScrollingOrDragging
-                            }
+                            value={this.state.interactionConfig.UseScrollingOrDragging}
                             onChange={this.onScrollDragChange.bind(this)}
                         />
                     );
@@ -309,13 +272,8 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                             rangeMax={20}
                             leftLabel="0cm"
                             rightLabel="20cm"
-                            value={
-                                this.state.interactionConfig.TouchPlane
-                                    .TouchPlaneActivationDistanceCm
-                            }
-                            onChange={this.onTouchPlaneDistanceChange.bind(
-                                this
-                            )}
+                            value={this.state.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCm}
+                            onChange={this.onTouchPlaneDistanceChange.bind(this)}
                         />
                     );
                     interactionControls.push(
@@ -333,10 +291,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         <ToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
-                            value={
-                                this.state.interactionConfig
-                                    .UseScrollingOrDragging
-                            }
+                            value={this.state.interactionConfig.UseScrollingOrDragging}
                             onChange={this.onScrollDragChange.bind(this)}
                         />
                     );
@@ -352,10 +307,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         rangeMax={30}
                         leftLabel="0cm"
                         rightLabel="30cm"
-                        value={
-                            this.state.interactionConfig
-                                .InteractionMinDistanceCm
-                        }
+                        value={this.state.interactionConfig.InteractionMinDistanceCm}
                         onChange={this.onInteractionMinDistChange.bind(this)}
                     />
                 );
@@ -367,10 +319,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                         rangeMax={30}
                         leftLabel="0cm"
                         rightLabel="30cm"
-                        value={
-                            this.state.interactionConfig
-                                .InteractionMaxDistanceCm
-                        }
+                        value={this.state.interactionConfig.InteractionMaxDistanceCm}
                         onChange={this.onInteractionMaxDistChange.bind(this)}
                     />
                 );
@@ -391,10 +340,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                             key={this.state.interactionConfig.InteractionType}
                             className="InteractionPreview"
                         >
-                            <source
-                                src={this.videoPaths[activeInteraction]}
-                                type="video/webm"
-                            />
+                            <source src={this.videoPaths[activeInteraction]} type="video/webm" />
                         </video>
                     </div>
 
@@ -419,10 +365,7 @@ export class InteractionsPage extends Page<{}, interactionsState> {
                     <div className="verticalContainer sideSpacing">
                         <ToggleSwitch
                             name="Enable/Disable"
-                            value={
-                                this.state.interactionConfig
-                                    .InteractionZoneEnabled
-                            }
+                            value={this.state.interactionConfig.InteractionZoneEnabled}
                             onChange={this.interactionZoneToggled.bind(this)}
                         />
                         {zoneControls}

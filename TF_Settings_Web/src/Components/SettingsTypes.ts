@@ -6,11 +6,10 @@ import {
 } from '../TouchFree/Configuration/ConfigurationTypes';
 import { InteractionType } from '../TouchFree/TouchFreeToolingTypes';
 
-const DefaultHoverAndHoldInteractionSettings: HoverAndHoldInteractionSettings =
-    {
-        HoverStartTimeS: 0.5,
-        HoverCompleteTimeS: 0.6,
-    };
+const DefaultHoverAndHoldInteractionSettings: HoverAndHoldInteractionSettings = {
+    HoverStartTimeS: 0.5,
+    HoverCompleteTimeS: 0.6,
+};
 
 const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings = {
     TouchPlaneActivationDistanceCm: 5,

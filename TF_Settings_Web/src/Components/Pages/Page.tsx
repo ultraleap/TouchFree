@@ -10,10 +10,6 @@ export abstract class Page<
     TState extends PageState = PageState
 > extends Component<TProps, TState> {
     render() {
-        return (
-            <div>
-                This is the base Page Render. You should not be seeing this.
-            </div>
-        );
+        return <div>This is the base Page Render. You should not be seeing this.</div>;
     }
 }

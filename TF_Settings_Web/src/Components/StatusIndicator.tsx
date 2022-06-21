@@ -68,11 +68,7 @@ export class StatusIndicator extends React.Component<{
         return (
             <div style={this.indicatorStyle}>
                 <div style={this.statusContainerStyle}>
-                    <img
-                        src={camStatusIcon}
-                        alt="Camera Status Icon"
-                        style={this.statusIconStyle}
-                    />
+                    <img src={camStatusIcon} alt="Camera Status Icon" style={this.statusIconStyle} />
                     <div
                         style={
                             this.props.status === TrackingServiceState.CONNECTED
@@ -82,15 +78,10 @@ export class StatusIndicator extends React.Component<{
                     />
                 </div>
                 <div style={this.statusContainerStyle}>
-                    <img
-                        src={svcStatusIcon}
-                        alt="Tracking Service Status Icon"
-                        style={this.statusIconStyle}
-                    />
+                    <img src={svcStatusIcon} alt="Tracking Service Status Icon" style={this.statusIconStyle} />
                     <div
                         style={
-                            this.props.status ===
-                            TrackingServiceState.UNAVAILABLE
+                            this.props.status === TrackingServiceState.UNAVAILABLE
                                 ? this.statusDotStyleBad
                                 : this.statusDotStyleOK
                         }
