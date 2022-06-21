@@ -414,7 +414,7 @@ TF_Service::sonarqube-check:
 
     - dotnet build ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.sln
 
-    - dotnet-coverage collect 'dotnet test ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.sln' -f xml  -o 'coverage.xml'
+    - dotnet-coverage collect 'dotnet test ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj' -f xml  -o 'coverage.xml'
 
     - dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
   allow_failure: true
