@@ -44,8 +44,8 @@ TF_Tooling::Unity::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFU_PATH}/Version.txt --swVer ${env:TF_TFU_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "{env:$CI_COMMIT_BRANCH}"
-    - echo ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFU_PATH}/Version.txt --swVer ${env:TF_TFU_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
 
     # Copy Version.txt to Tooling_Release folder
     - if (Test-Path -Path "./Tooling_Release") {
@@ -74,8 +74,8 @@ TF_Tooling::Web::build:
   when: always
   script:
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFW_PATH}/Version.txt --swVer ${env:TF_TFW_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "{env:$CI_COMMIT_BRANCH}"
-    - echo ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFW_PATH}/Version.txt --swVer ${env:TF_TFW_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
 
     # Build Tooling
     - cd ${env:TF_TFW_PATH}
@@ -277,8 +277,8 @@ TF_Settings::Windows::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SETTINGS_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "{env:$CI_COMMIT_BRANCH}"
-    - echo ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SETTINGS_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
 
     - mkdir $CI_PROJECT_DIR/UIBuild
     - cp ${env:TF_SETTINGS_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
@@ -341,7 +341,7 @@ TouchFree::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "{env:$CI_COMMIT_BRANCH}"
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
     - Get-Content "${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt"
 
     # Copy Version.txt to build folder
