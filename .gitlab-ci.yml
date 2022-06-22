@@ -342,7 +342,7 @@ TouchFree::build:
 
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "{env:$CI_COMMIT_BRANCH}"
-    - echo ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+    - Get-Content "${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt"
 
     # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
