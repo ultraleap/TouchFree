@@ -410,13 +410,13 @@ TF_Service::sonarqube-check:
   script:
     - rm ${CI_PROJECT_DIR}/sonar-project.properties
 
-    - dotnet sonarscanner begin /k:"apps_screen-control_AYGAPCWa_gBn6q3MndUx" /d:sonar.login="${SONAR_TOKEN}" /d:sonar.host.url="${SONAR_HOST_URL}" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+    - dotnet sonarscanner begin /k:"TouchFree-Service" /d:sonar.login="${SERVICE_SONAR_TOKEN}" /d:sonar.host.url="${SONAR_HOST_URL}" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
 
     - dotnet build ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.sln
 
     - dotnet-coverage collect "dotnet test ${CI_PROJECT_DIR}/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.sln" -f xml  -o 'coverage.xml'
 
-    - dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
+    - dotnet sonarscanner end /d:sonar.login="${SERVICE_SONAR_TOKEN}"
   allow_failure: true
   tags:
     - docker-windows
