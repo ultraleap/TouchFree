@@ -10,17 +10,17 @@ import TabSelector from './Controls/TabSelector';
 import { StatusIndicator } from './StatusIndicator';
 
 interface ControlBarProps {
-    status: TrackingServiceState;
+    tfStatus: TrackingServiceState;
 }
 
-const ControlBar: React.FC<ControlBarProps> = ({ status }) => {
+const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
     const location = useLocation();
     const navigate = useNavigate();
 
     return (
         <div className="overallContainerStyle">
             <div className="topBarStyle">
-                <StatusIndicator status={status} />
+                <StatusIndicator tfStatus={tfStatus} />
                 <img src={logo} alt="Logo: TouchFree by UltraLeap" className="horizElement" />
                 <div className="emptyContainer" />
             </div>

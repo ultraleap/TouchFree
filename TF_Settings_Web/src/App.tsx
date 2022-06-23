@@ -43,7 +43,7 @@ const App: React.FC = () => {
 
     return (
         <div className="app" ref={cursorParent}>
-            <ControlBar status={tfStatus} />
+            <ControlBar tfStatus={tfStatus} />
             <div style={{ marginTop: '170px' }}>
                 <Routes>
                     <Route path="camera/*" element={<CameraPage />} />
