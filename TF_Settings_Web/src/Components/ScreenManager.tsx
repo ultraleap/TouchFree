@@ -2,24 +2,25 @@
 // Manages the loading/display of the subscreens
 // Is the place where the active screen/tab is controlled
 
-import React, { Component, CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 
 import { ConnectionManager } from '../TouchFree/Connection/ConnectionManager';
 import { ServiceStatus } from '../TouchFree/Connection/TouchFreeServiceTypes';
 
 import { ControlBar } from './ControlBar';
-import { CameraPage } from './Pages/CameraPage';
 import { InteractionsPage } from './Pages/InteractionsPage';
+import { CameraPage } from './Pages/Camera/CameraPage';
+import { Page } from './Pages/Page';
 
-// const TouchFree = window.TouchFree;
+export type ScreenName = 'Camera' | 'Interactions';
 
 interface ScreenManagerState {
     atTopLevel: boolean;
     tfState: number;
-    activeTabName: string;
+    activeTabName: ScreenName;
 }
 
-const pages: { [name: string]: typeof Component } = {
+const pages: Record<ScreenName, typeof Page> = {
     Camera: CameraPage,
     Interactions: InteractionsPage,
 };
@@ -41,7 +42,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         const state = {
             atTopLevel: true,
             tfState: 0,
-            activeTabName: 'Camera',
+            activeTabName: 'Camera' as ScreenName,
         };
 
         this.state = state;
@@ -61,15 +62,9 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         // ToDo: Go to parent state
     }
 
-    public setScreenByName(screenName: string): void {
-        // Later this should validate that the incoming name is in the list of known screens
-
+    public setScreenByName(screenName: ScreenName): void {
         // Also check if the target is top level and set state.atTopLevel
-        this.setState(() => ({
-            activeTabName: screenName,
-        }));
-
-        this.forceUpdate();
+        this.setState(() => ({ activeTabName: screenName }));
     }
 
     private RequestStatus(): void {

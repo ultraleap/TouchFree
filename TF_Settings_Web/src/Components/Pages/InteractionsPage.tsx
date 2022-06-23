@@ -358,7 +358,7 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
                         {interactionControls}
                     </div>
 
-                    <div className="TitleLine">
+                    <div className="titleLine">
                         <h1> Interaction Zone </h1>
                     </div>
 
@@ -376,7 +376,7 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
 
         return (
             <div className="page">
-                <div className="TitleLine">
+                <div className="titleLine">
                     <h1> Interaction Type </h1>
                     <button
                         onClick={this.resetToDefaults.bind(this)}

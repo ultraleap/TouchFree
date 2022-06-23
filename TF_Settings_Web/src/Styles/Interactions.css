@@ -1,4 +1,4 @@
-.TitleLine {
+.titleLine {
     color: white;
 
     display: flex;
@@ -9,11 +9,11 @@
     padding-left: 3rem;
 }
 
-.TitleLine > h1 {
+.titleLine > h1 {
     flex: 1 1 auto;
 }
 
-.TitleLine > button.tfButton {
+.titleLine > button.tfButton {
     border: 0.1rem transparent;
     padding: 0.3rem;
     width: 230px;
@@ -21,7 +21,7 @@
     margin-right: 1.5rem;
 }
 
-.TitleLine > button.tfButton > p {
+.titleLine > button.tfButton > p {
     font-family: 'NowBold';
     display: inline-block;
     margin: 0;
