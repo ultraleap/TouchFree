@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import { Component } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface PageProps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface PageState {}
 
 export abstract class Page<
