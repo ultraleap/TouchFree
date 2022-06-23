@@ -21,7 +21,7 @@
 }
 
 .overallContainerStyle {
-    background-image: linear-gradient(270deg, #3C3C3C, #2F2F2F);
+    background-image: linear-gradient(270deg, #3c3c3c, #2f2f2f);
 }
 
 .horizElement {
@@ -30,7 +30,7 @@
     min-height: 0;
     min-width: 0;
     max-height: 4rem;
-    max-width: 26.1rem
+    max-width: 26.1rem;
 }
 
 .emptyContainer {
@@ -49,5 +49,5 @@
     display: inline-block;
     margin: 0;
     vertical-align: middle;
-    font-family: "NowRegular; Arial"
+    font-family: 'NowRegular; Arial';
 }
