@@ -100,7 +100,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                             progressTimer.StopTimer();
                             clickHeld = true;
                             clickingTimer.Restart();
-                            SendInputAction(InputType.DOWN, positions, 0f);
+                            SendInputAction(InputType.DOWN, positions, 1f);
                         }
                         else
                         {

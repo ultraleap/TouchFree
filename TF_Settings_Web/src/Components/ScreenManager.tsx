@@ -2,46 +2,46 @@
 // Manages the loading/display of the subscreens
 // Is the place where the active screen/tab is controlled
 
-import React, { Component, CSSProperties,  } from "react";
+import React, { Component, CSSProperties } from 'react';
 
-import { ConnectionManager } from "../TouchFree/Connection/ConnectionManager";
+import { ConnectionManager } from '../TouchFree/Connection/ConnectionManager';
+import { ServiceStatus } from '../TouchFree/Connection/TouchFreeServiceTypes';
 
-import { ControlBar } from "./ControlBar";
-import { CameraPage } from "./Pages/CameraPage";
-import { InteractionsPage } from "./Pages/InteractionsPage";
+import { ControlBar } from './ControlBar';
+import { CameraPage } from './Pages/CameraPage';
+import { InteractionsPage } from './Pages/InteractionsPage';
 
 // const TouchFree = window.TouchFree;
 
 interface ScreenManagerState {
-    atTopLevel: boolean,
-    tfState: number,
-    activeTabName: string,
+    atTopLevel: boolean;
+    tfState: number;
+    activeTabName: string;
 }
 
-const pages: {[name: string]: typeof Component} = {
-    "Camera": CameraPage,
-    "Interactions": InteractionsPage,
+const pages: { [name: string]: typeof Component } = {
+    Camera: CameraPage,
+    Interactions: InteractionsPage,
 };
 
 export class ScreenManager extends React.Component<{}, ScreenManagerState> {
-    private containerStyle : CSSProperties = {
+    private containerStyle: CSSProperties = {
         display: 'flex',
         flexDirection: 'column',
-        height: '100%'
-    }
+        height: '100%',
+    };
 
     private timerID: number;
-
 
     constructor(props: {}) {
         super(props);
 
         this.timerID = -1;
 
-        let state = {
+        const state = {
             atTopLevel: true,
             tfState: 0,
-            activeTabName: "Camera",
+            activeTabName: 'Camera',
         };
 
         this.state = state;
@@ -49,7 +49,7 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
 
     componentDidMount() {
         this.timerID = window.setInterval(() => {
-            this.RequestStatus()
+            this.RequestStatus();
         }, 5000);
     }
 
@@ -76,21 +76,26 @@ export class ScreenManager extends React.Component<{}, ScreenManagerState> {
         ConnectionManager.RequestServiceStatus(this.UpdateStatus.bind(this));
     }
 
-    private UpdateStatus(detail: any) {
-        this.setState(() => ({
-            tfState: detail.trackingServiceState
-        }));
+    private UpdateStatus(detail: ServiceStatus) {
+        const status = detail.trackingServiceState;
+        if (status) {
+            this.setState(() => ({
+                tfState: status,
+            }));
+        }
     }
 
-    render () {
-        let ThisPage = pages[this.state.activeTabName];
+    render() {
+        const ThisPage = pages[this.state.activeTabName];
 
         return (
             <div style={this.containerStyle}>
-                <ControlBar manager={this}
-                            atTopLevel={this.state.atTopLevel}
-                            status={this.state.tfState}
-                            activeTabName={this.state.activeTabName}/>
+                <ControlBar
+                    manager={this}
+                    atTopLevel={this.state.atTopLevel}
+                    status={this.state.tfState}
+                    activeTabName={this.state.activeTabName}
+                />
                 <ThisPage />
             </div>
         );
