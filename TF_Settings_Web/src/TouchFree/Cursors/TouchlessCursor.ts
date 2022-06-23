@@ -7,7 +7,7 @@ import { InputActionManager } from '../Plugins/InputActionManager';
 //
 // Override <HandleInputAction> to react to <TouchFreeInputActions> as they are recieved.
 //
-// For an example of a reactive cursor, see <DotCursor>.
+// For an example of a reactive cursor, see <SvgCursor>.
 export abstract class TouchlessCursor {
     // Group: Variables
 
