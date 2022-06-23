@@ -22,7 +22,7 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": ["react", "@typescript-eslint"],
+    "plugins": ["react", "@typescript-eslint", "simple-import-sort"],
     "ignorePatterns": ["src/TouchFree"],
     "rules": {
         "indent": "off",
@@ -48,6 +48,8 @@
         "unicorn/no-null": "off",
         "unicorn/no-zero-fractions": "off",
         "unicorn/no-array-push-push": "off",
-        "unicorn/no-nested-ternary": "off"
+        "unicorn/no-nested-ternary": "off",
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error"
     }
 }

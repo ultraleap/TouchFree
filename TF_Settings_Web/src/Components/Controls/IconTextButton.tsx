@@ -1,6 +1,6 @@
-import React from 'react';
-
 import '../../Styles/Controls/IconTextButton.css';
+
+import React from 'react';
 
 interface IconTextButtonProps {
     buttonStyle: React.CSSProperties;

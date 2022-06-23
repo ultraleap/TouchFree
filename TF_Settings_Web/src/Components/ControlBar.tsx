@@ -1,14 +1,13 @@
-import React from 'react';
-
-import { StatusIndicator } from './StatusIndicator';
-import TabSelector from './Controls/TabSelector';
-
-import logo from '../Images/Logo.png';
-import backArrow from '../Images/Back_Arrow.svg';
-
 import '../Styles/ControlBar.css';
+
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+
+import backArrow from '../Images/Back_Arrow.svg';
+import logo from '../Images/Logo.png';
 import { TrackingServiceState } from '../TouchFree/TouchFreeToolingTypes';
+import TabSelector from './Controls/TabSelector';
+import { StatusIndicator } from './StatusIndicator';
 
 interface ControlBarProps {
     status: TrackingServiceState;

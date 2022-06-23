@@ -1,16 +1,15 @@
+import './App.css';
+
 import React, { useEffect, useRef } from 'react';
-
-import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
-import { WebInputController } from './TouchFree/InputControllers/WebInputController';
-
-import { CursorManager } from './Components/CursorManager';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import './App.css';
+import ControlBar from './Components/ControlBar';
+import { CursorManager } from './Components/CursorManager';
 import { CameraPage } from './Components/Pages/Camera/CameraPage';
 import { InteractionsPage } from './Components/Pages/InteractionsPage';
-import ControlBar from './Components/ControlBar';
+import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
 import { ServiceStatus } from './TouchFree/Connection/TouchFreeServiceTypes';
+import { WebInputController } from './TouchFree/InputControllers/WebInputController';
 import { TrackingServiceState } from './TouchFree/TouchFreeToolingTypes';
 
 const App: React.FC = () => {

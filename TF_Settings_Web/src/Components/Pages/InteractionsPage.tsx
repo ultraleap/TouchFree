@@ -1,21 +1,20 @@
-import { InteractionConfigFull, TrackedPosition } from '../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigurationManager } from '../../TouchFree/Configuration/ConfigurationManager';
-import { ConfigState, WebSocketResponse } from '../../TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from '../../TouchFree/TouchFreeToolingTypes';
-
-import { RadioGroup } from '../Controls/RadioGroup';
-import { RadioLine } from '../Controls/RadioLine';
-import { ToggleSwitch } from '../Controls/ToggleSwitch';
-import { Slider } from '../Controls/Slider';
-import { TextSlider } from '../Controls/TextSlider';
-import { DefaultInteractionConfig } from '../SettingsTypes';
-
 import '../../Styles/Interactions.css';
 
-import AirPushPreview from '../../Videos/AirPush_Preview.webm';
-import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
-import HoverPreview from '../../Videos/Hover_Preview.webm';
 import { Component } from 'react';
+
+import { ConfigurationManager } from '../../TouchFree/Configuration/ConfigurationManager';
+import { InteractionConfigFull, TrackedPosition } from '../../TouchFree/Configuration/ConfigurationTypes';
+import { ConfigState, WebSocketResponse } from '../../TouchFree/Connection/TouchFreeServiceTypes';
+import { InteractionType } from '../../TouchFree/TouchFreeToolingTypes';
+import AirPushPreview from '../../Videos/AirPush_Preview.webm';
+import HoverPreview from '../../Videos/Hover_Preview.webm';
+import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
+import { RadioGroup } from '../Controls/RadioGroup';
+import { RadioLine } from '../Controls/RadioLine';
+import { Slider } from '../Controls/Slider';
+import { TextSlider } from '../Controls/TextSlider';
+import { ToggleSwitch } from '../Controls/ToggleSwitch';
+import { DefaultInteractionConfig } from '../SettingsTypes';
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,

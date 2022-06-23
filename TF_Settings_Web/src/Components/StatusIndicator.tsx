@@ -5,10 +5,10 @@
 // All have tooltips
 
 import React, { CSSProperties } from 'react';
-import { TrackingServiceState } from '../TouchFree/TouchFreeToolingTypes';
 
 import camStatusIcon from '../Images/Camera_Status_Icon.png';
 import svcStatusIcon from '../Images/Tracking_Status_Icon.png';
+import { TrackingServiceState } from '../TouchFree/TouchFreeToolingTypes';
 
 export class StatusIndicator extends React.Component<{
     status: TrackingServiceState;

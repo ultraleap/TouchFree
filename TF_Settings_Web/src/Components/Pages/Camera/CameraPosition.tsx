@@ -1,12 +1,12 @@
 import '../../../Styles/Camera/CameraPage.css';
 
-import IconTextButton from '../../Controls/IconTextButton';
-
-import { PositionType } from './CameraPage';
-import CameraFacingUserIcon from '../../../Images/Camera_Facing_User.svg';
-import CameraFacingScreenIcon from '../../../Images/Camera_Facing_Screen.svg';
-import CameraBelowIcon from '../../../Images/Camera_Below.svg';
 import { Component } from 'react';
+
+import CameraBelowIcon from '../../../Images/Camera_Below.svg';
+import CameraFacingScreenIcon from '../../../Images/Camera_Facing_Screen.svg';
+import CameraFacingUserIcon from '../../../Images/Camera_Facing_User.svg';
+import IconTextButton from '../../Controls/IconTextButton';
+import { PositionType } from './CameraPage';
 
 const buttonStyle: React.CSSProperties = { width: '48.75%', height: '350px' };
 const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };

@@ -1,12 +1,12 @@
-import { TextEntry } from '../../Controls/TextEntry';
-
 import '../../../Styles/Camera/ManualSetupPage.css';
 
-import { PhysicalConfig } from '../../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
-import { ConfigState, WebSocketResponse } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
-import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
 import { Component } from 'react';
+
+import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
+import { PhysicalConfig } from '../../../TouchFree/Configuration/ConfigurationTypes';
+import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
+import { ConfigState, WebSocketResponse } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
+import { TextEntry } from '../../Controls/TextEntry';
 
 interface PhysicalState {
     screenHeight: number;

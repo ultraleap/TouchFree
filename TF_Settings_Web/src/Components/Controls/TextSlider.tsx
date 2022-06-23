@@ -1,6 +1,6 @@
-import React, { PointerEvent, RefObject } from 'react';
-
 import '../../Styles/Controls/ToggleSwitch.css';
+
+import React, { PointerEvent, RefObject } from 'react';
 
 interface TextSliderProps {
     name: string;

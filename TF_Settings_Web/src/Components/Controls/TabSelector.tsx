@@ -1,7 +1,7 @@
 import '../../Styles/Controls/TabSelector.css';
 
 import React from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { NavLink,useNavigate } from 'react-router-dom';
 
 interface TabSelectorProps {
     name: string;

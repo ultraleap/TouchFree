@@ -1,6 +1,6 @@
-import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
-
 import '../../Styles/Controls/TextEntry.css';
+
+import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
 
 interface TextEntryProps {
     name: string;
