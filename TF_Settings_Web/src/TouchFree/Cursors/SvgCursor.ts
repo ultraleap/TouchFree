@@ -16,7 +16,7 @@ export class SVGCursor extends TouchlessCursor {
     hidingCursor: boolean = false;
     currentFadingInterval: NodeJS.Timeout | undefined = undefined;
 
-    constructor(_cursorCanvas: any, _cursorDot: any, _cursorRing: any, _xPositionAttribute = "cx", _yPositionAttribute = "cx", _ringSizeMultiplier = 2) {
+    constructor(_cursorCanvas: any, _cursorDot: any, _cursorRing: any, _xPositionAttribute = "cx", _yPositionAttribute = "cx", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(_cursorDot);
 
         this.cursorCanvas = _cursorCanvas;
@@ -26,6 +26,10 @@ export class SVGCursor extends TouchlessCursor {
         this.cursorRing = _cursorRing;
         this.ringSizeMultiplier = _ringSizeMultiplier;
         this.cursorStartSize = this.GetCurrentCursorRadius();
+
+        if (!_darkCursor) {
+            _cursorCanvas.classList.add('light');
+        }
 
         ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
         ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
