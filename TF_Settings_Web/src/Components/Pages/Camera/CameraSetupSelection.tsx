@@ -5,15 +5,12 @@ import '../../../Styles/Camera/CameraPage.css';
 import QuickSetupIcon from '../../../Images/Quick_Setup_Icon.svg';
 import ManualSetupIcon from '../../../Images/Manual_Setup_Icon.svg';
 import IconTextButton from '../../Controls/IconTextButton';
-import { SetupType } from './CameraPage';
+import { useNavigate } from 'react-router-dom';
 
-interface CameraSetupSelectionProps {
-    onClick: (position: SetupType) => void;
-}
-
-const CameraSetupSelection: React.FC<CameraSetupSelectionProps> = ({ onClick }) => {
+const CameraSetupSelection = () => {
+    const navigate = useNavigate();
     return (
-        <div className="page">
+        <div>
             <div className="titleLine">
                 <h1> Camera Setup </h1>
             </div>
@@ -24,7 +21,7 @@ const CameraSetupSelection: React.FC<CameraSetupSelectionProps> = ({ onClick }) 
                     iconStyle={{ margin: '30px 0px', height: '250px' }}
                     title="Auto Calibration"
                     text="Our automatic calibration enables you to set up quickly"
-                    onClick={() => onClick('Quick')}
+                    onClick={() => navigate('quick')}
                 />
                 <IconTextButton
                     buttonStyle={{ width: '33.75%' }}
@@ -32,7 +29,7 @@ const CameraSetupSelection: React.FC<CameraSetupSelectionProps> = ({ onClick }) 
                     iconStyle={{ margin: '65px 0px', height: '180px' }}
                     title="Manual Calibration"
                     text="Full control of your calibration"
-                    onClick={() => onClick('Manual')}
+                    onClick={() => navigate('manual')}
                 />
             </div>
         </div>

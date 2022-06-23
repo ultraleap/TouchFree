@@ -1,26 +1,24 @@
+import '../../Styles/Controls/TabSelector.css';
+
 import React from 'react';
-import { ScreenManager, ScreenName } from '../ScreenManager';
+import { useNavigate, NavLink } from 'react-router-dom';
 
-export class TabSelector extends React.Component<{
-    name: ScreenName;
-    manager: ScreenManager;
-    activeTab: ScreenName;
-}> {
-    onClick(): void {
-        this.props.manager.setScreenByName(this.props.name);
-    }
-
-    render() {
-        let className = 'tabButton';
-
-        if (this.props.name === this.props.activeTab) {
-            className += ' tabButtonActive';
-        }
-
-        return (
-            <button className={className} onClick={this.onClick.bind(this)} onPointerUp={this.onClick.bind(this)}>
-                {this.props.name}
-            </button>
-        );
-    }
+interface TabSelectorProps {
+    name: string;
 }
+
+const TabSelector: React.FC<TabSelectorProps> = ({ name }) => {
+    const navigate = useNavigate();
+    const lowerCaseName = name.toLowerCase();
+    return (
+        <NavLink
+            to={`/${lowerCaseName}`}
+            className={({ isActive }) => (isActive ? 'tabButton tabButtonActive' : 'tabButton')}
+            onPointerUp={() => navigate(`/${lowerCaseName}`)}
+        >
+            {name}
+        </NavLink>
+    );
+};
+
+export default TabSelector;

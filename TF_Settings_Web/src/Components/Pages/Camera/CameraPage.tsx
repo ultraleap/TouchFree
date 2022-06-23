@@ -1,18 +1,17 @@
 import '../../../Styles/Camera/CameraPage.css';
 
-import { Page } from '../Page';
-import { ManualSetupPage } from './ManualSetupPage';
+import { ManualSetup } from './ManualSetup';
 import { CameraPositionPage } from './CameraPosition';
 import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
 import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
 import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
 import CameraSetupSelection from './CameraSetupSelection';
+import { Component } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-export type SetupType = 'Quick' | 'Manual' | undefined;
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | undefined;
 
 interface CameraPageState {
-    activeSetup: SetupType;
     activePosition: PositionType;
 }
 
@@ -27,10 +26,10 @@ const getPositionFromConfig = (config: ConfigState): PositionType => {
     return 'Below';
 };
 
-export class CameraPage extends Page<{}, CameraPageState> {
+export class CameraPage extends Component<{}, CameraPageState> {
     constructor(props: {}) {
         super(props);
-        this.state = { activeSetup: undefined, activePosition: undefined };
+        this.state = { activePosition: undefined };
     }
 
     componentDidMount() {
@@ -42,18 +41,22 @@ export class CameraPage extends Page<{}, CameraPageState> {
     }
 
     render() {
-        switch (this.state.activeSetup) {
-            case 'Quick':
-                return (
-                    <CameraPositionPage
-                        configPosition={this.state.activePosition}
-                        onClick={(position: PositionType) => this.setState({ activePosition: position })}
+        return (
+            <>
+                <Routes>
+                    <Route path="" element={<CameraSetupSelection />} />
+                    <Route
+                        path="quick"
+                        element={
+                            <CameraPositionPage
+                                configPosition={this.state.activePosition}
+                                onClick={(position: PositionType) => this.setState({ activePosition: position })}
+                            />
+                        }
                     />
-                );
-            case 'Manual':
-                return <ManualSetupPage />;
-            default:
-                return <CameraSetupSelection onClick={(setup: SetupType) => this.setState({ activeSetup: setup })} />;
-        }
+                    <Route path="manual" element={<ManualSetup />} />
+                </Routes>
+            </>
+        );
     }
 }

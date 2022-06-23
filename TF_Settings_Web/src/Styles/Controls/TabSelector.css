@@ -1,0 +1,25 @@
+a {
+    all: unset;
+}
+
+.tabButton {
+    cursor: default;
+    padding-top: 1rem;
+    align-self: stretch;
+
+    border-top-left-radius: 1.2rem;
+    border-top-right-radius: 1.2rem;
+    background-color: transparent;
+    border-color: transparent;
+
+    flex: 1 1 auto;
+
+    font-family: 'Museo Sans', NowRegular, Arial;
+    color: white;
+    font-size: 2.5rem;
+}
+
+.tabButtonActive {
+    background-color: #222222;
+    border-top-color: #222222;
+}

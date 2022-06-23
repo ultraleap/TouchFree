@@ -17,7 +17,7 @@
         "typescript": "^4.5.5",
         "web-vitals": "^2.1.4"
     },
-    "homepage": "/settings/",
+    "homepage": "/camera",
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
@@ -46,6 +46,7 @@
         ]
     },
     "devDependencies": {
+        "@types/react-router-dom": "^5.3.3",
         "@types/uuid": "^8.3.4",
         "@typescript-eslint/eslint-plugin": "^5.29.0",
         "@typescript-eslint/parser": "^5.29.0",
@@ -54,6 +55,7 @@
         "eslint-plugin-unicorn": "^42.0.0",
         "prettier": "^2.7.1",
         "prettier-eslint": "^15.0.1",
+        "react-router-dom": "^6.3.0",
         "uuid": "^8.3.2"
     }
 }

@@ -3,7 +3,6 @@ import { ConfigurationManager } from '../../TouchFree/Configuration/Configuratio
 import { ConfigState, WebSocketResponse } from '../../TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from '../../TouchFree/TouchFreeToolingTypes';
 
-import { Page } from './Page';
 import { RadioGroup } from '../Controls/RadioGroup';
 import { RadioLine } from '../Controls/RadioLine';
 import { ToggleSwitch } from '../Controls/ToggleSwitch';
@@ -16,6 +15,7 @@ import '../../Styles/Interactions.css';
 import AirPushPreview from '../../Videos/AirPush_Preview.webm';
 import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
 import HoverPreview from '../../Videos/Hover_Preview.webm';
+import { Component } from 'react';
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,
@@ -32,7 +32,7 @@ interface InteractionsState {
     interactionConfig: InteractionConfigFull;
 }
 
-export class InteractionsPage extends Page<{}, InteractionsState> {
+export class InteractionsPage extends Component<{}, InteractionsState> {
     private videoPaths: string[] = [AirPushPreview, HoverPreview, TouchPlanePreview];
 
     componentDidMount(): void {
@@ -213,10 +213,12 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
     }
 
     render(): JSX.Element {
-        let coreBody: JSX.Element = <div></div>;
+        let coreBody: JSX.Element = <div style={{ minHeight: '900px' }} />;
         const interactionControls: JSX.Element[] = [];
         const zoneControls: JSX.Element[] = [];
 
+        // TODO: Make it so elements appear even when state is null to prevent flash of empty
+        //       screen while reading in config
         if (this.state !== null) {
             const activeInteraction: number = Object.keys(InteractionTranslator).findIndex((key: string) => {
                 return InteractionTranslator[key] === this.state.interactionConfig.InteractionType;
@@ -375,7 +377,7 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
         }
 
         return (
-            <div className="page">
+            <div>
                 <div className="titleLine">
                     <h1> Interaction Type </h1>
                     <button

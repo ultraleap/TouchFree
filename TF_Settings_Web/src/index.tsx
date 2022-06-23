@@ -3,5 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import './Fonts/fonts.css';
+import { BrowserRouter } from 'react-router-dom';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+ReactDOM.render(
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>,
+    document.querySelector('#root')
+);

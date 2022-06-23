@@ -13,24 +13,41 @@
     flex: 1 1 auto;
 }
 
-.titleLine > button.tfButton {
+.tfButton {
     border: 0.1rem transparent;
     padding: 0.3rem;
     width: 230px;
     max-width: 230px;
+    justify-self: left;
+    flex: 1 2 auto;
+    margin: 0.5rem;
     margin-right: 1.5rem;
+
+    height: 4rem;
+    min-width: 110px;
+
+    font-family: 'Museo Sans', NowRegular, Arial;
+    font-size: 1.5rem;
+    color: white;
+
+    box-shadow: 0 0 6px 0 rgba(157, 96, 212, 0.5);
+    background-image: linear-gradient(180deg, #353535, #2d2d2d), linear-gradient(180deg, #00eb86, #00cdcf);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    border-radius: 50px;
 }
 
-.titleLine > button.tfButton > p {
+.tfButton:hover {
+    box-shadow: none;
+    background-image: linear-gradient(180deg, #00eb85, #00ccce), linear-gradient(180deg, #00eb86, #00cdcf);
+}
+
+.tfButton > p {
     font-family: 'NowBold';
     display: inline-block;
     margin: 0;
     vertical-align: middle;
     text-align: center;
-}
-
-div.page {
-    background-color: #222222;
 }
 
 video.InteractionPreview {

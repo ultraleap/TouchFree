@@ -1,16 +1,15 @@
 import '../../../Styles/Camera/CameraPage.css';
 
-import { Page } from '../Page';
 import IconTextButton from '../../Controls/IconTextButton';
 
-import ScreenTopIcon from '../../../Images/Screentop.png';
 import { PositionType } from './CameraPage';
-// import CameraFacingUserIcon from '../../Images/Camera_Facing_User.svg';
-// import CameraFacingScreenIcon from '../../Images/Camera_Facing_Screen.svg';
-// import CameraBelowIcon from '../../Images/Camera_Below.svg';
+import CameraFacingUserIcon from '../../../Images/Camera_Facing_User.svg';
+import CameraFacingScreenIcon from '../../../Images/Camera_Facing_Screen.svg';
+import CameraBelowIcon from '../../../Images/Camera_Below.svg';
+import { Component } from 'react';
 
 const buttonStyle: React.CSSProperties = { width: '48.75%', height: '350px' };
-const iconStyle: React.CSSProperties = { margin: '15px 0px', height: '200px' };
+const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };
 const textStyle: React.CSSProperties = { color: '#00EB85', opacity: '1' };
 
 interface CameraPositionProps {
@@ -18,21 +17,21 @@ interface CameraPositionProps {
     configPosition: PositionType;
 }
 
-export class CameraPositionPage extends Page<CameraPositionProps, {}> {
+export class CameraPositionPage extends Component<CameraPositionProps, {}> {
     constructor(props: CameraPositionProps) {
         super(props);
     }
 
     render() {
         return (
-            <div className="page">
+            <div>
                 <div className="titleLine">
                     <h1> Where is Your Camera Positioned? </h1>
                 </div>
                 <div className="IconTextButtonDiv">
                     <IconTextButton
                         buttonStyle={buttonStyle}
-                        icon={ScreenTopIcon}
+                        icon={CameraFacingUserIcon}
                         iconStyle={iconStyle}
                         title="Camera Above Facing User"
                         text={this.props.configPosition === 'FaceUser' ? 'Current Setup' : ''}
@@ -41,7 +40,7 @@ export class CameraPositionPage extends Page<CameraPositionProps, {}> {
                     />
                     <IconTextButton
                         buttonStyle={buttonStyle}
-                        icon={ScreenTopIcon}
+                        icon={CameraFacingScreenIcon}
                         iconStyle={iconStyle}
                         title="Camera Above Facing Screen"
                         text={this.props.configPosition === 'FaceScreen' ? 'Current Setup' : ''}
@@ -50,7 +49,7 @@ export class CameraPositionPage extends Page<CameraPositionProps, {}> {
                     />
                     <IconTextButton
                         buttonStyle={{ ...buttonStyle, marginTop: '2.5%' }}
-                        icon={ScreenTopIcon}
+                        icon={CameraBelowIcon}
                         iconStyle={iconStyle}
                         title="Camera Below"
                         text={this.props.configPosition === 'Below' ? 'Current Setup' : ''}
