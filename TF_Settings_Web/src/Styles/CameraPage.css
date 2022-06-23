@@ -2,7 +2,8 @@
     height: 200px;
 }
 
-.screenFrontWrapper, .screenSideWrapper {
+.screenFrontWrapper,
+.screenSideWrapper {
     width: 450px;
     height: 500px;
     overflow: hidden;
@@ -23,7 +24,7 @@
     height: 24px;
 
     text-align: center;
-    color: #FFFFFF;
+    color: #ffffff;
     position: absolute;
     opacity: 0.5;
 }
@@ -55,7 +56,8 @@
     width: 66px;
     height: 29px;
 
-    background: transparent linear-gradient(90deg, #FFFFFF 0%, #E8E8E8 23%, #E8E8E8 77%, #FFFFFF 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #ffffff 0%, #e8e8e8 23%, #e8e8e8 77%, #ffffff 100%) 0% 0% no-repeat
+        padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 9px;
     position: absolute;
@@ -80,7 +82,7 @@
     width: 0px;
     height: 314px;
 
-    border-left: 4px dotted #00EB85;
+    border-left: 4px dotted #00eb85;
     position: absolute;
 }
 
@@ -94,9 +96,9 @@
     left: 736px;
     width: 57px;
     height: 351px;
-    
-    border-left: 3px solid #00EB85;
-    border-right: 3px solid #00EB85;
+
+    border-left: 3px solid #00eb85;
+    border-right: 3px solid #00eb85;
 }
 
 .screenTilt .screenFrontCenterLineVert,
@@ -110,7 +112,7 @@
     width: 20px;
     height: 20px;
 
-    border: 3px solid #00EB85;
+    border: 3px solid #00eb85;
     border-radius: 20px;
 }
 
@@ -120,7 +122,7 @@
     width: 288px;
     height: 0px;
 
-    border-top: 3px solid #00EB85;
+    border-top: 3px solid #00eb85;
     position: absolute;
 }
 
@@ -130,7 +132,7 @@
     width: 12px;
     height: 0px;
 
-    border-top: 3px solid #00EB85;
+    border-top: 3px solid #00eb85;
     position: absolute;
 }
 
@@ -140,7 +142,7 @@
     width: 52px;
     height: 0px;
 
-    border-top: 4px dotted #00EB85;
+    border-top: 4px dotted #00eb85;
 }
 
 .screenTilt .screenFrontTopLine,
@@ -155,7 +157,7 @@
     width: 288px;
     height: 0px;
 
-    border-top: 3px solid #00EB85;
+    border-top: 3px solid #00eb85;
     position: absolute;
 }
 
@@ -179,9 +181,9 @@
     left: 624px;
     width: 337px;
     height: 24px;
-    
+
     text-align: center;
-    color: #FFFFFF;
+    color: #ffffff;
     position: absolute;
     opacity: 0.5;
 }
@@ -191,7 +193,7 @@
     left: 779px;
     width: 32px;
     height: 338px;
-    
+
     background: transparent linear-gradient(175deg, #525252 0%, #323232 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 10px 0px 0px 10px;
@@ -212,8 +214,8 @@
     left: 811px;
     width: 10px;
     height: 314px;
-    
-    background: transparent linear-gradient(90deg, #D0D0D0 0%, #D0D0D000 100%) 0% 0% no-repeat padding-box;
+
+    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
     opacity: 0.54;
     position: absolute;
 }
@@ -225,7 +227,7 @@
     height: 306px;
     transform: matrix(0.97, -0.26, 0.26, 0.97, 0, 0);
 
-    background: transparent linear-gradient(90deg, #D0D0D0 0%, #D0D0D000 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
     position: absolute;
 }
 
@@ -235,7 +237,7 @@
     width: 0px;
     height: 314px;
 
-    border-left: 4px dotted #00EB85;
+    border-left: 4px dotted #00eb85;
     position: absolute;
 }
 
@@ -270,7 +272,7 @@
     width: 0px;
     height: 348px;
 
-    border-left: 3px solid #00EB85;
+    border-left: 3px solid #00eb85;
 }
 
 .cameraDistanceFromScreen .screenSideExtraLineVert {
@@ -279,7 +281,7 @@
     width: 0px;
     height: 21px;
 
-    border-left: 3px solid #00EB85;
+    border-left: 3px solid #00eb85;
     position: absolute;
 }
 
@@ -289,7 +291,7 @@
     width: 55px;
     height: 0px;
 
-    border-top: 3px solid #00EB85;
+    border-top: 3px solid #00eb85;
     position: absolute;
 }
 
@@ -312,7 +314,7 @@
     width: 55px;
     height: 0px;
 
-    border-top: 3px solid #00EB85;
+    border-top: 3px solid #00eb85;
     position: absolute;
 }
 
@@ -332,7 +334,7 @@
     left: 816px;
     width: 70px;
 
-    border-top: 4px dotted #00EB85;
+    border-top: 4px dotted #00eb85;
 }
 
 .screenSideCamera {
@@ -342,14 +344,15 @@
     height: 36px;
     transform: matrix(0.97, -0.24, 0.24, 0.97, 0, 0);
 
-    background: transparent linear-gradient(90deg, #FFFFFF 0%, #E8E8E8 23%, #E8E8E8 77%, #FFFFFF 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #ffffff 0%, #e8e8e8 23%, #e8e8e8 77%, #ffffff 100%) 0% 0% no-repeat
+        padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 9px;
     position: absolute;
 }
 
 .screenSideCameraBottom {
-    margin-top:27px;
+    margin-top: 27px;
     width: 39px;
     height: 9px;
 
@@ -370,13 +373,13 @@
 }
 
 .screenTilt .screenSideTiltBox::before {
-    content: " ";
+    content: ' ';
     transform-origin: 0% 100%;
     transform: skew(-75deg);
     width: 350px;
     height: 350px;
     opacity: 0.17;
-    background: transparent linear-gradient(180deg, #00EB85 0%, #00CCCE 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, #00eb85 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
     border-top-left-radius: 350px;
     position: absolute;
     left: 0;
@@ -396,13 +399,13 @@
 }
 
 .cameraRotation .screenSideTiltBox::before {
-    content: " ";
+    content: ' ';
     transform-origin: 0% 100%;
     transform: skew(-75deg);
     width: 350px;
     height: 350px;
     opacity: 0.17;
-    background: transparent linear-gradient(180deg, #00EB85 0%, #00CCCE 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, #00eb85 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
     border-top-left-radius: 350px;
     position: absolute;
     left: 0;
