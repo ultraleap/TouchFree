@@ -136,8 +136,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
                 Vector2 dPerp = virtualScreen.PixelsToMillimeters(dPerpPx);
 
+                // Multiply by confidence to make it harder to use when disused
+                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, distanceFromScreenMm) * confidence;
                 // Update AppliedForce, which is the crux of the AirPush algorithm
-                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, distanceFromScreenMm) * confidence;  // Multiply by confidence to make it harder to use when disused
                 appliedForce += forceChange;
                 appliedForce = Math.Clamp(appliedForce, 0f, 1f);
 
