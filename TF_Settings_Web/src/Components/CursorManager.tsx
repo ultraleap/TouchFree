@@ -5,9 +5,9 @@ export class CursorManager {
     public cursor: TouchlessCursor;
 
     constructor() {
-        let svgCanvas = document.getElementById('svg-cursor');
-        let svgDot = document.getElementById('svg-cursor-dot');
-        let svgRing = document.getElementById('svg-cursor-ring');
+        const svgCanvas = document.querySelector('#svg-cursor');
+        const svgDot = document.querySelector('#svg-cursor-dot');
+        const svgRing = document.querySelector('#svg-cursor-ring');
 
         this.cursor = new SVGCursor(svgCanvas, svgDot, svgRing, 'cx', 'cy');
     }

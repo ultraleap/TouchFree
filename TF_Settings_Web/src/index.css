@@ -15,7 +15,7 @@ code {
     transform-box: fill-box;
     transform-origin: center;
     transform: scale(1);
-    filter: drop-shadow( 0 0 10px rgba(255, 255, 255, .7));
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
 }
 
 #svg-cursor-dot.clicked {
@@ -27,15 +27,15 @@ code {
 }
 
 #svg-cursor-ring {
-    filter: drop-shadow( 0 0 10px rgba(255, 255, 255, .7));
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
 }
 
 #svg-cursor.light #svg-cursor-ring {
     stroke: white;
-    filter: drop-shadow( 0 0 10px rgba(0, 0, 0, .7));
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
 }
 
-#svg-cursor.light #svg-cursor-dot { 
+#svg-cursor.light #svg-cursor-dot {
     fill: white;
-    filter: drop-shadow( 0 0 10px rgba(0, 0, 0, .7));
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
 }
