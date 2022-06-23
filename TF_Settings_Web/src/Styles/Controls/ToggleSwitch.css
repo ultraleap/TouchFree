@@ -6,7 +6,7 @@
     display: inline-block;
     max-width: 60px;
     max-height: 34px;
-    border: 1px solid #FFFFFF29;
+    border: 1px solid #ffffff29;
     border-radius: 34px;
 }
 
@@ -26,29 +26,29 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: linear-gradient(180deg, #5C5C5C, #454545);
-    transition: .4s;
+    background-image: linear-gradient(180deg, #5c5c5c, #454545);
+    transition: 0.4s;
     border-radius: 34px;
-    box-shadow: inset 0px 1px 4px #000000D0;
+    box-shadow: inset 0px 1px 4px #000000d0;
 }
 
 .toggle:before {
     position: absolute;
-    content: "";
+    content: '';
     height: 26px;
     width: 26px;
     left: 4px;
     bottom: 4px;
     background-color: white;
-    background-image: linear-gradient(180deg, #FFFFFF, #D3D3D3);
-    transition: .4s;
+    background-image: linear-gradient(180deg, #ffffff, #d3d3d3);
+    transition: 0.4s;
     border-radius: 50%;
 }
 
-input:checked+.toggle {
-    background-image: linear-gradient(180deg, #00EB85, #00CCCE);
+input:checked + .toggle {
+    background-image: linear-gradient(180deg, #00eb85, #00ccce);
 }
 
-input:checked+.toggle:before {
+input:checked + .toggle:before {
     transform: translateX(26px);
 }

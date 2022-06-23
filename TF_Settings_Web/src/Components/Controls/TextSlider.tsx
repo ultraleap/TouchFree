@@ -1,20 +1,20 @@
-import React, { PointerEvent, RefObject } from "react";
+import React, { PointerEvent, RefObject } from 'react';
 
 import '../../Styles/Controls/ToggleSwitch.css';
 
 interface TextSliderProps {
-    name: string,
-    rangeMin: number,
-    rangeMax: number,
-    leftLabel: string,
-    rightLabel: string,
-    value: number,
-    onChange: (newValue: number) => void,
+    name: string;
+    rangeMin: number;
+    rangeMax: number;
+    leftLabel: string;
+    rightLabel: string;
+    value: number;
+    onChange: (newValue: number) => void;
 }
 
 export class TextSlider extends React.Component<TextSliderProps, {}> {
     public static defaultProps = {
-        increment: 0.1
+        increment: 0.1,
     };
 
     private dragging = false;
@@ -34,12 +34,12 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
         // this function is here purely to pass to the input, preventing it becoming ReadOnly
     }
     private onTextChange(e: React.FormEvent<HTMLInputElement>): void {
-        let hoverStartTime: number = parseFloat(e.currentTarget.value);
+        const hoverStartTime: number = Number.parseFloat(e.currentTarget.value);
         this.props.onChange(hoverStartTime);
     }
 
     private onUpCancel() {
-        this.dragging = false
+        this.dragging = false;
     }
 
     private onDown(event: PointerEvent<HTMLInputElement>) {
@@ -56,29 +56,29 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
     private setValueByPos(xPos: number) {
         if (this.inputElement.current !== null) {
             // Slider height is currently 0.75rem
-            let remValue = this.inputElement.current.clientHeight;
+            const remValue = this.inputElement.current.clientHeight;
 
             // Slider control is 1.5rem wide, so half is 1x remValue, full is 2x remValue
-            let posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth -  (2 * remValue));
-            let outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
+            const posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth - 2 * remValue);
+            const outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
 
-            if (this.props.rangeMin < outputValue &&
-                outputValue < this.props.rangeMax) {
+            if (this.props.rangeMin < outputValue && outputValue < this.props.rangeMax) {
                 this.props.onChange(outputValue);
             }
         }
     }
 
     private lerp(v0: number, v1: number, t: number): number {
-        return v0 * (1 - t) + v1 * t
+        return v0 * (1 - t) + v1 * t;
     }
 
     render() {
-        return(
+        return (
             <label className="backgroundLabel">
                 <p className="sliderLabel">{this.props.name}</p>
                 <div className="sliderContainer">
-                    <input type="range"
+                    <input
+                        type="range"
                         step={0.05}
                         min={this.props.rangeMin}
                         max={this.props.rangeMax}
@@ -90,18 +90,21 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                         onPointerUp={this.onUpCancel.bind(this)}
                         onPointerCancel={this.onUpCancel.bind(this)}
                         id="myRange"
-                        ref={this.inputElement}/>
+                        ref={this.inputElement}
+                    />
                     <div className="sliderLabelContainer">
                         <label className="leftSliderLabel">{this.props.leftLabel}</label>
                         <label className="rightSliderLabel">{this.props.rightLabel}</label>
                     </div>
                 </div>
                 <label className="sliderTextContainer">
-                    <input type="number"
-                           step={0.05}
-                           className="sliderText"
-                           value={this.props.value}
-                           onChange={this.onTextChange.bind(this)}/>
+                    <input
+                        type="number"
+                        step={0.05}
+                        className="sliderText"
+                        value={this.props.value}
+                        onChange={this.onTextChange.bind(this)}
+                    />
                 </label>
             </label>
         );

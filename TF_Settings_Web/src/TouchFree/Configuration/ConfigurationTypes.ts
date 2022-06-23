@@ -161,11 +161,11 @@ export interface Vector {
     // Property: X
     // The X co-ordinate of the vector
     X: number;
-    
+
     // Property: Y
     // The Y co-ordinate of the vector
     Y: number;
-    
+
     // Property: Z
     // The Z co-ordinate of the vector
     Z: number;
