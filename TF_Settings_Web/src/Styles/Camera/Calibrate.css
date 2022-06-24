@@ -1,13 +1,14 @@
 .instructions {
-    margin-top: -40px;
     display: block;
     align-items: center;
+    height: 320px;
 }
 
 .instructions > h1 {
     color: white;
     font-size: 3.5rem;
     font-family: MontserratRegular, Arial;
+    margin-top: 0;
     margin-bottom: 10px;
 }
 
@@ -46,7 +47,6 @@
     margin-left: calc(50% - 50px);
     width: 80px;
     height: 80px;
-    position: relative;
     display: flex;
     border-radius: 50%;
     box-shadow: 0px 0px 15px #00eb85;
@@ -60,8 +60,9 @@
     margin-top: 10px;
 }
 
-.instructions > #interactionGuide {
-    margin-top: 250px;
-    width: 700px;
-    height: 700px;
+.interactionGuide {
+    display: block;
+    margin: auto;
+    width: 780px;
+    height: 600px;
 }

@@ -45,7 +45,7 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
                 onClick();
             }}
         >
-            <img src={icon} alt={alt} style={iconStyle} />
+            <img style={iconStyle} src={icon} alt={alt} />
             <h1 style={titleStyle}>{title}</h1>
             <p style={textStyle}>{text}</p>
         </button>

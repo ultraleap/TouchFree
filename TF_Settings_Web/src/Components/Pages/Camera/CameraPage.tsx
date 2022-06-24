@@ -6,7 +6,8 @@ import { Route, Routes } from 'react-router-dom';
 import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
 import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
 import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
-import CameraCalibrateTop from './CalibrateTop';
+import CameraCalibrateBottom from './CameraCalibrateBottom';
+import CameraCalibrateTop from './CameraCalibrateTop';
 import CameraPositionPage from './CameraPosition';
 import CameraSetupSelection from './CameraSetupSelection';
 import { ManualSetup } from './ManualSetup';
@@ -41,6 +42,7 @@ const CameraPage = () => {
                 <Route path="" element={<CameraSetupSelection />} />
                 <Route path="quick" element={<CameraPositionPage configPosition={activePosition} />} />
                 <Route path="quick/:position/calibrateTop" element={<CameraCalibrateTop />} />
+                <Route path="quick/:position/calibrateBottom" element={<CameraCalibrateBottom />} />
 
                 <Route path="manual" element={<ManualSetup />} />
             </Routes>
