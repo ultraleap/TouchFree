@@ -62,6 +62,8 @@ namespace Ultraleap.TouchFree.Library
         HOVER,
         PUSH,
         TOUCHPLANE,
+        VELOCITYSWIPE,
+        AIRCLICK,
     }
 
     [Flags]
@@ -143,7 +145,9 @@ namespace Ultraleap.TouchFree.Library
         INDEX_STABLE,
         INDEX_TIP,
         WRIST,
-        NEAREST
+        NEAREST,
+        HAND_POINTING,
+        HAND_PROJECTION
     }
 
     [Serializable]
