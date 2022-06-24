@@ -43,98 +43,63 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             WebsocketInputAction converted = new WebsocketInputAction(_data);
 
-            CommunicationWrapper<WebsocketInputAction> message =
-                new CommunicationWrapper<WebsocketInputAction>(ActionCode.INPUT_ACTION.ToString(), converted);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(converted, ActionCode.INPUT_ACTION);
         }
 
         public void SendHandPresenceEvent(HandPresenceEvent _response)
         {
-            CommunicationWrapper<HandPresenceEvent> message =
-                new CommunicationWrapper<HandPresenceEvent>( ActionCode.HAND_PRESENCE_EVENT.ToString(), _response);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(_response, ActionCode.HAND_PRESENCE_EVENT);
         }
 
         public void SendHandshakeResponse(ResponseToClient _response)
         {
-            CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(), _response);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(_response, ActionCode.VERSION_HANDSHAKE_RESPONSE);
         }
 
         public void SendConfigChangeResponse(ResponseToClient _response)
         {
-            CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(ActionCode.CONFIGURATION_RESPONSE.ToString(), _response);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(_response, ActionCode.CONFIGURATION_RESPONSE);
         }
 
         public void SendConfigFileChangeResponse(ResponseToClient _response)
         {
-            CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE.ToString(), _response);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(_response, ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE);
         }
 
         public void SendConfigState(ConfigState _configState)
         {
-            CommunicationWrapper<ConfigState> message =
-                new CommunicationWrapper<ConfigState>(ActionCode.CONFIGURATION_STATE.ToString(), _configState);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(_configState, ActionCode.CONFIGURATION_STATE);
         }
 
         public void SendConfigFile(ConfigState _configState)
         {
-            CommunicationWrapper<ConfigState> message =
-                new CommunicationWrapper<ConfigState>(ActionCode.CONFIGURATION_FILE_STATE.ToString(), _configState);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(_configState, ActionCode.CONFIGURATION_FILE_STATE);
         }
 
         public void SendStatusResponse(ResponseToClient _response)
         {
-            CommunicationWrapper<ResponseToClient> message =
-                new CommunicationWrapper<ResponseToClient>(ActionCode.SERVICE_STATUS_RESPONSE.ToString(), _response);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
-
-            Send(jsonMessage);
+            SendResponse(_response, ActionCode.SERVICE_STATUS_RESPONSE);
         }
 
         public void SendStatus(ServiceStatus _status)
         {
-            CommunicationWrapper<ServiceStatus> message =
-                new CommunicationWrapper<ServiceStatus>(ActionCode.SERVICE_STATUS.ToString(), _status);
+            SendResponse(_status, ActionCode.SERVICE_STATUS);
+        }
+
+        public void SendQuickSetupResponse(ResponseToClient _response)
+        {
+            SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
+        }
+
+        private void SendResponse<T>(T _response, ActionCode actionCode)
+        {
+            CommunicationWrapper<T> message =
+                new CommunicationWrapper<T>(actionCode.ToString(), _response);
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
-            Send(jsonMessage);
-        }
-
-        private void Send(string message)
-        {
             socket.SendAsync(
-                Encoding.UTF8.GetBytes(message),
+                Encoding.UTF8.GetBytes(jsonMessage),
                 WebSocketMessageType.Text,
                 true,
                 CancellationToken.None);
@@ -212,6 +177,9 @@ namespace Ultraleap.TouchFree.Service.Connection
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_FILE:
                     receiver.configFileRequestQueue.Enqueue(content);
+                    break;
+                case ActionCode.QUICK_SETUP:
+                    receiver.quickSetupQueue.Enqueue(content);
                     break;
 
                 case ActionCode.INPUT_ACTION:

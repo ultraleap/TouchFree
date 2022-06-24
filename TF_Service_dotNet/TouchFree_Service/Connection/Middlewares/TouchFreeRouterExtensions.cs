@@ -45,6 +45,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         {
             var configManager = new ConfigManager();
             services.AddSingleton<IConfigManager>(configManager);
+            services.AddSingleton<IQuickSetupHandler, QuickSetupHandler>();
             var watcher = new ConfigFileWatcher(configManager);
 
             services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;

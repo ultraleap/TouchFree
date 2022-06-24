@@ -13,6 +13,13 @@ namespace Ultraleap.TouchFree.Library
         private const int initialWaitTimeSeconds = 1;
         private bool ShouldConnect = false;
 
+        private TrackingMode currentTrackingMode;
+
+        public TrackingMode CurrentTrackingMode
+        {
+            get { return currentTrackingMode; }
+        }
+
         public TrackingConnectionManager(IConfigManager _configManager)
         {
             configManager = _configManager;
@@ -136,6 +143,8 @@ namespace Ultraleap.TouchFree.Library
         void SetTrackingMode(TrackingMode _mode)
         {
             TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
+
+            currentTrackingMode = _mode;
 
             switch (_mode)
             {

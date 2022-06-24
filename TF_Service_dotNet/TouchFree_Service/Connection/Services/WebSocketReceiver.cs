@@ -18,16 +18,19 @@ namespace Ultraleap.TouchFree.Service.Connection
         public ConcurrentQueue<string> requestServiceStatusQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configFileChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configFileRequestQueue = new ConcurrentQueue<string>();
+        public ConcurrentQueue<string> quickSetupQueue = new ConcurrentQueue<string>();
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
         private readonly IConfigManager configManager;
+        private readonly IQuickSetupHandler quickSetupHandler;
 
-        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr, IConfigManager _configManager)
+        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr, IConfigManager _configManager, IQuickSetupHandler _quickSetupHandler)
         {
             clientMgr = _clientMgr;
             updateBehaviour = _updateBehaviour;
             configManager = _configManager;
+            quickSetupHandler = _quickSetupHandler;
 
             updateBehaviour.OnUpdate += Update;
         }
@@ -41,6 +44,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             CheckQueue(configFileChangeQueue, HandleConfigFileChange);
             CheckQueue(configFileRequestQueue, HandleConfigFileRequest);
+            CheckQueue(quickSetupQueue, HandleQuickSetupCall);
         }
 
         void CheckQueue(ConcurrentQueue<string> queue, Action<string> handler)
@@ -104,6 +108,32 @@ namespace Ultraleap.TouchFree.Service.Connection
                 physical);
 
             clientMgr.SendConfigFile(currentConfig);
+        }
+
+        void HandleQuickSetupCall(string _content)
+        {
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+
+            //// Explicitly check for requestID because it is the only required key
+            //if (!RequestIdExists(contentObj))
+            //{
+            //    ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
+            //    response.message = "Quick Setup call failed. This is due to a missing or invalid requestID";
+
+            //    // This is a failed request, do not continue with sending the configuration,
+            //    // the Client will have no way to handle the config state
+            //    clientMgr.SendQuickSetupResponse(response);
+            //    return;
+            //}
+
+            if (_content.ToLower().Contains("top"))
+            {
+                quickSetupHandler.HandleQuickSetupCall(QuickSetupPosition.Top);
+            }
+            else
+            {
+                quickSetupHandler.HandleQuickSetupCall(QuickSetupPosition.Bottom);
+            }
         }
 
         void HandleGetStatusRequest(string _content)
