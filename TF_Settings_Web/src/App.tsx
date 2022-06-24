@@ -5,7 +5,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import ControlBar from './Components/ControlBar';
 import { CursorManager } from './Components/CursorManager';
-import { CameraPage } from './Components/Pages/Camera/CameraPage';
+import CameraPage from './Components/Pages/Camera/CameraPage';
 import { InteractionsPage } from './Components/Pages/InteractionsPage';
 import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
 import { ServiceStatus } from './TouchFree/Connection/TouchFreeServiceTypes';
@@ -19,6 +19,16 @@ const App: React.FC = () => {
 
     useEffect(() => {
         ConnectionManager.init();
+
+        ConnectionManager.AddConnectionListener(() => {
+            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+                console.log('CONNECT');
+                const status = detail.trackingServiceState;
+                if (status) {
+                    setTfStatus(status);
+                }
+            });
+        });
         const controller: WebInputController = new WebInputController();
 
         const timerID = window.setInterval(() => {
@@ -36,6 +46,8 @@ const App: React.FC = () => {
         }
 
         return () => {
+            console.log('DISMOUNT');
+
             controller.disconnect();
             clearInterval(timerID);
         };
@@ -44,7 +56,8 @@ const App: React.FC = () => {
     return (
         <div className="app" ref={cursorParent}>
             <ControlBar tfStatus={tfStatus} />
-            <div style={{ marginTop: '170px' }}>
+            {/* Margin to */}
+            <div className="pageContent">
                 <Routes>
                     <Route path="camera/*" element={<CameraPage />} />
                     <Route path="interactions/*" element={<InteractionsPage />} />

@@ -1,62 +1,13 @@
 @font-face {
-    font-family: 'NowBlack';
-    src: url('./Now FL/Now-Black.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NowBold';
-    src: url('./Now FL/Now-Bold.otf') format('opentype');
+    font-family: 'MontserratBold';
+    src: url('./Montserrat/Montserrat-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'NowExtraBold';
-    src: url('./Now FL/Now-ExtraBold.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NowExtraLight';
-    src: url('./Now FL/Now-ExtraLight.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NowLight';
-    src: url('./Now FL/Now-Light.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NowMedium';
-    src: url('./Now FL/Now-Medium.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NowRegular';
-    src: url('./Now FL/Now-Regular.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NowSemiBold';
-    src: url('./Now FL/Now-SemiBold.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NowThin';
-    src: url('./Now FL/Now-Thin.otf') format('opentype');
+    font-family: 'MontserratRegular';
+    src: url('./Montserrat/Montserrat-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }

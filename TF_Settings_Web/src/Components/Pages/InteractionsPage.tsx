@@ -212,7 +212,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
     }
 
     render(): JSX.Element {
-        let coreBody: JSX.Element = <div style={{ minHeight: '900px' }} />;
+        let coreBody: JSX.Element = <div />;
         const interactionControls: JSX.Element[] = [];
         const zoneControls: JSX.Element[] = [];
 

@@ -4,7 +4,7 @@ a {
 
 .tabButton {
     cursor: default;
-    padding-top: 1rem;
+    padding-top: 1.3rem;
     align-self: stretch;
 
     border-top-left-radius: 1.2rem;
@@ -14,12 +14,16 @@ a {
 
     flex: 1 1 auto;
 
-    font-family: 'Museo Sans', NowRegular, Arial;
+    font-family: MontserratRegular, Arial;
     color: white;
-    font-size: 2.5rem;
+    font-size: 2.4rem;
 }
 
 .tabButtonActive {
     background-color: #222222;
     border-top-color: #222222;
+}
+
+.tabButtonHovered {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #00eb85, 0 0 40px #00eb85, 0 0 50px #00eb85;
 }

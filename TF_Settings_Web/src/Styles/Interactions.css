@@ -26,8 +26,8 @@
     height: 4rem;
     min-width: 110px;
 
-    font-family: 'Museo Sans', NowRegular, Arial;
-    font-size: 1.5rem;
+    font-family: MontserratRegular, Arial;
+    font-size: 1.4rem;
     color: white;
 
     box-shadow: 0 0 6px 0 rgba(157, 96, 212, 0.5);
@@ -43,9 +43,11 @@
 }
 
 .tfButton > p {
-    font-family: 'NowBold';
+    font-family: 'MontserratBold';
     display: inline-block;
     margin: 0;
+    font-size: 22px;
+    padding-bottom: 3px;
     vertical-align: middle;
     text-align: center;
 }
@@ -89,8 +91,8 @@ video.InteractionPreview {
 
 .backgroundLabel {
     text-align: left;
-    font-size: 1.5rem;
-    font-family: 'Museo Sans', NowRegular, Arial;
+    font-size: 1.4rem;
+    font-family: MontserratRegular, Arial;
     color: white;
 
     display: flex;

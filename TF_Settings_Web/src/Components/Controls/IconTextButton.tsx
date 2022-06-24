@@ -5,7 +5,8 @@ import React from 'react';
 interface IconTextButtonProps {
     buttonStyle: React.CSSProperties;
     icon: string;
-    iconStyle: React.CSSProperties;
+    alt: string;
+    iconStyle?: React.CSSProperties;
     title: string;
     titleStyle?: React.CSSProperties;
     text: string;
@@ -16,6 +17,7 @@ interface IconTextButtonProps {
 const IconTextButton: React.FC<IconTextButtonProps> = ({
     buttonStyle,
     icon,
+    alt,
     iconStyle,
     title,
     titleStyle,
@@ -33,7 +35,6 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
             }`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
-            // onPointerEnter={() => setHovered(true)}
             onPointerLeave={() => {
                 setHovered(false);
                 setPressed(false);
@@ -44,7 +45,7 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
                 onClick();
             }}
         >
-            <img src={icon} style={iconStyle} />
+            <img src={icon} alt={alt} style={iconStyle} />
             <h1 style={titleStyle}>{title}</h1>
             <p style={textStyle}>{text}</p>
         </button>

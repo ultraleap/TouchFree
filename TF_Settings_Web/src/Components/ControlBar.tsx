@@ -1,11 +1,12 @@
 import '../Styles/ControlBar.css';
 
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import backArrow from '../Images/Back_Arrow.svg';
 import logo from '../Images/Logo.png';
 import { TrackingServiceState } from '../TouchFree/TouchFreeToolingTypes';
+import IconTextButton from './Controls/IconTextButton';
 import TabSelector from './Controls/TabSelector';
 import { StatusIndicator } from './StatusIndicator';
 
@@ -13,11 +14,38 @@ interface ControlBarProps {
     tfStatus: TrackingServiceState;
 }
 
+const backButtonStyle: CSSProperties = {
+    width: '180px',
+    height: '60px',
+    borderRadius: '33px',
+    marginLeft: '1%',
+    marginBottom: '2%',
+    background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+};
+
+const backButtonIconStyle: CSSProperties = {
+    margin: '0',
+    marginRight: '0.8rem',
+};
+
+const backButtonTitleStyle: CSSProperties = {
+    fontSize: '28px',
+    padding: '0',
+    margin: '0',
+};
+
 const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
-    const location = useLocation();
+    const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    return (
+    const hideBar = pathname.includes('calibrate');
+
+    return hideBar ? (
+        <></>
+    ) : (
         <div className="overallContainerStyle">
             <div className="topBarStyle">
                 <StatusIndicator tfStatus={tfStatus} />
@@ -25,16 +53,23 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
                 <div className="emptyContainer" />
             </div>
             <div className="tabBarStyle">
-                {location.pathname === '/camera' || location.pathname === '/interactions' ? (
+                {pathname === '/camera' || pathname === '/interactions' ? (
                     <div className="tabBarStyle">
                         <TabSelector name="Camera" />
                         <TabSelector name="Interactions" />
                     </div>
                 ) : (
-                    <button onClick={() => navigate(-1)} className="backButtonStyle">
-                        <img src={backArrow} alt="Arrow pointing back" className="arrowStyle" />
-                        <p className="textStyle">Back</p>
-                    </button>
+                    <IconTextButton
+                        buttonStyle={backButtonStyle}
+                        icon={backArrow}
+                        alt="Arrow pointing back"
+                        iconStyle={backButtonIconStyle}
+                        title="Back"
+                        titleStyle={backButtonTitleStyle}
+                        text={''}
+                        textStyle={{ display: 'none' }}
+                        onClick={() => navigate(-1)}
+                    />
                 )}
             </div>
         </div>

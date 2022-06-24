@@ -1,10 +1,11 @@
 import '../../../Styles/Camera/CameraPage.css';
 
-import { Component } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import CameraBelowIcon from '../../../Images/Camera_Below.svg';
-import CameraFacingScreenIcon from '../../../Images/Camera_Facing_Screen.svg';
-import CameraFacingUserIcon from '../../../Images/Camera_Facing_User.svg';
+import CameraBelowIcon from '../../../Images/Camera/Camera_Below.svg';
+import CameraFacingScreenIcon from '../../../Images/Camera/Camera_Facing_Screen.svg';
+import CameraFacingUserIcon from '../../../Images/Camera/Camera_Facing_User.svg';
 import IconTextButton from '../../Controls/IconTextButton';
 import { PositionType } from './CameraPage';
 
@@ -13,51 +14,50 @@ const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };
 const textStyle: React.CSSProperties = { color: '#00EB85', opacity: '1' };
 
 interface CameraPositionProps {
-    onClick: (position: PositionType) => void;
     configPosition: PositionType;
 }
 
-export class CameraPositionPage extends Component<CameraPositionProps, {}> {
-    constructor(props: CameraPositionProps) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <div className="titleLine">
-                    <h1> Where is Your Camera Positioned? </h1>
-                </div>
-                <div className="IconTextButtonDiv">
-                    <IconTextButton
-                        buttonStyle={buttonStyle}
-                        icon={CameraFacingUserIcon}
-                        iconStyle={iconStyle}
-                        title="Camera Above Facing User"
-                        text={this.props.configPosition === 'FaceUser' ? 'Current Setup' : ''}
-                        textStyle={textStyle}
-                        onClick={() => this.props.onClick('FaceUser')}
-                    />
-                    <IconTextButton
-                        buttonStyle={buttonStyle}
-                        icon={CameraFacingScreenIcon}
-                        iconStyle={iconStyle}
-                        title="Camera Above Facing Screen"
-                        text={this.props.configPosition === 'FaceScreen' ? 'Current Setup' : ''}
-                        textStyle={textStyle}
-                        onClick={() => this.props.onClick('FaceScreen')}
-                    />
-                    <IconTextButton
-                        buttonStyle={{ ...buttonStyle, marginTop: '2.5%' }}
-                        icon={CameraBelowIcon}
-                        iconStyle={iconStyle}
-                        title="Camera Below"
-                        text={this.props.configPosition === 'Below' ? 'Current Setup' : ''}
-                        textStyle={textStyle}
-                        onClick={() => this.props.onClick('Below')}
-                    />
-                </div>
+const CameraPosition: React.FC<CameraPositionProps> = ({ configPosition }) => {
+    const navigate = useNavigate();
+    return (
+        <div>
+            <div className="titleLine">
+                <h1> Where is Your Camera Positioned? </h1>
             </div>
-        );
-    }
-}
+            <div className="IconTextButtonDiv">
+                <IconTextButton
+                    buttonStyle={buttonStyle}
+                    icon={CameraFacingUserIcon}
+                    alt="Icon for Camera Facing User option"
+                    iconStyle={iconStyle}
+                    title="Camera Above Facing User"
+                    text={configPosition === 'FaceUser' ? 'Current Setup' : ''}
+                    textStyle={textStyle}
+                    onClick={() => navigate('FaceUser/calibrateTop')}
+                />
+                <IconTextButton
+                    buttonStyle={buttonStyle}
+                    icon={CameraFacingScreenIcon}
+                    alt="Icon for Camera Facing Screen option"
+                    iconStyle={iconStyle}
+                    title="Camera Above Facing Screen"
+                    text={configPosition === 'FaceScreen' ? 'Current Setup' : ''}
+                    textStyle={textStyle}
+                    onClick={() => navigate('FaceScreen/calibrateTop')}
+                />
+                <IconTextButton
+                    buttonStyle={{ ...buttonStyle, marginTop: '2.5%' }}
+                    icon={CameraBelowIcon}
+                    alt="Icon for Camera Below Screen option"
+                    iconStyle={iconStyle}
+                    title="Camera Below"
+                    text={configPosition === 'Below' ? 'Current Setup' : ''}
+                    textStyle={textStyle}
+                    onClick={() => navigate('Below/calibrateTop')}
+                />
+            </div>
+        </div>
+    );
+};
+
+export default CameraPosition;

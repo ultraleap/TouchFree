@@ -1,13 +1,12 @@
 .app {
     text-align: center;
-    max-width: 1080px;
-    top: '0px';
-    bottom: '0px';
-    position: 'absolute';
-    height: '100%';
-    width: '1080px';
-    display: 'flex';
-    flex-direction: 'column';
+    height: 1920px;
+    width: 1080px;
     overflow-x: hidden;
     background-color: #222222;
+}
+
+.pageContent {
+    margin-top: 170px;
+    height: calc(100% - 170px);
 }

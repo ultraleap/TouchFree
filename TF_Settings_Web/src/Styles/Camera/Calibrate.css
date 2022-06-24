@@ -1,0 +1,67 @@
+.instructions {
+    margin-top: -40px;
+    display: block;
+    align-items: center;
+}
+
+.instructions > h1 {
+    color: white;
+    font-size: 3.5rem;
+    font-family: MontserratRegular, Arial;
+    margin-bottom: 10px;
+}
+
+.arrow {
+    margin-left: calc(50% - 30px);
+    width: 60px;
+    height: 60px;
+    opacity: 50%;
+    position: relative;
+    display: flex;
+}
+
+.arrow > #downLine {
+    width: 8px;
+    background-color: #01eb85;
+    height: 40px;
+    margin-left: 26px;
+    border-radius: 5px;
+}
+
+.arrow > #arrowHead {
+    border: solid #01eb85;
+    width: 8px;
+    height: 8px;
+    border-width: 0px 8px 8px 0;
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    padding: 8px;
+    transform: rotate(45deg);
+    border-radius: 5px;
+}
+
+.instructions > #touchCircle {
+    margin-top: 10px;
+    margin-left: calc(50% - 50px);
+    width: 80px;
+    height: 80px;
+    position: relative;
+    display: flex;
+    border-radius: 50%;
+    box-shadow: 0px 0px 15px #00eb85;
+    border: 10px solid #00eb85;
+}
+
+.instructions > #touchCircle > img {
+    width: 60px;
+    height: 60px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.instructions > #interactionGuide {
+    margin-top: 250px;
+    width: 700px;
+    height: 700px;
+}
