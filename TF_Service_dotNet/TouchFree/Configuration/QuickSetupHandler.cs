@@ -26,11 +26,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             if (position == QuickSetupPosition.Top)
             {
-                topHandPosition = handManager.PrimaryHand?.Fingers?.SingleOrDefault(x => x.Type == Leap.Finger.FingerType.TYPE_INDEX).TipPosition;
+                topHandPosition = handManager.RawHandPositions.FirstOrDefault();
             }
             else if (position == QuickSetupPosition.Bottom && topHandPosition != null)
             {
-                var bottomHandPosition = handManager.PrimaryHand?.Fingers?.SingleOrDefault(x => x.Type == Leap.Finger.FingerType.TYPE_INDEX).TipPosition;
+                Leap.Vector? bottomHandPosition = handManager.RawHandPositions.FirstOrDefault();
 
                 if (bottomHandPosition != null)
                 {
@@ -64,7 +64,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
         /// </summary>
         public Vector3 TopCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
         {
-            return Vector3.Lerp(bottomTouch, topTouch, EDGE_SCALING_FACTOR);
+            var difference = topTouch - bottomTouch;
+            return bottomTouch + (difference * EDGE_SCALING_FACTOR);
         }
 
         /// <summary>
@@ -74,7 +75,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
         /// </summary>
         public Vector3 BottomCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
         {
-            return Vector3.Lerp(topTouch, bottomTouch, EDGE_SCALING_FACTOR);
+            var difference = topTouch - bottomTouch;
+            return topTouch - (difference * EDGE_SCALING_FACTOR);
         }
 
         /// <summary>
@@ -121,11 +123,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 // in a calculation.
                 rotationAngles.X *= -1f;
             }
-            Vector3 rotatedVector = Vector3.Transform(bottomEdgeRef, Quaternion.CreateFromYawPitchRoll(rotationAngles.X, rotationAngles.Y, rotationAngles.Z));
+            var quaternion = Quaternion.CreateFromYawPitchRoll(rotationAngles.Z, rotationAngles.Y, rotationAngles.X);
+            Vector3 rotatedVector = Vector3.Transform(bottomEdgeRef, quaternion);
 
-            // Multiply by -1 so the vector is from screen to camera
-            Vector3 leapPosition = rotatedVector * -1f;
-            return leapPosition;
+            return rotatedVector;
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Ultraleap.TouchFree.Library.Configuration;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Leap;
-
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
 {
@@ -17,6 +18,8 @@ namespace Ultraleap.TouchFree.Library
         // PrimaryHand is lost.
         public Hand SecondaryHand;
         public HandChirality secondaryChirality;
+
+        public List<Vector> RawHandPositions;
 
         public event Action HandFound;
         public event Action HandsLost;
@@ -164,6 +167,8 @@ namespace Ultraleap.TouchFree.Library
             {
                 HandFound?.Invoke();
             }
+
+            RawHandPositions = currentFrame.Hands.Select(x => x.Fingers.Single(y => y.Type == Finger.FingerType.TYPE_INDEX).TipPosition).ToList();
 
             handsLastFrame = handCount;
 
