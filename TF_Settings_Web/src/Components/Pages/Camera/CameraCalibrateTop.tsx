@@ -7,7 +7,6 @@ import { CalibrateCancelButton, CalibrateInstructions } from './CalibrationCompo
 import { PositionType } from './CameraPage';
 
 const CameraCalibrateTop = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const position = useParams().position as PositionType;
     const navigate = useNavigate();
     return (
