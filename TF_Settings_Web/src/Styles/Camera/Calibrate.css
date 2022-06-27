@@ -66,3 +66,43 @@
     width: 780px;
     height: 600px;
 }
+
+.setupCompleteText {
+    color: white;
+    font-size: 5rem;
+    font-family: MontserratRegular, Arial;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.setupPracticeButton {
+    width: 65%;
+    height: 100%;
+    text-align: center;
+    font-size: 3rem;
+    font-family: MontserratRegular, Arial;
+    background-color: #00dbac;
+    color: black;
+    border-radius: 25px;
+}
+
+.setupPracticeButtonHovered {
+    transform: scale(1.02);
+    background: transparent linear-gradient(107deg, #00ccce 0%, #00eb85 100%) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 30px #00eb85;
+}
+
+.setupPracticeButtonPressed {
+    transform: scale(0.98);
+    background: transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 25px #000000;
+}
+
+.setupCompleteOptionsContainer {
+    height: 35%;
+    margin-top: 20%;
+    justify-content: space-evenly;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}

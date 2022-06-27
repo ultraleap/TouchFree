@@ -59,3 +59,28 @@ export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ bu
         />
     );
 };
+
+export const CalibratePracticeButton = () => {
+    const [hovered, setHovered] = React.useState<boolean>(false);
+    const [pressed, setPressed] = React.useState<boolean>(false);
+
+    return (
+        <button
+            className={`setupPracticeButton ${hovered ? ' setupPracticeButtonHovered' : ''} ${
+                pressed ? ' setupPracticeButtonPressed' : ''
+            }`}
+            onPointerOver={() => setHovered(true)}
+            onPointerLeave={() => {
+                setHovered(false);
+                setPressed(false);
+            }}
+            onPointerDown={() => setPressed(true)}
+            onPointerUp={() => {
+                setPressed(false);
+                console.log('CONFETTI');
+            }}
+        >
+            Practice Button Press
+        </button>
+    );
+};

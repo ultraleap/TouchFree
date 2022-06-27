@@ -7,6 +7,7 @@ import { ConfigurationManager } from '../../../TouchFree/Configuration/Configura
 import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
 import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
 import CameraCalibrateBottom from './CameraCalibrateBottom';
+import CameraCalibrateComplete from './CameraCalibrateComplete';
 import CameraCalibrateTop from './CameraCalibrateTop';
 import CameraPositionPage from './CameraPosition';
 import CameraSetupSelection from './CameraSetupSelection';
@@ -43,6 +44,7 @@ const CameraPage = () => {
                 <Route path="quick" element={<CameraPositionPage configPosition={activePosition} />} />
                 <Route path="quick/:position/calibrateTop" element={<CameraCalibrateTop />} />
                 <Route path="quick/:position/calibrateBottom" element={<CameraCalibrateBottom />} />
+                <Route path="quick/:position/calibrateComplete" element={<CameraCalibrateComplete />} />
 
                 <Route path="manual" element={<ManualSetup />} />
             </Routes>
