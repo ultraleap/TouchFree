@@ -22,7 +22,6 @@ const App: React.FC = () => {
 
         ConnectionManager.AddConnectionListener(() => {
             ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-                console.log('CONNECT');
                 const status = detail.trackingServiceState;
                 if (status) {
                     setTfStatus(status);
@@ -46,8 +45,6 @@ const App: React.FC = () => {
         }
 
         return () => {
-            console.log('DISMOUNT');
-
             controller.disconnect();
             clearInterval(timerID);
         };
@@ -56,7 +53,6 @@ const App: React.FC = () => {
     return (
         <div className="app" ref={cursorParent}>
             <ControlBar tfStatus={tfStatus} />
-            {/* Margin to */}
             <div className="pageContent">
                 <Routes>
                     <Route path="camera/*" element={<CameraPage />} />

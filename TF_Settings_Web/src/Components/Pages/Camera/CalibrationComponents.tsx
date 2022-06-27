@@ -1,7 +1,9 @@
 import '../../../Styles/Camera/Calibrate.css';
 
-import React from 'react';
+import { CreateTypes } from 'canvas-confetti';
+import React, { useRef } from 'react';
 import { CSSProperties } from 'react';
+import ReactCanvasConfetti from 'react-canvas-confetti';
 import { useNavigate } from 'react-router-dom';
 
 import FingerprintIcon from '../../../Images/Camera/Fingerprint_Icon.svg';
@@ -60,27 +62,55 @@ export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ bu
     );
 };
 
+const canvasStyles: CSSProperties = {
+    position: 'fixed',
+    pointerEvents: 'none',
+    width: '1080px',
+    height: '100%',
+    top: 0,
+    left: 0,
+};
+
 export const CalibratePracticeButton = () => {
     const [hovered, setHovered] = React.useState<boolean>(false);
     const [pressed, setPressed] = React.useState<boolean>(false);
 
+    const refAnimationInstance = useRef<CreateTypes | null>(null);
+    const fire = () => {
+        refAnimationInstance.current &&
+            refAnimationInstance.current({
+                spread: 360,
+                startVelocity: 50,
+                origin: { y: 0.45 },
+                particleCount: 100,
+                gravity: 0.4,
+                scalar: 1.5,
+            });
+    };
+
     return (
-        <button
-            className={`setupPracticeButton ${hovered ? ' setupPracticeButtonHovered' : ''} ${
-                pressed ? ' setupPracticeButtonPressed' : ''
-            }`}
-            onPointerOver={() => setHovered(true)}
-            onPointerLeave={() => {
-                setHovered(false);
-                setPressed(false);
-            }}
-            onPointerDown={() => setPressed(true)}
-            onPointerUp={() => {
-                setPressed(false);
-                console.log('CONFETTI');
-            }}
-        >
-            Practice Button Press
-        </button>
+        <>
+            <button
+                className={`setupPracticeButton ${hovered ? ' setupPracticeButtonHovered' : ''} ${
+                    pressed ? ' setupPracticeButtonPressed' : ''
+                }`}
+                onPointerOver={() => setHovered(true)}
+                onPointerLeave={() => {
+                    setHovered(false);
+                    setPressed(false);
+                }}
+                onPointerDown={() => setPressed(true)}
+                onPointerUp={() => {
+                    setPressed(false);
+                    fire();
+                }}
+            >
+                Practice Button Press
+            </button>
+            <ReactCanvasConfetti
+                refConfetti={(instance) => (refAnimationInstance.current = instance)}
+                style={canvasStyles}
+            />
+        </>
     );
 };
