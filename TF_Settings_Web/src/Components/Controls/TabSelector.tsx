@@ -1,31 +1,40 @@
 import '../../Styles/Controls/TabSelector.css';
 
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface TabSelectorProps {
     name: string;
+    isActiveTab: boolean;
+    onClick: () => void;
 }
 
-const TabSelector: React.FC<TabSelectorProps> = ({ name }) => {
+const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
+
+    const handleClick = () => {
+        if (!isActiveTab) {
+            navigate(`/${lowerCaseName}`);
+            onClick();
+        }
+    };
 
     const navigate = useNavigate();
     const lowerCaseName = name.toLowerCase();
     return (
-        <NavLink
-            to={`/${lowerCaseName}`}
-            className={({ isActive }) =>
-                isActive ? 'tabButton tabButtonActive' : hovered ? 'tabButton tabButtonHovered' : 'tabButton'
-            }
-            onPointerUp={() => navigate(`/${lowerCaseName}`)}
+        <button
+            className={isActiveTab ? 'tabButton tabButtonActive' : hovered ? 'tabButton tabButtonHovered' : 'tabButton'}
+            onPointerUp={handleClick}
+            onKeyDown={(keyEvent) => {
+                if (keyEvent.key === 'Enter') handleClick();
+            }}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
                 setHovered(false);
             }}
         >
             {name}
-        </NavLink>
+        </button>
     );
 };
 

@@ -44,6 +44,9 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
                 setPressed(false);
                 onClick();
             }}
+            onKeyDown={(keyEvent) => {
+                if (keyEvent.key === 'Enter') onClick();
+            }}
         >
             <img style={iconStyle} src={icon} alt={alt} />
             <h1 style={titleStyle}>{title}</h1>

@@ -66,7 +66,7 @@ const canvasStyles: CSSProperties = {
     position: 'fixed',
     pointerEvents: 'none',
     width: '1080px',
-    height: '100%',
+    height: '1920px',
     top: 0,
     left: 0,
 };
@@ -81,7 +81,7 @@ export const CalibratePracticeButton = () => {
             refAnimationInstance.current({
                 spread: 360,
                 startVelocity: 50,
-                origin: { y: 0.45 },
+                origin: { y: 0.42 },
                 particleCount: 100,
                 gravity: 0.4,
                 scalar: 1.5,
@@ -103,6 +103,9 @@ export const CalibratePracticeButton = () => {
                 onPointerUp={() => {
                     setPressed(false);
                     fire();
+                }}
+                onKeyDown={(keyEvent) => {
+                    if (keyEvent.key === 'Enter') fire();
                 }}
             >
                 Practice Button Press

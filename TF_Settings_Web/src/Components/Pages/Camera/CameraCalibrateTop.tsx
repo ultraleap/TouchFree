@@ -17,7 +17,7 @@ const CameraCalibrateTop = () => {
                 style={{ marginTop: '150px' }}
                 src={InteractionGuideIcon}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                onClick={() => {
+                onPointerUp={() => {
                     navigate(`/camera/quick/${position}/calibrateBottom`);
                 }}
             />

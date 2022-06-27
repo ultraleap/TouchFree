@@ -37,13 +37,21 @@ const backButtonTitleStyle: CSSProperties = {
     margin: '0',
 };
 
+const getBackLocation = (path: string): string => {
+    const lastIndex = path.endsWith('/') ? path.slice(0, -1).lastIndexOf('/') : path.lastIndexOf('/');
+
+    return path.slice(0, lastIndex);
+};
+
+type TabName = 'Camera' | 'Interactions';
+
 const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
+    const [activeTab, setActiveTab] = React.useState<TabName>('Camera');
+
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    const hideBar = pathname.includes('calibrate');
-
-    return hideBar ? (
+    return pathname.includes('calibrate') ? (
         <></>
     ) : (
         <div className="overallContainerStyle">
@@ -55,8 +63,16 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
             <div className="tabBarStyle">
                 {pathname === '/camera' || pathname === '/interactions' ? (
                     <div className="tabBarStyle">
-                        <TabSelector name="Camera" />
-                        <TabSelector name="Interactions" />
+                        <TabSelector
+                            name="Camera"
+                            isActiveTab={activeTab === 'Camera'}
+                            onClick={() => setActiveTab('Camera')}
+                        />
+                        <TabSelector
+                            name="Interactions"
+                            isActiveTab={activeTab === 'Interactions'}
+                            onClick={() => setActiveTab('Interactions')}
+                        />
                     </div>
                 ) : (
                     <IconTextButton
@@ -68,7 +84,9 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
                         titleStyle={backButtonTitleStyle}
                         text={''}
                         textStyle={{ display: 'none' }}
-                        onClick={() => navigate(-1)}
+                        onClick={() => {
+                            navigate(getBackLocation(pathname));
+                        }}
                     />
                 )}
             </div>

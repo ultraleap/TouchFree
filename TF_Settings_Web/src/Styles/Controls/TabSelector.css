@@ -1,10 +1,5 @@
-a {
-    all: unset;
-}
-
 .tabButton {
     cursor: default;
-    padding-top: 1.3rem;
     align-self: stretch;
 
     border-top-left-radius: 1.2rem;
