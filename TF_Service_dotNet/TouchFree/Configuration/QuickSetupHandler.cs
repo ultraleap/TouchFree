@@ -123,10 +123,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 // in a calculation.
                 rotationAngles.X *= -1f;
             }
-            var quaternion = Quaternion.CreateFromYawPitchRoll(rotationAngles.Z, rotationAngles.Y, rotationAngles.X);
+            var quaternion = Quaternion.CreateFromYawPitchRoll(rotationAngles.Y, rotationAngles.X, rotationAngles.Z);
             Vector3 rotatedVector = Vector3.Transform(bottomEdgeRef, quaternion);
 
-            return rotatedVector;
+            return -rotatedVector;
         }
     }
 }

@@ -112,28 +112,37 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void HandleQuickSetupCall(string _content)
         {
-            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+            QuickSetupRequest? quickSetupRequest = null;
 
-            //// Explicitly check for requestID because it is the only required key
-            //if (!RequestIdExists(contentObj))
-            //{
-            //    ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
-            //    response.message = "Quick Setup call failed. This is due to a missing or invalid requestID";
-
-            //    // This is a failed request, do not continue with sending the configuration,
-            //    // the Client will have no way to handle the config state
-            //    clientMgr.SendQuickSetupResponse(response);
-            //    return;
-            //}
-
-            if (_content.ToLower().Contains("top"))
+            try
             {
-                quickSetupHandler.HandleQuickSetupCall(QuickSetupPosition.Top);
+                quickSetupRequest = JsonConvert.DeserializeObject<QuickSetupRequest>(_content);
             }
-            else
+            catch { }
+
+            // Explicitly check for requestID because it is the only required key
+            if (string.IsNullOrWhiteSpace(quickSetupRequest?.requestID))
             {
-                quickSetupHandler.HandleQuickSetupCall(QuickSetupPosition.Bottom);
+                ResponseToClient response = new ResponseToClient("", "Failure", "", _content);
+                response.message = "Config state request failed. This is due to a missing or invalid requestID";
+
+                // This is a failed request, do not continue with sending the configuration,
+                // the Client will have no way to handle the config state
+                clientMgr.SendConfigChangeResponse(response);
+                return;
             }
+
+            quickSetupHandler.HandleQuickSetupCall(quickSetupRequest.Value.Position);
+
+            InteractionConfig interactions = InteractionConfigFile.LoadConfig();
+            PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
+
+            ConfigState currentConfig = new ConfigState(
+                quickSetupRequest.Value.requestID,
+                interactions,
+                physical);
+
+            clientMgr.SendConfigFile(currentConfig);
         }
 
         void HandleGetStatusRequest(string _content)
@@ -167,7 +176,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             clientMgr.SendStatus(currentConfig);
         }
 
-        private Boolean RequestIdExists(JObject _content)
+        private bool RequestIdExists(JObject _content)
         {
             if (!_content.ContainsKey("requestID") || _content.GetValue("requestID").ToString() == "")
             {
