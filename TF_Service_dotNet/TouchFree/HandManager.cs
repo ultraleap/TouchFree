@@ -6,7 +6,7 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public class HandManager
+    public class HandManager : IHandManager
     {
         public long Timestamp { get; private set; }
 
@@ -19,7 +19,14 @@ namespace Ultraleap.TouchFree.Library
         public Hand SecondaryHand;
         public HandChirality secondaryChirality;
 
-        public List<Vector> RawHandPositions;
+        public List<Vector> RawHandPositions
+        {
+            get
+            {
+                return _handPositions;
+            }
+        }
+        private List<Vector> _handPositions;
 
         public event Action HandFound;
         public event Action HandsLost;
@@ -131,7 +138,8 @@ namespace Ultraleap.TouchFree.Library
                 var angleWithScreenRotation = Utilities.DegreesToRadians(_config.ScreenRotationD) + angle;
 
                 var translatedYPosition = (float)(distanceFromScreenBottom * Math.Cos(angleWithScreenRotation));
-                if (_config.LeapPositionRelativeToScreenBottomMm.Z < 0 && _config.LeapPositionRelativeToScreenBottomMm.Y < 0) {
+                if (_config.LeapPositionRelativeToScreenBottomMm.Z < 0 && _config.LeapPositionRelativeToScreenBottomMm.Y < 0)
+                {
                     translatedYPosition = -translatedYPosition;
                 }
 
@@ -168,7 +176,11 @@ namespace Ultraleap.TouchFree.Library
                 HandFound?.Invoke();
             }
 
-            RawHandPositions = currentFrame.Hands.Select(x => x.Fingers.Single(y => y.Type == Finger.FingerType.TYPE_INDEX).TipPosition).ToList();
+            _handPositions = currentFrame.Hands
+                .Select(x => x.Fingers?.SingleOrDefault(y => y.Type == Finger.FingerType.TYPE_INDEX)?.TipPosition)
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToList();
 
             handsLastFrame = handCount;
 

@@ -38,6 +38,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public static IServiceCollection AddTrackingConnectionManager(this IServiceCollection services)
         {
             services.AddSingleton<TrackingConnectionManager>();
+            services.AddSingleton<ITrackingConnectionManager>(x => x.GetService<TrackingConnectionManager>());
             return services;
         }
 
@@ -58,6 +59,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public static IServiceCollection AddHandManager(this IServiceCollection services)
         {
             services.AddSingleton<HandManager>();
+            services.AddSingleton<IHandManager>(x => x.GetService<HandManager>());
             return services;
         }
 

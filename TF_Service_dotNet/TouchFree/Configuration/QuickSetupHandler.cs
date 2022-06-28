@@ -6,8 +6,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class QuickSetupHandler : IQuickSetupHandler
     {
-        private readonly HandManager handManager;
-        private readonly TrackingConnectionManager trackingConnectionManager;
+        private readonly IHandManager handManager;
+        private readonly ITrackingConnectionManager trackingConnectionManager;
         private readonly IConfigManager configManager;
         private Leap.Vector? topHandPosition;
 
@@ -15,7 +15,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private const float HEIGHT_SCALING_FACTOR = 1f / (1f - (2 * TARGET_DIST_FROM_EDGE_PERCENTAGE));
         private const float EDGE_SCALING_FACTOR = ((HEIGHT_SCALING_FACTOR - 1f) / 2f) + 1f;
 
-        public QuickSetupHandler(HandManager _handManager, TrackingConnectionManager _trackingConnectionManager, IConfigManager _configManager)
+        public QuickSetupHandler(IHandManager _handManager, ITrackingConnectionManager _trackingConnectionManager, IConfigManager _configManager)
         {
             handManager = _handManager;
             trackingConnectionManager = _trackingConnectionManager;
@@ -43,13 +43,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public void UpdateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
         {
-            Vector3 bottomNoX = new Vector3(0, bottomPos.Y, bottomPos.Z);
-            Vector3 topNoX = new Vector3(0, topPos.Y, topPos.Z);
+            Vector3 bottomNoX = new(0, bottomPos.Y, bottomPos.Z);
+            Vector3 topNoX = new(0, topPos.Y, topPos.Z);
 
             configManager.PhysicalConfig.ScreenHeightMm = Vector3.Distance(bottomNoX, topNoX) * HEIGHT_SCALING_FACTOR;
 
             var bottomEdge = BottomCentreFromTouches(bottomPos, topPos);
-            var topEdge = TopCentreFromTouches(bottomPos, topPos);
 
             configManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(bottomPos, topPos);
             configManager.PhysicalConfig.LeapPositionRelativeToScreenBottomMm = LeapPositionInScreenSpace(bottomEdge, configManager.PhysicalConfig.LeapRotationD);
@@ -58,22 +57,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
         }
 
         /// <summary>
-        /// BottomTouch -> TopTouch is 1/8th screen height as touch points are placed 10% in from the edge.
-        /// We need to offset the touch point by 1/10th of screen height = 1/8th of the distance between touch points.
-        /// For this we can Lerp from bottom to top touch travelling an extra 8th distance.
-        /// </summary>
-        public Vector3 TopCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
-        {
-            var difference = topTouch - bottomTouch;
-            return bottomTouch + (difference * EDGE_SCALING_FACTOR);
-        }
-
-        /// <summary>
         /// TopTouch -> BottomTouch is 1/8th screen height as touch points are placed 10% in from the edge.
         /// We need to offset the touch point by 1/10th of screen height = 1/8th of the distance between touch points.
         /// For this we can Lerp from top to bottom touch travelling an extra 8th distance
         /// </summary>
-        public Vector3 BottomCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
+        public static Vector3 BottomCentreFromTouches(Vector3 bottomTouch, Vector3 topTouch)
         {
             var difference = topTouch - bottomTouch;
             return topTouch - (difference * EDGE_SCALING_FACTOR);
@@ -107,7 +95,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         /// <summary>
         /// Find the position of the camera relative to the screen, using the screen position relative to the camera.
         /// </summary>
-        private Vector3 LeapPositionInScreenSpace(Vector3 bottomEdgeRef, Vector3 leapRotation)
+        public Vector3 LeapPositionInScreenSpace(Vector3 bottomEdgeRef, Vector3 leapRotation)
         {
             // In Leap Co-ords we know the Leap is at Vector3.zero, and that the bottom of the screen is at "bottomEdgeRef"
 
@@ -123,7 +111,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 // in a calculation.
                 rotationAngles.X *= -1f;
             }
-            var quaternion = Quaternion.CreateFromYawPitchRoll(rotationAngles.Y, rotationAngles.X, rotationAngles.Z);
+            var quaternion = Quaternion.CreateFromYawPitchRoll(
+                Utilities.DegreesToRadians(rotationAngles.Y),
+                Utilities.DegreesToRadians(rotationAngles.X),
+                Utilities.DegreesToRadians(rotationAngles.Z));
             Vector3 rotatedVector = Vector3.Transform(bottomEdgeRef, quaternion);
 
             return -rotatedVector;

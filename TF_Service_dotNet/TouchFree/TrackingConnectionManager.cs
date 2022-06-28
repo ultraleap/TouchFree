@@ -4,7 +4,7 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public class TrackingConnectionManager
+    public class TrackingConnectionManager : ITrackingConnectionManager
     {
         public Leap.Controller controller;
         IConfigManager configManager;
