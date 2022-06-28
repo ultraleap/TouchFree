@@ -78,7 +78,7 @@ namespace Ultraleap.TouchFree.Library
 
         private LeapTransform trackingTransform;
 
-        private TrackingConnectionManager trackingProvider;
+        private ITrackingConnectionManager trackingProvider;
 
         private int handsLastFrame;
 
@@ -92,7 +92,7 @@ namespace Ultraleap.TouchFree.Library
             trackingProvider.Disconnect();
         }
 
-        public HandManager(TrackingConnectionManager _trackingManager, IConfigManager _configManager)
+        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager)
         {
             handsLastFrame = 0;
 
@@ -239,27 +239,13 @@ namespace Ultraleap.TouchFree.Library
                 if (handChirality == HandChirality.LEFT && _left != null)
                 {
                     // Hand is still left
-                    if (_handType == HandType.PRIMARY)
-                    {
-                        PrimaryHand = _left;
-                    }
-                    else
-                    {
-                        SecondaryHand = _left;
-                    }
+                    AssignHandAccordingToType(_handType, _left);
                     return;
                 }
                 else if (handChirality == HandChirality.RIGHT && _right != null)
                 {
                     // Hand is still right
-                    if (_handType == HandType.PRIMARY)
-                    {
-                        PrimaryHand = _right;
-                    }
-                    else
-                    {
-                        SecondaryHand = _right;
-                    }
+                    AssignHandAccordingToType(_handType, _right);
                     return;
                 }
 
@@ -272,6 +258,19 @@ namespace Ultraleap.TouchFree.Library
                 {
                     AssignNewSecondary(_left, _right);
                 }
+            }
+        }
+
+        void AssignHandAccordingToType(HandType _handType, Hand _hand)
+        {
+            // Hand is still right
+            if (_handType == HandType.PRIMARY)
+            {
+                PrimaryHand = _hand;
+            }
+            else
+            {
+                SecondaryHand = _hand;
             }
         }
 

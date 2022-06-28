@@ -13,15 +13,23 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
-    internal class ClientConnection
+    public class ClientConnection : IClientConnection
     {
-        public WebSocket socket;
+        public WebSocket Socket
+        {
+            get
+            {
+                return socket;
+            }
+        }
+
+        private readonly WebSocket socket;
         private bool HandshakeCompleted;
         private readonly WebSocketReceiver receiver;
-        private readonly ClientConnectionManager clientMgr;
+        private readonly IClientConnectionManager clientMgr;
         private readonly IConfigManager configManager;
 
-        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, ClientConnectionManager _clientMgr, IConfigManager _configManager)
+        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, IClientConnectionManager _clientMgr, IConfigManager _configManager)
         {
             socket = _socket;
             receiver = _receiver;
@@ -93,7 +101,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             string jsonMessage = JsonConvert.SerializeObject(message);
 
-            socket.SendAsync(
+            Socket.SendAsync(
                 Encoding.UTF8.GetBytes(jsonMessage),
                 WebSocketMessageType.Text,
                 true,
@@ -102,7 +110,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         private void SendInitialHandState()
         {
-            this.SendHandPresenceEvent(clientMgr.missedHandPresenceEvent);
+            this.SendHandPresenceEvent(clientMgr.MissedHandPresenceEvent);
         }
 
         private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)

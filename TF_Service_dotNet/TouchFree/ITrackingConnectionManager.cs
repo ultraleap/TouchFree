@@ -2,6 +2,9 @@
 {
     public interface ITrackingConnectionManager
     {
-        TrackingConnectionManager.TrackingMode CurrentTrackingMode { get; }
+        TrackingMode CurrentTrackingMode { get; }
+        Leap.Controller controller { get; }
+        void Connect();
+        void Disconnect();
     }
 }

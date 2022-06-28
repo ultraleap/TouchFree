@@ -37,8 +37,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public static IServiceCollection AddTrackingConnectionManager(this IServiceCollection services)
         {
-            services.AddSingleton<TrackingConnectionManager>();
-            services.AddSingleton<ITrackingConnectionManager>(x => x.GetService<TrackingConnectionManager>());
+            services.AddSingleton<ITrackingConnectionManager, TrackingConnectionManager>();
             return services;
         }
 

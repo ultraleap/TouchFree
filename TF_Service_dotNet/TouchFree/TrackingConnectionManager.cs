@@ -6,8 +6,9 @@ namespace Ultraleap.TouchFree.Library
 {
     public class TrackingConnectionManager : ITrackingConnectionManager
     {
-        public Leap.Controller controller;
-        IConfigManager configManager;
+        public Leap.Controller controller { get; private set; }
+
+        private readonly IConfigManager configManager;
 
         private const int maximumWaitTimeSeconds = 30;
         private const int initialWaitTimeSeconds = 1;
@@ -161,13 +162,6 @@ namespace Ultraleap.TouchFree.Library
                     controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
-        }
-
-        public enum TrackingMode
-        {
-            DESKTOP,
-            HMD,
-            SCREENTOP
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Ultraleap.TouchFree.Library
         private readonly UpdateBehaviour updateBehaviour;
         private readonly IClientConnectionManager connectionManager;
 
-        private Dictionary<IInteraction, float> activeInteractions;
+        public Dictionary<IInteraction, float> activeInteractions { get; private set; }
         private IInteraction interactionCurrentlyDown;
         private IInteraction locationInteraction;
 
@@ -41,7 +41,7 @@ namespace Ultraleap.TouchFree.Library
             OnInteractionSettingsUpdated(_configManager.InteractionConfig);
         }
 
-        protected void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
+        public void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             var initialisationNotStarted = activeInteractions == null;
 
@@ -75,7 +75,7 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        protected void Update()
+        public void Update()
         {
             if (activeInteractions != null)
             {

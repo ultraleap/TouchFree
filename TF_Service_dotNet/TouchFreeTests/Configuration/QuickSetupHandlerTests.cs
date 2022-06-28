@@ -55,7 +55,7 @@ namespace TouchFreeTests.Configuration
             var bottomCentre = new Vector3(0, 20, 0);
             var topCentre = new Vector3(0, 80, 0);
             var sut = CreateSut();
-            trackingConnectionManager.SetupGet(x => x.CurrentTrackingMode).Returns(TrackingConnectionManager.TrackingMode.SCREENTOP);
+            trackingConnectionManager.SetupGet(x => x.CurrentTrackingMode).Returns(TrackingMode.SCREENTOP);
 
             // Act
             var result = sut.LeapRotationRelativeToScreen(bottomCentre, topCentre);
@@ -73,7 +73,7 @@ namespace TouchFreeTests.Configuration
             var bottomCentre = new Vector3(0, 0, 20);
             var topCentre = new Vector3(0, 0, 80);
             var sut = CreateSut();
-            trackingConnectionManager.SetupGet(x => x.CurrentTrackingMode).Returns(TrackingConnectionManager.TrackingMode.SCREENTOP);
+            trackingConnectionManager.SetupGet(x => x.CurrentTrackingMode).Returns(TrackingMode.SCREENTOP);
 
             // Act
             var result = sut.LeapRotationRelativeToScreen(bottomCentre, topCentre);

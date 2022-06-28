@@ -78,8 +78,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             var xRotation = (float)(Utilities.RADTODEG * Math.Atan2(directionBottomToTop.Z, directionBottomToTop.Y));
 
-            if (trackingConnectionManager.CurrentTrackingMode == TrackingConnectionManager.TrackingMode.SCREENTOP ||
-                trackingConnectionManager.CurrentTrackingMode == TrackingConnectionManager.TrackingMode.HMD)
+            if (trackingConnectionManager.CurrentTrackingMode == TrackingMode.SCREENTOP ||
+                trackingConnectionManager.CurrentTrackingMode == TrackingMode.HMD)
             {
                 rotation.X = -xRotation + 180;
                 rotation.Z = 180;
@@ -103,8 +103,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
             // We want to calculate the Vector from the bottom of the screen to the Leap in this rotated co-ord system.
 
             Vector3 rotationAngles = leapRotation;
-            if (trackingConnectionManager.CurrentTrackingMode == TrackingConnectionManager.TrackingMode.SCREENTOP ||
-                trackingConnectionManager.CurrentTrackingMode == TrackingConnectionManager.TrackingMode.HMD)
+            if (trackingConnectionManager.CurrentTrackingMode == TrackingMode.SCREENTOP ||
+                trackingConnectionManager.CurrentTrackingMode == TrackingMode.HMD)
             {
                 // In overhead mode, the stored 'x' angle is inverted so that positive angles always mean
                 // the camera is pointed towards the screen. Multiply by -1 here so that it can be used
