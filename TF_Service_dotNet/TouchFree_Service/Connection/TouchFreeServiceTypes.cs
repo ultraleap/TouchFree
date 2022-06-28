@@ -27,7 +27,6 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         CONFIGURATION_FILE_CHANGE_RESPONSE,
 
         QUICK_SETUP,
-        QUICK_SETUP_RESPONSE,
     }
 
     public enum HandPresenceState
