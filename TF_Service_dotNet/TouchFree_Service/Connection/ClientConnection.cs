@@ -86,11 +86,6 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_status, ActionCode.SERVICE_STATUS);
         }
 
-        public void SendQuickSetupResponse(ResponseToClient _response)
-        {
-            SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
-        }
-
         private void SendResponse<T>(T _response, ActionCode actionCode)
         {
             CommunicationWrapper<T> message =
