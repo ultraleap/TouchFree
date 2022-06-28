@@ -9,7 +9,7 @@ using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
-    public class ClientConnectionManager
+    public class ClientConnectionManager : IClientConnectionManager
     {
         // TODO:
         // * Dependency Inject the InteractionManager reference
@@ -119,7 +119,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        internal void SendInputActionToWebsocket(InputAction _data)
+        public void SendInputActionToWebsocket(InputAction _data)
         {
             if (activeConnections == null ||
                 activeConnections.Count < 1)
