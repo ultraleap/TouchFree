@@ -29,7 +29,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         bool isDragging = false;
 
         public TouchPlanePushInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IPositioningModule _positioningModule,

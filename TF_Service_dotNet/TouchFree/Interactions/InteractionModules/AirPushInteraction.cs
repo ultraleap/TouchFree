@@ -60,7 +60,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private bool isDragging = false;
 
         public AirPushInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IOptions<InteractionTuning> _interactionTuning,

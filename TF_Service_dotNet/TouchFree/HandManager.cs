@@ -11,12 +11,12 @@ namespace Ultraleap.TouchFree.Library
         public long Timestamp { get; private set; }
 
         // The PrimaryHand is the hand that appeared first. It does not change until tracking on it is lost.
-        public Hand PrimaryHand;
+        public Hand PrimaryHand { get; private set; }
         public HandChirality primaryChirality;
 
         // The SecondaryHand is the second hand that appears. It may be promoted to the PrimaryHand if the
         // PrimaryHand is lost.
-        public Hand SecondaryHand;
+        public Hand SecondaryHand { get; private set; }
         public HandChirality secondaryChirality;
 
         public List<Vector> RawHandPositions
@@ -199,13 +199,13 @@ namespace Ultraleap.TouchFree.Library
                     rightHand = hand;
             }
 
-            UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
-            UpdateHandStatus(ref SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
+            UpdateHandStatus(PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
+            UpdateHandStatus(SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
 
             HandsUpdated?.Invoke(PrimaryHand, SecondaryHand);
         }
 
-        void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, HandType _handType)
+        void UpdateHandStatus(Hand _hand, Hand _left, Hand _right, HandType _handType)
         {
             // We must use the cached HandChirality to ensure persistence
             HandChirality handChirality;
@@ -239,13 +239,27 @@ namespace Ultraleap.TouchFree.Library
                 if (handChirality == HandChirality.LEFT && _left != null)
                 {
                     // Hand is still left
-                    _hand = _left;
+                    if (_handType == HandType.PRIMARY)
+                    {
+                        PrimaryHand = _left;
+                    }
+                    else
+                    {
+                        SecondaryHand = _left;
+                    }
                     return;
                 }
                 else if (handChirality == HandChirality.RIGHT && _right != null)
                 {
                     // Hand is still right
-                    _hand = _right;
+                    if (_handType == HandType.PRIMARY)
+                    {
+                        PrimaryHand = _right;
+                    }
+                    else
+                    {
+                        SecondaryHand = _right;
+                    }
                     return;
                 }
 

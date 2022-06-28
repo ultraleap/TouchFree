@@ -58,8 +58,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public static IServiceCollection AddHandManager(this IServiceCollection services)
         {
-            services.AddSingleton<HandManager>();
-            services.AddSingleton<IHandManager>(x => x.GetService<HandManager>());
+            services.AddSingleton<IHandManager, HandManager>();
             return services;
         }
 

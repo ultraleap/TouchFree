@@ -33,7 +33,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private Stopwatch clickingTimer = new Stopwatch();
 
         public HoverAndHoldInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IPositioningModule _positioningModule,

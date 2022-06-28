@@ -35,7 +35,7 @@ namespace Ultraleap.TouchFree.Service
         Tuple<long, Positions> previousPosition = new Tuple<long, Positions>(0, new Positions());
 
         public GrabInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IPositioningModule _positioningModule,

@@ -22,9 +22,9 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         internal HandPresenceEvent missedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-        public HandManager handManager;
+        public IHandManager handManager;
 
-        public ClientConnectionManager(HandManager _handManager)
+        public ClientConnectionManager(IHandManager _handManager)
         {
             // InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
             handManager = _handManager;
