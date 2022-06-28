@@ -1,11 +1,10 @@
 import '../../../Styles/Camera/Calibrate.css';
 
 import { CSSProperties } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import IconTextButton from '../../Controls/IconTextButton';
 import { CalibratePracticeButton } from './CalibrationComponents';
-import { PositionType } from './CameraPage';
 
 const buttonStyle: CSSProperties = {
     width: '50%',
@@ -24,7 +23,6 @@ const titleStyle: CSSProperties = {
 };
 
 const CameraCalibrateComplete = () => {
-    const position = useParams().position as PositionType;
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>
@@ -59,7 +57,7 @@ const CameraCalibrateComplete = () => {
                     text={''}
                     textStyle={{ display: 'none' }}
                     onClick={() => {
-                        navigate(`/camera/quick/${position}/calibrateTop`);
+                        navigate('/camera/quick/calibrate/top');
                     }}
                 />
             </div>
