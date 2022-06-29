@@ -9,7 +9,6 @@ import { InteractionConfig } from '../../../TouchFree/Configuration/Configuratio
 import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from '../../../TouchFree/TouchFreeToolingTypes';
 import CameraCalibrateBottom from './CameraCalibrateBottom';
-import CameraCalibrateComplete from './CameraCalibrateComplete';
 import CameraCalibrateTop from './CameraCalibrateTop';
 import { PositionType } from './CameraPosition';
 
@@ -20,7 +19,6 @@ interface CameraCalibratePageProps {
 const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPosition }) => {
     useEffect(() => {
         let interactionConfig: InteractionConfig | null = null;
-
         // Save current config then change it to use config for calibration
         ConfigurationManager.RequestConfigState((config: ConfigState) => {
             interactionConfig = config.interaction;
@@ -46,7 +44,6 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
             <Routes>
                 <Route path="top" element={<CameraCalibrateTop />} />
                 <Route path="bottom" element={<CameraCalibrateBottom />} />
-                <Route path="complete" element={<CameraCalibrateComplete />} />
                 <Route path="*" element={<Navigate to="top" replace />} />
             </Routes>
         </>

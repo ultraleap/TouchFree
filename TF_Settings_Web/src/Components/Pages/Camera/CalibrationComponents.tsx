@@ -1,9 +1,11 @@
 import '../../../Styles/Camera/Calibrate.css';
+import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
 import React, { useRef } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
+import { buildStyles, CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import { useNavigate } from 'react-router-dom';
 
 import FingerprintIcon from '../../../Images/Camera/Fingerprint_Icon.svg';
@@ -99,11 +101,11 @@ export const CalibratePracticeButton = () => {
                     setHovered(false);
                     setPressed(false);
                 }}
-                onPointerDown={() => setPressed(true)}
-                onPointerUp={() => {
-                    setPressed(false);
+                onPointerDown={() => {
+                    setPressed(true);
                     fire();
                 }}
+                onPointerUp={() => setPressed(false)}
                 onKeyDown={(keyEvent) => {
                     if (keyEvent.key === 'Enter') fire();
                 }}
@@ -117,3 +119,26 @@ export const CalibratePracticeButton = () => {
         </>
     );
 };
+
+interface CalibrateProgressCircleProps {
+    progress: number;
+    style: CSSProperties;
+}
+
+export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = ({ progress, style }) => (
+    <div style={style} className="progressCircleContainer">
+        <CircularProgressbarWithChildren
+            value={progress}
+            maxValue={1}
+            styles={buildStyles({
+                textColor: '#00eb85',
+                pathColor: '#00eb85',
+            })}
+        >
+            <p>
+                Calibrating <br />
+            </p>
+            <p style={{ fontSize: '2.5rem' }}>{progress * 100}%</p>
+        </CircularProgressbarWithChildren>
+    </div>
+);

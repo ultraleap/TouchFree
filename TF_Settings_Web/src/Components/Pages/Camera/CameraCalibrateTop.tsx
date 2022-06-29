@@ -5,11 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 import InteractionGuideIcon from '../../../Images/Camera/Interaction_Guide_Top.png';
 import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
-import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
-import { CalibrateCancelButton, CalibrateInstructions } from './CalibrationComponents';
-
+import { TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
+import { CalibrateCancelButton, CalibrateInstructions, CalibrateProgressCircle } from './CalibrationComponents';
 const CameraCalibrateTop = () => {
-    const [progressToClick, setProgressToClick] = React.useState(0);
+    const [progressToClick, setProgressToClick] = React.useState<number>(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,8 +20,7 @@ const CameraCalibrateTop = () => {
     }, []);
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
-        const detail = evt.detail;
-        const roundedProg = Math.floor(detail.ProgressToClick * 10) / 10;
+        const roundedProg = Math.floor(evt.detail.ProgressToClick * 10) / 10;
         setProgressToClick(roundedProg);
         if (roundedProg >= 1) {
             handleClick();
@@ -31,7 +29,8 @@ const CameraCalibrateTop = () => {
 
     const handleClick = (): void => {
         // Send message to tracking service
-        // Top point = (130 + 145 + 60 + 20) = [355,445] -> midpoint = 400
+        // GreenCircle = (130 + 145 + 60 + 20) = [355,435] -> midpoint = 395
+        // Make exactly 20%
         navigate('/camera/quick/calibrate/bottom');
     };
 
@@ -47,8 +46,8 @@ const CameraCalibrateTop = () => {
                     navigate('/camera/quick/calibrate/bottom');
                 }}
             />
-            <h1 style={{ color: 'white' }}>{progressToClick}</h1>
-            <CalibrateCancelButton buttonStyle={{ marginTop: '580px' }} />
+            <CalibrateProgressCircle progress={progressToClick} style={{ marginTop: '10%' }} />
+            <CalibrateCancelButton buttonStyle={{ marginTop: 'calc(580px - 28%)' }} />
         </div>
     );
 };

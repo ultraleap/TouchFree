@@ -4,25 +4,25 @@
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
-    height: 5rem;
+    height: 40%;
     min-width: 0px;
     min-height: 0px;
 }
 
 .tabBarStyle {
+    height: 60%;
+}
+
+.tabBarContainer {
     display: flex;
-    align-items: flex-end;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    height: 5.6rem;
+    height: 100%;
 }
 
 .overallContainerStyle {
     position: fixed;
     top: 0;
     width: 1080px;
-    height: 170px;
+    height: 15%;
     background-image: linear-gradient(270deg, #3c3c3c, #2f2f2f);
     z-index: 1;
 }
@@ -32,11 +32,11 @@
     align-self: center;
     min-height: 0;
     min-width: 0;
-    max-height: 4rem;
-    max-width: 26.1rem;
+    max-height: 100%;
+    max-width: 38%;
 }
 
 .emptyContainer {
-    width: 125px;
+    width: 11%;
     height: 100%;
 }
