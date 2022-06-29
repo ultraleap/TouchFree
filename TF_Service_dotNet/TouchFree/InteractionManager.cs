@@ -146,7 +146,7 @@ namespace Ultraleap.TouchFree.Library
 
                 if (inputAction.HasValue)
                 {
-                    if (interactionCurrentlyDown != null && interactionCurrentlyDown != locationInteraction)
+                    if (interactionCurrentlyDown != null)
                     {
                         lastDownPosition = lastLocationInputAction.CursorPosition + inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
                         var updatedPosition = new Positions(lastDownPosition.Value, inputAction.Value.DistanceFromScreen);
