@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import InteractionGuideIcon from '../../../Images/Camera/Interaction_Guide_Top.png';
 import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
-import { TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
+import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
 import { CalibrateCancelButton, CalibrateInstructions, CalibrateProgressCircle } from './CalibrationComponents';
 const CameraCalibrateTop = () => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
@@ -22,20 +22,19 @@ const CameraCalibrateTop = () => {
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
         const roundedProg = Math.floor(evt.detail.ProgressToClick * 10) / 10;
         setProgressToClick(roundedProg);
-        if (roundedProg >= 1) {
+        if (roundedProg >= 1 && evt.detail.InputType === InputType.DOWN) {
             handleClick();
         }
     };
 
     const handleClick = (): void => {
         // Send message to tracking service
-        // GreenCircle = (130 + 145 + 60 + 20) = [355,435] -> midpoint = 395
-        // Make exactly 20%
+        // Midpoint needs to be 20vh = 384px
         navigate('/camera/quick/calibrate/bottom');
     };
 
     return (
-        <div style={{ height: '100%', alignItems: 'center', marginTop: '-40px' }}>
+        <div style={{ height: '100%', alignItems: 'center', marginTop: '-53px' }}>
             <CalibrateInstructions />
             <img
                 className="interactionGuide"
@@ -47,7 +46,7 @@ const CameraCalibrateTop = () => {
                 }}
             />
             <CalibrateProgressCircle progress={progressToClick} style={{ marginTop: '10%' }} />
-            <CalibrateCancelButton buttonStyle={{ marginTop: 'calc(580px - 28%)' }} />
+            <CalibrateCancelButton buttonStyle={{ marginTop: 'calc(593px - 28%)' }} />
         </div>
     );
 };

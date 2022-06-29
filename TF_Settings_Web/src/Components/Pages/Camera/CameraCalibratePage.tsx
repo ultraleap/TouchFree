@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
-import { InteractionConfig } from '../../../TouchFree/Configuration/ConfigurationTypes';
+import { InteractionConfig, PhysicalConfig, Vector } from '../../../TouchFree/Configuration/ConfigurationTypes';
 import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from '../../../TouchFree/TouchFreeToolingTypes';
 import CameraCalibrateBottom from './CameraCalibrateBottom';
@@ -19,9 +19,11 @@ interface CameraCalibratePageProps {
 const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPosition }) => {
     useEffect(() => {
         let interactionConfig: InteractionConfig | null = null;
+        let physicalConfig: PhysicalConfig | null = null;
         // Save current config then change it to use config for calibration
         ConfigurationManager.RequestConfigState((config: ConfigState) => {
             interactionConfig = config.interaction;
+            physicalConfig = config.physical;
             ConfigurationManager.RequestConfigChange(
                 {
                     InteractionType: InteractionType.HOVER,
@@ -31,12 +33,14 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
                         HoverCompleteTimeS: 5,
                     },
                 },
-                null,
+                {
+                    LeapRotationD: getRotationFromPosition(configPosition),
+                },
                 () => {}
             );
         });
 
-        return () => ConfigurationManager.RequestConfigChange(interactionConfig, null, () => {});
+        return () => ConfigurationManager.RequestConfigChange(interactionConfig, physicalConfig, () => {});
     }, []);
 
     return (
@@ -51,3 +55,14 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
 };
 
 export default CameraCalibratePage;
+
+const getRotationFromPosition = (position: PositionType): Vector => {
+    if (position === 'FaceScreen') {
+        return { X: 10, Y: 0, Z: 95 };
+    }
+    if (position === 'FaceUser') {
+        return { X: 0, Y: 0, Z: 95 };
+    }
+    // Below
+    return { X: 0, Y: 0, Z: 0 };
+};
