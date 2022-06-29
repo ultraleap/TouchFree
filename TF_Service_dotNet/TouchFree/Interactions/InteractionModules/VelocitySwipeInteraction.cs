@@ -267,17 +267,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return false;
         }
 
-        protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
-        {
-            base.OnInteractionSettingsUpdated(_config);
-
-            //minScrollVelocity_mmps = _config.minScrollVelocity_mmps;
-            //maxReleaseVelocity_mmps = _config.maxReleaseVelocity_mmps;
-            //maxOpposingVelocity_mmps = _config.maxOpposingVelocity_mmps;
-            //lockAxisToOnly = (Axis)_config.lockAxisToOnly;
-            //allowBidirectional = _config.allowBidirectional;
-        }
-
         enum Direction
         {
             LEFT,
