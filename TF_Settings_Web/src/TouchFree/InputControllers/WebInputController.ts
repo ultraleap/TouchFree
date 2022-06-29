@@ -129,12 +129,10 @@ export class WebInputController extends BaseInputController {
             case InputType.DOWN:
                 let downEvent: PointerEvent = new PointerEvent("pointerdown", this.activeEventProps);
                 this.DispatchToTarget(downEvent, elementAtPos);
-                console.log("DOWN: " + _inputData.CursorPosition);
                 break;
 
             case InputType.UP:
                 let upEvent: PointerEvent = new PointerEvent("pointerup", this.activeEventProps);
-                console.log("UP: " + _inputData.CursorPosition);
                 this.DispatchToTarget(upEvent, elementAtPos);
                 break;
         }
