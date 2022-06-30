@@ -2,7 +2,7 @@
 import '../../../Styles/Camera/Calibrate.css';
 
 import React, { ReactElement, useEffect } from 'react';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import InteractionBottomGuide from '../../../Images/Camera/Interaction_Guide_Bottom.png';
 import InteractionTopGuide from '../../../Images/Camera/Interaction_Guide_Top.png';
@@ -24,15 +24,17 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCan
                 style={{ marginTop: '150px' }}
                 src={InteractionTopGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                onClick={() => navigate('/camera/quick/calibrate/bottom')}
+                onClick={() => navigate('../bottom')}
             />
             <CalibrateProgressCircle progress={progressToClick} style={{ marginTop: '10%' }} />
             <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: 'calc(593px - 28%)' }} />
         </div>
     );
 
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    const handleClick = (navigate: NavigateFunction) => navigate('/camera/quick/calibrate/bottom');
+    const handleClick = () => {
+        //SEND TO SERVICE
+        navigate('../bottom');
+    };
 
     return CameraCalibrateScreen(handleClick, content);
 };
@@ -47,25 +49,26 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
                 style={{ paddingTop: 'calc(430px - 28%)', marginBottom: '120px' }}
                 src={InteractionBottomGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                onClick={() => navigate('/camera/quick/calibrate/complete')}
+                onClick={() => navigate('../complete')}
             />
             <CalibrateInstructions />
             <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '191px' }} />
         </div>
     );
 
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    const handleClick = () => navigate('/camera/quick/calibrate/complete');
+    const handleClick = () => {
+        //SEND TO SERVICE
+        navigate('../complete');
+    };
 
     return CameraCalibrateScreen(handleClick, content);
 };
 
 const CameraCalibrateScreen = (
-    handleClick: (navigate: NavigateFunction) => void,
+    handleClick: () => void,
     content: (progressToClick: number) => ReactElement
 ): ReactElement => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
-    const navigate = useNavigate();
 
     useEffect(() => {
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
@@ -79,7 +82,7 @@ const CameraCalibrateScreen = (
         const roundedProg = Math.floor(evt.detail.ProgressToClick * 10) / 10;
         setProgressToClick(roundedProg);
         if (roundedProg >= 1 && evt.detail.InputType === InputType.DOWN) {
-            handleClick(navigate);
+            handleClick();
         }
     };
 

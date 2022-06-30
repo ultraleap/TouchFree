@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import '../../../Styles/Camera/Calibrate.css';
 
-import { config } from 'node:process';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
@@ -43,7 +42,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
     }, []);
 
     const resetConfig = () => {
-        console.log(config);
+        console.log({ physicalConfig, interactionConfig });
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, physicalConfig ?? null, () => {});
     };
 
