@@ -12,14 +12,14 @@ namespace Ultraleap.TouchFree.Library.Interactions
     {
         public override InteractionType InteractionType { get; } = InteractionType.VELOCITYSWIPE;
 
-        private readonly float minScrollVelocity_mmps = 500f;
-        private readonly float maxReleaseVelocity_mmps = 40f;
+        private readonly float minScrollVelocity_mmps = 625f;
+        private readonly float maxReleaseVelocity_mmps = 200f;
 
-        private readonly float maxOpposingVelocity_mmps = 150f;
+        private readonly float maxOpposingVelocity_mmps = 65f;
         private readonly float minSwipeWidth = 10f;
         private readonly float swipeWidthScaling = 0.2f;
 
-        private readonly double scrollDelayMs = 300;
+        private readonly double scrollDelayMs = 450;
         private readonly Stopwatch scrollDelayStopwatch = new Stopwatch();
 
         private readonly Axis lockAxisToOnly = Axis.NONE;
