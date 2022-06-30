@@ -123,7 +123,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private InputActionResult HandleInteractionsAirPush(float confidence)
         {
-            var inputActionResult =  new InputActionResult();
+            InputActionResult inputActionResult;
             long currentTimestamp = latestTimestamp;
 
             if (handAppearedCooldown.IsRunning && handAppearedCooldown.ElapsedMilliseconds >= millisecondsCooldownOnEntry)
@@ -213,6 +213,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     // Send the move event
                     inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                     positionStabiliser.ReduceDeadzoneOffset();
+                }
+                else
+                {
+                    // Send the move event
+                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                 }
 
                 if (decayingForce && (appliedForce <= unclickThreshold - 0.1f))
