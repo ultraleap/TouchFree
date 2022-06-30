@@ -1,10 +1,8 @@
 import '../../../Styles/Camera/Calibrate.css';
 
-import React, { useEffect } from 'react';
-import { CSSProperties } from 'react';
+import React, { CSSProperties, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { InteractionConfig } from '../../../TouchFree/Configuration/ConfigurationTypes';
 import IconTextButton from '../../Controls/IconTextButton';
 import { CalibratePracticeButton } from './CalibrationComponents';
 
@@ -25,10 +23,14 @@ const titleStyle: CSSProperties = {
 };
 
 interface CameraCalibrateCompleteProps {
-    interactionConfig: InteractionConfig;
+    onLoad: () => void;
 }
 
-const CameraCalibrateComplete: React.FC = () => {
+const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad }) => {
+    useEffect(() => {
+        onLoad();
+    }, []);
+
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>

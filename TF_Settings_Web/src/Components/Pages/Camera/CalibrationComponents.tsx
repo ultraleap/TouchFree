@@ -29,6 +29,29 @@ export const CalibrateInstructions = () => {
     );
 };
 
+interface CalibrateProgressCircleProps {
+    progress: number;
+    style: CSSProperties;
+}
+
+export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = ({ progress, style }) => (
+    <div style={style} className="progressCircleContainer">
+        <CircularProgressbarWithChildren
+            value={progress}
+            maxValue={1}
+            styles={buildStyles({
+                textColor: '#00eb85',
+                pathColor: '#00eb85',
+            })}
+        >
+            <p>
+                Calibrating <br />
+            </p>
+            <p style={{ fontSize: '2.5rem' }}>{progress * 100}%</p>
+        </CircularProgressbarWithChildren>
+    </div>
+);
+
 const setupButtonStyle: CSSProperties = {
     width: '300px',
     height: '80px',
@@ -45,10 +68,11 @@ const setupButtonTitleStyle: CSSProperties = {
 };
 
 interface CalibrateCancelButtonProps {
+    onCancel: () => void;
     buttonStyle: CSSProperties;
 }
 
-export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ buttonStyle }) => {
+export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     const navigate = useNavigate();
     return (
         <IconTextButton
@@ -59,7 +83,10 @@ export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ bu
             titleStyle={setupButtonTitleStyle}
             text={''}
             textStyle={{ display: 'none' }}
-            onClick={() => navigate('/camera/quick/')}
+            onClick={() => {
+                onCancel();
+                navigate('/camera/quick/');
+            }}
         />
     );
 };
@@ -119,26 +146,3 @@ export const CalibratePracticeButton = () => {
         </>
     );
 };
-
-interface CalibrateProgressCircleProps {
-    progress: number;
-    style: CSSProperties;
-}
-
-export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = ({ progress, style }) => (
-    <div style={style} className="progressCircleContainer">
-        <CircularProgressbarWithChildren
-            value={progress}
-            maxValue={1}
-            styles={buildStyles({
-                textColor: '#00eb85',
-                pathColor: '#00eb85',
-            })}
-        >
-            <p>
-                Calibrating <br />
-            </p>
-            <p style={{ fontSize: '2.5rem' }}>{progress * 100}%</p>
-        </CircularProgressbarWithChildren>
-    </div>
-);
