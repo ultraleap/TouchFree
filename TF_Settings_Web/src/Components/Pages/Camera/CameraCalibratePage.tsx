@@ -12,6 +12,15 @@ import CameraCalibrateComplete from './CameraCalibrateComplete';
 import { CameraCalibrateBottom, CameraCalibrateTop } from './CameraCalibrateScreens';
 import { PositionType } from './CameraPosition';
 
+const calibrationInteractionConfig: Partial<InteractionConfig> = {
+    InteractionType: InteractionType.HOVER,
+    DeadzoneRadius: 0.007,
+    HoverAndHold: {
+        HoverStartTimeS: 1,
+        HoverCompleteTimeS: 2,
+    },
+};
+
 interface CameraCalibratePageProps {
     configPosition: PositionType;
 }
@@ -28,19 +37,16 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
             setinteractionConfig(config.interaction);
             setPhysicalConfig(config.physical);
             ConfigurationManager.RequestConfigChange(
-                {
-                    InteractionType: InteractionType.HOVER,
-                    DeadzoneRadius: 0.007,
-                    HoverAndHold: {
-                        HoverStartTimeS: 1,
-                        HoverCompleteTimeS: 2,
-                    },
-                },
+                calibrationInteractionConfig,
                 { LeapRotationD: getRotationFromPosition(configPosition) },
                 () => {}
             );
         });
     }, []);
+
+    const setCalibrationInteractionConfig = () => {
+        ConfigurationManager.RequestConfigChange(calibrationInteractionConfig, {}, () => {});
+    };
 
     const resetConfig = () => {
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, physicalConfig ?? null, () => {
@@ -56,7 +62,12 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
         <Routes>
             <Route path="top" element={<CameraCalibrateTop onCancel={resetConfig} />} />
             <Route path="bottom" element={<CameraCalibrateBottom onCancel={resetConfig} />} />
-            <Route path="complete" element={<CameraCalibrateComplete onLoad={resetInteractionConfig} />} />
+            <Route
+                path="complete"
+                element={
+                    <CameraCalibrateComplete onLoad={resetInteractionConfig} onRedo={setCalibrationInteractionConfig} />
+                }
+            />
             <Route path="*" element={<Navigate to="top" replace />} />
         </Routes>
     );

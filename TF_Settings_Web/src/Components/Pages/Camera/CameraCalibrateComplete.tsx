@@ -24,9 +24,10 @@ const titleStyle: CSSProperties = {
 
 interface CameraCalibrateCompleteProps {
     onLoad: () => void;
+    onRedo: () => void;
 }
 
-const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad }) => {
+const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad, onRedo }) => {
     useEffect(() => {
         onLoad();
     }, []);
@@ -65,6 +66,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                     text={''}
                     textStyle={{ display: 'none' }}
                     onClick={() => {
+                        onRedo();
                         navigate('/camera/quick/calibrate/top');
                     }}
                 />
