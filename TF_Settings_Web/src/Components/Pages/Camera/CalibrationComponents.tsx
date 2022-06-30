@@ -6,7 +6,6 @@ import React, { useRef } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbarWithChildren } from 'react-circular-progressbar';
-import { useNavigate } from 'react-router-dom';
 
 import FingerprintIcon from '../../../Images/Camera/Fingerprint_Icon.svg';
 import IconTextButton from '../../Controls/IconTextButton';
@@ -73,7 +72,6 @@ interface CalibrateCancelButtonProps {
 }
 
 export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ onCancel, buttonStyle }) => {
-    const navigate = useNavigate();
     return (
         <IconTextButton
             buttonStyle={{ ...setupButtonStyle, ...buttonStyle }}
@@ -83,10 +81,7 @@ export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ on
             titleStyle={setupButtonTitleStyle}
             text={''}
             textStyle={{ display: 'none' }}
-            onClick={() => {
-                onCancel();
-                navigate('/camera/quick/');
-            }}
+            onClick={() => onCancel()}
         />
     );
 };

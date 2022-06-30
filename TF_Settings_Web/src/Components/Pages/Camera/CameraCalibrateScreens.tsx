@@ -69,6 +69,7 @@ const CameraCalibrateScreen = (
     content: (progressToClick: number) => ReactElement
 ): ReactElement => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
+    const isNewClick = React.useRef<boolean>(false);
 
     useEffect(() => {
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
@@ -79,10 +80,16 @@ const CameraCalibrateScreen = (
     }, []);
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
-        const roundedProg = Math.floor(evt.detail.ProgressToClick * 10) / 10;
-        setProgressToClick(roundedProg);
-        if (roundedProg >= 1 && evt.detail.InputType === InputType.DOWN) {
-            handleClick();
+        if (!isNewClick.current) {
+            isNewClick.current = evt.detail.ProgressToClick === 0;
+            return;
+        }
+        if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
+            const roundedProg = Math.floor(evt.detail.ProgressToClick * 10) / 10;
+            setProgressToClick(roundedProg);
+            if (roundedProg >= 1) {
+                handleClick();
+            }
         }
     };
 

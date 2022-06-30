@@ -2,7 +2,7 @@
 import '../../../Styles/Camera/Calibrate.css';
 
 import React, { useEffect } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
 import { InteractionConfig, PhysicalConfig, Vector } from '../../../TouchFree/Configuration/ConfigurationTypes';
@@ -20,10 +20,11 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setinteractionConfig] = React.useState<InteractionConfig>();
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         // Save current config then change it to use config for calibration
         ConfigurationManager.RequestConfigState((config: ConfigState) => {
-            console.log(config);
             setinteractionConfig(config.interaction);
             setPhysicalConfig(config.physical);
             ConfigurationManager.RequestConfigChange(
@@ -42,12 +43,12 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
     }, []);
 
     const resetConfig = () => {
-        console.log({ physicalConfig, interactionConfig });
-        ConfigurationManager.RequestConfigChange(interactionConfig ?? null, physicalConfig ?? null, () => {});
+        ConfigurationManager.RequestConfigChange(interactionConfig ?? null, physicalConfig ?? null, () => {
+            navigate('/camera/quick/');
+        });
     };
 
     const resetInteractionConfig = () => {
-        console.log(interactionConfig);
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
     };
 
