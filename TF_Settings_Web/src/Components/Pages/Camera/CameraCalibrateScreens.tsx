@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import InteractionBottomGuide from '../../../Images/Camera/Interaction_Guide_Bottom.png';
 import InteractionTopGuide from '../../../Images/Camera/Interaction_Guide_Top.png';
+import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
 import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
 import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
 import { CalibrateCancelButton, CalibrateInstructions, CalibrateProgressCircle } from './CalibrationComponents';
@@ -24,7 +25,7 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCan
                 style={{ marginTop: '150px' }}
                 src={InteractionTopGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                onClick={() => navigate('../bottom')}
+                // onClick={() => navigate('../bottom')}
             />
             <CalibrateProgressCircle progress={progressToClick} style={{ marginTop: '10%' }} />
             <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: 'calc(593px - 28%)' }} />
@@ -32,7 +33,7 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCan
     );
 
     const handleClick = () => {
-        //SEND TO SERVICE
+        ConnectionManager.serviceConnection()?.QuickSetupRequest(true);
         navigate('../bottom');
     };
 
@@ -49,7 +50,7 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
                 style={{ paddingTop: 'calc(430px - 28%)', marginBottom: '120px' }}
                 src={InteractionBottomGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                onClick={() => navigate('../complete')}
+                // onClick={() => navigate('../complete')}
             />
             <CalibrateInstructions />
             <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '191px' }} />
@@ -57,7 +58,7 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
     );
 
     const handleClick = () => {
-        //SEND TO SERVICE
+        ConnectionManager.serviceConnection()?.QuickSetupRequest(false);
         navigate('../complete');
     };
 
