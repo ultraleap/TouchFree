@@ -39,10 +39,7 @@ const App: React.FC = () => {
             });
         }, 5000);
 
-        const cursorManager = new CursorManager();
-        if (cursorParent.current !== null) {
-            cursorManager.setElement(cursorParent.current);
-        }
+        new CursorManager();
 
         return () => {
             controller.disconnect();

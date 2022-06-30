@@ -7,12 +7,12 @@ variables:
   TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
   TF_TFU_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling
   TF_SETTINGS_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/SettingsUI
-  
+
   BS_EXTENSION_NAME: ultouchfree
 
   TF_TFU_VERSION: '1.1.0'
   TF_TFW_VERSION: '1.1.0'
-  TOUCHFREE_VERSION: '2.3.0'
+  TOUCHFREE_VERSION: '2.3.1'
 
   TF_TOOLING_API_VERSION: '1.2.0'
 
@@ -44,7 +44,9 @@ TF_Tooling::Unity::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFU_PATH}/Version.txt --swVer ${env:TF_TFU_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFU_PATH}/Version.txt --swVer ${env:TF_TFU_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+
     # Copy Version.txt to Tooling_Release folder
     - if (Test-Path -Path "./Tooling_Release") {
         Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
@@ -72,7 +74,9 @@ TF_Tooling::Web::build:
   when: always
   script:
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFW_PATH}/Version.txt --swVer ${env:TF_TFW_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFW_PATH}/Version.txt --swVer ${env:TF_TFW_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+
     # Build Tooling
     - cd ${env:TF_TFW_PATH}
     - npm i
@@ -151,7 +155,7 @@ TF_Service::dotNet::Windows::build:
       }
     - mkdir ./Service_dotNet_Build
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/win-x64/publish/*" ./Service_dotNet_Build
-    
+    - rm ./Service_dotNet_Build/interaction-tuning.json
 
     # Sign the executable with the UltraLeap certificate
     - azuresigntool sign -du "https://www.ultraleap.com" -kvu "https://$env:SIGN_VAULT_ID.vault.azure.net/"  -kvi "$env:SIGN_VAULT_APPLICATION_ID" -kvs "$env:SIGN_VAULT_APPLICATION_CLIENT_CODE" -kvc "ultraleap-ltd" -kvt "$env:SIGN_VAULT_TENANT_ID" -tr http://timestamp.digicert.com -v "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree_Service.exe"
@@ -179,10 +183,11 @@ TF_Service::dotNet::ARMLinux::build:
       }
     - mkdir ./Service_dotNet_Build_ARMLinux
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/linux-arm64/publish/*" ./Service_dotNet_Build_ARMLinux
+    - rm ./Service_dotNet_Build_ARMLinux/interaction-tuning.json
 
     - mkdir ./Service_dotNet_Build_ARMLinux/ThirdParty
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
-    - mv ./Service_dotNet_Build_ARMLinux/ThirdParty/.NetRuntime.License.txt ./Service_dotNet_Build_ARMLinux/ThirdParty/dotNetRuntime.License.txt 
+    - mv ./Service_dotNet_Build_ARMLinux/ThirdParty/.NetRuntime.License.txt ./Service_dotNet_Build_ARMLinux/ThirdParty/dotNetRuntime.License.txt
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Newtonsoft.JSON.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
@@ -239,7 +244,7 @@ TF_Service::Tray::build:
     # Move the built tray app to the root directory
     - mkdir ./Service_Tray_Build
     - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray/bin/x64/Release/* ./Service_Tray_Build
-    
+
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/Service_Tray_Build/ServiceUITray.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
@@ -273,7 +278,9 @@ TF_Settings::Windows::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SETTINGS_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SETTINGS_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+
     - mkdir $CI_PROJECT_DIR/UIBuild
     - cp ${env:TF_SETTINGS_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
 
@@ -335,7 +342,8 @@ TouchFree::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA}
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content "${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt"
 
     # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
@@ -556,7 +564,7 @@ TF_Service::ARMLinux::package:
     - cp ./LeapSDK/ThirdPartyNotices.md ./TouchFree_Extension/Tracking
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
     - cp -R $CI_PROJECT_DIR/TF_Settings_Web/build/* ./TouchFree_Extension/wwwroot
-    
+
     - cp $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Version.txt ./TouchFree_Extension
 
     - cd "$CI_PROJECT_DIR/Scripts/BrightSign_Scripts/"

@@ -1,8 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Leap;
+using NUnit.Framework;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using System;
-using Leap;
 
 namespace TouchFreeTests
 {
@@ -18,10 +17,10 @@ namespace TouchFreeTests
         public void TranslationIsCorrectlyConstructedFromConfig()
         {
             // Given
-            HandManager handManger = new (null, null);
-            System.Numerics.Vector3 translationInMillimeters = new (100f, 200f, 300f);
+            HandManager handManger = new(null, null);
+            System.Numerics.Vector3 translationInMillimeters = new(100f, 200f, 300f);
             Leap.Vector translationInLeapSpace = new Leap.Vector(translationInMillimeters.X, translationInMillimeters.Y, -translationInMillimeters.Z);
-            PhysicalConfigInternal testConfig = new () { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
+            PhysicalConfigInternal testConfig = new() { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
 
             // When
             handManger.UpdateTrackingTransform(testConfig);
@@ -30,24 +29,26 @@ namespace TouchFreeTests
             Assert.AreEqual(translationInLeapSpace, handManger.TrackingTransform().translation);
         }
 
+        #region UpdateTrackingTransform
+
         [Test]
         public void UpdateTrackingTransform_TopMountedOrientation_XRotationNotInverted()
         {
             // Given
-            HandManager handManger = new (null, null);
-            System.Numerics.Vector3 topDownRotation = new (45, 0, 180);
+            HandManager handManger = new(null, null);
+            System.Numerics.Vector3 topDownRotation = new(45, 0, 180);
             System.Numerics.Quaternion topDownQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(topDownRotation.Y),
                 Utilities.DegreesToRadians(topDownRotation.X),
                 Utilities.DegreesToRadians(topDownRotation.Z));
 
-            PhysicalConfigInternal testConfig = new () { LeapRotationD = topDownRotation };
+            PhysicalConfigInternal testConfig = new() { LeapRotationD = topDownRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
 
             //Then
-            System.Numerics.Quaternion handManagerRotation = new ()
+            System.Numerics.Quaternion handManagerRotation = new()
             {
                 X = handManger.TrackingTransform().rotation.x,
                 Y = handManger.TrackingTransform().rotation.y,
@@ -61,20 +62,20 @@ namespace TouchFreeTests
         public void UpdateTrackingTransform_BottomMountedOrientation_XRotationInverted()
         {
             // Given
-            HandManager handManger = new (null, null);
-            System.Numerics.Vector3 bottomRotation = new (45, 0, 0);
+            HandManager handManger = new(null, null);
+            System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
             System.Numerics.Quaternion bottomQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(bottomRotation.Y),
                 Utilities.DegreesToRadians(-bottomRotation.X),
                 Utilities.DegreesToRadians(bottomRotation.Z));
 
-            PhysicalConfigInternal testConfig = new () { LeapRotationD = bottomRotation };
+            PhysicalConfigInternal testConfig = new() { LeapRotationD = bottomRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
 
             //Then
-            System.Numerics.Quaternion handManagerRotation = new ()
+            System.Numerics.Quaternion handManagerRotation = new()
             {
                 X = handManger.TrackingTransform().rotation.x,
                 Y = handManger.TrackingTransform().rotation.y,
@@ -127,6 +128,10 @@ namespace TouchFreeTests
             Assert.AreEqual(positionTranslation.Y, handManger.TrackingTransform().translation.y, 0.01);
             Assert.AreEqual(positionTranslation.Z, handManger.TrackingTransform().translation.z, 0.01);
         }
+
+        #endregion
+
+        #region Update
 
         [Test]
         public void Update_NoHandsInFrame_HandsAreNull()
@@ -256,5 +261,7 @@ namespace TouchFreeTests
             Assert.AreEqual(true, handManger.PrimaryHand.IsLeft);
             Assert.IsNull(handManger.SecondaryHand);
         }
+
+        #endregion
     }
 }

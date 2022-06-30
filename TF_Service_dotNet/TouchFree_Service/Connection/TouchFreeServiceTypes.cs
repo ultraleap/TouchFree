@@ -3,7 +3,7 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.ConnectionTypes
 {
-    internal enum ActionCode
+    public enum ActionCode
     {
         INPUT_ACTION,
 
@@ -25,12 +25,8 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         CONFIGURATION_FILE_STATE,
         SET_CONFIGURATION_FILE,
         CONFIGURATION_FILE_CHANGE_RESPONSE,
-    }
 
-    public enum HandPresenceState
-    {
-        HAND_FOUND,
-        HANDS_LOST
+        QUICK_SETUP,
     }
 
     internal enum Compatibility
@@ -83,17 +79,6 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
             requestID = _id;
             trackingServiceState = _trackingServiceState;
             configurationState = _configurationState;
-        }
-    }
-
-    [Serializable]
-    public struct HandPresenceEvent
-    {
-        public HandPresenceState state;
-
-        public HandPresenceEvent(HandPresenceState _state)
-        {
-            state = _state;
         }
     }
 

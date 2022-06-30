@@ -2,6 +2,7 @@
 using System.Numerics;
 
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
@@ -28,34 +29,39 @@ namespace Ultraleap.TouchFree.Library.Interactions
         bool isDragging = false;
 
         public TouchPlanePushInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IPositioningModule _positioningModule) : base(_handManager, _virtualScreen, _configManager, _positioningModule, TrackedPosition.NEAREST)
+            IPositioningModule _positioningModule,
+            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
+            positionConfiguration = new[]
+            {
+                new PositionTrackerConfiguration(TrackedPosition.NEAREST, 1)
+            };
         }
 
-        protected override void UpdateData(Leap.Hand hand)
+        protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
         {
             if (hand == null)
             {
-                if (hadHandLastFrame)
-                {
-                    // We lost the hand so cancel anything we may have been doing
-                    SendInputAction(InputType.CANCEL, positions, 0);
-                }
-
                 pressComplete = false;
                 isDragging = false;
                 pressing = false;
                 handReady = false;
-                return;
+
+                if (hadHandLastFrame)
+                {
+                    // We lost the hand so cancel anything we may have been doing
+                    return CreateInputActionResult(InputType.CANCEL, positions, 0);
+                }
+                return new InputActionResult();
             }
 
-            HandleInteractions();
+            return HandleInteractions();
         }
 
-        private void HandleInteractions()
+        private InputActionResult HandleInteractions()
         {
             Vector2 currentCursorPosition = positions.CursorPosition;
 
@@ -69,9 +75,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     // we are touching the screen
                     if (!pressing)
                     {
-                        SendInputAction(InputType.DOWN, positions, progressToClick);
                         downPos = currentCursorPosition;
                         pressing = true;
+
+                        return CreateInputActionResult(InputType.DOWN, positions, progressToClick);
                     }
                     else if (!ignoreDragging)
                     {
@@ -82,40 +89,45 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
                         if (isDragging)
                         {
-                            SendInputAction(InputType.MOVE, positions, progressToClick);
+                            return CreateInputActionResult(InputType.MOVE, positions, progressToClick);
                         }
                         else
                         {
                             // NONE causes the client to react to data without using Input.
-                            SendInputAction(InputType.NONE, positions, progressToClick);
+                            return CreateInputActionResult(InputType.NONE, positions, progressToClick);
                         }
                     }
                     else if (!pressComplete)
                     {
-                        Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
-                        SendInputAction(InputType.UP, downPositions, progressToClick);
-
                         pressComplete = true;
+
+                        Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
+                        return CreateInputActionResult(InputType.UP, downPositions, progressToClick);
                     }
                 }
             }
             else
             {
+                InputActionResult result;
                 if (pressing && !pressComplete)
                 {
                     Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
-                    SendInputAction(InputType.UP, downPositions, progressToClick);
+                    result = CreateInputActionResult(InputType.UP, downPositions, progressToClick);
                 }
                 else
                 {
-                    SendInputAction(InputType.MOVE, positions, progressToClick);
+                    result = CreateInputActionResult(InputType.MOVE, positions, progressToClick);
                 }
 
                 pressComplete = false;
                 pressing = false;
                 isDragging = false;
                 handReady = true;
+
+                return result;
             }
+
+            return new InputActionResult();
         }
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
@@ -137,7 +149,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
             base.OnInteractionSettingsUpdated(_config);
 
             touchPlaneDistanceMm = _config.TouchPlane.TouchPlaneActivationDistanceMm;
-            positioningModule.TrackedPosition = _config.TouchPlane.TouchPlaneTrackedPosition;
+            positionConfiguration = new[]
+            {
+                new PositionTrackerConfiguration(_config.TouchPlane.TouchPlaneTrackedPosition, 1)
+            };
         }
     }
 }

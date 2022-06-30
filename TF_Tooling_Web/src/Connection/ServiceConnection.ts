@@ -236,4 +236,21 @@ export class ServiceConnection {
 
         this.webSocket.send(message);
     }
+
+    // Function: QuickSetupRequest
+    // Used internally to pass information to the Service about performing a QuickSetup.
+    // A configuration update is the expected response.
+    QuickSetupRequest(atTopTarget: boolean): void {
+        const position = atTopTarget ? 'Top' : 'Bottom';
+        let guid: string = uuidgen();
+        
+        let request: any = {
+            requestID: guid,
+            position
+        };
+        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<any>(ActionCode.QUICK_SETUP, request);
+        let message: string = JSON.stringify(wrapper);
+
+        this.webSocket.send(message);
+    }
 }
