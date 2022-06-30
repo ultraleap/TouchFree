@@ -163,7 +163,7 @@ namespace Ultraleap.TouchFree.Library
                         {
                             var differenceInLocations = lastDownPosition.Value - lastLocationInputAction.CursorPosition;
                             var differenceLength = differenceInLocations.Length();
-                            var decrease = Utilities.MapRangeToRange(Math.Clamp(differenceLength, 10, 300), 10, Math.Max(300, differenceLength), 10, 50);
+                            var decrease = Utilities.MapRangeToRange(differenceLength, 10, Math.Max(300, differenceLength), 10, 50);
                             var decreaseRatio = decrease / differenceLength;
                             // Soften moving back to the location cursor position (this should be changed to use time so that it is consistent when we have lower frame rate)
                             lastDownPosition = differenceLength > 10 ? (differenceInLocations * decreaseRatio) + lastLocationInputAction.CursorPosition : null;
