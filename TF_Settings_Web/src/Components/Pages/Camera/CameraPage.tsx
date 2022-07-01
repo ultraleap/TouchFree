@@ -12,22 +12,20 @@ const CameraPage = () => {
     const [activePosition, setActivePosition] = React.useState<PositionType>(null);
 
     return (
-        <>
-            <Routes>
-                <Route path="" element={<CameraSetupSelection />} />
-                <Route
-                    path="quick"
-                    element={
-                        <CameraPosition
-                            configPosition={activePosition}
-                            setPosition={(position: PositionType) => setActivePosition(position)}
-                        />
-                    }
-                />
-                <Route path="quick/calibrate/*" element={<CameraCalibratePage configPosition={activePosition} />} />
-                <Route path="manual" element={<ManualSetup />} />
-            </Routes>
-        </>
+        <Routes>
+            <Route path="" element={<CameraSetupSelection />} />
+            <Route
+                path="quick"
+                element={
+                    <CameraPosition
+                        activePosition={activePosition}
+                        setPosition={(position: PositionType) => setActivePosition(position)}
+                    />
+                }
+            />
+            <Route path="quick/calibrate/*" element={<CameraCalibratePage activePosition={activePosition} />} />
+            <Route path="manual" element={<ManualSetup />} />
+        </Routes>
     );
 };
 

@@ -12,7 +12,7 @@ import CameraCalibrateComplete from './CameraCalibrateComplete';
 import { CameraCalibrateBottom, CameraCalibrateTop } from './CameraCalibrateScreens';
 import { PositionType } from './CameraPosition';
 
-const calibrationInteractionConfig: Partial<InteractionConfig> = {
+const calibInteractionConfig: Partial<InteractionConfig> = {
     InteractionType: InteractionType.HOVER,
     DeadzoneRadius: 0.007,
     HoverAndHold: {
@@ -22,50 +22,80 @@ const calibrationInteractionConfig: Partial<InteractionConfig> = {
 };
 
 interface CameraCalibratePageProps {
-    configPosition: PositionType;
+    activePosition: PositionType;
 }
 
-const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPosition }) => {
+const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePosition }) => {
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
-    const [interactionConfig, setinteractionConfig] = React.useState<InteractionConfig>();
+    const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
+    const [isCalibConfigActive, setIsCalibConfigActive] = React.useState<boolean>(false);
 
     const navigate = useNavigate();
 
     useEffect(() => {
+        setCursorDisplay(false);
         // Save current config then change it to use config for calibration
         ConfigurationManager.RequestConfigState((config: ConfigState) => {
-            setinteractionConfig(config.interaction);
+            setInteractionConfig(config.interaction);
             setPhysicalConfig(config.physical);
+
             ConfigurationManager.RequestConfigChange(
-                calibrationInteractionConfig,
-                { LeapRotationD: getRotationFromPosition(configPosition) },
-                () => {}
+                calibInteractionConfig,
+                { LeapRotationD: getRotationFromPosition(activePosition) },
+                () => setIsCalibConfigActive(true)
             );
         });
     }, []);
 
-    const setCalibrationInteractionConfig = () => {
-        ConfigurationManager.RequestConfigChange(calibrationInteractionConfig, {}, () => {});
-    };
+    const setCalibInteractionConfig = (): void =>
+        ConfigurationManager.RequestConfigChange(calibInteractionConfig, {}, () => {});
 
-    const resetConfig = () => {
+    const resetCalibConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, physicalConfig ?? null, () => {
             navigate('/camera/quick/');
         });
-    };
 
-    const resetInteractionConfig = () => {
+    const resetCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
-    };
 
     return (
         <Routes>
-            <Route path="top" element={<CameraCalibrateTop onCancel={resetConfig} />} />
-            <Route path="bottom" element={<CameraCalibrateBottom onCancel={resetConfig} />} />
+            <Route
+                path="top"
+                element={
+                    <CameraCalibrateTop
+                        isConfigSet={isCalibConfigActive}
+                        onCancel={() => {
+                            setCursorDisplay(true);
+                            resetCalibConfig();
+                        }}
+                    />
+                }
+            />
+            <Route
+                path="bottom"
+                element={
+                    <CameraCalibrateBottom
+                        onCancel={() => {
+                            setCursorDisplay(true);
+                            resetCalibConfig();
+                        }}
+                    />
+                }
+            />
             <Route
                 path="complete"
                 element={
-                    <CameraCalibrateComplete onLoad={resetInteractionConfig} onRedo={setCalibrationInteractionConfig} />
+                    <CameraCalibrateComplete
+                        onLoad={() => {
+                            setCursorDisplay(true);
+                            resetCalibInteractionConfig();
+                        }}
+                        onRedo={() => {
+                            setCursorDisplay(false);
+                            setCalibInteractionConfig();
+                        }}
+                    />
                 }
             />
             <Route path="*" element={<Navigate to="top" replace />} />
@@ -75,6 +105,18 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ configPositio
 
 export default CameraCalibratePage;
 
+const setCursorDisplay = (show: boolean) => {
+    const svgCanvas = document.querySelector('#svg-cursor');
+    if (!svgCanvas) return;
+
+    if (show) {
+        svgCanvas.classList.remove('hidden');
+    } else {
+        svgCanvas.classList.add('hidden');
+    }
+};
+
+// Need better defaults??
 const getRotationFromPosition = (position: PositionType): Vector => {
     if (position === 'FaceScreen') {
         return { X: 10, Y: 0, Z: 95 };

@@ -15,7 +15,10 @@ interface CameraCalibrateScreenProps {
     onCancel: () => void;
 }
 
-export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCancel }): ReactElement => {
+export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfigSet: boolean }> = ({
+    onCancel,
+    isConfigSet,
+}): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div style={{ height: '100%', alignItems: 'center', marginTop: '-53px' }}>
@@ -37,7 +40,7 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCan
         navigate('../bottom');
     };
 
-    return CameraCalibrateScreen(handleClick, content);
+    return CameraCalibrateScreen(handleClick, content, isConfigSet);
 };
 
 export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ onCancel }): ReactElement => {
@@ -62,15 +65,19 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
         navigate('../complete');
     };
 
-    return CameraCalibrateScreen(handleClick, content);
+    return CameraCalibrateScreen(handleClick, content, true);
 };
 
 const CameraCalibrateScreen = (
     handleClick: () => void,
-    content: (progressToClick: number) => ReactElement
+    content: (progressToClick: number) => ReactElement,
+    isConfigSet: boolean
 ): ReactElement => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
     const isNewClick = React.useRef<boolean>(false);
+    const readyToInteract = React.useRef<boolean>(false);
+
+    readyToInteract.current = isConfigSet;
 
     useEffect(() => {
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
@@ -81,6 +88,9 @@ const CameraCalibrateScreen = (
     }, []);
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
+        if (readyToInteract.current === false) {
+            return;
+        }
         if (!isNewClick.current) {
             isNewClick.current = evt.detail.ProgressToClick === 0;
             return;

@@ -29,11 +29,11 @@ const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };
 const textStyle: React.CSSProperties = { color: '#00EB85', opacity: '1' };
 
 interface CameraPositionProps {
-    configPosition: PositionType;
+    activePosition: PositionType;
     setPosition: (position: PositionType) => void;
 }
 
-const CameraPosition: React.FC<CameraPositionProps> = ({ configPosition, setPosition }) => {
+const CameraPosition: React.FC<CameraPositionProps> = ({ activePosition, setPosition }) => {
     useEffect(() => {
         ConfigurationManager.RequestConfigState((config: ConfigState) => {
             setPosition(getPositionFromConfig(config));
@@ -55,7 +55,7 @@ const CameraPosition: React.FC<CameraPositionProps> = ({ configPosition, setPosi
                         alt={`Icon for ${title} option`}
                         iconStyle={iconStyle}
                         title={title}
-                        text={configPosition === type ? 'Current Setup' : ''}
+                        text={activePosition === type ? 'Current Setup' : ''}
                         textStyle={textStyle}
                         onClick={() => {
                             setPosition(type);

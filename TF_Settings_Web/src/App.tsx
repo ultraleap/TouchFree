@@ -1,6 +1,6 @@
 import './App.css';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import ControlBar from './Components/ControlBar';
@@ -14,8 +14,6 @@ import { TrackingServiceState } from './TouchFree/TouchFreeToolingTypes';
 
 const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
-
-    const cursorParent = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         ConnectionManager.init();
@@ -48,7 +46,7 @@ const App: React.FC = () => {
     }, []);
 
     return (
-        <div className="app" ref={cursorParent}>
+        <div className="app">
             <ControlBar tfStatus={tfStatus} />
             <div className="pageContent">
                 <Routes>
