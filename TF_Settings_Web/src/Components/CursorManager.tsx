@@ -5,10 +5,17 @@ export class CursorManager {
     public cursor: TouchlessCursor;
 
     constructor() {
-        const svgCanvas = document.querySelector('#svg-cursor');
-        const svgDot = document.querySelector('#svg-cursor-dot');
-        const svgRing = document.querySelector('#svg-cursor-ring');
+        this.cursor = new SVGCursor(undefined, (inputAction: any) => inputAction.CursorPosition, 'cx', 'cy');
+        const cursorCount = 10;
+        for (let index = 0; index < cursorCount; index++) {
+            new SVGCursor(index, (inputAction: any) => this.GetFingerTipElement(inputAction, index), 'cx', 'cy');
+        }
+    }
 
-        this.cursor = new SVGCursor(svgCanvas, svgDot, svgRing, 'cx', 'cy');
+    GetFingerTipElement(inputAction: any, index: number) {
+        if (inputAction?.FingerTipPositions) {
+            return inputAction?.FingerTipPositions[index];
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
@@ -74,7 +76,32 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         protected InputActionResult CreateInputActionResult(InputType _inputType, Positions _positions, float _progressToClick)
         {
-            return new InputActionResult(new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick), _progressToClick);
+            var fingerTipPositions = new List<Vector2>();
+            if (handManager.LeftHand != null)
+            {
+                fingerTipPositions.AddRange(handManager.LeftHand?.Fingers?
+                    .Select(x => virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(x.TipPosition)))
+                    .Select(x => new Vector2(x.X, x.Y)));
+                //fingerTipPositions.AddRange(handManager.LeftHand?.Fingers?
+                //    .Select(x => virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(x.bones[1].NextJoint)))
+                //    .Select(x => new Vector2(x.X, x.Y)));
+                //fingerTipPositions.AddRange(handManager.LeftHand?.Fingers?
+                //    .Select(x => virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(x.bones[2].NextJoint)))
+                //    .Select(x => new Vector2(x.X, x.Y)));
+            }
+            if (handManager.RightHand != null)
+            {
+                fingerTipPositions.AddRange(handManager.RightHand?.Fingers?
+                    .Select(x => virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(x.TipPosition)))
+                    .Select(x => new Vector2(x.X, x.Y)));
+                //fingerTipPositions.AddRange(handManager.RightHand?.Fingers?
+                //    .Select(x => virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(x.bones[1].NextJoint)))
+                //    .Select(x => new Vector2(x.X, x.Y)));
+                //fingerTipPositions.AddRange(handManager.RightHand?.Fingers?
+                //    .Select(x => virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(x.bones[2].NextJoint)))
+                //    .Select(x => new Vector2(x.X, x.Y)));
+            }
+            return new InputActionResult(new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick, fingerTipPositions.ToArray()), _progressToClick);
         } 
 
         Leap.Hand GetHand()

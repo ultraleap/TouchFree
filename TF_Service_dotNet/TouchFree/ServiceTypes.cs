@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 
 using Leap;
@@ -21,8 +22,9 @@ namespace Ultraleap.TouchFree.Library
         public readonly Vector2 CursorPosition;
         public readonly float DistanceFromScreen;
         public readonly float ProgressToClick;
+        public readonly Vector2[] FingerTipPositions;
 
-        public InputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _progressToClick)
+        public InputAction(long _timestamp, InteractionType _interactionType, HandType _handType, HandChirality _chirality, InputType _inputType, Positions _positions, float _progressToClick, Vector2[] _fingerTipPositions)
         {
             Timestamp = _timestamp;
             InteractionType = _interactionType;
@@ -32,6 +34,7 @@ namespace Ultraleap.TouchFree.Library
             CursorPosition = _positions.CursorPosition;
             DistanceFromScreen = _positions.DistanceFromScreen;
             ProgressToClick = _progressToClick;
+            FingerTipPositions = _fingerTipPositions;
         }
     }
 
@@ -104,6 +107,7 @@ namespace Ultraleap.TouchFree.Library
         public WebSocketVector2 CursorPosition;
         public float DistanceFromScreen;
         public float ProgressToClick;
+        public WebSocketVector2[] FingerTipPositions;
 
         public WebsocketInputAction(InputAction _data)
         {
@@ -115,6 +119,7 @@ namespace Ultraleap.TouchFree.Library
             CursorPosition = new WebSocketVector2(_data.CursorPosition);
             DistanceFromScreen = _data.DistanceFromScreen;
             ProgressToClick = _data.ProgressToClick;
+            FingerTipPositions = _data.FingerTipPositions?.Select(x => new WebSocketVector2(x))?.ToArray();
         }
     }
 

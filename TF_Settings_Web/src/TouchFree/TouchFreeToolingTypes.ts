@@ -25,6 +25,7 @@ export class TouchFreeInputAction {
     CursorPosition: Array<number>;
     DistanceFromScreen: number;
     ProgressToClick: number;
+    FingerTipPositions: Array<Array<number>>;
 
     constructor(
         _timestamp: number,
@@ -34,7 +35,8 @@ export class TouchFreeInputAction {
         _inputType: InputType,
         _cursorPosition: Array<number>,
         _distanceFromScreen: number,
-        _progressToClick: number)
+        _progressToClick: number,
+        _fingerTipPositions: Array<Array<number>>)
     {
         this.Timestamp = _timestamp;
         this.InteractionType = _interactionType;
@@ -44,6 +46,7 @@ export class TouchFreeInputAction {
         this.CursorPosition = _cursorPosition;
         this.DistanceFromScreen = _distanceFromScreen;
         this.ProgressToClick = _progressToClick;
+        this.FingerTipPositions = _fingerTipPositions;
     }
 }
 
@@ -51,19 +54,23 @@ export class TouchFreeInputAction {
 // Used to translate the raw actions that come across the websocket (<WebsocketInputActions>) and
 // convert them into the Tooling-friendly <TouchFreeInputAction> format.
 export function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInputAction {
-    const yPosition = window.innerHeight - (_wsInput.CursorPosition.y / window.devicePixelRatio);
-    const xPosition = _wsInput.CursorPosition.x / window.devicePixelRatio;
-
     return new TouchFreeInputAction(
         _wsInput.Timestamp,
         FlagUtilities.GetInteractionTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetHandTypeFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetChiralityFromFlags(_wsInput.InteractionFlags),
         FlagUtilities.GetInputTypeFromFlags(_wsInput.InteractionFlags),
-        [xPosition, yPosition],
+        ConvertCoordinatesToPositions(_wsInput.CursorPosition),
         _wsInput.DistanceFromScreen,
         _wsInput.ProgressToClick,
+        _wsInput.FingerTipPositions?.map(x => ConvertCoordinatesToPositions(x)),
     );
+}
+
+function ConvertCoordinatesToPositions(_coordinates: any) {
+    const yPosition = window.innerHeight - (_coordinates.y / window.devicePixelRatio);
+    const xPosition = _coordinates.x / window.devicePixelRatio;
+    return [xPosition, yPosition];
 }
 
 // Enum: HandChirality
@@ -172,6 +179,8 @@ export class WebsocketInputAction {
     DistanceFromScreen: number;
     // Variable: ProgressToClick
     ProgressToClick: number;
+    // Variable: FingerTipPositions
+    FingerTipPositions: Array<any>;
 
     constructor(
         _timestamp: number,
@@ -179,12 +188,14 @@ export class WebsocketInputAction {
         _cursorPosition: any,
         _distanceFromScreen: number,
         _progressToClick: number,
+        _fingerTipPositions: Array<any>,
     ) {
         this.Timestamp = _timestamp;
         this.InteractionFlags = _interactionFlags;
         this.CursorPosition = _cursorPosition;
         this.DistanceFromScreen = _distanceFromScreen;
         this.ProgressToClick = _progressToClick;
+        this.FingerTipPositions = _fingerTipPositions;
     }
 }
 

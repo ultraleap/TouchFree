@@ -20,7 +20,7 @@ class App extends React.Component {
         backgroundColor: '#222222',
     };
 
-    private cursorManager: CursorManager;
+    public static cursorManager: CursorManager;
     private cursorParent: RefObject<HTMLDivElement>;
 
     // TouchFree objects
@@ -31,7 +31,9 @@ class App extends React.Component {
         ConnectionManager.init();
         this.inputSystem = new WebInputController();
 
-        this.cursorManager = new CursorManager();
+        if (!App.cursorManager) {
+            App.cursorManager = new CursorManager();
+        }
         this.cursorParent = React.createRef();
     }
 
