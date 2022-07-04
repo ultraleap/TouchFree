@@ -43,7 +43,7 @@
 }
 
 .tfButton > p {
-    font-family: 'MontserratBold';
+    font-family: MontserratRegular, Arial;
     display: inline-block;
     margin: 0;
     font-size: 22px;

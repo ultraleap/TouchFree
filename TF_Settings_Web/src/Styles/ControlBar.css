@@ -22,7 +22,7 @@
     position: fixed;
     top: 0;
     width: 1080px;
-    height: 170px;
+    height: var(--controlBarSize);
     background-image: linear-gradient(270deg, #3c3c3c, #2f2f2f);
     z-index: 1;
 }

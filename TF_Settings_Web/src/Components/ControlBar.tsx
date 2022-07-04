@@ -17,7 +17,7 @@ interface ControlBarProps {
 const backButtonStyle: CSSProperties = {
     width: '180px',
     height: '60px',
-    borderRadius: '33px',
+    borderRadius: '30px',
     marginLeft: '1%',
     marginBottom: '2%',
     background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',

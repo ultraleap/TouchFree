@@ -1,3 +1,7 @@
+:root {
+    --controlBarSize: 170px;
+}
+
 .app {
     text-align: center;
     height: 1920px;
@@ -7,6 +11,6 @@
 }
 
 .pageContent {
-    margin-top: 170px;
-    height: calc(100% - 170px);
+    margin-top: var(--controlBarSize);
+    height: calc(100% - var(--controlBarSize));
 }

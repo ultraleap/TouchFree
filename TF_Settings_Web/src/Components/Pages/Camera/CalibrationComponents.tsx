@@ -5,23 +5,52 @@ import { CreateTypes } from 'canvas-confetti';
 import React, { useRef } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
-import { buildStyles, CircularProgressbarWithChildren } from 'react-circular-progressbar';
+import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import FingerprintIcon from '../../../Images/Camera/Fingerprint_Icon.svg';
 import IconTextButton from '../../Controls/IconTextButton';
 
-export const CalibrateInstructions = () => {
+interface CalibrateInstructionsProps {
+    progress: number;
+    containerStyle: CSSProperties;
+}
+export const CalibrateInstructions: React.FC<CalibrateInstructionsProps> = ({ progress, containerStyle }) => {
+    const instructionsText = (
+        <h1>
+            Hold INDEX FINGER against <br /> this <span style={{ color: '#01EB85' }}>GREEN CIRCLE</span>
+        </h1>
+    );
+
+    const calibratingText = (
+        <h1 style={{ color: '#01EB85' }}>
+            <div style={{ display: 'flex', height: '62px' }}>
+                <span style={{ width: '25%', paddingLeft: '37.5%' }}>Calibrating</span>
+                <span style={{ width: '4%', textAlign: 'left' }} className="loading" />
+            </div>
+            {(progress * 100).toFixed(0)}%
+        </h1>
+    );
+
     return (
-        <div className="instructions">
-            <h1>
-                Hold INDEX FINGER against
-                <br /> this <span style={{ color: '#01EB85' }}>GREEN CIRCLE</span>
-            </h1>
+        <div className="instructions" style={containerStyle}>
+            {/* Instruction text = 135px */}
+            <SwitchTransition>
+                <CSSTransition
+                    key={progress <= 0 ? 'calibratingText' : 'instructionText'}
+                    addEndListener={(node, done) => node.addEventListener('transitionend', done, false)}
+                    classNames="fade"
+                >
+                    {progress <= 0 ? calibratingText : instructionsText}
+                </CSSTransition>
+            </SwitchTransition>
             <div className="arrow">
+                {/* Arrow = 60px + 30px padding = 80px */}
                 <div id="downLine" />
                 <div id="arrowHead" />
             </div>
             <div id="touchCircle">
+                {/* Touch outer circle = 30px padding */}
                 <img src={FingerprintIcon} alt="Fingerprint Icon showing where to place finger for Quick Setup" />
             </div>
         </div>
@@ -35,26 +64,26 @@ interface CalibrateProgressCircleProps {
 
 export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = ({ progress, style }) => (
     <div style={style} className="progressCircleContainer">
-        <CircularProgressbarWithChildren
+        <CircularProgressbar
             value={progress}
             maxValue={1}
+            strokeWidth={25}
             styles={buildStyles({
+                strokeLinecap: 'butt',
                 textColor: '#00eb85',
                 pathColor: '#00eb85',
+                backgroundColor: 'black',
+                trailColor: 'transparent',
+                pathTransitionDuration: 0.01,
             })}
-        >
-            <p>
-                Calibrating <br />
-            </p>
-            <p style={{ fontSize: '2.5rem' }}>{progress * 100}%</p>
-        </CircularProgressbarWithChildren>
+        />
     </div>
 );
 
 const setupButtonStyle: CSSProperties = {
     width: '300px',
     height: '80px',
-    borderRadius: '33px',
+    borderRadius: '40px',
     background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
 };
 
@@ -132,7 +161,9 @@ export const CalibratePracticeButton = () => {
                     if (keyEvent.key === 'Enter') fire();
                 }}
             >
-                Practice Button Press
+                Practice
+                <br />
+                Button Press
             </button>
             <ReactCanvasConfetti
                 refConfetti={(instance) => (refAnimationInstance.current = instance)}

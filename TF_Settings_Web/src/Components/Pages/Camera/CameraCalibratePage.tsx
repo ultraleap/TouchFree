@@ -17,7 +17,7 @@ const calibInteractionConfig: Partial<InteractionConfig> = {
     DeadzoneRadius: 0.007,
     HoverAndHold: {
         HoverStartTimeS: 1,
-        HoverCompleteTimeS: 2,
+        HoverCompleteTimeS: 5,
     },
 };
 
@@ -106,14 +106,10 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
 export default CameraCalibratePage;
 
 const setCursorDisplay = (show: boolean) => {
-    const svgCanvas = document.querySelector('#svg-cursor');
+    const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;
     if (!svgCanvas) return;
 
-    if (show) {
-        svgCanvas.classList.remove('hidden');
-    } else {
-        svgCanvas.classList.add('hidden');
-    }
+    svgCanvas.style.opacity = show ? '1' : '0';
 };
 
 // Need better defaults??

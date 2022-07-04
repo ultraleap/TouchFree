@@ -1,15 +1,64 @@
+.contentContainer {
+    height: calc(100% + var(--controlBarSize));
+    margin-top: calc(0% - var(--controlBarSize));
+}
+
 .instructions {
     display: block;
     align-items: center;
-    height: 320px;
+    height: 400px;
 }
 
 .instructions > h1 {
+    height: 135px;
     color: white;
-    font-size: 3.5rem;
+    font-size: 3rem;
     font-family: MontserratRegular, Arial;
     margin-top: 0;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
+}
+
+.fade-enter {
+    opacity: 0;
+}
+.fade-exit {
+    opacity: 1;
+}
+.fade-enter-active {
+    opacity: 1;
+}
+.fade-exit-active {
+    opacity: 0;
+}
+.fade-enter-active,
+.fade-exit-active {
+    transition: opacity 150ms;
+}
+
+.loading {
+    font-size: 3rem;
+    font-family: MontserratRegular, Arial;
+}
+
+.loading:after {
+    display: inline-block;
+    animation: loadingDots steps(1, end) 1s infinite;
+    content: '';
+}
+
+@keyframes loadingDots {
+    0% {
+        content: '';
+    }
+    25% {
+        content: '.';
+    }
+    50% {
+        content: '..';
+    }
+    75% {
+        content: '...';
+    }
 }
 
 .arrow {
@@ -19,6 +68,7 @@
     opacity: 50%;
     position: relative;
     display: flex;
+    padding-bottom: 30px;
 }
 
 .arrow > #downLine {
@@ -48,7 +98,9 @@
     width: 80px;
     height: 80px;
     display: flex;
+    position: relative;
     border-radius: 50%;
+    background-color: #000000;
     box-shadow: 0px 0px 15px #00eb85;
     border: 10px solid #00eb85;
 }
@@ -60,23 +112,18 @@
     margin-top: 10px;
 }
 
+.progressCircleContainer {
+    z-index: 0;
+    position: absolute;
+    left: 440px;
+    width: 180px;
+}
+
 .interactionGuide {
     display: block;
     margin: auto;
     width: 780px;
     height: 600px;
-}
-
-.progressCircleContainer {
-    display: block;
-    margin: auto;
-    width: 18%;
-}
-
-.progressCircleContainer p {
-    color: white;
-    font-size: 1.5rem;
-    font-family: MontserratRegular, Arial;
 }
 .setupCompleteText {
     color: white;
@@ -87,24 +134,25 @@
 }
 
 .setupPracticeButton {
-    width: 65%;
+    width: 50%;
     height: 100%;
     text-align: center;
     font-size: 3rem;
     font-family: MontserratRegular, Arial;
-    background-color: #00dbac;
+    background: transparent linear-gradient(107deg, #00ccce 0%, #00eb85 100%) 0% 0% no-repeat padding-box;
+
     color: black;
     border-radius: 25px;
 }
 
 .setupPracticeButtonHovered {
-    transform: scale(1.02);
-    background: transparent linear-gradient(107deg, #00ccce 0%, #00eb85 100%) 0% 0% no-repeat padding-box;
+    transform: scale(1.3);
+    /* font-size: 2.5rem; */
     box-shadow: 0px 5px 30px #00eb85;
 }
 
 .setupPracticeButtonPressed {
-    transform: scale(0.98);
+    transform: scale(1);
     background: transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 25px #000000;
 }

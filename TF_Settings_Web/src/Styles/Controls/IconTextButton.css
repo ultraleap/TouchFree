@@ -12,6 +12,7 @@
     font-size: 26px;
     font-family: MontserratRegular, Arial;
     margin-bottom: 0;
+    font-weight: normal;
 }
 
 .IconTextButton > p {
@@ -32,5 +33,5 @@
 
 .IconTextButtonPressed {
     transform: scale(1.02);
-    box-shadow: 0px 0px 40px gold;
+    box-shadow: 0px 0px 40px white;
 }

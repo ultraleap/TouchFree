@@ -21,21 +21,22 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfi
 }): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
-        <div style={{ height: '100%', alignItems: 'center', marginTop: '-53px' }}>
-            <CalibrateInstructions />
+        <div className="contentContainer">
+            <CalibrateInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
+            <CalibrateProgressCircle progress={progressToClick} style={{ top: '285px' }} />
             <img
                 className="interactionGuide"
-                style={{ marginTop: '150px' }}
+                style={{ marginTop: '50px' }}
                 src={InteractionTopGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                // onClick={() => navigate('../bottom')}
+                onClick={() => navigate('../bottom')}
             />
-            <CalibrateProgressCircle progress={progressToClick} style={{ marginTop: '10%' }} />
-            <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: 'calc(593px - 28%)' }} />
+            <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '600px' }} />
         </div>
     );
 
     const handleClick = () => {
+        // Center of fingerprint icon should be at 20% of page = 384px
         ConnectionManager.serviceConnection()?.QuickSetupRequest(true);
         navigate('../bottom');
     };
@@ -46,21 +47,22 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfi
 export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ onCancel }): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
-        <div style={{ height: '100%', alignItems: 'center' }}>
-            <CalibrateProgressCircle progress={progressToClick} style={{ paddingTop: '57px' }} />
+        <div className="contentContainer">
             <img
                 className="interactionGuide"
-                style={{ paddingTop: 'calc(430px - 28%)', marginBottom: '120px' }}
+                style={{ paddingTop: '550px' }}
                 src={InteractionBottomGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
                 // onClick={() => navigate('../complete')}
             />
-            <CalibrateInstructions />
-            <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '191px' }} />
+            <CalibrateInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
+            <CalibrateProgressCircle progress={progressToClick} style={{ bottom: '285px' }} />
+            <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '100px' }} />
         </div>
     );
 
     const handleClick = () => {
+        // Center of fingerprint icon should be at 80% of page = 1536px
         ConnectionManager.serviceConnection()?.QuickSetupRequest(false);
         navigate('../complete');
     };
@@ -96,7 +98,7 @@ const CameraCalibrateScreen = (
             return;
         }
         if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
-            const roundedProg = Math.floor(evt.detail.ProgressToClick * 10) / 10;
+            const roundedProg = Math.floor(evt.detail.ProgressToClick * 100) / 100;
             setProgressToClick(roundedProg);
             if (roundedProg >= 1) {
                 handleClick();
