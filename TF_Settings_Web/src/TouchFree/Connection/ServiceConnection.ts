@@ -111,11 +111,6 @@ export class ServiceConnection {
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
                 break;
 
-            case ActionCode.CONFIGURATION_STATE:
-                let configState: ConfigState = looseData.content;
-                ConnectionManager.messageReceiver.configStateQueue.push(configState);
-                break;
-
             case ActionCode.HAND_PRESENCE_EVENT:
                 let handEvent: HandPresenceEvent = looseData.content;
                 ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
@@ -126,7 +121,9 @@ export class ServiceConnection {
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
                 break;
 
+            case ActionCode.CONFIGURATION_STATE:
             case ActionCode.CONFIGURATION_FILE_STATE:
+            case ActionCode.QUICK_SETUP_CONFIG:
                 let configFileState: ConfigState = looseData.content;
                 ConnectionManager.messageReceiver.configStateQueue.push(configFileState);
                 break;
@@ -135,6 +132,7 @@ export class ServiceConnection {
             case ActionCode.VERSION_HANDSHAKE_RESPONSE:
             case ActionCode.SERVICE_STATUS_RESPONSE:
             case ActionCode.CONFIGURATION_FILE_RESPONSE:
+            case ActionCode.QUICK_SETUP_RESPONSE:
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
@@ -217,7 +215,7 @@ export class ServiceConnection {
 
     // Function: RequestConfigFile
     // Used internally to request information from the Service via the <webSocket>.
-    // Provides an asynchronous <ServiceStatus> via the _callback parameter.
+    // Provides an asynchronous <ConfigState> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigFile(_callback: (detail: ConfigState) => void): void {
@@ -238,9 +236,16 @@ export class ServiceConnection {
     }
 
     // Function: QuickSetupRequest
-    // Used internally to pass information to the Service about performing a QuickSetup.
-    // A configuration update is the expected response.
-    QuickSetupRequest(atTopTarget: boolean): void {
+    // Used internally to pass information to the Service about performing a QuickSetup
+    // via the <webSocket>.
+    // Provides an asynchronous <WebSocketResponse> via the _callback parameter.
+    // Provides an asynchronous <ConfigState> via the _configurationCallback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
+    // If your _configurationCallback requires context it should be bound to that context via .bind()
+    QuickSetupRequest(atTopTarget: boolean,
+        _callback: (detail: WebSocketResponse) => void,
+        _configurationCallback: (detail: ConfigState) => void): void {
         const position = atTopTarget ? 'Top' : 'Bottom';
         let guid: string = uuidgen();
         
@@ -250,6 +255,16 @@ export class ServiceConnection {
         };
         let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<any>(ActionCode.QUICK_SETUP, request);
         let message: string = JSON.stringify(wrapper);
+
+        if (_callback !== null) {
+            ConnectionManager.messageReceiver.responseCallbacks[guid] =
+                new ResponseCallback(Date.now(), _callback);
+        }
+
+        if (_configurationCallback !== null) {
+            ConnectionManager.messageReceiver.configStateCallbacks[guid] =
+                new ConfigStateCallback(Date.now(), _configurationCallback);
+        }
 
         this.webSocket.send(message);
     }

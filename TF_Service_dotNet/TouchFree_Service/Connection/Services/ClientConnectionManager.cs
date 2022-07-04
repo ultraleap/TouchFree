@@ -201,5 +201,27 @@ namespace Ultraleap.TouchFree.Service.Connection
                 }
             }
         }
+
+        public void SendQuickSetupConfigFile(ConfigState _config)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.Socket.State == WebSocketState.Open)
+                {
+                    connection.SendQuickSetupConfigFile(_config);
+                }
+            }
+        }
+
+        public void SendQuickSetupResponse(ResponseToClient _response)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.Socket.State == WebSocketState.Open)
+                {
+                    connection.SendQuickSetupResponse(_response);
+                }
+            }
+        }
     }
 }

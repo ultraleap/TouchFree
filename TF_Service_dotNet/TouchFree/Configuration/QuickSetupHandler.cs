@@ -22,22 +22,46 @@ namespace Ultraleap.TouchFree.Library.Configuration
             configManager = _configManager;
         }
 
-        public void HandleQuickSetupCall(QuickSetupPosition position)
+        public QuickSetupResponse HandleQuickSetupCall(QuickSetupPosition position)
         {
             if (position == QuickSetupPosition.Top)
             {
                 topHandPosition = handManager.RawHandPositions.FirstOrDefault();
+
+                return new QuickSetupResponse()
+                {
+                    ConfigurationUpdated = false,
+                    PositionRecorded = topHandPosition.HasValue,
+                };
             }
             else if (position == QuickSetupPosition.Bottom && topHandPosition != null)
             {
                 Leap.Vector? bottomHandPosition = handManager.RawHandPositions.FirstOrDefault();
+
+                var response = new QuickSetupResponse()
+                {
+                    ConfigurationUpdated = false,
+                    PositionRecorded = bottomHandPosition.HasValue,
+                };
 
                 if (bottomHandPosition != null)
                 {
                     UpdateConfigurationValues(
                         Utilities.LeapVectorToNumerics(bottomHandPosition.Value) * 1000,
                         Utilities.LeapVectorToNumerics(topHandPosition.Value) * 1000);
+
+                    response.ConfigurationUpdated = true;
                 }
+
+                return response;
+            }
+            else
+            {
+                return new QuickSetupResponse()
+                {
+                    ConfigurationUpdated = false,
+                    PositionRecorded = false,
+                };
             }
         }
 

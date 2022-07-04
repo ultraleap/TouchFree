@@ -2,6 +2,6 @@
 {
     public interface IQuickSetupHandler
     {
-        void HandleQuickSetupCall(QuickSetupPosition position);
+        QuickSetupResponse HandleQuickSetupCall(QuickSetupPosition position);
     }
 }

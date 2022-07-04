@@ -132,17 +132,30 @@ namespace Ultraleap.TouchFree.Service.Connection
                 return;
             }
 
-            quickSetupHandler.HandleQuickSetupCall(quickSetupRequest.Value.Position);
+            var quickSetupResponse = quickSetupHandler.HandleQuickSetupCall(quickSetupRequest.Value.Position);
 
-            InteractionConfig interactions = InteractionConfigFile.LoadConfig();
-            PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
+            if (quickSetupResponse?.ConfigurationUpdated == true)
+            {
+                InteractionConfig interactions = InteractionConfigFile.LoadConfig();
+                PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
 
-            ConfigState currentConfig = new ConfigState(
-                quickSetupRequest.Value.requestID,
-                interactions,
-                physical);
+                ConfigState currentConfig = new ConfigState(
+                    quickSetupRequest.Value.requestID,
+                    interactions,
+                    physical);
 
-            clientMgr.SendConfigFile(currentConfig);
+                clientMgr.SendQuickSetupConfigFile(currentConfig);
+            }
+            else if (quickSetupResponse?.PositionRecorded == true)
+            {
+                ResponseToClient response = new ResponseToClient("", "Success", "", _content);
+                clientMgr.SendQuickSetupResponse(response);
+            }
+            else
+            {
+                ResponseToClient response = new ResponseToClient("", "Failure", "Unable to record hand position", _content);
+                clientMgr.SendQuickSetupResponse(response);
+            }
         }
 
         void HandleGetStatusRequest(string _content)
