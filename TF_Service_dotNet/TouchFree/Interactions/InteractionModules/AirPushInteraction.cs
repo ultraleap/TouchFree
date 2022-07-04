@@ -59,6 +59,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool isDragging = false;
 
+        private readonly ExtrapolationPositionModifier extrapolation;
+        private readonly PositionFilter filter;
+
         public AirPushInteraction(
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
@@ -79,6 +82,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 unclickThreshold = _interactionTuning.Value.AirPushSettings.UnclickThreshold;
                 unclickThresholdDrag = _interactionTuning.Value.AirPushSettings.UnclickThresholdDrag;
             }
+            extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
+            filter = new PositionFilter(_interactionTuning);
 
             positionConfiguration = new[]
             {
@@ -89,6 +94,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
         {
             var returnPositions = base.ApplyAdditionalPositionModifiers(positions);
+            returnPositions.CursorPosition = extrapolation.ApplyModification(returnPositions.CursorPosition);
+            returnPositions.CursorPosition = filter.ApplyModification(returnPositions.CursorPosition);
             return returnPositions;
         }
 
@@ -116,7 +123,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private InputActionResult HandleInteractionsAirPush(float confidence)
         {
-            var inputActionResult =  new InputActionResult();
+            InputActionResult inputActionResult;
             long currentTimestamp = latestTimestamp;
 
             if (handAppearedCooldown.IsRunning && handAppearedCooldown.ElapsedMilliseconds >= millisecondsCooldownOnEntry)
@@ -206,6 +213,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     // Send the move event
                     inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                     positionStabiliser.ReduceDeadzoneOffset();
+                }
+                else
+                {
+                    // Send the move event
+                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                 }
 
                 if (decayingForce && (appliedForce <= unclickThreshold - 0.1f))

@@ -21,14 +21,6 @@ namespace Ultraleap.TouchFree.Service
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureAppConfiguration((hostingContext, config) =>
-                    {
-#if DEBUG
-                         config.AddJsonFile("interaction-tuning.json",
-                                            optional: true,
-                                            reloadOnChange: true);
-#endif
-                     });
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls("http://localhost:9739");
                 });
