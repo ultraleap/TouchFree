@@ -212,10 +212,13 @@ namespace Ultraleap.TouchFree.Library
 
                 if (lastPrimaryLocation.HasValue && lastSecondaryLocation.HasValue)
                 {
-                    var primaryLocationChangeX = (lastPrimaryLocation.Value - primaryHandIndexTipLocation).X / screenWidthPX;
-                    var primaryLocationChangeY = (lastPrimaryLocation.Value - primaryHandIndexTipLocation).Y / screenHeightPX;
-                    var secondaryLocationChangeX = (lastSecondaryLocation.Value - secondaryHandIndexTipLocation).X / screenWidthPX;
-                    var secondaryLocationChangeY = (lastSecondaryLocation.Value - secondaryHandIndexTipLocation).Y / screenHeightPX;
+                    var primaryLocationChange = lastPrimaryLocation.Value - primaryHandIndexTipLocation;
+                    var primaryLocationChangeX = primaryLocationChange.X / screenWidthPX;
+                    var primaryLocationChangeY = primaryLocationChange.Y / screenHeightPX;
+
+                    var secondaryLocationChange = lastSecondaryLocation.Value - secondaryHandIndexTipLocation;
+                    var secondaryLocationChangeX = secondaryLocationChange.X / screenWidthPX;
+                    var secondaryLocationChangeY = secondaryLocationChange.Y / screenHeightPX;
 
                     PrimaryHandActivity = Math.Clamp(PrimaryHandActivity * 0.9f + Math.Abs(primaryLocationChangeX) + Math.Abs(primaryLocationChangeY), 0f, 1f);
                     SecondaryHandActivity = Math.Clamp(SecondaryHandActivity * 0.9f + Math.Abs(secondaryLocationChangeX) + Math.Abs(secondaryLocationChangeY), 0f, 1f);
