@@ -37,12 +37,6 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
         public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
 
-        public float minScrollVelocity_mmps = 500f;
-        public float maxReleaseVelocity_mmps = 0f;
-        public float maxOpposingVelocity_mmps = 150f;
-        public int lockAxisToOnly = 0;
-        public bool allowBidirectional = false;
-
         public InteractionConfig()
         {
             this.UseScrollingOrDragging = true;

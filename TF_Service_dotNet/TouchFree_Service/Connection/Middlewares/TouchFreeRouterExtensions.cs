@@ -68,6 +68,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IInteraction, GrabInteraction>();
             services.AddSingleton<IInteraction, HoverAndHoldInteraction>();
             services.AddSingleton<IInteraction, TouchPlanePushInteraction>();
+            services.AddSingleton<IInteraction, VelocitySwipeInteraction>();
+            services.AddSingleton<IInteraction, AirClickInteraction>();
 
             var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
             services.Configure<InteractionTuning>(configuration.GetSection(nameof(InteractionTuning)));
@@ -91,6 +93,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IPositionTracker, IndexTipTracker>();
             services.AddSingleton<IPositionTracker, NearestTracker>();
             services.AddSingleton<IPositionTracker, WristTracker>();
+            services.AddSingleton<IPositionTracker, HandPointingTracker>();
+            services.AddSingleton<IPositionTracker, ProjectionTracker>();
 
             return services;
         }
