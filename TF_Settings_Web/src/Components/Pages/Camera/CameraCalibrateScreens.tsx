@@ -37,7 +37,15 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfi
 
     const handleClick = () => {
         // Center of fingerprint icon should be at 20% of page = 384px
-        ConnectionManager.serviceConnection()?.QuickSetupRequest(true);
+        ConnectionManager.serviceConnection()?.QuickSetupRequest(
+            true,
+            (detail) => {
+                console.log(detail);
+            },
+            (detail) => {
+                console.log(detail);
+            }
+        );
         navigate('../bottom');
     };
 
@@ -63,7 +71,11 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
 
     const handleClick = () => {
         // Center of fingerprint icon should be at 80% of page = 1536px
-        ConnectionManager.serviceConnection()?.QuickSetupRequest(false);
+        ConnectionManager.serviceConnection()?.QuickSetupRequest(
+            false,
+            () => {},
+            () => {}
+        );
         navigate('../complete');
     };
 
