@@ -115,7 +115,7 @@
 .progressCircleContainer {
     z-index: 0;
     position: absolute;
-    left: 440px;
+    left: 450px;
     width: 180px;
 }
 
@@ -147,14 +147,7 @@
 
 .setupPracticeButtonHovered {
     transform: scale(1.3);
-    /* font-size: 2.5rem; */
     box-shadow: 0px 5px 30px #00eb85;
-}
-
-.setupPracticeButtonPressed {
-    transform: scale(1);
-    background: transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box;
-    box-shadow: 0px 5px 25px #000000;
 }
 
 .setupCompleteOptionsContainer {

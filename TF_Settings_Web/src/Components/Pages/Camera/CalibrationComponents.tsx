@@ -37,11 +37,11 @@ export const CalibrateInstructions: React.FC<CalibrateInstructionsProps> = ({ pr
             {/* Instruction text = 135px */}
             <SwitchTransition>
                 <CSSTransition
-                    key={progress <= 0 ? 'calibratingText' : 'instructionText'}
+                    key={progress > 0 ? 'calibratingText' : 'instructionText'}
                     addEndListener={(node, done) => node.addEventListener('transitionend', done, false)}
                     classNames="fade"
                 >
-                    {progress <= 0 ? calibratingText : instructionsText}
+                    {progress > 0 ? calibratingText : instructionsText}
                 </CSSTransition>
             </SwitchTransition>
             <div className="arrow">
@@ -124,9 +124,12 @@ const canvasStyles: CSSProperties = {
     left: 0,
 };
 
-export const CalibratePracticeButton = () => {
+interface CalibratePracticeButtonProps {
+    progress: number;
+}
+
+export const CalibratePracticeButton: React.FC<CalibratePracticeButtonProps> = ({ progress }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
-    const [pressed, setPressed] = React.useState<boolean>(false);
 
     const refAnimationInstance = useRef<CreateTypes | null>(null);
     const fire = () => {
@@ -144,19 +147,11 @@ export const CalibratePracticeButton = () => {
     return (
         <>
             <button
-                className={`setupPracticeButton ${hovered ? ' setupPracticeButtonHovered' : ''} ${
-                    pressed ? ' setupPracticeButtonPressed' : ''
-                }`}
+                className={`setupPracticeButton ${hovered ? ' setupPracticeButtonHovered' : ''}`}
+                style={progressStyle(progress, hovered)}
                 onPointerOver={() => setHovered(true)}
-                onPointerLeave={() => {
-                    setHovered(false);
-                    setPressed(false);
-                }}
-                onPointerDown={() => {
-                    setPressed(true);
-                    fire();
-                }}
-                onPointerUp={() => setPressed(false)}
+                onPointerLeave={() => setHovered(false)}
+                onPointerDown={() => fire()}
                 onKeyDown={(keyEvent) => {
                     if (keyEvent.key === 'Enter') fire();
                 }}
@@ -171,4 +166,18 @@ export const CalibratePracticeButton = () => {
             />
         </>
     );
+};
+
+const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
+    if (!isHovered) {
+        return {};
+    }
+    if (progress < 0.8) {
+        return { transform: `scale(${1.3 - progress * 0.6})` };
+    }
+    return {
+        transform: `scale(${1.3 - progress * 0.6})`,
+        background: 'transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box',
+        boxShadow: '0px 5px 25px #000000',
+    };
 };

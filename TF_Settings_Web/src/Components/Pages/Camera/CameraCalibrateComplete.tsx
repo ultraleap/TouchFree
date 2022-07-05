@@ -3,6 +3,8 @@ import '../../../Styles/Camera/Calibrate.css';
 import React, { CSSProperties, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
+import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
 import IconTextButton from '../../Controls/IconTextButton';
 import { CalibratePracticeButton } from './CalibrationComponents';
 
@@ -28,9 +30,23 @@ interface CameraCalibrateCompleteProps {
 }
 
 const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad, onRedo }) => {
+    const [progressToClick, setProgressToClick] = React.useState<number>(0);
+
     useEffect(() => {
         onLoad();
+
+        InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
+
+        return () => {
+            InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
+        };
     }, []);
+
+    const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
+        if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
+            setProgressToClick(evt.detail.ProgressToClick);
+        }
+    };
 
     const navigate = useNavigate();
     return (
@@ -42,7 +58,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                 </h1>
             </div>
             <div style={{ height: '12%', paddingTop: '12%' }}>
-                <CalibratePracticeButton />
+                <CalibratePracticeButton progress={progressToClick} />
             </div>
             <div className="setupCompleteOptionsContainer">
                 <IconTextButton

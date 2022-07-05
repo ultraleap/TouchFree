@@ -23,7 +23,7 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfi
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
             <CalibrateInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrateProgressCircle progress={progressToClick} style={{ top: '285px' }} />
+            <CalibrateProgressCircle progress={progressToClick} style={{ top: '295px' }} />
             <img
                 className="interactionGuide"
                 style={{ marginTop: '50px' }}
@@ -53,10 +53,10 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
                 style={{ paddingTop: '550px' }}
                 src={InteractionBottomGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                // onClick={() => navigate('../complete')}
+                onClick={() => navigate('../complete')}
             />
             <CalibrateInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrateProgressCircle progress={progressToClick} style={{ bottom: '285px' }} />
+            <CalibrateProgressCircle progress={progressToClick} style={{ bottom: '295px' }} />
             <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '100px' }} />
         </div>
     );
