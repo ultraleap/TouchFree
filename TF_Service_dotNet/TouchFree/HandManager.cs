@@ -24,8 +24,11 @@ namespace Ultraleap.TouchFree.Library
         public delegate void HandUpdate(Hand primary, Hand secondary);
         public event HandUpdate HandsUpdated;
 
-        private float PrimaryHandActivity = 1f;
-        private float SecondaryHandActivity = 1f;
+        private const float PrimaryHandActivityDefault = 0.02f;
+        private const float SecondaryHandActivityDefault = 0.01f;
+
+        private float PrimaryHandActivity = PrimaryHandActivityDefault;
+        private float SecondaryHandActivity = SecondaryHandActivityDefault;
 
         private Vector3? lastPrimaryLocation;
         private Vector3? lastSecondaryLocation;
@@ -241,8 +244,8 @@ namespace Ultraleap.TouchFree.Library
             }
             else
             {
-                PrimaryHandActivity = 1f;
-                SecondaryHandActivity = 1f;
+                PrimaryHandActivity = PrimaryHandActivityDefault;
+                SecondaryHandActivity = SecondaryHandActivityDefault;
                 lastPrimaryLocation = null;
                 lastSecondaryLocation = null;
             }
@@ -255,7 +258,7 @@ namespace Ultraleap.TouchFree.Library
 
         private bool HandActivityInSwapThreshold()
         {
-            return PrimaryHandActivity < 0.01f && SecondaryHandActivity > 0.02f;
+            return PrimaryHandActivity < SecondaryHandActivityDefault && SecondaryHandActivity > PrimaryHandActivityDefault;
         }
 
         private static bool PrimaryHandIsOffScreen(float _primaryRelativeXScreenPosition, float _primaryRelativeYScreenPosition)
