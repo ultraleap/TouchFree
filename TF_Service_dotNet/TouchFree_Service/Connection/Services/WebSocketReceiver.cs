@@ -148,12 +148,12 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
             else if (quickSetupResponse?.PositionRecorded == true)
             {
-                ResponseToClient response = new ResponseToClient("", "Success", "", _content);
+                ResponseToClient response = new ResponseToClient(quickSetupRequest.Value.requestID, "Success", "", _content);
                 clientMgr.SendQuickSetupResponse(response);
             }
             else
             {
-                ResponseToClient response = new ResponseToClient("", "Failure", "Unable to record hand position", _content);
+                ResponseToClient response = new ResponseToClient(quickSetupRequest.Value.requestID, "Failure", "Unable to record hand position", _content);
                 clientMgr.SendQuickSetupResponse(response);
             }
         }
