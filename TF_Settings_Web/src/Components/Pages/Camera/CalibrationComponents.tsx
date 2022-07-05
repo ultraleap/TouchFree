@@ -34,7 +34,6 @@ export const CalibrateInstructions: React.FC<CalibrateInstructionsProps> = ({ pr
 
     return (
         <div className="instructions" style={containerStyle}>
-            {/* Instruction text = 135px */}
             <SwitchTransition>
                 <CSSTransition
                     key={progress > 0 ? 'calibratingText' : 'instructionText'}
@@ -45,12 +44,10 @@ export const CalibrateInstructions: React.FC<CalibrateInstructionsProps> = ({ pr
                 </CSSTransition>
             </SwitchTransition>
             <div className="arrow">
-                {/* Arrow = 60px + 30px padding = 80px */}
                 <div id="downLine" />
                 <div id="arrowHead" />
             </div>
             <div id="touchCircle">
-                {/* Touch outer circle = 30px padding */}
                 <img src={FingerprintIcon} alt="Fingerprint Icon showing where to place finger for Quick Setup" />
             </div>
         </div>
@@ -70,11 +67,9 @@ export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = (
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
-                textColor: '#00eb85',
                 pathColor: '#00eb85',
-                backgroundColor: 'black',
                 trailColor: 'transparent',
-                pathTransitionDuration: 0.01,
+                pathTransitionDuration: 0.15,
             })}
         />
     </div>

@@ -39,10 +39,7 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
                 setHovered(false);
                 setPressed(false);
             }}
-            onPointerDown={() => {
-                setPressed(true);
-                // onClick();
-            }}
+            onPointerDown={() => setPressed(true)}
             onPointerUp={() => {
                 setPressed(false);
                 onClick();

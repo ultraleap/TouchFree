@@ -29,22 +29,17 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfi
                 style={{ marginTop: '50px' }}
                 src={InteractionTopGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                onClick={() => navigate('../bottom')}
+                onDoubleClick={() => navigate('../bottom')}
             />
             <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '600px' }} />
         </div>
     );
 
     const handleClick = () => {
-        // Center of fingerprint icon should be at 20% of page = 384px
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
             true,
-            (detail) => {
-                console.log(detail);
-            },
-            (detail) => {
-                console.log(detail);
-            }
+            () => {},
+            () => {}
         );
         navigate('../bottom');
     };
@@ -61,7 +56,7 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
                 style={{ paddingTop: '550px' }}
                 src={InteractionBottomGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
-                onClick={() => navigate('../complete')}
+                onDoubleClick={() => navigate('../complete')}
             />
             <CalibrateInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
             <CalibrateProgressCircle progress={progressToClick} style={{ bottom: '295px' }} />
@@ -70,7 +65,6 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
     );
 
     const handleClick = () => {
-        // Center of fingerprint icon should be at 80% of page = 1536px
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
             false,
             () => {},

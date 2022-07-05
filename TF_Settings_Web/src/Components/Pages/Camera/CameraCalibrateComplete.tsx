@@ -69,9 +69,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                     titleStyle={titleStyle}
                     text={''}
                     textStyle={{ display: 'none' }}
-                    onClick={() => {
-                        navigate('/camera');
-                    }}
+                    onClick={() => navigate('/camera')}
                 />
                 <IconTextButton
                     buttonStyle={buttonStyle}
