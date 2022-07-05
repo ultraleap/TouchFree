@@ -148,12 +148,16 @@ namespace Ultraleap.TouchFree.Library
                 {
                     if (interactionCurrentlyDown != null)
                     {
-                        lastDownPosition = lastLocationInputAction.CursorPosition + inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
-                        var updatedPosition = new Positions(lastDownPosition.Value, inputAction.Value.DistanceFromScreen);
-                        inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
-                            updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
+                        // We don't need to do anything if the location interaction is the one causing the DOWN
+                        if (interactionCurrentlyDown != locationInteraction)
+                        {
+                            lastDownPosition = lastLocationInputAction.CursorPosition + inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
+                            var updatedPosition = new Positions(lastDownPosition.Value, inputAction.Value.DistanceFromScreen);
+                            inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
+                                updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
+                        }
                     }
-                    else
+                    else if (interactionCurrentlyDown == null)
                     {
                         if (lastDownPosition.HasValue)
                         {
