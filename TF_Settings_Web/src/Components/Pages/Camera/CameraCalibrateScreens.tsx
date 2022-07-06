@@ -83,7 +83,7 @@ const CameraCalibrateScreen = (
 ): ReactElement => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
     const isNewClick = React.useRef<boolean>(false);
-    const readyToInteract = React.useRef<boolean>(false);
+    const readyToInteract = React.useRef<boolean>(isConfigSet);
 
     readyToInteract.current = isConfigSet;
 
