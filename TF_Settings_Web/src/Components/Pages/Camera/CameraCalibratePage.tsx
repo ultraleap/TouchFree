@@ -132,7 +132,7 @@ const setCursorDisplay = (show: boolean) => {
     const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;
     if (!svgCanvas) return;
 
-    svgCanvas.style.opacity = show ? '1' : '0';
+    svgCanvas.style.opacity = show ? '' : '0';
 };
 
 // Need better defaults??
