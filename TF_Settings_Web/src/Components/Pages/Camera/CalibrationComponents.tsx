@@ -114,6 +114,7 @@ export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ on
             text={''}
             textStyle={{ display: 'none' }}
             onClick={() => onCancel()}
+            hasHover={false}
         />
     );
 };
