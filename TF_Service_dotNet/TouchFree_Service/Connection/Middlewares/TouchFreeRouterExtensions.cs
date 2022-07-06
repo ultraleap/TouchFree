@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
