@@ -46,6 +46,10 @@ export class ConnectionManager extends EventTarget {
     // This value is settable in the Inspector.
     static port: string = "9739";
 
+    // Variable: currentHandPresence
+    // Private reference to the current hand presense state
+    private static currentHandPresence: HandPresenceState = HandPresenceState.HANDS_LOST;
+
     // Group: Functions
 
     // Function: init
@@ -82,6 +86,8 @@ export class ConnectionManager extends EventTarget {
     // Called by the <MessageReciever> to pass HandPresence events via the <HandFound> and
     // <HandsLost> events on this class
     public static HandleHandPresenceEvent(_state: HandPresenceState): void {
+        ConnectionManager.currentHandPresence = _state;
+        
         let handPresenceEvent: CustomEvent;
 
         if (_state === HandPresenceState.HAND_FOUND) {
@@ -115,5 +121,11 @@ export class ConnectionManager extends EventTarget {
         }
 
         ConnectionManager.serviceConnection()?.RequestServiceStatus(_callback);
+    }
+
+    // Function: RequestServiceStatus
+    // Function to get the current hand presense state
+    public static GetCurrentHandPresence(): HandPresenceState {
+        return ConnectionManager.currentHandPresence;
     }
 }
