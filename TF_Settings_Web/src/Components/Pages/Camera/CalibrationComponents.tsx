@@ -76,18 +76,12 @@ export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = (
     </div>
 );
 
-interface CalibrateHandLostMessageProps {
-    style?: CSSProperties;
-}
-
-export const CalibrateHandLostMessage: React.FC<CalibrateHandLostMessageProps> = ({ style }) => {
-    return (
-        <div className={'handNotFoundContainer'} style={style}>
-            <img src={HandIcon} alt="Hand Icon" />
-            <p>Hand Not Detected</p>
-        </div>
-    );
-};
+export const CalibrateHandLostMessage = () => (
+    <div className={'handNotFoundContainer'}>
+        <img src={HandIcon} alt="Hand Icon" />
+        <p>Hand Not Detected</p>
+    </div>
+);
 
 const setupButtonStyle: CSSProperties = {
     width: '300px',
@@ -181,11 +175,11 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
     if (!isHovered) {
         return {};
     }
-    if (progress < 0.8) {
-        return { transform: `scale(${1.3 - progress * 0.6})` };
+    if (progress < 0.9) {
+        return { transform: `scale(${1.3 - progress * 0.4})` };
     }
     return {
-        transform: `scale(${1.3 - progress * 0.6})`,
+        transform: `scale(${1.3 - progress * 0.4})`,
         background: 'transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box',
         boxShadow: '0px 5px 25px #000000',
     };

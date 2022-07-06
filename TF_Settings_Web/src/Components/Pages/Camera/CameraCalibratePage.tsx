@@ -84,12 +84,12 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                 path="top"
                 element={
                     <CameraCalibrateTop
+                        isHandPresent={isHandPresent}
                         isConfigSet={isCalibConfigActive}
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
                         }}
-                        isHandPresent={isHandPresent}
                     />
                 }
             />
@@ -97,11 +97,11 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                 path="bottom"
                 element={
                     <CameraCalibrateBottom
+                        isHandPresent={isHandPresent}
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
                         }}
-                        isHandPresent={isHandPresent}
                     />
                 }
             />
@@ -109,6 +109,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                 path="complete"
                 element={
                     <CameraCalibrateComplete
+                        isHandPresent={isHandPresent}
                         onLoad={() => {
                             setCursorDisplay(true);
                             resetCalibInteractionConfig();
@@ -117,7 +118,6 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                             setCursorDisplay(false);
                             setCalibInteractionConfig();
                         }}
-                        // TODO: Add isHandPresent
                     />
                 }
             />
@@ -132,7 +132,7 @@ const setCursorDisplay = (show: boolean) => {
     const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;
     if (!svgCanvas) return;
 
-    // svgCanvas.style.opacity = show ? '1' : '0';
+    svgCanvas.style.opacity = show ? '1' : '0';
 };
 
 // Need better defaults??

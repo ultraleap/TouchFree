@@ -17,8 +17,8 @@ import {
 } from './CalibrationComponents';
 
 interface CameraCalibrateScreenProps {
-    onCancel: () => void;
     isHandPresent: boolean;
+    onCancel: () => void;
 }
 
 export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfigSet: boolean }> = ({

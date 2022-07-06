@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
 import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
 import IconTextButton from '../../Controls/IconTextButton';
-import { CalibratePracticeButton } from './CalibrationComponents';
+import { CalibrateHandLostMessage, CalibratePracticeButton } from './CalibrationComponents';
 
 const buttonStyle: CSSProperties = {
     width: '50%',
@@ -25,11 +25,12 @@ const titleStyle: CSSProperties = {
 };
 
 interface CameraCalibrateCompleteProps {
+    isHandPresent: boolean;
     onLoad: () => void;
     onRedo: () => void;
 }
 
-const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad, onRedo }) => {
+const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad, onRedo, isHandPresent }) => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
 
     useEffect(() => {
@@ -51,7 +52,8 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>
-            <div style={{ paddingTop: '25%' }}>
+            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
+            <div style={{ paddingTop: '250px' }}>
                 <h1 className="setupCompleteText">
                     Setup <br />
                     Complete
