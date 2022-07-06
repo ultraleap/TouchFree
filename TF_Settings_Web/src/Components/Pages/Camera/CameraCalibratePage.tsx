@@ -6,11 +6,14 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
 import { InteractionConfig, PhysicalConfig, Vector } from '../../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
+import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
+import { ConfigState, HandPresenceState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from '../../../TouchFree/TouchFreeToolingTypes';
 import CameraCalibrateComplete from './CameraCalibrateComplete';
 import { CameraCalibrateBottom, CameraCalibrateTop } from './CameraCalibrateScreens';
 import { PositionType } from './CameraPosition';
+
+const handEventTypes = ['HandsLost', 'HandFound'];
 
 const calibInteractionConfig: Partial<InteractionConfig> = {
     InteractionType: InteractionType.HOVER,
@@ -29,6 +32,9 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
     const [isCalibConfigActive, setIsCalibConfigActive] = React.useState<boolean>(false);
+    const [isHandPresent, setIsHandPresent] = React.useState<boolean>(
+        ConnectionManager.GetCurrentHandPresence() === HandPresenceState.HAND_FOUND
+    );
 
     const navigate = useNavigate();
 
@@ -45,7 +51,21 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                 () => setIsCalibConfigActive(true)
             );
         });
+
+        for (const eventType of handEventTypes) {
+            ConnectionManager.instance.addEventListener(eventType, setHandPresence);
+        }
+
+        return () => {
+            for (const eventType of handEventTypes) {
+                ConnectionManager.instance.removeEventListener(eventType, setHandPresence);
+            }
+        };
     }, []);
+
+    const setHandPresence = (evt: Event) => {
+        setIsHandPresent(evt.type === 'HandFound');
+    };
 
     const setCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(calibInteractionConfig, {}, () => {});
@@ -69,6 +89,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                             setCursorDisplay(true);
                             resetCalibConfig();
                         }}
+                        isHandPresent={isHandPresent}
                     />
                 }
             />
@@ -80,6 +101,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                             setCursorDisplay(true);
                             resetCalibConfig();
                         }}
+                        isHandPresent={isHandPresent}
                     />
                 }
             />
@@ -95,6 +117,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                             setCursorDisplay(false);
                             setCalibInteractionConfig();
                         }}
+                        // TODO: Add isHandPresent
                     />
                 }
             />
@@ -109,7 +132,7 @@ const setCursorDisplay = (show: boolean) => {
     const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;
     if (!svgCanvas) return;
 
-    svgCanvas.style.opacity = show ? '1' : '0';
+    // svgCanvas.style.opacity = show ? '1' : '0';
 };
 
 // Need better defaults??

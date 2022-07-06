@@ -9,6 +9,7 @@ import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import FingerprintIcon from '../../../Images/Camera/Fingerprint_Icon.svg';
+import HandIcon from '../../../Images/Tracking_Status_Icon.svg';
 import IconTextButton from '../../Controls/IconTextButton';
 
 interface CalibrateInstructionsProps {
@@ -74,6 +75,19 @@ export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = (
         />
     </div>
 );
+
+interface CalibrateHandLostMessageProps {
+    style?: CSSProperties;
+}
+
+export const CalibrateHandLostMessage: React.FC<CalibrateHandLostMessageProps> = ({ style }) => {
+    return (
+        <div className={'handNotFoundContainer'} style={style}>
+            <img src={HandIcon} alt="Hand Icon" />
+            <p>Hand Not Detected</p>
+        </div>
+    );
+};
 
 const setupButtonStyle: CSSProperties = {
     width: '300px',
