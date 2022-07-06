@@ -128,7 +128,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
                         SetDirection(dPerp, absPerp);
 
-                        inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 0);
+                        inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 1f);
                     }
                     else
                     {
