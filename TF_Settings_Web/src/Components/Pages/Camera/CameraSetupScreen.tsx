@@ -39,6 +39,9 @@ const CameraSetupScreen = () => {
     };
 
     const getUSB = () => {
+        // navigator.usb.requestDevice({ filters: [{ vendorId: 10550 }] }).then(function (device) {
+        //     console.log(device);
+        // });
         navigator.usb
             .getDevices()
             .then((list) => {
