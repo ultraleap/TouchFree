@@ -1,26 +1,30 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import '../../../Styles/Camera/Calibrate.css';
+import '../../../../../Styles/Camera/Calibrate.css';
 
 import React, { ReactElement, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import InteractionBottomGuide from '../../../Images/Camera/Interaction_Guide_Bottom.png';
-import InteractionTopGuide from '../../../Images/Camera/Interaction_Guide_Top.png';
-import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
-import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
-import { InputType, InteractionType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
-import { CalibrateCancelButton, CalibrateInstructions, CalibrateProgressCircle } from './CalibrationComponents';
+import InteractionBottomGuide from '../../../../../Images/Camera/Interaction_Guide_Bottom.png';
+import InteractionTopGuide from '../../../../../Images/Camera/Interaction_Guide_Top.png';
+import { ConnectionManager } from '../../../../../TouchFree/Connection/ConnectionManager';
+import { InputActionManager } from '../../../../../TouchFree/Plugins/InputActionManager';
+import { InputType, InteractionType, TouchFreeInputAction } from '../../../../../TouchFree/TouchFreeToolingTypes';
+import { CalibrationCancelButton, CalibrationInstructions, CalibrationProgressCircle } from './CalibrationComponents';
 
-interface CameraCalibrateScreenProps {
+/**
+ * CalibrationTop and CalibrationBottom screens use CalibrationBaseScreen to handle logic and just pass in their content
+ */
+
+interface CalibrationBaseScreenProps {
     onCancel: () => void;
 }
 
-export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCancel }): ReactElement => {
+export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({ onCancel }): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
-            <CalibrateInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrateProgressCircle progress={progressToClick} style={{ top: '295px' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ top: '295px' }} />
             <img
                 className="interactionGuide"
                 style={{ marginTop: '50px' }}
@@ -28,7 +32,7 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCan
                 alt="Guide demonstrating how to interact with Quick Setup"
                 onDoubleClick={() => navigate('../bottom')}
             />
-            <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '600px' }} />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '600px' }} />
         </div>
     );
 
@@ -41,10 +45,10 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCan
         navigate('../bottom');
     };
 
-    return CameraCalibrateScreen(handleClick, content);
+    return CalibrationBaseScreen(handleClick, content);
 };
 
-export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ onCancel }): ReactElement => {
+export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({ onCancel }): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
@@ -55,9 +59,9 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
                 alt="Guide demonstrating how to interact with Quick Setup"
                 onDoubleClick={() => navigate('../complete')}
             />
-            <CalibrateInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrateProgressCircle progress={progressToClick} style={{ bottom: '295px' }} />
-            <CalibrateCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '100px' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ bottom: '295px' }} />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '100px' }} />
         </div>
     );
 
@@ -70,10 +74,10 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
         navigate('../complete');
     };
 
-    return CameraCalibrateScreen(handleClick, content);
+    return CalibrationBaseScreen(handleClick, content);
 };
 
-const CameraCalibrateScreen = (
+const CalibrationBaseScreen = (
     handleClick: () => void,
     content: (progressToClick: number) => ReactElement
 ): ReactElement => {

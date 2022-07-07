@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import '../../../Styles/Camera/Calibrate.css';
+import '../../../../../Styles/Camera/Calibrate.css';
 
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
-import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
-import { InteractionConfig, PhysicalConfig, Vector } from '../../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from '../../../TouchFree/TouchFreeToolingTypes';
-import CameraCalibrateComplete from './CameraCalibrateComplete';
-import { CameraCalibrateBottom, CameraCalibrateTop } from './CameraCalibrateScreens';
-import { PositionType } from './CameraPosition';
+import { ConfigurationManager } from '../../../../../TouchFree/Configuration/ConfigurationManager';
+import { InteractionConfig, PhysicalConfig, Vector } from '../../../../../TouchFree/Configuration/ConfigurationTypes';
+import { ConfigState } from '../../../../../TouchFree/Connection/TouchFreeServiceTypes';
+import { InteractionType } from '../../../../../TouchFree/TouchFreeToolingTypes';
+import { PositionType } from '../PositionSelectionScreen';
+import CalibrationCompleteScreen from './CalibrationCompleteScreen';
+import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationScreens';
 
 const calibInteractionConfig: Partial<InteractionConfig> = {
     InteractionType: InteractionType.HOVER,
@@ -21,11 +21,11 @@ const calibInteractionConfig: Partial<InteractionConfig> = {
     },
 };
 
-interface CameraCalibratePageProps {
+interface CalibrationManager {
     activePosition: PositionType;
 }
 
-const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePosition }) => {
+const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) => {
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
 
@@ -62,7 +62,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             <Route
                 path="top"
                 element={
-                    <CameraCalibrateTop
+                    <CalibrationTopScreen
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
@@ -73,7 +73,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             <Route
                 path="bottom"
                 element={
-                    <CameraCalibrateBottom
+                    <CalibrationBottomScreen
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
@@ -84,7 +84,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             <Route
                 path="complete"
                 element={
-                    <CameraCalibrateComplete
+                    <CalibrationCompleteScreen
                         onLoad={() => {
                             setCursorDisplay(true);
                             resetCalibInteractionConfig();
@@ -101,7 +101,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
     );
 };
 
-export default CameraCalibratePage;
+export default CalibrationManager;
 
 const setCursorDisplay = (show: boolean) => {
     const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;

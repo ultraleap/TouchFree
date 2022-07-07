@@ -5,7 +5,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import ControlBar from './Components/ControlBar';
 import { CursorManager } from './Components/CursorManager';
-import CameraPage from './Components/Pages/Camera/CameraPage';
+import CameraManager from './Components/Pages/Camera/CameraManager';
 import { InteractionsPage } from './Components/Pages/InteractionsPage';
 import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
 import { ServiceStatus } from './TouchFree/Connection/TouchFreeServiceTypes';
@@ -45,8 +45,8 @@ const App: React.FC = () => {
             <ControlBar tfStatus={tfStatus} />
             <div className="pageContent">
                 <Routes>
-                    <Route path="/settings/camera/*" element={<CameraPage />} />
-                    <Route path="/settings/interactions/*" element={<InteractionsPage />} />
+                    <Route path="/settings/camera/*" element={<CameraManager />} />
+                    <Route path="/settings/interactions" element={<InteractionsPage />} />
                     <Route path="*" element={<Navigate to="/settings/camera" replace />} />
                 </Routes>
             </div>

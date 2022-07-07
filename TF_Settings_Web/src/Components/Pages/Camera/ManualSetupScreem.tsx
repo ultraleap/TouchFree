@@ -19,7 +19,7 @@ interface PhysicalState {
     selectedView: string;
 }
 
-export class ManualSetup extends Component<{}, PhysicalState> {
+export class ManualSetupScreen extends Component<{}, PhysicalState> {
     currentScreenHeight = '';
     currentCameraHeight = '';
     currentCameraLeftToRight = '';
