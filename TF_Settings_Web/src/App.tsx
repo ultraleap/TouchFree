@@ -50,9 +50,9 @@ const App: React.FC = () => {
             <ControlBar tfStatus={tfStatus} />
             <div className="pageContent">
                 <Routes>
-                    <Route path="camera/*" element={<CameraPage />} />
-                    <Route path="interactions/*" element={<InteractionsPage />} />
-                    <Route path="*" element={<Navigate to="/camera" replace />} />
+                    <Route path="/settings/camera/*" element={<CameraPage />} />
+                    <Route path="/settings/interactions/*" element={<InteractionsPage />} />
+                    <Route path="*" element={<Navigate to="/settings/camera" replace />} />
                 </Routes>
             </div>
         </div>

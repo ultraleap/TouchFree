@@ -61,7 +61,7 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
                 <div className="emptyContainer" />
             </div>
             <div className="tabBarStyle">
-                {pathname === '/camera' || pathname === '/interactions' ? (
+                {pathname === '/settings/camera' || pathname === '/settings/interactions' ? (
                     <div className="tabBarStyle">
                         <TabSelector
                             name="Camera"

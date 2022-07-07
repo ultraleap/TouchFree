@@ -52,7 +52,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
 
     const resetCalibConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, physicalConfig ?? null, () => {
-            navigate('/camera/quick/');
+            navigate('/settings/camera/quick/');
         });
 
     const resetCalibInteractionConfig = (): void =>

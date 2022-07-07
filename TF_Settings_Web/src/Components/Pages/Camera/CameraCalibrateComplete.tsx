@@ -69,7 +69,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                     titleStyle={titleStyle}
                     text={''}
                     textStyle={{ display: 'none' }}
-                    onClick={() => navigate('/camera')}
+                    onClick={() => navigate('/settings/camera')}
                 />
                 <IconTextButton
                     buttonStyle={buttonStyle}
@@ -81,7 +81,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                     textStyle={{ display: 'none' }}
                     onClick={() => {
                         onRedo();
-                        navigate('/camera/quick/calibrate/top');
+                        navigate('/settings/camera/quick/calibrate/top');
                     }}
                 />
             </div>
