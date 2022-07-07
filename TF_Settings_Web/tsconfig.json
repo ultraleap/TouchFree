@@ -16,9 +16,6 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "baseUrl": "src",
-        "paths": {
-            "@controls/*": ["src/components/controls/*"]
-        },
         "typeRoots": ["node_modules/@types", "src/Videos/vidoes"]
     },
     "include": ["src", "src/**/*.webm"]
