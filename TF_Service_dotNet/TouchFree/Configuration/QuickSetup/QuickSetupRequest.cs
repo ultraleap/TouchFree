@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
 {
     [Serializable]
     public struct QuickSetupRequest

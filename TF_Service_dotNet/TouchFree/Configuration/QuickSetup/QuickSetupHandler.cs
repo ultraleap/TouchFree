@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Numerics;
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
 {
     public class QuickSetupHandler : IQuickSetupHandler
     {
@@ -22,7 +22,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             configManager = _configManager;
         }
 
-        public QuickSetupResponse HandleQuickSetupCall(QuickSetupPosition position)
+        public QuickSetupResponse HandlePositionRecording(QuickSetupPosition position)
         {
             if (position == QuickSetupPosition.Top)
             {
@@ -32,6 +32,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 {
                     ConfigurationUpdated = false,
                     PositionRecorded = topHandPosition.HasValue,
+                    QuickSetupError = !topHandPosition.HasValue ? "Unable to find hand for Top position" : null
                 };
             }
             else if (position == QuickSetupPosition.Bottom && topHandPosition != null)
@@ -52,15 +53,30 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
                     response.ConfigurationUpdated = true;
                 }
+                else
+                {
+                    response.QuickSetupError = "Unable to find hand for Bottom position";
+                }
 
                 return response;
             }
             else
             {
+                if (position == QuickSetupPosition.Bottom && topHandPosition == null)
+                {
+                    return new QuickSetupResponse()
+                    {
+                        ConfigurationUpdated = false,
+                        PositionRecorded = false,
+                        QuickSetupError = "Unable to set Bottom position as there is no recorded Top position"
+                    };
+                }
+
                 return new QuickSetupResponse()
                 {
                     ConfigurationUpdated = false,
                     PositionRecorded = false,
+                    QuickSetupError = "Invalid Quick Setup position value"
                 };
             }
         }
