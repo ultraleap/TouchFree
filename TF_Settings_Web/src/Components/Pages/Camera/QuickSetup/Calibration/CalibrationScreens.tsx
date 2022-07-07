@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import '../../../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 
+import InteractionBottomGuide from 'Images/Camera/Interaction_Guide_Bottom.png';
+import InteractionTopGuide from 'Images/Camera/Interaction_Guide_Top.png';
 import React, { ReactElement, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
+import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
 
-import InteractionBottomGuide from '../../../../../Images/Camera/Interaction_Guide_Bottom.png';
-import InteractionTopGuide from '../../../../../Images/Camera/Interaction_Guide_Top.png';
-import { ConnectionManager } from '../../../../../TouchFree/Connection/ConnectionManager';
-import { InputActionManager } from '../../../../../TouchFree/Plugins/InputActionManager';
-import { InputType, InteractionType, TouchFreeInputAction } from '../../../../../TouchFree/TouchFreeToolingTypes';
 import { CalibrationCancelButton, CalibrationInstructions, CalibrationProgressCircle } from './CalibrationComponents';
 
 /**

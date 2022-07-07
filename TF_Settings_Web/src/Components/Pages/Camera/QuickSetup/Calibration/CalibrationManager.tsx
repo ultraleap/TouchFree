@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import '../../../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 
+import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/Configuration/ConfigurationTypes';
+import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
-import { ConfigurationManager } from '../../../../../TouchFree/Configuration/ConfigurationManager';
-import { InteractionConfig, PhysicalConfig, Vector } from '../../../../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigState } from '../../../../../TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from '../../../../../TouchFree/TouchFreeToolingTypes';
-import { PositionType } from '../PositionSelectionScreen';
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
 import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationScreens';
 

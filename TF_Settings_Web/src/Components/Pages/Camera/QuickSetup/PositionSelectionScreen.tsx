@@ -1,15 +1,14 @@
-import '../../../../Styles/Camera/Camera.css';
+import 'Styles/Camera/Camera.css';
 
+import IconTextButton from 'Components/Controls/IconTextButton';
+import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
+import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
+import CameraFacingUserIcon from 'Images/Camera/Camera_Facing_User.svg';
+import { ULTRALEAP_GREEN } from 'index';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { ULTRALEAP_GREEN } from '../../../..';
-import CameraBelowIcon from '../../../../Images/Camera/Camera_Below.svg';
-import CameraFacingScreenIcon from '../../../../Images/Camera/Camera_Facing_Screen.svg';
-import CameraFacingUserIcon from '../../../../Images/Camera/Camera_Facing_User.svg';
-import { ConfigurationManager } from '../../../../TouchFree/Configuration/ConfigurationManager';
-import { ConfigState } from '../../../../TouchFree/Connection/TouchFreeServiceTypes';
-import IconTextButton from '../../../Controls/IconTextButton';
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 

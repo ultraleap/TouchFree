@@ -1,4 +1,4 @@
-import '../../../Styles/Camera/Camera.css';
+import 'Styles/Camera/Camera.css';
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';

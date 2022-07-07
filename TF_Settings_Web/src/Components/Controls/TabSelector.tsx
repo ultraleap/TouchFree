@@ -1,4 +1,4 @@
-import '../../Styles/Controls/TabSelector.css';
+import 'Styles/Controls/TabSelector.css';
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';

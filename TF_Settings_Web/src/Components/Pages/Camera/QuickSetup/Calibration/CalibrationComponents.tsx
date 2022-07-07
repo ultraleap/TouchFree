@@ -1,16 +1,16 @@
-import '../../../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
+import IconTextButton from 'Components/Controls/IconTextButton';
+import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 import React, { useRef } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
-import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from '../../../../..';
-import FingerprintIcon from '../../../../../Images/Camera/Fingerprint_Icon.svg';
-import IconTextButton from '../../../../Controls/IconTextButton';
+import FingerprintIcon from '/Images/Camera/Fingerprint_Icon.svg';
 
 interface CalibrationInstructionsProps {
     progress: number;

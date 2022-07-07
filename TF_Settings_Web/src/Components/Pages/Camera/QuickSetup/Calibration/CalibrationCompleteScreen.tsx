@@ -1,11 +1,11 @@
-import '../../../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 
+import IconTextButton from 'Components/Controls/IconTextButton';
 import React, { CSSProperties, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
+import { InputType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
 
-import { InputActionManager } from '../../../../../TouchFree/Plugins/InputActionManager';
-import { InputType, TouchFreeInputAction } from '../../../../../TouchFree/TouchFreeToolingTypes';
-import IconTextButton from '../../../../Controls/IconTextButton';
 import { CalibrationPracticeButton } from './CalibrationComponents';
 
 const buttonStyle: CSSProperties = {

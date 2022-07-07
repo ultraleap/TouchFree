@@ -1,11 +1,11 @@
-import '../Styles/ControlBar.css';
+import 'Styles/ControlBar.css';
 
+import backArrow from 'Images/Back_Arrow.svg';
+import logo from 'Images/Logo.png';
 import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
 
-import backArrow from '../Images/Back_Arrow.svg';
-import logo from '../Images/Logo.png';
-import { TrackingServiceState } from '../TouchFree/TouchFreeToolingTypes';
 import IconTextButton from './Controls/IconTextButton';
 import TabSelector from './Controls/TabSelector';
 import { StatusIndicator } from './StatusIndicator';
