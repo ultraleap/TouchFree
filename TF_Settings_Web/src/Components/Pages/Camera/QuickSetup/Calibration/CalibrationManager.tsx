@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import '../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 
+import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/Configuration/ConfigurationTypes';
+import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
-import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
-import { InteractionConfig, PhysicalConfig, Vector } from '../../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigState } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from '../../../TouchFree/TouchFreeToolingTypes';
-import CameraCalibrateComplete from './CameraCalibrateComplete';
-import { CameraCalibrateBottom, CameraCalibrateTop } from './CameraCalibrateScreens';
-import { PositionType } from './CameraPosition';
+import CalibrationCompleteScreen from './CalibrationCompleteScreen';
+import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationScreens';
 
 const calibInteractionConfig: Partial<InteractionConfig> = {
     InteractionType: InteractionType.HOVER,
@@ -21,14 +21,13 @@ const calibInteractionConfig: Partial<InteractionConfig> = {
     },
 };
 
-interface CameraCalibratePageProps {
+interface CalibrationManager {
     activePosition: PositionType;
 }
 
-const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePosition }) => {
+const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) => {
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
-    const [isCalibConfigActive, setIsCalibConfigActive] = React.useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -42,7 +41,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             ConfigurationManager.RequestConfigChange(
                 calibInteractionConfig,
                 { LeapRotationD: getRotationFromPosition(activePosition) },
-                () => setIsCalibConfigActive(true)
+                () => {}
             );
         });
     }, []);
@@ -63,8 +62,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             <Route
                 path="top"
                 element={
-                    <CameraCalibrateTop
-                        isConfigSet={isCalibConfigActive}
+                    <CalibrationTopScreen
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
@@ -75,7 +73,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             <Route
                 path="bottom"
                 element={
-                    <CameraCalibrateBottom
+                    <CalibrationBottomScreen
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
@@ -86,7 +84,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             <Route
                 path="complete"
                 element={
-                    <CameraCalibrateComplete
+                    <CalibrationCompleteScreen
                         onLoad={() => {
                             setCursorDisplay(true);
                             resetCalibInteractionConfig();
@@ -103,23 +101,23 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
     );
 };
 
-export default CameraCalibratePage;
+export default CalibrationManager;
 
 const setCursorDisplay = (show: boolean) => {
     const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;
     if (!svgCanvas) return;
 
-    svgCanvas.style.opacity = show ? '1' : '0';
+    // Add an opacity of 0 to hide the cursor and remove this opacity to show the cursor
+    svgCanvas.style.opacity = show ? '' : '0';
 };
 
-// Need better defaults??
 const getRotationFromPosition = (position: PositionType): Vector => {
     if (position === 'FaceScreen') {
-        return { X: 10, Y: 0, Z: 95 };
+        return { X: 20, Y: 0, Z: 180 };
     }
     if (position === 'FaceUser') {
-        return { X: 0, Y: 0, Z: 95 };
+        return { X: -20, Y: 0, Z: 180 };
     }
-    // position === 'FaceUser'
+    // position === 'Below' (Desktop)
     return { X: 0, Y: 0, Z: 0 };
 };

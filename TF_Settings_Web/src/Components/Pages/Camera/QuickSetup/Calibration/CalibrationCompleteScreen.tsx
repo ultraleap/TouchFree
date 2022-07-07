@@ -1,12 +1,12 @@
-import '../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 
+import IconTextButton from 'Components/Controls/IconTextButton';
 import React, { CSSProperties, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
+import { InputType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
 
-import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
-import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
-import IconTextButton from '../../Controls/IconTextButton';
-import { CalibratePracticeButton } from './CalibrationComponents';
+import { CalibrationPracticeButton } from './CalibrationComponents';
 
 const buttonStyle: CSSProperties = {
     width: '50%',
@@ -24,12 +24,12 @@ const titleStyle: CSSProperties = {
     alignItems: 'center',
 };
 
-interface CameraCalibrateCompleteProps {
+interface CalibrationCompleteProps {
     onLoad: () => void;
     onRedo: () => void;
 }
 
-const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad, onRedo }) => {
+const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad, onRedo }) => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
 
     useEffect(() => {
@@ -58,7 +58,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                 </h1>
             </div>
             <div style={{ height: '12%', paddingTop: '12%' }}>
-                <CalibratePracticeButton progress={progressToClick} />
+                <CalibrationPracticeButton progress={progressToClick} />
             </div>
             <div className="setupCompleteOptionsContainer">
                 <IconTextButton
@@ -89,4 +89,4 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
     );
 };
 
-export default CameraCalibrateComplete;
+export default CalibrationCompleteScreen;

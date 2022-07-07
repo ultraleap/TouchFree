@@ -1,4 +1,4 @@
-import '../../Styles/Controls/Sliders.css';
+import 'Styles/Controls/Sliders.css';
 
 import React, { PointerEvent, RefObject } from 'react';
 

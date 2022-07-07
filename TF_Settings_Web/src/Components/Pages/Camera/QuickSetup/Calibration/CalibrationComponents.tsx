@@ -1,22 +1,21 @@
-import '../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
+import IconTextButton from 'Components/Controls/IconTextButton';
+import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
+import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 import React, { useRef } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
-import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from '../../..';
-import FingerprintIcon from '../../../Images/Camera/Fingerprint_Icon.svg';
-import IconTextButton from '../../Controls/IconTextButton';
-
-interface CalibrateInstructionsProps {
+interface CalibrationInstructionsProps {
     progress: number;
     containerStyle: CSSProperties;
 }
-export const CalibrateInstructions: React.FC<CalibrateInstructionsProps> = ({ progress, containerStyle }) => {
+export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = ({ progress, containerStyle }) => {
     const instructionsText = (
         <h1>
             Hold INDEX FINGER against <br /> this <span className="greenText">GREEN CIRCLE</span>
@@ -55,22 +54,21 @@ export const CalibrateInstructions: React.FC<CalibrateInstructionsProps> = ({ pr
     );
 };
 
-interface CalibrateProgressCircleProps {
+interface CalibrationProgressCircleProps {
     progress: number;
     style: CSSProperties;
 }
 
-export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = ({ progress, style }) => (
+export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
     <div style={style} className="progressCircleContainer">
         <CircularProgressbar
-            value={progress}
+            value={Math.floor(progress * 50) / 50}
             maxValue={1}
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
                 pathColor: ULTRALEAP_GREEN,
                 trailColor: 'transparent',
-                pathTransitionDuration: 0.15,
             })}
         />
     </div>
@@ -91,12 +89,12 @@ const setupButtonTitleStyle: CSSProperties = {
     height: '100%',
 };
 
-interface CalibrateCancelButtonProps {
+interface CalibrationCancelButtonProps {
     onCancel: () => void;
     buttonStyle: CSSProperties;
 }
 
-export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ onCancel, buttonStyle }) => {
+export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
         <IconTextButton
             buttonStyle={{ ...setupButtonStyle, ...buttonStyle }}
@@ -122,11 +120,11 @@ const canvasStyles = (): CSSProperties => {
     };
 };
 
-interface CalibratePracticeButtonProps {
+interface CalibrationPracticeButtonProps {
     progress: number;
 }
 
-export const CalibratePracticeButton: React.FC<CalibratePracticeButtonProps> = ({ progress }) => {
+export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps> = ({ progress }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
 
     const refAnimationInstance = useRef<CreateTypes | null>(null);

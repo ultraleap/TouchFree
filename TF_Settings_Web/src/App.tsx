@@ -5,7 +5,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import ControlBar from './Components/ControlBar';
 import { CursorManager } from './Components/CursorManager';
-import CameraPage from './Components/Pages/Camera/CameraPage';
+import CameraManager from './Components/Pages/Camera/CameraManager';
 import { InteractionsPage } from './Components/Pages/InteractionsPage';
 import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
 import { ServiceStatus } from './TouchFree/Connection/TouchFreeServiceTypes';
@@ -16,26 +16,21 @@ const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
     useEffect(() => {
+        const updateTfStatus = () => {
+            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+                const status = detail.trackingServiceState;
+                if (status) {
+                    setTfStatus(status);
+                }
+            });
+        };
+
         ConnectionManager.init();
 
-        ConnectionManager.AddConnectionListener(() => {
-            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-                const status = detail.trackingServiceState;
-                if (status) {
-                    setTfStatus(status);
-                }
-            });
-        });
+        ConnectionManager.AddConnectionListener(updateTfStatus);
         const controller: WebInputController = new WebInputController();
 
-        const timerID = window.setInterval(() => {
-            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-                const status = detail.trackingServiceState;
-                if (status) {
-                    setTfStatus(status);
-                }
-            });
-        }, 5000);
+        const timerID = window.setInterval(updateTfStatus, 5000);
 
         new CursorManager();
 
@@ -50,8 +45,8 @@ const App: React.FC = () => {
             <ControlBar tfStatus={tfStatus} />
             <div className="pageContent">
                 <Routes>
-                    <Route path="/settings/camera/*" element={<CameraPage />} />
-                    <Route path="/settings/interactions/*" element={<InteractionsPage />} />
+                    <Route path="/settings/camera/*" element={<CameraManager />} />
+                    <Route path="/settings/interactions" element={<InteractionsPage />} />
                     <Route path="*" element={<Navigate to="/settings/camera" replace />} />
                 </Routes>
             </div>

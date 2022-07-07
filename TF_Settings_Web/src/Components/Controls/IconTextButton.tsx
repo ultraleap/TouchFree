@@ -1,4 +1,4 @@
-import '../../Styles/Controls/IconTextButton.css';
+import 'Styles/Controls/IconTextButton.css';
 
 import React from 'react';
 

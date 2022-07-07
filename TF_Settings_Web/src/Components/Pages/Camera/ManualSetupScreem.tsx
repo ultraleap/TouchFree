@@ -1,12 +1,11 @@
-import '../../../Styles/Camera/ManualSetupPage.css';
+import 'Styles/Camera/ManualSetupPage.css';
 
+import { TextEntry } from 'Components/Controls/TextEntry';
 import { Component } from 'react';
-
-import { ConfigurationManager } from '../../../TouchFree/Configuration/ConfigurationManager';
-import { PhysicalConfig } from '../../../TouchFree/Configuration/ConfigurationTypes';
-import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
-import { ConfigState, WebSocketResponse } from '../../../TouchFree/Connection/TouchFreeServiceTypes';
-import { TextEntry } from '../../Controls/TextEntry';
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { PhysicalConfig } from 'TouchFree/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 
 interface PhysicalState {
     screenHeight: number;
@@ -19,7 +18,7 @@ interface PhysicalState {
     selectedView: string;
 }
 
-export class ManualSetup extends Component<{}, PhysicalState> {
+export class ManualSetupScreen extends Component<{}, PhysicalState> {
     currentScreenHeight = '';
     currentCameraHeight = '';
     currentCameraLeftToRight = '';

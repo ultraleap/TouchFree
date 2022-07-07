@@ -1,4 +1,4 @@
-import '../../Styles/Controls/TabSelector.css';
+import 'Styles/Controls/TabSelector.css';
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
 
     const handleClick = () => {
         if (!isActiveTab) {
-            navigate(`/${lowerCaseName}`);
+            navigate(`/settings/${lowerCaseName}`);
             onClick();
         }
     };
