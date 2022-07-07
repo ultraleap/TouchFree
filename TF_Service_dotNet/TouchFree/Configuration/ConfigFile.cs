@@ -101,7 +101,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         protected void SaveConfig_Internal(TData config)
         {
-            File.WriteAllText(_ConfigFilePath, JsonConvert.SerializeObject(config, Formatting.Indented));
+            WriteConfigToFile(config);
         }
 
         protected TData DeserialiseRawText(string rawText)
@@ -140,8 +140,16 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             Directory.CreateDirectory(ConfigFileUtils.ConfigFileDirectory);
             RequestConfigFilePermissions();
-            File.WriteAllText(_ConfigFilePath, JsonConvert.SerializeObject(new TData()));
+            WriteConfigToFile(new TData());
             TouchFreeLog.WriteLine($"No {ConfigFileName} file found in {ConfigFileUtils.ConfigFileDirectory}. One has been generated for you with default values.");
+        }
+
+        private void WriteConfigToFile(TData data)
+        {
+            var json = JsonConvert.SerializeObject(data, Formatting.Indented);
+            // Replace the coordinate bits of json with lowercase versions for compatibility with the Unity Settings UI
+            json = json.Replace("\"X\"", "\"x\"").Replace("\"Y\"", "\"y\"").Replace("\"Z\"", "\"z\"");
+            File.WriteAllText(_ConfigFilePath, json);
         }
 
         void RequestConfigFilePermissions()

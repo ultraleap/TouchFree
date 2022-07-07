@@ -63,7 +63,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private readonly PositionFilter filter;
 
         public AirPushInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IOptions<InteractionTuning> _interactionTuning,

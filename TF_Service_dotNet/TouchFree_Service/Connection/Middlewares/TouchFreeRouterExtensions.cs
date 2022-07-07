@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
@@ -37,7 +38,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public static IServiceCollection AddTrackingConnectionManager(this IServiceCollection services)
         {
-            services.AddSingleton<TrackingConnectionManager>();
+            services.AddSingleton<ITrackingConnectionManager, TrackingConnectionManager>();
             return services;
         }
 
@@ -45,6 +46,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         {
             var configManager = new ConfigManager();
             services.AddSingleton<IConfigManager>(configManager);
+            services.AddSingleton<IQuickSetupHandler, QuickSetupHandler>();
             var watcher = new ConfigFileWatcher(configManager);
 
             services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
@@ -56,7 +58,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public static IServiceCollection AddHandManager(this IServiceCollection services)
         {
-            services.AddSingleton<HandManager>();
+            services.AddSingleton<IHandManager, HandManager>();
             return services;
         }
 

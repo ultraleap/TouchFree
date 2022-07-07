@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
+using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service.Connection
@@ -12,11 +13,11 @@ namespace Ultraleap.TouchFree.Service.Connection
     public class TouchFreeRouter
     {
         private readonly RequestDelegate next;
-        private readonly ClientConnectionManager clientMgr;
+        private readonly IClientConnectionManager clientMgr;
         private readonly WebSocketReceiver receiver;
         private readonly ConfigManager configManager;
 
-        public TouchFreeRouter(RequestDelegate _next, ClientConnectionManager _clientMgr, WebSocketReceiver _receiver, ConfigManager _configManager)
+        public TouchFreeRouter(RequestDelegate _next, IClientConnectionManager _clientMgr, WebSocketReceiver _receiver, ConfigManager _configManager)
         {
             next = _next;
             clientMgr = _clientMgr;

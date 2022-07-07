@@ -34,6 +34,8 @@ namespace TouchFreeTests
             return new(null, null, null);
         }
 
+        #region UpdateTrackingTransform
+
         [Test]
         public void UpdateTrackingTransform_TopMountedOrientation_XRotationNotInverted()
         {
@@ -131,6 +133,10 @@ namespace TouchFreeTests
             Assert.AreEqual(positionTranslation.Y, handManger.TrackingTransform().translation.y, 0.01);
             Assert.AreEqual(positionTranslation.Z, handManger.TrackingTransform().translation.z, 0.01);
         }
+
+        #endregion
+
+        #region Update
 
         [Test]
         public void Update_NoHandsInFrame_HandsAreNull()
@@ -260,5 +266,7 @@ namespace TouchFreeTests
             Assert.AreEqual(true, handManger.PrimaryHand.IsLeft);
             Assert.IsNull(handManger.SecondaryHand);
         }
+
+        #endregion
     }
 }

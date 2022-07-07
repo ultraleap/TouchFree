@@ -1,23 +1,33 @@
 ﻿using Leap;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public class HandManager
+    public class HandManager : IHandManager
     {
         public long Timestamp { get; private set; }
 
         // The PrimaryHand is the hand that appeared first. It does not change until tracking on it is lost.
-        public Hand PrimaryHand;
+        public Hand PrimaryHand { get; private set; }
         public HandChirality primaryChirality;
 
         // The SecondaryHand is the second hand that appears. It may be promoted to the PrimaryHand if the
         // PrimaryHand is lost.
-        public Hand SecondaryHand;
+        public Hand SecondaryHand { get; private set; }
         public HandChirality secondaryChirality;
+
+        public List<Leap.Vector> RawHandPositions
+        {
+            get
+            {
+                return _handPositions;
+            }
+        }
+        private List<Leap.Vector> _handPositions;
 
         public event Action HandFound;
         public event Action HandsLost;
@@ -78,7 +88,7 @@ namespace Ultraleap.TouchFree.Library
 
         private LeapTransform trackingTransform;
 
-        private TrackingConnectionManager trackingProvider;
+        private ITrackingConnectionManager trackingProvider;
         private readonly IVirtualScreen virtualScreen;
         private readonly IConfigManager configManager;
 
@@ -94,7 +104,7 @@ namespace Ultraleap.TouchFree.Library
             trackingProvider.Disconnect();
         }
 
-        public HandManager(TrackingConnectionManager _trackingManager, IConfigManager _configManager, IVirtualScreen _virtualScreen)
+        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager, IVirtualScreen _virtualScreen)
         {
             handsLastFrame = 0;
 
@@ -180,6 +190,12 @@ namespace Ultraleap.TouchFree.Library
                 HandFound?.Invoke();
             }
 
+            _handPositions = currentFrame.Hands
+                .Select(x => x.Fingers?.SingleOrDefault(y => y.Type == Finger.FingerType.TYPE_INDEX)?.TipPosition)
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToList();
+
             handsLastFrame = handCount;
 
             currentFrame.Transform(trackingTransform);
@@ -250,8 +266,8 @@ namespace Ultraleap.TouchFree.Library
                 lastSecondaryLocation = null;
             }
 
-            UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
-            UpdateHandStatus(ref SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
+            UpdateHandStatus(PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
+            UpdateHandStatus(SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
 
             HandsUpdated?.Invoke(PrimaryHand, SecondaryHand);
         }
@@ -277,7 +293,7 @@ namespace Ultraleap.TouchFree.Library
                     _secondaryRelativeYScreenPosition > -0.4;
         }
 
-        void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, HandType _handType)
+        void UpdateHandStatus(Hand _hand, Hand _left, Hand _right, HandType _handType)
         {
             // We must use the cached HandChirality to ensure persistence
             HandChirality handChirality;
@@ -311,13 +327,13 @@ namespace Ultraleap.TouchFree.Library
                 if (handChirality == HandChirality.LEFT && _left != null)
                 {
                     // Hand is still left
-                    _hand = _left;
+                    AssignHandAccordingToType(_handType, _left);
                     return;
                 }
                 else if (handChirality == HandChirality.RIGHT && _right != null)
                 {
                     // Hand is still right
-                    _hand = _right;
+                    AssignHandAccordingToType(_handType, _right);
                     return;
                 }
 
@@ -330,6 +346,19 @@ namespace Ultraleap.TouchFree.Library
                 {
                     AssignNewSecondary(_left, _right);
                 }
+            }
+        }
+
+        void AssignHandAccordingToType(HandType _handType, Hand _hand)
+        {
+            // Hand is still right
+            if (_handType == HandType.PRIMARY)
+            {
+                PrimaryHand = _hand;
+            }
+            else
+            {
+                SecondaryHand = _hand;
             }
         }
 

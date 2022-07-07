@@ -16,10 +16,15 @@ code {
     transform-origin: center;
     transform: scale(1);
     filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+    pointer-events: none;
 }
 
 #svg-cursor-dot.clicked {
     transform: scale(0.5);
+}
+
+#svg-cursor {
+    pointer-events: none;
 }
 
 #svg-cursor.hidden {
@@ -28,6 +33,7 @@ code {
 
 #svg-cursor-ring {
     filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+    pointer-events: none;
 }
 
 #svg-cursor.light #svg-cursor-ring {
