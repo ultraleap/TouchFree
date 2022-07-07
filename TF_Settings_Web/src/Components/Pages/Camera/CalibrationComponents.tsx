@@ -8,6 +8,7 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
+import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from '../../..';
 import FingerprintIcon from '../../../Images/Camera/Fingerprint_Icon.svg';
 import IconTextButton from '../../Controls/IconTextButton';
 
@@ -18,12 +19,12 @@ interface CalibrateInstructionsProps {
 export const CalibrateInstructions: React.FC<CalibrateInstructionsProps> = ({ progress, containerStyle }) => {
     const instructionsText = (
         <h1>
-            Hold INDEX FINGER against <br /> this <span style={{ color: '#01EB85' }}>GREEN CIRCLE</span>
+            Hold INDEX FINGER against <br /> this <span className="greenText">GREEN CIRCLE</span>
         </h1>
     );
 
     const calibratingText = (
-        <h1 style={{ color: '#01EB85' }}>
+        <h1 className="greenText">
             <div style={{ display: 'flex', height: '62px' }}>
                 <span style={{ width: '25%', paddingLeft: '37.5%' }}>Calibrating</span>
                 <span style={{ width: '4%', textAlign: 'left' }} className="loading" />
@@ -67,7 +68,7 @@ export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = (
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
-                pathColor: '#00eb85',
+                pathColor: ULTRALEAP_GREEN,
                 trailColor: 'transparent',
                 pathTransitionDuration: 0.15,
             })}
@@ -110,13 +111,15 @@ export const CalibrateCancelButton: React.FC<CalibrateCancelButtonProps> = ({ on
     );
 };
 
-const canvasStyles: CSSProperties = {
-    position: 'fixed',
-    pointerEvents: 'none',
-    width: '1080px',
-    height: '1920px',
-    top: 0,
-    left: 0,
+const canvasStyles = (): CSSProperties => {
+    return {
+        position: 'fixed',
+        pointerEvents: 'none',
+        width: APP_WIDTH,
+        height: APP_HEIGHT,
+        top: 0,
+        left: 0,
+    };
 };
 
 interface CalibratePracticeButtonProps {
@@ -157,7 +160,7 @@ export const CalibratePracticeButton: React.FC<CalibratePracticeButtonProps> = (
             </button>
             <ReactCanvasConfetti
                 refConfetti={(instance) => (refAnimationInstance.current = instance)}
-                style={canvasStyles}
+                style={canvasStyles()}
             />
         </>
     );

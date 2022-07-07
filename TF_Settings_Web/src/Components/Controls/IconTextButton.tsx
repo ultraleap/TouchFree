@@ -30,9 +30,8 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
 
     return (
         <button
-            className={`IconTextButton ${hovered ? ' IconTextButtonHovered' : ''} ${
-                pressed ? ' IconTextButtonPressed' : ''
-            }`}
+            className={`IconTextButton ${hovered ? 'IconTextButtonHovered' : ''}
+                ${pressed ? 'IconTextButtonPressed' : ''}`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {

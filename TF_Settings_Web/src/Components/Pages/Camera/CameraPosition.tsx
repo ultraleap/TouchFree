@@ -3,6 +3,7 @@ import '../../../Styles/Camera/CameraPage.css';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { ULTRALEAP_GREEN } from '../../..';
 import CameraBelowIcon from '../../../Images/Camera/Camera_Below.svg';
 import CameraFacingScreenIcon from '../../../Images/Camera/Camera_Facing_Screen.svg';
 import CameraFacingUserIcon from '../../../Images/Camera/Camera_Facing_User.svg';
@@ -26,7 +27,12 @@ const positionOptions: PositionOption[] = [
 
 const buttonStyle: React.CSSProperties = { width: '48.75%', height: '350px', marginBottom: '2.5%' };
 const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };
-const textStyle: React.CSSProperties = { color: '#00EB85', opacity: '1' };
+const textStyle = (): React.CSSProperties => {
+    return {
+        color: ULTRALEAP_GREEN,
+        opacity: '1',
+    };
+};
 
 interface CameraPositionProps {
     activePosition: PositionType;
@@ -56,7 +62,7 @@ const CameraPosition: React.FC<CameraPositionProps> = ({ activePosition, setPosi
                         iconStyle={iconStyle}
                         title={title}
                         text={activePosition === type ? 'Current Setup' : ''}
-                        textStyle={textStyle}
+                        textStyle={textStyle()}
                         onClick={() => {
                             setPosition(type);
                             navigate('calibrate');
