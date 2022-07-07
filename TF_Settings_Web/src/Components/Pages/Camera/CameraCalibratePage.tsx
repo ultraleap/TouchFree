@@ -28,7 +28,6 @@ interface CameraCalibratePageProps {
 const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePosition }) => {
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
-    const [isCalibConfigActive, setIsCalibConfigActive] = React.useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -42,7 +41,7 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
             ConfigurationManager.RequestConfigChange(
                 calibInteractionConfig,
                 { LeapRotationD: getRotationFromPosition(activePosition) },
-                () => setIsCalibConfigActive(true)
+                () => {}
             );
         });
     }, []);
@@ -64,7 +63,6 @@ const CameraCalibratePage: React.FC<CameraCalibratePageProps> = ({ activePositio
                 path="top"
                 element={
                     <CameraCalibrateTop
-                        isConfigSet={isCalibConfigActive}
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
@@ -109,17 +107,17 @@ const setCursorDisplay = (show: boolean) => {
     const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;
     if (!svgCanvas) return;
 
-    svgCanvas.style.opacity = show ? '1' : '0';
+    // Add an opacity of 0 to hide the cursor and remove this opacity to show the cursor
+    svgCanvas.style.opacity = show ? '' : '0';
 };
 
-// Need better defaults??
 const getRotationFromPosition = (position: PositionType): Vector => {
     if (position === 'FaceScreen') {
-        return { X: 10, Y: 0, Z: 95 };
+        return { X: 20, Y: 0, Z: 180 };
     }
     if (position === 'FaceUser') {
-        return { X: 0, Y: 0, Z: 95 };
+        return { X: -20, Y: 0, Z: 180 };
     }
-    // position === 'FaceUser'
+    // position === 'Below' (Desktop)
     return { X: 0, Y: 0, Z: 0 };
 };

@@ -63,14 +63,13 @@ interface CalibrateProgressCircleProps {
 export const CalibrateProgressCircle: React.FC<CalibrateProgressCircleProps> = ({ progress, style }) => (
     <div style={style} className="progressCircleContainer">
         <CircularProgressbar
-            value={progress}
+            value={Math.floor(progress * 50) / 50}
             maxValue={1}
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
                 pathColor: ULTRALEAP_GREEN,
                 trailColor: 'transparent',
-                pathTransitionDuration: 0.15,
             })}
         />
     </div>

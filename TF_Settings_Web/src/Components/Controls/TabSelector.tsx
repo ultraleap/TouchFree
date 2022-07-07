@@ -14,7 +14,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
 
     const handleClick = () => {
         if (!isActiveTab) {
-            navigate(`/${lowerCaseName}`);
+            navigate(`/settings/${lowerCaseName}`);
             onClick();
         }
     };

@@ -8,17 +8,14 @@ import InteractionBottomGuide from '../../../Images/Camera/Interaction_Guide_Bot
 import InteractionTopGuide from '../../../Images/Camera/Interaction_Guide_Top.png';
 import { ConnectionManager } from '../../../TouchFree/Connection/ConnectionManager';
 import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
-import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
+import { InputType, InteractionType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
 import { CalibrateCancelButton, CalibrateInstructions, CalibrateProgressCircle } from './CalibrationComponents';
 
 interface CameraCalibrateScreenProps {
     onCancel: () => void;
 }
 
-export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfigSet: boolean }> = ({
-    onCancel,
-    isConfigSet,
-}): ReactElement => {
+export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps> = ({ onCancel }): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
@@ -44,7 +41,7 @@ export const CameraCalibrateTop: React.FC<CameraCalibrateScreenProps & { isConfi
         navigate('../bottom');
     };
 
-    return CameraCalibrateScreen(handleClick, content, isConfigSet);
+    return CameraCalibrateScreen(handleClick, content);
 };
 
 export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ onCancel }): ReactElement => {
@@ -73,19 +70,15 @@ export const CameraCalibrateBottom: React.FC<CameraCalibrateScreenProps> = ({ on
         navigate('../complete');
     };
 
-    return CameraCalibrateScreen(handleClick, content, true);
+    return CameraCalibrateScreen(handleClick, content);
 };
 
 const CameraCalibrateScreen = (
     handleClick: () => void,
-    content: (progressToClick: number) => ReactElement,
-    isConfigSet: boolean
+    content: (progressToClick: number) => ReactElement
 ): ReactElement => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
     const isNewClick = React.useRef<boolean>(false);
-    const readyToInteract = React.useRef<boolean>(isConfigSet);
-
-    readyToInteract.current = isConfigSet;
 
     useEffect(() => {
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
@@ -96,18 +89,17 @@ const CameraCalibrateScreen = (
     }, []);
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
-        if (readyToInteract.current === false) {
-            return;
-        }
-        if (!isNewClick.current) {
-            isNewClick.current = evt.detail.ProgressToClick === 0;
-            return;
-        }
-        if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
-            const roundedProg = Math.floor(evt.detail.ProgressToClick * 100) / 100;
-            setProgressToClick(roundedProg);
-            if (roundedProg >= 1) {
-                handleClick();
+        if (evt.detail.InteractionType === InteractionType.HOVER) {
+            if (!isNewClick.current) {
+                isNewClick.current = evt.detail.ProgressToClick === 0;
+                return;
+            }
+
+            if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
+                setProgressToClick(evt.detail.ProgressToClick);
+                if (evt.detail.ProgressToClick >= 1) {
+                    handleClick();
+                }
             }
         }
     };
