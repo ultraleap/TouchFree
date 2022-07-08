@@ -1,4 +1,4 @@
-import '../../Styles/Controls/IconTextButton.css';
+import 'Styles/Controls/IconTextButton.css';
 
 import React from 'react';
 
@@ -32,8 +32,8 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
 
     return (
         <button
-            className={`IconTextButton ${canHover && hovered ? ' IconTextButtonHovered' : ''} ${
-                pressed ? ' IconTextButtonPressed' : ''
+            className={`IconTextButton ${canHover && hovered ? 'IconTextButtonHovered' : ''} ${
+                pressed ? 'IconTextButtonPressed' : ''
             }`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}

@@ -39,7 +39,8 @@
 
 .tfButton:hover {
     box-shadow: none;
-    background-image: linear-gradient(180deg, #00eb85, #00ccce), linear-gradient(180deg, #00eb86, #00cdcf);
+    background-image: linear-gradient(180deg, var(--ultraleap-green), #00ccce),
+        linear-gradient(180deg, #00eb86, #00cdcf);
 }
 
 .tfButton > p {

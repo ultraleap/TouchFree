@@ -1,16 +1,12 @@
-:root {
-    --controlBarSize: 170px;
-}
-
 .app {
     text-align: center;
-    height: 1920px;
-    width: 1080px;
+    height: var(--app-height);
+    width: var(--app-width);
     overflow-x: hidden;
-    background-color: #222222;
+    background-color: var(--app-background-color);
 }
 
 .pageContent {
-    margin-top: var(--controlBarSize);
-    height: calc(100% - var(--controlBarSize));
+    margin-top: var(--control-bar-size);
+    height: calc(100% - var(--control-bar-size));
 }

@@ -1,12 +1,14 @@
-import '../../../Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.css';
 
 import React, { CSSProperties, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { InputActionManager } from '../../../TouchFree/Plugins/InputActionManager';
-import { InputType, TouchFreeInputAction } from '../../../TouchFree/TouchFreeToolingTypes';
-import IconTextButton from '../../Controls/IconTextButton';
-import { CalibrateHandLostMessage, CalibratePracticeButton } from './CalibrationComponents';
+import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
+import { InputType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
+
+import IconTextButton from 'Components/Controls/IconTextButton';
+
+import { CalibrateHandLostMessage, CalibrationPracticeButton } from './CalibrationComponents';
 
 const buttonStyle: CSSProperties = {
     width: '50%',
@@ -24,13 +26,13 @@ const titleStyle: CSSProperties = {
     alignItems: 'center',
 };
 
-interface CameraCalibrateCompleteProps {
+interface CalibrationCompleteProps {
     isHandPresent: boolean;
     onLoad: () => void;
     onRedo: () => void;
 }
 
-const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoad, onRedo, isHandPresent }) => {
+const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad, onRedo, isHandPresent }) => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
 
     useEffect(() => {
@@ -60,7 +62,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                 </h1>
             </div>
             <div style={{ height: '12%', paddingTop: '12%' }}>
-                <CalibratePracticeButton progress={progressToClick} />
+                <CalibrationPracticeButton progress={progressToClick} />
             </div>
             <div className="setupCompleteOptionsContainer">
                 <IconTextButton
@@ -71,7 +73,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                     titleStyle={titleStyle}
                     text={''}
                     textStyle={{ display: 'none' }}
-                    onClick={() => navigate('/camera')}
+                    onClick={() => navigate('/settings/camera')}
                 />
                 <IconTextButton
                     buttonStyle={buttonStyle}
@@ -83,7 +85,7 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
                     textStyle={{ display: 'none' }}
                     onClick={() => {
                         onRedo();
-                        navigate('/camera/quick/calibrate/top');
+                        navigate('/settings/camera/quick/calibrate/top');
                     }}
                 />
             </div>
@@ -91,4 +93,4 @@ const CameraCalibrateComplete: React.FC<CameraCalibrateCompleteProps> = ({ onLoa
     );
 };
 
-export default CameraCalibrateComplete;
+export default CalibrationCompleteScreen;

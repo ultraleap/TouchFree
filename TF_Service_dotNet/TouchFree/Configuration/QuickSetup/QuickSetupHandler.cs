@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Numerics;
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
 {
     public class QuickSetupHandler : IQuickSetupHandler
     {
@@ -22,7 +22,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             configManager = _configManager;
         }
 
-        public QuickSetupResponse HandleQuickSetupCall(QuickSetupPosition position)
+        public QuickSetupResponse HandlePositionRecording(QuickSetupPosition position)
         {
             if (position == QuickSetupPosition.Top)
             {
@@ -32,6 +32,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 {
                     ConfigurationUpdated = false,
                     PositionRecorded = topHandPosition.HasValue,
+                    QuickSetupError = !topHandPosition.HasValue ? "Unable to find hand for Top position" : null
                 };
             }
             else if (position == QuickSetupPosition.Bottom && topHandPosition != null)
@@ -52,29 +53,47 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
                     response.ConfigurationUpdated = true;
                 }
+                else
+                {
+                    response.QuickSetupError = "Unable to find hand for Bottom position";
+                }
 
                 return response;
             }
             else
             {
+                if (position == QuickSetupPosition.Bottom && topHandPosition == null)
+                {
+                    return new QuickSetupResponse()
+                    {
+                        ConfigurationUpdated = false,
+                        PositionRecorded = false,
+                        QuickSetupError = "Unable to set Bottom position as there is no recorded Top position"
+                    };
+                }
+
                 return new QuickSetupResponse()
                 {
                     ConfigurationUpdated = false,
                     PositionRecorded = false,
+                    QuickSetupError = "Invalid Quick Setup position value"
                 };
             }
         }
 
         public void UpdateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
         {
-            Vector3 bottomNoX = new(0, bottomPos.Y, bottomPos.Z);
-            Vector3 topNoX = new(0, topPos.Y, topPos.Z);
+            var zCorrectedBottomPosition = new Vector3(bottomPos.X, bottomPos.Y, -bottomPos.Z);
+            var zCorrectedTopPosition = new Vector3(topPos.X, topPos.Y, -topPos.Z);
+
+            Vector3 bottomNoX = new(0, zCorrectedBottomPosition.Y, zCorrectedBottomPosition.Z);
+            Vector3 topNoX = new(0, zCorrectedTopPosition.Y, zCorrectedTopPosition.Z);
 
             configManager.PhysicalConfig.ScreenHeightMm = Vector3.Distance(bottomNoX, topNoX) * HEIGHT_SCALING_FACTOR;
 
-            var bottomEdge = BottomCentreFromTouches(bottomPos, topPos);
+            var bottomEdge = BottomCentreFromTouches(zCorrectedBottomPosition, zCorrectedTopPosition);
 
-            configManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(bottomPos, topPos);
+            configManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(zCorrectedBottomPosition, zCorrectedTopPosition);
             configManager.PhysicalConfig.LeapPositionRelativeToScreenBottomMm = LeapPositionInScreenSpace(bottomEdge, configManager.PhysicalConfig.LeapRotationD);
             PhysicalConfigFile.SaveConfig(configManager.PhysicalConfig.ForApi());
             configManager.PhysicalConfigWasUpdated();
@@ -111,6 +130,16 @@ namespace Ultraleap.TouchFree.Library.Configuration
             else
             {
                 rotation.X = xRotation;
+            }
+
+            while (rotation.X > 180)
+            {
+                rotation.X -= 360;
+            }
+
+            while (rotation.X < -180)
+            {
+                rotation.X += 360;
             }
 
             return rotation;

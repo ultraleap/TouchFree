@@ -46,7 +46,7 @@
 }
 
 input:checked + .toggle {
-    background-image: linear-gradient(180deg, #00eb85, #00ccce);
+    background-image: linear-gradient(180deg, var(--ultraleap-green), #00ccce);
 }
 
 input:checked + .toggle:before {

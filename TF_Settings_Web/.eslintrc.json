@@ -22,7 +22,7 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": ["react", "@typescript-eslint", "simple-import-sort"],
+    "plugins": ["react", "@typescript-eslint", "no-relative-import-paths"],
     "ignorePatterns": ["src/TouchFree"],
     "rules": {
         "indent": "off",
@@ -50,7 +50,6 @@
         "unicorn/no-array-push-push": "off",
         "unicorn/no-nested-ternary": "off",
         "unicorn/consistent-function-scoping": "off",
-        "simple-import-sort/imports": "error",
-        "simple-import-sort/exports": "error"
+        "no-relative-import-paths/no-relative-import-paths": ["error", { "allowSameFolder": true, "rootDir": "src" }]
     }
 }

@@ -1,12 +1,13 @@
-import '../../../Styles/Camera/CameraPage.css';
+import 'Styles/Camera/Camera.css';
 
 import { useNavigate } from 'react-router-dom';
 
-import ManualSetupIcon from '../../../Images/Camera/Manual_Setup_Icon.svg';
-import QuickSetupIcon from '../../../Images/Camera/Quick_Setup_Icon.svg';
-import IconTextButton from '../../Controls/IconTextButton';
+import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';
+import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
 
-const CameraSetupSelection = () => {
+import IconTextButton from 'Components/Controls/IconTextButton';
+
+const CameraSetupScreen = () => {
     const navigate = useNavigate();
     return (
         <div>
@@ -37,4 +38,4 @@ const CameraSetupSelection = () => {
     );
 };
 
-export default CameraSetupSelection;
+export default CameraSetupScreen;

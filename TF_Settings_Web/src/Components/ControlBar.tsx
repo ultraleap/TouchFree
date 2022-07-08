@@ -1,11 +1,13 @@
-import '../Styles/ControlBar.css';
+import 'Styles/ControlBar.css';
 
 import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import backArrow from '../Images/Back_Arrow.svg';
-import logo from '../Images/Logo.png';
-import { TrackingServiceState } from '../TouchFree/TouchFreeToolingTypes';
+import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
+
+import backArrow from 'Images/Back_Arrow.svg';
+import logo from 'Images/Logo.png';
+
 import IconTextButton from './Controls/IconTextButton';
 import TabSelector from './Controls/TabSelector';
 import { StatusIndicator } from './StatusIndicator';
@@ -61,7 +63,7 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
                 <div className="emptyContainer" />
             </div>
             <div className="tabBarStyle">
-                {pathname === '/camera' || pathname === '/interactions' ? (
+                {pathname === '/settings/camera' || pathname === '/settings/interactions' ? (
                     <div className="tabBarStyle">
                         <TabSelector
                             name="Camera"

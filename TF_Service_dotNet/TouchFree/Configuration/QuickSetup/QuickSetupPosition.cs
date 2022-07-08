@@ -1,4 +1,4 @@
-﻿namespace Ultraleap.TouchFree.Library.Configuration
+﻿namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
 {
     public enum QuickSetupPosition
     {

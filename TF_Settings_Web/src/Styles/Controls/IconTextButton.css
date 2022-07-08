@@ -28,7 +28,7 @@
 
 .IconTextButtonHovered {
     transform: scale(1.04);
-    box-shadow: 0px 0px 30px #00eb85;
+    box-shadow: 0px 0px 30px var(--ultraleap-green);
 }
 
 .IconTextButtonPressed {
