@@ -123,6 +123,27 @@
     width: 180px;
 }
 
+.handNotFoundContainer {
+    display: flex;
+    margin: auto;
+    background: transparent linear-gradient(180deg, #e1164d 0%, #d11882 100%) 0% 0% no-repeat padding-box;
+    border-radius: 15px;
+    height: 50px;
+    width: 320px;
+    justify-content: center;
+    align-items: center;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+.handNotFoundContainer > p {
+    flex: none;
+    color: white;
+    font-size: 1.6rem;
+    font-family: MontserratRegular, Arial;
+    text-align: center;
+    margin-left: 5px;
+}
+
 .interactionGuide {
     display: block;
     margin: auto;

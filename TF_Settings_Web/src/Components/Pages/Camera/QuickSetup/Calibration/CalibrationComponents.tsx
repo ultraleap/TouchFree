@@ -11,6 +11,7 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
+import HandIcon from 'Images/Tracking_Status_Icon.svg';
 
 import IconTextButton from 'Components/Controls/IconTextButton';
 
@@ -31,7 +32,7 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
                 <span style={{ width: '25%', paddingLeft: '37.5%' }}>Calibrating</span>
                 <span style={{ width: '4%', textAlign: 'left' }} className="loading" />
             </div>
-            {(progress * 100).toFixed(0)}%
+            {Math.ceil(progress * 100).toFixed(0)}%
         </h1>
     );
 
@@ -65,7 +66,7 @@ interface CalibrationProgressCircleProps {
 export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
     <div style={style} className="progressCircleContainer">
         <CircularProgressbar
-            value={Math.floor(progress * 50) / 50}
+            value={Math.ceil(progress * 50) / 50}
             maxValue={1}
             strokeWidth={25}
             styles={buildStyles({
@@ -75,6 +76,13 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
                 pathTransitionDuration: 0.08,
             })}
         />
+    </div>
+);
+
+export const CalibrateHandLostMessage = () => (
+    <div className={'handNotFoundContainer'}>
+        <img src={HandIcon} alt="Hand Icon" />
+        <p>Hand Not Detected</p>
     </div>
 );
 
@@ -109,6 +117,7 @@ export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = (
             text={''}
             textStyle={{ display: 'none' }}
             onClick={() => onCancel()}
+            canHover={false}
         />
     );
 };
@@ -172,11 +181,11 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
     if (!isHovered) {
         return {};
     }
-    if (progress < 0.8) {
-        return { transform: `scale(${1.3 - progress * 0.6})` };
+    if (progress < 0.9) {
+        return { transform: `scale(${1.3 - progress * 0.4})` };
     }
     return {
-        transform: `scale(${1.3 - progress * 0.6})`,
+        transform: `scale(${1.3 - progress * 0.4})`,
         background: 'transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box',
         boxShadow: '0px 5px 25px #000000',
     };

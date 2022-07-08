@@ -6,13 +6,16 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
 import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/Configuration/ConfigurationTypes';
-import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import { ConfigState, HandPresenceState } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
 import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
 import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationScreens';
+
+const handEventTypes = ['HandsLost', 'HandFound'];
 
 const calibInteractionConfig: Partial<InteractionConfig> = {
     InteractionType: InteractionType.HOVER,
@@ -30,6 +33,9 @@ interface CalibrationManager {
 const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) => {
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
+    const [isHandPresent, setIsHandPresent] = React.useState<boolean>(
+        ConnectionManager.GetCurrentHandPresence() === HandPresenceState.HAND_FOUND
+    );
 
     const navigate = useNavigate();
 
@@ -46,7 +52,21 @@ const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) =>
                 () => {}
             );
         });
+
+        for (const eventType of handEventTypes) {
+            ConnectionManager.instance.addEventListener(eventType, setHandPresence);
+        }
+
+        return () => {
+            for (const eventType of handEventTypes) {
+                ConnectionManager.instance.removeEventListener(eventType, setHandPresence);
+            }
+        };
     }, []);
+
+    const setHandPresence = (evt: Event) => {
+        setIsHandPresent(evt.type === 'HandFound');
+    };
 
     const setCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(calibInteractionConfig, {}, () => {});
@@ -65,6 +85,7 @@ const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) =>
                 path="top"
                 element={
                     <CalibrationTopScreen
+                        isHandPresent={isHandPresent}
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
@@ -76,6 +97,7 @@ const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) =>
                 path="bottom"
                 element={
                     <CalibrationBottomScreen
+                        isHandPresent={isHandPresent}
                         onCancel={() => {
                             setCursorDisplay(true);
                             resetCalibConfig();
@@ -87,6 +109,7 @@ const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) =>
                 path="complete"
                 element={
                     <CalibrationCompleteScreen
+                        isHandPresent={isHandPresent}
                         onLoad={() => {
                             setCursorDisplay(true);
                             resetCalibInteractionConfig();

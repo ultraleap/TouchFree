@@ -12,6 +12,7 @@ interface IconTextButtonProps {
     text: string;
     textStyle?: React.CSSProperties;
     onClick: () => void;
+    canHover?: boolean;
 }
 
 const IconTextButton: React.FC<IconTextButtonProps> = ({
@@ -24,14 +25,16 @@ const IconTextButton: React.FC<IconTextButtonProps> = ({
     text,
     textStyle,
     onClick,
+    canHover = true,
 }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
     const [pressed, setPressed] = React.useState<boolean>(false);
 
     return (
         <button
-            className={`IconTextButton ${hovered ? 'IconTextButtonHovered' : ''}
-                ${pressed ? 'IconTextButtonPressed' : ''}`}
+            className={`IconTextButton ${canHover && hovered ? 'IconTextButtonHovered' : ''} ${
+                pressed ? 'IconTextButtonPressed' : ''
+            }`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {

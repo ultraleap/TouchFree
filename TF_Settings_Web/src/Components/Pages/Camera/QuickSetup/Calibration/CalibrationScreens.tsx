@@ -11,30 +11,40 @@ import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/Touc
 import InteractionBottomGuide from 'Images/Camera/Interaction_Guide_Bottom.png';
 import InteractionTopGuide from 'Images/Camera/Interaction_Guide_Top.png';
 
-import { CalibrationCancelButton, CalibrationInstructions, CalibrationProgressCircle } from './CalibrationComponents';
+import {
+    CalibrateHandLostMessage,
+    CalibrationCancelButton,
+    CalibrationInstructions,
+    CalibrationProgressCircle,
+} from './CalibrationComponents';
 
 /**
  * CalibrationTop and CalibrationBottom screens use CalibrationBaseScreen to handle logic and just pass in their content
  */
 
 interface CalibrationBaseScreenProps {
+    isHandPresent: boolean;
     onCancel: () => void;
 }
 
-export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({ onCancel }): ReactElement => {
+export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
+    isHandPresent,
+    onCancel,
+}): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
             <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '295px' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ top: '294px' }} />
+            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
             <img
                 className="interactionGuide"
-                style={{ marginTop: '50px' }}
+                style={{ paddingTop: '50px' }}
                 src={InteractionTopGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
                 onDoubleClick={() => navigate('../bottom')}
             />
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '600px' }} />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '575px' }} />
         </div>
     );
 
@@ -50,20 +60,24 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({ onC
     return CalibrationBaseScreen(handleClick, content);
 };
 
-export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({ onCancel }): ReactElement => {
+export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
+    isHandPresent,
+    onCancel,
+}): ReactElement => {
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
             <img
                 className="interactionGuide"
-                style={{ paddingTop: '550px' }}
+                style={{ paddingTop: '600px' }}
                 src={InteractionBottomGuide}
                 alt="Guide demonstrating how to interact with Quick Setup"
                 onDoubleClick={() => navigate('../complete')}
             />
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ bottom: '295px' }} />
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '100px' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '50px' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ top: '1446px' }} />
+            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '75px' }} />
         </div>
     );
 

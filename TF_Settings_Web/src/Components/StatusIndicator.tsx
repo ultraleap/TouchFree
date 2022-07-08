@@ -5,7 +5,7 @@ import React, { CSSProperties } from 'react';
 import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
 
 import camStatusIcon from 'Images/Camera_Status_Icon.png';
-import svcStatusIcon from 'Images/Tracking_Status_Icon.png';
+import svcStatusIcon from 'Images/Tracking_Status_Icon.svg';
 
 interface StatusIndicatorProps {
     tfStatus: TrackingServiceState;
