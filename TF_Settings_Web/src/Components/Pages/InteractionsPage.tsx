@@ -1,19 +1,22 @@
 import 'Styles/Interactions.css';
 
+import { Component } from 'react';
+
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/ConfigurationTypes';
+import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
+
+import AirPushPreview from 'Videos/AirPush_Preview.webm';
+import HoverPreview from 'Videos/Hover_Preview.webm';
+import TouchPlanePreview from 'Videos/TouchPlane_Preview.webm';
+
 import { RadioGroup } from 'Components/Controls/RadioGroup';
 import { RadioLine } from 'Components/Controls/RadioLine';
 import { Slider } from 'Components/Controls/Slider';
 import { TextSlider } from 'Components/Controls/TextSlider';
 import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
 import { DefaultInteractionConfig } from 'Components/SettingsTypes';
-import { Component } from 'react';
-import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
-import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/ConfigurationTypes';
-import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
-import AirPushPreview from 'Videos/AirPush_Preview.webm';
-import HoverPreview from 'Videos/Hover_Preview.webm';
-import TouchPlanePreview from 'Videos/TouchPlane_Preview.webm';
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,

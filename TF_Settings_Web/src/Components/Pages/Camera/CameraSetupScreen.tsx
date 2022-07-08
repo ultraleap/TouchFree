@@ -1,9 +1,11 @@
 import 'Styles/Camera/Camera.css';
 
-import IconTextButton from 'Components/Controls/IconTextButton';
+import { useNavigate } from 'react-router-dom';
+
 import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';
 import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
-import { useNavigate } from 'react-router-dom';
+
+import IconTextButton from 'Components/Controls/IconTextButton';
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();

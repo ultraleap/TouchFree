@@ -1,14 +1,18 @@
 import 'Styles/Camera/Camera.css';
 
-import IconTextButton from 'Components/Controls/IconTextButton';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { ULTRALEAP_GREEN } from 'index';
+
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
+
 import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
 import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
 import CameraFacingUserIcon from 'Images/Camera/Camera_Facing_User.svg';
-import { ULTRALEAP_GREEN } from 'index';
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
-import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
+
+import IconTextButton from 'Components/Controls/IconTextButton';
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 
