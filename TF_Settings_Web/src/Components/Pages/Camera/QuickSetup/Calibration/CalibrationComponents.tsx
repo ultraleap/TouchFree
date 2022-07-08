@@ -72,7 +72,7 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
                 strokeLinecap: 'butt',
                 pathColor: ULTRALEAP_GREEN,
                 trailColor: 'transparent',
-                pathTransitionDuration: 0.1,
+                pathTransitionDuration: 0.08,
             })}
         />
     </div>
