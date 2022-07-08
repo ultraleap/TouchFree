@@ -8,10 +8,10 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
-import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
+import HandIcon from 'Images/Tracking_Status_Icon.svg';
 
 import IconTextButton from 'Components/Controls/IconTextButton';
 
@@ -32,7 +32,7 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
                 <span style={{ width: '25%', paddingLeft: '37.5%' }}>Calibrating</span>
                 <span style={{ width: '4%', textAlign: 'left' }} className="loading" />
             </div>
-            {(progress * 100).toFixed(0)}%
+            {Math.ceil(progress * 100).toFixed(0)}%
         </h1>
     );
 
@@ -66,7 +66,7 @@ interface CalibrationProgressCircleProps {
 export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
     <div style={style} className="progressCircleContainer">
         <CircularProgressbar
-            value={Math.floor(progress * 50) / 50}
+            value={Math.ceil(progress * 50) / 50}
             maxValue={1}
             strokeWidth={25}
             styles={buildStyles({

@@ -6,6 +6,7 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
 import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { ConfigState, HandPresenceState } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
@@ -13,7 +14,6 @@ import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelecti
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
 import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationScreens';
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 
 const handEventTypes = ['HandsLost', 'HandFound'];
 
@@ -33,7 +33,6 @@ interface CalibrationManager {
 const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) => {
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
-    const [isCalibConfigActive, setIsCalibConfigActive] = React.useState<boolean>(false);
     const [isHandPresent, setIsHandPresent] = React.useState<boolean>(
         ConnectionManager.GetCurrentHandPresence() === HandPresenceState.HAND_FOUND
     );
