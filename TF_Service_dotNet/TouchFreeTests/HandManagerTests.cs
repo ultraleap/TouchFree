@@ -17,7 +17,7 @@ namespace TouchFreeTests
         public void TranslationIsCorrectlyConstructedFromConfig()
         {
             // Given
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             System.Numerics.Vector3 translationInMillimeters = new(100f, 200f, 300f);
             Leap.Vector translationInLeapSpace = new Leap.Vector(translationInMillimeters.X, translationInMillimeters.Y, -translationInMillimeters.Z);
             PhysicalConfigInternal testConfig = new() { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
@@ -29,13 +29,18 @@ namespace TouchFreeTests
             Assert.AreEqual(translationInLeapSpace, handManger.TrackingTransform().translation);
         }
 
+        private HandManager CreateSut()
+        {
+            return new(null, null, null);
+        }
+
         #region UpdateTrackingTransform
 
         [Test]
         public void UpdateTrackingTransform_TopMountedOrientation_XRotationNotInverted()
         {
             // Given
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             System.Numerics.Vector3 topDownRotation = new(45, 0, 180);
             System.Numerics.Quaternion topDownQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(topDownRotation.Y),
@@ -62,7 +67,7 @@ namespace TouchFreeTests
         public void UpdateTrackingTransform_BottomMountedOrientation_XRotationInverted()
         {
             // Given
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
             System.Numerics.Quaternion bottomQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(bottomRotation.Y),
@@ -89,7 +94,7 @@ namespace TouchFreeTests
         public void UpdateTrackingTransform_BottomMountedOrientation_UseLeapPositionRelative()
         {
             // Given
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
             System.Numerics.Vector3 relativePosition = new(1000, 2000, 3000);
             System.Numerics.Vector3 positionTranslation = new(1000, 2000, -3000);
@@ -113,7 +118,7 @@ namespace TouchFreeTests
         public void UpdateTrackingTransform_BottomMountedOrientationScreenIsRotated_UseLeapPositionRelativeWithScreenRotation()
         {
             // Given
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
             System.Numerics.Vector3 relativePosition = new(1000, 1000, 1000);
             System.Numerics.Vector3 positionTranslation = new(1000, 1158.46f, -811.16f);
@@ -139,7 +144,7 @@ namespace TouchFreeTests
             //Given
             Frame frame = new Frame();
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -157,7 +162,7 @@ namespace TouchFreeTests
             Frame frame = new Frame();
             frame.Hands.Add(hand);
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -176,7 +181,7 @@ namespace TouchFreeTests
             Frame frame = new Frame();
             frame.Hands.Add(hand);
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -197,7 +202,7 @@ namespace TouchFreeTests
             frame.Hands.Add(leftHand);
             frame.Hands.Add(rightHand);
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -218,7 +223,7 @@ namespace TouchFreeTests
             Frame firstFrame = new Frame();
             firstFrame.Hands.Add(leftHand);
             FrameEventArgs firstFrameEventArgs = new FrameEventArgs(firstFrame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             handManger.Update(this, firstFrameEventArgs);
 
             Frame secondFrame = new Frame();
@@ -246,7 +251,7 @@ namespace TouchFreeTests
             firstFrame.Hands.Add(leftHand);
             firstFrame.Hands.Add(rightHand);
             FrameEventArgs firstFrameEventArgs = new FrameEventArgs(firstFrame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             handManger.Update(this, firstFrameEventArgs);
 
             Frame secondFrame = new Frame();

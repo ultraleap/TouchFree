@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Leap;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Leap;
+using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
@@ -19,19 +20,28 @@ namespace Ultraleap.TouchFree.Library
         public Hand SecondaryHand { get; private set; }
         public HandChirality secondaryChirality;
 
-        public List<Vector> RawHandPositions
+        public List<Leap.Vector> RawHandPositions
         {
             get
             {
                 return _handPositions;
             }
         }
-        private List<Vector> _handPositions;
+        private List<Leap.Vector> _handPositions;
 
         public event Action HandFound;
         public event Action HandsLost;
         public delegate void HandUpdate(Hand primary, Hand secondary);
         public event HandUpdate HandsUpdated;
+
+        private const float PrimaryHandActivityDefault = 0.02f;
+        private const float SecondaryHandActivityDefault = 0.01f;
+
+        private float PrimaryHandActivity = PrimaryHandActivityDefault;
+        private float SecondaryHandActivity = SecondaryHandActivityDefault;
+
+        private Vector3? lastPrimaryLocation;
+        private Vector3? lastSecondaryLocation;
 
         bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
         bool PrimaryIsRight => PrimaryHand != null && !PrimaryHand.IsLeft;
@@ -79,6 +89,8 @@ namespace Ultraleap.TouchFree.Library
         private LeapTransform trackingTransform;
 
         private ITrackingConnectionManager trackingProvider;
+        private readonly IVirtualScreen virtualScreen;
+        private readonly IConfigManager configManager;
 
         private int handsLastFrame;
 
@@ -92,11 +104,13 @@ namespace Ultraleap.TouchFree.Library
             trackingProvider.Disconnect();
         }
 
-        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager)
+        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager, IVirtualScreen _virtualScreen)
         {
             handsLastFrame = 0;
 
             trackingProvider = _trackingManager;
+            virtualScreen = _virtualScreen;
+            configManager = _configManager;
             if (trackingProvider != null)
             {
                 trackingProvider.controller.FrameReady += Update;
@@ -133,7 +147,7 @@ namespace Ultraleap.TouchFree.Library
 
             if (_config.ScreenRotationD != 0)
             {
-                var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomMm.Y, _config.LeapPositionRelativeToScreenBottomMm.Z).Magnitude;
+                var distanceFromScreenBottom = new Leap.Vector(0, _config.LeapPositionRelativeToScreenBottomMm.Y, _config.LeapPositionRelativeToScreenBottomMm.Z).Magnitude;
                 var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomMm.Z / _config.LeapPositionRelativeToScreenBottomMm.Y);
                 var angleWithScreenRotation = Utilities.DegreesToRadians(_config.ScreenRotationD) + angle;
 
@@ -143,7 +157,7 @@ namespace Ultraleap.TouchFree.Library
                     translatedYPosition = -translatedYPosition;
                 }
 
-                var translatedUsingScreenPosition = new Vector(
+                var translatedUsingScreenPosition = new Leap.Vector(
                     _config.LeapPositionRelativeToScreenBottomMm.X,
                     translatedYPosition,
                     (float)(distanceFromScreenBottom * Math.Sin(angleWithScreenRotation)));
@@ -154,7 +168,7 @@ namespace Ultraleap.TouchFree.Library
             else
             {
                 trackingTransform = new LeapTransform(
-                    new Vector(
+                    new Leap.Vector(
                         _config.LeapPositionRelativeToScreenBottomMm.X,
                         _config.LeapPositionRelativeToScreenBottomMm.Y,
                         -_config.LeapPositionRelativeToScreenBottomMm.Z),
@@ -199,10 +213,84 @@ namespace Ultraleap.TouchFree.Library
                     rightHand = hand;
             }
 
+            if (PrimaryHand?.Fingers?.Count(x => x.Type == Finger.FingerType.TYPE_INDEX) > 0 && 
+                SecondaryHand?.Fingers?.Count(x => x.Type == Finger.FingerType.TYPE_INDEX) > 0)
+            {
+                var primaryHandIndexTip = PrimaryHand.Fingers.Single(x => x.Type == Finger.FingerType.TYPE_INDEX).TipPosition;
+                var secondaryHandIndexTip = SecondaryHand.Fingers.Single(x => x.Type == Finger.FingerType.TYPE_INDEX).TipPosition;
+
+                var primaryHandIndexTipLocation = virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(primaryHandIndexTip));
+                var secondaryHandIndexTipLocation = virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(secondaryHandIndexTip));
+
+                var screenWidthPX = configManager.PhysicalConfig.ScreenWidthPX;
+                var screenHeightPX = configManager.PhysicalConfig.ScreenHeightPX;
+
+                var primaryRelativeXScreenPosition = primaryHandIndexTipLocation.X / screenWidthPX;
+                var primaryRelativeYScreenPosition = primaryHandIndexTipLocation.Y / screenHeightPX;
+                var secondaryRelativeXScreenPosition = secondaryHandIndexTipLocation.X / screenWidthPX;
+                var secondaryRelativeYScreenPosition = secondaryHandIndexTipLocation.Y / screenHeightPX;
+
+                if (lastPrimaryLocation.HasValue && lastSecondaryLocation.HasValue)
+                {
+                    var primaryLocationChange = lastPrimaryLocation.Value - primaryHandIndexTipLocation;
+                    var primaryLocationChangeX = primaryLocationChange.X / screenWidthPX;
+                    var primaryLocationChangeY = primaryLocationChange.Y / screenHeightPX;
+
+                    var secondaryLocationChange = lastSecondaryLocation.Value - secondaryHandIndexTipLocation;
+                    var secondaryLocationChangeX = secondaryLocationChange.X / screenWidthPX;
+                    var secondaryLocationChangeY = secondaryLocationChange.Y / screenHeightPX;
+
+                    PrimaryHandActivity = Math.Clamp(PrimaryHandActivity * 0.9f + Math.Abs(primaryLocationChangeX) + Math.Abs(primaryLocationChangeY), 0f, 1f);
+                    SecondaryHandActivity = Math.Clamp(SecondaryHandActivity * 0.9f + Math.Abs(secondaryLocationChangeX) + Math.Abs(secondaryLocationChangeY), 0f, 1f);
+                }
+
+                lastPrimaryLocation = primaryHandIndexTipLocation;
+                lastSecondaryLocation = secondaryHandIndexTipLocation;
+
+                if (SecondaryHandIsOnScreen(secondaryRelativeXScreenPosition, secondaryRelativeYScreenPosition) &&
+                    (HandActivityInSwapThreshold() ||
+                     PrimaryHandIsOffScreen(primaryRelativeXScreenPosition, primaryRelativeYScreenPosition)))
+                {
+                    Hand oldPrimaryHand = PrimaryHand;
+                    PrimaryHand = SecondaryHand;
+                    SecondaryHand = oldPrimaryHand;
+                    primaryChirality = PrimaryHand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
+                    secondaryChirality = SecondaryHand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
+                }
+            }
+            else
+            {
+                PrimaryHandActivity = PrimaryHandActivityDefault;
+                SecondaryHandActivity = SecondaryHandActivityDefault;
+                lastPrimaryLocation = null;
+                lastSecondaryLocation = null;
+            }
+
             UpdateHandStatus(PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
             UpdateHandStatus(SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
 
             HandsUpdated?.Invoke(PrimaryHand, SecondaryHand);
+        }
+
+        private bool HandActivityInSwapThreshold()
+        {
+            return PrimaryHandActivity < SecondaryHandActivityDefault && SecondaryHandActivity > PrimaryHandActivityDefault;
+        }
+
+        private static bool PrimaryHandIsOffScreen(float _primaryRelativeXScreenPosition, float _primaryRelativeYScreenPosition)
+        {
+            return _primaryRelativeXScreenPosition > 1.4 ||
+                     _primaryRelativeXScreenPosition < -0.4 ||
+                     _primaryRelativeYScreenPosition > 1.4 ||
+                     _primaryRelativeYScreenPosition < -0.4;
+        }
+
+        private static bool SecondaryHandIsOnScreen(float _secondaryRelativeXScreenPosition, float _secondaryRelativeYScreenPosition)
+        {
+            return _secondaryRelativeXScreenPosition < 1.4 &&
+                    _secondaryRelativeXScreenPosition > -0.4 &&
+                    _secondaryRelativeYScreenPosition < 1.4 &&
+                    _secondaryRelativeYScreenPosition > -0.4;
         }
 
         void UpdateHandStatus(Hand _hand, Hand _left, Hand _right, HandType _handType)
