@@ -1,12 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
 import './Fonts/fonts.css';
+import './index.css';
+
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+
+import App from './App';
+
+export const APP_HEIGHT = getComputedStyle(document.documentElement).getPropertyValue('--app-height');
+export const APP_WIDTH = getComputedStyle(document.documentElement).getPropertyValue('--app-width');
+export const ULTRALEAP_GREEN = getComputedStyle(document.documentElement).getPropertyValue('--ultraleap-green');
 
 ReactDOM.render(
-    <React.StrictMode>
+    <BrowserRouter>
         <App />
-    </React.StrictMode>,
+    </BrowserRouter>,
     document.querySelector('#root')
 );

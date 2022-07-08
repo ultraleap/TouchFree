@@ -1,12 +1,13 @@
-import { TextEntry } from '../Controls/TextEntry';
+import 'Styles/Camera/ManualSetupPage.css';
 
-import '../../Styles/CameraPage.css';
+import { Component } from 'react';
 
-import { Page } from './Page';
-import { PhysicalConfig } from '../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigurationManager } from '../../TouchFree/Configuration/ConfigurationManager';
-import { ConfigState, WebSocketResponse } from '../../TouchFree/Connection/TouchFreeServiceTypes';
-import { ConnectionManager } from '../../TouchFree/Connection/ConnectionManager';
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { PhysicalConfig } from 'TouchFree/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+
+import { TextEntry } from 'Components/Controls/TextEntry';
 
 interface PhysicalState {
     screenHeight: number;
@@ -19,7 +20,7 @@ interface PhysicalState {
     selectedView: string;
 }
 
-export class CameraPage extends Page<{}, PhysicalState> {
+export class ManualSetupScreen extends Component<{}, PhysicalState> {
     currentScreenHeight = '';
     currentCameraHeight = '';
     currentCameraLeftToRight = '';
@@ -131,8 +132,6 @@ export class CameraPage extends Page<{}, PhysicalState> {
         const value = Number.parseFloat(e.currentTarget?.value);
         if (!Number.isNaN(value)) {
             this.setState({ screenHeight: value });
-        } else {
-            this.setState(this.state);
         }
     }
 
@@ -141,8 +140,6 @@ export class CameraPage extends Page<{}, PhysicalState> {
         const value = Number.parseFloat(e.currentTarget?.value);
         if (!Number.isNaN(value)) {
             this.setState({ cameraHeight: value });
-        } else {
-            this.setState(this.state);
         }
     }
 
@@ -151,8 +148,6 @@ export class CameraPage extends Page<{}, PhysicalState> {
         const value = Number.parseFloat(e.currentTarget?.value);
         if (!Number.isNaN(value)) {
             this.setState({ cameraLeftToRight: value });
-        } else {
-            this.setState(this.state);
         }
     }
 
@@ -161,8 +156,6 @@ export class CameraPage extends Page<{}, PhysicalState> {
         const value = Number.parseFloat(e.currentTarget?.value);
         if (!Number.isNaN(value)) {
             this.setState({ screenTilt: value });
-        } else {
-            this.setState(this.state);
         }
     }
 
@@ -171,8 +164,6 @@ export class CameraPage extends Page<{}, PhysicalState> {
         const value = Number.parseFloat(e.currentTarget?.value);
         if (!Number.isNaN(value)) {
             this.setState({ cameraRotation: value });
-        } else {
-            this.setState(this.state);
         }
     }
 
@@ -181,8 +172,6 @@ export class CameraPage extends Page<{}, PhysicalState> {
         const value = Number.parseFloat(e.currentTarget?.value);
         if (!Number.isNaN(value)) {
             this.setState({ cameraDistanceFromScreen: value });
-        } else {
-            this.setState(this.state);
         }
     }
 
@@ -219,7 +208,7 @@ export class CameraPage extends Page<{}, PhysicalState> {
     render() {
         return (
             <div className={'page ' + this.state.selectedView}>
-                <div className="TitleLine">
+                <div className="titleLine">
                     <h1> Manual Calibration </h1>
                 </div>
 
@@ -249,7 +238,7 @@ export class CameraPage extends Page<{}, PhysicalState> {
                             onPointerDown={this.onCameraLeftToRightClicked.bind(this)}
                             selected={this.state.selectedView === 'cameraLeftToRight'}
                         />
-                        <div className="cameraPageDivider"></div>
+                        <div className="pageDivider"></div>
                         <TextEntry
                             name="Screen Tilt (degrees)"
                             value={this.currentScreenTilt}

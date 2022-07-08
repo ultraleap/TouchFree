@@ -83,14 +83,17 @@ namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
 
         public void UpdateConfigurationValues(Vector3 bottomPos, Vector3 topPos)
         {
-            Vector3 bottomNoX = new(0, bottomPos.Y, bottomPos.Z);
-            Vector3 topNoX = new(0, topPos.Y, topPos.Z);
+            var zCorrectedBottomPosition = new Vector3(bottomPos.X, bottomPos.Y, -bottomPos.Z);
+            var zCorrectedTopPosition = new Vector3(topPos.X, topPos.Y, -topPos.Z);
+
+            Vector3 bottomNoX = new(0, zCorrectedBottomPosition.Y, zCorrectedBottomPosition.Z);
+            Vector3 topNoX = new(0, zCorrectedTopPosition.Y, zCorrectedTopPosition.Z);
 
             configManager.PhysicalConfig.ScreenHeightMm = Vector3.Distance(bottomNoX, topNoX) * HEIGHT_SCALING_FACTOR;
 
-            var bottomEdge = BottomCentreFromTouches(bottomPos, topPos);
+            var bottomEdge = BottomCentreFromTouches(zCorrectedBottomPosition, zCorrectedTopPosition);
 
-            configManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(bottomPos, topPos);
+            configManager.PhysicalConfig.LeapRotationD = LeapRotationRelativeToScreen(zCorrectedBottomPosition, zCorrectedTopPosition);
             configManager.PhysicalConfig.LeapPositionRelativeToScreenBottomMm = LeapPositionInScreenSpace(bottomEdge, configManager.PhysicalConfig.LeapRotationD);
             PhysicalConfigFile.SaveConfig(configManager.PhysicalConfig.ForApi());
             configManager.PhysicalConfigWasUpdated();
@@ -127,6 +130,16 @@ namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
             else
             {
                 rotation.X = xRotation;
+            }
+
+            while (rotation.X > 180)
+            {
+                rotation.X -= 360;
+            }
+
+            while (rotation.X < -180)
+            {
+                rotation.X += 360;
             }
 
             return rotation;

@@ -1,4 +1,4 @@
-.TitleLine {
+.titleLine {
     color: white;
 
     display: flex;
@@ -9,28 +9,48 @@
     padding-left: 3rem;
 }
 
-.TitleLine > h1 {
+.titleLine > h1 {
     flex: 1 1 auto;
 }
 
-.TitleLine > button.tfButton {
+.tfButton {
     border: 0.1rem transparent;
     padding: 0.3rem;
     width: 230px;
     max-width: 230px;
+    justify-self: left;
+    flex: 1 2 auto;
+    margin: 0.5rem;
     margin-right: 1.5rem;
+
+    height: 4rem;
+    min-width: 110px;
+
+    font-family: MontserratRegular, Arial;
+    font-size: 1.4rem;
+    color: white;
+
+    box-shadow: 0 0 6px 0 rgba(157, 96, 212, 0.5);
+    background-image: linear-gradient(180deg, #353535, #2d2d2d), linear-gradient(180deg, #00eb86, #00cdcf);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    border-radius: 50px;
 }
 
-.TitleLine > button.tfButton > p {
-    font-family: 'NowBold';
+.tfButton:hover {
+    box-shadow: none;
+    background-image: linear-gradient(180deg, var(--ultraleap-green), #00ccce),
+        linear-gradient(180deg, #00eb86, #00cdcf);
+}
+
+.tfButton > p {
+    font-family: MontserratRegular, Arial;
     display: inline-block;
     margin: 0;
+    font-size: 22px;
+    padding-bottom: 3px;
     vertical-align: middle;
     text-align: center;
-}
-
-div.page {
-    background-color: #222222;
 }
 
 video.InteractionPreview {
@@ -72,8 +92,8 @@ video.InteractionPreview {
 
 .backgroundLabel {
     text-align: left;
-    font-size: 1.5rem;
-    font-family: 'Museo Sans', NowRegular, Arial;
+    font-size: 1.4rem;
+    font-family: MontserratRegular, Arial;
     color: white;
 
     display: flex;

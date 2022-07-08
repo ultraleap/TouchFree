@@ -149,12 +149,12 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
             else if (quickSetupResponse?.PositionRecorded == true)
             {
-                ResponseToClient response = new ResponseToClient(string.Empty, "Success", string.Empty, _content);
+                ResponseToClient response = new ResponseToClient(quickSetupRequest.Value.requestID, "Success", string.Empty, _content);
                 clientMgr.SendQuickSetupResponse(response);
             }
             else
             {
-                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", quickSetupResponse?.QuickSetupError ?? string.Empty, _content);
+                ResponseToClient response = new ResponseToClient(quickSetupRequest.Value.requestID, "Failure", quickSetupResponse?.QuickSetupError ?? string.Empty, _content);
                 clientMgr.SendQuickSetupResponse(response);
             }
         }

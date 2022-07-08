@@ -1,6 +1,6 @@
-import React from 'react';
+import 'Styles/Controls/RadioButtons.css';
 
-import '../../Styles/Controls/RadioButtons.css';
+import React from 'react';
 
 interface RadioProps {
     name: string;

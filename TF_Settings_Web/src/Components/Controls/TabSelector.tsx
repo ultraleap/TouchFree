@@ -1,26 +1,41 @@
+import 'Styles/Controls/TabSelector.css';
+
 import React from 'react';
-import { ScreenManager } from '../ScreenManager';
+import { useNavigate } from 'react-router-dom';
 
-export class TabSelector extends React.Component<{
+interface TabSelectorProps {
     name: string;
-    manager: ScreenManager;
-    activeTab: string;
-}> {
-    onClick(): void {
-        this.props.manager.setScreenByName.bind(this.props.manager)(this.props.name);
-    }
-
-    render() {
-        let className = 'tabButton';
-
-        if (this.props.name === this.props.activeTab) {
-            className += ' tabButtonActive';
-        }
-
-        return (
-            <button className={className} onClick={this.onClick.bind(this)} onPointerUp={this.onClick.bind(this)}>
-                {this.props.name}
-            </button>
-        );
-    }
+    isActiveTab: boolean;
+    onClick: () => void;
 }
+
+const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick }) => {
+    const [hovered, setHovered] = React.useState<boolean>(false);
+
+    const handleClick = () => {
+        if (!isActiveTab) {
+            navigate(`/settings/${lowerCaseName}`);
+            onClick();
+        }
+    };
+
+    const navigate = useNavigate();
+    const lowerCaseName = name.toLowerCase();
+    return (
+        <button
+            className={isActiveTab ? 'tabButton tabButtonActive' : hovered ? 'tabButton tabButtonHovered' : 'tabButton'}
+            onPointerUp={handleClick}
+            onKeyDown={(keyEvent) => {
+                if (keyEvent.key === 'Enter') handleClick();
+            }}
+            onPointerOver={() => setHovered(true)}
+            onPointerLeave={() => {
+                setHovered(false);
+            }}
+        >
+            {name}
+        </button>
+    );
+};
+
+export default TabSelector;

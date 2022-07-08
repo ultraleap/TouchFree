@@ -1,93 +1,41 @@
-// Shows
-// one image if everything is fine
-// a different one if camera isn't connected
-// one if service isn't connected
-// All have tooltips
+import 'Styles/StatusIndicator.css';
 
 import React, { CSSProperties } from 'react';
-import { TrackingServiceState } from '../TouchFree/TouchFreeToolingTypes';
 
-import camStatusIcon from '../Images/Camera_Status_Icon.png';
-import svcStatusIcon from '../Images/Tracking_Status_Icon.png';
+import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
 
-export class StatusIndicator extends React.Component<{
-    status: TrackingServiceState;
-}> {
-    private indicatorStyle: CSSProperties = {
-        alignSelf: 'center',
-        height: '100%',
-        minWidth: '6rem',
-        maxWidth: '30rem',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingLeft: '2rem',
-    };
+import camStatusIcon from 'Images/Camera_Status_Icon.png';
+import svcStatusIcon from 'Images/Tracking_Status_Icon.png';
 
-    private statusContainerStyle: CSSProperties = {
-        alignSelf: 'stretch',
-        minHeight: '0',
-        minWidth: '0',
-        maxHeight: '5rem',
-        maxWidth: '30rem',
-        position: 'relative',
-        display: 'flex',
-    };
-
-    private statusIconStyle: CSSProperties = {
-        alignSelf: 'center',
-        minHeight: '0',
-        minWidth: '0',
-        maxHeight: '5rem',
-        maxWidth: '30rem',
-        position: 'relative',
-    };
-
-    private statusDotStyleOK: CSSProperties = {
-        position: 'absolute',
-        right: '-15%',
-        top: '1.5rem',
-        height: '1rem',
-        width: '1rem',
-        borderRadius: '.5rem',
-        backgroundImage: 'linear-gradient(180deg, #00EB86, #00CDCF)',
-    };
-
-    private statusDotStyleBad: CSSProperties = {
-        position: 'absolute',
-        right: '-15%',
-        top: '1.5rem',
-        height: '1rem',
-        width: '1rem',
-        borderRadius: '.5rem',
-        // #E2164D (top) to #D11883 (bottom)
-        backgroundImage: 'linear-gradient(180deg, #E2164D, #D11883)',
-    };
-
-    render() {
-        return (
-            <div style={this.indicatorStyle}>
-                <div style={this.statusContainerStyle}>
-                    <img src={camStatusIcon} alt="Camera Status Icon" style={this.statusIconStyle} />
-                    <div
-                        style={
-                            this.props.status === TrackingServiceState.CONNECTED
-                                ? this.statusDotStyleOK
-                                : this.statusDotStyleBad
-                        }
-                    />
-                </div>
-                <div style={this.statusContainerStyle}>
-                    <img src={svcStatusIcon} alt="Tracking Service Status Icon" style={this.statusIconStyle} />
-                    <div
-                        style={
-                            this.props.status === TrackingServiceState.UNAVAILABLE
-                                ? this.statusDotStyleBad
-                                : this.statusDotStyleOK
-                        }
-                    />
-                </div>
-            </div>
-        );
-    }
+interface StatusIndicatorProps {
+    tfStatus: TrackingServiceState;
 }
+
+const statusDotOK: CSSProperties = {
+    backgroundImage: 'linear-gradient(180deg, #00eb86, #00cdcf)',
+};
+
+const statusDotBad: CSSProperties = {
+    backgroundImage: 'linear-gradient(180deg, #e2164d, #d11883)',
+};
+
+export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tfStatus }) => {
+    return (
+        <div className="statusContainer">
+            <div className="statusIconContainer">
+                <img src={camStatusIcon} alt="Camera Status Icon" />
+                <div
+                    className="statusDot"
+                    style={tfStatus === TrackingServiceState.CONNECTED ? statusDotOK : statusDotBad}
+                />
+            </div>
+            <div className="statusIconContainer">
+                <img src={svcStatusIcon} alt="Tracking Service Status Icon" />
+                <div
+                    className="statusDot"
+                    style={tfStatus === TrackingServiceState.UNAVAILABLE ? statusDotBad : statusDotOK}
+                />
+            </div>
+        </div>
+    );
+};

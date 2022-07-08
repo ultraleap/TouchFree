@@ -1,6 +1,6 @@
-import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
+import 'Styles/Controls/TextEntry.css';
 
-import '../../Styles/Controls/TextEntry.css';
+import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
 
 interface TextEntryProps {
     name: string;
@@ -19,17 +19,13 @@ export class TextEntry extends React.Component<TextEntryProps, {}> {
     render() {
         return (
             <label
-                onClick={this.props.onClick.bind(this)}
-                onPointerDown={this.props.onPointerDown.bind(this)}
+                onClick={this.props.onClick}
+                onPointerDown={this.props.onPointerDown}
                 className={this.getClassName()}
             >
                 <p className="textEntryLabel">{this.props.name}</p>
                 <label className="textEntryContainer">
-                    <input
-                        className="textEntryText"
-                        value={this.props.value}
-                        onChange={this.props.onChange.bind(this)}
-                    />
+                    <input className="textEntryText" value={this.props.value} onChange={this.props.onChange} />
                 </label>
             </label>
         );
