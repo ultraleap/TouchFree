@@ -132,6 +132,16 @@ namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
                 rotation.X = xRotation;
             }
 
+            while (rotation.X > 180)
+            {
+                rotation.X -= 360;
+            }
+
+            while (rotation.X < -180)
+            {
+                rotation.X += 360;
+            }
+
             return rotation;
         }
 
