@@ -12,43 +12,56 @@ const CameraSetupScreen = () => {
     const videoRef = React.useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
-        getVideo();
+        // getVideo();
     }, [videoRef]);
 
     const getVideo = () => {
         navigator.mediaDevices.enumerateDevices().then((list) => {
             // console.log(list);
-            const device = list.find((device) => device.label.includes('Leap Motion'));
-            if (!device) {
+            const cam = list.find((device) => device.label.includes('Leap Motion'));
+            // console.log(cam);
+            if (!cam) {
                 console.error('Can not find device');
                 return;
             }
             navigator.mediaDevices
-                .getUserMedia({ video: { deviceId: device.deviceId } })
+                .getUserMedia({ video: { deviceId: cam.deviceId } })
+                // .getUserMedia({ video: true })
                 .then((stream) => {
+                    console.log('TEST');
+                    console.log(stream);
                     const video = videoRef.current;
                     if (!video) return;
                     video.srcObject = stream;
                     video.play();
                 })
                 .catch((error) => {
-                    // SEE IF TRACKING SERVICE IS CLAIMING CAMERA
-                    console.error('error:', error);
+                    console.error(error.name + ': ' + error.message);
                 });
         });
     };
 
+    let device: USBDevice;
+
     const getUSB = () => {
-        // navigator.usb.requestDevice({ filters: [{ vendorId: 10550 }] }).then(function (device) {
-        //     console.log(device);
-        // });
+        return;
+        navigator.usb.requestDevice({ filters: [{ vendorId: 10550 }] }).then(function (device) {
+            console.log(device);
+        });
         navigator.usb
             .getDevices()
-            .then((list) => {
-                console.log(list);
+            .then((deviceList) => {
+                device = deviceList[0];
+                console.log(device);
+                return device.open(); // Begin a session.
             })
+            .then(() => device.selectConfiguration(1))
+            // VDIEO INTERFACES CANNOT BE CLAIMED BY WEBUSB
+            // "An attempt to claim a USB device interface has been blocked because it
+            // implements a protected interface class."
+            .then(() => device.claimInterface(0))
+
             .catch((error) => {
-                // SEE IF TRACKING SERVICE IS CLAIMING CAMERA
                 console.error('error:', error);
             });
     };
@@ -79,12 +92,13 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('manual')}
                 />
             </div>
-            <video ref={videoRef} style={{ height: '300px', marginTop: '100px' }} />
+            <video ref={videoRef} style={{ width: '100%', height: '300px', marginTop: '100px' }} />
             <button
                 style={{ width: '500px', height: '100px', marginTop: '100px', background: 'pink' }}
-                onClick={getUSB}
+                // onClick={getUSB}
+                onClick={getVideo}
             >
-                CLICK FOR USB
+                CLICK FOR CAMERA?
             </button>
         </div>
     );
