@@ -2,7 +2,7 @@
 import 'Styles/Camera/Calibrate.css';
 
 import React, { useEffect } from 'react';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
 import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/Configuration/ConfigurationTypes';
@@ -26,11 +26,11 @@ const calibInteractionConfig: Partial<InteractionConfig> = {
     },
 };
 
-interface CalibrationManager {
+interface CalibrationManagerProps {
     activePosition: PositionType;
 }
 
-const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) => {
+const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition }) => {
     const [physicalConfig, setPhysicalConfig] = React.useState<PhysicalConfig>();
     const [interactionConfig, setInteractionConfig] = React.useState<InteractionConfig>();
     const [isHandPresent, setIsHandPresent] = React.useState<boolean>(
@@ -121,7 +121,6 @@ const CalibrationManager: React.FC<CalibrationManager> = ({ activePosition }) =>
                     />
                 }
             />
-            <Route path="*" element={<Navigate to="top" replace />} />
         </Routes>
     );
 };

@@ -65,7 +65,7 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
                         textStyle={textStyle()}
                         onClick={() => {
                             setPosition(type);
-                            navigate('calibrate');
+                            navigate('calibrate/top');
                         }}
                     />
                 ))}

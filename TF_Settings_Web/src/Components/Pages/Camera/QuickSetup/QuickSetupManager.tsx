@@ -6,19 +6,18 @@ import { Route, Routes } from 'react-router-dom';
 import CalibrationManager from './Calibration/CalibrationManager';
 import PositionSelectionScreen, { PositionType } from './PositionSelectionScreen';
 
-interface QuickSetupProps {
-    activePosition: PositionType;
-    setPosition: (position: PositionType) => void;
-}
+const QuickSetupManager = () => {
+    const [activePosition, setActivePosition] = React.useState<PositionType>(null);
 
-const QuickSetupManager: React.FC<QuickSetupProps> = ({ activePosition, setPosition }) => (
-    <Routes>
-        <Route
-            path=""
-            element={<PositionSelectionScreen activePosition={activePosition} setPosition={setPosition} />}
-        />
-        <Route path="calibrate/*" element={<CalibrationManager activePosition={activePosition} />} />
-    </Routes>
-);
+    return (
+        <Routes>
+            <Route
+                path=""
+                element={<PositionSelectionScreen activePosition={activePosition} setPosition={setActivePosition} />}
+            />
+            <Route path="calibrate/*" element={<CalibrationManager activePosition={activePosition} />} />
+        </Routes>
+    );
+};
 
 export default QuickSetupManager;
