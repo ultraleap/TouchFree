@@ -8,14 +8,12 @@ import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
 import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
 
-import InteractionBottomGuide from 'Images/Camera/Interaction_Guide_Bottom.png';
-import InteractionTopGuide from 'Images/Camera/Interaction_Guide_Top.png';
-
 import {
-    CalibrateHandLostMessage,
+    CalibrationHandLostMessage,
     CalibrationCancelButton,
     CalibrationInstructions,
     CalibrationProgressCircle,
+    CalibrationTutorialVideo,
 } from './CalibrationComponents';
 
 /**
@@ -36,14 +34,8 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
         <div className="contentContainer">
             <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
             <CalibrationProgressCircle progress={progressToClick} style={{ top: '294px' }} />
-            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
-            <img
-                className="interactionGuide"
-                style={{ paddingTop: '50px' }}
-                src={InteractionTopGuide}
-                alt="Guide demonstrating how to interact with Quick Setup"
-                onDoubleClick={() => navigate('../bottom')}
-            />
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '50px' }} />}
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '50px' }} />
             <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '575px' }} />
         </div>
     );
@@ -67,16 +59,10 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
-            <img
-                className="interactionGuide"
-                style={{ paddingTop: '600px' }}
-                src={InteractionBottomGuide}
-                alt="Guide demonstrating how to interact with Quick Setup"
-                onDoubleClick={() => navigate('../complete')}
-            />
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '600px' }} />
             <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '50px' }} />
             <CalibrationProgressCircle progress={progressToClick} style={{ top: '1446px' }} />
-            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '50px' }} />}
             <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '75px' }} />
         </div>
     );

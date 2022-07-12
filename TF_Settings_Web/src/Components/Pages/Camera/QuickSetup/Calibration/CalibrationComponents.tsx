@@ -12,6 +12,7 @@ import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
+import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
 import IconTextButton from 'Components/Controls/IconTextButton';
 
@@ -79,11 +80,19 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
     </div>
 );
 
-export const CalibrateHandLostMessage = () => (
+export const CalibrationHandLostMessage = () => (
     <div className={'handNotFoundContainer'}>
         <img src={HandIcon} alt="Hand Icon" />
         <p>Hand Not Detected</p>
     </div>
+);
+
+interface CalibrationTutorialVideoProps {
+    videoStyle: CSSProperties;
+}
+
+export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => (
+    <video className="interactionGuide" style={videoStyle} autoPlay={true} loop={true} src={TutorialVideo} />
 );
 
 const setupButtonStyle: CSSProperties = {

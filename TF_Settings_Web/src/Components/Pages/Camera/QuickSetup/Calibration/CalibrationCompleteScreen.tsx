@@ -8,7 +8,7 @@ import { InputType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes
 
 import IconTextButton from 'Components/Controls/IconTextButton';
 
-import { CalibrateHandLostMessage, CalibrationPracticeButton } from './CalibrationComponents';
+import { CalibrationHandLostMessage, CalibrationPracticeButton } from './CalibrationComponents';
 
 const buttonStyle: CSSProperties = {
     width: '50%',
@@ -54,7 +54,7 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>
-            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '50px' }} />}
             <div style={{ paddingTop: '250px' }}>
                 <h1 className="setupCompleteText">
                     Setup <br />
