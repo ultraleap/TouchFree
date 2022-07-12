@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.Numerics;
-using Microsoft.Extensions.Options;
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
@@ -26,7 +24,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public float distAtSpeedMaxMm = 8f;
         public float horizontalDecayDistMm = 50f;
 
-        public float thetaOne = 22f;
+        public float thetaOne = 65f;
         public float thetaTwo = 135f;
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
@@ -91,6 +89,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             };
         }
 
+        protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
+        {
+            base.OnInteractionSettingsUpdated(_config);
+
+            thetaOne = ignoreDragging ? 15f : 65f;
+        }
+
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
         {
             var returnPositions = base.ApplyAdditionalPositionModifiers(positions);
@@ -109,7 +114,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Restarts the hand timer every frame that we have no active hand
                 handAppearedCooldown.Restart();
 
-                if(hadHandLastFrame)
+                if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
                     return CreateInputActionResult(InputType.CANCEL, positions, appliedForce);
@@ -158,8 +163,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Determine whether to send any other events
                 if (pressing)
                 {
-                    if ((!isDragging && appliedForce < unclickThreshold) || 
-                        (isDragging && appliedForce < unclickThresholdDrag) || 
+                    if ((!isDragging && appliedForce < unclickThreshold) ||
+                        (isDragging && appliedForce < unclickThresholdDrag) ||
                         ignoreDragging ||
                         (clickHoldStopwatch.IsRunning && clickHoldStopwatch.ElapsedMilliseconds >= clickHoldTimerMs))
                     {
@@ -200,7 +205,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     inputActionResult = CreateInputActionResult(InputType.DOWN, positions, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
 
-                    if(!ignoreDragging)
+                    if (!ignoreDragging)
                     {
                         clickHoldStopwatch.Restart();
                     }
@@ -302,7 +307,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
             else
             {
-                float angleFromScreen = (float) Math.Atan2(
+                float angleFromScreen = (float)Math.Atan2(
                     _dPerp.Length(),
                     _currentVelocity * _dt) * Utilities.RADTODEG;
 
