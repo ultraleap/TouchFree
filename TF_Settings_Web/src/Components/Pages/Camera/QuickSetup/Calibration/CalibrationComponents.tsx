@@ -2,7 +2,7 @@ import 'Styles/Camera/Calibrate.css';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
@@ -91,9 +91,24 @@ interface CalibrationTutorialVideoProps {
     videoStyle: CSSProperties;
 }
 
-export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => (
-    <video className="interactionGuide" style={videoStyle} autoPlay={true} loop={true} src={TutorialVideo} />
-);
+export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => {
+    const [loaded, setLoaded] = useState<boolean>(false);
+
+    const getVideoStyle = (): CSSProperties => {
+        return { ...videoStyle, visibility: loaded ? 'visible' : 'hidden' };
+    };
+
+    return (
+        <video
+            className="interactionGuide"
+            style={getVideoStyle()}
+            autoPlay={true}
+            loop={true}
+            src={TutorialVideo}
+            onLoadedData={() => setLoaded(true)}
+        />
+    );
+};
 
 const setupButtonStyle: CSSProperties = {
     width: '300px',
@@ -148,18 +163,28 @@ interface CalibrationPracticeButtonProps {
 
 export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps> = ({ progress }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
+    const numFired = useRef<number>(0);
 
     const refAnimationInstance = useRef<CreateTypes | null>(null);
     const fire = () => {
+        // Limit number of concurrent confetti events to prevent page from becoming unresponsive
+        if (numFired.current > 2) return;
+
         refAnimationInstance.current &&
             refAnimationInstance.current({
                 spread: 360,
                 startVelocity: 50,
                 origin: { y: 0.42 },
-                particleCount: 100,
+                particleCount: 50,
                 gravity: 0.4,
                 scalar: 1.5,
             });
+
+        numFired.current++;
+
+        setTimeout(() => {
+            numFired.current--;
+        }, 3000);
     };
 
     return (
