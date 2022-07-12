@@ -338,12 +338,12 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                             onChange={this.onInteractionChange.bind(this)}
                         />
                         <video
-                            autoPlay
-                            loop
+                            autoPlay={true}
+                            loop={true}
                             key={this.state.interactionConfig.InteractionType}
                             className="InteractionPreview"
                         >
-                            <source src={this.videoPaths[activeInteraction]} type="video/webm" />
+                            <source src={this.videoPaths[activeInteraction]} />
                         </video>
                     </div>
 
