@@ -2,7 +2,7 @@ import 'Styles/Camera/Calibrate.css';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
@@ -10,7 +10,6 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 
-import TutorialPoster from 'Images/Camera/Calibration_Tutorial_Poster.png';
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
@@ -92,16 +91,24 @@ interface CalibrationTutorialVideoProps {
     videoStyle: CSSProperties;
 }
 
-export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => (
-    <video
-        className="interactionGuide"
-        style={videoStyle}
-        autoPlay={true}
-        loop={true}
-        src={TutorialVideo}
-        poster={TutorialPoster}
-    />
-);
+export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => {
+    const [loaded, setLoaded] = useState<boolean>(false);
+
+    const getVideoStyle = (): CSSProperties => {
+        return { ...videoStyle, visibility: loaded ? 'visible' : 'hidden' };
+    };
+
+    return (
+        <video
+            className="interactionGuide"
+            style={getVideoStyle()}
+            autoPlay={true}
+            loop={true}
+            src={TutorialVideo}
+            onLoadedData={() => setLoaded(true)}
+        />
+    );
+};
 
 const setupButtonStyle: CSSProperties = {
     width: '300px',
