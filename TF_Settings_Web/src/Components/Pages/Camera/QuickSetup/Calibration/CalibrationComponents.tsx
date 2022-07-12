@@ -156,18 +156,28 @@ interface CalibrationPracticeButtonProps {
 
 export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps> = ({ progress }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
+    const numFired = useRef<number>(0);
 
     const refAnimationInstance = useRef<CreateTypes | null>(null);
     const fire = () => {
+        // Limit number of concurrent confetti events to prevent page from becoming unresponsive
+        if (numFired.current > 2) return;
+
         refAnimationInstance.current &&
             refAnimationInstance.current({
                 spread: 360,
                 startVelocity: 50,
                 origin: { y: 0.42 },
-                particleCount: 100,
+                particleCount: 50,
                 gravity: 0.4,
                 scalar: 1.5,
             });
+
+        numFired.current++;
+
+        setTimeout(() => {
+            numFired.current--;
+        }, 3000);
     };
 
     return (
