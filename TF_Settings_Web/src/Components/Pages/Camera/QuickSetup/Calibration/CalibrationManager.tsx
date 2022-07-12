@@ -13,7 +13,7 @@ import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
-import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationScreens';
+import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationTopBottomScreens';
 
 const handEventTypes = ['HandsLost', 'HandFound'];
 

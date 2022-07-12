@@ -12,8 +12,8 @@ import {
     CalibrationHandLostMessage,
     CalibrationCancelButton,
     CalibrationInstructions,
-    CalibrationProgressCircle,
     CalibrationTutorialVideo,
+    CalibrationProgressCircle,
 } from './CalibrationComponents';
 
 /**
@@ -32,11 +32,11 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '294px' }} />
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '50px' }} />}
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '50px' }} />
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '575px' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '5.5vh' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ top: '16vh' }} />
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
         </div>
     );
 
@@ -59,11 +59,11 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
     const navigate = useNavigate();
     const content = (progressToClick: number): ReactElement => (
         <div className="contentContainer">
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '600px' }} />
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '50px' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '1446px' }} />
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '50px' }} />}
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '75px' }} />
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '2.5vh' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ bottom: '15.5vh' }} />
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
         </div>
     );
 

@@ -1,21 +1,21 @@
 .contentContainer {
-    height: calc(100% + var(--control-bar-size));
+    overflow: hidden;
     margin-top: calc(0% - var(--control-bar-size));
 }
 
 .instructions {
     display: block;
     align-items: center;
-    height: 400px;
+    height: 20vh;
 }
 
 .instructions > h1 {
-    height: 135px;
+    height: 7vh;
     color: white;
     font-size: 3rem;
     font-family: MontserratRegular, Arial;
     margin-top: 0;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .instructions .greenText {
@@ -65,62 +65,37 @@
     }
 }
 
+@media only screen and (max-height: 1600px) {
+    .arrow {
+        visibility: hidden;
+    }
+}
+
 .arrow {
-    margin-left: calc(50% - 30px);
-    width: 60px;
-    height: 60px;
-    opacity: 50%;
-    position: relative;
+    height: 3vh;
+    aspect-ratio: 1/1;
     display: flex;
-    padding-bottom: 30px;
+    margin: auto;
 }
 
-.arrow > #downLine {
-    width: 8px;
-    background-color: var(--ultraleap-green);
-    height: 40px;
-    margin-left: 26px;
-    border-radius: 5px;
-}
-
-.arrow > #arrowHead {
-    border: solid var(--ultraleap-green);
-    width: 8px;
-    height: 8px;
-    border-width: 0px 8px 8px 0;
-    position: absolute;
-    top: 10px;
-    left: 14px;
-    padding: 8px;
-    transform: rotate(45deg);
-    border-radius: 5px;
-}
-
-.instructions > #touchCircle {
-    margin-top: 10px;
-    margin-left: calc(50% - 50px);
-    width: 80px;
-    height: 80px;
+.touchCircle {
     display: flex;
+    margin-top: 2.5vh;
+    margin-left: calc(50% - 2.5vh);
+    padding: 0.5vh;
+    height: 3vh;
+    aspect-ratio: 1/1;
     position: relative;
     border-radius: 50%;
-    background-color: #000000;
-    box-shadow: 0px 0px 15px var(--ultraleap-green);
-    border: 10px solid var(--ultraleap-green);
-}
-
-.instructions > #touchCircle > img {
-    width: 60px;
-    height: 60px;
-    margin-left: 10px;
-    margin-top: 10px;
+    border: 0.5vh solid var(--ultraleap-green);
 }
 
 .progressCircleContainer {
     z-index: 0;
     position: absolute;
-    left: 450px;
-    width: 180px;
+    left: calc(50% - 4.5vh);
+    height: 9vh;
+    aspect-ratio: 1/1;
 }
 
 .handNotFoundContainer {
@@ -128,12 +103,10 @@
     margin: auto;
     background: transparent linear-gradient(180deg, #e1164d 0%, #d11882 100%) 0% 0% no-repeat padding-box;
     border-radius: 15px;
-    height: 50px;
+    height: 3vh;
     width: 320px;
     justify-content: center;
     align-items: center;
-    margin-top: -20px;
-    margin-bottom: 20px;
 }
 .handNotFoundContainer > p {
     flex: none;
@@ -148,7 +121,7 @@
     display: block;
     margin: auto;
     width: 780px;
-    height: 600px;
+    height: 32vh;
 }
 .setupCompleteText {
     color: white;
@@ -176,8 +149,8 @@
 }
 
 .setupCompleteOptionsContainer {
-    height: 35%;
-    margin-top: 20%;
+    height: 600px;
+    margin-top: 200px;
     justify-content: space-evenly;
     align-items: center;
     display: flex;

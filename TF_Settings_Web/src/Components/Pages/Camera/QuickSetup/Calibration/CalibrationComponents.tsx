@@ -8,9 +8,10 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
-import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
+import { APP_MARGIN_LEFT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
+import DownArrow from 'Images/Down_Arrow.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
@@ -29,7 +30,7 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
 
     const calibratingText = (
         <h1 className="greenText">
-            <div style={{ display: 'flex', height: '62px' }}>
+            <div style={{ display: 'flex', height: '3.2vh' }}>
                 <span style={{ width: '25%', paddingLeft: '37.5%' }}>Calibrating</span>
                 <span style={{ width: '4%', textAlign: 'left' }} className="loading" />
             </div>
@@ -48,13 +49,12 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
                     {progress > 0 ? calibratingText : instructionsText}
                 </CSSTransition>
             </SwitchTransition>
-            <div className="arrow">
-                <div id="downLine" />
-                <div id="arrowHead" />
-            </div>
-            <div id="touchCircle">
-                <img src={FingerprintIcon} alt="Fingerprint Icon showing where to place finger for Quick Setup" />
-            </div>
+            <img src={DownArrow} alt="Down arrow" className="arrow" />
+            <img
+                className="touchCircle"
+                src={FingerprintIcon}
+                alt="Fingerprint Icon showing where to place finger for Quick Setup"
+            />
         </div>
     );
 };
@@ -97,17 +97,16 @@ export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> =
 
 const setupButtonStyle: CSSProperties = {
     width: '300px',
-    height: '80px',
-    borderRadius: '40px',
+    height: '4vh',
+    borderRadius: '50px',
     background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
 };
 
 const setupButtonTitleStyle: CSSProperties = {
-    fontSize: '2rem',
+    fontSize: '1.7vh',
     padding: '0',
     textAlign: 'center',
-    margin: '0',
-    height: '100%',
+    marginTop: '-5%',
 };
 
 interface CalibrationCancelButtonProps {
@@ -133,12 +132,12 @@ export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = (
 
 const canvasStyles = (): CSSProperties => {
     return {
-        position: 'fixed',
-        pointerEvents: 'none',
+        height: '100%',
         width: APP_WIDTH,
-        height: APP_HEIGHT,
+        position: 'fixed',
         top: 0,
-        left: 0,
+        left: APP_MARGIN_LEFT,
+        pointerEvents: 'none',
     };
 };
 
@@ -155,7 +154,7 @@ export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps>
             refAnimationInstance.current({
                 spread: 360,
                 startVelocity: 50,
-                origin: { y: 0.42 },
+                origin: { x: 0.5, y: 0.42 },
                 particleCount: 100,
                 gravity: 0.4,
                 scalar: 1.5,

@@ -1,6 +1,6 @@
 :root {
-    --app-height: 1920px;
     --app-width: 1080px;
+    --app-margin-left: calc((100% - var(--app-width)) / 2);
     --control-bar-size: 170px;
     --app-background-color: #222222;
     --ultraleap-green: #01eb85;

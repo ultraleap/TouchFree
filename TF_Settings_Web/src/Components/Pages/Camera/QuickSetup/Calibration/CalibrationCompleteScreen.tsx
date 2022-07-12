@@ -54,14 +54,14 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '50px' }} />}
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
             <div style={{ paddingTop: '250px' }}>
                 <h1 className="setupCompleteText">
                     Setup <br />
                     Complete
                 </h1>
             </div>
-            <div style={{ height: '12%', paddingTop: '12%' }}>
+            <div style={{ height: '200px', paddingTop: '100px' }}>
                 <CalibrationPracticeButton progress={progressToClick} />
             </div>
             <div className="setupCompleteOptionsContainer">
