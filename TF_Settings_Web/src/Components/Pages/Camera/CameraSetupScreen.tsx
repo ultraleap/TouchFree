@@ -9,62 +9,43 @@ import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
 import IconTextButton from 'Components/Controls/IconTextButton';
 
 const CameraSetupScreen = () => {
-    const videoRef = React.useRef<HTMLVideoElement>(null);
+    const videoRef = React.useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        // getVideo();
-    }, [videoRef]);
+        const socket = new WebSocket('ws://127.0.0.1:1024');
+        socket.binaryType = 'arraybuffer';
 
-    const getVideo = () => {
-        navigator.mediaDevices.enumerateDevices().then((list) => {
-            // console.log(list);
-            const cam = list.find((device) => device.label.includes('Leap Motion'));
-            // console.log(cam);
-            if (!cam) {
-                console.error('Can not find device');
-                return;
+        socket.addEventListener('open', () => {
+            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
+        });
+
+        socket.addEventListener('message', (event) => {
+            if (!videoRef.current) return;
+            const data = new DataView(event.data);
+            if (data.getUint8(0) === 1) {
+                // Image data
+                const width = data.getUint32(1);
+                const height = data.getUint32(5);
+
+                const buf = new ArrayBuffer(width * height * 4);
+                const buf8 = new Uint8ClampedArray(buf);
+                const buf32 = new Uint32Array(buf);
+
+                for (let i = 0; i < width * height; i++) {
+                    const px = data.getUint8(6 + i);
+                    buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
+                }
+
+                const image = new ImageData(buf8, width, height);
+                videoRef.current.width = width;
+                videoRef.current.height = height;
+                const context = videoRef.current.getContext('2d');
+                if (context) {
+                    context.putImageData(image, 0, 0);
+                }
             }
-            navigator.mediaDevices
-                .getUserMedia({ video: { deviceId: cam.deviceId } })
-                // .getUserMedia({ video: true })
-                .then((stream) => {
-                    console.log('TEST');
-                    console.log(stream);
-                    const video = videoRef.current;
-                    if (!video) return;
-                    video.srcObject = stream;
-                    video.play();
-                })
-                .catch((error) => {
-                    console.error(error.name + ': ' + error.message);
-                });
         });
-    };
-
-    let device: USBDevice;
-
-    const getUSB = () => {
-        return;
-        navigator.usb.requestDevice({ filters: [{ vendorId: 10550 }] }).then(function (device) {
-            console.log(device);
-        });
-        navigator.usb
-            .getDevices()
-            .then((deviceList) => {
-                device = deviceList[0];
-                console.log(device);
-                return device.open(); // Begin a session.
-            })
-            .then(() => device.selectConfiguration(1))
-            // VDIEO INTERFACES CANNOT BE CLAIMED BY WEBUSB
-            // "An attempt to claim a USB device interface has been blocked because it
-            // implements a protected interface class."
-            .then(() => device.claimInterface(0))
-
-            .catch((error) => {
-                console.error('error:', error);
-            });
-    };
+    });
 
     const navigate = useNavigate();
     return (
@@ -92,14 +73,7 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('manual')}
                 />
             </div>
-            <video ref={videoRef} style={{ width: '100%', height: '300px', marginTop: '100px' }} />
-            <button
-                style={{ width: '500px', height: '100px', marginTop: '100px', background: 'pink' }}
-                // onClick={getUSB}
-                onClick={getVideo}
-            >
-                CLICK FOR CAMERA?
-            </button>
+            <canvas ref={videoRef} style={{ width: '80%', height: '800px', marginTop: '50px' }} />
         </div>
     );
 };
