@@ -8,8 +8,11 @@ import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
 
 import IconTextButton from 'Components/Controls/IconTextButton';
 
+type CameraType = 'left' | 'right';
+
 const CameraSetupScreen = () => {
-    const videoRef = React.useRef<HTMLCanvasElement>(null);
+    const topVideoRef = React.useRef<HTMLCanvasElement>(null);
+    const botVideoRef = React.useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         const socket = new WebSocket('ws://127.0.0.1:1024');
@@ -20,29 +23,11 @@ const CameraSetupScreen = () => {
         });
 
         socket.addEventListener('message', (event) => {
-            if (!videoRef.current) return;
+            if (!topVideoRef.current || !botVideoRef.current || typeof event.data == 'string') return;
             const data = new DataView(event.data);
             if (data.getUint8(0) === 1) {
-                // Image data
-                const width = data.getUint32(1);
-                const height = data.getUint32(5);
-
-                const buf = new ArrayBuffer(width * height * 4);
-                const buf8 = new Uint8ClampedArray(buf);
-                const buf32 = new Uint32Array(buf);
-
-                for (let i = 0; i < width * height; i++) {
-                    const px = data.getUint8(6 + i);
-                    buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
-                }
-
-                const image = new ImageData(buf8, width, height);
-                videoRef.current.width = width;
-                videoRef.current.height = height;
-                const context = videoRef.current.getContext('2d');
-                if (context) {
-                    context.putImageData(image, 0, 0);
-                }
+                displayCameraFeed(data, 'left', topVideoRef.current);
+                displayCameraFeed(data, 'right', botVideoRef.current);
             }
         });
     });
@@ -73,9 +58,33 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('manual')}
                 />
             </div>
-            <canvas ref={videoRef} style={{ width: '80%', height: '800px', marginTop: '50px' }} />
+            <canvas ref={topVideoRef} style={{ width: '80%', height: '400px', marginTop: '50px' }} />
+            <canvas ref={botVideoRef} style={{ width: '80%', height: '400px', marginTop: '50px' }} />
         </div>
     );
 };
 
 export default CameraSetupScreen;
+
+const displayCameraFeed = (data: DataView, camera: CameraType, canvas: HTMLCanvasElement) => {
+    const width = data.getUint32(1);
+    const cameraHeight = data.getUint32(5) / 2;
+
+    const buf = new ArrayBuffer(width * cameraHeight * 4);
+    const buf8 = new Uint8ClampedArray(buf);
+    const buf32 = new Uint32Array(buf);
+
+    const offset = camera === 'right' ? 0 : width * cameraHeight;
+
+    for (let i = 0; i < width * cameraHeight; i++) {
+        const px = data.getUint8(6 + i + offset);
+        buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
+    }
+
+    const context = canvas.getContext('2d');
+    if (context) {
+        canvas.width = width;
+        canvas.height = cameraHeight;
+        context.putImageData(new ImageData(buf8, width, cameraHeight), 0, 0);
+    }
+};
