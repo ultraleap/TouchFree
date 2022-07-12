@@ -1,12 +1,13 @@
 .app {
     text-align: center;
-    height: var(--app-height);
+    height: 100vh;
     width: var(--app-width);
-    overflow-x: hidden;
+    margin-left: var(--app-margin-left);
     background-color: var(--app-background-color);
 }
 
 .pageContent {
-    margin-top: var(--control-bar-size);
-    height: calc(100% - var(--control-bar-size));
+    padding-top: var(--control-bar-size);
+    height: calc(100 - var(--control-bar-size));
+    background-color: var(--app-background-color);
 }
