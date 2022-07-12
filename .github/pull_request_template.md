@@ -1,0 +1,6 @@
+- [ ] Test plan updated 
+- [ ] Code Review 
+- [ ] Developer Testing: Key item tests 
+- [ ] Developer Testing: Execution of the updated test plan (changed items for this work only) 
+- [ ] Product Owner Review (Optional) 
+- [ ] Update Release Notes on the JIRA ticket for harvest at release time
