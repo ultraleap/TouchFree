@@ -15,30 +15,30 @@ import { TrackingServiceState } from './TouchFree/TouchFreeToolingTypes';
 const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
-    // useEffect(() => {
-    //     const updateTfStatus = () => {
-    //         ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-    //             const status = detail.trackingServiceState;
-    //             if (status) {
-    //                 setTfStatus(status);
-    //             }
-    //         });
-    //     };
+    useEffect(() => {
+        const updateTfStatus = () => {
+            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+                const status = detail.trackingServiceState;
+                if (status) {
+                    setTfStatus(status);
+                }
+            });
+        };
 
-    //     ConnectionManager.init();
+        ConnectionManager.init();
 
-    //     ConnectionManager.AddConnectionListener(updateTfStatus);
-    //     const controller: WebInputController = new WebInputController();
+        ConnectionManager.AddConnectionListener(updateTfStatus);
+        const controller: WebInputController = new WebInputController();
 
-    //     const timerID = window.setInterval(updateTfStatus, 5000);
+        const timerID = window.setInterval(updateTfStatus, 5000);
 
-    //     new CursorManager();
+        new CursorManager();
 
-    //     return () => {
-    //         controller.disconnect();
-    //         clearInterval(timerID);
-    //     };
-    // }, []);
+        return () => {
+            controller.disconnect();
+            clearInterval(timerID);
+        };
+    }, []);
 
     return (
         <div className="app">
