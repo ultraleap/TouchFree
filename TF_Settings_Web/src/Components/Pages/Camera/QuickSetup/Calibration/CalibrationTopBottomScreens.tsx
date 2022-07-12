@@ -30,15 +30,6 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
     onCancel,
 }): ReactElement => {
     const navigate = useNavigate();
-    const content = (progressToClick: number): ReactElement => (
-        <div className="contentContainer">
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '5.5vh' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '16vh' }} />
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
-        </div>
-    );
 
     const handleClick = () => {
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
@@ -49,7 +40,17 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
         navigate('../bottom');
     };
 
-    return CalibrationBaseScreen(handleClick, content);
+    const content = (progressToClick: number): ReactElement => (
+        <div onPointerDown={handleClick} className="contentContainer">
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '5.5vh' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ top: '16vh' }} />
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
+        </div>
+    );
+
+    return CalibrationBaseScreen(content);
 };
 
 export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
@@ -57,15 +58,6 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
     onCancel,
 }): ReactElement => {
     const navigate = useNavigate();
-    const content = (progressToClick: number): ReactElement => (
-        <div className="contentContainer">
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '2.5vh' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ bottom: '15.5vh' }} />
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
-        </div>
-    );
 
     const handleClick = () => {
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
@@ -76,13 +68,20 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
         navigate('../complete');
     };
 
-    return CalibrationBaseScreen(handleClick, content);
+    const content = (progressToClick: number): ReactElement => (
+        <div onPointerDown={handleClick} className="contentContainer">
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '2.5vh' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ bottom: '15.5vh' }} />
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
+        </div>
+    );
+
+    return CalibrationBaseScreen(content);
 };
 
-const CalibrationBaseScreen = (
-    handleClick: () => void,
-    content: (progressToClick: number) => ReactElement
-): ReactElement => {
+const CalibrationBaseScreen = (content: (progressToClick: number) => ReactElement): ReactElement => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
     const isNewClick = React.useRef<boolean>(false);
 
@@ -103,9 +102,6 @@ const CalibrationBaseScreen = (
 
             if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
                 setProgressToClick(evt.detail.ProgressToClick);
-                if (evt.detail.ProgressToClick >= 1) {
-                    handleClick();
-                }
             }
         }
     };
