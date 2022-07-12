@@ -10,6 +10,7 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import { APP_HEIGHT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 
+import TutorialPoster from 'Images/Camera/Calibration_Tutorial_Poster.png';
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
@@ -92,7 +93,14 @@ interface CalibrationTutorialVideoProps {
 }
 
 export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => (
-    <video className="interactionGuide" style={videoStyle} autoPlay={true} loop={true} src={TutorialVideo} />
+    <video
+        className="interactionGuide"
+        style={videoStyle}
+        autoPlay={true}
+        loop={true}
+        src={TutorialVideo}
+        poster={TutorialPoster}
+    />
 );
 
 const setupButtonStyle: CSSProperties = {
