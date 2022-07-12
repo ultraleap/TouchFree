@@ -7,9 +7,9 @@ import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/
 import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
-import AirPushPreview from 'Videos/AirPush_Preview.webm';
-import HoverPreview from 'Videos/Hover_Preview.webm';
-import TouchPlanePreview from 'Videos/TouchPlane_Preview.webm';
+import AirPushPreview from 'Videos/AirPush_Preview.mp4';
+import HoverPreview from 'Videos/Hover_Preview.mp4';
+import TouchPlanePreview from 'Videos/TouchPlane_Preview.mp4';
 
 import { RadioGroup } from 'Components/Controls/RadioGroup';
 import { RadioLine } from 'Components/Controls/RadioLine';
