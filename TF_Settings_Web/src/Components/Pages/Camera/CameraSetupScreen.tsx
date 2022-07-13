@@ -14,6 +14,8 @@ const CameraSetupScreen = () => {
     const topVideoRef = React.useRef<HTMLCanvasElement>(null);
     const botVideoRef = React.useRef<HTMLCanvasElement>(null);
 
+    const frameCount = React.useRef<number>(0);
+
     useEffect(() => {
         const socket = new WebSocket('ws://127.0.0.1:1024');
         socket.binaryType = 'arraybuffer';
@@ -22,15 +24,27 @@ const CameraSetupScreen = () => {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         });
 
+        // setInterval(() => {
+        //     console.log(frameCount.current);
+        //     frameCount.current = 0;
+        // }, 1000);
+
         socket.addEventListener('message', (event) => {
             if (!topVideoRef.current || !botVideoRef.current || typeof event.data == 'string') return;
+            frameCount.current++;
+            if (frameCount.current > 1) {
+                if (frameCount.current == 10) {
+                    frameCount.current = 0;
+                }
+                return;
+            }
             const data = new DataView(event.data);
             if (data.getUint8(0) === 1) {
                 displayCameraFeed(data, 'left', topVideoRef.current);
                 displayCameraFeed(data, 'right', botVideoRef.current);
             }
         });
-    });
+    }, []);
 
     const navigate = useNavigate();
     return (
