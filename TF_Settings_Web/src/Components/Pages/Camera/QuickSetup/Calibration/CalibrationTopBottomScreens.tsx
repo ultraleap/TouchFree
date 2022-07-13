@@ -40,15 +40,18 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
         navigate('../bottom');
     };
 
-    const content = (progressToClick: number): ReactElement => (
-        <div onPointerDown={handleClick} className="contentContainer">
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '5vh' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '15.5vh' }} />
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
-        </div>
-    );
+    const content = (progressToClick: number): ReactElement => {
+        const prog = isHandPresent ? progressToClick : 0;
+        return (
+            <div onPointerDown={handleClick} className="contentContainer">
+                <CalibrationInstructions progress={prog} containerStyle={{ paddingTop: '5vh' }} />
+                <CalibrationProgressCircle progress={prog} style={{ top: '15.5vh' }} />
+                {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+                <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
+                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
+            </div>
+        );
+    };
 
     return CalibrationBaseScreen(content);
 };
@@ -68,15 +71,18 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
         navigate('../complete');
     };
 
-    const content = (progressToClick: number): ReactElement => (
-        <div onPointerDown={handleClick} className="contentContainer">
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '2.5vh' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ bottom: '15.5vh' }} />
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
-        </div>
-    );
+    const content = (progressToClick: number): ReactElement => {
+        const prog = isHandPresent ? progressToClick : 0;
+        return (
+            <div onPointerDown={handleClick} className="contentContainer">
+                <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
+                <CalibrationInstructions progress={prog} containerStyle={{ paddingTop: '2.5vh' }} />
+                <CalibrationProgressCircle progress={prog} style={{ bottom: '15.5vh' }} />
+                {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
+            </div>
+        );
+    };
 
     return CalibrationBaseScreen(content);
 };

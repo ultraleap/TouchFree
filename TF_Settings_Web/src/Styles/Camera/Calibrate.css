@@ -73,7 +73,7 @@
 
 .arrow {
     height: 3vh;
-    aspect-ratio: 1/1;
+    width: 3vh;
     display: flex;
     margin: auto;
 }
@@ -84,7 +84,7 @@
     margin-left: calc(50% - 2.5vh);
     padding: 0.5vh;
     height: 3vh;
-    aspect-ratio: 1/1;
+    width: 3vh;
     position: relative;
     border-radius: 50%;
     border: 0.5vh solid var(--ultraleap-green);
@@ -95,7 +95,7 @@
     position: absolute;
     left: calc(50% - 4.5vh);
     height: 9vh;
-    aspect-ratio: 1/1;
+    width: 9vh;
 }
 
 .handNotFoundContainer {
