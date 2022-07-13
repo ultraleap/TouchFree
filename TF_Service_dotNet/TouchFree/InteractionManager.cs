@@ -73,6 +73,10 @@ namespace Ultraleap.TouchFree.Library
             {
                 updateBehaviour.OnUpdate += Update;
             }
+
+            // Reset the down position between interactions
+            lastDownPosition = null;
+            interactionCurrentlyDown = null;
         }
 
         public void Update()
