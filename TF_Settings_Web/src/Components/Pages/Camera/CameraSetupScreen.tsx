@@ -29,17 +29,6 @@ const CameraSetupScreen = () => {
                 displayCameraFeed(data, 'left', topVideoRef.current);
                 displayCameraFeed(data, 'right', botVideoRef.current);
             }
-            if (data.getUint8(0) === 3) {
-                const dataSize = data.getUint32(1);
-                console.log(dataSize);
-                const buf = new ArrayBuffer(dataSize * 4);
-                const buf32 = new Float32Array(buf);
-
-                for (let i = 0; i < dataSize; i++) {
-                    buf32[i] = data.getFloat32(5 + i);
-                }
-                // console.log(buf32);
-            }
         });
     });
 
@@ -69,8 +58,8 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('manual')}
                 />
             </div>
-            <canvas ref={topVideoRef} style={{ width: '80%', height: '400px', marginTop: '50px' }} />
-            <canvas ref={botVideoRef} style={{ width: '80%', height: '400px', marginTop: '50px' }} />
+            <canvas ref={topVideoRef} style={{ width: '400px', height: '400px', margin: '50px' }} />
+            <canvas ref={botVideoRef} style={{ width: '400px', height: '400px', margin: '50px' }} />
         </div>
     );
 };
@@ -87,7 +76,7 @@ const displayCameraFeed = (data: DataView, camera: CameraType, canvas: HTMLCanva
 
     const offset = camera === 'right' ? 0 : width * cameraHeight;
 
-    for (let i = 0; i < width * cameraHeight; i++) {
+    for (let i = width; i < width * cameraHeight; i++) {
         const px = data.getUint8(9 + i + offset);
         buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
     }
