@@ -47,7 +47,7 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
         if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
-            setProgressToClick(evt.detail.ProgressToClick);
+            setProgressToClick(isHandPresent ? evt.detail.ProgressToClick : 0);
         }
     };
 
