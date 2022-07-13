@@ -42,8 +42,8 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
 
     const content = (progressToClick: number): ReactElement => (
         <div onPointerDown={handleClick} className="contentContainer">
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '5.5vh' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '16vh' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '5vh' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ top: '15.5vh' }} />
             {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
             <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
             <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
