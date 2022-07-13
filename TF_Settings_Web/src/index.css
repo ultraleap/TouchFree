@@ -1,6 +1,6 @@
 :root {
-    --app-height: 1920px;
     --app-width: 1080px;
+    --app-margin-left: calc((100% - var(--app-width)) / 2);
     --control-bar-size: 170px;
     --app-background-color: #222222;
     --ultraleap-green: #01eb85;
@@ -8,6 +8,7 @@
 
 body {
     margin: 0;
+    background-color: var(--app-background-color);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
         'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;

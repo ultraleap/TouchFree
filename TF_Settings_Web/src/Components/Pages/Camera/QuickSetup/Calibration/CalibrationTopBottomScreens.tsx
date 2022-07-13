@@ -8,13 +8,11 @@ import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
 import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
 
-import InteractionBottomGuide from 'Images/Camera/Interaction_Guide_Bottom.png';
-import InteractionTopGuide from 'Images/Camera/Interaction_Guide_Top.png';
-
 import {
-    CalibrateHandLostMessage,
+    CalibrationHandLostMessage,
     CalibrationCancelButton,
     CalibrationInstructions,
+    CalibrationTutorialVideo,
     CalibrationProgressCircle,
 } from './CalibrationComponents';
 
@@ -32,21 +30,6 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
     onCancel,
 }): ReactElement => {
     const navigate = useNavigate();
-    const content = (progressToClick: number): ReactElement => (
-        <div className="contentContainer">
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '100px' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '294px' }} />
-            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
-            <img
-                className="interactionGuide"
-                style={{ paddingTop: '50px' }}
-                src={InteractionTopGuide}
-                alt="Guide demonstrating how to interact with Quick Setup"
-                onDoubleClick={() => navigate('../bottom')}
-            />
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '575px' }} />
-        </div>
-    );
 
     const handleClick = () => {
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
@@ -57,7 +40,17 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
         navigate('../bottom');
     };
 
-    return CalibrationBaseScreen(handleClick, content);
+    const content = (progressToClick: number): ReactElement => (
+        <div onPointerDown={handleClick} className="contentContainer">
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '5.5vh' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ top: '16vh' }} />
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
+        </div>
+    );
+
+    return CalibrationBaseScreen(content);
 };
 
 export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
@@ -65,21 +58,6 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
     onCancel,
 }): ReactElement => {
     const navigate = useNavigate();
-    const content = (progressToClick: number): ReactElement => (
-        <div className="contentContainer">
-            <img
-                className="interactionGuide"
-                style={{ paddingTop: '600px' }}
-                src={InteractionBottomGuide}
-                alt="Guide demonstrating how to interact with Quick Setup"
-                onDoubleClick={() => navigate('../complete')}
-            />
-            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '50px' }} />
-            <CalibrationProgressCircle progress={progressToClick} style={{ top: '1446px' }} />
-            {!isHandPresent ? <CalibrateHandLostMessage /> : <div style={{ height: '50px' }} />}
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '75px' }} />
-        </div>
-    );
 
     const handleClick = () => {
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
@@ -90,13 +68,20 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
         navigate('../complete');
     };
 
-    return CalibrationBaseScreen(handleClick, content);
+    const content = (progressToClick: number): ReactElement => (
+        <div onPointerDown={handleClick} className="contentContainer">
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
+            <CalibrationInstructions progress={progressToClick} containerStyle={{ paddingTop: '2.5vh' }} />
+            <CalibrationProgressCircle progress={progressToClick} style={{ bottom: '15.5vh' }} />
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
+        </div>
+    );
+
+    return CalibrationBaseScreen(content);
 };
 
-const CalibrationBaseScreen = (
-    handleClick: () => void,
-    content: (progressToClick: number) => ReactElement
-): ReactElement => {
+const CalibrationBaseScreen = (content: (progressToClick: number) => ReactElement): ReactElement => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
     const isNewClick = React.useRef<boolean>(false);
 
@@ -117,9 +102,6 @@ const CalibrationBaseScreen = (
 
             if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
                 setProgressToClick(evt.detail.ProgressToClick);
-                if (evt.detail.ProgressToClick >= 1) {
-                    handleClick();
-                }
             }
         }
     };
