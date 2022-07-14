@@ -67,7 +67,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
     const strokeWidth = 5;
 
     if (!data?.dotColor) {
-        return (<svg xmlns="http://www.w3.org/2000/svg" height="400" width="400"></svg>);
+        return <svg xmlns="http://www.w3.org/2000/svg" height="400" width="400"></svg>;
     }
     return (
         <svg xmlns="http://www.w3.org/2000/svg" height="400" width="400">

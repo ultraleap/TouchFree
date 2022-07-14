@@ -9,7 +9,7 @@ import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';
 import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
 
 import { HandSvg, HandSvgCoordinate } from 'Components/Controls/HandSvg';
-import IconTextButton from 'Components/Controls/IconTextButton'; 
+import IconTextButton from 'Components/Controls/IconTextButton';
 
 interface HandRenderState {
     handOne: any;
@@ -18,7 +18,8 @@ interface HandRenderState {
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
-    const [handData, setHandData] = React.useState<HandRenderState>({handOne: {
+    const [handData, setHandData] = React.useState<HandRenderState>({
+        handOne: {
             indexTip: new HandSvgCoordinate(40, 10),
             indexKnuckle: new HandSvgCoordinate(40, 90),
             middleTip: new HandSvgCoordinate(70, 10),
@@ -43,7 +44,7 @@ const CameraSetupScreen = () => {
             thumbTip: new HandSvgCoordinate(10, 40),
             wrist: new HandSvgCoordinate(80, 160),
             dotColor: 'red',
-        }
+        },
     });
 
     // useEffect(() => {
@@ -59,7 +60,7 @@ const CameraSetupScreen = () => {
             const handTwo = evt.detail.Hands[1];
             const updatedHandData = {
                 handOne: {},
-                handTwo: {}
+                handTwo: {},
             };
 
             if (handOne) {
@@ -82,7 +83,7 @@ const CameraSetupScreen = () => {
     }, []);
 
     const translateToCoordinate = (coordinate: any) => {
-        return new HandSvgCoordinate(200 + (coordinate.X * 400), 200 + (coordinate.Z * 400));
+        return new HandSvgCoordinate(200 + coordinate.X * 400, 200 + coordinate.Z * 400);
     };
 
     const tipJointIndex = 3;
