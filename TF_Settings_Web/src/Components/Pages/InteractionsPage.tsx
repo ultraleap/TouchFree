@@ -217,6 +217,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
         let coreBody: JSX.Element = <div />;
         const interactionControls: JSX.Element[] = [];
         const zoneControls: JSX.Element[] = [];
+        let interactionVideos: JSX.Element[];
 
         // TODO: Make it so elements appear even when state is null to prevent flash of empty
         //       screen while reading in config
@@ -328,6 +329,20 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                 );
             }
 
+            interactionVideos = this.videoPaths.map((video, videoIndex) => {
+                return (
+                    <video
+                        autoPlay={true}
+                        loop={true}
+                        key={video}
+                        className="InteractionPreview"
+                        style={{ display: videoIndex === activeInteraction ? undefined : 'none' }}
+                    >
+                        <source src={video} />
+                    </video>
+                );
+            });
+
             coreBody = (
                 <div>
                     <div className="horizontalContainer sideSpacing">
@@ -337,14 +352,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                             options={Object.keys(InteractionTranslator)}
                             onChange={this.onInteractionChange.bind(this)}
                         />
-                        <video
-                            autoPlay={true}
-                            loop={true}
-                            key={this.state.interactionConfig.InteractionType}
-                            className="InteractionPreview"
-                        >
-                            <source src={this.videoPaths[activeInteraction]} />
-                        </video>
+                        {interactionVideos}
                     </div>
 
                     <div className="verticalContainer sideSpacing">
