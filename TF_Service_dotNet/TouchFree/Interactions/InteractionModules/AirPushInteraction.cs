@@ -60,6 +60,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private readonly ExtrapolationPositionModifier extrapolation;
         private readonly PositionFilter filter;
 
+        private readonly InteractionTuning interactionTuning;
+
         public AirPushInteraction(
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
@@ -68,17 +70,19 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
-            if (_interactionTuning?.Value?.AirPushSettings != null)
+            interactionTuning = _interactionTuning?.Value;
+
+            if (interactionTuning?.AirPushSettings != null)
             {
-                speedMin = _interactionTuning.Value.AirPushSettings.SpeedMin;
-                speedMax = _interactionTuning.Value.AirPushSettings.SpeedMax;
-                distAtSpeedMinMm = _interactionTuning.Value.AirPushSettings.DistAtSpeedMinMm;
-                distAtSpeedMaxMm = _interactionTuning.Value.AirPushSettings.DistAtSpeedMaxMm;
-                horizontalDecayDistMm = _interactionTuning.Value.AirPushSettings.HorizontalDecayDistMm;
-                thetaOne = _interactionTuning.Value.AirPushSettings.ThetaOne;
-                thetaTwo = _interactionTuning.Value.AirPushSettings.ThetaTwo;
-                unclickThreshold = _interactionTuning.Value.AirPushSettings.UnclickThreshold;
-                unclickThresholdDrag = _interactionTuning.Value.AirPushSettings.UnclickThresholdDrag;
+                speedMin = interactionTuning.AirPushSettings.SpeedMin;
+                speedMax = interactionTuning.AirPushSettings.SpeedMax;
+                distAtSpeedMinMm = interactionTuning.AirPushSettings.DistAtSpeedMinMm;
+                distAtSpeedMaxMm = interactionTuning.AirPushSettings.DistAtSpeedMaxMm;
+                horizontalDecayDistMm = interactionTuning.AirPushSettings.HorizontalDecayDistMm;
+                thetaOne = interactionTuning.AirPushSettings.ThetaOne;
+                thetaTwo = interactionTuning.AirPushSettings.ThetaTwo;
+                unclickThreshold = interactionTuning.AirPushSettings.UnclickThreshold;
+                unclickThresholdDrag = interactionTuning.AirPushSettings.UnclickThresholdDrag;
             }
             extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
             filter = new PositionFilter(_interactionTuning);
@@ -93,7 +97,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             base.OnInteractionSettingsUpdated(_config);
 
-            thetaOne = ignoreDragging ? 15f : 65f;
+            thetaOne = ignoreDragging || (interactionTuning?.EnableVelocitySwipeWithAirPush == true) ? 15f : 65f;
         }
 
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
