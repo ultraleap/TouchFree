@@ -86,10 +86,10 @@ const CalibrationBaseScreen = (content: (progressToClick: number) => ReactElemen
     const isNewClick = React.useRef<boolean>(false);
 
     useEffect(() => {
-        InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
+        InputActionManager.instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
 
         return () => {
-            InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
+            InputActionManager.instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
         };
     }, []);
 

@@ -6,8 +6,8 @@ import { InputActionPlugin } from "./InputActionPlugin";
 // received data through any <InputActionPlugins> given to it and finaly distributes the data
 // via the  <TransmitInputAction> event which should be listened to by any class hoping to make
 // use of incoming <TouchFreeInputActions>.
-export class InputActionManager extends EventTarget {
-    // Event: TransmitInputAction
+export class HandDataManager extends EventTarget {
+    // Event: TransmitHandData
     // An event for transmitting <TouchFreeInputActions> that are received via the <messageReceiver> to
     // be listened to.
 
@@ -17,17 +17,19 @@ export class InputActionManager extends EventTarget {
 
     // Variable: instance
     // The instance of the singleton for referencing the events transmitted
-    private static _instance: InputActionManager;
+    private static _instance: HandDataManager;
 
     static plugins: Array<InputActionPlugin> | null = null;
 
     public static get instance() {
-        if (InputActionManager._instance === undefined) {
-            InputActionManager._instance = new InputActionManager();
+        if (HandDataManager._instance === undefined) {
+            HandDataManager._instance = new HandDataManager();
         }
 
-        return InputActionManager._instance;
+        return HandDataManager._instance;
     }
+
+    static lastFrame: number | undefined = undefined;
 
     // Function: SetPlugins
     // Use this function to set the <InputActionPlugins> that the manager should use, as well as the order the
@@ -39,37 +41,15 @@ export class InputActionManager extends EventTarget {
     // Function: HandleInputAction
     // Called by the <messageReceiver> to relay a <TouchFreeInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
-    public static HandleInputAction(_action: TouchFreeInputAction): void {
-
-        let rawInputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
-            'TransmitInputActionRaw',
-            { detail: _action }
-        );
-        InputActionManager.instance.dispatchEvent(rawInputActionEvent);
-
-        let action = _action;
-
-        if (this.plugins !== null) {
-            for (var i = 0; i < this.plugins.length; i++) {
-                let modifiedAction = this.plugins[i].RunPlugin(action);
-
-                if (modifiedAction !== null) {
-                    action = modifiedAction;
-                } else {
-                    // The plugin has cancelled the InputAction entirely
-                    return;
-                }
-            }
+    public static HandleInputAction(_data: any): void {
+        const currentTimeStamp = Date.now();
+        if (!HandDataManager.lastFrame || HandDataManager.lastFrame + 100 < currentTimeStamp ) {
+            let rawHandsEvent: CustomEvent<any> = new CustomEvent<any>(
+                'TransmitHandData',
+                { detail: _data }
+            );
+            HandDataManager.instance.dispatchEvent(rawHandsEvent);
+            HandDataManager.lastFrame = currentTimeStamp;
         }
-
-        let inputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
-            'TransmitInputAction',
-            { detail: action }
-        );
-
-        // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
-        setTimeout(() => {
-            InputActionManager.instance.dispatchEvent(inputActionEvent);
-        }, 0);
     }
 }

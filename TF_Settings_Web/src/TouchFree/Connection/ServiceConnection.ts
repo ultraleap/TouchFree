@@ -111,6 +111,11 @@ export class ServiceConnection {
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
                 break;
 
+            case ActionCode.HAND_DATA:
+                let wsHandData: any = looseData.content;
+                ConnectionManager.messageReceiver.handDataQueue.push(wsHandData);
+                break;
+
             case ActionCode.HAND_PRESENCE_EVENT:
                 let handEvent: HandPresenceEvent = looseData.content;
                 ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;

@@ -44,6 +44,8 @@ export enum ActionCode {
     QUICK_SETUP = "QUICK_SETUP",
     QUICK_SETUP_CONFIG = "QUICK_SETUP_CONFIG",
     QUICK_SETUP_RESPONSE = "QUICK_SETUP_RESPONSE",
+
+    HAND_DATA = "HAND_DATA",
 }
 
 // Enum: HandPresenceState

@@ -54,6 +54,18 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(converted, ActionCode.INPUT_ACTION);
         }
 
+        public void SendHandData(HandFrame _data)
+        {
+            if (!HandshakeCompleted)
+            {
+                // Long-term we shouldn't get this far until post-handshake, but the systems should
+                // be designed cohesively when the Service gets its polish
+                return;
+            }
+
+            SendResponse(_data, ActionCode.HAND_DATA);
+        }
+
         public void SendHandPresenceEvent(HandPresenceEvent _response)
         {
             SendResponse(_response, ActionCode.HAND_PRESENCE_EVENT);

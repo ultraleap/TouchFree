@@ -38,10 +38,10 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     useEffect(() => {
         onLoad();
 
-        InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
+        InputActionManager.instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
 
         return () => {
-            InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
+            InputActionManager.instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
         };
     }, []);
 

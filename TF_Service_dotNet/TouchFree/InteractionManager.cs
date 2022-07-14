@@ -12,6 +12,7 @@ namespace Ultraleap.TouchFree.Library
     {
         private readonly IEnumerable<IInteraction> interactions;
         private readonly InteractionTuning interactionTuning;
+        private readonly IHandManager handManager;
         private readonly UpdateBehaviour updateBehaviour;
         private readonly IClientConnectionManager connectionManager;
 
@@ -29,12 +30,14 @@ namespace Ultraleap.TouchFree.Library
             IClientConnectionManager _connectionManager,
             IEnumerable<IInteraction> _interactions,
             IOptions<InteractionTuning> _interactionTuning,
-            IConfigManager _configManager)
+            IConfigManager _configManager,
+            IHandManager _handManager)
         {
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
             interactions = _interactions;
             interactionTuning = _interactionTuning?.Value;
+            handManager = _handManager;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
@@ -77,6 +80,8 @@ namespace Ultraleap.TouchFree.Library
 
         public void Update()
         {
+            connectionManager.SendHandDataToWebsocket(handManager.RawHands);
+
             if (activeInteractions != null)
             {
                 InputAction? inputAction = null;

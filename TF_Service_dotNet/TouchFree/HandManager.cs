@@ -20,6 +20,8 @@ namespace Ultraleap.TouchFree.Library
         public Hand SecondaryHand { get; private set; }
         public HandChirality secondaryChirality;
 
+        public HandFrame RawHands { get; private set; }
+
         public List<Leap.Vector> RawHandPositions
         {
             get
@@ -197,6 +199,24 @@ namespace Ultraleap.TouchFree.Library
                 .ToList();
 
             handsLastFrame = handCount;
+
+            RawHands = new HandFrame()
+            {
+                Hands = currentFrame.Hands.Select(x => new RawHand()
+                {
+                    Fingers = x.Fingers.Select(f => new RawFinger()
+                    {
+                        Type = (FingerType)f.Type,
+                        Bones = f.bones.Select(b => new RawBone()
+                        {
+                            NextJoint = Utilities.LeapVectorToNumerics(b.NextJoint),
+                            PrevJoint = Utilities.LeapVectorToNumerics(b.PrevJoint)
+                        }).ToArray()
+                    }).ToArray(),
+                    WristPosition = Utilities.LeapVectorToNumerics(x.WristPosition),
+                    WristWidth = x.PalmWidth
+                }).ToArray()
+            };
 
             currentFrame.Transform(trackingTransform);
 

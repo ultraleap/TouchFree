@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Leap;
+using System;
 using System.Collections.Generic;
-using Leap;
 
 namespace Ultraleap.TouchFree.Library
 {
@@ -8,6 +8,7 @@ namespace Ultraleap.TouchFree.Library
     {
         Hand PrimaryHand { get; }
         Hand SecondaryHand { get; }
+        HandFrame RawHands { get; }
         List<Vector> RawHandPositions { get; }
         long Timestamp { get; }
         void ConnectToTracking();

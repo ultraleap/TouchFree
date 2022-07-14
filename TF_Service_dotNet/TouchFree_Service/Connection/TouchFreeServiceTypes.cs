@@ -29,6 +29,8 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         QUICK_SETUP,
         QUICK_SETUP_CONFIG,
         QUICK_SETUP_RESPONSE,
+
+        HAND_DATA,
     }
 
     internal enum Compatibility
