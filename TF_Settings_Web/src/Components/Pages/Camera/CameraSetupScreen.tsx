@@ -21,6 +21,7 @@ const CameraSetupScreen = () => {
         socket.binaryType = 'arraybuffer';
 
         socket.addEventListener('open', () => {
+            console.log('open');
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         });
 
@@ -80,6 +81,12 @@ const CameraSetupScreen = () => {
 
 export default CameraSetupScreen;
 
+// Decimal in signed 2's complement
+// const OVEREXPOSED_THRESHOLD = -12566464; //#FF404040;
+// const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;
+const OVEREXPOSED_THRESHOLD = -6250336; //#FFA0A0A0;
+// const OVEREXPOSED_THRESHOLD = -4144960; //#FFC0C0C0;
+
 const displayCameraFeed = (data: DataView, camera: CameraType, canvas: HTMLCanvasElement) => {
     const context = canvas.getContext('2d');
     if (!context) return;
@@ -97,7 +104,8 @@ const displayCameraFeed = (data: DataView, camera: CameraType, canvas: HTMLCanva
     buf32.fill(0xff000000, 0, width);
     for (let i = width; i < width * cameraHeight; i++) {
         const px = data.getUint8(9 + i + offset);
-        buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
+        const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
+        buf32[i] = hexColor < OVEREXPOSED_THRESHOLD ? hexColor : 0xffffff00;
     }
 
     canvas.width = width;
