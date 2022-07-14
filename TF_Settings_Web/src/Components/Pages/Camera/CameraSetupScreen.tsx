@@ -81,6 +81,9 @@ const CameraSetupScreen = () => {
 export default CameraSetupScreen;
 
 const displayCameraFeed = (data: DataView, camera: CameraType, canvas: HTMLCanvasElement) => {
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
     const width = data.getUint32(1);
     const cameraHeight = data.getUint32(5) / 2;
 
@@ -90,15 +93,14 @@ const displayCameraFeed = (data: DataView, camera: CameraType, canvas: HTMLCanva
 
     const offset = camera === 'right' ? 0 : width * cameraHeight;
 
+    // Set first row to black pixels to remove the flashing magic line
+    buf32.fill(0xff000000, 0, width);
     for (let i = width; i < width * cameraHeight; i++) {
         const px = data.getUint8(9 + i + offset);
         buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
     }
 
-    const context = canvas.getContext('2d');
-    if (context) {
-        canvas.width = width;
-        canvas.height = cameraHeight;
-        context.putImageData(new ImageData(buf8, width, cameraHeight), 0, 0);
-    }
+    canvas.width = width;
+    canvas.height = cameraHeight;
+    context.putImageData(new ImageData(buf8, width, cameraHeight), 0, 0);
 };
