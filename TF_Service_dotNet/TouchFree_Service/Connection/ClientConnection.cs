@@ -104,7 +104,16 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
         }
 
-        private void SendResponse<T>(T _response, ActionCode actionCode)
+        internal void SendTrackingResponse(ActionCode action, ResponseToClient response)
+        {
+            if (action == ActionCode.GET_TRACKING_STATE) {
+                SendResponse(_response, ActionCode.GET_TRACKING_STATE_RESPONSE);
+            } else if (action == ActionCode.SET_TRACKING_STATE) {
+                SendResponse(_response, ActionCode.SET_TRACKING_STATE_RESPONSE);
+            }
+        }
+
+        internal void SendResponse<T>(T _response, ActionCode actionCode)
         {
             CommunicationWrapper<T> message =
                 new CommunicationWrapper<T>(actionCode.ToString(), _response);
@@ -176,23 +185,31 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             switch (action)
             {
+                case ActionCode.REQUEST_SERVICE_STATUS:
+                    receiver.requestServiceStatusQueue.Enqueue(content);
+                    break;
+                case ActionCode.QUICK_SETUP:
+                    receiver.quickSetupQueue.Enqueue(content);
+                    break;
+
                 case ActionCode.SET_CONFIGURATION_STATE:
                     receiver.configChangeQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_STATE:
                     receiver.configStateRequestQueue.Enqueue(content);
                     break;
-                case ActionCode.REQUEST_SERVICE_STATUS:
-                    receiver.requestServiceStatusQueue.Enqueue(content);
-                    break;
+
                 case ActionCode.SET_CONFIGURATION_FILE:
                     receiver.configFileChangeQueue.Enqueue(content);
                     break;
                 case ActionCode.REQUEST_CONFIGURATION_FILE:
                     receiver.configFileRequestQueue.Enqueue(content);
                     break;
-                case ActionCode.QUICK_SETUP:
-                    receiver.quickSetupQueue.Enqueue(content);
+
+                case ActionCode.GET_TRACKING_STATE:
+                case ActionCode.SET_TRACKING_STATE:
+                    IncomingRequest req = new IncomingRequest(action, null, content);
+                    receiver.trackingApiChangeQueue.Enqueue(req);
                     break;
 
                 case ActionCode.INPUT_ACTION:
@@ -204,6 +221,9 @@ namespace Ultraleap.TouchFree.Service.Connection
                 case ActionCode.SERVICE_STATUS:
                 case ActionCode.CONFIGURATION_FILE_STATE:
                 case ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE:
+                case ActionCode.QUICK_SETUP_RESPONSE:
+                case ActionCode.GET_TRACKING_STATE_RESPONSE:
+                case ActionCode.SET_TRACKING_STATE_RESPONSE:
                     TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:

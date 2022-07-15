@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
@@ -16,46 +17,60 @@ namespace Ultraleap.TouchFree.Service.Connection
     {
         public ConcurrentQueue<string> configChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configStateRequestQueue = new ConcurrentQueue<string>();
-        public ConcurrentQueue<string> requestServiceStatusQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configFileChangeQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> configFileRequestQueue = new ConcurrentQueue<string>();
+
+        public ConcurrentQueue<string> requestServiceStatusQueue = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> quickSetupQueue = new ConcurrentQueue<string>();
+
+        public ConcurrentQueue<IncomingRequest> trackingApiChangeQueue = new ConcurrentQueue<IncomingRequest>();
+        public ConcurrentQueue<TrackingResponse> trackingApiResponseQueue = new ConcurrentQueue<TrackingResponse>();
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
         private readonly IConfigManager configManager;
         private readonly IQuickSetupHandler quickSetupHandler;
+        private readonly ITrackingDiagnosticApi diagnosticApi;
 
-        public WebSocketReceiver(UpdateBehaviour _updateBehaviour, ClientConnectionManager _clientMgr, IConfigManager _configManager, IQuickSetupHandler _quickSetupHandler)
+        public WebSocketReceiver(UpdateBehaviour _updateBehaviour,
+                                 ClientConnectionManager _clientMgr,
+                                 IConfigManager _configManager,
+                                 IQuickSetupHandler _quickSetupHandler,
+                                 ITrackingDiagnosticApi _diagnosticApiManager)
         {
             clientMgr = _clientMgr;
             updateBehaviour = _updateBehaviour;
             configManager = _configManager;
             quickSetupHandler = _quickSetupHandler;
+            diagnosticApi = _diagnosticApiManager;
 
             updateBehaviour.OnUpdate += Update;
+
+            InitialiseDiagnosticListeners();
         }
 
         void Update()
         {
-            CheckQueue(configStateRequestQueue, HandleConfigStateRequest);
             CheckQueue(configChangeQueue, HandleConfigChange);
-
-            CheckQueue(requestServiceStatusQueue, HandleGetStatusRequest);
-
+            CheckQueue(configStateRequestQueue, HandleConfigStateRequest);
             CheckQueue(configFileChangeQueue, HandleConfigFileChange);
             CheckQueue(configFileRequestQueue, HandleConfigFileRequest);
+
+            CheckQueue(requestServiceStatusQueue, HandleGetStatusRequest);
             CheckQueue(quickSetupQueue, HandleQuickSetupRequest);
+
+            CheckQueue(trackingApiChangeQueue, HandleTrackingRequest);
+            CheckQueue(trackingApiResponseQueue, HandleTrackingResponses);
         }
 
-        void CheckQueue(ConcurrentQueue<string> queue, Action<string> handler)
+        static void CheckQueue<T>(ConcurrentQueue<T> _queue, Action<T> _handler)
         {
-            string content;
-            if (queue.TryPeek(out content))
+            T content;
+            if (_queue.TryPeek(out content))
             {
                 // Parse newly received messages
-                queue.TryDequeue(out content);
-                handler.Invoke(content);
+                _queue.TryDequeue(out content);
+                _handler.Invoke(content);
             }
         }
 
@@ -189,6 +204,100 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             clientMgr.SendStatus(currentConfig);
         }
+
+        #region DiagnosticAPI_Requests
+        void HandleTrackingRequest(IncomingRequest _request)
+        {
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
+
+            // Explicitly check for requestID else we can't respond
+            if (!RequestIdExists(contentObj))
+            {
+                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _request.content);
+                response.message = "Tracking State change request failed. This is due to a missing or invalid requestID";
+
+                // This is a failed request, do not continue with sending the status,
+                // the Client will have no way to handle the config state
+                clientMgr.SendTrackingResponse(_request.action, response);
+                return;
+            }
+
+            _request.requestId = contentObj.GetValue("requestID").ToString();
+
+            if (_request.action == ActionCode.GET_TRACKING_ANALYTICS)
+            {
+                HandleGetTrackingStateRequest(contentObj, requestId, _request.content);
+            }
+            else
+            {
+                HandleSetTrackingStateRequest(contentObj, requestId, _request.content);
+            }
+        }
+
+        void HandleGetTrackingStateRequest(JObject contentObj, string requestId, string originalContent)
+        {
+            TrackingResponse response = new TrackingResponse(requestId, originalContent, true, true, true, true, true, diagnosticApi);
+
+            diagnosticApi.GetAllowImages();
+            diagnosticApi.GetImageMask();
+            diagnosticApi.GetCameraOrientation();
+            diagnosticApi.GetAnalyticsMode();
+        }
+
+        void HandleSetTrackingStateRequest(JObject contentObj, string requestId, string originalContent)
+        {
+            JToken maskToken;
+            JToken allowImagesToken;
+            JToken cameraReversedToken;
+            JToken analyticsEnabledToken;
+
+            bool needsMask = contentObj.TryGetValue("mask", out maskToken);
+            bool needsImages = contentObj.TryGetValue("allowImages", out allowImagesToken);
+            bool needsOrientation = contentObj.TryGetValue("cameraReversed", out maskToken);
+            bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
+
+            TrackingResponse response = new TrackingResponse(requestId, originalContent, false, needsMask, needsImages, needsOrientation, needsMask, diagnosticApi);
+
+            if (needsMask)
+            {
+                var mask = maskToken.ToObject<MaskingData>();
+                diagnosticApi.SetMasking(mask.left, mask.right, mask.upper, mask.lower);
+            }
+
+            if (needsImages)
+            {
+                var allowImages = allowImagesToken.ToObject<bool>();
+                diagnosticApi.SetAllowImages(allowImagesToken);
+            }
+
+            if (needsOrientation)
+            {
+                var reversed = cameraReversedToken.ToObject<bool>();
+                diagnosticApi.SetCameraOrientation(reversed);
+            }
+
+            if (needsAnalytics)
+            {
+                var analyticsEnable = analyticsEnabledToken.ToObject<bool>();
+                diagnosticApi.SetAnalyticsMode(analyticsEnable);
+            }
+        }
+
+        void HandleTrackingResponses(TrackingResponse response)
+        {
+            if (response.Ready()) {
+                var content = JsonConvert.SerializeObject(response.state);
+
+                ActionCode action = response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
+
+                ResponseToClient clientResponse = new ResponseToClient(response.requestId, "Success", content, response.originalRequest);
+
+                clientMgr.SendTrackingResponse(_request.action, response);
+            } else {
+                trackingApiResponseQueue.Enqueue(response);
+            }
+        }
+        #endregion
 
         private bool RequestIdExists(JObject _content)
         {

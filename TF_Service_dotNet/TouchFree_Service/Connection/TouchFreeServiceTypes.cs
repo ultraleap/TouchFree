@@ -29,6 +29,11 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         QUICK_SETUP,
         QUICK_SETUP_CONFIG,
         QUICK_SETUP_RESPONSE,
+
+        GET_TRACKING_STATE,
+        GET_TRACKING_STATE_RESPONSE,
+        SET_TRACKING_STATE,
+        SET_TRACKING_STATE_RESPONSE,
     }
 
     internal enum Compatibility
@@ -84,6 +89,20 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         }
     }
 
+    public struct IncomingRequest
+    {
+        public ActionCode action;
+        public string requestId;
+        public string content;
+
+        public IncomingRequest(ActionCode _action, string _requestId, string _content)
+        {
+            action = _action;
+            requestId = _requestId;
+            content = _content;
+        }
+    }
+
     [Serializable]
     public struct ResponseToClient
     {
@@ -101,6 +120,13 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         }
     }
 
+    public struct TrackingState {
+        public MaskingData? mask;
+        public bool? allowImages;
+        public bool? cameraReversed;
+        public bool? analyticsEnabled;
+    }
+
     internal struct CommunicationWrapper<T>
     {
         public string action;
@@ -110,6 +136,22 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         {
             action = _actionCode;
             content = _content;
+        }
+    }
+
+    internal struct MaskingData
+    {
+        public float lower;
+        public float upper;
+        public float right;
+        public float left;
+
+        public MaskingData(float _lower, float _upper, float _right, float _left)
+        {
+            lower = _lower;
+            upper = _upper;
+            right = _right;
+            left = _left;
         }
     }
 }
