@@ -62,7 +62,7 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                 </h1>
             </div>
             <div className="setupCompleteOptionsContainer">
-                <CalibrationPracticeButton progress={progressToClick} />
+                <CalibrationPracticeButton isHandPresent={isHandPresent} progress={progressToClick} />
                 <IconTextButton
                     buttonStyle={buttonStyle}
                     icon={''}

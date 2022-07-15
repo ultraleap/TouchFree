@@ -2,7 +2,7 @@ import 'Styles/Camera/Calibrate.css';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
@@ -157,12 +157,19 @@ const canvasStyles = (): CSSProperties => {
 };
 
 interface CalibrationPracticeButtonProps {
+    isHandPresent: boolean;
     progress: number;
 }
 
-export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps> = ({ progress }) => {
+export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps> = ({ isHandPresent, progress }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
     const numFired = useRef<number>(0);
+
+    useEffect(() => {
+        if (!isHandPresent) {
+            setHovered(false);
+        }
+    }, [isHandPresent]);
 
     const refAnimationInstance = useRef<CreateTypes | null>(null);
     const fire = () => {
