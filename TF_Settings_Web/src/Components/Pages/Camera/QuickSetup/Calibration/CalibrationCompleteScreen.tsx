@@ -11,8 +11,8 @@ import IconTextButton from 'Components/Controls/IconTextButton';
 import { CalibrationHandLostMessage, CalibrationPracticeButton } from './CalibrationComponents';
 
 const buttonStyle: CSSProperties = {
-    width: '50%',
-    height: '30%',
+    width: '60%',
+    height: '25%',
     borderRadius: '33px',
     background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
 };
@@ -54,17 +54,15 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '50px' }} />}
-            <div style={{ paddingTop: '250px' }}>
+            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <div style={{ paddingTop: '200px' }}>
                 <h1 className="setupCompleteText">
                     Setup <br />
                     Complete
                 </h1>
             </div>
-            <div style={{ height: '12%', paddingTop: '12%' }}>
-                <CalibrationPracticeButton progress={progressToClick} />
-            </div>
             <div className="setupCompleteOptionsContainer">
+                <CalibrationPracticeButton progress={progressToClick} />
                 <IconTextButton
                     buttonStyle={buttonStyle}
                     icon={''}
