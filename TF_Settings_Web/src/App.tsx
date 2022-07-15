@@ -16,20 +16,6 @@ const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
     useEffect(() => {
-        /* eslint-disable @typescript-eslint/no-var-requires */
-        /* eslint-disable unicorn/prefer-module */
-        try {
-            const VideoModeConfigurationClass = require('@brightsign/videomodeconfiguration');
-            if (VideoModeConfigurationClass) {
-                const videoConfig = new VideoModeConfigurationClass();
-                videoConfig.setMode({ interlaced: true });
-            }
-        } catch {
-            /*intentionally empty*/
-        }
-        /* eslint-enable @typescript-eslint/no-var-requires */
-        /* eslint-enable unicorn/prefer-module */
-
         const updateTfStatus = () => {
             ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
                 const status = detail.trackingServiceState;
