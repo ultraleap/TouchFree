@@ -45,8 +45,6 @@ namespace Ultraleap.TouchFree.Service.Connection
             diagnosticApi = _diagnosticApiManager;
 
             updateBehaviour.OnUpdate += Update;
-
-            InitialiseDiagnosticListeners();
         }
 
         void Update()
@@ -224,19 +222,19 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             _request.requestId = contentObj.GetValue("requestID").ToString();
 
-            if (_request.action == ActionCode.GET_TRACKING_ANALYTICS)
+            if (_request.action == ActionCode.GET_TRACKING_STATE)
             {
-                HandleGetTrackingStateRequest(contentObj, requestId, _request.content);
+                HandleGetTrackingStateRequest(_request);
             }
             else
             {
-                HandleSetTrackingStateRequest(contentObj, requestId, _request.content);
+                HandleSetTrackingStateRequest(contentObj, _request);
             }
         }
 
-        void HandleGetTrackingStateRequest(JObject contentObj, string requestId, string originalContent)
+        void HandleGetTrackingStateRequest(IncomingRequest _request)
         {
-            TrackingResponse response = new TrackingResponse(requestId, originalContent, true, true, true, true, true, diagnosticApi);
+            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true, diagnosticApi);
 
             diagnosticApi.GetAllowImages();
             diagnosticApi.GetImageMask();
@@ -244,7 +242,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             diagnosticApi.GetAnalyticsMode();
         }
 
-        void HandleSetTrackingStateRequest(JObject contentObj, string requestId, string originalContent)
+        void HandleSetTrackingStateRequest(JObject contentObj, IncomingRequest _request)
         {
             JToken maskToken;
             JToken allowImagesToken;
@@ -253,10 +251,10 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             bool needsMask = contentObj.TryGetValue("mask", out maskToken);
             bool needsImages = contentObj.TryGetValue("allowImages", out allowImagesToken);
-            bool needsOrientation = contentObj.TryGetValue("cameraReversed", out maskToken);
+            bool needsOrientation = contentObj.TryGetValue("cameraReversed", out cameraReversedToken);
             bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
 
-            TrackingResponse response = new TrackingResponse(requestId, originalContent, false, needsMask, needsImages, needsOrientation, needsMask, diagnosticApi);
+            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsMask, diagnosticApi);
 
             if (needsMask)
             {
@@ -267,7 +265,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             if (needsImages)
             {
                 var allowImages = allowImagesToken.ToObject<bool>();
-                diagnosticApi.SetAllowImages(allowImagesToken);
+                diagnosticApi.SetAllowImages(allowImages);
             }
 
             if (needsOrientation)
@@ -283,18 +281,18 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        void HandleTrackingResponses(TrackingResponse response)
+        void HandleTrackingResponses(TrackingResponse _response)
         {
-            if (response.Ready()) {
-                var content = JsonConvert.SerializeObject(response.state);
+            if (_response.Ready()) {
+                var content = JsonConvert.SerializeObject(_response.state);
 
-                ActionCode action = response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
+                ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
 
-                ResponseToClient clientResponse = new ResponseToClient(response.requestId, "Success", content, response.originalRequest);
+                ResponseToClient clientResponse = new ResponseToClient(_response.requestId, "Success", content, _response.originalRequest);
 
-                clientMgr.SendTrackingResponse(_request.action, response);
+                clientMgr.SendTrackingResponse(action, clientResponse);
             } else {
-                trackingApiResponseQueue.Enqueue(response);
+                trackingApiResponseQueue.Enqueue(_response);
             }
         }
         #endregion

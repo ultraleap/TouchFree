@@ -139,7 +139,7 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         }
     }
 
-    internal struct MaskingData
+    public struct MaskingData
     {
         public float lower;
         public float upper;

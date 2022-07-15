@@ -22,6 +22,11 @@ namespace Ultraleap.TouchFree.Library.Connections
         public bool cameraReversed = false;
         public bool? allowImages;
 
+        public event Action<ImageMaskData> OnMaskingResponse;
+        public event Action<bool> OnAnalyticsResponse;
+        public event Action<bool> OnAllowImagesResponse;
+        public event Action<bool> OnCameraOrientationResponse;
+
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;

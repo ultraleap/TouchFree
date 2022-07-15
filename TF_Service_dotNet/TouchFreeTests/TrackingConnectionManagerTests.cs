@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
+
 using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace TouchFreeTests
 {

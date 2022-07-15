@@ -1,3 +1,6 @@
+using Ultraleap.TouchFree.Library.Connections;
+using Ultraleap.TouchFree.Service.ConnectionTypes;
+
 namespace Ultraleap.TouchFree.Service.Connection
 {
     public class TrackingResponse
@@ -12,6 +15,8 @@ namespace Ultraleap.TouchFree.Service.Connection
         public bool isGetRequest;
         public TrackingState state;
 
+        private readonly ITrackingDiagnosticApi diagnosticApi;
+
         public TrackingResponse(string _requestId,
                                 string _originalRequest,
                                 bool _isGetRequest,
@@ -19,7 +24,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                                 bool _needsImages,
                                 bool _needsOrientation,
                                 bool _needsAnalytics,
-                                IDiagnosticAPI diagnosticAPI)
+                                ITrackingDiagnosticApi _diagnosticAPI)
         {
             requestId = _requestId;
             originalRequest = _originalRequest;
@@ -28,6 +33,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             needsImages = _needsImages;
             needsOrientation = _needsOrientation;
             needsAnalytics = _needsAnalytics;
+            diagnosticApi = _diagnosticAPI;
 
             if (_needsMask) {
                 diagnosticApi.OnMaskingResponse += this.OnMasking;
@@ -38,11 +44,11 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
 
             if (_needsOrientation) {
-                diagnosticApi.OnCameraOrientationResponse += response.OnCameraOrientation;
+                diagnosticApi.OnCameraOrientationResponse += this.OnCameraOrientation;
             }
 
             if (_needsAnalytics) {
-                diagnosticApi.OnAnalyticsResponse += response.OnAnalytics;
+                diagnosticApi.OnAnalyticsResponse += this.OnAnalytics;
             }
 
             state = new TrackingState();
@@ -53,7 +59,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         }
 
         public void OnMasking(ImageMaskData _mask) {
-            state.mask = _mask;
+            state.mask = new MaskingData((float)_mask.lower, (float)_mask.upper, (float)_mask.right, (float)_mask.left);
             needsMask = false;
         }
 
