@@ -43,6 +43,12 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
+        public static IServiceCollection AddTrackingDiagnosticApi(this IServiceCollection services)
+        {
+            services.AddSingleton<ITrackingDiagnosticApi, TrackingDiagnosticApi>();
+            return services;
+        }
+
         public static IServiceCollection AddConfig(this IServiceCollection services)
         {
             var configManager = new ConfigManager();

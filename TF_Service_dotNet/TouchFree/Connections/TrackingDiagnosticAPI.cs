@@ -186,7 +186,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                         {
                             var data = JsonConvert.DeserializeObject<DApiPayloadMessage<ServiceInfoPayload>>(_message);
                             trackingServiceVersion = data.payload.server_version ?? trackingServiceVersion;
-                            OnTrackingServerInfoResponse();
+                            OnTrackingServerInfoResponse?.Invoke();
                         }
                         catch (Exception ex)
                         {
@@ -200,7 +200,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                             var data = JsonConvert.DeserializeObject<DApiPayloadMessage<DiagnosticDeviceInformation>>(_message);
                             connectedDeviceFirmware = data?.payload.device_firmware ?? connectedDeviceFirmware;
                             connectedDeviceSerial = data?.payload.device_serial ?? connectedDeviceSerial;
-                            OnTrackingDeviceInfoResponse();
+                            OnTrackingDeviceInfoResponse?.Invoke();
                         }
                         catch (Exception ex)
                         {
@@ -260,7 +260,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 // Version does not allow masking
                 maskingAllowed = false;
             }
-            OnTrackingApiVersionResponse();
+            OnTrackingApiVersionResponse?.Invoke();
         }
 
         public void Request(object payload)
