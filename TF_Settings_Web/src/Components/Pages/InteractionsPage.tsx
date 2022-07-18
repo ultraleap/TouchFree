@@ -7,9 +7,7 @@ import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/
 import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
-import AirPushPreview from 'Videos/AirPush_Preview.webm';
-import HoverPreview from 'Videos/Hover_Preview.webm';
-import TouchPlanePreview from 'Videos/TouchPlane_Preview.webm';
+import InteractionPreviews from 'Videos/Interaction_Explainer_Combined.mp4';
 
 import { RadioGroup } from 'Components/Controls/RadioGroup';
 import { RadioLine } from 'Components/Controls/RadioLine';
@@ -34,8 +32,6 @@ interface InteractionsState {
 }
 
 export class InteractionsPage extends Component<{}, InteractionsState> {
-    private videoPaths: string[] = [AirPushPreview, HoverPreview, TouchPlanePreview];
-
     componentDidMount(): void {
         ConfigurationManager.RequestConfigFileState(this.setStateFromFile.bind(this));
     }
@@ -328,6 +324,8 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                 );
             }
 
+
+
             coreBody = (
                 <div>
                     <div className="horizontalContainer sideSpacing">
@@ -338,12 +336,12 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                             onChange={this.onInteractionChange.bind(this)}
                         />
                         <video
-                            autoPlay
-                            loop
-                            key={this.state.interactionConfig.InteractionType}
-                            className="InteractionPreview"
+                            autoPlay={true}
+                            loop={true}
+                            key={InteractionPreviews}
+                            className={'InteractionPreview Interaction' + activeInteraction.toString()}
                         >
-                            <source src={this.videoPaths[activeInteraction]} type="video/webm" />
+                            <source src={InteractionPreviews} />
                         </video>
                     </div>
 
