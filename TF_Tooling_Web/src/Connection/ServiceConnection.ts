@@ -13,6 +13,9 @@ import {
     ServiceStatus,
     ServiceStatusCallback,
     ServiceStatusRequest,
+    SimpleRequest,
+    TrackingState,
+    SimpleCallback,
     WebSocketResponse
 } from './TouchFreeServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
@@ -133,6 +136,9 @@ export class ServiceConnection {
             case ActionCode.SERVICE_STATUS_RESPONSE:
             case ActionCode.CONFIGURATION_FILE_RESPONSE:
             case ActionCode.QUICK_SETUP_RESPONSE:
+            case ActionCode.GET_TRACKING_STATE_RESPONSE:
+            case ActionCode.SET_TRACKING_STATE_RESPONSE:
+                console.log(_message)
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
@@ -265,6 +271,29 @@ export class ServiceConnection {
             ConnectionManager.messageReceiver.configStateCallbacks[guid] =
                 new ConfigStateCallback(Date.now(), _configurationCallback);
         }
+
+        this.webSocket.send(message);
+    }
+
+    // Function: RequestTrackingState
+    // Requests 
+    RequestTrackingState(_callback: (detail: WebSocketResponse) => void) {
+        if (!_callback) {
+            console.error('Request failed. This is due to a missing callback');
+            return;
+        }
+        const guid: string = uuidgen();
+        const request: SimpleRequest = new SimpleRequest(guid);
+        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<SimpleRequest>(
+            ActionCode.GET_TRACKING_STATE,
+            request
+        );
+        const message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new SimpleCallback(
+            Date.now(),
+            _callback
+        );
 
         this.webSocket.send(message);
     }
