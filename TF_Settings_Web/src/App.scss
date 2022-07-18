@@ -6,8 +6,14 @@
     background-color: var(--app-background-color);
 }
 
-.pageContent {
+.page-content {
     padding-top: var(--control-bar-size);
     height: calc(100 - var(--control-bar-size));
     background-color: var(--app-background-color);
+}
+
+.title-line {
+    color: white;
+    text-align: left;
+    padding-left: 3rem;
 }

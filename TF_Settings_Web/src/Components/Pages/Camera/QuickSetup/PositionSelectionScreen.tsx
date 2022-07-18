@@ -1,4 +1,4 @@
-import 'Styles/Camera/Camera.css';
+import 'Styles/Camera/Camera.scss';
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
 import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
 import CameraFacingUserIcon from 'Images/Camera/Camera_Facing_User.svg';
 
-import IconTextButton from 'Components/Controls/IconTextButton';
+import { VerticalIconTextButton } from 'Components/Controls/TFButton';
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 
@@ -49,12 +49,12 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
     const navigate = useNavigate();
     return (
         <div>
-            <div className="titleLine">
+            <div className="title-line">
                 <h1> Where is Your Camera Positioned? </h1>
             </div>
-            <div className="IconTextButtonDiv">
+            <div className="tf-button-container">
                 {positionOptions.map(({ type, title, icon }: PositionOption) => (
-                    <IconTextButton
+                    <VerticalIconTextButton
                         key={type}
                         buttonStyle={buttonStyle}
                         icon={icon}

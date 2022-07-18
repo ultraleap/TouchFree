@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import 'Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.scss';
 
 import React, { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';

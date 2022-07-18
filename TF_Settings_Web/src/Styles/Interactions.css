@@ -1,18 +1,3 @@
-.titleLine {
-    color: white;
-
-    display: flex;
-    flex-direction: row;
-    align-items: left;
-    text-align: left;
-
-    padding-left: 3rem;
-}
-
-.titleLine > h1 {
-    flex: 1 1 auto;
-}
-
 .tfButton {
     border: 0.1rem transparent;
     padding: 0.3rem;

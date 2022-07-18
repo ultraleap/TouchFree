@@ -1,0 +1,24 @@
+.control-bar-container {
+    position: fixed;
+    top: 0;
+    width: var(--app-width);
+    height: var(--control-bar-size);
+    background-image: linear-gradient(270deg, #3c3c3c, #2f2f2f);
+    z-index: 1;
+}
+
+.control-bar-top {
+    display: flex;
+    justify-content: space-between;
+    height: 5rem;
+}
+
+.control-bar-bottom {
+    display: flex;
+    height: 5.6rem;
+}
+
+.control-bar-logo {
+    align-self: center;
+    width: 30rem;
+}
