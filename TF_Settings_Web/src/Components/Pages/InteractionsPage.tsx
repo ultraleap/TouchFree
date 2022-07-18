@@ -7,9 +7,7 @@ import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/
 import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
-import AirPushPreview from 'Videos/AirPush_Preview.mp4';
-import HoverPreview from 'Videos/Hover_Preview.mp4';
-import TouchPlanePreview from 'Videos/TouchPlane_Preview.mp4';
+import InteractionPreviews from 'Videos/Interaction_Explainer_Combined.mp4';
 
 import { RadioGroup } from 'Components/Controls/RadioGroup';
 import { RadioLine } from 'Components/Controls/RadioLine';
@@ -34,8 +32,6 @@ interface InteractionsState {
 }
 
 export class InteractionsPage extends Component<{}, InteractionsState> {
-    private videoPaths: string[] = [AirPushPreview, HoverPreview, TouchPlanePreview];
-
     componentDidMount(): void {
         ConfigurationManager.RequestConfigFileState(this.setStateFromFile.bind(this));
     }
@@ -217,7 +213,6 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
         let coreBody: JSX.Element = <div />;
         const interactionControls: JSX.Element[] = [];
         const zoneControls: JSX.Element[] = [];
-        let interactionVideos: JSX.Element[];
 
         // TODO: Make it so elements appear even when state is null to prevent flash of empty
         //       screen while reading in config
@@ -329,19 +324,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                 );
             }
 
-            interactionVideos = this.videoPaths.map((video, videoIndex) => {
-                return (
-                    <video
-                        autoPlay={true}
-                        loop={true}
-                        key={video}
-                        className="InteractionPreview"
-                        style={{ display: videoIndex === activeInteraction ? undefined : 'none' }}
-                    >
-                        <source src={video} />
-                    </video>
-                );
-            });
+
 
             coreBody = (
                 <div>
@@ -352,7 +335,14 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                             options={Object.keys(InteractionTranslator)}
                             onChange={this.onInteractionChange.bind(this)}
                         />
-                        {interactionVideos}
+                        <video
+                            autoPlay={true}
+                            loop={true}
+                            key={InteractionPreviews}
+                            className={'InteractionPreview Interaction' + activeInteraction.toString()}
+                        >
+                            <source src={InteractionPreviews} />
+                        </video>
                     </div>
 
                     <div className="verticalContainer sideSpacing">

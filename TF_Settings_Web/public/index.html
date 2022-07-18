@@ -21,21 +21,6 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
         <title>TouchFree Configuration</title>
-        <script name="TouchFree" type="text/javascript">            
-            /* eslint-disable @typescript-eslint/no-var-requires */
-            /* eslint-disable unicorn/prefer-module */
-            try {
-                const VideoModeConfigurationClass = require('@brightsign/videomodeconfiguration');
-                if (VideoModeConfigurationClass) {
-                    const videoConfig = new VideoModeConfigurationClass();
-                    videoConfig.setMode({ interlaced: true });
-                }
-            } catch {
-                /*intentionally empty*/
-            }
-            /* eslint-enable @typescript-eslint/no-var-requires */
-            /* eslint-enable unicorn/prefer-module */
-        </script>
     </head>
     <body>
         <svg

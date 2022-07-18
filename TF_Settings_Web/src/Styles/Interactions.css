@@ -60,7 +60,21 @@ video.InteractionPreview {
     flex: 1 1 auto;
 
     max-width: 30rem;
-    max-height: 18rem;
+    max-height: 17.5rem;
+    height: 17.5rem;
+    object-fit: cover;
+}
+
+video.InteractionPreview.Interaction0 {
+    object-position: 50% 0rem;
+}
+
+video.InteractionPreview.Interaction1 {
+    object-position: 50% -36.5rem;
+}
+
+video.InteractionPreview.Interaction2 {
+    object-position: 50% -18.5rem;
 }
 
 .verticalContainer {
