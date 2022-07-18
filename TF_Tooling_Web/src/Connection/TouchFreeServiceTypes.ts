@@ -7,6 +7,7 @@ import {
     ConfigurationState,
     TrackingServiceState
 } from '../TouchFreeToolingTypes';
+import { Mask } from '../Tracking/TrackingTypes';
 
 // Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data
@@ -19,6 +20,10 @@ import {
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
+// GET_TRACKING_STATE - Represents a request to receive the current state of the tacking settings
+// GET_TRACKING_STATE_RESPONSE - Represents a response from a GET_TRACKING_STATE with the current state of the tacking settings
+// SET_TRACKING_STATE - Represents a request to set the current state of the tacking settings
+// SET_TRACKING_STATE_RESPONSE - Represents a response from a SET_TRACKING_STATE with the updated state of the tacking settings
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
 
@@ -44,13 +49,18 @@ export enum ActionCode {
     QUICK_SETUP = "QUICK_SETUP",
     QUICK_SETUP_CONFIG = "QUICK_SETUP_CONFIG",
     QUICK_SETUP_RESPONSE = "QUICK_SETUP_RESPONSE",
+
+    GET_TRACKING_STATE = "GET_TRACKING_STATE",
+    GET_TRACKING_STATE_RESPONSE = "GET_TRACKING_STATE_RESPONSE",
+    SET_TRACKING_STATE = "SET_TRACKING_STATE",
+    SET_TRACKING_STATE_RESPONSE = "SET_TRACKING_STATE_RESPONSE",
 }
 
 // Enum: HandPresenceState
 // HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
 // HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
 // PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
-//             use in <MessageReciever> for more details.
+//             use in <MessageReceiver> for more details.
 export enum HandPresenceState {
     HAND_FOUND,
     HANDS_LOST,
@@ -244,5 +254,97 @@ export class CommunicationWrapper<T> {
     constructor(_actionCode: ActionCode, _content: T) {
         this.action = _actionCode;
         this.content = _content;
+    }
+}
+
+// Class: PartialTrackingState
+// This data structure is used to send requests for changes to the Tracking settings.
+//
+// When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
+export class PartialTrackingState {
+    // Variable: requestID
+    requestID: string;
+    // Variable: mask
+    mask: Mask | null;
+    // Variable: cameraOrientation
+    cameraReversed: boolean | null;
+    // Variable: allowImages
+    allowImages: boolean | null;
+    // Variable: analyticsEnabled
+    analyticsEnabled: boolean | null;
+
+    constructor(
+        _id: string,
+        _mask: Mask | null,
+        _cameraReversed: boolean | null,
+        _allowImages: boolean | null,
+        _analyticsEnabled: boolean | null
+    ) {
+        this.requestID = _id;
+        this.mask = _mask;
+        this.cameraReversed = _cameraReversed;
+        this.allowImages = _allowImages;
+        this.analyticsEnabled = _analyticsEnabled;
+    }
+}
+
+// Class: PartialTrackingState
+// This data structure is used to send requests for changes to the Tracking settings.
+//
+// When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
+export class TrackingState {
+    // Variable: requestID
+    requestID: string;
+    // Variable: mask
+    mask: Mask;
+    // Variable: reverseCameraOrientation
+    cameraReversed: boolean;
+    // Variable: allowImages
+    allowImages: boolean;
+    // Variable: analyticsEnabled
+    analyticsEnabled: boolean;
+
+    constructor(
+        _id: string,
+        _mask: Mask,
+        _cameraReversed: boolean,
+        _allowImages: boolean,
+        _analyticsEnabled: boolean
+    ) {
+        this.requestID = _id;
+        this.mask = _mask;
+        this.cameraReversed = _cameraReversed;
+        this.allowImages = _allowImages;
+        this.analyticsEnabled = _analyticsEnabled;
+    }
+}
+
+// class: TrackingChangeRequest
+// Used to request the current state of the configuration on the Service. This is received as
+// a <TrackingState> which should be linked to a <TrackingStateCallback> via requestID to make
+// use of the data received.
+export class SimpleRequest {
+    // Variable: requestID
+    requestID: string;
+
+    constructor(_id: string) {
+        this.requestID = _id;
+    }
+}
+
+// Class: TrackingStateCallback
+// Used by <MessageReceiver> to wait for a <TrackingState> from the Service. Owns a callback
+// with a <TrackingState> as a parameter to allow users to make use of the new
+// <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
+// timeout if not seen within a reasonable timeframe.
+export class SimpleCallback {
+    // Variable: timestamp
+    timestamp: number;
+    // Variable: callback
+    callback: (detail: WebSocketResponse) => void;
+
+    constructor(_timestamp: number, _callback: (detail: WebSocketResponse) => void) {
+        this.timestamp = _timestamp;
+        this.callback = _callback;
     }
 }
