@@ -1,4 +1,5 @@
 import 'Styles/ControlBar.scss';
+import cssVariables from 'Styles/_variables.scss';
 
 import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -22,7 +23,7 @@ const backButtonStyle: CSSProperties = {
     borderRadius: '30px',
     marginLeft: '1%',
     marginBottom: '2%',
-    background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
+    background: cssVariables.lightGreyGradient,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

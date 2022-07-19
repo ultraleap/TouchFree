@@ -106,7 +106,7 @@ input[type='number'] {
     max-width: 3rem;
     margin-right: 1.5rem;
 
-    background: transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box;
+    background: v.$light-grey-gradient;
     box-shadow: 0px 2px 5px #00000080;
     border: 1px solid #ffffff1a;
     border-radius: 10px;

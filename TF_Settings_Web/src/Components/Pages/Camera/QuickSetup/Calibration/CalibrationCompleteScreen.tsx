@@ -1,4 +1,5 @@
 import 'Styles/Camera/Calibrate.scss';
+import cssVariables from 'Styles/_variables.scss';
 
 import React, { CSSProperties, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +15,7 @@ const buttonStyle: CSSProperties = {
     width: '60%',
     height: '25%',
     borderRadius: '33px',
-    background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
+    background: cssVariables.lightGreyGradient,
 };
 
 const titleStyle: CSSProperties = {

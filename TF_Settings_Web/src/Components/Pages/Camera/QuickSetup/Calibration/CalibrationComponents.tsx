@@ -113,7 +113,7 @@ const cancelSetupButtonStyle: CSSProperties = {
     width: '300px',
     height: '4vh',
     borderRadius: '50px',
-    background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
+    background: cssVariables.lightGreyGradient,
 };
 
 const cancelSetupButtonTextStyle: CSSProperties = {

@@ -18,4 +18,11 @@
     color: white;
     text-align: left;
     padding-left: 3rem;
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+
+    h1 {
+        flex: 1 1 auto;
+    }
 }

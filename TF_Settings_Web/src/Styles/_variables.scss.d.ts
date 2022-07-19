@@ -4,6 +4,8 @@ export interface GlobalCSS {
     controlBarSize: string;
     appBackgroundColor: string;
     ultraLeapGreen: string;
+    lightGreyGradient: string;
+    darkGreyGradient: string;
 }
 
 export const styles: GlobalCSS;
