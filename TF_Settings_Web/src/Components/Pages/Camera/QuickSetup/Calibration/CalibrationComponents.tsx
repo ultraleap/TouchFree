@@ -131,7 +131,7 @@ export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = (
     return (
         <TextButton
             buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
-            title="Cancel Setup"
+            title=""
             titleStyle={{ display: 'none' }}
             text="Cancel Setup"
             textStyle={cancelSetupButtonTextStyle}
