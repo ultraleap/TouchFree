@@ -20,6 +20,8 @@ namespace Ultraleap.TouchFree.Library
         public Hand SecondaryHand { get; private set; }
         public HandChirality secondaryChirality;
 
+        private List<Leap.Hand> PreConversionRawHands;
+
         public HandFrame RawHands { get; private set; }
 
         public List<Leap.Vector> RawHandPositions
@@ -116,6 +118,7 @@ namespace Ultraleap.TouchFree.Library
             if (trackingProvider != null)
             {
                 trackingProvider.controller.FrameReady += Update;
+                trackingProvider.controller.ImageReady += UpdateRawHands;
             }
 
             if (_configManager != null)
@@ -178,6 +181,47 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
+        private Vector3 LeapToCameraFrame(Leap.Vector leapVector, Leap.Image image)
+        {
+            var ray = new Leap.Vector((float)Math.Atan2(leapVector.x, leapVector.y), (float)Math.Atan2(leapVector.z, leapVector.y), -(float)Math.Sqrt(leapVector.x * leapVector.x + leapVector.z * leapVector.z + leapVector.y * leapVector.y));
+
+            var leftPosition = image.RectilinearToPixel(Image.CameraType.LEFT, ray);
+            var rightPosition = image.RectilinearToPixel(Image.CameraType.RIGHT, ray);
+
+            return new Vector3(leftPosition.x, leftPosition.y, leftPosition.z);
+
+            //var distanceFromCentre = Math.Sqrt(leapVector.x * leapVector.x + leapVector.z * leapVector.z + leapVector.y * leapVector.y);
+            //var xRotation = Math.Atan2(leapVector.x, leapVector.y) / Math.PI;
+            //var yRotation = Math.Atan2(leapVector.z, leapVector.y) / Math.PI;
+
+
+            //return new Vector3((float)xRotation, (float)yRotation, (float)distanceFromCentre);
+        }
+
+        public void UpdateRawHands(object sender, ImageEventArgs e)
+        {
+            if (PreConversionRawHands != null && e.image != null)
+            {
+                RawHands = new HandFrame()
+                {
+                    Hands = PreConversionRawHands.Select(x => new RawHand()
+                    {
+                        Fingers = x.Fingers.Select(f => new RawFinger()
+                        {
+                            Type = (FingerType)f.Type,
+                            Bones = f.bones.Select(b => new RawBone()
+                            {
+                                NextJoint = LeapToCameraFrame(b.NextJoint, e.image),
+                                PrevJoint = LeapToCameraFrame(b.PrevJoint, e.image)
+                            }).ToArray()
+                        }).ToArray(),
+                        WristPosition = LeapToCameraFrame(x.WristPosition, e.image),
+                        WristWidth = x.PalmWidth
+                    }).ToArray()
+                };
+            }
+        }
+
         public void Update(object sender, FrameEventArgs e)
         {
             var currentFrame = e.frame;
@@ -200,25 +244,10 @@ namespace Ultraleap.TouchFree.Library
 
             handsLastFrame = handCount;
 
-            RawHands = new HandFrame()
-            {
-                Hands = currentFrame.Hands.Select(x => new RawHand()
-                {
-                    Fingers = x.Fingers.Select(f => new RawFinger()
-                    {
-                        Type = (FingerType)f.Type,
-                        Bones = f.bones.Select(b => new RawBone()
-                        {
-                            NextJoint = Utilities.LeapVectorToNumerics(b.NextJoint),
-                            PrevJoint = Utilities.LeapVectorToNumerics(b.PrevJoint)
-                        }).ToArray()
-                    }).ToArray(),
-                    WristPosition = Utilities.LeapVectorToNumerics(x.WristPosition),
-                    WristWidth = x.PalmWidth
-                }).ToArray()
-            };
+            PreConversionRawHands = currentFrame.Hands;
 
-            currentFrame.Transform(trackingTransform);
+
+            currentFrame = currentFrame.TransformedCopy(trackingTransform);
 
             Timestamp = currentFrame.Timestamp;
 

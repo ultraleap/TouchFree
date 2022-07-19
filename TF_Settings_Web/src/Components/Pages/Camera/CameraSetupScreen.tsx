@@ -121,7 +121,7 @@ const CameraSetupScreen = () => {
     }, []);
 
     const translateToCoordinate = (coordinate: any) => {
-        return new HandSvgCoordinate(200 + coordinate.X * 400, 200 + coordinate.Z * 400);
+        return new HandSvgCoordinate(330-coordinate.X, coordinate.Y - 30);
     };
 
     const tipJointIndex = 3;
@@ -155,8 +155,6 @@ const CameraSetupScreen = () => {
                 <h1> Camera Setup </h1>
             </div>
             <div className="IconTextButtonDiv">
-                <HandSvg key="hand-data-1" data={handData.handOne} />
-                <HandSvg key="hand-data-2" data={handData.handTwo} />
                 <IconTextButton
                     buttonStyle={{ width: '63.75%' }}
                     icon={QuickSetupIcon}
@@ -177,7 +175,9 @@ const CameraSetupScreen = () => {
                 />
             </div>
             <canvas ref={topVideoRef} style={{ width: '400px', height: '400px', margin: '50px' }} />
+            <HandSvg key="hand-data-1" data={handData.handOne} />
             <canvas ref={botVideoRef} style={{ width: '400px', height: '400px', margin: '50px' }} />
+            <HandSvg key="hand-data-2" data={handData.handTwo} />
         </div>
     );
 };

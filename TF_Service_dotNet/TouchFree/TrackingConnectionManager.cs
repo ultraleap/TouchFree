@@ -162,6 +162,8 @@ namespace Ultraleap.TouchFree.Library
                     controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
+
+            controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
         }
     }
 }
