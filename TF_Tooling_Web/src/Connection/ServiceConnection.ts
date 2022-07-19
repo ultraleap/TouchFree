@@ -138,7 +138,6 @@ export class ServiceConnection {
             case ActionCode.QUICK_SETUP_RESPONSE:
             case ActionCode.GET_TRACKING_STATE_RESPONSE:
             case ActionCode.SET_TRACKING_STATE_RESPONSE:
-                console.log(_message)
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
@@ -290,10 +289,7 @@ export class ServiceConnection {
         );
         const message: string = JSON.stringify(wrapper);
 
-        ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new SimpleCallback(
-            Date.now(),
-            _callback
-        );
+        ConnectionManager.messageReceiver.responseCallbacks[guid] = new SimpleCallback(Date.now(), _callback);
 
         this.webSocket.send(message);
     }
