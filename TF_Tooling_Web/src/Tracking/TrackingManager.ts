@@ -37,8 +37,8 @@ export class TrackingManager {
     public static RequestTrackingChange(
         _callback: (detail: WebSocketResponse) => void | null,
         _mask: Mask | null,
-        _cameraReversed: boolean | null,
         _allowImages: boolean | null,
+        _cameraReversed: boolean | null,
         _analyticsEnabled: boolean | null
     ) {
         const requestID = uuidgen();
