@@ -1,15 +1,17 @@
+@use 'Styles/variables' as v;
+
 .app {
     text-align: center;
     height: 100vh;
-    width: var(--app-width);
-    margin-left: var(--app-margin-left);
-    background-color: var(--app-background-color);
+    width: v.$app-width;
+    margin-left: v.$app-margin-left;
+    background-color: v.$app-background-color;
 }
 
 .page-content {
-    padding-top: var(--control-bar-size);
-    height: calc(100 - var(--control-bar-size));
-    background-color: var(--app-background-color);
+    padding-top: v.$control-bar-size;
+    height: calc(100% - v.$control-bar-size);
+    background-color: v.$app-background-color;
 }
 
 .title-line {

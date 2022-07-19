@@ -1,4 +1,4 @@
-import 'Styles/Interactions.css';
+import 'Styles/Interactions.scss';
 
 import { Component } from 'react';
 
@@ -384,7 +384,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     <button
                         onClick={this.resetToDefaults.bind(this)}
                         onPointerUp={this.resetToDefaults.bind(this)}
-                        className="tfButton"
+                        className="reset-button"
                     >
                         <p> Reset to Default </p>
                     </button>

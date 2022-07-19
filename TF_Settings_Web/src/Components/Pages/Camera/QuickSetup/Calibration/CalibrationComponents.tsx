@@ -1,4 +1,5 @@
 import 'Styles/Camera/Calibrate.scss';
+import cssVariables from 'Styles/_variables.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
@@ -7,8 +8,6 @@ import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-
-import { APP_MARGIN_LEFT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import DownArrow from 'Images/Down_Arrow.svg';
@@ -72,7 +71,7 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
-                pathColor: ULTRALEAP_GREEN,
+                pathColor: cssVariables.ultraLeapGreen,
                 trailColor: 'transparent',
                 pathTransitionDuration: 0.08,
             })}
@@ -144,10 +143,10 @@ export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = (
 const canvasStyles = (): CSSProperties => {
     return {
         height: '100%',
-        width: APP_WIDTH,
+        width: cssVariables.appWidth,
         position: 'fixed',
         top: 0,
-        left: APP_MARGIN_LEFT,
+        left: cssVariables.appMarginLeft,
         pointerEvents: 'none',
     };
 };

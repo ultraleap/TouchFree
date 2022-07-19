@@ -1,3 +1,5 @@
+@use 'Styles/variables' as v;
+
 /* The switch - the box around the slider */
 .switch {
     margin: 0.75rem;
@@ -46,7 +48,7 @@
 }
 
 input:checked + .toggle {
-    background-image: linear-gradient(180deg, var(--ultraleap-green), #00ccce);
+    background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce);
 }
 
 input:checked + .toggle:before {

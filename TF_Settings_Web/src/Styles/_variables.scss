@@ -1,0 +1,13 @@
+$app-width: 1080px;
+$app-margin-left: calc((100% - $app-width) / 2);
+$control-bar-size: 170px;
+$app-background-color: #222222;
+$ultraleap-green: #01eb85;
+
+:export {
+    appWidth: $app-width;
+    appMarginLeft: $app-margin-left;
+    controlBarSize: $control-bar-size;
+    appBackgroundColor: $app-background-color;
+    ultraLeapGreen: $ultraleap-green;
+}

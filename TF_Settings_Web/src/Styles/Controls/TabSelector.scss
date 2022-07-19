@@ -1,3 +1,5 @@
+@use 'Styles/variables' as v;
+
 .tabButton {
     cursor: default;
     align-self: stretch;
@@ -15,11 +17,11 @@
 }
 
 .tabButtonActive {
-    background-color: var(--app-background-color);
-    border-top-color: var(--app-background-color);
+    background-color: v.$app-background-color;
+    border-top-color: v.$app-background-color;
 }
 
 .tabButtonHovered {
-    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--ultraleap-green), 0 0 40px var(--ultraleap-green),
-        0 0 50px var(--ultraleap-green);
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px v.$ultraleap-green, 0 0 40px v.$ultraleap-green,
+        0 0 50px v.$ultraleap-green;
 }
