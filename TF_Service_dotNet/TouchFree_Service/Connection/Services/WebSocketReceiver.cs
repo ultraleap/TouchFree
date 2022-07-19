@@ -240,6 +240,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             diagnosticApi.GetImageMask();
             diagnosticApi.GetCameraOrientation();
             diagnosticApi.GetAnalyticsMode();
+
+            trackingApiResponseQueue.Enqueue(response);
         }
 
         void HandleSetTrackingStateRequest(JObject contentObj, IncomingRequest _request)
