@@ -1,6 +1,6 @@
 import 'Styles/StatusIndicator.scss';
 
-import React, { CSSProperties } from 'react';
+import React from 'react';
 
 import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
 
