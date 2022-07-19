@@ -58,13 +58,18 @@ namespace Ultraleap.TouchFree.Service.Connection
             CheckQueue(quickSetupQueue, HandleQuickSetupRequest);
 
             CheckQueue(trackingApiChangeQueue, HandleTrackingRequest);
-            CheckQueue(trackingApiResponseQueue, HandleTrackingResponses);
+            CheckQueue(trackingApiResponseQueue, HandleTrackingResponses, (response) => response.Ready());
         }
 
         static void CheckQueue<T>(ConcurrentQueue<T> _queue, Action<T> _handler)
         {
+            CheckQueue(_queue, _handler, (item) => true);
+        }
+
+        static void CheckQueue<T>(ConcurrentQueue<T> _queue, Action<T> _handler, Func<T, bool> _dequeueCheck)
+        {
             T content;
-            if (_queue.TryPeek(out content))
+            if (_queue.TryPeek(out content) && _dequeueCheck.Invoke(content))
             {
                 // Parse newly received messages
                 _queue.TryDequeue(out content);
@@ -240,6 +245,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             diagnosticApi.GetImageMask();
             diagnosticApi.GetCameraOrientation();
             diagnosticApi.GetAnalyticsMode();
+
+            trackingApiResponseQueue.Enqueue(response);
         }
 
         void HandleSetTrackingStateRequest(JObject contentObj, IncomingRequest _request)
@@ -279,21 +286,19 @@ namespace Ultraleap.TouchFree.Service.Connection
                 var analyticsEnable = analyticsEnabledToken.ToObject<bool>();
                 diagnosticApi.SetAnalyticsMode(analyticsEnable);
             }
+
+            trackingApiResponseQueue.Enqueue(response);
         }
 
         void HandleTrackingResponses(TrackingResponse _response)
         {
-            if (_response.Ready()) {
-                var content = JsonConvert.SerializeObject(_response.state);
+            var content = JsonConvert.SerializeObject(_response.state);
 
-                ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
+            ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
 
-                ResponseToClient clientResponse = new ResponseToClient(_response.requestId, "Success", content, _response.originalRequest);
+            ResponseToClient clientResponse = new ResponseToClient(_response.requestId, "Success", content, _response.originalRequest);
 
-                clientMgr.SendTrackingResponse(action, clientResponse);
-            } else {
-                trackingApiResponseQueue.Enqueue(_response);
-            }
+            clientMgr.SendTrackingResponse(action, clientResponse);
         }
         #endregion
 
