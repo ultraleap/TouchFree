@@ -74,7 +74,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
 
     render() {
         return (
-            <label className="backgroundLabel">
+            <label className="input-label-container">
                 <p className="sliderLabel">{this.props.name}</p>
                 <div className="sliderContainer">
                     <input

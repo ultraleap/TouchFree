@@ -2,6 +2,8 @@ import 'Styles/Camera/Camera.scss';
 
 import React, { useEffect, useState } from 'react';
 
+import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
+
 type CameraType = 'left' | 'right';
 
 const CameraMaskingScreen = () => {
@@ -62,18 +64,15 @@ const CameraMaskingScreen = () => {
                     <p>Right Lens</p>
                 </div>
                 <div className="cam-feeds-options-container">
-                    <div className="cam-feeds-option">
+                    <label className="cam-feeds-option">
                         <div className="cam-feeds-option-text">
                             <h1>Reverse Camera Orientation</h1>
                             <p>Reverse the camera orientation (hand should enter from the bottom)</p>
                         </div>
                         <div className="cam-feeds-option-toggle">
-                            <label className="switch">
-                                <input type="checkbox" checked={isCameraReversed} onChange={(e) => console.log(e)} />
-                                <span className="toggle round" />
-                            </label>
+                            <ToggleSwitch value={isCameraReversed} onChange={(value) => setIsCameraReversed(value)} />
                         </div>
-                    </div>
+                    </label>
                     <div className="cam-feeds-option"></div>
                 </div>
             </div>

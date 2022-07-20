@@ -13,7 +13,7 @@ import { RadioGroup } from 'Components/Controls/RadioGroup';
 import { RadioLine } from 'Components/Controls/RadioLine';
 import { Slider } from 'Components/Controls/Slider';
 import { TextSlider } from 'Components/Controls/TextSlider';
-import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
+import { LabelledToggleSwitch } from 'Components/Controls/ToggleSwitch';
 import { DefaultInteractionConfig } from 'Components/SettingsTypes';
 
 const InteractionTranslator: Record<string, InteractionType> = {
@@ -256,7 +256,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     break;
                 case InteractionType.TOUCHPLANE:
                     interactionControls.push(
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
                             value={this.state.interactionConfig.UseScrollingOrDragging}
@@ -287,7 +287,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     break;
                 case InteractionType.PUSH:
                     interactionControls.push(
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
                             value={this.state.interactionConfig.UseScrollingOrDragging}
@@ -323,8 +323,6 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     />
                 );
             }
-
-
 
             coreBody = (
                 <div>
@@ -364,7 +362,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     </div>
 
                     <div className="verticalContainer sideSpacing">
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Enable/Disable"
                             value={this.state.interactionConfig.InteractionZoneEnabled}
                             onChange={this.interactionZoneToggled.bind(this)}
