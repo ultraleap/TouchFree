@@ -2,8 +2,8 @@ import { ConnectionManager } from '../Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
-    PartialTrackingState,
     TrackingState,
+    TrackingStateResponse,
     WebSocketResponse,
 } from '../Connection/TouchFreeServiceTypes';
 import { v4 as uuidgen } from 'uuid';
@@ -18,7 +18,7 @@ export class TrackingManager {
     // Provides a <TrackingState> asynchronously via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    public static RequestTrackingState(_callback: (detail: WebSocketResponse) => void) {
+    public static RequestTrackingState(_callback: (detail: TrackingStateResponse) => void) {
         if (!_callback) {
             console.error('Config file state request failed. This call requires a callback.');
             return;
@@ -43,7 +43,7 @@ export class TrackingManager {
     ) {
         const requestID = uuidgen();
 
-        const content = new PartialTrackingState(
+        const content = new TrackingState(
             requestID,
             _mask,
             _cameraReversed,

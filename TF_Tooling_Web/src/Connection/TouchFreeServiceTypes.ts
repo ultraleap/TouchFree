@@ -257,11 +257,35 @@ export class CommunicationWrapper<T> {
     }
 }
 
-// Class: PartialTrackingState
-// This data structure is used to send requests for changes to the Tracking settings.
-//
-// When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
-export class PartialTrackingState {
+// Class: SuccessWrapper
+// Type extension for <TrackingStateResponse> to capture the success state, clarifying message and response content.
+export interface SuccessWrapper<T> {
+    // Variable: succeeded
+    succeeded: boolean;
+    // Variable: msg
+    msg: string;
+    // Variable: content
+    content?: T;
+}
+
+// Class: TrackingStateResponse
+// Type of the response from a GET/SET tracking state request. 
+export interface TrackingStateResponse {
+    // Variable: requestID
+    requestID: string;
+    // Variable: mask
+    mask: SuccessWrapper<Mask> | null;
+    // Variable: cameraOrientation
+    cameraReversed: SuccessWrapper<boolean> | null;
+    // Variable: allowImages
+    allowImages: SuccessWrapper<boolean> | null;
+    // Variable: analyticsEnabled
+    analyticsEnabled: SuccessWrapper<boolean> | null;
+}
+
+// Class: TrackingState
+// Used to construct a SET_TRACKING_STATE request.
+export class TrackingState {
     // Variable: requestID
     requestID: string;
     // Variable: mask
@@ -288,41 +312,8 @@ export class PartialTrackingState {
     }
 }
 
-// Class: PartialTrackingState
-// This data structure is used to send requests for changes to the Tracking settings.
-//
-// When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
-export class TrackingState {
-    // Variable: requestID
-    requestID: string;
-    // Variable: mask
-    mask: Mask;
-    // Variable: reverseCameraOrientation
-    cameraReversed: boolean;
-    // Variable: allowImages
-    allowImages: boolean;
-    // Variable: analyticsEnabled
-    analyticsEnabled: boolean;
-
-    constructor(
-        _id: string,
-        _mask: Mask,
-        _cameraReversed: boolean,
-        _allowImages: boolean,
-        _analyticsEnabled: boolean
-    ) {
-        this.requestID = _id;
-        this.mask = _mask;
-        this.cameraReversed = _cameraReversed;
-        this.allowImages = _allowImages;
-        this.analyticsEnabled = _analyticsEnabled;
-    }
-}
-
-// class: TrackingChangeRequest
-// Used to request the current state of the configuration on the Service. This is received as
-// a <TrackingState> which should be linked to a <TrackingStateCallback> via requestID to make
-// use of the data received.
+// class: SimpleRequest
+// Used to make a basic request to the service. To be used with <CommunicationWrapper> to create a more complex request.
 export class SimpleRequest {
     // Variable: requestID
     requestID: string;
@@ -333,17 +324,16 @@ export class SimpleRequest {
 }
 
 // Class: TrackingStateCallback
-// Used by <MessageReceiver> to wait for a <TrackingState> from the Service. Owns a callback
-// with a <TrackingState> as a parameter to allow users to make use of the new
-// <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
+// Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a 
+// <TrackingStateResponse> as a parameter. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class SimpleCallback {
+export class TrackingStateCallback {
     // Variable: timestamp
     timestamp: number;
     // Variable: callback
-    callback: (detail: WebSocketResponse) => void;
+    callback: (detail: TrackingStateResponse) => void;
 
-    constructor(_timestamp: number, _callback: (detail: WebSocketResponse) => void) {
+    constructor(_timestamp: number, _callback: (detail: TrackingStateResponse) => void) {
         this.timestamp = _timestamp;
         this.callback = _callback;
     }

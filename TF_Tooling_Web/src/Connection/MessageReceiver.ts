@@ -5,8 +5,10 @@ import {
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
-    SimpleCallback,
-    WebSocketResponse,
+    TrackingState,
+    TrackingStateCallback,
+    TrackingStateResponse,
+    WebSocketResponse
 } from './TouchFreeServiceTypes';
 import {
     BitmaskFlags,
@@ -72,12 +74,16 @@ export class MessageReceiver {
 
     lastStateUpdate: HandPresenceState;
 
+    // Variable: trackingStateQueue
+    // A queue of <TrackingStates> that have been received from the Service.
+    trackingStateQueue: Array<TrackingStateResponse> = [];
+
     // Variable: trackingSettingsStateCallbacks
     // A dictionary of unique request IDs and <TrackingStateCallback> that represent requests that are awaiting response from the Service.
-    trackingStateCallbacks: { [id: string]: SimpleCallback; } = {};
+    trackingStateCallbacks: { [id: string]: TrackingStateCallback; } = {};
 
     // Variable: callbackClearInterval
-    // Stores the reference number for the interal running <ClearUnresponsiveCallbacks>, allowing
+    // Stores the reference number for the interval running <ClearUnresponsiveCallbacks>, allowing
     // it to be cleared.
     private callbackClearInterval: number;
 
