@@ -6,6 +6,7 @@ export interface GlobalCSS {
     ultraLeapGreen: string;
     lightGreyGradient: string;
     darkGreyGradient: string;
+    baseFont: string;
 }
 
 export const styles: GlobalCSS;

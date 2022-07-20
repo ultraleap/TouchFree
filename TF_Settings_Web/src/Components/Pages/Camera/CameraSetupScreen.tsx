@@ -46,7 +46,7 @@ const CameraSetupScreen = () => {
                 iconStyle={{ marginBottom: '0px' }}
                 title="Camera Masking"
                 text="Mask areas of your cameras vision from reflections and harsh areas of light"
-                onClick={() => navigate('quick')}
+                onClick={() => navigate('masking')}
             />
         </div>
     );

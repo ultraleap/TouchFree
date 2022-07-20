@@ -13,7 +13,7 @@
     height: 4rem;
     min-width: 110px;
 
-    font-family: MontserratRegular, Arial;
+    font-family: v.$base-font;
     font-size: 1.4rem;
     color: white;
 
@@ -30,7 +30,7 @@
     }
 
     > p {
-        font-family: MontserratRegular, Arial;
+        font-family: v.$base-font;
         display: inline-block;
         margin: 0;
         font-size: 22px;
@@ -94,7 +94,7 @@ video.InteractionPreview.Interaction2 {
 .backgroundLabel {
     text-align: left;
     font-size: 1.4rem;
-    font-family: MontserratRegular, Arial;
+    font-family: v.$base-font;
     color: white;
 
     display: flex;
