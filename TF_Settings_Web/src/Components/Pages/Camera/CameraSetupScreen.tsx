@@ -11,6 +11,8 @@ import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
 import { HandSvg, HandSvgCoordinate } from 'Components/Controls/HandSvg';
 import IconTextButton from 'Components/Controls/IconTextButton';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 interface HandRenderState {
     handOne: any;
     handTwo: any;
@@ -215,3 +217,5 @@ const displayCameraFeed = (data: DataView, camera: CameraType, canvas: HTMLCanva
     canvas.height = cameraHeight;
     context.putImageData(new ImageData(buf8, width, cameraHeight), 0, 0);
 };
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
