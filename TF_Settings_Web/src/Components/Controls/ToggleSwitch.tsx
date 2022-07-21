@@ -7,39 +7,29 @@ interface ToggleSwitchProps {
     onChange: (newState: boolean) => void;
 }
 
-export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ value, onChange }) => {
-    return (
-        <>
-            <input
-                type="checkbox"
-                style={{ display: 'none' }}
-                checked={value}
-                onChange={() => {
-                    onChange(!value);
-                }}
-            />
-            <div className="switch" />
-        </>
-    );
-};
+export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ value, onChange }) => (
+    <>
+        <input
+            type="checkbox"
+            style={{ display: 'none' }}
+            checked={value}
+            onChange={() => {
+                onChange(!value);
+            }}
+        />
+        <div className="switch" />
+    </>
+);
 
 interface LabelledToggleSwitchProps extends ToggleSwitchProps {
     name: string;
 }
 
-export const LabelledToggleSwitch: React.FC<LabelledToggleSwitchProps> = ({ name, value, onChange }) => {
-    return (
-        <label className="input-label-container">
-            <p className="switch-label">{name}</p>
-            <input
-                type="checkbox"
-                style={{ display: 'none' }}
-                checked={value}
-                onChange={() => {
-                    onChange(!value);
-                }}
-            />
-            <div className="switch" />
-        </label>
-    );
-};
+export const LabelledToggleSwitch: React.FC<LabelledToggleSwitchProps> = ({ name, value, onChange }) => (
+    <label className="input-label-container">
+        <p className="switch-label">{name}</p>
+        <span className="switch-container">
+            <ToggleSwitch value={value} onChange={onChange} />
+        </span>
+    </label>
+);

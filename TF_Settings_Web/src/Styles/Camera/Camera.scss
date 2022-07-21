@@ -101,11 +101,12 @@
 }
 
 .cam-feeds-option-toggle {
-    width: 15%;
+    width: 18%;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    margin: auto 0 auto 0;
+    height: 40px;
 
     > div {
         margin: 0;
