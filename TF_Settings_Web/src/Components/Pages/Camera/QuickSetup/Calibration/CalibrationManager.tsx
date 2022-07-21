@@ -13,7 +13,7 @@ import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
-import { CalibrationBottomScreen, CalibrationTopScreen } from './CalibrationTopBottomScreens';
+import CalibrationScreen from './CalibrationScreen';
 
 const handEventTypes = ['HandsLost', 'HandFound'];
 
@@ -84,7 +84,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
             <Route
                 path="top"
                 element={
-                    <CalibrationTopScreen
+                    <CalibrationScreen
                         isHandPresent={isHandPresent}
                         onCancel={() => {
                             setCursorDisplay(true);
@@ -96,7 +96,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
             <Route
                 path="bottom"
                 element={
-                    <CalibrationBottomScreen
+                    <CalibrationScreen
                         isHandPresent={isHandPresent}
                         onCancel={() => {
                             setCursorDisplay(true);
