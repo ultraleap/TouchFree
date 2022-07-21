@@ -9,7 +9,7 @@
     margin: 0 2.5%;
 }
 
-#camera-page-divider {
+.camera-page-divider {
     height: 10px;
     margin-top: 40px;
     margin-bottom: 40px;
@@ -62,6 +62,42 @@
 .cam-feed-box--sub {
     @include cam-feed-box(480px, 120px);
     margin: 0;
+    position: relative;
+}
+
+.sub-feed-overlay {
+    position: absolute;
+    height: 102%;
+    width: 102%;
+    left: -1%;
+    top: -1%;
+
+    background: transparent linear-gradient(180deg, #373737 0%, #2c2c2c 100%) 0% 0% no-repeat padding-box;
+    border: 1px solid #ffffff1a;
+    border-radius: 10px;
+    opacity: 0.85;
+
+    display: flex;
+    align-items: center;
+
+    box-shadow: 0px 0px 30px v.$ultraleap-green;
+}
+
+.sub-feed-overlay--content {
+    width: 100%;
+    user-select: none;
+
+    > p {
+        color: white;
+        font-family: v.$base-font;
+        text-align: center;
+        font-size: 25px;
+    }
+
+    > img {
+        height: 45px;
+        margin-bottom: 10px;
+    }
 }
 
 .cam-feeds-options-container {
@@ -87,6 +123,7 @@
     text-align: left;
     font-family: v.$base-font;
     color: white;
+    user-select: none;
 
     > h1 {
         font-size: 18px;

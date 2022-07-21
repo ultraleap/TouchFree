@@ -35,7 +35,7 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('manual')}
                 />
             </div>
-            <div id="camera-page-divider" />
+            <div className="camera-page-divider" />
             <div className="title-line">
                 <h1> Tools </h1>
             </div>

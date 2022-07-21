@@ -2,14 +2,18 @@ import 'Styles/Camera/Camera.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
 
+import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
+
 import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
 
-const enum Lens {
+enum Lens {
     Left,
     Right,
 }
 
 const CameraMaskingScreen = () => {
+    const [mainLens, setMainLens] = useState<Lens>(Lens.Left);
+    const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
     // State for Config Options
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
@@ -18,11 +22,12 @@ const CameraMaskingScreen = () => {
     const showOverexposedRef = useRef(showOverexposed);
 
     // Refs for camera displays
-    const mainLensRef = useRef<HTMLCanvasElement>(null);
-    const subLensRef = useRef<HTMLCanvasElement>(null);
+    const leftLensRef = useRef<HTMLCanvasElement>(null);
+    const rightLensRef = useRef<HTMLCanvasElement>(null);
 
     // Ref to track frames so we only display every X frames to save rendering power
     const frameCount = useRef<number>(0);
+    // Ref to track if we have successfully subscribed to camera images
     const successfullySubscribed = useRef<boolean>(false);
 
     const setIsCameraReversed = (value: boolean) => {
@@ -39,8 +44,12 @@ const CameraMaskingScreen = () => {
         const socket = new WebSocket('ws://127.0.0.1:1024');
         socket.binaryType = 'arraybuffer';
 
+        socket.addEventListener('open', () => {
+            console.log('WebSocket open');
+        });
+
         socket.addEventListener('message', (event) => {
-            if (!mainLensRef.current || !subLensRef.current || typeof event.data == 'string') return;
+            if (!leftLensRef.current || !rightLensRef.current || typeof event.data == 'string') return;
             frameCount.current++;
             if (frameCount.current > 1) {
                 if (frameCount.current == 10) {
@@ -56,8 +65,8 @@ const CameraMaskingScreen = () => {
             if (data.getUint8(0) === 1) {
                 successfullySubscribed.current = true;
                 const lensInfo = [
-                    { lens: Lens.Left, ref: mainLensRef.current },
-                    { lens: Lens.Right, ref: subLensRef.current },
+                    { lens: Lens.Left, ref: leftLensRef.current },
+                    { lens: Lens.Right, ref: rightLensRef.current },
                 ];
 
                 for (const { lens, ref } of lensInfo) {
@@ -76,13 +85,24 @@ const CameraMaskingScreen = () => {
                 </p>
             </div>
             <div className="cam-feed-box--main">
-                <canvas ref={mainLensRef} />
-                <p>Left Lens</p>
+                <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
+                <p>{Lens[mainLens]} Lens</p>
             </div>
             <div className="cam-feeds-bottom-container">
-                <div className="cam-feed-box--sub" onClick={() => console.log('SWAP  LENS')}>
-                    <canvas ref={subLensRef} />
-                    <p>Right Lens</p>
+                <div
+                    className="cam-feed-box--sub"
+                    onPointerEnter={() => setIsSubFeedHovered(true)}
+                    onPointerLeave={() => setIsSubFeedHovered(false)}
+                    onPointerDown={() => setMainLens(1 - mainLens)}
+                >
+                    <canvas ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
+                    <p>{Lens[1 - mainLens]} Lens</p>
+                    <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
+                        <div className="sub-feed-overlay--content">
+                            <img src={SwapMainLensIcon} alt="Swap Camera Lens icon" />
+                            <p>Swap as main lens view</p>
+                        </div>
+                    </span>
                 </div>
                 <div className="cam-feeds-options-container">
                     <CameraMaskingOption
