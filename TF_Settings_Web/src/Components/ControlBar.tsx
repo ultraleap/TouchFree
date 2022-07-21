@@ -1,4 +1,5 @@
-import 'Styles/ControlBar.css';
+import 'Styles/ControlBar.scss';
+import cssVariables from 'Styles/_variables.scss';
 
 import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -8,7 +9,7 @@ import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
 import backArrow from 'Images/Back_Arrow.svg';
 import logo from 'Images/Logo.png';
 
-import IconTextButton from './Controls/IconTextButton';
+import { VerticalIconTextButton } from './Controls/TFButton';
 import TabSelector from './Controls/TabSelector';
 import { StatusIndicator } from './StatusIndicator';
 
@@ -22,7 +23,7 @@ const backButtonStyle: CSSProperties = {
     borderRadius: '30px',
     marginLeft: '1%',
     marginBottom: '2%',
-    background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
+    background: cssVariables.lightGreyGradient,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -56,15 +57,15 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
     return pathname.includes('calibrate') ? (
         <></>
     ) : (
-        <div className="overallContainerStyle">
-            <div className="topBarStyle">
+        <div className="control-bar-container">
+            <div className="control-bar-top">
                 <StatusIndicator tfStatus={tfStatus} />
-                <img src={logo} alt="Logo: TouchFree by UltraLeap" className="horizElement" />
-                <div className="emptyContainer" />
+                <img src={logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
+                <div style={{ width: '125px' }} />
             </div>
-            <div className="tabBarStyle">
+            <div className="control-bar-bottom">
                 {pathname === '/settings/camera' || pathname === '/settings/interactions' ? (
-                    <div className="tabBarStyle">
+                    <>
                         <TabSelector
                             name="Camera"
                             isActiveTab={activeTab === 'Camera'}
@@ -75,9 +76,9 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
                             isActiveTab={activeTab === 'Interactions'}
                             onClick={() => setActiveTab('Interactions')}
                         />
-                    </div>
+                    </>
                 ) : (
-                    <IconTextButton
+                    <VerticalIconTextButton
                         buttonStyle={backButtonStyle}
                         icon={backArrow}
                         alt="Arrow pointing back"

@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -43,7 +43,7 @@ const App: React.FC = () => {
     return (
         <div className="app">
             <ControlBar tfStatus={tfStatus} />
-            <div className="pageContent">
+            <div className="page-content">
                 <Routes>
                     <Route path="/settings/camera/*" element={<CameraManager />} />
                     <Route path="/settings/interactions" element={<InteractionsPage />} />

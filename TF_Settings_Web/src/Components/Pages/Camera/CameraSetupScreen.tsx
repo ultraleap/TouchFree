@@ -1,21 +1,22 @@
-import 'Styles/Camera/Camera.css';
+import 'Styles/Camera/Camera.scss';
 
 import { useNavigate } from 'react-router-dom';
 
+import CameraMaskingIcon from 'Images/Camera/Camera_Masking_Icon.png';
 import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';
 import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
 
-import IconTextButton from 'Components/Controls/IconTextButton';
+import { HorizontalIconTextButton, VerticalIconTextButton } from 'Components/Controls/TFButton';
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
     return (
         <div>
-            <div className="titleLine">
+            <div className="title-line">
                 <h1> Camera Setup </h1>
             </div>
-            <div className="IconTextButtonDiv">
-                <IconTextButton
+            <div className="tf-button-container">
+                <VerticalIconTextButton
                     buttonStyle={{ width: '63.75%' }}
                     icon={QuickSetupIcon}
                     alt="Icon for Quick Setup option"
@@ -24,7 +25,7 @@ const CameraSetupScreen = () => {
                     text="Our automatic calibration enables you to set up quickly"
                     onClick={() => navigate('quick')}
                 />
-                <IconTextButton
+                <VerticalIconTextButton
                     buttonStyle={{ width: '33.75%' }}
                     icon={ManualSetupIcon}
                     alt="Icon for Manual Setup option"
@@ -34,6 +35,19 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('manual')}
                 />
             </div>
+            <div id="camera-page-divider" />
+            <div className="title-line">
+                <h1> Tools </h1>
+            </div>
+            <HorizontalIconTextButton
+                buttonStyle={{}}
+                icon={CameraMaskingIcon}
+                alt="Icon for Camera Masking"
+                iconStyle={{ marginBottom: '0px' }}
+                title="Camera Masking"
+                text="Mask areas of your cameras vision from reflections and harsh areas of light"
+                onClick={() => navigate('quick')}
+            />
         </div>
     );
 };

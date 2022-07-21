@@ -1,19 +1,6 @@
-.titleLine {
-    color: white;
+@use 'Styles/variables' as v;
 
-    display: flex;
-    flex-direction: row;
-    align-items: left;
-    text-align: left;
-
-    padding-left: 3rem;
-}
-
-.titleLine > h1 {
-    flex: 1 1 auto;
-}
-
-.tfButton {
+.reset-button {
     border: 0.1rem transparent;
     padding: 0.3rem;
     width: 230px;
@@ -35,22 +22,22 @@
     background-origin: border-box;
     background-clip: content-box, border-box;
     border-radius: 50px;
-}
 
-.tfButton:hover {
-    box-shadow: none;
-    background-image: linear-gradient(180deg, var(--ultraleap-green), #00ccce),
-        linear-gradient(180deg, #00eb86, #00cdcf);
-}
+    &:hover {
+        box-shadow: none;
+        background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce),
+            linear-gradient(180deg, #00eb86, #00cdcf);
+    }
 
-.tfButton > p {
-    font-family: MontserratRegular, Arial;
-    display: inline-block;
-    margin: 0;
-    font-size: 22px;
-    padding-bottom: 3px;
-    vertical-align: middle;
-    text-align: center;
+    > p {
+        font-family: MontserratRegular, Arial;
+        display: inline-block;
+        margin: 0;
+        font-size: 22px;
+        padding-bottom: 3px;
+        vertical-align: middle;
+        text-align: center;
+    }
 }
 
 video.InteractionPreview {
@@ -117,7 +104,7 @@ video.InteractionPreview.Interaction2 {
     margin: 0.75rem;
 
     box-shadow: 0 2px 10px 0 #00000099;
-    background: transparent linear-gradient(180deg, #373737 0%, #2c2c2c 100%) 0% 0% no-repeat padding-box;
+    background: v.$dark-grey-gradient;
     border: 1px solid #ffffff1a;
     border-radius: 0.5rem;
 

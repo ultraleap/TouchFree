@@ -1,4 +1,4 @@
-import 'Styles/Interactions.css';
+import 'Styles/Interactions.scss';
 
 import { Component } from 'react';
 
@@ -359,7 +359,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                         {interactionControls}
                     </div>
 
-                    <div className="titleLine">
+                    <div className="title-line">
                         <h1> Interaction Zone </h1>
                     </div>
 
@@ -377,12 +377,12 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
 
         return (
             <div>
-                <div className="titleLine">
+                <div className="title-line">
                     <h1> Interaction Type </h1>
                     <button
                         onClick={this.resetToDefaults.bind(this)}
                         onPointerUp={this.resetToDefaults.bind(this)}
-                        className="tfButton"
+                        className="reset-button"
                     >
                         <p> Reset to Default </p>
                     </button>

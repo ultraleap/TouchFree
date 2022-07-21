@@ -1,3 +1,5 @@
+@use 'Styles/variables' as v;
+
 .pageDivider {
     height: 200px;
 }
@@ -82,7 +84,7 @@
     width: 0px;
     height: 314px;
 
-    border-left: 4px dotted var(--ultraleap-green);
+    border-left: 4px dotted v.$ultraleap-green;
     position: absolute;
 }
 
@@ -97,8 +99,8 @@
     width: 57px;
     height: 351px;
 
-    border-left: 3px solid var(--ultraleap-green);
-    border-right: 3px solid var(--ultraleap-green);
+    border-left: 3px solid v.$ultraleap-green;
+    border-right: 3px solid v.$ultraleap-green;
 }
 
 .screenTilt .screenFrontCenterLineVert,
@@ -112,7 +114,7 @@
     width: 20px;
     height: 20px;
 
-    border: 3px solid var(--ultraleap-green);
+    border: 3px solid v.$ultraleap-green;
     border-radius: 20px;
 }
 
@@ -122,7 +124,7 @@
     width: 288px;
     height: 0px;
 
-    border-top: 3px solid var(--ultraleap-green);
+    border-top: 3px solid v.$ultraleap-green;
     position: absolute;
 }
 
@@ -137,7 +139,7 @@
     width: 52px;
     height: 0px;
 
-    border-top: 4px dotted var(--ultraleap-green);
+    border-top: 4px dotted v.$ultraleap-green;
 }
 
 .screenTilt .screenFrontTopLine,
@@ -152,7 +154,7 @@
     width: 288px;
     height: 0px;
 
-    border-top: 3px solid var(--ultraleap-green);
+    border-top: 3px solid v.$ultraleap-green;
     position: absolute;
 }
 
@@ -232,7 +234,7 @@
     width: 0px;
     height: 314px;
 
-    border-left: 4px dotted var(--ultraleap-green);
+    border-left: 4px dotted v.$ultraleap-green;
     position: absolute;
 }
 
@@ -266,7 +268,7 @@
     width: 0px;
     height: 348px;
 
-    border-left: 3px solid var(--ultraleap-green);
+    border-left: 3px solid v.$ultraleap-green;
 }
 
 .cameraDistanceFromScreen .screenSideExtraLineVert {
@@ -275,7 +277,7 @@
     width: 0px;
     height: 21px;
 
-    border-left: 3px solid var(--ultraleap-green);
+    border-left: 3px solid v.$ultraleap-green;
     position: absolute;
 }
 
@@ -285,7 +287,7 @@
     width: 55px;
     height: 0px;
 
-    border-top: 3px solid var(--ultraleap-green);
+    border-top: 3px solid v.$ultraleap-green;
     position: absolute;
 }
 
@@ -308,7 +310,7 @@
     width: 55px;
     height: 0px;
 
-    border-top: 3px solid var(--ultraleap-green);
+    border-top: 3px solid v.$ultraleap-green;
     position: absolute;
 }
 
@@ -328,7 +330,7 @@
     left: 816px;
     width: 70px;
 
-    border-top: 4px dotted var(--ultraleap-green);
+    border-top: 4px dotted v.$ultraleap-green;
 }
 
 .screenSideCamera {
@@ -373,7 +375,7 @@
     width: 350px;
     height: 350px;
     opacity: 0.17;
-    background: transparent linear-gradient(180deg, var(--ultraleap-green) 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, v.$ultraleap-green 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
     border-top-left-radius: 350px;
     position: absolute;
     left: 0;
@@ -399,7 +401,7 @@
     width: 350px;
     height: 350px;
     opacity: 0.17;
-    background: transparent linear-gradient(180deg, var(--ultraleap-green) 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, v.$ultraleap-green 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
     border-top-left-radius: 350px;
     position: absolute;
     left: 0;

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import 'Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.scss';
 
 import React, { ReactElement, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -43,12 +43,12 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
     const content = (progressToClick: number): ReactElement => {
         const prog = isHandPresent ? progressToClick : 0;
         return (
-            <div onPointerDown={handleClick} className="contentContainer">
+            <div onPointerDown={handleClick} className="content-container">
                 <CalibrationInstructions progress={prog} containerStyle={{ paddingTop: '5vh' }} />
                 <CalibrationProgressCircle progress={prog} style={{ top: '15.5vh' }} />
                 {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
                 <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
-                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30vh' }} />
+                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30.5vh' }} />
             </div>
         );
     };
@@ -74,7 +74,7 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
     const content = (progressToClick: number): ReactElement => {
         const prog = isHandPresent ? progressToClick : 0;
         return (
-            <div onPointerDown={handleClick} className="contentContainer">
+            <div onPointerDown={handleClick} className="content-container">
                 <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
                 <CalibrationInstructions progress={prog} containerStyle={{ paddingTop: '2.5vh' }} />
                 <CalibrationProgressCircle progress={prog} style={{ bottom: '15.5vh' }} />

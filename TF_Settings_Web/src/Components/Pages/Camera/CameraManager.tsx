@@ -1,5 +1,3 @@
-import 'Styles/Camera/Camera.css';
-
 import { Route, Routes } from 'react-router-dom';
 
 import CameraSetupScreen from './CameraSetupScreen';

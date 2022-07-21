@@ -1,4 +1,5 @@
-import 'Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.scss';
+import cssVariables from 'Styles/_variables.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
@@ -8,14 +9,12 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
-import { APP_MARGIN_LEFT, APP_WIDTH, ULTRALEAP_GREEN } from 'index';
-
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import DownArrow from 'Images/Down_Arrow.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
-import IconTextButton from 'Components/Controls/IconTextButton';
+import { TextButton } from 'Components/Controls/TFButton';
 
 interface CalibrationInstructionsProps {
     progress: number;
@@ -51,7 +50,7 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
             </SwitchTransition>
             <img src={DownArrow} alt="Down arrow" className="arrow" />
             <img
-                className="touchCircle"
+                className="touch-circle"
                 src={FingerprintIcon}
                 alt="Fingerprint Icon showing where to place finger for Quick Setup"
             />
@@ -65,14 +64,14 @@ interface CalibrationProgressCircleProps {
 }
 
 export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
-    <div style={style} className="progressCircleContainer">
+    <div style={style} className="touch-circle-progress">
         <CircularProgressbar
             value={Math.ceil(progress * 50) / 50}
             maxValue={1}
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
-                pathColor: ULTRALEAP_GREEN,
+                pathColor: cssVariables.ultraLeapGreen,
                 trailColor: 'transparent',
                 pathTransitionDuration: 0.08,
             })}
@@ -81,7 +80,7 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
 );
 
 export const CalibrationHandLostMessage = () => (
-    <div className={'handNotFoundContainer'}>
+    <div className={'hand-not-found-container'}>
         <img src={HandIcon} alt="Hand Icon" />
         <p>Hand Not Detected</p>
     </div>
@@ -100,7 +99,7 @@ export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> =
 
     return (
         <video
-            className="interactionGuide"
+            className="interaction-guide"
             style={getVideoStyle()}
             autoPlay={true}
             loop={true}
@@ -110,18 +109,16 @@ export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> =
     );
 };
 
-const setupButtonStyle: CSSProperties = {
+const cancelSetupButtonStyle: CSSProperties = {
     width: '300px',
     height: '4vh',
     borderRadius: '50px',
-    background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
+    background: cssVariables.lightGreyGradient,
 };
 
-const setupButtonTitleStyle: CSSProperties = {
+const cancelSetupButtonTextStyle: CSSProperties = {
     fontSize: '1.7vh',
-    padding: '0',
-    textAlign: 'center',
-    marginTop: '-5%',
+    opacity: 1,
 };
 
 interface CalibrationCancelButtonProps {
@@ -131,14 +128,12 @@ interface CalibrationCancelButtonProps {
 
 export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
-        <IconTextButton
-            buttonStyle={{ ...setupButtonStyle, ...buttonStyle }}
-            icon={''}
-            alt=""
-            title="Cancel Setup"
-            titleStyle={setupButtonTitleStyle}
-            text={''}
-            textStyle={{ display: 'none' }}
+        <TextButton
+            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
+            title=""
+            titleStyle={{ display: 'none' }}
+            text="Cancel Setup"
+            textStyle={cancelSetupButtonTextStyle}
             onClick={() => onCancel()}
             canHover={false}
         />
@@ -148,10 +143,10 @@ export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = (
 const canvasStyles = (): CSSProperties => {
     return {
         height: '100%',
-        width: APP_WIDTH,
+        width: cssVariables.appWidth,
         position: 'fixed',
         top: 0,
-        left: APP_MARGIN_LEFT,
+        left: cssVariables.appMarginLeft,
         pointerEvents: 'none',
     };
 };
@@ -196,7 +191,7 @@ export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps>
     return (
         <>
             <button
-                className={`setupPracticeButton ${hovered ? ' setupPracticeButtonHovered' : ''}`}
+                className={`setup-practice-button ${hovered ? ' setup-practice-button-hovered' : ''}`}
                 style={progressStyle(progress, hovered)}
                 onPointerOver={() => setHovered(true)}
                 onPointerLeave={() => setHovered(false)}
