@@ -1,4 +1,4 @@
-import 'Styles/Camera/Camera.scss';
+import 'Styles/Camera/CameraMasking.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
 
