@@ -144,7 +144,7 @@ const CameraMaskingOption: React.FC<CameraMaskingOptionProps> = ({ title, descri
 );
 
 // Decimal in signed 2's complement
-const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;
+//const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;
 const OVEREXPOSED_COLOR = -13434625; //#FFFF0033;
 
 const displayLensFeed = (
