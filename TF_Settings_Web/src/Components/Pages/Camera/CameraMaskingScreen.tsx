@@ -25,8 +25,8 @@ const CameraMaskingScreen = () => {
     const leftLensRef = useRef<HTMLCanvasElement>(null);
     const rightLensRef = useRef<HTMLCanvasElement>(null);
 
-    // Ref to track frames so we only display every X frames to save rendering power
-    const frameCount = useRef<number>(0);
+    // Ref to track if a frame is being rendered so we don't start rendering a new one until the current is complete
+    const frameProcessing = useRef<boolean>(false);
     // Ref to track if we have successfully subscribed to camera images
     const successfullySubscribed = useRef<boolean>(false);
 
@@ -50,13 +50,13 @@ const CameraMaskingScreen = () => {
 
         socket.addEventListener('message', (event) => {
             if (!leftLensRef.current || !rightLensRef.current || typeof event.data == 'string') return;
-            frameCount.current++;
-            if (frameCount.current > 1) {
-                if (frameCount.current == 10) {
-                    frameCount.current = 0;
-                }
+
+            if (frameProcessing.current) {
                 return;
             }
+
+            frameProcessing.current = true;
+
             if (!successfullySubscribed.current) {
                 socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
             }
@@ -73,6 +73,7 @@ const CameraMaskingScreen = () => {
                     displayLensFeed(data, lens, ref, isCamReversedRef.current, showOverexposedRef.current);
                 }
             }
+            frameProcessing.current = false;
         });
     }, []);
 
@@ -166,13 +167,16 @@ const displayLensFeed = (
     const buf8 = new Uint8ClampedArray(buf);
     const buf32 = new Uint32Array(buf);
 
-    const offset = lens === Lens.Right ? 0 : dim2 < dim1 ? width : width * lensHeight;
+    const offset = lens === Lens.Right ? 0 : dim2 < dim1 ? lensHeight : width * lensHeight;
 
     for (let i = 0; i < width * lensHeight; i++) {
         const px = dim2 < dim1 ? data.getUint8(9 + i + offset * (i % offset)) : data.getUint8(9 + i + offset);
-
-        const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
-        buf32[i] = showOverexposedAreas && hexColor > OVEREXPOSED_THRESHOLD ? OVEREXPOSED_COLOR : hexColor;
+        if (showOverexposedAreas && px > 224) {
+            buf32[i] = OVEREXPOSED_COLOR;
+        } else {
+            const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
+            buf32[i] = hexColor;
+        }
     }
     // Set black pixels to remove flashing camera bytes
     const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
