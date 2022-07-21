@@ -80,21 +80,22 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
 );
 
 const ReturnToPositionScreenMessage = (props: { timeToPosSelect?: number }) => {
-    const message = <p style={{ fontSize: '1rem' }}>Cancelling in {props.timeToPosSelect}s</p>;
+    const message = <p style={{ fontWeight: 'normal' }}>Returning in {props.timeToPosSelect}s</p>;
 
     return props.timeToPosSelect ? message : <></>;
 };
 
-export const CalibrationHandLostMessage = (props: {timeToPosSelect?: number}) => {
-        return (
+export const CalibrationHandLostMessage = (props: { timeToPosSelect?: number }) => {
+    const { timeToPosSelect } = props;
+    return (
+        <div>
             <div className={'hand-not-found-container'}>
-                <div style={{ display: 'flex' }}>
-                    <img src={HandIcon} alt="Hand Icon" />
-                    <p>No Hand Detected</p>
-                </div>
-                <ReturnToPositionScreenMessage timeToPosSelect={props.timeToPosSelect} />
+                <img src={HandIcon} alt="Hand Icon" />
+                <p>No Hand Detected{timeToPosSelect ? ':' : ''}</p>
+                <ReturnToPositionScreenMessage timeToPosSelect={timeToPosSelect} />
             </div>
-        );
+        </div>
+    );
 };
 
 interface CalibrationTutorialVideoProps {

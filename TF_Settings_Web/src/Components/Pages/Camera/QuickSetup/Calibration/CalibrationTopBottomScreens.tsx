@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import 'Styles/Camera/Calibrate.scss';
+import styles from 'Styles/Camera/Calibrate.scss';
 
 import React, { ReactElement, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +16,8 @@ import {
     CalibrationTutorialVideo,
     CalibrationProgressCircle,
 } from './CalibrationComponents';
+
+const { handNotFoundHeight } = styles;
 
 /**
  * CalibrationTop and CalibrationBottom screens use CalibrationBaseScreen to handle logic and just pass in their content
@@ -51,7 +54,7 @@ export const CalibrationTopScreen: React.FC<CalibrationBaseScreenProps> = ({
                 {!isHandPresent ? (
                     <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
                 ) : (
-                    <div style={{ height: '5vh' }} />
+                    <div style={{ height: handNotFoundHeight }} />
                 )}
                 <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
                 <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30.5vh' }} />
@@ -87,7 +90,7 @@ export const CalibrationBottomScreen: React.FC<CalibrationBaseScreenProps> = ({
                 {!isHandPresent ? (
                     <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
                 ) : (
-                    <div style={{ height: '5vh' }} />
+                    <div style={{ height: handNotFoundHeight }} />
                 )}
                 <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
             </div>

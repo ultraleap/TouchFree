@@ -99,16 +99,22 @@
     width: 9vh;
 }
 
+$hand-not-found-height: 3vh;
+
+:export {
+    handNotFoundHeight: $hand-not-found-height;
+}
+
+
 .hand-not-found-container {
-    display: flex;
-    flex-direction: column;
+    display: inline-flex;
     margin: auto;
     background: transparent linear-gradient(180deg, #e1164d 0%, #d11882 100%) 0% 0% no-repeat padding-box;
     border-radius: 15px;
-    height: 5vh;
-    width: 320px;
+    height: $hand-not-found-height;
     justify-content: center;
     align-items: center;
+    padding: 0 30px;
 
     p {
         flex: none;
@@ -117,6 +123,7 @@
         font-family: MontserratRegular, Arial;
         text-align: center;
         margin-left: 5px;
+        font-weight: bold;
     }
 }
 
