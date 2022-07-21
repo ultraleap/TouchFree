@@ -23,6 +23,7 @@ namespace Ultraleap.TouchFree.Library
         private List<Leap.Hand> PreConversionRawHands;
 
         public HandFrame RawHands { get; private set; }
+        public bool RawHandsUpdated = false;
 
         public List<Leap.Vector> RawHandPositions
         {
@@ -200,8 +201,9 @@ namespace Ultraleap.TouchFree.Library
 
         public void UpdateRawHands(object sender, ImageEventArgs e)
         {
-            if (PreConversionRawHands != null && e.image != null)
+            if (PreConversionRawHands != null && e.image != null && RawHandsUpdated)
             {
+                RawHandsUpdated = false;
                 RawHands = new HandFrame()
                 {
                     Hands = PreConversionRawHands.Select(x => new RawHand()
@@ -245,6 +247,7 @@ namespace Ultraleap.TouchFree.Library
             handsLastFrame = handCount;
 
             PreConversionRawHands = currentFrame.Hands;
+            RawHandsUpdated = true;
 
 
             currentFrame = currentFrame.TransformedCopy(trackingTransform);
