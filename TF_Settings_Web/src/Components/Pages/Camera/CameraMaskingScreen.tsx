@@ -169,13 +169,35 @@ const displayLensFeed = (
 
     const offset = lens === Lens.Right ? 0 : dim2 < dim1 ? lensHeight : width * lensHeight;
 
-    for (let i = 0; i < width * lensHeight; i++) {
-        const px = dim2 < dim1 ? data.getUint8(9 + i + offset * (i % offset)) : data.getUint8(9 + i + offset);
-        if (showOverexposedAreas && px > 224) {
-            buf32[i] = OVEREXPOSED_COLOR;
-        } else {
-            const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
-            buf32[i] = hexColor;
+    if (dim2 < dim1) {
+        let j = 0;
+        let offsetCount = 0;
+        for (let i = 0; i < width * lensHeight; i++) {
+            if (j === lensHeight) {
+                offsetCount++;
+                j = 0;
+            } else {
+                j++;
+            }
+
+            const px = data.getUint8(9 + i + offset + lensHeight * offsetCount);
+
+            if (showOverexposedAreas && px > 224) {
+                buf32[i] = OVEREXPOSED_COLOR;
+            } else {
+                const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
+                buf32[i] = hexColor;
+            }
+        }
+    } else {
+        for (let i = 0; i < width * lensHeight; i++) {
+            const px = data.getUint8(9 + i + offset);
+            if (showOverexposedAreas && px > 224) {
+                buf32[i] = OVEREXPOSED_COLOR;
+            } else {
+                const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
+                buf32[i] = hexColor;
+            }
         }
     }
     // Set black pixels to remove flashing camera bytes
