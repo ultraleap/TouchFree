@@ -156,8 +156,11 @@ const displayLensFeed = (
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    const width = data.getUint32(1);
-    const lensHeight = data.getUint32(5) / 2;
+    const dim1 = data.getUint32(1);
+    const dim2 = data.getUint32(5);
+
+    const width = Math.min(dim1, dim2);
+    const lensHeight = Math.max(dim1, dim2) / 2;
 
     const buf = new ArrayBuffer(width * lensHeight * 4);
     const buf8 = new Uint8ClampedArray(buf);
