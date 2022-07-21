@@ -43,6 +43,30 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
             }
         }
 
+        // Property: useSwipeInteraction
+        // If true, enables the swipe interaction alongside AirPush, Hover and Hold or TouchPlane if
+        // one of those interactions is configured
+        public bool useSwipeInteraction
+        {
+            get
+            {
+                return UseSwipeInteraction;
+            }
+            set
+            {
+                if (configValues.ContainsKey("UseSwipeInteraction"))
+                {
+                    configValues["UseSwipeInteraction"] = value;
+                }
+                else
+                {
+                    configValues.Add("UseSwipeInteraction", value);
+                }
+
+                UseSwipeInteraction = value;
+            }
+        }
+
         // Property: deadzoneRadius
         // All interactions use a small deadzone to stabilise the position of the cursor, to prevent
         // small user movements from making the cursor shake in place. This setting controls the
@@ -171,6 +195,7 @@ namespace Ultraleap.TouchFree.Tooling.Configuration
         public Dictionary<string, object> configValues = new Dictionary<string, object>();
 
         [SerializeField] private bool UseScrollingOrDragging;
+        [SerializeField] private bool UseSwipeInteraction;
         [SerializeField] private float DeadzoneRadius;
         [SerializeField] private bool InteractionZoneEnabled;
         [SerializeField] private float InteractionMinDistanceCm;

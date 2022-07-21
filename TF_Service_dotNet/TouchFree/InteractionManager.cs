@@ -56,7 +56,7 @@ namespace Ultraleap.TouchFree.Library
                     interactionsToUse.Add(InteractionType.AIRCLICK);
                 }
 
-                if (interactionTuning?.EnableVelocitySwipeWithAirPush == true)
+                if (_config?.UseSwipeInteraction == true)
                 {
                     interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
                 }
