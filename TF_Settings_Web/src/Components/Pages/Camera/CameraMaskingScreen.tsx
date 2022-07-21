@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
 
-enum Lens {
-    LEFT,
-    RIGHT,
+const enum Lens {
+    Left,
+    Right,
 }
 
 const CameraMaskingScreen = () => {
@@ -23,6 +23,7 @@ const CameraMaskingScreen = () => {
 
     // Ref to track frames so we only display every X frames to save rendering power
     const frameCount = useRef<number>(0);
+    const successfullySubscribed = useRef<boolean>(false);
 
     const setIsCameraReversed = (value: boolean) => {
         _setIsCamReversed(value);
@@ -36,13 +37,7 @@ const CameraMaskingScreen = () => {
 
     useEffect(() => {
         const socket = new WebSocket('ws://127.0.0.1:1024');
-        // socket.close();
         socket.binaryType = 'arraybuffer';
-
-        socket.addEventListener('open', () => {
-            console.log('WebSocket open');
-            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
-        });
 
         socket.addEventListener('message', (event) => {
             if (!mainLensRef.current || !subLensRef.current || typeof event.data == 'string') return;
@@ -53,19 +48,21 @@ const CameraMaskingScreen = () => {
                 }
                 return;
             }
+            if (!successfullySubscribed.current) {
+                socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
+            }
 
             const data = new DataView(event.data);
             if (data.getUint8(0) === 1) {
+                successfullySubscribed.current = true;
                 const lensInfo = [
-                    { lens: Lens.LEFT, ref: mainLensRef.current },
-                    { lens: Lens.RIGHT, ref: subLensRef.current },
+                    { lens: Lens.Left, ref: mainLensRef.current },
+                    { lens: Lens.Right, ref: subLensRef.current },
                 ];
 
                 for (const { lens, ref } of lensInfo) {
                     displayLensFeed(data, lens, ref, isCamReversedRef.current, showOverexposedRef.current);
                 }
-            } else {
-                console.log('NOT INT: ' + data.getUint8(0));
             }
         });
     }, []);
@@ -146,7 +143,7 @@ const displayLensFeed = (
     const buf8 = new Uint8ClampedArray(buf);
     const buf32 = new Uint32Array(buf);
 
-    const offset = lens === Lens.RIGHT ? 0 : width * lensHeight;
+    const offset = lens === Lens.Right ? 0 : width * lensHeight;
 
     for (let i = 0; i < width * lensHeight; i++) {
         const px = data.getUint8(9 + i + offset);
