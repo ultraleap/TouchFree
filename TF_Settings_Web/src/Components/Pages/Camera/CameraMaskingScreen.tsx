@@ -166,10 +166,11 @@ const displayLensFeed = (
     const buf8 = new Uint8ClampedArray(buf);
     const buf32 = new Uint32Array(buf);
 
-    const offset = lens === Lens.Right ? 0 : width * lensHeight;
+    const offset = lens === Lens.Right ? 0 : dim2 < dim1 ? width : width * lensHeight;
 
     for (let i = 0; i < width * lensHeight; i++) {
-        const px = data.getUint8(9 + i + offset);
+        const px = dim2 < dim1 ? data.getUint8(9 + i + offset * (i % offset)) : data.getUint8(9 + i + offset);
+
         const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
         buf32[i] = showOverexposedAreas && hexColor > OVEREXPOSED_THRESHOLD ? OVEREXPOSED_COLOR : hexColor;
     }
