@@ -101,15 +101,16 @@
 
 .hand-not-found-container {
     display: flex;
+    flex-direction: column;
     margin: auto;
     background: transparent linear-gradient(180deg, #e1164d 0%, #d11882 100%) 0% 0% no-repeat padding-box;
     border-radius: 15px;
-    height: 3vh;
+    height: 5vh;
     width: 320px;
     justify-content: center;
     align-items: center;
 
-    > p {
+    p {
         flex: none;
         color: white;
         font-size: 1.6rem;
