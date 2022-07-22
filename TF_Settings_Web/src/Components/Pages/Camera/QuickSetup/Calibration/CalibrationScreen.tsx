@@ -2,7 +2,7 @@
 import 'Styles/Camera/Calibrate.scss';
 import styles from 'Styles/Camera/Calibrate.scss';
 
-import React, { ReactElement, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
@@ -27,8 +27,7 @@ interface CalibrationScreenProps {
 const TIMEOUT_S = 10;
 const TIMEOUT_MS = TIMEOUT_S * 1000;
 
-const CalibrationScreen = (props: CalibrationScreenProps): ReactElement => {
-    const { isHandPresent, onCancel } = props;
+const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, onCancel }) => {
     // ===== Click Progress =====
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
     const [progress, setProgress] = React.useState<number>(0);
@@ -43,7 +42,7 @@ const CalibrationScreen = (props: CalibrationScreenProps): ReactElement => {
 
     const handleClick = (path: string) => {
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
-            false,
+            path === '../bottom' ? true : false,
             () => {},
             () => {}
         );
@@ -89,7 +88,7 @@ const CalibrationScreen = (props: CalibrationScreenProps): ReactElement => {
             clearTimeout(timeout.current);
             clearInterval(interval.current);
         };
-    }, [isHandPresent]);
+    }, [isHandPresent, progressToClick]);
 
     if (location.pathname.endsWith('top')) {
         return (
@@ -108,16 +107,16 @@ const CalibrationScreen = (props: CalibrationScreenProps): ReactElement => {
     }
 
     return (
-        <div onPointerDown={() => handleClick('../top')} className="content-container">
-            <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '5vh' }} />
-            <CalibrationProgressCircle progress={progress} style={{ top: '15.5vh' }} />
+        <div onPointerDown={() => handleClick('../complete')} className="content-container">
+            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
+            <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '2.5vh' }} />
+            <CalibrationProgressCircle progress={progress} style={{ bottom: '15.5vh' }} />
             {!isHandPresent ? (
                 <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
             ) : (
                 <div style={{ height: handNotFoundHeight }} />
             )}
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30.5vh' }} />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
         </div>
     );
 };
