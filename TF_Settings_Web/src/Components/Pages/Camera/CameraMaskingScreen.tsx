@@ -170,16 +170,9 @@ const displayLensFeed = (
     const offset = lens === Lens.Right ? 0 : dim2 < dim1 ? lensHeight : width * lensHeight;
 
     if (dim2 < dim1) {
-        let j = 0;
+        let pixelRowDistance = 0;
         let offsetCount = 0;
         for (let i = 0; i < width * lensHeight; i++) {
-            if (j === lensHeight) {
-                offsetCount++;
-                j = 0;
-            } else {
-                j++;
-            }
-
             const px = data.getUint8(9 + i + offset + lensHeight * offsetCount);
 
             if (showOverexposedAreas && px > 224) {
@@ -187,6 +180,13 @@ const displayLensFeed = (
             } else {
                 const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
                 buf32[i] = hexColor;
+            }
+
+            if (pixelRowDistance === lensHeight - 1) {
+                offsetCount++;
+                pixelRowDistance = 0;
+            } else {
+                pixelRowDistance++;
             }
         }
     } else {
