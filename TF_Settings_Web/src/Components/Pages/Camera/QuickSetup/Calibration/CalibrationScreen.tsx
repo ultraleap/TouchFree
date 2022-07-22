@@ -24,18 +24,21 @@ interface CalibrationScreenProps {
     onCancel: () => void;
 }
 
-const TIMEOUT_S = 10;
+export const TIMEOUT_S = 10;
 const TIMEOUT_MS = TIMEOUT_S * 1000;
+const INITIAL_WAIT_MS = 5000;
 
 const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, onCancel }) => {
+    const [displayHandIndicator, setDisplayHandIndicator] = React.useState(false);
     // ===== Click Progress =====
-    const [progressToClick, setProgressToClick] = React.useState<number>(0);
-    const [progress, setProgress] = React.useState<number>(0);
-    const isNewClick = React.useRef<boolean>(false);
+    const [progressToClick, setProgressToClick] = React.useState(0);
+    const [progress, setProgress] = React.useState(0);
+    const isNewClick = React.useRef(false);
     // ===== Timeout =====
     const [timeToPosSelect, setTimeToPosSelect] = React.useState(TIMEOUT_S);
     const timeout = React.useRef<NodeJS.Timeout>();
     const interval = React.useRef<NodeJS.Timer>();
+    const [initialWaitOver, setInitialWaitOver] = React.useState(false);
     // ===== React Router =====
     const navigate = useNavigate();
     const location = useLocation();
@@ -71,7 +74,25 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     }, []);
 
     useEffect(() => {
-        if (!isHandPresent) {
+        const initialWait = setTimeout(() => {
+            setInitialWaitOver(true);
+        }, INITIAL_WAIT_MS);
+
+        return () => {
+            clearTimeout(initialWait);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isHandPresent && initialWaitOver) {
+            setDisplayHandIndicator(true);
+        } else {
+            setDisplayHandIndicator(false);
+        }
+    }, [isHandPresent, initialWaitOver]);
+
+    useEffect(() => {
+        if (displayHandIndicator) {
             interval.current = setInterval(() => setTimeToPosSelect((t) => t - 1), 1000);
             timeout.current = setTimeout(() => {
                 navigate('../../');
@@ -88,14 +109,14 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             clearTimeout(timeout.current);
             clearInterval(interval.current);
         };
-    }, [isHandPresent, progressToClick]);
+    }, [displayHandIndicator, progressToClick]);
 
     if (location.pathname.endsWith('top')) {
         return (
             <div onPointerDown={() => handleClick('../bottom')} className="content-container">
                 <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '5vh' }} />
                 <CalibrationProgressCircle progress={progress} style={{ top: '15.5vh' }} />
-                {!isHandPresent ? (
+                {displayHandIndicator ? (
                     <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
                 ) : (
                     <div style={{ height: handNotFoundHeight }} />
@@ -111,7 +132,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
             <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '2.5vh' }} />
             <CalibrationProgressCircle progress={progress} style={{ bottom: '15.5vh' }} />
-            {!isHandPresent ? (
+            {displayHandIndicator ? (
                 <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
             ) : (
                 <div style={{ height: handNotFoundHeight }} />
