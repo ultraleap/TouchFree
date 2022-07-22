@@ -25,10 +25,12 @@ const CameraMaskingScreen = () => {
     const leftLensRef = useRef<HTMLCanvasElement>(null);
     const rightLensRef = useRef<HTMLCanvasElement>(null);
 
+    const byteConversionArray = new Uint32Array(256);
+    const byteConversionArrayOverExposed = new Uint32Array(256);
+
     for (let i = 0; i < 256; i++) {
-        DataConverter.conversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
-        DataConverter.conversionArrayOverExposed[i] =
-            i > 224 ? OVEREXPOSED_COLOR : (255 << 24) | (i << 16) | (i << 8) | i;
+        byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
+        byteConversionArrayOverExposed[i] = i > 224 ? OVEREXPOSED_COLOR : byteConversionArray[i];
     }
 
     // Ref to track if a frame is being rendered so we don't start rendering a new one until the current is complete
@@ -76,18 +78,20 @@ const CameraMaskingScreen = () => {
                 ];
 
                 for (const { lens, ref } of lensInfo) {
-                    DataConverter.displayLensFeed(
+                    displayLensFeed(
                         data,
                         lens,
                         ref,
                         isCamReversedRef.current,
-                        showOverexposedRef.current
+                        showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
                     );
                 }
             }
+
+            // Settimeout with 16ms for ~60fps if we have the performance
             setTimeout(() => {
                 frameProcessing.current = false;
-            }, 5);
+            }, 16);
         });
     }, []);
 
@@ -161,75 +165,57 @@ const CameraMaskingOption: React.FC<CameraMaskingOptionProps> = ({ title, descri
 //const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;
 const OVEREXPOSED_COLOR = -13434625; //#FFFF0033;
 
-class DataConverter {
-    value = 1;
+const displayLensFeed = (
+    data: DataView,
+    lens: Lens,
+    canvas: HTMLCanvasElement,
+    isCameraReversed: boolean,
+    byteConversionArray: Uint32Array
+) => {
+    const context = canvas.getContext('2d');
+    if (!context) return;
 
-    static conversionArray = new Uint32Array(256);
-    static conversionArrayOverExposed = new Uint32Array(256);
+    const dim1 = data.getUint32(1);
+    const dim2 = data.getUint32(5);
 
-    static displayLensFeed = (
-        data: DataView,
-        lens: Lens,
-        canvas: HTMLCanvasElement,
-        isCameraReversed: boolean,
-        showOverexposedAreas: boolean
-    ) => {
-        const context = canvas.getContext('2d');
-        if (!context) return;
+    const width = Math.min(dim1, dim2);
+    const lensHeight = Math.max(dim1, dim2) / 2;
 
-        const dim1 = data.getUint32(1);
-        const dim2 = data.getUint32(5);
+    const buf = new ArrayBuffer(width * lensHeight * 4);
+    const buf8 = new Uint8ClampedArray(buf);
+    const buf32 = new Uint32Array(buf);
 
-        const width = Math.min(dim1, dim2);
-        const lensHeight = Math.max(dim1, dim2) / 2;
+    const rotated90 = dim2 < dim1;
 
-        const buf = new ArrayBuffer(width * lensHeight * 4);
-        const buf8 = new Uint8ClampedArray(buf);
-        const buf32 = new Uint32Array(buf);
+    if (rotated90) {
+        const offset = 9 + (lens === Lens.Right ? 0 : lensHeight);
 
-        const rotated90 = dim2 < dim1;
+        let rowBase = 0;
+        const offsetView = new DataView(data.buffer.slice(offset, offset + width * lensHeight * 2));
 
-        const offset = lens === Lens.Right ? 0 : rotated90 ? lensHeight : width * lensHeight;
-
-        const conversionMethod = showOverexposedAreas
-            ? DataConverter.convertByteToHexOverExposed
-            : DataConverter.convertByteToHex;
-
-        if (rotated90) {
-            let rowBase = 0;
-            const offsetView = new DataView(data.buffer.slice(9 + offset, 9 + (width * lensHeight * 2) + offset));
-            for (let rowIndex = 0; rowIndex < width; rowIndex++) {
-                const rowStart = rowBase*2;
-                for (let i = 0; i < lensHeight; i++) {
-                    const px = offsetView.getUint8(i + rowStart);
-                    buf32[i + rowBase] = conversionMethod(px);
-                }
-                rowBase += lensHeight;
+        for (let rowIndex = 0; rowIndex < width; rowIndex++) {
+            const rowStart = rowBase * 2;
+            for (let i = 0; i < lensHeight; i++) {
+                buf32[i + rowBase] = byteConversionArray[offsetView.getUint8(i + rowStart)];
             }
-        } else {
-            const offsetView = new DataView(data.buffer.slice(9 + offset, 9 + width * lensHeight + offset));
-
-            for (let i = 0; i < width * lensHeight; i++) {
-                const px = offsetView.getUint8(i);
-                buf32[i] = conversionMethod(px);
-            }
+            rowBase += lensHeight;
         }
-        // Set black pixels to remove flashing camera bytes
-        const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
-        buf32.fill(0xff000000, startOffset, startOffset + width);
+    } else {
+        const offset = 9 + (lens === Lens.Right ? 0 : width * lensHeight);
 
-        canvas.width = width;
-        canvas.height = lensHeight;
-        context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
-    };
+        const offsetView = new DataView(data.buffer.slice(offset, offset + width * lensHeight));
 
-    static convertByteToHex = (byte: number): number => {
-        return DataConverter.conversionArray[byte];
-    };
+        for (let i = 0; i < width * lensHeight; i++) {
+            buf32[i] = byteConversionArray[offsetView.getUint8(i)];
+        }
+    }
+    // Set black pixels to remove flashing camera bytes
+    const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
+    buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    static convertByteToHexOverExposed = (byte: number): number => {
-        return DataConverter.conversionArrayOverExposed[byte];
-    };
-}
+    canvas.width = width;
+    canvas.height = lensHeight;
+    context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
+};
 
 export default CameraMaskingScreen;
