@@ -11,6 +11,7 @@ using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 using Ultraleap.TouchFree.Service.ConnectionTypes;
 
+#nullable enable
 namespace Ultraleap.TouchFree.Service.Connection
 {
     public class WebSocketReceiver
@@ -24,7 +25,7 @@ namespace Ultraleap.TouchFree.Service.Connection
         public ConcurrentQueue<string> quickSetupQueue = new ConcurrentQueue<string>();
 
         public ConcurrentQueue<IncomingRequest> trackingApiChangeQueue = new ConcurrentQueue<IncomingRequest>();
-        public ConcurrentQueue<TrackingResponse> trackingApiResponseQueue = new ConcurrentQueue<TrackingResponse>();
+        public TrackingResponse? trackingApiResponse = null;
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
@@ -45,6 +46,11 @@ namespace Ultraleap.TouchFree.Service.Connection
             diagnosticApi = _diagnosticApiManager;
 
             updateBehaviour.OnUpdate += Update;
+
+            diagnosticApi.OnMaskingResponse += OnMasking;
+            diagnosticApi.OnAllowImagesResponse += OnAllowImages;
+            diagnosticApi.OnCameraOrientationResponse += OnCameraOrientation;
+            diagnosticApi.OnAnalyticsResponse += OnAnalytics;
         }
 
         void Update()
@@ -57,19 +63,21 @@ namespace Ultraleap.TouchFree.Service.Connection
             CheckQueue(requestServiceStatusQueue, HandleGetStatusRequest);
             CheckQueue(quickSetupQueue, HandleQuickSetupRequest);
 
-            CheckQueue(trackingApiChangeQueue, HandleTrackingRequest);
-            CheckQueue(trackingApiResponseQueue, HandleTrackingResponses, (response) => response.Ready());
+            if (trackingApiResponse.HasValue)
+            {
+                CheckDApiResponse();
+            }
+            else
+            {
+                CheckQueue(trackingApiChangeQueue, HandleTrackingRequest);
+            }
         }
 
         static void CheckQueue<T>(ConcurrentQueue<T> _queue, Action<T> _handler)
         {
-            CheckQueue(_queue, _handler, (item) => true);
-        }
-
-        static void CheckQueue<T>(ConcurrentQueue<T> _queue, Action<T> _handler, Func<T, bool> _dequeueCheck)
-        {
             T content;
-            if (_queue.TryPeek(out content) && _dequeueCheck.Invoke(content))
+
+            if (_queue.TryPeek(out content))
             {
                 // Parse newly received messages
                 _queue.TryDequeue(out content);
@@ -239,14 +247,14 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void HandleGetTrackingStateRequest(IncomingRequest _request)
         {
-            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true, diagnosticApi);
+            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true);
 
             diagnosticApi.GetAllowImages();
             diagnosticApi.GetImageMask();
             diagnosticApi.GetCameraOrientation();
             diagnosticApi.GetAnalyticsMode();
 
-            trackingApiResponseQueue.Enqueue(response);
+            trackingApiResponse = response;
         }
 
         void HandleSetTrackingStateRequest(JObject contentObj, IncomingRequest _request)
@@ -261,44 +269,160 @@ namespace Ultraleap.TouchFree.Service.Connection
             bool needsOrientation = contentObj.TryGetValue("cameraReversed", out cameraReversedToken);
             bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
 
-            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsMask, diagnosticApi);
+            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsMask);
 
             if (needsMask)
             {
-                var mask = maskToken.ToObject<MaskingData>();
+                var mask = maskToken!.ToObject<MaskingData>();
                 diagnosticApi.SetMasking(mask.left, mask.right, mask.upper, mask.lower);
             }
 
             if (needsImages)
             {
-                var allowImages = allowImagesToken.ToObject<bool>();
+                var allowImages = allowImagesToken!.ToObject<bool>();
                 diagnosticApi.SetAllowImages(allowImages);
             }
 
             if (needsOrientation)
             {
-                var reversed = cameraReversedToken.ToObject<bool>();
+                var reversed = cameraReversedToken!.ToObject<bool>();
                 diagnosticApi.SetCameraOrientation(reversed);
             }
 
             if (needsAnalytics)
             {
-                var analyticsEnable = analyticsEnabledToken.ToObject<bool>();
+                var analyticsEnable = analyticsEnabledToken!.ToObject<bool>();
                 diagnosticApi.SetAnalyticsMode(analyticsEnable);
             }
 
-            trackingApiResponseQueue.Enqueue(response);
+            trackingApiResponse = response;
         }
 
-        void HandleTrackingResponses(TrackingResponse _response)
+        void CheckDApiResponse()
         {
-            var content = JsonConvert.SerializeObject(_response.state);
+            if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
+            {
+                TrackingResponse response = trackingApiResponse.Value;
+                var content = JsonConvert.SerializeObject(response.state);
 
-            ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
+                ActionCode action = response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
 
-            ResponseToClient clientResponse = new ResponseToClient(_response.requestId, "Success", content, _response.originalRequest);
+                bool maskSuccess = CheckSuccess(response.state.mask);
+                bool imageSuccess = CheckSuccess(response.state.allowImages);
+                bool cameraSuccess = CheckSuccess(response.state.cameraReversed);
+                bool analyticsSuccess = CheckSuccess(response.state.analyticsEnabled);
 
-            clientMgr.SendTrackingResponse(action, clientResponse);
+                bool success = maskSuccess && imageSuccess && cameraSuccess && analyticsSuccess;
+
+                ResponseToClient clientResponse;
+
+                if (success)
+                {
+                    clientResponse = new ResponseToClient(response.requestId, "Success", content, response.originalRequest);
+                }
+                else
+                {
+                    clientResponse = new ResponseToClient(response.requestId, "Incomplete Change", content, response.originalRequest);
+                }
+
+                clientMgr.SendTrackingResponse(action, clientResponse);
+                trackingApiResponse = null;
+            }
+        }
+
+        private bool CheckSuccess<T>(SuccessWrapper<T>? wrapper)
+        {
+            if (wrapper.HasValue)
+            {
+                return wrapper.Value.succeeded;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public bool ResponseIsReady(TrackingResponse _response)
+        {
+            return (!_response.needsMask && !_response.needsImages && !_response.needsOrientation && !_response.needsAnalytics);
+        }
+
+        public void OnMasking(ImageMaskData? _mask, string _message)
+        {
+            if (trackingApiResponse.HasValue) {
+                var response = trackingApiResponse.Value;
+
+                if (_mask.HasValue)
+                {
+                    var mask = _mask.Value;
+                    var convertedMask = new MaskingData((float)mask.lower, (float)mask.upper, (float)mask.right, (float)mask.left);
+                    response.state.mask = new SuccessWrapper<MaskingData?>(true, _message, convertedMask);
+                }
+                else
+                {
+                    response.state.mask = new SuccessWrapper<MaskingData?>(false, _message, null);
+                }
+
+                response.needsMask = false;
+            }
+        }
+
+        public void OnAllowImages(bool? _allowImages, string _message)
+        {
+            if (trackingApiResponse.HasValue)
+            {
+                var response = trackingApiResponse.Value;
+
+                if (_allowImages.HasValue)
+                {
+                    response.state.allowImages = new SuccessWrapper<bool?>(true, _message, _allowImages.Value);
+                }
+                else
+                {
+                    response.state.allowImages = new SuccessWrapper<bool?>(false, _message, null);
+                }
+
+                response.needsImages = false;
+            }
+        }
+
+        public void OnCameraOrientation(bool? _cameraReversed, string _message)
+        {
+            if (trackingApiResponse.HasValue)
+            {
+                var response = trackingApiResponse.Value;
+
+                if (_cameraReversed.HasValue)
+                {
+                    response.state.allowImages = new SuccessWrapper<bool?>(true, _message, _cameraReversed.Value);
+                }
+                else
+                {
+                    response.state.allowImages = new SuccessWrapper<bool?>(false, _message, null);
+                }
+
+                response.needsOrientation = false;
+            }
+        }
+
+        public void OnAnalytics(bool? _analytics, string _message)
+        {
+            if (trackingApiResponse.HasValue)
+            {
+                var response = trackingApiResponse.Value;
+
+
+                if (_analytics.HasValue)
+                {
+                    response.state.allowImages = new SuccessWrapper<bool?>(true, _message, _analytics.Value);
+                }
+                else
+                {
+                    response.state.allowImages = new SuccessWrapper<bool?>(false, _message, null);
+                }
+
+                response.needsAnalytics = false;
+            }
         }
         #endregion
 
