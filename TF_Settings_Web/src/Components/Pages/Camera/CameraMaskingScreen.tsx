@@ -199,11 +199,11 @@ const displayLensFeeds = (
                 rightBuf32[i + rowBase] = byteConversionArray[offsetView.getUint8(i + rowStart)];
             }
 
-            rowStart += lensHeight
+            rowStart += lensHeight;
             for (let i = 0; i < lensHeight; i++) {
                 leftBuf32[i + rowBase] = byteConversionArray[offsetView.getUint8(i + rowStart)];
             }
-            
+
             rowBase += lensHeight;
         }
     } else {
