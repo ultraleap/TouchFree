@@ -85,7 +85,9 @@ const CameraMaskingScreen = () => {
                     );
                 }
             }
-            frameProcessing.current = false;
+            setTimeout(() => {
+                frameProcessing.current = false;
+            }, 5);
         });
     }, []);
 
@@ -194,19 +196,19 @@ class DataConverter {
             : DataConverter.convertByteToHex;
 
         if (rotated90) {
+            let rowBase = 0;
+            const offsetView = new DataView(data.buffer.slice(9 + offset, 9 + (width * lensHeight * 2) + offset));
             for (let rowIndex = 0; rowIndex < width; rowIndex++) {
-                const rowBase = rowIndex * lensHeight;
-                const start = 9 + offset + rowBase * 2;
-                const dataRow = data.buffer.slice(start, start + lensHeight);
-                const rowView = new DataView(dataRow);
-
+                const rowStart = rowBase*2;
                 for (let i = 0; i < lensHeight; i++) {
-                    const px = rowView.getUint8(i);
+                    const px = offsetView.getUint8(i + rowStart);
                     buf32[i + rowBase] = conversionMethod(px);
                 }
+                rowBase += lensHeight;
             }
         } else {
             const offsetView = new DataView(data.buffer.slice(9 + offset, 9 + width * lensHeight + offset));
+
             for (let i = 0; i < width * lensHeight; i++) {
                 const px = offsetView.getUint8(i);
                 buf32[i] = conversionMethod(px);
