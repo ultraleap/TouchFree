@@ -25,6 +25,12 @@ const CameraMaskingScreen = () => {
     const leftLensRef = useRef<HTMLCanvasElement>(null);
     const rightLensRef = useRef<HTMLCanvasElement>(null);
 
+    for (let i = 0; i < 256; i++) {
+        DataConverter.conversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
+        DataConverter.conversionArrayOverExposed[i] =
+            i > 224 ? OVEREXPOSED_COLOR : (255 << 24) | (i << 16) | (i << 8) | i;
+    }
+
     // Ref to track if a frame is being rendered so we don't start rendering a new one until the current is complete
     const frameProcessing = useRef<boolean>(false);
     // Ref to track if we have successfully subscribed to camera images
@@ -70,7 +76,13 @@ const CameraMaskingScreen = () => {
                 ];
 
                 for (const { lens, ref } of lensInfo) {
-                    displayLensFeed(data, lens, ref, isCamReversedRef.current, showOverexposedRef.current);
+                    DataConverter.displayLensFeed(
+                        data,
+                        lens,
+                        ref,
+                        isCamReversedRef.current,
+                        showOverexposedRef.current
+                    );
                 }
             }
             frameProcessing.current = false;
@@ -147,66 +159,75 @@ const CameraMaskingOption: React.FC<CameraMaskingOptionProps> = ({ title, descri
 //const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;
 const OVEREXPOSED_COLOR = -13434625; //#FFFF0033;
 
-const displayLensFeed = (
-    data: DataView,
-    lens: Lens,
-    canvas: HTMLCanvasElement,
-    isCameraReversed: boolean,
-    showOverexposedAreas: boolean
-) => {
-    const context = canvas.getContext('2d');
-    if (!context) return;
+class DataConverter {
+    value = 1;
 
-    const dim1 = data.getUint32(1);
-    const dim2 = data.getUint32(5);
+    static conversionArray = new Uint32Array(256);
+    static conversionArrayOverExposed = new Uint32Array(256);
 
-    const width = Math.min(dim1, dim2);
-    const lensHeight = Math.max(dim1, dim2) / 2;
+    static displayLensFeed = (
+        data: DataView,
+        lens: Lens,
+        canvas: HTMLCanvasElement,
+        isCameraReversed: boolean,
+        showOverexposedAreas: boolean
+    ) => {
+        const context = canvas.getContext('2d');
+        if (!context) return;
 
-    const buf = new ArrayBuffer(width * lensHeight * 4);
-    const buf8 = new Uint8ClampedArray(buf);
-    const buf32 = new Uint32Array(buf);
+        const dim1 = data.getUint32(1);
+        const dim2 = data.getUint32(5);
 
-    const offset = lens === Lens.Right ? 0 : dim2 < dim1 ? lensHeight : width * lensHeight;
+        const width = Math.min(dim1, dim2);
+        const lensHeight = Math.max(dim1, dim2) / 2;
 
-    if (dim2 < dim1) {
-        let pixelRowDistance = 0;
-        let offsetCount = 0;
-        for (let i = 0; i < width * lensHeight; i++) {
-            const px = data.getUint8(9 + i + offset + lensHeight * offsetCount);
+        const buf = new ArrayBuffer(width * lensHeight * 4);
+        const buf8 = new Uint8ClampedArray(buf);
+        const buf32 = new Uint32Array(buf);
 
-            if (showOverexposedAreas && px > 224) {
-                buf32[i] = OVEREXPOSED_COLOR;
-            } else {
-                const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
-                buf32[i] = hexColor;
+        const rotated90 = dim2 < dim1;
+
+        const offset = lens === Lens.Right ? 0 : rotated90 ? lensHeight : width * lensHeight;
+
+        const conversionMethod = showOverexposedAreas
+            ? DataConverter.convertByteToHexOverExposed
+            : DataConverter.convertByteToHex;
+
+        if (rotated90) {
+            for (let rowIndex = 0; rowIndex < width; rowIndex++) {
+                const rowBase = rowIndex * lensHeight;
+                const start = 9 + offset + rowBase * 2;
+                const dataRow = data.buffer.slice(start, start + lensHeight);
+                const rowView = new DataView(dataRow);
+
+                for (let i = 0; i < lensHeight; i++) {
+                    const px = rowView.getUint8(i);
+                    buf32[i + rowBase] = conversionMethod(px);
+                }
             }
-
-            if (pixelRowDistance === lensHeight - 1) {
-                offsetCount++;
-                pixelRowDistance = 0;
-            } else {
-                pixelRowDistance++;
+        } else {
+            const offsetView = new DataView(data.buffer.slice(9 + offset, 9 + width * lensHeight + offset));
+            for (let i = 0; i < width * lensHeight; i++) {
+                const px = offsetView.getUint8(i);
+                buf32[i] = conversionMethod(px);
             }
         }
-    } else {
-        for (let i = 0; i < width * lensHeight; i++) {
-            const px = data.getUint8(9 + i + offset);
-            if (showOverexposedAreas && px > 224) {
-                buf32[i] = OVEREXPOSED_COLOR;
-            } else {
-                const hexColor = (255 << 24) | (px << 16) | (px << 8) | px;
-                buf32[i] = hexColor;
-            }
-        }
-    }
-    // Set black pixels to remove flashing camera bytes
-    const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
-    buf32.fill(0xff000000, startOffset, startOffset + width);
+        // Set black pixels to remove flashing camera bytes
+        const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
+        buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    canvas.width = width;
-    canvas.height = lensHeight;
-    context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
-};
+        canvas.width = width;
+        canvas.height = lensHeight;
+        context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
+    };
+
+    static convertByteToHex = (byte: number): number => {
+        return DataConverter.conversionArray[byte];
+    };
+
+    static convertByteToHexOverExposed = (byte: number): number => {
+        return DataConverter.conversionArrayOverExposed[byte];
+    };
+}
 
 export default CameraMaskingScreen;
