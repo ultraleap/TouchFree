@@ -77,15 +77,12 @@ const CameraMaskingScreen = () => {
                     { lens: Lens.Right, ref: rightLensRef.current },
                 ];
 
-                for (const { lens, ref } of lensInfo) {
-                    displayLensFeed(
-                        data,
-                        lens,
-                        ref,
-                        isCamReversedRef.current,
-                        showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
-                    );
-                }
+                displayLensFeeds(
+                    data,
+                    lensInfo,
+                    isCamReversedRef.current,
+                    showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
+                );
             }
 
             // Settimeout with 32ms for ~30fps if we have the performance
@@ -165,15 +162,15 @@ const CameraMaskingOption: React.FC<CameraMaskingOptionProps> = ({ title, descri
 //const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;
 const OVEREXPOSED_COLOR = -13434625; //#FFFF0033;
 
-const displayLensFeed = (
+const displayLensFeeds = (
     data: DataView,
-    lens: Lens,
-    canvas: HTMLCanvasElement,
+    lensInfo: { lens: Lens; ref: HTMLCanvasElement }[],
     isCameraReversed: boolean,
     byteConversionArray: Uint32Array
 ) => {
-    const context = canvas.getContext('2d');
-    if (!context) return;
+    const leftContext = lensInfo[0].ref.getContext('2d');
+    const rightContext = lensInfo[1].ref.getContext('2d');
+    if (!leftContext || !rightContext) return;
 
     const dim1 = data.getUint32(1);
     const dim2 = data.getUint32(5);
@@ -181,41 +178,58 @@ const displayLensFeed = (
     const width = Math.min(dim1, dim2);
     const lensHeight = Math.max(dim1, dim2) / 2;
 
-    const buf = new ArrayBuffer(width * lensHeight * 4);
-    const buf8 = new Uint8ClampedArray(buf);
-    const buf32 = new Uint32Array(buf);
+    const leftBuf = new ArrayBuffer(width * lensHeight * 4);
+    const leftBuf8 = new Uint8ClampedArray(leftBuf);
+    const leftBuf32 = new Uint32Array(leftBuf);
 
-    const rotated90 = dim2 < dim1;
+    const rightBuf = new ArrayBuffer(width * lensHeight * 4);
+    const rightBuf8 = new Uint8ClampedArray(rightBuf);
+    const rightBuf32 = new Uint32Array(rightBuf);
+
+    const rotated90 = dim2 > dim1;
+    const offset = 9;
 
     if (rotated90) {
-        const offset = 9 + (lens === Lens.Right ? 0 : lensHeight);
-
         let rowBase = 0;
         const offsetView = new DataView(data.buffer.slice(offset, offset + width * lensHeight * 2));
 
         for (let rowIndex = 0; rowIndex < width; rowIndex++) {
-            const rowStart = rowBase * 2;
+            let rowStart = rowBase * 2;
             for (let i = 0; i < lensHeight; i++) {
-                buf32[i + rowBase] = byteConversionArray[offsetView.getUint8(i + rowStart)];
+                rightBuf32[i + rowBase] = byteConversionArray[offsetView.getUint8(i + rowStart)];
             }
+
+            rowStart += lensHeight
+            for (let i = 0; i < lensHeight; i++) {
+                leftBuf32[i + rowBase] = byteConversionArray[offsetView.getUint8(i + rowStart)];
+            }
+            
             rowBase += lensHeight;
         }
     } else {
-        const offset = 9 + (lens === Lens.Right ? 0 : width * lensHeight);
-
-        const offsetView = new DataView(data.buffer.slice(offset, offset + width * lensHeight));
+        let offsetView = new DataView(data.buffer.slice(offset, offset + width * lensHeight));
 
         for (let i = 0; i < width * lensHeight; i++) {
-            buf32[i] = byteConversionArray[offsetView.getUint8(i)];
+            rightBuf32[i] = byteConversionArray[offsetView.getUint8(i)];
+        }
+
+        offsetView = new DataView(data.buffer.slice(offset + width * lensHeight, offset + width * lensHeight * 2));
+        for (let i = 0; i < width * lensHeight; i++) {
+            leftBuf32[i] = byteConversionArray[offsetView.getUint8(i)];
         }
     }
     // Set black pixels to remove flashing camera bytes
     const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
-    buf32.fill(0xff000000, startOffset, startOffset + width);
+    rightBuf32.fill(0xff000000, startOffset, startOffset + width);
+    leftBuf32.fill(0xff000000, startOffset, startOffset + width);
 
-    canvas.width = width;
-    canvas.height = lensHeight;
-    context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
+    lensInfo[0].ref.width = width;
+    lensInfo[0].ref.height = lensHeight;
+    leftContext.putImageData(new ImageData(leftBuf8, width, lensHeight), 0, 0);
+
+    lensInfo[1].ref.width = width;
+    lensInfo[1].ref.height = lensHeight;
+    rightContext.putImageData(new ImageData(rightBuf8, width, lensHeight), 0, 0);
 };
 
 export default CameraMaskingScreen;
