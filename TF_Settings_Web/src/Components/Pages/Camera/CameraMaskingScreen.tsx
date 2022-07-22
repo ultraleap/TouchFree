@@ -1,6 +1,6 @@
 import 'Styles/Camera/CameraMasking.scss';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { PointerEvent, useEffect, useRef, useState } from 'react';
 
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
@@ -85,6 +85,8 @@ const CameraMaskingScreen = () => {
                 </p>
             </div>
             <div className="cam-feed-box--main">
+                <CameraMaskingSlider direction="left" />
+                <CameraMaskingSlider direction="bottom" />
                 <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
                 <p>{Lens[mainLens]} Lens</p>
             </div>
@@ -141,6 +143,61 @@ const CameraMaskingOption: React.FC<CameraMaskingOptionProps> = ({ title, descri
         </div>
     </label>
 );
+
+type Direction = 'left' | 'right' | 'top' | 'bottom';
+
+const CameraMaskingSlider: React.FC<{ direction: Direction }> = ({ direction }) => {
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [startPos, setStartPos] = useState<{ X: number; Y: number }>({ X: 0, Y: 0 });
+
+    const sliderRef = useRef<HTMLSpanElement>(null);
+
+    const onStartDrag = (event: PointerEvent<HTMLDivElement>) => {
+        setIsDragging(true);
+        if (startPos.X === 0) {
+            setStartPos({ X: event.pageX, Y: event.pageY });
+        }
+
+        console.log('START X: ' + event.pageX + '    START Y: ' + event.pageY);
+    };
+
+    const onMove = (event: PointerEvent<HTMLDivElement>) => {
+        if (!isDragging || !sliderRef.current) return;
+        const elem = event.target as HTMLDivElement;
+        // UP = negative
+        // LEFT = positive
+
+        // console.log('START X: ' + startPos.X + '    START Y: ' + startPos.Y);
+
+        // moving up page = -offsetY
+        let offsetY = event.pageY - startPos.Y;
+        offsetY = Math.min(0, offsetY);
+        offsetY = Math.max(-350, offsetY);
+
+        console.log('X: ' + offsetY + '    Y: ' + event.pageY);
+
+        // sliderRef.current.style.transform = `translateY(${offsetY}px)`;
+        sliderRef.current.style.top = `${900 + offsetY}px`;
+    };
+
+    const onEndDrag = (event: PointerEvent<HTMLDivElement>) => {
+        console.log('END X: ' + event.pageX + '    END Y: ' + event.pageY);
+
+        setIsDragging(false);
+        // setStartPos({ X: event.pageX, Y: event.pageY });
+    };
+
+    return (
+        <span ref={sliderRef} className={`masking-slider--${direction}`} onPointerMove={onMove}>
+            <div
+                className="masking-slider--knob"
+                onPointerDown={onStartDrag}
+                onPointerUp={onEndDrag}
+                onPointerCancel={onEndDrag}
+            />
+        </span>
+    );
+};
 
 // Decimal in signed 2's complement
 const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;

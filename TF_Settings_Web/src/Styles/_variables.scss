@@ -3,8 +3,8 @@ $app-margin-left: calc((100% - $app-width) / 2);
 $control-bar-size: 170px;
 $app-background-color: #222222;
 $ultraleap-green: #01eb85;
-$light-grey-gradient: transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box;
-$dark-grey-gradient: transparent linear-gradient(180deg, #373737 0%, #2c2c2c 100%) 0% 0% no-repeat padding-box;
+$light-grey-gradient: linear-gradient(180deg, #5c5c5c 0%, #454545 100%);
+$dark-grey-gradient: linear-gradient(180deg, #373737 0%, #2c2c2c 100%);
 $base-font: MontserratRegular, Arial;
 
 :export {
