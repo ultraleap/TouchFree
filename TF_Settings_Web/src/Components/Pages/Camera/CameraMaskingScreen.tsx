@@ -88,10 +88,10 @@ const CameraMaskingScreen = () => {
                 }
             }
 
-            // Settimeout with 16ms for ~60fps if we have the performance
+            // Settimeout with 32ms for ~30fps if we have the performance
             setTimeout(() => {
                 frameProcessing.current = false;
-            }, 16);
+            }, 32);
         });
     }, []);
 
