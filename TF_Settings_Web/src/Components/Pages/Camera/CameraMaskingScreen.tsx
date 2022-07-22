@@ -186,7 +186,7 @@ const displayLensFeeds = (
     const rightBuf8 = new Uint8ClampedArray(rightBuf);
     const rightBuf32 = new Uint32Array(rightBuf);
 
-    const rotated90 = dim2 > dim1;
+    const rotated90 = dim2 < dim1;
     const offset = 9;
 
     if (rotated90) {
