@@ -30,7 +30,7 @@ const positionOptions: PositionOption[] = [
 const buttonStyle: React.CSSProperties = { width: '48.75%', height: '350px', marginBottom: '2.5%' };
 const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };
 const textStyle: React.CSSProperties = {
-    color: cssVariables.ultraLeapGreen,
+    color: cssVariables.ultraleapGreen,
     opacity: '1',
 };
 

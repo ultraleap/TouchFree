@@ -35,7 +35,7 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('manual')}
                 />
             </div>
-            <div id="camera-page-divider" />
+            <div className="camera-page-divider" />
             <div className="title-line">
                 <h1> Tools </h1>
             </div>
@@ -46,7 +46,7 @@ const CameraSetupScreen = () => {
                 iconStyle={{ marginBottom: '0px' }}
                 title="Camera Masking"
                 text="Mask areas of your cameras vision from reflections and harsh areas of light"
-                onClick={() => navigate('quick')}
+                onClick={() => navigate('masking')}
             />
         </div>
     );

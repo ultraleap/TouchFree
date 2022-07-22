@@ -3,9 +3,10 @@ export interface GlobalCSS {
     appMarginLeft: string;
     controlBarSize: string;
     appBackgroundColor: string;
-    ultraLeapGreen: string;
+    ultraleapGreen: string;
     lightGreyGradient: string;
     darkGreyGradient: string;
+    baseFont: string;
 }
 
 export const styles: GlobalCSS;
