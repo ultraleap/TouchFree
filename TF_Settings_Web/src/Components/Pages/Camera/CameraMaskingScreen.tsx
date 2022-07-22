@@ -1,5 +1,3 @@
-import { start } from 'node:repl';
-
 import 'Styles/Camera/CameraMasking.scss';
 
 import React, { PointerEvent, useEffect, useRef, useState } from 'react';
@@ -32,7 +30,8 @@ const CameraMaskingScreen = () => {
 
     for (let i = 0; i < 256; i++) {
         byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
-        byteConversionArrayOverExposed[i] = i > 224 ? OVEREXPOSED_COLOR : byteConversionArray[i];
+        // -13434625 = #FFFF0033 in signed 2's complement
+        byteConversionArrayOverExposed[i] = i > 224 ? -13434625 : byteConversionArray[i];
     }
 
     // Ref to track if a frame is being rendered so we don't start rendering a new one until the current is complete
@@ -74,14 +73,11 @@ const CameraMaskingScreen = () => {
             const data = new DataView(event.data);
             if (data.getUint8(0) === 1) {
                 successfullySubscribed.current = true;
-                const lensInfo = [
-                    { lens: Lens.Left, ref: leftLensRef.current },
-                    { lens: Lens.Right, ref: rightLensRef.current },
-                ];
 
                 displayLensFeeds(
                     data,
-                    lensInfo,
+                    leftLensRef.current,
+                    rightLensRef.current,
                     isCamReversedRef.current,
                     showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
                 );
@@ -255,18 +251,15 @@ const CameraMaskingSlider: React.FC<{ direction: Direction }> = ({ direction }) 
 
 const limitVal = (val: number): number => Math.min(360, Math.max(0, val));
 
-// Decimal in signed 2's complement
-//const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;
-const OVEREXPOSED_COLOR = -13434625; //#FFFF0033;
-
 const displayLensFeeds = (
     data: DataView,
-    lensInfo: { lens: Lens; ref: HTMLCanvasElement }[],
+    leftLensRef: HTMLCanvasElement,
+    rightLensRef: HTMLCanvasElement,
     isCameraReversed: boolean,
     byteConversionArray: Uint32Array
 ) => {
-    const leftContext = lensInfo[0].ref.getContext('2d');
-    const rightContext = lensInfo[1].ref.getContext('2d');
+    const leftContext = leftLensRef.getContext('2d');
+    const rightContext = rightLensRef.getContext('2d');
     if (!leftContext || !rightContext) return;
 
     const dim1 = data.getUint32(1);
@@ -320,12 +313,12 @@ const displayLensFeeds = (
     rightBuf32.fill(0xff000000, startOffset, startOffset + width);
     leftBuf32.fill(0xff000000, startOffset, startOffset + width);
 
-    lensInfo[0].ref.width = width;
-    lensInfo[0].ref.height = lensHeight;
+    leftLensRef.width = width;
+    leftLensRef.height = lensHeight;
     leftContext.putImageData(new ImageData(leftBuf8, width, lensHeight), 0, 0);
 
-    lensInfo[1].ref.width = width;
-    lensInfo[1].ref.height = lensHeight;
+    rightLensRef.width = width;
+    rightLensRef.height = lensHeight;
     rightContext.putImageData(new ImageData(rightBuf8, width, lensHeight), 0, 0);
 };
 

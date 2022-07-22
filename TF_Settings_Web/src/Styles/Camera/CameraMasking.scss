@@ -43,18 +43,20 @@
     position: absolute;
     top: $top;
     left: $left;
-    margin: 0;
 
+    // Fix these colors so same for top and side
+    $gradient-color: #00000000 0%, v.$ultraleap-green 50%, #00000000 100%;
     @if $vertical {
         height: 0px;
         width: 10px;
-        padding: 400px 0 400px 0;
-        background: linear-gradient(0deg, #2c2c2c 0%, #00eb85 50%, #2c2c2c 100%);
+        padding: 300px 0 300px 0;
+        margin: 100px 0 100px 0;
+        background: linear-gradient(0deg, $gradient-color);
     } @else {
         height: 10px;
         width: 0px;
         padding: 0 400px 0 400px;
-        background: linear-gradient(90deg, #2c2c2c 0%, #00eb85 50%, #2c2c2c 100%);
+        background: linear-gradient(90deg, $gradient-color);
     }
 }
 
