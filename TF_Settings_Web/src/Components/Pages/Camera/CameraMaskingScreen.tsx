@@ -1,3 +1,5 @@
+import { start } from 'node:repl';
+
 import 'Styles/Camera/CameraMasking.scss';
 
 import React, { PointerEvent, useEffect, useRef, useState } from 'react';
@@ -86,6 +88,8 @@ const CameraMaskingScreen = () => {
             </div>
             <div className="cam-feed-box--main">
                 <CameraMaskingSlider direction="left" />
+                <CameraMaskingSlider direction="right" />
+                <CameraMaskingSlider direction="top" />
                 <CameraMaskingSlider direction="bottom" />
                 <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
                 <p>{Lens[mainLens]} Lens</p>
@@ -145,59 +149,95 @@ const CameraMaskingOption: React.FC<CameraMaskingOptionProps> = ({ title, descri
 );
 
 type Direction = 'left' | 'right' | 'top' | 'bottom';
+interface SliderPosInfo {
+    X: number;
+    Y: number;
+    initialTop: number;
+    initialLeft: number;
+}
 
 const CameraMaskingSlider: React.FC<{ direction: Direction }> = ({ direction }) => {
-    const [isDragging, setIsDragging] = useState<boolean>(false);
-    const [startPos, setStartPos] = useState<{ X: number; Y: number }>({ X: 0, Y: 0 });
+    const startPosInfo = useRef<SliderPosInfo>({
+        X: Number.NaN,
+        Y: Number.NaN,
+        initialTop: Number.NaN,
+        initialLeft: Number.NaN,
+    });
 
     const sliderRef = useRef<HTMLSpanElement>(null);
 
-    const onStartDrag = (event: PointerEvent<HTMLDivElement>) => {
-        setIsDragging(true);
-        if (startPos.X === 0) {
-            setStartPos({ X: event.pageX, Y: event.pageY });
+    const onStartDrag = (event: PointerEvent<HTMLSpanElement>) => {
+        if (!sliderRef.current) return;
+
+        if (Number.isNaN(startPosInfo.current.X) || Number.isNaN(startPosInfo.current.Y)) {
+            const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
+            const left = Number.parseFloat(getComputedStyle(sliderRef.current).left);
+
+            startPosInfo.current = { X: event.pageX, Y: event.pageY, initialTop: top, initialLeft: left };
         }
 
-        console.log('START X: ' + event.pageX + '    START Y: ' + event.pageY);
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onEndDrag);
     };
 
-    const onMove = (event: PointerEvent<HTMLDivElement>) => {
-        if (!isDragging || !sliderRef.current) return;
-        const elem = event.target as HTMLDivElement;
-        // UP = negative
-        // LEFT = positive
+    const onMove = (event: globalThis.PointerEvent) => {
+        if (!sliderRef.current) return;
 
-        // console.log('START X: ' + startPos.X + '    START Y: ' + startPos.Y);
-
-        // moving up page = -offsetY
-        let offsetY = event.pageY - startPos.Y;
-        offsetY = Math.min(0, offsetY);
-        offsetY = Math.max(-350, offsetY);
-
-        console.log('X: ' + offsetY + '    Y: ' + event.pageY);
-
-        // sliderRef.current.style.transform = `translateY(${offsetY}px)`;
-        sliderRef.current.style.top = `${900 + offsetY}px`;
+        switch (direction) {
+            case 'left':
+                sliderRef.current.style.left = `${
+                    startPosInfo.current.initialLeft + limitVal(event.pageX - startPosInfo.current.X)
+                }px`;
+                break;
+            case 'right':
+                sliderRef.current.style.left = `${
+                    startPosInfo.current.initialLeft - limitVal(startPosInfo.current.X - event.pageX)
+                }px`;
+                break;
+            case 'top':
+                sliderRef.current.style.top = `${
+                    startPosInfo.current.initialTop + limitVal(event.pageY - startPosInfo.current.Y)
+                }px`;
+                break;
+            case 'bottom':
+                sliderRef.current.style.top = `${
+                    startPosInfo.current.initialTop - limitVal(startPosInfo.current.Y - event.pageY)
+                }px`;
+                break;
+        }
     };
 
-    const onEndDrag = (event: PointerEvent<HTMLDivElement>) => {
-        console.log('END X: ' + event.pageX + '    END Y: ' + event.pageY);
+    const onEndDrag = (event: globalThis.PointerEvent) => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onEndDrag);
 
-        setIsDragging(false);
-        // setStartPos({ X: event.pageX, Y: event.pageY });
+        let dragVal = 0;
+        switch (direction) {
+            case 'left':
+                dragVal = limitVal(event.pageX - startPosInfo.current.X);
+                break;
+            case 'right':
+                dragVal = limitVal(startPosInfo.current.X - event.pageX);
+                break;
+            case 'top':
+                dragVal = limitVal(event.pageY - startPosInfo.current.Y);
+                break;
+            case 'bottom':
+                dragVal = limitVal(startPosInfo.current.Y - event.pageY);
+                break;
+        }
+
+        console.log('Drag end: ' + dragVal);
     };
 
     return (
-        <span ref={sliderRef} className={`masking-slider--${direction}`} onPointerMove={onMove}>
-            <div
-                className="masking-slider--knob"
-                onPointerDown={onStartDrag}
-                onPointerUp={onEndDrag}
-                onPointerCancel={onEndDrag}
-            />
+        <span ref={sliderRef} className={`masking-slider--${direction}`} onPointerDown={onStartDrag}>
+            <div className="masking-slider--knob" />
         </span>
     );
 };
+
+const limitVal = (val: number): number => Math.min(360, Math.max(0, val));
 
 // Decimal in signed 2's complement
 const OVEREXPOSED_THRESHOLD = -8355712; //#FF808080;

@@ -66,24 +66,27 @@
     background-image: linear-gradient(270deg, v.$ultraleap-green, #00ccce);
     box-shadow: 0px 2px 9px #000000cb;
     border: 1px solid #ffffff73;
+
+    // Half of size - half of slider bar width + border
+    // 50px/2 - 5px + 1px
+    margin-left: -21px;
+    margin-top: -21px;
 }
 
 .masking-slider--left {
     @include masking-slider(100px, 100px, $vertical: true);
+}
 
-    .masking-slider--knob {
-        margin-left: -22px;
-        margin-top: -27px;
-    }
+.masking-slider--right {
+    @include masking-slider(100px, 900px, $vertical: true);
+}
+
+.masking-slider--top {
+    @include masking-slider(100px, 100px, $vertical: false);
 }
 
 .masking-slider--bottom {
     @include masking-slider(900px, 100px, $vertical: false);
-
-    .masking-slider--knob {
-        margin-top: -22px;
-        margin-left: -27px;
-    }
 }
 
 .cam-feeds-bottom-container {
