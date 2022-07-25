@@ -103,6 +103,38 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         }
     }
 
+    public struct TrackingResponse
+    {
+        public bool needsMask;
+        public bool needsImages;
+        public bool needsOrientation;
+        public bool needsAnalytics;
+
+        public string requestId;
+        public string originalRequest;
+        public bool isGetRequest;
+        public TrackingState state;
+
+        public TrackingResponse(string _requestId,
+                                string _originalRequest,
+                                bool _isGetRequest,
+                                bool _needsMask,
+                                bool _needsImages,
+                                bool _needsOrientation,
+                                bool _needsAnalytics)
+        {
+            requestId = _requestId;
+            originalRequest = _originalRequest;
+            isGetRequest = _isGetRequest;
+            needsMask = _needsMask;
+            needsImages = _needsImages;
+            needsOrientation = _needsOrientation;
+            needsAnalytics = _needsAnalytics;
+
+            state = new TrackingState();
+        }
+    }
+
     [Serializable]
     public struct ResponseToClient
     {
@@ -121,10 +153,22 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
     }
 
     public struct TrackingState {
-        public MaskingData? mask;
-        public bool? allowImages;
-        public bool? cameraReversed;
-        public bool? analyticsEnabled;
+        public SuccessWrapper<MaskingData?>? mask;
+        public SuccessWrapper<bool?>? allowImages;
+        public SuccessWrapper<bool?>? cameraReversed;
+        public SuccessWrapper<bool?>? analyticsEnabled;
+    }
+
+    public struct SuccessWrapper<T> {
+        public bool succeeded;
+        public string msg;
+        public T content;
+
+        public SuccessWrapper(bool _success, string _message, T _content) {
+            succeeded = _success;
+            msg = _message;
+            content = _content;
+        }
     }
 
     internal struct CommunicationWrapper<T>

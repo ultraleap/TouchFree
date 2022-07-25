@@ -4,10 +4,10 @@ namespace Ultraleap.TouchFree.Library.Connections
 {
     public interface ITrackingDiagnosticApi
     {
-        public event Action<ImageMaskData> OnMaskingResponse;
-        public event Action<bool> OnAnalyticsResponse;
-        public event Action<bool> OnAllowImagesResponse;
-        public event Action<bool> OnCameraOrientationResponse;
+        public event Action<ImageMaskData?, string> OnMaskingResponse;
+        public event Action<bool?, string> OnAnalyticsResponse;
+        public event Action<bool?, string> OnAllowImagesResponse;
+        public event Action<bool?, string> OnCameraOrientationResponse;
 
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;

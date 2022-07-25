@@ -22,10 +22,10 @@ namespace Ultraleap.TouchFree.Library.Connections
         public bool cameraReversed = false;
         public bool? allowImages;
 
-        public event Action<ImageMaskData> OnMaskingResponse;
-        public event Action<bool> OnAnalyticsResponse;
-        public event Action<bool> OnAllowImagesResponse;
-        public event Action<bool> OnCameraOrientationResponse;
+        public event Action<ImageMaskData?, String> OnMaskingResponse;
+        public event Action<bool?, string> OnAnalyticsResponse;
+        public event Action<bool?, string> OnAllowImagesResponse;
+        public event Action<bool?, string> OnCameraOrientationResponse;
 
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;
@@ -132,11 +132,14 @@ namespace Ultraleap.TouchFree.Library.Connections
                         try
                         {
                             var maskingResponse = JsonConvert.DeserializeObject<DApiPayloadMessage<ImageMaskData>>(_message);
-                            this.OnMaskingResponse?.Invoke(maskingResponse.payload);
+
+                            this.OnMaskingResponse?.Invoke(maskingResponse.payload, "Image Mask State");
                         }
                         catch
                         {
                             Console.WriteLine("DiagnosticAPI - Could not parse GetImageMask data: " + _message);
+
+                            this.OnMaskingResponse?.Invoke(null, $"Could not access Masking data. Tracking Response: \"{_message}\"");
                         }
                         break;
 
@@ -173,11 +176,14 @@ namespace Ultraleap.TouchFree.Library.Connections
                         try
                         {
                             var data = JsonConvert.DeserializeObject<DApiPayloadMessage<bool>>(_message);
-                            this.OnAnalyticsResponse?.Invoke(data.payload);
+
+                            this.OnAnalyticsResponse?.Invoke(data.payload, "Analytics State");
                         }
                         catch
                         {
                             Console.WriteLine("DiagnosticAPI - Could not parse analytics response: " + _message);
+
+                            this.OnAnalyticsResponse?.Invoke(null, $"Could not access Analytics state. Tracking Response: \"{_message}\"");
                         }
                         break;
 
@@ -215,11 +221,14 @@ namespace Ultraleap.TouchFree.Library.Connections
 
                             var data = JsonConvert.DeserializeObject<DApiPayloadMessage<bool>>(_message);
                             allowImages = data?.payload ?? false;
-                            OnAllowImagesResponse?.Invoke(allowImages.Value);
+
+                            this.OnAllowImagesResponse?.Invoke(allowImages, "AllowImages state");
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine("DiagnosticAPI - Could not parse allow images response: " + _message);
+
+                            this.OnAllowImagesResponse?.Invoke(null, $"Could not access AllowImages state. Tracking Response: \"{_message}\"");
                         }
                         break;
 
@@ -229,11 +238,14 @@ namespace Ultraleap.TouchFree.Library.Connections
                         {
                             var data = JsonConvert.DeserializeObject<DApiPayloadMessage<CameraOrientationPayload>>(_message);
                             cameraReversed = data?.payload.camera_orientation == "fixed-inverted";
-                            OnCameraOrientationResponse?.Invoke(cameraReversed);
+
+                            this.OnCameraOrientationResponse?.Invoke(cameraReversed, "CameraOrientation state");
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine("DiagnosticAPI - Could not parse camera orientation response: " + _message);
+
+                            this.OnCameraOrientationResponse?.Invoke(null, $"Could not access CameraOrientation state. Tracking Response: \"{_message}\"");
                         }
                         break;
 
