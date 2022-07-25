@@ -6,7 +6,6 @@ export interface GlobalCSS {
     ultraleapGreen: string;
     lightGreyGradient: string;
     darkGreyGradient: string;
-    handNotFoundHeight: string;
     baseFont: string;
 }
 
