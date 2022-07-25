@@ -36,8 +36,8 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     const isNewClick = React.useRef(false);
     // ===== Timeout =====
     const [timeToPosSelect, setTimeToPosSelect] = React.useState(TIMEOUT_S);
-    const timeout = React.useRef<NodeJS.Timeout>();
-    const interval = React.useRef<NodeJS.Timer>();
+    const timeout = React.useRef<number>();
+    const interval = React.useRef<number>();
     const [initialWaitOver, setInitialWaitOver] = React.useState(false);
     // ===== React Router =====
     const navigate = useNavigate();
@@ -87,21 +87,21 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
 
     useEffect(() => {
         if (displayHandIndicator) {
-            interval.current = setInterval(() => setTimeToPosSelect((t) => t - 1), 1000);
-            timeout.current = setTimeout(() => {
+            interval.current = window.setInterval(() => setTimeToPosSelect((t) => t - 1), 1000);
+            timeout.current = window.setTimeout(() => {
                 navigate('../../');
             }, TIMEOUT_MS);
             setProgress(0);
         } else {
             setProgress(progressToClick);
             setTimeToPosSelect(TIMEOUT_S);
-            clearInterval(interval.current);
-            clearTimeout(timeout.current);
+            window.clearInterval(interval.current);
+            window.clearTimeout(timeout.current);
         }
 
         return () => {
-            clearTimeout(timeout.current);
-            clearInterval(interval.current);
+            window.clearTimeout(timeout.current);
+            window.clearInterval(interval.current);
         };
     }, [displayHandIndicator, progressToClick]);
 
