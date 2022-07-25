@@ -20,8 +20,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         // Speed in millimeters per second
         public float speedMin = 150f;
         public float speedMax = 500f;
-        public float distAtSpeedMinMm = 64f;
-        public float distAtSpeedMaxMm = 28f;
+        public float distAtSpeedMinMm = 42f;
+        public float distAtSpeedMaxMm = 8f;
         public float horizontalDecayDistMm = 50f;
 
         public float thetaOne = 65f;

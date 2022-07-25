@@ -56,10 +56,10 @@ namespace Ultraleap.TouchFree.Library
                     interactionsToUse.Add(InteractionType.AIRCLICK);
                 }
 
-                //if (interactionTuning?.EnableVelocitySwipeWithAirPush == true)
-                //{
+                if (interactionTuning?.EnableVelocitySwipeWithAirPush == true)
+                {
                     interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
-                //}
+                }
             }
             else
             {
