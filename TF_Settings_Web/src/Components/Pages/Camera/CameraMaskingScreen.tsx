@@ -168,7 +168,11 @@ interface SliderPosInfo {
     initialLeft: number;
 }
 
+const limitVal = (val: number): number => Math.min(400, Math.max(0, val));
+
 const CameraMaskingSlider: React.FC<{ direction: Direction }> = ({ direction }) => {
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+
     const startPosInfo = useRef<SliderPosInfo>({
         X: Number.NaN,
         Y: Number.NaN,
@@ -181,6 +185,7 @@ const CameraMaskingSlider: React.FC<{ direction: Direction }> = ({ direction }) 
     const onStartDrag = (event: PointerEvent<HTMLSpanElement>) => {
         if (!sliderRef.current) return;
 
+        setIsDragging(true);
         if (Number.isNaN(startPosInfo.current.X) || Number.isNaN(startPosInfo.current.Y)) {
             const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
             const left = Number.parseFloat(getComputedStyle(sliderRef.current).left);
@@ -220,6 +225,7 @@ const CameraMaskingSlider: React.FC<{ direction: Direction }> = ({ direction }) 
     };
 
     const onEndDrag = (event: globalThis.PointerEvent) => {
+        setIsDragging(false);
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onEndDrag);
 
@@ -243,13 +249,17 @@ const CameraMaskingSlider: React.FC<{ direction: Direction }> = ({ direction }) 
     };
 
     return (
-        <span ref={sliderRef} className={`masking-slider--${direction}`} onPointerDown={onStartDrag}>
-            <div className="masking-slider--knob" />
+        <span ref={sliderRef} className={`masking-slider--${direction}`}>
+            <div
+                className={`masking-slider-knob ${isDragging ? 'masking-slider-knob--dragging' : ''}`}
+                onPointerDown={onStartDrag}
+            >
+                <div className="masking-slider-arrow--one" />
+                <div className="masking-slider-arrow--two" />
+            </div>
         </span>
     );
 };
-
-const limitVal = (val: number): number => Math.min(360, Math.max(0, val));
 
 const displayLensFeeds = (
     data: DataView,
