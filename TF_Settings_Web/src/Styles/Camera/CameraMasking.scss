@@ -1,5 +1,6 @@
 @use 'Styles/variables' as v;
 
+// ===== Camera Feeds =====
 @mixin cam-feed-box($size, $padding) {
     position: relative;
     margin: auto;
@@ -80,6 +81,7 @@
     }
 }
 
+// ===== Masking Sliders =====
 @mixin masking-slider($top, $left, $vertical) {
     position: absolute;
     top: $top;
@@ -182,6 +184,7 @@
     border-radius: 50% 50% 0 0;
 }
 
+// ===== Bottom container =====
 .cam-feeds-bottom-container {
     display: flex;
     justify-content: space-between;
@@ -195,6 +198,7 @@
     flex-direction: column;
 }
 
+// ===== Camera Feed Option =====
 .cam-feeds-option {
     background: v.$dark-grey-gradient;
     width: 100%;
