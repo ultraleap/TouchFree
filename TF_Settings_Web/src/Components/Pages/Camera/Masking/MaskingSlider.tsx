@@ -1,3 +1,5 @@
+import 'Styles/Camera/CameraMasking.scss';
+
 import React, { PointerEvent, useRef, useState } from 'react';
 
 export type SliderDirection = 'left' | 'right' | 'top' | 'bottom';

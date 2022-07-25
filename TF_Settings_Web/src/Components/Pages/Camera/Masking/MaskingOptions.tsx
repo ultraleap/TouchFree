@@ -1,3 +1,5 @@
+import 'Styles/Camera/CameraMasking.scss';
+
 import React from 'react';
 
 import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';

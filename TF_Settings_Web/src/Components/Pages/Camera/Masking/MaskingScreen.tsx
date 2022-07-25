@@ -45,6 +45,7 @@ const MaskingScreen = () => {
     // ===== Variables =====
     const byteConversionArray = new Uint32Array(256);
     const byteConversionArrayOverExposed = new Uint32Array(256);
+    const sliderDirections: SliderDirection[] = ['left', 'right', 'top', 'bottom'];
 
     // ===== UseEffect =====
     useEffect(() => {
@@ -109,9 +110,9 @@ const MaskingScreen = () => {
                 </p>
             </div>
             <div className="cam-feed-box--main">
-                {['left', 'right', 'top', 'bottom'].forEach((direction) => {
-                    <MaskingSlider direction={direction as SliderDirection} />;
-                })}
+                {sliderDirections.map((direction) => (
+                    <MaskingSlider key={direction} direction={direction} />
+                ))}
                 <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
                 <p>{Lens[mainLens]} Lens</p>
             </div>
