@@ -67,18 +67,12 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
 
     useEffect(() => {
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
-
-        return () => {
-            InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
-        };
-    }, []);
-
-    useEffect(() => {
         const initialWait = setTimeout(() => {
             setInitialWaitOver(true);
         }, INITIAL_WAIT_MS);
 
         return () => {
+            InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
             clearTimeout(initialWait);
         };
     }, []);
