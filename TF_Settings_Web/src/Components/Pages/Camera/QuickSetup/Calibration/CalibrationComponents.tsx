@@ -90,19 +90,18 @@ const ReturnToPositionScreenMessage: FC<HandsLostProps> = ({ timeToPosSelect }) 
         return <></>;
     }
 
-    let paddingString = '';
     const timeToPosSelectLength = timeToPosSelect.toString().length;
     const timeoutLength = TIMEOUT_S.toString().length;
 
-    paddingString = paddingString.padEnd(timeoutLength - timeToPosSelectLength, '0');
+    const numString = ''.padEnd(timeoutLength - timeToPosSelectLength, '0') + timeToPosSelect;
+
+    const formattedString = [...numString].map((char, index) => {
+        return <span key={index} style={{ width: '1ch', justifyContent: 'center' }}>{char}</span>;
+    });
 
     return (
         <div id="return-message">
-            <p>Returning in </p>
-            <p id="timer">
-                {paddingString}
-                {timeToPosSelect}s
-            </p>
+            <p>Returning in <span style={{marginLeft: '0.3rem'}}>{formattedString}</span>s</p>
         </div>
     );
 };
