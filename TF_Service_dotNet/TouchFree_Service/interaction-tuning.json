@@ -7,7 +7,10 @@
             "ScrollDelayMs": 500,
             "AllowVerticalScroll": true,
             "AllowHorizontalScroll": true,
-            "AllowBidirectionalScroll": false
+            "AllowBidirectionalScroll": false,
+            "MinSwipeLength": 10,
+            "MaxSwipeWidth": 10,
+            "SwipeWidthScaling": 0.2
         },
         "AirPushSettings": {
             "SpeedMin": 150,

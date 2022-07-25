@@ -16,7 +16,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private readonly float maxReleaseVelocity_mmps = 200f;
 
         private readonly float maxOpposingVelocity_mmps = 65f;
-        private readonly float minSwipeWidth = 10f;
+        private readonly float minSwipeLength = 10f;
+        private readonly float maxSwipeWidth = 10f;
         private readonly float swipeWidthScaling = 0.2f;
 
         private readonly double scrollDelayMs = 450;
@@ -54,6 +55,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 maxReleaseVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxReleaseVelocity_mmps;
                 maxOpposingVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxOpposingVelocity_mmps;
                 scrollDelayMs = _interactionTuning.Value.VelocitySwipeSettings.ScrollDelayMs;
+                minSwipeLength = _interactionTuning.Value.VelocitySwipeSettings.MinSwipeLength;
+                maxSwipeWidth = _interactionTuning.Value.VelocitySwipeSettings.MaxSwipeWidth;
+                swipeWidthScaling = _interactionTuning.Value.VelocitySwipeSettings.SwipeWidthScaling;
 
                 if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll && _interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
                 {
@@ -120,7 +124,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 if (potentialScrollOrigin.HasValue)
                 {
                     var changeFromPossibleOrigin = Vector2.Abs(positions.CursorPosition - potentialScrollOrigin.Value);
-                    if (changeFromPossibleOrigin.X > minSwipeWidth || changeFromPossibleOrigin.Y > minSwipeWidth)
+                    if (changeFromPossibleOrigin.X > minSwipeLength || changeFromPossibleOrigin.Y > minSwipeLength)
                     {
                         pressing = true;
                         scrollOrigin = previousScreenPos;
@@ -235,13 +239,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             switch (currentDirection)
             {
                 case Direction.LEFT:
-                    return _dPerp.X > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (minSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
+                    return _dPerp.X > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
                 case Direction.RIGHT:
-                    return _dPerp.X < maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (minSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
+                    return _dPerp.X < maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
                 case Direction.UP:
-                    return _dPerp.Y < maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (minSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
+                    return _dPerp.Y < maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
                 case Direction.DOWN:
-                    return _dPerp.Y > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (minSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
+                    return _dPerp.Y > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
                 default:
                     return false;
             }

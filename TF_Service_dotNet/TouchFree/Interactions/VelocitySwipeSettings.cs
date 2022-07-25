@@ -12,5 +12,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public bool AllowVerticalScroll { get; set; }
         public bool AllowHorizontalScroll { get; set; }
         public bool AllowBidirectionalScroll { get; set; }
+        public float MinSwipeLength { get; set; }
+        public float MaxSwipeWidth { get; set; }
+        public float SwipeWidthScaling { get; set; }
     }
 }
