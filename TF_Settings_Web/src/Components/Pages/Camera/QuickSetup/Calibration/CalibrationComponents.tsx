@@ -3,7 +3,7 @@ import cssVariables from 'Styles/_variables.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
@@ -16,11 +16,13 @@ import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
 import { TextButton } from 'Components/Controls/TFButton';
 
+import { TIMEOUT_S } from './CalibrationScreen';
+
 interface CalibrationInstructionsProps {
     progress: number;
     containerStyle: CSSProperties;
 }
-export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = ({ progress, containerStyle }) => {
+export const CalibrationInstructions: FC<CalibrationInstructionsProps> = ({ progress, containerStyle }) => {
     const instructionsText = (
         <h1>
             Hold INDEX FINGER against <br /> this <span className="greenText">GREEN CIRCLE</span>
@@ -63,7 +65,7 @@ interface CalibrationProgressCircleProps {
     style: CSSProperties;
 }
 
-export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
+export const CalibrationProgressCircle: FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
     <div style={style} className="touch-circle-progress">
         <CircularProgressbar
             value={Math.ceil(progress * 50) / 50}
@@ -79,14 +81,33 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
     </div>
 );
 
-const ReturnToPositionScreenMessage = (props: { timeToPosSelect?: number }) => {
-    const message = <p style={{ fontWeight: 'normal' }}>Returning in {props.timeToPosSelect}s</p>;
+interface HandsLostProps {
+    timeToPosSelect?: number;
+}
 
-    return props.timeToPosSelect ? message : <></>;
+const ReturnToPositionScreenMessage: FC<HandsLostProps> = (timeToPosSelect) => {
+    if (!timeToPosSelect) {
+        return <></>;
+    }
+
+    let paddingString = '';
+    const timeToPosSelectLength = timeToPosSelect.toString().length;
+    const timeoutLength = TIMEOUT_S.toString().length;
+
+    paddingString = paddingString.padEnd(timeoutLength - timeToPosSelectLength, '0');
+
+    return (
+        <div id="return-message">
+            <p>Returning in </p>
+            <p id="timer">
+                {paddingString}
+                {timeToPosSelect}s
+            </p>
+        </div>
+    );
 };
 
-export const CalibrationHandLostMessage = (props: { timeToPosSelect?: number }) => {
-    const { timeToPosSelect } = props;
+export const CalibrationHandLostMessage: FC<HandsLostProps> = ({ timeToPosSelect }) => {
     return (
         <div>
             <div className={'hand-not-found-container'}>
@@ -102,7 +123,7 @@ interface CalibrationTutorialVideoProps {
     videoStyle: CSSProperties;
 }
 
-export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => {
+export const CalibrationTutorialVideo: FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => {
     const [loaded, setLoaded] = useState<boolean>(false);
 
     const getVideoStyle = (): CSSProperties => {
@@ -138,7 +159,7 @@ interface CalibrationCancelButtonProps {
     buttonStyle: CSSProperties;
 }
 
-export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
+export const CalibrationCancelButton: FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
         <TextButton
             buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
@@ -168,7 +189,7 @@ interface CalibrationPracticeButtonProps {
     progress: number;
 }
 
-export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps> = ({ isHandPresent, progress }) => {
+export const CalibrationPracticeButton: FC<CalibrationPracticeButtonProps> = ({ isHandPresent, progress }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
     const numFired = useRef<number>(0);
 
