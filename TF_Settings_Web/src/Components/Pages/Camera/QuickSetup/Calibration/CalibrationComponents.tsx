@@ -93,8 +93,8 @@ const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSele
     const timeToPosSelectLength = timeToPosSelect.toString().length;
     const timeoutLength = TIMEOUT_S.toString().length;
 
+    // If the time left has fewer characters than the initial time, pad the start with "0"s
     const numString = ''.padEnd(timeoutLength - timeToPosSelectLength, '0') + timeToPosSelect;
-
     const formattedString = [...numString].map((char, index) => {
         return <span key={index} style={{ width: '1ch', justifyContent: 'center' }}>{char}</span>;
     });
