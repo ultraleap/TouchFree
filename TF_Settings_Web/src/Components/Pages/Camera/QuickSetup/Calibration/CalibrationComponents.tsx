@@ -85,7 +85,7 @@ interface HandsLostProps {
     timeToPosSelect?: number;
 }
 
-const ReturnToPositionScreenMessage: FC<HandsLostProps> = (timeToPosSelect) => {
+const ReturnToPositionScreenMessage: FC<HandsLostProps> = ({ timeToPosSelect }) => {
     if (!timeToPosSelect) {
         return <></>;
     }
