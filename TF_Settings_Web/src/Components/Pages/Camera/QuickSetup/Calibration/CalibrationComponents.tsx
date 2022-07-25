@@ -3,7 +3,7 @@ import cssVariables from 'Styles/_variables.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
@@ -22,7 +22,7 @@ interface CalibrationInstructionsProps {
     progress: number;
     containerStyle: CSSProperties;
 }
-export const CalibrationInstructions: FC<CalibrationInstructionsProps> = ({ progress, containerStyle }) => {
+export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = ({ progress, containerStyle }) => {
     const instructionsText = (
         <h1>
             Hold INDEX FINGER against <br /> this <span className="greenText">GREEN CIRCLE</span>
@@ -65,7 +65,7 @@ interface CalibrationProgressCircleProps {
     style: CSSProperties;
 }
 
-export const CalibrationProgressCircle: FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
+export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
     <div style={style} className="touch-circle-progress">
         <CircularProgressbar
             value={Math.ceil(progress * 50) / 50}
@@ -85,7 +85,7 @@ interface HandsLostProps {
     timeToPosSelect?: number;
 }
 
-const ReturnToPositionScreenMessage: FC<HandsLostProps> = ({ timeToPosSelect }) => {
+const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSelect }) => {
     if (!timeToPosSelect) {
         return <></>;
     }
@@ -106,7 +106,7 @@ const ReturnToPositionScreenMessage: FC<HandsLostProps> = ({ timeToPosSelect }) 
     );
 };
 
-export const CalibrationHandLostMessage: FC<HandsLostProps> = ({ timeToPosSelect }) => {
+export const CalibrationHandLostMessage: React.FC<HandsLostProps> = ({ timeToPosSelect }) => {
     return (
         <div>
             <div className={'hand-not-found-container'}>
@@ -122,7 +122,7 @@ interface CalibrationTutorialVideoProps {
     videoStyle: CSSProperties;
 }
 
-export const CalibrationTutorialVideo: FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => {
+export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> = ({ videoStyle }) => {
     const [loaded, setLoaded] = useState<boolean>(false);
 
     const getVideoStyle = (): CSSProperties => {
@@ -158,7 +158,7 @@ interface CalibrationCancelButtonProps {
     buttonStyle: CSSProperties;
 }
 
-export const CalibrationCancelButton: FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
+export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
         <TextButton
             buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
@@ -188,7 +188,7 @@ interface CalibrationPracticeButtonProps {
     progress: number;
 }
 
-export const CalibrationPracticeButton: FC<CalibrationPracticeButtonProps> = ({ isHandPresent, progress }) => {
+export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps> = ({ isHandPresent, progress }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
     const numFired = useRef<number>(0);
 
