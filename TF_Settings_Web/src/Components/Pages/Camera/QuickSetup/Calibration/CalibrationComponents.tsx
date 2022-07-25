@@ -73,7 +73,7 @@ export const CalibrationProgressCircle: FC<CalibrationProgressCircleProps> = ({ 
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
-                pathColor: cssVariables.ultraLeapGreen,
+                pathColor: cssVariables.ultraleapGreen,
                 trailColor: 'transparent',
                 pathTransitionDuration: 0.08,
             })}

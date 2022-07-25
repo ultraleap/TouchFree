@@ -1,3 +1,5 @@
+@use 'Styles/variables' as v;
+
 .tf-button-container {
     width: 95%;
     min-height: 450px;
@@ -7,7 +9,7 @@
     margin: 0 2.5%;
 }
 
-#camera-page-divider {
+.camera-page-divider {
     height: 10px;
     margin-top: 40px;
     margin-bottom: 40px;
