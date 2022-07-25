@@ -184,7 +184,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for config state failed. This is due to a missing callback");
             return;
         }
 
@@ -206,7 +206,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for service status failed. This is due to a missing callback");
             return;
         }
 
@@ -228,7 +228,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigFile(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for config file failed. This is due to a missing callback");
             return;
         }
 
@@ -278,10 +278,13 @@ export class ServiceConnection {
     }
 
     // Function: RequestTrackingState
-    // Requests 
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
     RequestTrackingState(_callback: (detail: TrackingStateResponse) => void) {
         if (!_callback) {
-            console.error('Request failed. This is due to a missing callback');
+            console.error('Request for tracking state failed. This is due to a missing callback');
             return;
         }
         const guid: string = uuidgen();
