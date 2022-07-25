@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="199.824" height="181.619" viewBox="0 0 199.824 181.619">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.102"/>
+      <stop offset="0.502" stop-color="#fff" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.102"/>
+    </linearGradient>
+    <filter id="Exclusion_7" x="0" y="0" width="118.228" height="118.228" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.8"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Path_67" x="72.865" y="13.703" width="71.066" height="71.21" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-2"/>
+      <feFlood flood-opacity="0.8"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Rectangle_680" x="75.627" y="57.422" width="124.197" height="124.197" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-3"/>
+      <feFlood flood-opacity="0.8"/>
+      <feComposite operator="in" in2="blur-3"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_69" data-name="Group 69" transform="translate(-751.665 -731.569)">
+    <g transform="matrix(1, 0, 0, 1, 751.67, 731.57)" filter="url(#Exclusion_7)">
+      <path id="Exclusion_7-2" data-name="Exclusion 7" d="M97.227,97.228H0V0L97.228,97.228h0ZM21.211,50.886V76.018l25.132,0L21.211,50.886Z" transform="translate(10.5 7.5)" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" fill="url(#linear-gradient)"/>
+    </g>
+    <line id="Line_71" data-name="Line 71" x1="5.006" y2="5.006" transform="translate(765.803 829.772) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_72" data-name="Line 72" x1="5.006" y2="5.006" transform="translate(765.803 821.261) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_73" data-name="Line 73" x1="5.006" y2="5.006" transform="translate(765.803 812.751) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_74" data-name="Line 74" x1="5.006" y2="5.006" transform="translate(765.803 804.241) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_75" data-name="Line 75" x1="5.006" y2="5.006" transform="translate(765.803 795.73) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_76" data-name="Line 76" x1="5.006" y2="5.006" transform="translate(765.803 787.22) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_77" data-name="Line 77" x1="5.006" y2="5.006" transform="translate(765.803 778.709) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_78" data-name="Line 78" x1="5.006" y2="5.006" transform="translate(765.803 770.198) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_79" data-name="Line 79" x1="5.006" y2="5.006" transform="translate(765.803 761.688) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <g transform="matrix(1, 0, 0, 1, 751.67, 731.57)" filter="url(#Path_67)">
+      <g id="Path_67-2" data-name="Path 67" transform="translate(81.86 72.91) rotate(-90)" fill="url(#linear-gradient)">
+        <path d="M 26.60476112365723 51.56557846069336 C 20.66597175598145 51.56557846069336 15.98918151855469 51.08415985107422 12.30713176727295 50.09381103515625 C 9.06356143951416 49.22138977050781 6.673251628875732 47.97071075439453 4.999621391296387 46.27029800415039 C 3.351391553878784 44.59569931030273 2.361081600189209 42.44589996337891 1.883051633834839 39.5047607421875 C 1.429581642150879 36.71471786499023 1.480661630630493 33.49712753295898 1.53473162651062 30.09060859680176 C 1.553051590919495 28.93640899658203 1.572001576423645 27.7429084777832 1.572001576423645 26.53278923034668 C 1.572001576423645 23.15271949768066 2.233651638031006 19.87455940246582 3.538581609725952 16.78936004638672 C 4.799311637878418 13.80864906311035 6.60448169708252 11.13138961791992 8.903931617736816 8.831939697265625 C 11.20338153839111 6.532479286193848 13.88064193725586 4.727319240570068 16.86134147644043 3.466589212417603 C 19.94654083251953 2.161649227142334 23.22470092773438 1.499999284744263 26.60476112365723 1.499999284744263 C 29.98482131958008 1.499999284744263 33.26298141479492 2.161649227142334 36.34817123413086 3.466589212417603 C 39.32887268066406 4.727319240570068 42.00613021850586 6.532479286193848 44.30558013916016 8.831939697265625 C 46.60503005981445 11.13138961791992 48.41019058227539 13.80864906311035 49.67092132568359 16.78936004638672 C 50.97585296630859 19.87455940246582 51.63750076293945 23.15271949768066 51.63750076293945 26.53278923034668 C 51.63750076293945 27.7429084777832 51.65645217895508 28.93640899658203 51.67477035522461 30.09062004089355 C 51.72883987426758 33.49712753295898 51.77992248535156 36.71471786499023 51.32645034790039 39.5047607421875 C 50.84842300415039 42.44589996337891 49.85811233520508 44.59569931030273 48.20988082885742 46.27029800415039 C 46.53625106811523 47.97071075439453 44.14595031738281 49.22138977050781 40.90238189697266 50.09381103515625 C 37.22033309936523 51.08415985107422 32.54354095458984 51.56557846069336 26.60476112365723 51.56557846069336 Z" stroke="none"/>
+        <path d="M 26.60476112365723 3 C 23.42654228210449 3 20.344970703125 3.621788024902344 17.44567108154297 4.848091125488281 C 14.64376068115234 6.033199310302734 12.12676239013672 7.730419158935547 9.964591979980469 9.892601013183594 C 7.802410125732422 12.05476760864258 6.105201721191406 14.57177734375 4.920089721679688 17.37368774414062 C 3.693790435791016 20.27299880981445 3.072002410888672 23.35455894470215 3.072002410888672 26.53278923034668 C 3.072002410888672 27.75481986999512 3.052963256835938 28.95436859130859 3.034542083740234 30.11441993713379 C 2.981552124023438 33.45249938964844 2.931503295898438 36.60544967651367 3.363620758056641 39.26411819458008 C 3.789390563964844 41.88372802734375 4.648933410644531 43.77565002441406 6.068660736083984 45.21809005737305 C 9.279163360595703 48.47994995117188 15.9965705871582 50.06557846069336 26.60476112365723 50.06557846069336 C 37.21294021606445 50.06557846069336 43.93034362792969 48.47994995117188 47.14083099365234 45.21809005737305 C 48.56056213378906 43.77565002441406 49.42010116577148 41.88373947143555 49.84587097167969 39.26412963867188 C 50.27799224853516 36.60546112060547 50.22794342041016 33.45250701904297 50.17494964599609 30.11443901062012 C 50.15653228759766 28.95438003540039 50.13749313354492 27.75481986999512 50.13749313354492 26.53278923034668 C 50.13749313354492 23.35455894470215 49.51570129394531 20.27298736572266 48.28940200805664 17.37368774414062 C 47.10430145263672 14.57177734375 45.4070930480957 12.05476760864258 43.24491119384766 9.892589569091797 C 41.08274078369141 7.73040771484375 38.56574249267578 6.033199310302734 35.76383972167969 4.848091125488281 C 32.86454010009766 3.621788024902344 29.78298187255859 3 26.60476112365723 3 M 26.60476112365723 0 C 41.25839233398438 0 53.13749313354492 11.8791389465332 53.13749313354492 26.53278923034668 C 53.13749313354492 41.18643951416016 55.93824005126953 53.06557846069336 26.60476112365723 53.06557846069336 C -2.728736877441406 53.06557846069336 0.07200241088867188 41.18643951416016 0.07200241088867188 26.53278923034668 C 0.07200241088867188 11.8791389465332 11.95112228393555 0 26.60476112365723 0 Z" stroke="none" fill="#fff"/>
+      </g>
+    </g>
+    <g id="Rectangle_681" data-name="Rectangle 681" transform="translate(848.034 770.117)" fill="none" stroke="#fff" stroke-width="3">
+      <path d="M7.76,0H21.91a3.621,3.621,0,0,1,3.621,3.621V11.9a3.621,3.621,0,0,1-3.621,3.621H7.76A7.76,7.76,0,0,1,0,7.76v0A7.76,7.76,0,0,1,7.76,0Z" stroke="none"/>
+      <path d="M7.76,1.5H21.481a2.55,2.55,0,0,1,2.55,2.55v7.419a2.55,2.55,0,0,1-2.55,2.55H7.76A6.26,6.26,0,0,1,1.5,7.76v0A6.26,6.26,0,0,1,7.76,1.5Z" fill="none"/>
+    </g>
+    <g id="Ellipse_62" data-name="Ellipse 62" transform="translate(853.042 775.123)" fill="none" stroke="#fff" stroke-width="2">
+      <ellipse cx="3.004" cy="3.004" rx="3.004" ry="3.004" stroke="none"/>
+      <ellipse cx="3.004" cy="3.004" rx="2.004" ry="2.004" fill="none"/>
+    </g>
+    <line id="Line_57" data-name="Line 57" x2="15.968" transform="translate(883.646 792.144)" fill="none" stroke="#fff" stroke-width="2"/>
+    <line id="Line_58" data-name="Line 58" y1="6.508" transform="translate(899.614 790.393)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="4"/>
+    <g id="Rectangle_682" data-name="Rectangle 682" transform="translate(858.814 745.838)" fill="none" stroke="#fff" stroke-width="3">
+      <path d="M7.009,0h0a7.009,7.009,0,0,1,7.009,7.009v.5a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0v-.5A7.009,7.009,0,0,1,7.009,0Z" stroke="none"/>
+      <path d="M5.333,1.5H8.684a3.833,3.833,0,0,1,3.833,3.833v0a.676.676,0,0,1-.676.676H2.176A.676.676,0,0,1,1.5,5.333v0A3.833,3.833,0,0,1,5.333,1.5Z" fill="none"/>
+    </g>
+    <line id="Line_60" data-name="Line 60" x1="5.006" y2="5.006" transform="translate(848.035 876.17) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_61" data-name="Line 61" x1="5.006" y2="5.006" transform="translate(854.052 870.152) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_62" data-name="Line 62" x1="5.006" y2="5.006" transform="translate(860.071 864.133) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_63" data-name="Line 63" x1="5.006" y2="5.006" transform="translate(866.088 858.116) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_64" data-name="Line 64" x1="5.006" y2="5.006" transform="translate(872.106 852.098) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_65" data-name="Line 65" x1="5.006" y2="5.006" transform="translate(878.124 846.081) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_66" data-name="Line 66" x1="5.006" y2="5.006" transform="translate(884.142 840.063) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_67" data-name="Line 67" x1="5.006" y2="5.006" transform="translate(890.159 834.045) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_68" data-name="Line 68" x1="5.006" y2="5.006" transform="translate(902.195 822.009) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_69" data-name="Line 69" x1="5.006" y2="5.006" transform="translate(896.178 828.028) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_70" data-name="Line 70" x1="5.006" y2="5.006" transform="translate(908.212 815.991) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <line id="Line_59" data-name="Line 59" x1="5.006" y2="5.006" transform="translate(914.231 809.974) rotate(-90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    <g transform="matrix(1, 0, 0, 1, 751.67, 731.57)" filter="url(#Rectangle_680)">
+      <g id="Rectangle_680-2" data-name="Rectangle 680" transform="translate(106.22 169.62) rotate(-135)" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" fill="url(#linear-gradient)">
+        <rect width="30.538" height="119.648" stroke="none"/>
+        <rect x="1.5" y="1.5" width="27.538" height="116.648" fill="none"/>
+      </g>
+    </g>
+  </g>
+</svg>

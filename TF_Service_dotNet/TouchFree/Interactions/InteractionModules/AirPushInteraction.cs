@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.Numerics;
-using Microsoft.Extensions.Options;
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
@@ -26,7 +24,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public float distAtSpeedMaxMm = 28f;
         public float horizontalDecayDistMm = 50f;
 
-        public float thetaOne = 22f;
+        public float thetaOne = 65f;
         public float thetaTwo = 135f;
         // If a hand moves an angle less than thetaOne, this is "towards" the screen
         // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
@@ -62,25 +60,29 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private readonly ExtrapolationPositionModifier extrapolation;
         private readonly PositionFilter filter;
 
+        private readonly InteractionTuning interactionTuning;
+
         public AirPushInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
-            if (_interactionTuning?.Value?.AirPushSettings != null)
+            interactionTuning = _interactionTuning?.Value;
+
+            if (interactionTuning?.AirPushSettings != null)
             {
-                speedMin = _interactionTuning.Value.AirPushSettings.SpeedMin;
-                speedMax = _interactionTuning.Value.AirPushSettings.SpeedMax;
-                distAtSpeedMinMm = _interactionTuning.Value.AirPushSettings.DistAtSpeedMinMm;
-                distAtSpeedMaxMm = _interactionTuning.Value.AirPushSettings.DistAtSpeedMaxMm;
-                horizontalDecayDistMm = _interactionTuning.Value.AirPushSettings.HorizontalDecayDistMm;
-                thetaOne = _interactionTuning.Value.AirPushSettings.ThetaOne;
-                thetaTwo = _interactionTuning.Value.AirPushSettings.ThetaTwo;
-                unclickThreshold = _interactionTuning.Value.AirPushSettings.UnclickThreshold;
-                unclickThresholdDrag = _interactionTuning.Value.AirPushSettings.UnclickThresholdDrag;
+                speedMin = interactionTuning.AirPushSettings.SpeedMin;
+                speedMax = interactionTuning.AirPushSettings.SpeedMax;
+                distAtSpeedMinMm = interactionTuning.AirPushSettings.DistAtSpeedMinMm;
+                distAtSpeedMaxMm = interactionTuning.AirPushSettings.DistAtSpeedMaxMm;
+                horizontalDecayDistMm = interactionTuning.AirPushSettings.HorizontalDecayDistMm;
+                thetaOne = interactionTuning.AirPushSettings.ThetaOne;
+                thetaTwo = interactionTuning.AirPushSettings.ThetaTwo;
+                unclickThreshold = interactionTuning.AirPushSettings.UnclickThreshold;
+                unclickThresholdDrag = interactionTuning.AirPushSettings.UnclickThresholdDrag;
             }
             extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
             filter = new PositionFilter(_interactionTuning);
@@ -89,6 +91,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
             };
+        }
+
+        protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
+        {
+            base.OnInteractionSettingsUpdated(_config);
+
+            thetaOne = ignoreDragging || (interactionTuning?.EnableVelocitySwipeWithAirPush == true) ? 15f : 65f;
         }
 
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
@@ -109,7 +118,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Restarts the hand timer every frame that we have no active hand
                 handAppearedCooldown.Restart();
 
-                if(hadHandLastFrame)
+                if (hadHandLastFrame)
                 {
                     // We lost the hand so cancel anything we may have been doing
                     return CreateInputActionResult(InputType.CANCEL, positions, appliedForce);
@@ -158,8 +167,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 // Determine whether to send any other events
                 if (pressing)
                 {
-                    if ((!isDragging && appliedForce < unclickThreshold) || 
-                        (isDragging && appliedForce < unclickThresholdDrag) || 
+                    if ((!isDragging && appliedForce < unclickThreshold) ||
+                        (isDragging && appliedForce < unclickThresholdDrag) ||
                         ignoreDragging ||
                         (clickHoldStopwatch.IsRunning && clickHoldStopwatch.ElapsedMilliseconds >= clickHoldTimerMs))
                     {
@@ -200,7 +209,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     inputActionResult = CreateInputActionResult(InputType.DOWN, positions, appliedForce);
                     cursorPressPosition = positions.CursorPosition;
 
-                    if(!ignoreDragging)
+                    if (!ignoreDragging)
                     {
                         clickHoldStopwatch.Restart();
                     }
@@ -302,7 +311,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
             else
             {
-                float angleFromScreen = (float) Math.Atan2(
+                float angleFromScreen = (float)Math.Atan2(
                     _dPerp.Length(),
                     _currentVelocity * _dt) * Utilities.RADTODEG;
 

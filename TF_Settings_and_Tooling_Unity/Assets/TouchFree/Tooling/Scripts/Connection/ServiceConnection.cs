@@ -122,27 +122,29 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     InputAction cInput = new InputAction(wsInput);
                     ConnectionManager.messageReceiver.actionQueue.Enqueue(cInput);
                     break;
+
                 case ActionCode.CONFIGURATION_STATE:
+                case ActionCode.QUICK_SETUP_CONFIG:
+                case ActionCode.CONFIGURATION_FILE_STATE:
                     ConfigState configState = JsonUtility.FromJson<ConfigState>(content);
                     ConnectionManager.messageReceiver.configStateQueue.Enqueue(configState);
                     break;
+
                 case ActionCode.HAND_PRESENCE_EVENT:
                     HandPresenceEvent handEvent = JsonUtility.FromJson<HandPresenceEvent>(content);
                     ConnectionManager.messageReceiver.handState = handEvent.state;
                     break;
+                    
                 case ActionCode.SERVICE_STATUS:
                     ServiceStatus serviceStatus = JsonUtility.FromJson<ServiceStatus>(content);
                     ConnectionManager.messageReceiver.serviceStatusQueue.Enqueue(serviceStatus);
-                    break;
-                case ActionCode.CONFIGURATION_FILE_STATE:
-                    ConfigState configFileState = JsonUtility.FromJson<ConfigState>(content);
-                    ConnectionManager.messageReceiver.configStateQueue.Enqueue(configFileState);
                     break;
 
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
                 case ActionCode.SERVICE_STATUS_RESPONSE:
                 case ActionCode.CONFIGURATION_FILE_RESPONSE:
+                case ActionCode.QUICK_SETUP_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
@@ -231,6 +233,32 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             {
                 ConnectionManager.messageReceiver.serviceStatusCallbacks.Add(requestID, new ServiceStatusCallback(DateTime.Now.Millisecond, _callback));
             }
+
+            webSocket.Send(jsonMessage);
+        }
+
+        // Function: SendQuickSetupMessage
+        // Used internally to send data about quick setup to the Service via the <webSocket>
+        // Provides an asynchronous <WebSocketResponse> via the _callback parameter.
+        // Provides an asynchronous <ConfigState> via the _configCallback parameter.
+        internal void SendQuickSetupMessage(QuickSetupPosition _position, Action<WebSocketResponse> _callback, Action<ConfigState> _configCallback)
+        {
+            string requestID = Guid.NewGuid().ToString();
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.responseCallbacks.Add(requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
+            }
+            if (_callback != null)
+            {
+                ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _configCallback));
+            }
+
+            var request = new QuickSetupRequest(requestID, _position);
+
+            CommunicationWrapper<QuickSetupRequest> message =
+                new CommunicationWrapper<QuickSetupRequest>(ActionCode.QUICK_SETUP.ToString(), request);
+
+            string jsonMessage = JsonUtility.ToJson(message);
 
             webSocket.Send(jsonMessage);
         }

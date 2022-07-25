@@ -1,21 +1,20 @@
-import { InteractionConfigFull, TrackedPosition } from '../../TouchFree/Configuration/ConfigurationTypes';
-import { ConfigurationManager } from '../../TouchFree/Configuration/ConfigurationManager';
-import { ConfigState, WebSocketResponse } from '../../TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from '../../TouchFree/TouchFreeToolingTypes';
+import 'Styles/Interactions.scss';
 
-import { Page } from './Page';
-import { RadioGroup } from '../Controls/RadioGroup';
-import { RadioLine } from '../Controls/RadioLine';
-import { ToggleSwitch } from '../Controls/ToggleSwitch';
-import { Slider } from '../Controls/Slider';
-import { TextSlider } from '../Controls/TextSlider';
-import { DefaultInteractionConfig } from '../SettingsTypes';
+import { Component } from 'react';
 
-import '../../Styles/Interactions.css';
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
+import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/ConfigurationTypes';
+import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
-import AirPushPreview from '../../Videos/AirPush_Preview.webm';
-import TouchPlanePreview from '../../Videos/TouchPlane_Preview.webm';
-import HoverPreview from '../../Videos/Hover_Preview.webm';
+import InteractionPreviews from 'Videos/Interaction_Explainer_Combined.mp4';
+
+import { RadioGroup } from 'Components/Controls/RadioGroup';
+import { RadioLine } from 'Components/Controls/RadioLine';
+import { Slider } from 'Components/Controls/Slider';
+import { TextSlider } from 'Components/Controls/TextSlider';
+import { LabelledToggleSwitch } from 'Components/Controls/ToggleSwitch';
+import { DefaultInteractionConfig } from 'Components/SettingsTypes';
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,
@@ -32,9 +31,7 @@ interface InteractionsState {
     interactionConfig: InteractionConfigFull;
 }
 
-export class InteractionsPage extends Page<{}, InteractionsState> {
-    private videoPaths: string[] = [AirPushPreview, HoverPreview, TouchPlanePreview];
-
+export class InteractionsPage extends Component<{}, InteractionsState> {
     componentDidMount(): void {
         ConfigurationManager.RequestConfigFileState(this.setStateFromFile.bind(this));
     }
@@ -213,10 +210,12 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
     }
 
     render(): JSX.Element {
-        let coreBody: JSX.Element = <div></div>;
+        let coreBody: JSX.Element = <div />;
         const interactionControls: JSX.Element[] = [];
         const zoneControls: JSX.Element[] = [];
 
+        // TODO: Make it so elements appear even when state is null to prevent flash of empty
+        //       screen while reading in config
         if (this.state !== null) {
             const activeInteraction: number = Object.keys(InteractionTranslator).findIndex((key: string) => {
                 return InteractionTranslator[key] === this.state.interactionConfig.InteractionType;
@@ -257,7 +256,7 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
                     break;
                 case InteractionType.TOUCHPLANE:
                     interactionControls.push(
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
                             value={this.state.interactionConfig.UseScrollingOrDragging}
@@ -288,7 +287,7 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
                     break;
                 case InteractionType.PUSH:
                     interactionControls.push(
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
                             value={this.state.interactionConfig.UseScrollingOrDragging}
@@ -335,12 +334,12 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
                             onChange={this.onInteractionChange.bind(this)}
                         />
                         <video
-                            autoPlay
-                            loop
-                            key={this.state.interactionConfig.InteractionType}
-                            className="InteractionPreview"
+                            autoPlay={true}
+                            loop={true}
+                            key={InteractionPreviews}
+                            className={'InteractionPreview Interaction' + activeInteraction.toString()}
                         >
-                            <source src={this.videoPaths[activeInteraction]} type="video/webm" />
+                            <source src={InteractionPreviews} />
                         </video>
                     </div>
 
@@ -358,12 +357,12 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
                         {interactionControls}
                     </div>
 
-                    <div className="TitleLine">
+                    <div className="title-line">
                         <h1> Interaction Zone </h1>
                     </div>
 
                     <div className="verticalContainer sideSpacing">
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Enable/Disable"
                             value={this.state.interactionConfig.InteractionZoneEnabled}
                             onChange={this.interactionZoneToggled.bind(this)}
@@ -375,13 +374,13 @@ export class InteractionsPage extends Page<{}, InteractionsState> {
         }
 
         return (
-            <div className="page">
-                <div className="TitleLine">
+            <div>
+                <div className="title-line">
                     <h1> Interaction Type </h1>
                     <button
                         onClick={this.resetToDefaults.bind(this)}
                         onPointerUp={this.resetToDefaults.bind(this)}
-                        className="tfButton"
+                        className="reset-button"
                     >
                         <p> Reset to Default </p>
                     </button>

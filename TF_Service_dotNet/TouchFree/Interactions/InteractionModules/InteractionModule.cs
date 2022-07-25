@@ -25,13 +25,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected IPositioningModule positioningModule;
         protected IPositionStabiliser positionStabiliser;
 
-        protected readonly HandManager handManager;
+        protected readonly IHandManager handManager;
         protected readonly IVirtualScreen virtualScreen;
         private readonly IConfigManager configManager;
 
         protected IEnumerable<PositionTrackerConfiguration> positionConfiguration;
 
-        public InteractionModule(HandManager _handManager, IVirtualScreen _virtualScreen, IConfigManager _configManager, IPositioningModule _positioningModule, IPositionStabiliser _positionStabiliser)
+        public InteractionModule(IHandManager _handManager, IVirtualScreen _virtualScreen, IConfigManager _configManager, IPositioningModule _positioningModule, IPositionStabiliser _positionStabiliser)
         {
             handManager = _handManager;
             virtualScreen = _virtualScreen;

@@ -4,14 +4,22 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public class TrackingConnectionManager
+    public class TrackingConnectionManager : ITrackingConnectionManager
     {
-        public Leap.Controller controller;
-        IConfigManager configManager;
+        public Leap.Controller controller { get; private set; }
+
+        private readonly IConfigManager configManager;
 
         private const int maximumWaitTimeSeconds = 30;
         private const int initialWaitTimeSeconds = 1;
         private bool ShouldConnect = false;
+
+        private TrackingMode currentTrackingMode;
+
+        public TrackingMode CurrentTrackingMode
+        {
+            get { return currentTrackingMode; }
+        }
 
         public TrackingConnectionManager(IConfigManager _configManager)
         {
@@ -137,6 +145,8 @@ namespace Ultraleap.TouchFree.Library
         {
             TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
 
+            currentTrackingMode = _mode;
+
             switch (_mode)
             {
                 case TrackingMode.DESKTOP:
@@ -152,13 +162,6 @@ namespace Ultraleap.TouchFree.Library
                     controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
-        }
-
-        public enum TrackingMode
-        {
-            DESKTOP,
-            HMD,
-            SCREENTOP
         }
     }
 }

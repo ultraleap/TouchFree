@@ -41,7 +41,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
 
         public VelocitySwipeInteraction(
-            HandManager _handManager,
+            IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IOptions<InteractionTuning> _interactionTuning,
