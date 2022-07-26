@@ -20,13 +20,14 @@ const MaskingScreen = () => {
     // Config options
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
+    const [isFrameProcessing, _setIsFrameProcessing] = useState<boolean>(false);
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
     const isCamReversedRef = useRef(isCamReversed);
     const showOverexposedRef = useRef(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
-    const frameProcessing = useRef<boolean>(false);
+    const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
 
     // ===== State Setters =====
     const setIsCameraReversed = (value: boolean) => {
@@ -36,6 +37,10 @@ const MaskingScreen = () => {
     const setShowOverexposedAreas = (value: boolean) => {
         _setShowOverexposed(value);
         showOverexposedRef.current = value;
+    };
+    const setIsFrameProcessing = (value: boolean) => {
+        _setIsFrameProcessing(value);
+        isFrameProcessingRef.current = value;
     };
 
     // ===== Canvas Refs =====
@@ -73,10 +78,16 @@ const MaskingScreen = () => {
     };
 
     const messageHandler = (socket: WebSocket, event: MessageEvent) => {
-        if (frameProcessing.current || !leftLensRef.current || !rightLensRef.current || typeof event.data == 'string')
+        if (
+            isFrameProcessingRef.current ||
+            !leftLensRef.current ||
+            !rightLensRef.current ||
+            typeof event.data == 'string'
+        ) {
             return;
+        }
 
-        frameProcessing.current = true;
+        setIsFrameProcessing(true);
 
         if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
@@ -97,7 +108,7 @@ const MaskingScreen = () => {
 
         // Settimeout with 32ms for ~30fps if we have the performance
         setTimeout(() => {
-            frameProcessing.current = false;
+            setIsFrameProcessing(false);
         }, 32);
     };
 
