@@ -20,6 +20,7 @@ namespace Ultraleap.TouchFree.ServiceShared
     public class InteractionConfig : BaseSettings
     {
         public bool UseScrollingOrDragging = true;
+        public bool UseSwipeInteraction = false;
         public float DeadzoneRadius = 0.003f;
 
         public bool InteractionZoneEnabled = false;
@@ -37,6 +38,7 @@ namespace Ultraleap.TouchFree.ServiceShared
             var defaults = new InteractionConfig();
 
             UseScrollingOrDragging = defaults.UseScrollingOrDragging;
+            UseSwipeInteraction = defaults.UseSwipeInteraction;
             DeadzoneRadius = defaults.DeadzoneRadius;
 
             InteractionZoneEnabled = defaults.InteractionZoneEnabled;
