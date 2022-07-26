@@ -398,11 +398,11 @@ namespace Ultraleap.TouchFree.Service.Connection
 
                 if (_cameraReversed.HasValue)
                 {
-                    response.state.allowImages = new SuccessWrapper<bool?>(true, _message, _cameraReversed.Value);
+                    response.state.cameraReversed = new SuccessWrapper<bool?>(true, _message, _cameraReversed.Value);
                 }
                 else
                 {
-                    response.state.allowImages = new SuccessWrapper<bool?>(false, _message, null);
+                    response.state.cameraReversed = new SuccessWrapper<bool?>(false, _message, null);
                 }
 
                 response.needsOrientation = false;
@@ -419,11 +419,11 @@ namespace Ultraleap.TouchFree.Service.Connection
 
                 if (_analytics.HasValue)
                 {
-                    response.state.allowImages = new SuccessWrapper<bool?>(true, _message, _analytics.Value);
+                    response.state.analyticsEnabled = new SuccessWrapper<bool?>(true, _message, _analytics.Value);
                 }
                 else
                 {
-                    response.state.allowImages = new SuccessWrapper<bool?>(false, _message, null);
+                    response.state.analyticsEnabled = new SuccessWrapper<bool?>(false, _message, null);
                 }
 
                 response.needsAnalytics = false;
