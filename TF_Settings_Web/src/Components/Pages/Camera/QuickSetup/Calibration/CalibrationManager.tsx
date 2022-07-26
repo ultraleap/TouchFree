@@ -11,10 +11,10 @@ import { ConfigState, HandPresenceState } from 'TouchFree/Connection/TouchFreeSe
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
 import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
+import { TFClickEvent } from 'Components/SettingsTypes';
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
 import CalibrationScreen from './CalibrationScreen';
-import { CancelEvent } from 'Components/SettingsTypes';
 
 const handEventTypes = ['HandsLost', 'HandFound'];
 
@@ -80,7 +80,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
     const resetCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
 
-    const onCancel = (event: CancelEvent) => {
+    const onCancel = (event: TFClickEvent) => {
         event.stopPropagation();
         setCursorDisplay(true);
         resetCalibConfig();
@@ -90,21 +90,11 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
         <Routes>
             <Route
                 path="top"
-                element={
-                    <CalibrationScreen
-                        isHandPresent={isHandPresent}
-                        onCancel={onCancel}
-                    />
-                }
+                element={<CalibrationScreen key="top" isHandPresent={isHandPresent} onCancel={onCancel} />}
             />
             <Route
                 path="bottom"
-                element={
-                    <CalibrationScreen
-                        isHandPresent={isHandPresent}
-                        onCancel={onCancel}
-                    />
-                }
+                element={<CalibrationScreen key="bottom" isHandPresent={isHandPresent} onCancel={onCancel} />}
             />
             <Route
                 path="complete"

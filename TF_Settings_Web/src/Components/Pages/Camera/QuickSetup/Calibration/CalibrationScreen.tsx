@@ -9,6 +9,8 @@ import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
 import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
 
+import { TFClickEvent } from 'Components/SettingsTypes';
+
 import {
     CalibrationHandLostMessage,
     CalibrationCancelButton,
@@ -16,13 +18,12 @@ import {
     CalibrationTutorialVideo,
     CalibrationProgressCircle,
 } from './CalibrationComponents';
-import { CancelEvent } from 'Components/SettingsTypes';
 
 const { handNotFoundHeight } = styles;
 
 interface CalibrationScreenProps {
     isHandPresent: boolean;
-    onCancel: (event: CancelEvent) => void;
+    onCancel: (event: TFClickEvent) => void;
 }
 
 export const TIMEOUT_S = 10;
@@ -54,7 +55,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     };
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
-        const {detail} = evt;
+        const { detail } = evt;
         if (detail.InteractionType === InteractionType.HOVER) {
             if (!isNewClick.current) {
                 isNewClick.current = detail.ProgressToClick === 0;
@@ -86,7 +87,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
             clearTimeout(initialWait);
         };
-    }, [location.pathname]);
+    }, []);
 
     useEffect(() => {
         if (!isHandPresent && initialWaitOver) {

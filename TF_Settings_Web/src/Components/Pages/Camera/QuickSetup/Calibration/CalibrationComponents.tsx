@@ -15,9 +15,9 @@ import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
 import { TextButton } from 'Components/Controls/TFButton';
+import { TFClickEvent } from 'Components/SettingsTypes';
 
 import { TIMEOUT_S } from './CalibrationScreen';
-import { CancelEvent } from 'Components/SettingsTypes';
 
 interface CalibrationInstructionsProps {
     progress: number;
@@ -97,12 +97,18 @@ const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSele
     // If the time left has fewer characters than the initial time, pad the start with "0"s
     const numString = ''.padEnd(timeoutLength - timeToPosSelectLength, '0') + timeToPosSelect;
     const formattedString = [...numString].map((char, index) => {
-        return <span key={index} style={{ width: '1ch', justifyContent: 'center' }}>{char}</span>;
+        return (
+            <span key={index} style={{ width: '1ch', justifyContent: 'center' }}>
+                {char}
+            </span>
+        );
     });
 
     return (
         <div id="return-message">
-            <p>Returning in <span style={{marginLeft: '0.3rem'}}>{formattedString}</span>s</p>
+            <p>
+                Returning in <span style={{ marginLeft: '0.3rem' }}>{formattedString}</span>s
+            </p>
         </div>
     );
 };
@@ -155,7 +161,7 @@ const cancelSetupButtonTextStyle: CSSProperties = {
 };
 
 interface CalibrationCancelButtonProps {
-    onCancel: (event: CancelEvent) => void;
+    onCancel: (event: TFClickEvent) => void;
     buttonStyle: CSSProperties;
 }
 

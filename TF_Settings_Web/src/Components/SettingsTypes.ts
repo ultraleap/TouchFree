@@ -31,4 +31,4 @@ export const DefaultInteractionConfig: InteractionConfigFull = {
     TouchPlane: DefaultTouchPlaneInteractionSettings,
 };
 
-export type CancelEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
+export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;

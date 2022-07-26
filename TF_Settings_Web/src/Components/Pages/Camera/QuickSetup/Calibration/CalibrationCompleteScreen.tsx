@@ -1,7 +1,7 @@
 import 'Styles/Camera/Calibrate.scss';
 import cssVariables from 'Styles/_variables.scss';
 
-import React, { CSSProperties, useEffect } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
@@ -35,6 +35,7 @@ interface CalibrationCompleteProps {
 
 const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad, onRedo, isHandPresent }) => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
+    const isNewClick = useRef(false);
 
     useEffect(() => {
         onLoad();
@@ -47,9 +48,25 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     }, []);
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
-        if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
-            setProgressToClick(evt.detail.ProgressToClick);
+        const { detail } = evt;
+        if (!isNewClick.current) {
+            isNewClick.current = detail.InputType === InputType.UP;
+            return;
         }
+        if (detail.InputType === InputType.MOVE || detail.InputType === InputType.DOWN) {
+            setProgressToClick(detail.ProgressToClick);
+        }
+    };
+
+    const doneClickHandler = () => {
+        if (!isNewClick) return;
+        navigate('/settings/camera');
+    };
+
+    const redoClickHandler = () => {
+        if (!isNewClick) return;
+        onRedo();
+        navigate('/settings/camera/quick/calibrate/top');
     };
 
     const navigate = useNavigate();
@@ -70,7 +87,7 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                     titleStyle={titleStyle}
                     text={''}
                     textStyle={{ display: 'none' }}
-                    onClick={() => navigate('/settings/camera')}
+                    onClick={doneClickHandler}
                 />
                 <TextButton
                     buttonStyle={buttonStyle}
@@ -78,10 +95,7 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                     titleStyle={titleStyle}
                     text={''}
                     textStyle={{ display: 'none' }}
-                    onClick={() => {
-                        onRedo();
-                        navigate('/settings/camera/quick/calibrate/top');
-                    }}
+                    onClick={redoClickHandler}
                 />
             </div>
         </div>

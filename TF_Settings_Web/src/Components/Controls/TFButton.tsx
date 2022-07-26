@@ -1,7 +1,8 @@
 import 'Styles/Controls/TFButton.scss';
 
 import React, { CSSProperties } from 'react';
-import { CancelEvent } from 'Components/SettingsTypes';
+
+import { TFClickEvent } from 'Components/SettingsTypes';
 
 interface TextButtonProps {
     buttonStyle: React.CSSProperties;
@@ -91,7 +92,7 @@ const TFButton = (
     buttonClass: string,
     canHover: boolean,
     buttonStyle: CSSProperties,
-    onClick: (event: CancelEvent) => void,
+    onClick: (event: TFClickEvent) => void,
     content: JSX.Element
 ) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
