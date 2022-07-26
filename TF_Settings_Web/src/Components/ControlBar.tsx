@@ -21,11 +21,12 @@ const backButtonStyle: CSSProperties = {
     width: '200px',
     height: '80px',
     borderRadius: '30px',
-    marginLeft: '3%',
-    marginBottom: '2%',
+    marginLeft: '30px',
+    marginBottom: '30px',
     background: cssVariables.lightGreyGradient,
     display: 'flex',
     justifyContent: 'center',
+    alignSelf: 'flex-end',
     alignItems: 'center',
 };
 
