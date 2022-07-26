@@ -30,3 +30,5 @@ export const DefaultInteractionConfig: InteractionConfigFull = {
     HoverAndHold: DefaultHoverAndHoldInteractionSettings,
     TouchPlane: DefaultTouchPlaneInteractionSettings,
 };
+
+export type CancelEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;

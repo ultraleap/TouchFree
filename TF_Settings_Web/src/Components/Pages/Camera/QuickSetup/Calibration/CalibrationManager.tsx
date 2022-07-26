@@ -14,6 +14,7 @@ import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelecti
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
 import CalibrationScreen from './CalibrationScreen';
+import { CancelEvent } from 'Components/SettingsTypes';
 
 const handEventTypes = ['HandsLost', 'HandFound'];
 
@@ -79,6 +80,12 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
     const resetCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
 
+    const onCancel = (event: CancelEvent) => {
+        event.stopPropagation();
+        setCursorDisplay(true);
+        resetCalibConfig();
+    };
+
     return (
         <Routes>
             <Route
@@ -86,10 +93,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
                 element={
                     <CalibrationScreen
                         isHandPresent={isHandPresent}
-                        onCancel={() => {
-                            setCursorDisplay(true);
-                            resetCalibConfig();
-                        }}
+                        onCancel={onCancel}
                     />
                 }
             />
@@ -98,10 +102,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
                 element={
                     <CalibrationScreen
                         isHandPresent={isHandPresent}
-                        onCancel={() => {
-                            setCursorDisplay(true);
-                            resetCalibConfig();
-                        }}
+                        onCancel={onCancel}
                     />
                 }
             />

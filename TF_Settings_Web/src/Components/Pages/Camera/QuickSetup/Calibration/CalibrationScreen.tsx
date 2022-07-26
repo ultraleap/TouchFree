@@ -16,12 +16,13 @@ import {
     CalibrationTutorialVideo,
     CalibrationProgressCircle,
 } from './CalibrationComponents';
+import { CancelEvent } from 'Components/SettingsTypes';
 
 const { handNotFoundHeight } = styles;
 
 interface CalibrationScreenProps {
     isHandPresent: boolean;
-    onCancel: () => void;
+    onCancel: (event: CancelEvent) => void;
 }
 
 export const TIMEOUT_S = 10;

@@ -1,6 +1,7 @@
 import 'Styles/Controls/TFButton.scss';
 
 import React, { CSSProperties } from 'react';
+import { CancelEvent } from 'Components/SettingsTypes';
 
 interface TextButtonProps {
     buttonStyle: React.CSSProperties;
@@ -8,7 +9,7 @@ interface TextButtonProps {
     titleStyle?: React.CSSProperties;
     text: string;
     textStyle?: React.CSSProperties;
-    onClick: () => void;
+    onClick: (event: React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) => void;
     canHover?: boolean;
 }
 
@@ -90,7 +91,7 @@ const TFButton = (
     buttonClass: string,
     canHover: boolean,
     buttonStyle: CSSProperties,
-    onClick: () => void,
+    onClick: (event: CancelEvent) => void,
     content: JSX.Element
 ) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
@@ -107,13 +108,13 @@ const TFButton = (
                 setHovered(false);
                 setPressed(false);
             }}
-            onPointerDown={() => {
+            onPointerDown={(event) => {
                 setPressed(true);
-                onClick();
+                onClick(event);
             }}
             onPointerUp={() => setPressed(false)}
             onKeyDown={(keyEvent) => {
-                if (keyEvent.key === 'Enter') onClick();
+                if (keyEvent.key === 'Enter') onClick(keyEvent);
             }}
         >
             {content}

@@ -17,6 +17,7 @@ import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 import { TextButton } from 'Components/Controls/TFButton';
 
 import { TIMEOUT_S } from './CalibrationScreen';
+import { CancelEvent } from 'Components/SettingsTypes';
 
 interface CalibrationInstructionsProps {
     progress: number;
@@ -154,7 +155,7 @@ const cancelSetupButtonTextStyle: CSSProperties = {
 };
 
 interface CalibrationCancelButtonProps {
-    onCancel: () => void;
+    onCancel: (event: CancelEvent) => void;
     buttonStyle: CSSProperties;
 }
 
@@ -166,7 +167,7 @@ export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = (
             titleStyle={{ display: 'none' }}
             text="Cancel Setup"
             textStyle={cancelSetupButtonTextStyle}
-            onClick={() => onCancel()}
+            onClick={onCancel}
             canHover={false}
         />
     );
