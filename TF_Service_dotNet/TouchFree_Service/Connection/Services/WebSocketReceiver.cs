@@ -267,8 +267,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             bool needsOrientation = contentObj.TryGetValue("cameraReversed", out cameraReversedToken);
             bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
 
-            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsMask);
-
+            trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsMask);
+ 
             if (needsMask)
             {
                 var mask = maskToken!.ToObject<MaskingData>();
@@ -292,8 +292,6 @@ namespace Ultraleap.TouchFree.Service.Connection
                 var analyticsEnable = analyticsEnabledToken!.ToObject<bool>();
                 diagnosticApi.SetAnalyticsMode(analyticsEnable);
             }
-
-            trackingApiResponse = response;
         }
 
         void CheckDApiResponse()
