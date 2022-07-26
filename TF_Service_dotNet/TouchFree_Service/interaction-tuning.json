@@ -3,6 +3,7 @@
         "VelocitySwipeSettings": {
             "MinScrollVelocity_mmps": 500,
             "MaxReleaseVelocity_mmps": 0,
+            "MaxLateralVelocity_mmps": 250,
             "MaxOpposingVelocity_mmps": 150,
             "ScrollDelayMs": 500,
             "AllowVerticalScroll": true,
