@@ -12,13 +12,19 @@ interface MaskingOptionProps {
 }
 
 const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value, onChange }) => (
-    <label className="cam-feeds-option">
+    <label
+        className="cam-feeds-option"
+        onPointerDown={() => {
+            onChange(!value);
+        }}
+    >
         <div className="cam-feeds-option-text">
             <h1>{title}</h1>
             <p>{description}</p>
         </div>
         <div className="cam-feeds-option-toggle">
-            <ToggleSwitch value={value} onChange={onChange} />
+            {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+            <ToggleSwitch value={value} onChange={() => {}} />
         </div>
     </label>
 );
