@@ -32,6 +32,10 @@ const INITIAL_WAIT_MS = 5000;
 
 const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, onCancel }) => {
     const [displayHandIndicator, setDisplayHandIndicator] = React.useState(false);
+    // ===== React Router =====
+    const navigate = useNavigate();
+    const location = useLocation();
+    const isTop = location.pathname.endsWith('top');
     // ===== Click Progress =====
     const [progressToClick, setProgressToClick] = React.useState(0);
     const [progress, setProgress] = React.useState(0);
@@ -40,10 +44,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     const [timeToPosSelect, setTimeToPosSelect] = React.useState(TIMEOUT_S);
     const timeout = React.useRef<number>();
     const interval = React.useRef<number>();
-    const [initialWaitOver, setInitialWaitOver] = React.useState(false);
-    // ===== React Router =====
-    const navigate = useNavigate();
-    const location = useLocation();
+    const [initialWaitOver, setInitialWaitOver] = React.useState(!isTop);
 
     const handleClick = (path: string) => {
         ConnectionManager.serviceConnection()?.QuickSetupRequest(
@@ -67,7 +68,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             }
 
             if (detail.InputType === InputType.DOWN && detail.ProgressToClick === 1) {
-                if (location.pathname.endsWith('top')) {
+                if (isTop) {
                     handleClick('../bottom');
                     return;
                 }
@@ -78,10 +79,13 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     };
 
     useEffect(() => {
+        let initialWait: number;
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
-        const initialWait = setTimeout(() => {
-            setInitialWaitOver(true);
-        }, INITIAL_WAIT_MS);
+        if (isTop) {
+            initialWait = window.setTimeout(() => {
+                setInitialWaitOver(true);
+            }, INITIAL_WAIT_MS);
+        }
 
         return () => {
             InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
