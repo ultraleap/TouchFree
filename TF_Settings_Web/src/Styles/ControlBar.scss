@@ -12,12 +12,13 @@
 .control-bar-top {
     display: flex;
     justify-content: space-between;
-    height: 5rem;
+    height: 40%;
 }
 
 .control-bar-bottom {
     display: flex;
-    height: 5.6rem;
+    height: 60%;
+    align-items: center;
 }
 
 .control-bar-logo {

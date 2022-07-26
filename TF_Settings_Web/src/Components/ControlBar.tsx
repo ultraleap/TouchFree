@@ -18,10 +18,10 @@ interface ControlBarProps {
 }
 
 const backButtonStyle: CSSProperties = {
-    width: '180px',
-    height: '60px',
+    width: '200px',
+    height: '80px',
     borderRadius: '30px',
-    marginLeft: '1%',
+    marginLeft: '3%',
     marginBottom: '2%',
     background: cssVariables.lightGreyGradient,
     display: 'flex',
