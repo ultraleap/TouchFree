@@ -105,7 +105,6 @@ $hand-not-found-height: 3vh;
     handNotFoundHeight: $hand-not-found-height;
 }
 
-
 .hand-not-found-container {
     display: inline-flex;
     margin: auto;
@@ -125,7 +124,7 @@ $hand-not-found-height: 3vh;
         margin-left: 5px;
         font-weight: bold;
     }
-    
+
     #return-message * {
         font-weight: normal;
         display: inline-flex;

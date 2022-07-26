@@ -9,6 +9,6 @@ export interface GlobalCSS {
     baseFont: string;
 }
 
-export const styles: GlobalCSS;
+export let styles: GlobalCSS;
 
 export default styles;

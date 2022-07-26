@@ -1,7 +1,7 @@
 export interface CalibrateCSS {
-  handNotFoundHeight: string;
+    handNotFoundHeight: string;
 }
 
-export const styles: CalibrateCSS;
+export let styles: CalibrateCSS;
 
 export default styles;
