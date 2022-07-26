@@ -55,15 +55,15 @@ namespace Ultraleap.TouchFree.Library
                 {
                     interactionsToUse.Add(InteractionType.AIRCLICK);
                 }
-
-                if (_config?.UseSwipeInteraction == true)
-                {
-                    interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
-                }
             }
             else
             {
                 interactionsToUse.Add(_config.InteractionType);
+            }
+
+            if (_config.InteractionType != InteractionType.GRAB && _config?.UseSwipeInteraction == true)
+            {
+                interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
             }
 
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
