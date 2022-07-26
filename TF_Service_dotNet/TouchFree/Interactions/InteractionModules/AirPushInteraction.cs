@@ -97,7 +97,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             base.OnInteractionSettingsUpdated(_config);
 
-            thetaOne = ignoreDragging || (interactionTuning?.EnableVelocitySwipeWithAirPush == true) ? 15f : 65f;
+            thetaOne = ignoreDragging || ignoreSwiping ? 15f : 65f;
         }
 
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
