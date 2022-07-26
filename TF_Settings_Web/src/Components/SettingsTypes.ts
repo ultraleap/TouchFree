@@ -18,6 +18,7 @@ const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings = {
 
 export const DefaultInteractionConfig: InteractionConfigFull = {
     UseScrollingOrDragging: false,
+    UseSwipeInteraction: false,
     DeadzoneRadius: 0.003,
 
     InteractionZoneEnabled: false,
