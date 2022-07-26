@@ -12,6 +12,7 @@ interface SliderPosInfo {
 }
 
 const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) => {
+    const [isHovered, setIsHovered] = useState<boolean>(false);
     const [isDragging, setIsDragging] = useState<boolean>(false);
 
     const startPosInfo = useRef<SliderPosInfo>({
@@ -92,8 +93,10 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
     return (
         <span ref={sliderRef} className={`masking-slider--${direction}`}>
             <div
-                className={`masking-slider-knob ${isDragging ? 'masking-slider-knob--dragging' : ''}`}
+                className={`masking-slider-knob ${isHovered || isDragging ? 'masking-slider-knob--dragging' : ''}`}
                 onPointerDown={onStartDrag}
+                onPointerEnter={() => setIsHovered(true)}
+                onPointerLeave={() => setIsHovered(false)}
             >
                 <div className="masking-slider-arrow--one" />
                 <div className="masking-slider-arrow--two" />
