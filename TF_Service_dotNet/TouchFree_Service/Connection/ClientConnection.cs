@@ -104,7 +104,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
         }
 
-        internal void SendTrackingResponse(ActionCode _action, ResponseToClient _response)
+        internal void SendTrackingResponse(ResponseToClient _response, ActionCode _action)
         {
             if (_action == ActionCode.GET_TRACKING_STATE) {
                 SendResponse(_response, ActionCode.GET_TRACKING_STATE_RESPONSE);

@@ -225,13 +225,13 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        public void SendTrackingResponse(ActionCode _action, ResponseToClient _response)
+        public void SendTrackingResponse(ResponseToClient _response, ActionCode _action)
         {
             foreach (ClientConnection connection in activeConnections)
             {
                 if (connection.Socket.State == WebSocketState.Open)
                 {
-                    connection.SendResponse(_response, _action);
+                    connection.SendTrackingResponse(_response, _action);
                 }
             }
         }

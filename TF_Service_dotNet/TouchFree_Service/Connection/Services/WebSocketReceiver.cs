@@ -47,10 +47,10 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             updateBehaviour.OnUpdate += Update;
 
-            diagnosticApi.OnMaskingResponse += OnMasking;
-            diagnosticApi.OnAllowImagesResponse += OnAllowImages;
-            diagnosticApi.OnCameraOrientationResponse += OnCameraOrientation;
-            diagnosticApi.OnAnalyticsResponse += OnAnalytics;
+            diagnosticApi.OnMaskingResponse += this.OnMasking;
+            diagnosticApi.OnAllowImagesResponse += this.OnAllowImages;
+            diagnosticApi.OnCameraOrientationResponse += this.OnCameraOrientation;
+            diagnosticApi.OnAnalyticsResponse += this.OnAnalytics;
         }
 
         void Update()
@@ -229,7 +229,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
                 // This is a failed request, do not continue with sending the status,
                 // the Client will have no way to handle the config state
-                clientMgr.SendTrackingResponse(_request.action, response);
+                clientMgr.SendTrackingResponse(response, _request.action);
                 return;
             }
 
@@ -247,14 +247,12 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void HandleGetTrackingStateRequest(IncomingRequest _request)
         {
-            TrackingResponse response = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true);
+            trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true);
 
             diagnosticApi.GetAllowImages();
             diagnosticApi.GetImageMask();
             diagnosticApi.GetCameraOrientation();
             diagnosticApi.GetAnalyticsMode();
-
-            trackingApiResponse = response;
         }
 
         void HandleSetTrackingStateRequest(JObject contentObj, IncomingRequest _request)
@@ -303,31 +301,37 @@ namespace Ultraleap.TouchFree.Service.Connection
             if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
             {
                 TrackingResponse response = trackingApiResponse.Value;
-                var content = JsonConvert.SerializeObject(response.state);
-
-                ActionCode action = response.isGetRequest ? ActionCode.GET_TRACKING_STATE_RESPONSE : ActionCode.SET_TRACKING_STATE_RESPONSE;
-
-                bool maskSuccess = CheckSuccess(response.state.mask);
-                bool imageSuccess = CheckSuccess(response.state.allowImages);
-                bool cameraSuccess = CheckSuccess(response.state.cameraReversed);
-                bool analyticsSuccess = CheckSuccess(response.state.analyticsEnabled);
-
-                bool success = maskSuccess && imageSuccess && cameraSuccess && analyticsSuccess;
-
-                ResponseToClient clientResponse;
-
-                if (success)
-                {
-                    clientResponse = new ResponseToClient(response.requestId, "Success", content, response.originalRequest);
-                }
-                else
-                {
-                    clientResponse = new ResponseToClient(response.requestId, "Incomplete Change", content, response.originalRequest);
-                }
-
-                clientMgr.SendTrackingResponse(action, clientResponse);
                 trackingApiResponse = null;
+
+                SendDApiResponse(response);
             }
+        }
+
+        void SendDApiResponse(TrackingResponse _response)
+        {
+            var content = JsonConvert.SerializeObject(_response.state);
+
+            ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE: ActionCode.SET_TRACKING_STATE;
+
+            bool maskSuccess = CheckSuccess(_response.state.mask);
+            bool imageSuccess = CheckSuccess(_response.state.allowImages);
+            bool cameraSuccess = CheckSuccess(_response.state.cameraReversed);
+            bool analyticsSuccess = CheckSuccess(_response.state.analyticsEnabled);
+
+            bool success = maskSuccess && imageSuccess && cameraSuccess && analyticsSuccess;
+
+            ResponseToClient clientResponse;
+
+            if (success)
+            {
+                clientResponse = new ResponseToClient(_response.requestId, "Success", content, _response.originalRequest);
+            }
+            else
+            {
+                clientResponse = new ResponseToClient(_response.requestId, "Incomplete Change", content, _response.originalRequest);
+            }
+
+            clientMgr.SendTrackingResponse(clientResponse, action);
         }
 
         private bool CheckSuccess<T>(SuccessWrapper<T>? wrapper)
@@ -364,6 +368,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 }
 
                 response.needsMask = false;
+                trackingApiResponse = response;
             }
         }
 
@@ -383,6 +388,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 }
 
                 response.needsImages = false;
+                trackingApiResponse = response;
             }
         }
 
@@ -402,6 +408,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 }
 
                 response.needsOrientation = false;
+                trackingApiResponse = response;
             }
         }
 
@@ -422,6 +429,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 }
 
                 response.needsAnalytics = false;
+                trackingApiResponse = response;
             }
         }
         #endregion

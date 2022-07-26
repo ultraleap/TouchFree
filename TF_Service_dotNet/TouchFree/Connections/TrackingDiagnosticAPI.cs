@@ -109,7 +109,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             if (e.IsText)
             {
-                newMessages.Enqueue(e.Data);
+                newMessages.Enqueue(e.Data + " ");
             }
         }
 
@@ -288,7 +288,6 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-
         public void GetAnalyticsMode()
         {
             Request(new DApiMessage(DApiMsgTypes.GetAnalyticsEnabled));
@@ -341,7 +340,6 @@ namespace Ultraleap.TouchFree.Library.Connections
             var payload = new CameraOrientationPayload() { device_id = connectedDeviceID, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" };
             Request(new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload));
         }
-
 
         public void GetDeviceInfo()
         {
