@@ -54,14 +54,24 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     };
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
-        if (evt.detail.InteractionType === InteractionType.HOVER) {
+        const {detail} = evt;
+        if (detail.InteractionType === InteractionType.HOVER) {
             if (!isNewClick.current) {
-                isNewClick.current = evt.detail.ProgressToClick === 0;
+                isNewClick.current = detail.ProgressToClick === 0;
                 return;
             }
 
-            if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
-                setProgressToClick(evt.detail.ProgressToClick);
+            if (detail.InputType === InputType.MOVE || detail.InputType === InputType.DOWN) {
+                setProgressToClick(detail.ProgressToClick);
+            }
+
+            if (detail.InputType === InputType.DOWN && detail.ProgressToClick === 1) {
+                if (location.pathname.endsWith('top')) {
+                    handleClick('../bottom');
+                    return;
+                }
+
+                handleClick('../complete');
             }
         }
     };
@@ -76,7 +86,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
             clearTimeout(initialWait);
         };
-    }, []);
+    }, [location.pathname]);
 
     useEffect(() => {
         if (!isHandPresent && initialWaitOver) {
@@ -108,7 +118,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
 
     if (location.pathname.endsWith('top')) {
         return (
-            <div onPointerDown={() => handleClick('../bottom')} className="content-container">
+            <div className="content-container">
                 <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '5vh' }} />
                 <CalibrationProgressCircle progress={progress} style={{ top: '15.5vh' }} />
                 {displayHandIndicator ? (
@@ -123,7 +133,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     }
 
     return (
-        <div onPointerDown={() => handleClick('../complete')} className="content-container">
+        <div className="content-container">
             <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
             <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '2.5vh' }} />
             <CalibrationProgressCircle progress={progress} style={{ bottom: '15.5vh' }} />
