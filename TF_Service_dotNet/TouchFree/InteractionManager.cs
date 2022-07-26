@@ -97,7 +97,8 @@ namespace Ultraleap.TouchFree.Library
                     {
                         lastLocationActionToUpdate = inputAction;
                     }
-                    else if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
+
+                    if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
                     {
                         if (interactionCurrentlyDown != locationInteraction)
                         {
