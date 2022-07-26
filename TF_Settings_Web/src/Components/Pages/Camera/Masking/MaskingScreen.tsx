@@ -57,7 +57,7 @@ const MaskingScreen = () => {
         for (let i = 0; i < 256; i++) {
             byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
             // -13434625 = #FFFF0033 in signed 2's complement
-            byteConversionArrayOverExposed[i] = i > 224 ? -13434625 : byteConversionArray[i];
+            byteConversionArrayOverExposed[i] = i > 128 ? -13434625 : byteConversionArray[i];
         }
 
         const socket = new WebSocket('ws://127.0.0.1:1024');
