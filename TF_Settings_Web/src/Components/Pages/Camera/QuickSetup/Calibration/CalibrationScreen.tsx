@@ -23,7 +23,7 @@ const { handNotFoundHeight } = styles;
 
 interface CalibrationScreenProps {
     isHandPresent: boolean;
-    onCancel: (event: TFClickEvent) => void;
+    onCancel: (event?: TFClickEvent) => void;
 }
 
 export const TIMEOUT_S = 10;
@@ -105,7 +105,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
         if (displayHandIndicator) {
             interval.current = window.setInterval(() => setTimeToPosSelect((t) => t - 1), 1000);
             timeout.current = window.setTimeout(() => {
-                navigate('../../');
+                onCancel();
             }, TIMEOUT_MS);
             setProgress(0);
         } else {

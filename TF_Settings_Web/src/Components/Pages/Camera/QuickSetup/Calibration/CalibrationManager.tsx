@@ -80,8 +80,8 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
     const resetCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
 
-    const onCancel = (event: TFClickEvent) => {
-        event.stopPropagation();
+    const onCancel = (event?: TFClickEvent) => {
+        event?.stopPropagation();
         setCursorDisplay(true);
         resetCalibConfig();
     };
