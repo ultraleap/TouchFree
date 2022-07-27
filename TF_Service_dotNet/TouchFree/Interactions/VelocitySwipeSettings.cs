@@ -6,6 +6,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
     public class VelocitySwipeSettings
     {
         public float MinScrollVelocity_mmps { get; set; }
+        public float UpwardsMinVelocityDecrease_mmps { get; set; }
+        public float DownwardsMinVelocityIncrease_mmps { get; set; }
         public float MaxReleaseVelocity_mmps { get; set; }
         public float MaxLateralVelocity_mmps { get; set; }
         public float MaxOpposingVelocity_mmps { get; set; }

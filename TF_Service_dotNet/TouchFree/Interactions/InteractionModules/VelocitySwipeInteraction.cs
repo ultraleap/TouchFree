@@ -13,10 +13,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public override InteractionType InteractionType { get; } = InteractionType.VELOCITYSWIPE;
 
         private readonly float minScrollVelocity_mmps = 625f;
+        private readonly float upwardsMinVelocityDecrease_mmps = 50f;
+        private readonly float downwardsMinVelocityIncrease_mmps = 50f;
         private readonly float maxReleaseVelocity_mmps = 200f;
 
         private readonly float maxLateralVelocity_mmps = 300f;
         private readonly float maxOpposingVelocity_mmps = 65f;
+
         private readonly float minSwipeLength = 10f;
         private readonly float maxSwipeWidth = 10f;
         private readonly float swipeWidthScaling = 0.2f;
@@ -53,6 +56,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
             if (_interactionTuning?.Value?.VelocitySwipeSettings != null)
             {
                 minScrollVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MinScrollVelocity_mmps;
+                upwardsMinVelocityDecrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.UpwardsMinVelocityDecrease_mmps;
+                downwardsMinVelocityIncrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.DownwardsMinVelocityIncrease_mmps;
                 maxReleaseVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxReleaseVelocity_mmps;
                 maxLateralVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxLateralVelocity_mmps;
                 maxOpposingVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxOpposingVelocity_mmps;
@@ -187,7 +192,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             if (allowBidirectional)
             {
-                if (_absPerp.X > minScrollVelocity_mmps || _absPerp.Y > minScrollVelocity_mmps)
+                if (_absPerp.X > minScrollVelocity_mmps || VerticalVelocityOverMinScrollVelocity(_dPerp))
                 {
                     return true;
                 }
@@ -195,13 +200,18 @@ namespace Ultraleap.TouchFree.Library.Interactions
             else
             {
                 if (((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
-                    ((_absPerp.Y > minScrollVelocity_mmps) && (_absPerp.X < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.X))
+                    (VerticalVelocityOverMinScrollVelocity(_dPerp) && (_absPerp.X < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.X))
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        bool VerticalVelocityOverMinScrollVelocity(Vector2 _dPerp)
+        {
+            return _dPerp.Y > (minScrollVelocity_mmps - upwardsMinVelocityDecrease_mmps) || -_dPerp.Y > (downwardsMinVelocityIncrease_mmps + minScrollVelocity_mmps);
         }
 
         bool CheckIfScrollAllowed(Vector2 _dPerp)
