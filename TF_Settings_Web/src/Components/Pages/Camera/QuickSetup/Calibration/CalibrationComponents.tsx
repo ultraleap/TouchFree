@@ -221,7 +221,7 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
     }
     return {
         transform: `scale(${1.3 - progress * 0.4})`,
-        background: 'transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box',
+        background: 'linear-gradient(107deg, #e2164d 0%, #d11883 100%)',
         boxShadow: '0px 5px 25px #000000',
     };
 };
