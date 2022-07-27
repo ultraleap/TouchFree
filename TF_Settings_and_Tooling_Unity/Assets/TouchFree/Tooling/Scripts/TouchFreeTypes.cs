@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Tooling
 
         // Variable: ApiVersion
         // The current API version of the Tooling.
-        public static readonly Version ApiVersion = new Version("1.2.0");
+        public static readonly Version ApiVersion = new Version("1.3.0");
 
         // Variable: API_HEADER_NAME
         // The name of the header we wish the Service to compare our version with.

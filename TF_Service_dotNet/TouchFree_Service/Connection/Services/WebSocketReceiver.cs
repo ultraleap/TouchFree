@@ -311,25 +311,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE: ActionCode.SET_TRACKING_STATE;
 
-            bool maskSuccess = CheckSuccess(_response.state.mask);
-            bool imageSuccess = CheckSuccess(_response.state.allowImages);
-            bool cameraSuccess = CheckSuccess(_response.state.cameraReversed);
-            bool analyticsSuccess = CheckSuccess(_response.state.analyticsEnabled);
-
-            bool success = maskSuccess && imageSuccess && cameraSuccess && analyticsSuccess;
-
-            ResponseToClient clientResponse;
-
-            if (success)
-            {
-                clientResponse = new ResponseToClient(_response.requestId, "Success", content, _response.originalRequest);
-            }
-            else
-            {
-                clientResponse = new ResponseToClient(_response.requestId, "Incomplete Change", content, _response.originalRequest);
-            }
-
-            clientMgr.SendTrackingResponse(clientResponse, action);
+            clientMgr.SendTrackingResponse(_response, action);
         }
 
         private bool CheckSuccess<T>(SuccessWrapper<T>? wrapper)

@@ -104,12 +104,12 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
         }
 
-        internal void SendTrackingResponse(ResponseToClient _response, ActionCode _action)
+        internal void SendTrackingResponse(TrackingApiState _state, ActionCode _action)
         {
             if (_action == ActionCode.GET_TRACKING_STATE) {
-                SendResponse(_response, ActionCode.GET_TRACKING_STATE_RESPONSE);
+                SendResponse(_state, ActionCode.GET_TRACKING_STATE_RESPONSE);
             } else if (_action == ActionCode.SET_TRACKING_STATE) {
-                SendResponse(_response, ActionCode.SET_TRACKING_STATE_RESPONSE);
+                SendResponse(_state, ActionCode.SET_TRACKING_STATE_RESPONSE);
             }
         }
 
