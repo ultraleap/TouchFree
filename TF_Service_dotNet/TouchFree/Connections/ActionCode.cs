@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Ultraleap.TouchFree.Library.Connection
+namespace Ultraleap.TouchFree.Library.Connections
 {
     public enum ActionCode
     {

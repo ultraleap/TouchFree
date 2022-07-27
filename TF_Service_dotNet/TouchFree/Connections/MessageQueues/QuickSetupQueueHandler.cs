@@ -2,7 +2,7 @@
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 
-namespace Ultraleap.TouchFree.Library.Connection
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public class QuickSetupQueueHandler : MessageQueueHandler
     {

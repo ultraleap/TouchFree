@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library.Connection
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public class ServiceStatusQueueHandler : MessageQueueHandler
     {

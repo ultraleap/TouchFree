@@ -1,7 +1,7 @@
 ﻿using System;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library.Connection
+namespace Ultraleap.TouchFree.Library.Connections
 {
     public enum TrackingServiceState
     {

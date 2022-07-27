@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using Ultraleap.TouchFree.Library.Connections;
 
-namespace Ultraleap.TouchFree.Library.Connection
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     internal class TrackingApiChangeQueueHandler : MessageQueueHandler
     {
-        public override ActionCode[] ActionCodes => new [] {ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE} ;
+        public override ActionCode[] ActionCodes => new[] { ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE };
 
         public TrackingResponse? trackingApiResponse = null;
         private readonly ITrackingDiagnosticApi diagnosticApi;
@@ -133,7 +132,7 @@ namespace Ultraleap.TouchFree.Library.Connection
 
         public bool ResponseIsReady(TrackingResponse _response)
         {
-            return (!_response.needsMask && !_response.needsImages && !_response.needsOrientation && !_response.needsAnalytics);
+            return !_response.needsMask && !_response.needsImages && !_response.needsOrientation && !_response.needsAnalytics;
         }
 
         public void OnMasking(ImageMaskData? _mask, string _message)

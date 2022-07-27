@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library.Connection
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public class ConfigurationFileChangeQueueHandler : BaseConfigurationChangeQueueHandler
     {

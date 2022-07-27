@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Ultraleap.TouchFree.Library.Connection
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public interface IMessageQueueHandler
     {

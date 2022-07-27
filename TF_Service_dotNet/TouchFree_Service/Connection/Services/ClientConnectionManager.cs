@@ -4,8 +4,7 @@ using System.Net.WebSockets;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Library.Connection;
-
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
