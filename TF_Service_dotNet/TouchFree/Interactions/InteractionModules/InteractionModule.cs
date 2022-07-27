@@ -13,6 +13,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public HandType handType;
 
         public bool ignoreDragging;
+        public bool ignoreSwiping;
 
         protected Positions positions;
 
@@ -69,6 +70,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
             ignoreDragging = !_config.UseScrollingOrDragging;
+            ignoreSwiping = !_config.UseSwipeInteraction;
             positionStabiliser.ResetValues();
         }
 

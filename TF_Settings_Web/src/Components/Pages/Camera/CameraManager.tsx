@@ -1,9 +1,8 @@
-import 'Styles/Camera/Camera.css';
-
 import { Route, Routes } from 'react-router-dom';
 
 import CameraSetupScreen from './CameraSetupScreen';
 import { ManualSetupScreen } from './ManualSetupScreen';
+import MaskingScreen from './Masking/MaskingScreen';
 import QuickSetupManager from './QuickSetup/QuickSetupManager';
 
 const CameraManager = () => {
@@ -12,6 +11,7 @@ const CameraManager = () => {
             <Route path="" element={<CameraSetupScreen />} />
             <Route path="quick/*" element={<QuickSetupManager />} />
             <Route path="manual" element={<ManualSetupScreen />} />
+            <Route path="masking" element={<MaskingScreen />} />
         </Routes>
     );
 };

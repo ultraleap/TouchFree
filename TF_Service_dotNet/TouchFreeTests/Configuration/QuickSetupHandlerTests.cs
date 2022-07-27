@@ -34,7 +34,7 @@ namespace TouchFreeTests.Configuration
         }
 
         [Test]
-        public void LeapRotationRelativeToScreen_Horizontal_ReturnsRotationOfNinety()
+        public void LeapRotationRelativeToScreen_Horizontal_ReturnsRotationOfMinusNinety()
         {
             // Arrange
             var bottomCentre = new Vector3(0, 0, 20);
@@ -45,7 +45,7 @@ namespace TouchFreeTests.Configuration
             var result = sut.LeapRotationRelativeToScreen(bottomCentre, topCentre);
 
             // Assert
-            Assert.AreEqual(90f, result.X);
+            Assert.AreEqual(-90f, result.X);
             Assert.AreEqual(0f, result.Y);
             Assert.AreEqual(0f, result.Z);
         }

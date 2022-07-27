@@ -18,6 +18,7 @@ const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings = {
 
 export const DefaultInteractionConfig: InteractionConfigFull = {
     UseScrollingOrDragging: false,
+    UseSwipeInteraction: false,
     DeadzoneRadius: 0.003,
 
     InteractionZoneEnabled: false,
@@ -30,3 +31,5 @@ export const DefaultInteractionConfig: InteractionConfigFull = {
     HoverAndHold: DefaultHoverAndHoldInteractionSettings,
     TouchPlane: DefaultTouchPlaneInteractionSettings,
 };
+
+export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;

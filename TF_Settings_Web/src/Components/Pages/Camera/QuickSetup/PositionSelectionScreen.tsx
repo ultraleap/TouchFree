@@ -1,9 +1,8 @@
-import 'Styles/Camera/Camera.css';
+import 'Styles/Camera/Camera.scss';
+import cssVariables from 'Styles/_variables.scss';
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { ULTRALEAP_GREEN } from 'index';
 
 import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
 import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
@@ -12,7 +11,7 @@ import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
 import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
 import CameraFacingUserIcon from 'Images/Camera/Camera_Facing_User.svg';
 
-import IconTextButton from 'Components/Controls/IconTextButton';
+import { VerticalIconTextButton } from 'Components/Controls/TFButton';
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 
@@ -30,11 +29,9 @@ const positionOptions: PositionOption[] = [
 
 const buttonStyle: React.CSSProperties = { width: '48.75%', height: '350px', marginBottom: '2.5%' };
 const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };
-const textStyle = (): React.CSSProperties => {
-    return {
-        color: ULTRALEAP_GREEN,
-        opacity: '1',
-    };
+const textStyle: React.CSSProperties = {
+    color: cssVariables.ultraleapGreen,
+    opacity: '1',
 };
 
 type PositionSelectionProps = { activePosition: PositionType; setPosition: (position: PositionType) => void };
@@ -49,12 +46,12 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
     const navigate = useNavigate();
     return (
         <div>
-            <div className="titleLine">
+            <div className="title-line">
                 <h1> Where is Your Camera Positioned? </h1>
             </div>
-            <div className="IconTextButtonDiv">
+            <div className="tf-button-container">
                 {positionOptions.map(({ type, title, icon }: PositionOption) => (
-                    <IconTextButton
+                    <VerticalIconTextButton
                         key={type}
                         buttonStyle={buttonStyle}
                         icon={icon}
@@ -62,7 +59,7 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
                         iconStyle={iconStyle}
                         title={title}
                         text={activePosition === type ? 'Current Setup' : ''}
-                        textStyle={textStyle()}
+                        textStyle={textStyle}
                         onClick={() => {
                             setPosition(type);
                             navigate('calibrate/top');

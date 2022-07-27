@@ -1,4 +1,4 @@
-import 'Styles/Interactions.css';
+import 'Styles/Interactions.scss';
 
 import { Component } from 'react';
 
@@ -7,15 +7,13 @@ import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/
 import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
-import AirPushPreview from 'Videos/AirPush_Preview.webm';
-import HoverPreview from 'Videos/Hover_Preview.webm';
-import TouchPlanePreview from 'Videos/TouchPlane_Preview.webm';
+import InteractionPreviews from 'Videos/Interaction_Explainer_Combined.mp4';
 
 import { RadioGroup } from 'Components/Controls/RadioGroup';
 import { RadioLine } from 'Components/Controls/RadioLine';
 import { Slider } from 'Components/Controls/Slider';
 import { TextSlider } from 'Components/Controls/TextSlider';
-import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
+import { LabelledToggleSwitch } from 'Components/Controls/ToggleSwitch';
 import { DefaultInteractionConfig } from 'Components/SettingsTypes';
 
 const InteractionTranslator: Record<string, InteractionType> = {
@@ -34,8 +32,6 @@ interface InteractionsState {
 }
 
 export class InteractionsPage extends Component<{}, InteractionsState> {
-    private videoPaths: string[] = [AirPushPreview, HoverPreview, TouchPlanePreview];
-
     componentDidMount(): void {
         ConfigurationManager.RequestConfigFileState(this.setStateFromFile.bind(this));
     }
@@ -260,7 +256,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     break;
                 case InteractionType.TOUCHPLANE:
                     interactionControls.push(
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
                             value={this.state.interactionConfig.UseScrollingOrDragging}
@@ -291,7 +287,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     break;
                 case InteractionType.PUSH:
                     interactionControls.push(
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Scroll and Drag"
                             key="Scroll and Drag"
                             value={this.state.interactionConfig.UseScrollingOrDragging}
@@ -338,12 +334,12 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                             onChange={this.onInteractionChange.bind(this)}
                         />
                         <video
-                            autoPlay
-                            loop
-                            key={this.state.interactionConfig.InteractionType}
-                            className="InteractionPreview"
+                            autoPlay={true}
+                            loop={true}
+                            key={InteractionPreviews}
+                            className={'InteractionPreview Interaction' + activeInteraction.toString()}
                         >
-                            <source src={this.videoPaths[activeInteraction]} type="video/webm" />
+                            <source src={InteractionPreviews} />
                         </video>
                     </div>
 
@@ -361,12 +357,12 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                         {interactionControls}
                     </div>
 
-                    <div className="titleLine">
+                    <div className="title-line">
                         <h1> Interaction Zone </h1>
                     </div>
 
                     <div className="verticalContainer sideSpacing">
-                        <ToggleSwitch
+                        <LabelledToggleSwitch
                             name="Enable/Disable"
                             value={this.state.interactionConfig.InteractionZoneEnabled}
                             onChange={this.interactionZoneToggled.bind(this)}
@@ -379,12 +375,12 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
 
         return (
             <div>
-                <div className="titleLine">
+                <div className="title-line">
                     <h1> Interaction Type </h1>
                     <button
                         onClick={this.resetToDefaults.bind(this)}
                         onPointerUp={this.resetToDefaults.bind(this)}
-                        className="tfButton"
+                        className="reset-button"
                     >
                         <p> Reset to Default </p>
                     </button>

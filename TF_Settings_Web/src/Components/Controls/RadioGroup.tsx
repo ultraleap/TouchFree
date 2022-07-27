@@ -1,4 +1,4 @@
-import 'Styles/Controls/RadioButtons.css';
+import 'Styles/Controls/RadioButtons.scss';
 
 import React from 'react';
 
@@ -20,7 +20,7 @@ export class RadioGroup extends React.Component<RadioProps, {}> {
                 {this.props.options.map((option, index) => (
                     <label
                         key={index}
-                        className="backgroundLabel"
+                        className="input-label-container"
                         onPointerDown={() => {
                             this.props.onChange(option);
                         }}

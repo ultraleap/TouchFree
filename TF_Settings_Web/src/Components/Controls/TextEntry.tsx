@@ -1,4 +1,4 @@
-import 'Styles/Controls/TextEntry.css';
+import 'Styles/Controls/TextEntry.scss';
 
 import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
 

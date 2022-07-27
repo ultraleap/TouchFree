@@ -1,4 +1,4 @@
-import 'Styles/Camera/ManualSetupPage.css';
+import 'Styles/Camera/ManualSetupPage.scss';
 
 import { Component } from 'react';
 
@@ -208,7 +208,7 @@ export class ManualSetupScreen extends Component<{}, PhysicalState> {
     render() {
         return (
             <div className={'page ' + this.state.selectedView}>
-                <div className="titleLine">
+                <div className="title-line">
                     <h1> Manual Calibration </h1>
                 </div>
 

@@ -1,4 +1,4 @@
-import 'Styles/Controls/Sliders.css';
+import 'Styles/Controls/Sliders.scss';
 
 import React, { PointerEvent, RefObject } from 'react';
 
@@ -71,7 +71,7 @@ export class Slider extends React.Component<SliderProps, {}> {
 
     render() {
         return (
-            <label className="backgroundLabel">
+            <label className="input-label-container">
                 <p className="sliderLabel">{this.props.name}</p>
                 <div className="sliderContainer">
                     <input

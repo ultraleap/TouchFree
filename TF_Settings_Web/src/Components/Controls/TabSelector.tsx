@@ -1,4 +1,4 @@
-import 'Styles/Controls/TabSelector.css';
+import 'Styles/Controls/TabSelector.scss';
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +24,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
     return (
         <button
             className={isActiveTab ? 'tabButton tabButtonActive' : hovered ? 'tabButton tabButtonHovered' : 'tabButton'}
-            onPointerUp={handleClick}
+            onPointerDown={handleClick}
             onKeyDown={(keyEvent) => {
                 if (keyEvent.key === 'Enter') handleClick();
             }}
