@@ -19,6 +19,7 @@ import {
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
+
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
 
@@ -44,6 +45,9 @@ export enum ActionCode {
     QUICK_SETUP = "QUICK_SETUP",
     QUICK_SETUP_CONFIG = "QUICK_SETUP_CONFIG",
     QUICK_SETUP_RESPONSE = "QUICK_SETUP_RESPONSE",
+
+    HAND_DATA = "HAND_DATA",
+    SET_HAND_DATA_STREAM_STATE = "SET_HAND_DATA_STREAM_STATE"
 }
 
 // Enum: HandPresenceState
@@ -134,6 +138,19 @@ export class ConfigState extends TouchFreeRequest {
 // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
 // use of the data received.
 export class ConfigChangeRequest extends TouchFreeRequest {
+}
+
+// class: ConfigChangeRequest
+// Used to request the current state of the configuration on the Service. This is received as
+// a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
+// use of the data received.
+export class HandRenderDataStateRequest extends TouchFreeRequest {
+    enabled: boolean;
+
+    constructor(_id: string, enabled: boolean) {
+        super(_id);
+        this.enabled = enabled;
+    }
 }
 
 // Class: ConfigStateCallback

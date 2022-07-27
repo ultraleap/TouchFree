@@ -1,12 +1,30 @@
+import { v4 as uuidgen } from 'uuid';
+
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
 
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import {
+    ActionCode,
+    CommunicationWrapper,
+    HandRenderDataStateRequest,
+} from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
+
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
+
+import { HandSvg } from 'Components/Controls/HandsSvg';
+import { HandSvgCoordinate } from 'Components/Controls/HandsSvg';
 
 import MaskingOption from './MaskingOptions';
 import MaskingSlider, { SliderDirection } from './MaskingSlider';
 import { displayLensFeeds } from './displayLensFeeds';
+
+interface HandRenderState {
+    handOne: any;
+    handTwo: any;
+}
 
 enum Lens {
     Left,
@@ -14,6 +32,34 @@ enum Lens {
 }
 
 const MaskingScreen = () => {
+    const [handData, setHandData] = useState<HandRenderState>({
+        handOne: {
+            indexTip: new HandSvgCoordinate(40, 10),
+            indexKnuckle: new HandSvgCoordinate(40, 90),
+            middleTip: new HandSvgCoordinate(70, 10),
+            middleKnuckle: new HandSvgCoordinate(70, 90),
+            ringTip: new HandSvgCoordinate(100, 10),
+            ringKnuckle: new HandSvgCoordinate(100, 90),
+            littleTip: new HandSvgCoordinate(130, 10),
+            littleKnuckle: new HandSvgCoordinate(130, 90),
+            thumbTip: new HandSvgCoordinate(10, 40),
+            wrist: new HandSvgCoordinate(80, 160),
+            dotColor: 'blue',
+        },
+        handTwo: {
+            indexTip: new HandSvgCoordinate(40, 10),
+            indexKnuckle: new HandSvgCoordinate(40, 90),
+            middleTip: new HandSvgCoordinate(70, 10),
+            middleKnuckle: new HandSvgCoordinate(70, 90),
+            ringTip: new HandSvgCoordinate(100, 10),
+            ringKnuckle: new HandSvgCoordinate(100, 90),
+            littleTip: new HandSvgCoordinate(130, 10),
+            littleKnuckle: new HandSvgCoordinate(130, 90),
+            thumbTip: new HandSvgCoordinate(10, 40),
+            wrist: new HandSvgCoordinate(80, 160),
+            dotColor: 'red',
+        },
+    });
     // ===== State =====
     const [mainLens, setMainLens] = useState<Lens>(Lens.Left);
     const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
@@ -112,6 +158,69 @@ const MaskingScreen = () => {
         }, 32);
     };
 
+    const handleTFInput = (evt: CustomEvent<any>): void => {
+        if (evt.detail?.Hands) {
+            const handOne = evt.detail.Hands[0];
+            const handTwo = evt.detail.Hands[1];
+            const updatedHandData = {
+                handOne: {},
+                handTwo: {},
+            };
+
+            if (handOne) {
+                updatedHandData.handOne = handToSvgData(handOne);
+            }
+            if (handTwo) {
+                updatedHandData.handTwo = handToSvgData(handTwo);
+            }
+            setHandData(updatedHandData);
+        }
+    };
+
+    useEffect(() => {
+        HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
+
+        return () => {
+            HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
+        };
+    }, []);
+
+    const cameraRenderSize = 350;
+
+    const translateToCoordinate = (coordinate: any) => {
+        return new HandSvgCoordinate(
+            (800 * (cameraRenderSize - coordinate.X)) / cameraRenderSize,
+            (800 * (coordinate.Y)) / cameraRenderSize
+        );
+    };
+
+    const tipJointIndex = 3;
+    const knuckleJointIndex = 1;
+
+    const handToSvgData = (hand: any): any => {
+        const indexFinger = hand.Fingers.find((f: any) => f.Type == 1);
+        const middleFinger = hand.Fingers.find((f: any) => f.Type == 2);
+        const ringFinger = hand.Fingers.find((f: any) => f.Type == 3);
+        const littleFinger = hand.Fingers.find((f: any) => f.Type == 4);
+        const thumbFinger = hand.Fingers.find((f: any) => f.Type == 0);
+        const wrist = hand.WristPosition;
+        return {
+            indexTip: translateToCoordinate(indexFinger.Bones[tipJointIndex].NextJoint),
+            indexKnuckle: translateToCoordinate(indexFinger.Bones[knuckleJointIndex].PrevJoint),
+            middleTip: translateToCoordinate(middleFinger.Bones[tipJointIndex].NextJoint),
+            middleKnuckle: translateToCoordinate(middleFinger.Bones[knuckleJointIndex].PrevJoint),
+            ringTip: translateToCoordinate(ringFinger.Bones[tipJointIndex].NextJoint),
+            ringKnuckle: translateToCoordinate(ringFinger.Bones[knuckleJointIndex].PrevJoint),
+            littleTip: translateToCoordinate(littleFinger.Bones[tipJointIndex].NextJoint),
+            littleKnuckle: translateToCoordinate(littleFinger.Bones[knuckleJointIndex].PrevJoint),
+            thumbTip: translateToCoordinate(thumbFinger.Bones[tipJointIndex].NextJoint),
+            wrist: translateToCoordinate(wrist),
+            dotColor: 'blue',
+        };
+    };
+
+    setHandRenderState(true);
+
     return (
         <div>
             <div className="title-line" style={{ flexDirection: 'column' }}>
@@ -125,6 +234,8 @@ const MaskingScreen = () => {
                     <MaskingSlider key={direction} direction={direction} />
                 ))}
                 <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
+                <HandSvg key="hand-data-1" data={handData.handOne} />
+                <HandSvg key="hand-data-2" data={handData.handTwo} />
                 <p>{Lens[mainLens]} Lens</p>
             </div>
             <div className="cam-feeds-bottom-container">
@@ -160,6 +271,19 @@ const MaskingScreen = () => {
             </div>
         </div>
     );
+};
+
+const setHandRenderState = (handRenderState: boolean): void => {
+    const requestID = uuidgen();
+
+    const content = new HandRenderDataStateRequest(requestID, handRenderState);
+    const request = new CommunicationWrapper(ActionCode.SET_HAND_DATA_STREAM_STATE, content);
+
+    const jsonContent = JSON.stringify(request);
+
+    ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, () => {
+        return true;
+    });
 };
 
 export default MaskingScreen;

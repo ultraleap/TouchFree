@@ -18,6 +18,7 @@ import {
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
+import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
 
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
@@ -46,6 +47,10 @@ export class MessageReceiver {
     // Variable: actionQueue
     // A queue of <TouchFreeInputActions> that have been received from the Service.
     actionQueue: Array<WebsocketInputAction> = [];
+
+    // Variable: handDataQueue
+    // A queue of <TouchFreeInputActions> that have been received from the Service.
+    handDataQueue: Array<any> = [];
 
     // Variable: responseQueue
     // A queue of <WebSocketResponses> that have been received from the Service.
@@ -113,6 +118,7 @@ export class MessageReceiver {
         this.CheckForConfigState();
         this.CheckForServiceStatus();
         this.CheckForAction();
+        this.CheckForHandData();
     }
 
     // Function: CheckForResponse
@@ -221,6 +227,30 @@ export class MessageReceiver {
         if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
             ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
             this.lastStateUpdate = HandPresenceState.PROCESSED;
+        }
+    }
+    
+    // Function: CheckForAction
+    // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
+    // clears out non-essential <TouchFreeInputActions> down to the number specified by
+    // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
+    // <InputActionManager> to handle the action.
+    // UP <InputType>s have their positions set to the last known position to ensure
+    // input events trigger correctly.
+    CheckForHandData(): void {
+        while (this.handDataQueue.length > this.actionCullToCount) {
+            if (this.handDataQueue[0] !== undefined) {
+                this.handDataQueue.shift();
+            }
+        }
+
+        let action: any | undefined = this.handDataQueue.shift();
+
+        if (action !== undefined) {
+            // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+            setTimeout(() => {
+                HandDataManager.HandleInputAction(action);
+            });
         }
     }
 
