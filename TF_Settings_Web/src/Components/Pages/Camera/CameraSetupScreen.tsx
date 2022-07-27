@@ -23,6 +23,7 @@ const CameraSetupScreen = () => {
     };
 
     useEffect(() => {
+        resizeHandler();
         window.addEventListener('resize', resizeHandler);
         return () => window.removeEventListener('resize', resizeHandler);
     }, []);
