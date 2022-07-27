@@ -17,6 +17,7 @@ namespace TouchFreeTests.Configuration
 
             //Then
             Assert.AreEqual(true, config.UseScrollingOrDragging);
+            Assert.AreEqual(false, config.UseSwipeInteraction);
             Assert.AreEqual(3f, config.DeadzoneRadiusMm);
             Assert.AreEqual(false, config.InteractionZoneEnabled);
             Assert.AreEqual(0.0f, config.InteractionMinDistanceMm);

@@ -26,7 +26,7 @@
     &:hover {
         box-shadow: none;
         background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce),
-            linear-gradient(180deg, #00eb86, #00cdcf);
+            linear-gradient(180deg, v.$ultraleap-green, #00cdcf);
     }
 
     > p {
