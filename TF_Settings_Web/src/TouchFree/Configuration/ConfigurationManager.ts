@@ -30,16 +30,7 @@ export class ConfigurationManager {
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
         _callback: (detail: WebSocketResponse) => void): void {
-
-        let action = ActionCode.SET_CONFIGURATION_STATE;
-        let requestID = uuidgen();
-
-        let content = new PartialConfigState(requestID, _interaction, _physical);
-        let request = new CommunicationWrapper(action, content);
-
-        let jsonContent = JSON.stringify(request);
-
-        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
+        ConfigurationManager.BaseConfigChangeRequest(_interaction, _physical, _callback, ActionCode.SET_CONFIGURATION_STATE);
     }
 
     // Function: RequestConfigState
@@ -72,8 +63,15 @@ export class ConfigurationManager {
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
         _callback: (detail: WebSocketResponse) => void): void {
+        ConfigurationManager.BaseConfigChangeRequest(_interaction, _physical, _callback, ActionCode.SET_CONFIGURATION_FILE);
+    }
 
-        let action = ActionCode.SET_CONFIGURATION_FILE;
+    private static BaseConfigChangeRequest(
+        _interaction: Partial<InteractionConfig> | null,
+        _physical: Partial<PhysicalConfig> | null,
+        _callback: (detail: WebSocketResponse) => void,
+        action: ActionCode): void {
+
         let requestID = uuidgen();
 
         let content = new PartialConfigState(requestID, _interaction, _physical);
