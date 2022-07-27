@@ -41,6 +41,11 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
         ConfigurationManager.RequestConfigState((config: ConfigState) => {
             setPosition(getPositionFromConfig(config));
         });
+        ConfigurationManager.RequestConfigChange(
+            null,
+            { ScreenWidthPX: screen.width, ScreenHeightPX: screen.height },
+            () => console.log(`Updated screen size in config to: ${screen.width}x${screen.height}px`)
+        );
     }, []);
 
     const navigate = useNavigate();
