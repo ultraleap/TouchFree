@@ -122,7 +122,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
         }
 
-        internal void SendTrackingResponse(TrackingResponse _state, ActionCode _action)
+        internal void SendTrackingResponse<T>(T _state, ActionCode _action)
         {
             if (_action == ActionCode.GET_TRACKING_STATE) {
                 SendResponse(_state, ActionCode.GET_TRACKING_STATE_RESPONSE);
@@ -200,10 +200,10 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             // We don't handle after-the-fact Handshake Requests here. We may wish to
             // if / when we anticipate externals building their own Tooling clients.
-            var queueHandler = messageQueueHandlers.SingleOrDefault(x => x.ActionCode == action);
+            var queueHandler = messageQueueHandlers.SingleOrDefault(x => x.ActionCodes.Contains(action));
             if (queueHandler != null)
             {
-                messageQueueHandlers.Single(x => x.ActionCode == action).Queue.Enqueue(content);
+                queueHandler.Queue.Enqueue(new IncomingRequest(action, null, content));
             }
             else if (action.ExpectedToBeHandled())
             {

@@ -242,7 +242,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
-        public void SendTrackingResponse(TrackingResponse _state, ActionCode _action)
+        public void SendTrackingResponse<T>(T _state, ActionCode _action)
         {
             foreach (ClientConnection connection in activeConnections)
             {

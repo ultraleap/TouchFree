@@ -12,15 +12,15 @@ namespace Ultraleap.TouchFree.Library.Connection
             configManager = _configManager;
         }
 
-        public override ActionCode ActionCode => ActionCode.SET_CONFIGURATION_STATE;
+        public override ActionCode[] ActionCodes => new[] { ActionCode.SET_CONFIGURATION_STATE };
 
-        protected override void Handle(string _content)
+        protected override void Handle(IncomingRequest _request)
         {
-            ResponseToClient response = ValidateConfigChange(_content);
+            ResponseToClient response = ValidateConfigChange(_request.content);
 
             if (response.status == "Success")
             {
-                ChangeConfig(_content);
+                ChangeConfig(_request.content);
             }
 
             clientMgr.SendConfigChangeResponse(response);

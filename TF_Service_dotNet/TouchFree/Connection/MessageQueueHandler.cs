@@ -5,8 +5,8 @@ namespace Ultraleap.TouchFree.Library.Connection
 {
     public abstract class MessageQueueHandler : IMessageQueueHandler
     {
-        public ConcurrentQueue<string> Queue { get; private set; } = new ConcurrentQueue<string>();
-        public abstract ActionCode ActionCode { get; }
+        public ConcurrentQueue<IncomingRequest> Queue { get; private set; } = new ConcurrentQueue<IncomingRequest>();
+        public abstract ActionCode[] ActionCodes { get; }
 
         private readonly UpdateBehaviour updateBehaviour;
         protected readonly IClientConnectionManager clientMgr;
@@ -21,7 +21,7 @@ namespace Ultraleap.TouchFree.Library.Connection
 
         void CheckQueue()
         {
-            string content;
+            IncomingRequest content;
             if (Queue.TryPeek(out content))
             {
                 // Parse newly received messages
@@ -30,7 +30,7 @@ namespace Ultraleap.TouchFree.Library.Connection
             }
         }
 
-        protected abstract void Handle(string _content);
+        protected abstract void Handle(IncomingRequest _content);
 
         protected bool RequestIdExists(JObject _content)
         {

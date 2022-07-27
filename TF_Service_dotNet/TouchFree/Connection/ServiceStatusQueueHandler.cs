@@ -9,7 +9,7 @@ namespace Ultraleap.TouchFree.Library.Connection
         private readonly IConfigManager configManager;
         private readonly IHandManager handManager;
 
-        public override ActionCode ActionCode => ActionCode.REQUEST_SERVICE_STATUS;
+        public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_SERVICE_STATUS };
 
         public ServiceStatusQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
         {
@@ -17,14 +17,14 @@ namespace Ultraleap.TouchFree.Library.Connection
             handManager = _handManager;
         }
 
-        protected override void Handle(string _content)
+        protected override void Handle(IncomingRequest _request)
         {
-            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
 
             // Explicitly check for requestID because it is the only required key
             if (!RequestIdExists(contentObj))
             {
-                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _content);
+                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _request.content);
                 response.message = "Config state request failed. This is due to a missing or invalid requestID";
 
                 // This is a failed request, do not continue with sending the status,

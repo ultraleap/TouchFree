@@ -4,7 +4,7 @@ namespace Ultraleap.TouchFree.Library.Connection
 {
     public interface IMessageQueueHandler
     {
-        ActionCode ActionCode { get; }
-        ConcurrentQueue<string> Queue { get; }
+        ActionCode[] ActionCodes { get; }
+        ConcurrentQueue<IncomingRequest> Queue { get; }
     }
 }

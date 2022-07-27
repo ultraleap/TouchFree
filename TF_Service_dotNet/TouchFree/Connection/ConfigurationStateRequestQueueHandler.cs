@@ -8,21 +8,21 @@ namespace Ultraleap.TouchFree.Library.Connection
     {
         private readonly IConfigManager configManager;
 
-        public override ActionCode ActionCode => ActionCode.REQUEST_CONFIGURATION_STATE;
+        public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_CONFIGURATION_STATE };
 
         public ConfigurationStateRequestQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager) : base(_updateBehaviour, _clientMgr)
         {
             configManager = _configManager;
         }
 
-        protected override void Handle(string _content)
+        protected override void Handle(IncomingRequest _request)
         {
-            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
 
             // Explicitly check for requestID because it is the only required key
             if (!RequestIdExists(contentObj))
             {
-                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _content);
+                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _request.content);
                 response.message = "Config state request failed. This is due to a missing or invalid requestID";
 
                 // This is a failed request, do not continue with sendingthe configuration,

@@ -7,44 +7,22 @@ namespace Ultraleap.TouchFree.Library.Connection
 {
     internal class TrackingApiChangeQueueHandler : MessageQueueHandler
     {
-        public override ActionCode ActionCode => throw new NotImplementedException();
+        public override ActionCode[] ActionCodes => new [] {ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE} ;
 
         public TrackingResponse? trackingApiResponse = null;
         private readonly ITrackingDiagnosticApi diagnosticApi;
 
-        public TrackingApiChangeQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApiManager) : base(_updateBehaviour, _clientMgr)
+        public TrackingApiChangeQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
         {
+            diagnosticApi = _diagnosticApi;
+
             diagnosticApi.OnMaskingResponse += OnMasking;
             diagnosticApi.OnAllowImagesResponse += OnAllowImages;
             diagnosticApi.OnCameraOrientationResponse += OnCameraOrientation;
             diagnosticApi.OnAnalyticsResponse += OnAnalytics;
         }
 
-        protected override void Handle(string _content)
-        {
-            throw new NotImplementedException();
-        }
-
-        void CheckDApiResponse()
-        {
-            if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
-            {
-                TrackingResponse response = trackingApiResponse.Value;
-                trackingApiResponse = null;
-
-                SendDApiResponse(response);
-            }
-        }
-
-        void SendDApiResponse(TrackingResponse _response)
-        {
-            var content = JsonConvert.SerializeObject(_response.state);
-
-            ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE : ActionCode.SET_TRACKING_STATE;
-
-            clientMgr.SendTrackingResponse(_response, action);
-        }
-        void HandleTrackingRequest(IncomingRequest _request)
+        protected override void Handle(IncomingRequest _request)
         {
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
 
@@ -70,6 +48,26 @@ namespace Ultraleap.TouchFree.Library.Connection
             {
                 HandleSetTrackingStateRequest(contentObj, _request);
             }
+        }
+
+        void CheckDApiResponse()
+        {
+            if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
+            {
+                TrackingResponse response = trackingApiResponse.Value;
+                trackingApiResponse = null;
+
+                SendDApiResponse(response);
+            }
+        }
+
+        void SendDApiResponse(TrackingResponse _response)
+        {
+            var content = JsonConvert.SerializeObject(_response.state);
+
+            ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE : ActionCode.SET_TRACKING_STATE;
+
+            clientMgr.SendTrackingResponse(_response, action);
         }
 
         void HandleGetTrackingStateRequest(IncomingRequest _request)
