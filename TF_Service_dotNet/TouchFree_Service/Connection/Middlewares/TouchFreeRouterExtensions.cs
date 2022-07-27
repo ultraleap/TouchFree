@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 using Ultraleap.TouchFree.Library.Connection;
@@ -46,6 +47,12 @@ namespace Ultraleap.TouchFree.Service.Connection
         public static IServiceCollection AddTrackingConnectionManager(this IServiceCollection services)
         {
             services.AddSingleton<ITrackingConnectionManager, TrackingConnectionManager>();
+            return services;
+        }
+
+        public static IServiceCollection AddTrackingDiagnosticApi(this IServiceCollection services)
+        {
+            services.AddSingleton<ITrackingDiagnosticApi, TrackingDiagnosticApi>();
             return services;
         }
 

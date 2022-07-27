@@ -122,7 +122,16 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
         }
 
-        private void SendResponse<T>(T _response, ActionCode actionCode)
+        internal void SendTrackingResponse(TrackingResponse _state, ActionCode _action)
+        {
+            if (_action == ActionCode.GET_TRACKING_STATE) {
+                SendResponse(_state, ActionCode.GET_TRACKING_STATE_RESPONSE);
+            } else if (_action == ActionCode.SET_TRACKING_STATE) {
+                SendResponse(_state, ActionCode.SET_TRACKING_STATE_RESPONSE);
+            }
+        }
+
+        internal void SendResponse<T>(T _response, ActionCode actionCode)
         {
             CommunicationWrapper<T> message =
                 new CommunicationWrapper<T>(actionCode.ToString(), _response);

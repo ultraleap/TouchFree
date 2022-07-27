@@ -134,7 +134,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     HandPresenceEvent handEvent = JsonUtility.FromJson<HandPresenceEvent>(content);
                     ConnectionManager.messageReceiver.handState = handEvent.state;
                     break;
-                    
+
                 case ActionCode.SERVICE_STATUS:
                     ServiceStatus serviceStatus = JsonUtility.FromJson<ServiceStatus>(content);
                     ConnectionManager.messageReceiver.serviceStatusQueue.Enqueue(serviceStatus);
@@ -147,6 +147,12 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                 case ActionCode.QUICK_SETUP_RESPONSE:
                     WebSocketResponse response = JsonUtility.FromJson<WebSocketResponse>(content);
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
+                    break;
+
+                case ActionCode.GET_TRACKING_STATE_RESPONSE:
+                case ActionCode.SET_TRACKING_STATE_RESPONSE:
+                    TrackingStateResponse trackingResponse = JsonUtility.FromJson<TrackingStateResponse>(content);
+                    ConnectionManager.messageReceiver.trackingStateQueue.Enqueue(trackingResponse);
                     break;
             }
         }
@@ -254,9 +260,27 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             }
 
             var request = new QuickSetupRequest(requestID, _position);
+            var message = new CommunicationWrapper<QuickSetupRequest>(ActionCode.QUICK_SETUP.ToString(), request);
 
-            CommunicationWrapper<QuickSetupRequest> message =
-                new CommunicationWrapper<QuickSetupRequest>(ActionCode.QUICK_SETUP.ToString(), request);
+            string jsonMessage = JsonUtility.ToJson(message);
+
+            webSocket.Send(jsonMessage);
+        }
+
+        internal void RequestTrackingState(Action<TrackingStateResponse> _trackingCallback)
+        {
+            if (_trackingCallback == null)
+            {
+                Debug.Log("Request for tracking state failed. This is due to a missing callback");
+                return;
+            }
+
+            string requestID = Guid.NewGuid().ToString();
+
+            ConnectionManager.messageReceiver.trackingStateCallbacks.Add(requestID, new TrackingStateCallback(DateTime.Now.Millisecond, _trackingCallback));
+
+            var request = new ServiceStatusRequest(requestID);
+            var message = new CommunicationWrapper<ServiceStatusRequest>(ActionCode.GET_TRACKING_STATE.ToString(), request);
 
             string jsonMessage = JsonUtility.ToJson(message);
 

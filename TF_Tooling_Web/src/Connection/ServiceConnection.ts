@@ -13,6 +13,10 @@ import {
     ServiceStatus,
     ServiceStatusCallback,
     ServiceStatusRequest,
+    SimpleRequest,
+    TrackingState,
+    TrackingStateCallback,
+    TrackingStateResponse,
     WebSocketResponse
 } from './TouchFreeServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
@@ -136,6 +140,10 @@ export class ServiceConnection {
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
+            case ActionCode.GET_TRACKING_STATE_RESPONSE:
+            case ActionCode.SET_TRACKING_STATE_RESPONSE:
+                const trackingResponse: TrackingStateResponse = looseData.content;
+                ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
         }
     }
 
@@ -176,7 +184,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for config state failed. This is due to a missing callback");
             return;
         }
 
@@ -198,7 +206,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for service status failed. This is due to a missing callback");
             return;
         }
 
@@ -220,7 +228,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigFile(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for config file failed. This is due to a missing callback");
             return;
         }
 
@@ -265,6 +273,29 @@ export class ServiceConnection {
             ConnectionManager.messageReceiver.configStateCallbacks[guid] =
                 new ConfigStateCallback(Date.now(), _configurationCallback);
         }
+
+        this.webSocket.send(message);
+    }
+
+    // Function: RequestTrackingState
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
+    RequestTrackingState(_callback: (detail: TrackingStateResponse) => void) {
+        if (!_callback) {
+            console.error('Request for tracking state failed. This is due to a missing callback');
+            return;
+        }
+        const guid: string = uuidgen();
+        const request: SimpleRequest = new SimpleRequest(guid);
+        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<SimpleRequest>(
+            ActionCode.GET_TRACKING_STATE,
+            request
+        );
+        const message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new TrackingStateCallback(Date.now(), _callback);
 
         this.webSocket.send(message);
     }
