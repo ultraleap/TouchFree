@@ -12,6 +12,7 @@ namespace Ultraleap.TouchFree.Library
     [Serializable]
     public struct RawHand
     {
+        public bool CurrentPrimary { get; set; }
         public RawFinger[] Fingers { get; set; }
         public float WristWidth { get; set; }
         public Vector3 WristPosition { get; set; }

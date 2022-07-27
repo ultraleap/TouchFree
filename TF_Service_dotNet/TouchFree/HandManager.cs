@@ -202,6 +202,7 @@ namespace Ultraleap.TouchFree.Library
                 {
                     Hands = PreConversionRawHands.Select(x => new RawHand()
                     {
+                        CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
                         Fingers = x.Fingers.Select(f => new RawFinger()
                         {
                             Type = (FingerType)f.Type,
