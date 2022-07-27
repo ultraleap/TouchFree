@@ -75,6 +75,30 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
     }
 
     [Serializable]
+    public struct TrackingApiState
+    {
+        public string requestID;
+        public SuccessWrapper<MaskingData?>? mask;
+        public SuccessWrapper<bool?>? allowImages;
+        public SuccessWrapper<bool?>? cameraReversed;
+        public SuccessWrapper<bool?>? analyticsEnabled;
+    }
+
+    public struct SuccessWrapper<T>
+    {
+        public bool succeeded;
+        public string msg;
+        public T content;
+
+        public SuccessWrapper(bool _success, string _message, T _content)
+        {
+            succeeded = _success;
+            msg = _message;
+            content = _content;
+        }
+    }
+
+    [Serializable]
     public struct ServiceStatus
     {
         public string requestID;
@@ -110,10 +134,9 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         public bool needsOrientation;
         public bool needsAnalytics;
 
-        public string requestId;
         public string originalRequest;
         public bool isGetRequest;
-        public TrackingState state;
+        public TrackingApiState state;
 
         public TrackingResponse(string _requestId,
                                 string _originalRequest,
@@ -123,7 +146,6 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
                                 bool _needsOrientation,
                                 bool _needsAnalytics)
         {
-            requestId = _requestId;
             originalRequest = _originalRequest;
             isGetRequest = _isGetRequest;
             needsMask = _needsMask;
@@ -131,7 +153,8 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
             needsOrientation = _needsOrientation;
             needsAnalytics = _needsAnalytics;
 
-            state = new TrackingState();
+            state = new TrackingApiState();
+            state.requestID = _requestId;
         }
     }
 
@@ -149,25 +172,6 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
             status = _status;
             message = _msg;
             originalRequest = _request;
-        }
-    }
-
-    public struct TrackingState {
-        public SuccessWrapper<MaskingData?>? mask;
-        public SuccessWrapper<bool?>? allowImages;
-        public SuccessWrapper<bool?>? cameraReversed;
-        public SuccessWrapper<bool?>? analyticsEnabled;
-    }
-
-    public struct SuccessWrapper<T> {
-        public bool succeeded;
-        public string msg;
-        public T content;
-
-        public SuccessWrapper(bool _success, string _message, T _content) {
-            succeeded = _success;
-            msg = _message;
-            content = _content;
         }
     }
 
