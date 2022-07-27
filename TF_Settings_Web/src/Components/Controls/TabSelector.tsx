@@ -1,6 +1,6 @@
 import 'Styles/Controls/TabSelector.scss';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface TabSelectorProps {
@@ -11,6 +11,7 @@ interface TabSelectorProps {
 
 const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick }) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
+    const [pressed, setPressed] = React.useState<boolean>(false);
 
     const handleClick = () => {
         if (!isActiveTab) {
@@ -19,18 +20,33 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
         }
     };
 
+    const getSpecialClassName = useCallback((): string => {
+        if (isActiveTab) return 'tab-button--active';
+
+        return pressed ? 'tab-button--pressed' : hovered ? 'tab-button--hovered' : '';
+    }, [isActiveTab, hovered, pressed]);
+
     const navigate = useNavigate();
     const lowerCaseName = name.toLowerCase();
     return (
         <button
-            className={isActiveTab ? 'tabButton tabButtonActive' : hovered ? 'tabButton tabButtonHovered' : 'tabButton'}
-            onPointerDown={handleClick}
-            onKeyDown={(keyEvent) => {
-                if (keyEvent.key === 'Enter') handleClick();
-            }}
+            className={`tab-button ${getSpecialClassName()}`}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
                 setHovered(false);
+                setPressed(false);
+            }}
+            onPointerDown={() => {
+                setPressed(true);
+            }}
+            onPointerUp={() => {
+                if (pressed) {
+                    handleClick();
+                }
+                setPressed(false);
+            }}
+            onKeyDown={(keyEvent) => {
+                if (keyEvent.key === 'Enter') handleClick();
             }}
         >
             {name}
