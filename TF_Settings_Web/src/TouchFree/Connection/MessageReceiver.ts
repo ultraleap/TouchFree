@@ -129,6 +129,9 @@ export class MessageReceiver {
                     "This is the content of the response: \n Response ID: " + response.requestID +
                     "\n Status: " + response.status + "\n Message: " + response.message +
                     "\n Original request - " + response.originalRequest);
+            } else {
+                // This is logged to aid users in debugging
+                console.log(response.message);
             }
         }
     }
