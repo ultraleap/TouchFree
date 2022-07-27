@@ -5,7 +5,10 @@ import {
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
-    WebSocketResponse,
+    TrackingState,
+    TrackingStateCallback,
+    TrackingStateResponse,
+    WebSocketResponse
 } from './TouchFreeServiceTypes';
 import {
     BitmaskFlags,
@@ -71,8 +74,16 @@ export class MessageReceiver {
 
     lastStateUpdate: HandPresenceState;
 
+    // Variable: trackingStateQueue
+    // A queue of <TrackingStates> that have been received from the Service.
+    trackingStateQueue: Array<TrackingStateResponse> = [];
+
+    // Variable: trackingSettingsStateCallbacks
+    // A dictionary of unique request IDs and <TrackingStateCallback> that represent requests that are awaiting response from the Service.
+    trackingStateCallbacks: { [id: string]: TrackingStateCallback; } = {};
+
     // Variable: callbackClearInterval
-    // Stores the reference number for the interal running <ClearUnresponsiveCallbacks>, allowing
+    // Stores the reference number for the interval running <ClearUnresponsiveCallbacks>, allowing
     // it to be cleared.
     private callbackClearInterval: number;
 
@@ -110,6 +121,7 @@ export class MessageReceiver {
         this.CheckForResponse();
         this.CheckForConfigState();
         this.CheckForServiceStatus();
+        this.CheckForTrackingStateResponse();
         this.CheckForAction();
     }
 
@@ -190,6 +202,31 @@ export class MessageReceiver {
                 if (key === _serviceStatus.requestID) {
                     this.serviceStatusCallbacks[key].callback(_serviceStatus);
                     delete this.serviceStatusCallbacks[key];
+                    return;
+                }
+            };
+        }
+    }
+
+    // Function: CheckForTrackingStateResponse
+    // Used to check the <trackingStateQueue> for a <TrackingStateResponse>. Sends it to <HandleTrackingStateResponse> if there is one.
+    CheckForTrackingStateResponse(): void {
+        const trackingStateResponse: TrackingStateResponse | undefined = this.trackingStateQueue.shift();
+
+        if (trackingStateResponse !== undefined) {
+            this.HandleTrackingStateResponse(trackingStateResponse);
+        }
+    }
+
+    // Function: HandleTrackingStateResponse
+    // Checks the dictionary of <trackingStateCallbacks> for a matching request ID. If there is a
+    // match, calls the callback action in the matching <TrackingStateCallback>.
+    HandleTrackingStateResponse(trackingStateResponse: TrackingStateResponse): void {
+        if (this.trackingStateCallbacks !== undefined) {
+            for (let key in this.trackingStateCallbacks) {
+                if (key === trackingStateResponse.requestID) {
+                    this.trackingStateCallbacks[key].callback(trackingStateResponse);
+                    delete this.trackingStateCallbacks[key];
                     return;
                 }
             };

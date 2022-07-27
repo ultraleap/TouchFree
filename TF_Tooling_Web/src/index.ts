@@ -4,6 +4,7 @@ import * as Cursors from './Cursors'
 import * as InputControllers from './InputControllers';
 import * as Plugins from './Plugins';
 import * as TouchFreeToolingTypes from './TouchFreeToolingTypes';
+import * as Tracking from './Tracking';
 
 module.exports = {
     Configuration: Configuration,
@@ -12,4 +13,5 @@ module.exports = {
     InputControllers: InputControllers,
     Plugins: Plugins,
     TouchFreeToolingTypes: TouchFreeToolingTypes,
+    Tracking: Tracking,
 }
