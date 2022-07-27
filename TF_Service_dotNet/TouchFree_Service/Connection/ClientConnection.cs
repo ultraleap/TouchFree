@@ -104,13 +104,9 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
         }
 
-        internal void SendTrackingResponse(TrackingApiState _state, ActionCode _action)
+        internal void SendTrackingState(TrackingApiState _state)
         {
-            if (_action == ActionCode.GET_TRACKING_STATE) {
-                SendResponse(_state, ActionCode.GET_TRACKING_STATE_RESPONSE);
-            } else if (_action == ActionCode.SET_TRACKING_STATE) {
-                SendResponse(_state, ActionCode.SET_TRACKING_STATE_RESPONSE);
-            }
+            SendResponse(_state, ActionCode.TRACKING_STATE);
         }
 
         internal void SendResponse<T>(T _response, ActionCode actionCode)
@@ -222,8 +218,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 case ActionCode.CONFIGURATION_FILE_STATE:
                 case ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE:
                 case ActionCode.QUICK_SETUP_RESPONSE:
-                case ActionCode.GET_TRACKING_STATE_RESPONSE:
-                case ActionCode.SET_TRACKING_STATE_RESPONSE:
+                case ActionCode.TRACKING_STATE:
                     TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
                     break;
                 default:

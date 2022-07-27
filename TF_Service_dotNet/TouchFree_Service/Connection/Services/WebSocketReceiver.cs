@@ -224,12 +224,22 @@ namespace Ultraleap.TouchFree.Service.Connection
             // Explicitly check for requestID else we can't respond
             if (!RequestIdExists(contentObj))
             {
-                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _request.content);
-                response.message = "Tracking State change request failed. This is due to a missing or invalid requestID";
+                string message = "Tracking State change request failed. This is due to a missing or invalid requestID";
 
-                // This is a failed request, do not continue with sending the status,
+                var maskResponse = new SuccessWrapper<MaskingData?>(false, message, null);
+                var boolResponse = new SuccessWrapper<bool?>(false, message, null);
+
+                TrackingApiState state = new TrackingApiState() {
+                    requestID =  "",
+                    mask = maskResponse,
+                    allowImages = boolResponse,
+                    cameraReversed = boolResponse,
+                    analyticsEnabled= boolResponse
+                };
+
+                // This is a failed request, do not continue with processing the request,
                 // the Client will have no way to handle the config state
-                clientMgr.SendTrackingResponse(response, _request.action);
+                clientMgr.SendTrackingState(state);
                 return;
             }
 
@@ -311,19 +321,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE: ActionCode.SET_TRACKING_STATE;
 
-            clientMgr.SendTrackingResponse(_response, action);
-        }
-
-        private bool CheckSuccess<T>(SuccessWrapper<T>? wrapper)
-        {
-            if (wrapper.HasValue)
-            {
-                return wrapper.Value.succeeded;
-            }
-            else
-            {
-                return true;
-            }
+            clientMgr.SendTrackingState(_response.state);
         }
 
         public bool ResponseIsReady(TrackingResponse _response)

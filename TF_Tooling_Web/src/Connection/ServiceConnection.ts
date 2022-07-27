@@ -140,8 +140,7 @@ export class ServiceConnection {
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
-            case ActionCode.GET_TRACKING_STATE_RESPONSE:
-            case ActionCode.SET_TRACKING_STATE_RESPONSE:
+            case ActionCode.TRACKING_STATE:
                 const trackingResponse: TrackingStateResponse = looseData.content;
                 ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
         }
@@ -256,7 +255,7 @@ export class ServiceConnection {
         _configurationCallback: (detail: ConfigState) => void): void {
         const position = atTopTarget ? 'Top' : 'Bottom';
         let guid: string = uuidgen();
-        
+
         let request: any = {
             requestID: guid,
             position

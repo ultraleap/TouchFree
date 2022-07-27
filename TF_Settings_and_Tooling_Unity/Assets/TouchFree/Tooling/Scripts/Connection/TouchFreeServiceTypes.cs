@@ -50,9 +50,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         QUICK_SETUP_RESPONSE,
 
         GET_TRACKING_STATE,
-        GET_TRACKING_STATE_RESPONSE,
         SET_TRACKING_STATE,
-        SET_TRACKING_STATE_RESPONSE,
+        TRACKING_STATE,
     }
 
     // Enum: HandPresenceState
@@ -311,19 +310,19 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public struct TrackingStateResponse
     {
         // Variable: requestID
-        string requestID;
+        public string requestID;
 
         // Variable: mask
-        SuccessWrapper<MaskData>? mask;
+        public SuccessWrapper<MaskData>? mask;
 
         // Variable: cameraOrientation
-        SuccessWrapper<bool>? cameraReversed;
+        public SuccessWrapper<bool>? cameraReversed;
 
         // Variable: allowImages
-        SuccessWrapper<bool>? allowImages;
+        public SuccessWrapper<bool>? allowImages;
 
         // Variable: analyticsEnabled
-        SuccessWrapper<bool>? analyticsEnabled;
+        public SuccessWrapper<bool>? analyticsEnabled;
     }
 
     // Class: TrackingState
@@ -355,7 +354,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         }
     }
 
-    public struct MaskData {
+    public struct MaskData
+    {
         public float lower;
         public float upper;
         public float right;
@@ -383,10 +383,10 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public struct TrackingStateCallback
     {
         // Variable: timestamp
-        float timestamp;
+        public float timestamp;
 
         // Variable: callback
-        Action<TrackingStateResponse> callback;
+        public Action<TrackingStateResponse> callback;
 
         public TrackingStateCallback(float _timestamp, Action<TrackingStateResponse> _callback)
         {
