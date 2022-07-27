@@ -43,7 +43,7 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
         });
         ConfigurationManager.RequestConfigChange(
             null,
-            { ScreenWidthPX: screen.width, ScreenHeightPX: screen.height },
+            { ScreenWidthPX: window.innerWidth, ScreenHeightPX: window.innerHeight },
             () => console.log(`Updated screen size in config to: ${screen.width}x${screen.height}px`)
         );
     }, []);
