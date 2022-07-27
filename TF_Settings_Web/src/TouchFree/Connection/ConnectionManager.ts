@@ -87,13 +87,12 @@ export class ConnectionManager extends EventTarget {
     // <HandsLost> events on this class
     public static HandleHandPresenceEvent(_state: HandPresenceState): void {
         ConnectionManager.currentHandPresence = _state;
-
+        
         let handPresenceEvent: CustomEvent;
 
         if (_state === HandPresenceState.HAND_FOUND) {
             handPresenceEvent = new CustomEvent('HandFound');
-        }
-        else {
+        } else {
             handPresenceEvent = new CustomEvent('HandsLost');
         }
 
