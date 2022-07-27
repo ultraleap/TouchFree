@@ -4,7 +4,7 @@ using System.Net.WebSockets;
 
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
+using Ultraleap.TouchFree.Library.Connection;
 
 
 namespace Ultraleap.TouchFree.Service.Connection
@@ -137,6 +137,23 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
+        public void SendHandDataToWebsocket(HandFrame _data)
+        {
+            if (activeConnections == null ||
+                activeConnections.Count < 1)
+            {
+                return;
+            }
+
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.Socket.State == WebSocketState.Open)
+                {
+                    connection.SendHandData(_data);
+                }
+            }
+        }
+
         public void SendConfigChangeResponse(ResponseToClient _response)
         {
             foreach (ClientConnection connection in activeConnections)
@@ -220,6 +237,17 @@ namespace Ultraleap.TouchFree.Service.Connection
                 if (connection.Socket.State == WebSocketState.Open)
                 {
                     connection.SendQuickSetupResponse(_response);
+                }
+            }
+        }
+
+        public void SendHandDataStreamStateResponse(ResponseToClient _response)
+        {
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.Socket.State == WebSocketState.Open)
+                {
+                    connection.SendHandDataStreamStateResponse(_response);
                 }
             }
         }

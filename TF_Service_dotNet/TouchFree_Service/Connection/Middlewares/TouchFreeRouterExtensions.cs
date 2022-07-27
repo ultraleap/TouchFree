@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
+using Ultraleap.TouchFree.Library.Connection;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
@@ -26,7 +27,13 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public static IServiceCollection AddWebSocketReceiver(this IServiceCollection services)
         {
-            services.AddSingleton<WebSocketReceiver>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationChangeQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationFileChangeQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationStateRequestQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationFileRequestQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, QuickSetupQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ServiceStatusQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, HandDataStreamStateQueueHandler>();
             return services;
         }
 

@@ -8,6 +8,7 @@ namespace Ultraleap.TouchFree.Library
     {
         Hand PrimaryHand { get; }
         Hand SecondaryHand { get; }
+        HandFrame RawHands { get; }
         List<Vector> RawHandPositions { get; }
         long Timestamp { get; }
         void ConnectToTracking();

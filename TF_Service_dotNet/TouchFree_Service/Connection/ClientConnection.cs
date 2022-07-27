@@ -1,15 +1,16 @@
-using System;
-using System.Net.WebSockets;
-using System.Text.RegularExpressions;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Threading;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
-
+using System.Text.RegularExpressions;
+using System.Threading;
 using Ultraleap.TouchFree.Library;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connection;
+using Ultraleap.TouchFree.Service.ConnectionTypes;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -25,14 +26,14 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         private readonly WebSocket socket;
         private bool HandshakeCompleted;
-        private readonly WebSocketReceiver receiver;
+        private readonly IEnumerable<IMessageQueueHandler> messageQueueHandlers;
         private readonly IClientConnectionManager clientMgr;
         private readonly IConfigManager configManager;
 
-        public ClientConnection(WebSocket _socket, WebSocketReceiver _receiver, IClientConnectionManager _clientMgr, IConfigManager _configManager)
+        public ClientConnection(WebSocket _socket, IEnumerable<IMessageQueueHandler> _messageQueueHandlers, IClientConnectionManager _clientMgr, IConfigManager _configManager)
         {
             socket = _socket;
-            receiver = _receiver;
+            messageQueueHandlers = _messageQueueHandlers;
             clientMgr = _clientMgr;
             configManager = _configManager;
             HandshakeCompleted = false;
@@ -52,6 +53,18 @@ namespace Ultraleap.TouchFree.Service.Connection
             WebsocketInputAction converted = new WebsocketInputAction(_data);
 
             SendResponse(converted, ActionCode.INPUT_ACTION);
+        }
+
+        public void SendHandData(HandFrame _data)
+        {
+            if (!HandshakeCompleted)
+            {
+                // Long-term we shouldn't get this far until post-handshake, but the systems should
+                // be designed cohesively when the Service gets its polish
+                return;
+            }
+
+            SendResponse(_data, ActionCode.HAND_DATA);
         }
 
         public void SendHandPresenceEvent(HandPresenceEvent _response)
@@ -102,6 +115,11 @@ namespace Ultraleap.TouchFree.Service.Connection
         public void SendQuickSetupResponse(ResponseToClient _response)
         {
             SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
+        }
+
+        public void SendHandDataStreamStateResponse(ResponseToClient _response)
+        {
+            SendResponse(_response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
         }
 
         private void SendResponse<T>(T _response, ActionCode actionCode)
@@ -173,42 +191,22 @@ namespace Ultraleap.TouchFree.Service.Connection
 
             // We don't handle after-the-fact Handshake Requests here. We may wish to
             // if / when we anticipate externals building their own Tooling clients.
-
-            switch (action)
+            var queueHandler = messageQueueHandlers.SingleOrDefault(x => x.ActionCode == action);
+            if (queueHandler != null)
             {
-                case ActionCode.SET_CONFIGURATION_STATE:
-                    receiver.configChangeQueue.Enqueue(content);
-                    break;
-                case ActionCode.REQUEST_CONFIGURATION_STATE:
-                    receiver.configStateRequestQueue.Enqueue(content);
-                    break;
-                case ActionCode.REQUEST_SERVICE_STATUS:
-                    receiver.requestServiceStatusQueue.Enqueue(content);
-                    break;
-                case ActionCode.SET_CONFIGURATION_FILE:
-                    receiver.configFileChangeQueue.Enqueue(content);
-                    break;
-                case ActionCode.REQUEST_CONFIGURATION_FILE:
-                    receiver.configFileRequestQueue.Enqueue(content);
-                    break;
-                case ActionCode.QUICK_SETUP:
-                    receiver.quickSetupQueue.Enqueue(content);
-                    break;
-
-                case ActionCode.INPUT_ACTION:
-                case ActionCode.CONFIGURATION_STATE:
-                case ActionCode.CONFIGURATION_RESPONSE:
-                case ActionCode.VERSION_HANDSHAKE_RESPONSE:
-                case ActionCode.HAND_PRESENCE_EVENT:
-                case ActionCode.SERVICE_STATUS_RESPONSE:
-                case ActionCode.SERVICE_STATUS:
-                case ActionCode.CONFIGURATION_FILE_STATE:
-                case ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE:
-                    TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
-                    break;
-                default:
-                    TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not recognised.");
-                    break;
+                messageQueueHandlers.Single(x => x.ActionCode == action).Queue.Enqueue(content);
+            }
+            else if (action.ExpectedToBeHandled())
+            {
+                TouchFreeLog.ErrorWriteLine("Expected to be able to handle a " + action + " action but unable to find queue.");
+            }
+            else if (action.UnexpectedByTheService())
+            {
+                TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
+            }
+            else
+            { 
+                TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not recognised.");
             }
         }
 
