@@ -271,7 +271,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Used internally to send data about quick setup to the Service via the <webSocket>
         // Provides an asynchronous <TrackingStateResponse> via the _stateCallback parameter on a successful response.
         // Provides an asynchronous <WebSocketResponse> via the _responseCallback parameter if there are issues to communicate why.
-        internal void RequestTrackingState(Action<TrackingStateResponse> _stateCallback,  Action<WebSocketResponse> _responseCallback)
+        internal void RequestTrackingState(Action<TrackingStateResponse> _stateCallback)
         {
             if (_stateCallback == null)
             {
