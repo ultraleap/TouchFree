@@ -21,7 +21,6 @@ const backButtonStyle: CSSProperties = {
     width: '200px',
     height: '80px',
     borderRadius: '30px',
-    marginLeft: '30px',
     marginBottom: '30px',
     background: cssVariables.lightGreyGradient,
     display: 'flex',
