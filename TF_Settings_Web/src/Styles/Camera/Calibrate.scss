@@ -99,23 +99,36 @@
     width: 9vh;
 }
 
+$hand-not-found-height: 3vh;
+
+:export {
+    handNotFoundHeight: $hand-not-found-height;
+}
+
 .hand-not-found-container {
-    display: flex;
+    display: inline-flex;
     margin: auto;
     background: linear-gradient(180deg, #e1164d 0%, #d11882 100%);
     border-radius: 15px;
-    height: 3vh;
-    width: 320px;
+    height: $hand-not-found-height;
     justify-content: center;
     align-items: center;
+    padding: 0 30px;
 
-    > p {
+    p {
         flex: none;
         color: white;
         font-size: 1.6rem;
         font-family: v.$base-font;
         text-align: center;
         margin-left: 5px;
+        font-weight: bold;
+    }
+
+    #return-message * {
+        font-weight: normal;
+        display: inline-flex;
+        align-items: flex-end;
     }
 }
 
