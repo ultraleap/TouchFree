@@ -13,7 +13,7 @@
     height: 4rem;
     min-width: 110px;
 
-    font-family: MontserratRegular, Arial;
+    font-family: v.$base-font;
     font-size: 1.4rem;
     color: white;
 
@@ -26,11 +26,11 @@
     &:hover {
         box-shadow: none;
         background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce),
-            linear-gradient(180deg, #00eb86, #00cdcf);
+            linear-gradient(180deg, v.$ultraleap-green, #00cdcf);
     }
 
     > p {
-        font-family: MontserratRegular, Arial;
+        font-family: v.$base-font;
         display: inline-block;
         margin: 0;
         font-size: 22px;
@@ -91,10 +91,10 @@ video.InteractionPreview.Interaction2 {
     justify-content: space-between;
 }
 
-.backgroundLabel {
+.input-label-container {
     text-align: left;
     font-size: 1.4rem;
-    font-family: MontserratRegular, Arial;
+    font-family: v.$base-font;
     color: white;
 
     display: flex;

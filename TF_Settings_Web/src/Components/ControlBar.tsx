@@ -18,14 +18,14 @@ interface ControlBarProps {
 }
 
 const backButtonStyle: CSSProperties = {
-    width: '180px',
-    height: '60px',
+    width: '200px',
+    height: '80px',
     borderRadius: '30px',
-    marginLeft: '1%',
-    marginBottom: '2%',
+    marginBottom: '30px',
     background: cssVariables.lightGreyGradient,
     display: 'flex',
     justifyContent: 'center',
+    alignSelf: 'flex-end',
     alignItems: 'center',
 };
 

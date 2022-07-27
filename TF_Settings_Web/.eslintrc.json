@@ -3,12 +3,7 @@
         "browser": true,
         "es2021": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:unicorn/recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
+    "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
     "settings": {
         "react": {
             "version": "detect"
@@ -26,7 +21,7 @@
     "ignorePatterns": ["src/TouchFree"],
     "rules": {
         "indent": "off",
-        "linebreak-style": ["error", "windows"],
+        "linebreak-style": "off",
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "max-len": ["error", { "code": 120 }],
@@ -42,14 +37,6 @@
             }
         ],
         "@typescript-eslint/no-empty-interface": "warn",
-        "unicorn/prevent-abbreviations": "off",
-        "unicorn/filename-case": "off",
-        "unicorn/numeric-separators-style": "off",
-        "unicorn/no-null": "off",
-        "unicorn/no-zero-fractions": "off",
-        "unicorn/no-array-push-push": "off",
-        "unicorn/no-nested-ternary": "off",
-        "unicorn/consistent-function-scoping": "off",
         "no-relative-import-paths/no-relative-import-paths": ["error", { "allowSameFolder": true, "rootDir": "src" }]
     }
 }

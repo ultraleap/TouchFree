@@ -14,7 +14,7 @@
         height: 7vh;
         color: white;
         font-size: 3rem;
-        font-family: MontserratRegular, Arial;
+        font-family: v.$base-font;
         margin-top: 0;
         margin-bottom: 0;
     }
@@ -43,7 +43,7 @@
 
 .loading {
     font-size: 3rem;
-    font-family: MontserratRegular, Arial;
+    font-family: v.$base-font;
     &:after {
         display: inline-block;
         animation: loadingDots steps(1, end) 1s infinite;
@@ -99,23 +99,36 @@
     width: 9vh;
 }
 
+$hand-not-found-height: 3vh;
+
+:export {
+    handNotFoundHeight: $hand-not-found-height;
+}
+
 .hand-not-found-container {
-    display: flex;
+    display: inline-flex;
     margin: auto;
-    background: transparent linear-gradient(180deg, #e1164d 0%, #d11882 100%) 0% 0% no-repeat padding-box;
+    background: linear-gradient(180deg, #e1164d 0%, #d11882 100%);
     border-radius: 15px;
-    height: 3vh;
-    width: 320px;
+    height: $hand-not-found-height;
     justify-content: center;
     align-items: center;
+    padding: 0 30px;
 
-    > p {
+    p {
         flex: none;
         color: white;
         font-size: 1.6rem;
-        font-family: MontserratRegular, Arial;
+        font-family: v.$base-font;
         text-align: center;
         margin-left: 5px;
+        font-weight: bold;
+    }
+
+    #return-message * {
+        font-weight: normal;
+        display: inline-flex;
+        align-items: flex-end;
     }
 }
 
@@ -138,7 +151,7 @@
 .setup-complete-title {
     color: white;
     font-size: 5rem;
-    font-family: MontserratRegular, Arial;
+    font-family: v.$base-font;
     margin-top: 0;
     margin-bottom: 10px;
 }
@@ -148,8 +161,8 @@
     height: 25%;
     text-align: center;
     font-size: 3rem;
-    font-family: MontserratRegular, Arial;
-    background: transparent linear-gradient(107deg, #00ccce 0%, v.$ultraleap-green 100%) 0% 0% no-repeat padding-box;
+    font-family: v.$base-font;
+    background: linear-gradient(107deg, #00ccce 0%, v.$ultraleap-green 100%);
     border: 0px;
     border-radius: 25px;
 }

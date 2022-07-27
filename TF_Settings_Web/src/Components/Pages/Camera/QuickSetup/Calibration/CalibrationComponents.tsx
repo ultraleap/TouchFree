@@ -15,6 +15,9 @@ import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
 import { TextButton } from 'Components/Controls/TFButton';
+import { TFClickEvent } from 'Components/SettingsTypes';
+
+import { TIMEOUT_S } from './CalibrationScreen';
 
 interface CalibrationInstructionsProps {
     progress: number;
@@ -71,7 +74,7 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
             strokeWidth={25}
             styles={buildStyles({
                 strokeLinecap: 'butt',
-                pathColor: cssVariables.ultraLeapGreen,
+                pathColor: cssVariables.ultraleapGreen,
                 trailColor: 'transparent',
                 pathTransitionDuration: 0.08,
             })}
@@ -79,12 +82,48 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
     </div>
 );
 
-export const CalibrationHandLostMessage = () => (
-    <div className={'hand-not-found-container'}>
-        <img src={HandIcon} alt="Hand Icon" />
-        <p>Hand Not Detected</p>
-    </div>
-);
+interface HandsLostProps {
+    timeToPosSelect?: number;
+}
+
+const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSelect }) => {
+    if (!timeToPosSelect) {
+        return <></>;
+    }
+
+    const timeToPosSelectLength = timeToPosSelect.toString().length;
+    const timeoutLength = TIMEOUT_S.toString().length;
+
+    // If the time left has fewer characters than the initial time, pad the start with "0"s
+    const numString = ''.padEnd(timeoutLength - timeToPosSelectLength, '0') + timeToPosSelect;
+    const formattedString = [...numString].map((char, index) => {
+        return (
+            <span key={index} style={{ width: '1ch', justifyContent: 'center' }}>
+                {char}
+            </span>
+        );
+    });
+
+    return (
+        <div id="return-message">
+            <p>
+                Returning in <span style={{ marginLeft: '0.3rem' }}>{formattedString}</span>s
+            </p>
+        </div>
+    );
+};
+
+export const CalibrationHandLostMessage: React.FC<HandsLostProps> = ({ timeToPosSelect }) => {
+    return (
+        <div>
+            <div className={'hand-not-found-container'}>
+                <img src={HandIcon} alt="Hand Icon" />
+                <p>No Hand Detected{timeToPosSelect ? ':' : ''}</p>
+                <ReturnToPositionScreenMessage timeToPosSelect={timeToPosSelect} />
+            </div>
+        </div>
+    );
+};
 
 interface CalibrationTutorialVideoProps {
     videoStyle: CSSProperties;
@@ -122,7 +161,7 @@ const cancelSetupButtonTextStyle: CSSProperties = {
 };
 
 interface CalibrationCancelButtonProps {
-    onCancel: () => void;
+    onCancel: (event: TFClickEvent) => void;
     buttonStyle: CSSProperties;
 }
 
@@ -134,7 +173,7 @@ export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = (
             titleStyle={{ display: 'none' }}
             text="Cancel Setup"
             textStyle={cancelSetupButtonTextStyle}
-            onClick={() => onCancel()}
+            onClick={onCancel}
             canHover={false}
         />
     );
@@ -221,7 +260,7 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
     }
     return {
         transform: `scale(${1.3 - progress * 0.4})`,
-        background: 'transparent linear-gradient(107deg, #e2164d 0%, #d11883 100%) 0% 0% no-repeat padding-box',
+        background: 'linear-gradient(107deg, #e2164d 0%, #d11883 100%)',
         boxShadow: '0px 5px 25px #000000',
     };
 };
