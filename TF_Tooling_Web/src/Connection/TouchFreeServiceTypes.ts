@@ -20,10 +20,10 @@ import { Mask } from '../Tracking/TrackingTypes';
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
-// GET_TRACKING_STATE - Represents a request to receive the current state of the tacking settings
-// GET_TRACKING_STATE_RESPONSE - Represents a response from a GET_TRACKING_STATE with the current state of the tacking settings
-// SET_TRACKING_STATE - Represents a request to set the current state of the tacking settings
-// SET_TRACKING_STATE_RESPONSE - Represents a response from a SET_TRACKING_STATE with the updated state of the tacking settings
+// GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
+// GET_TRACKING_STATE_RESPONSE - Represents a response from a GET_TRACKING_STATE with the current state of the tracking settings
+// SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
+// SET_TRACKING_STATE_RESPONSE - Represents a response from a SET_TRACKING_STATE with the updated state of the tracking settings
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
 
@@ -269,7 +269,7 @@ export interface SuccessWrapper<T> {
 }
 
 // Class: TrackingStateResponse
-// Type of the response from a GET/SET tracking state request. 
+// Type of the response from a GET/SET tracking state request.
 export interface TrackingStateResponse {
     // Variable: requestID
     requestID: string;
@@ -324,7 +324,7 @@ export class SimpleRequest {
 }
 
 // Class: TrackingStateCallback
-// Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a 
+// Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a
 // <TrackingStateResponse> as a parameter. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
 export class TrackingStateCallback {

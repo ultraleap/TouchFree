@@ -18,6 +18,10 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // QUICK_SETUP - Represents a request to carry out a quick setup
     // QUICK_SETUP_CONFIG - Represents a response from a quick setup with an updated configuration
     // QUICK_SETUP_RESPONSE - Represents a Success/Failure response from quick setup that has not completed
+    // GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
+    // GET_TRACKING_STATE_RESPONSE - Represents a response from a GET_TRACKING_STATE with the current state of the tracking settings
+    // SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
+    // SET_TRACKING_STATE_RESPONSE - Represents a response from a SET_TRACKING_STATE with the updated state of the tracking settings
     internal enum ActionCode
     {
         INPUT_ACTION,
@@ -44,6 +48,11 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         QUICK_SETUP,
         QUICK_SETUP_CONFIG,
         QUICK_SETUP_RESPONSE,
+
+        GET_TRACKING_STATE,
+        GET_TRACKING_STATE_RESPONSE,
+        SET_TRACKING_STATE,
+        SET_TRACKING_STATE_RESPONSE,
     }
 
     // Enum: HandPresenceState
@@ -281,5 +290,108 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     {
         Top,
         Bottom
+    }
+
+    // struct: SuccessWrapper
+    // Type extension for <TrackingStateResponse> to capture the success state, clarifying message and response content.
+    public struct SuccessWrapper<T>
+    {
+        // Variable: succeeded
+        bool succeeded;
+
+        // Variable: msg
+        string msg;
+
+        // Variable: content
+        T? content;
+    }
+
+    // Class: TrackingStateResponse
+    // Type of the response from a GET/SET tracking state request.
+    public struct TrackingStateResponse
+    {
+        // Variable: requestID
+        string requestID;
+
+        // Variable: mask
+        SuccessWrapper<MaskData>? mask;
+
+        // Variable: cameraOrientation
+        SuccessWrapper<bool>? cameraReversed;
+
+        // Variable: allowImages
+        SuccessWrapper<bool>? allowImages;
+
+        // Variable: analyticsEnabled
+        SuccessWrapper<bool>? analyticsEnabled;
+    }
+
+    // Class: TrackingState
+    // Used to construct a SET_TRACKING_STATE request.
+    public class TrackingState
+    {
+        // Variable: requestID
+        string requestID;
+        // Variable: mask
+        MaskData? mask;
+        // Variable: cameraOrientation
+        bool? cameraReversed;
+        // Variable: allowImages
+        bool? allowImages;
+        // Variable: analyticsEnabled
+        bool? analyticsEnabled;
+
+        public TrackingState(string _id,
+                       MaskData? _mask,
+                       bool? _cameraReversed,
+                       bool? _allowImages,
+                       bool? _analyticsEnabled)
+        {
+            this.requestID = _id;
+            this.mask = _mask;
+            this.cameraReversed = _cameraReversed;
+            this.allowImages = _allowImages;
+            this.analyticsEnabled = _analyticsEnabled;
+        }
+    }
+
+    public struct MaskData {
+        public float lower;
+        public float upper;
+        public float right;
+        public float left;
+    }
+
+
+    // class: SimpleRequest
+    // Used to make a basic request to the service. To be used with <CommunicationWrapper> to create a more complex request.
+    public struct SimpleRequest
+    {
+        // Variable: requestID
+        string requestID;
+
+        SimpleRequest(string _id)
+        {
+            this.requestID = _id;
+        }
+    }
+
+    // Class: TrackingStateCallback
+    // Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a
+    // <TrackingStateResponse> as a parameter. Stores a timestamp of its creation so the response has the ability to
+    // timeout if not seen within a reasonable timeframe.
+    public struct TrackingStateCallback
+    {
+        // Variable: timestamp
+        float timestamp;
+
+        // Variable: callback
+        Action<TrackingStateResponse> callback;
+
+        public TrackingStateCallback(float _timestamp, Action<TrackingStateResponse> _callback)
+        {
+            this.timestamp = _timestamp;
+            this.callback = _callback;
+        }
     }
 }
