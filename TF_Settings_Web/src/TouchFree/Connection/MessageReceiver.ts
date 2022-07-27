@@ -137,7 +137,7 @@ export class MessageReceiver {
     }
 
     // Function: CheckForConfigState
-    // Used to check the <configStateQueue> for a <ConfigState>. Sends it to Sends it to <HandleCallbackList> with
+    // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleCallbackList> with
     // the <configStateCallbacks> dictionary if there is one.
     CheckForConfigState(): void {
         let configState: ConfigState | undefined = this.configStateQueue.shift();
@@ -235,7 +235,7 @@ export class MessageReceiver {
         MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.serviceStatusCallbacks);
     }
 
-    private static ClearUnresponsiveItems<T extends TouchFreeRequest>(lastClearTime: number, callbacks: {[id: string]: TouchFreeRequestCallback<T>}) {
+    private static ClearUnresponsiveItems<T>(lastClearTime: number, callbacks: {[id: string]: TouchFreeRequestCallback<T>}) {
         if (callbacks !== undefined) {
             for (let key in callbacks) {
                 if (callbacks[key].timestamp < lastClearTime) {
