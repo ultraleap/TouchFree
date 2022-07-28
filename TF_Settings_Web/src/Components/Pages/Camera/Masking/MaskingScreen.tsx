@@ -36,12 +36,12 @@ const MaskingScreen = () => {
     const showOverexposedRef = useRef(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
     const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
+    const timeoutRef = useRef<number>();
 
     // ===== State Setters =====
     /* eslint-disable @typescript-eslint/no-empty-function */
-    const setMaskingInfo = (direction: SliderDirection, value: number) => {
-        const mask: Mask = { ...maskingInfo, [direction]: value };
-        // console.log(mask);
+    const setMaskingInfo = (direction: SliderDirection, maskingValue: number) => {
+        const mask: Mask = { ...maskingInfo, [direction]: maskingValue };
         _setMaskingInfo(mask);
         TrackingManager.RequestTrackingChange(() => {}, mask, null, null, null);
     };
@@ -92,6 +92,7 @@ const MaskingScreen = () => {
         return () => {
             socket.removeEventListener('open', handleWSOpen);
             socket.removeEventListener('message', (event) => handleMessage(socket, event));
+            window.clearTimeout(timeoutRef.current);
         };
     }, []);
 
@@ -148,7 +149,7 @@ const MaskingScreen = () => {
         }
 
         // Settimeout with 32ms for ~30fps if we have the performance
-        setTimeout(() => {
+        timeoutRef.current = window.setTimeout(() => {
             setIsFrameProcessing(false);
         }, 32);
     };
@@ -166,7 +167,7 @@ const MaskingScreen = () => {
                     <MaskingSlider
                         key={sliderInfo[0]}
                         direction={sliderInfo[0] as SliderDirection}
-                        value={sliderInfo[1]}
+                        maskingValue={sliderInfo[1]}
                         setMaskingValue={setMaskingInfo}
                     />
                 ))}

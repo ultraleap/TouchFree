@@ -15,20 +15,18 @@ interface SliderPosInfo {
 
 interface MaskingSliderProps {
     direction: SliderDirection;
-    value: number;
-    setMaskingValue: (direction: SliderDirection, value: number) => void;
+    maskingValue: number;
+    setMaskingValue: (direction: SliderDirection, maskingValue: number) => void;
 }
 
-const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, value, setMaskingValue }) => {
+const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, setMaskingValue }) => {
+    // ===== State =====
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [isDragging, setIsDragging] = useState<boolean>(false);
 
+    // ===== Refs =====
+    const maskingValueRef = useRef<number>(maskingValue);
     const sliderRef = useRef<HTMLSpanElement>(null);
-    const maskingValueRef = useRef<number>(value);
-
-    useEffect(() => {
-        maskingValueRef.current = value;
-    }, [value]);
 
     const startPosInfo = useRef<SliderPosInfo>({
         X: Number.NaN,
@@ -37,6 +35,7 @@ const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, value, setMask
         initialLeft: Number.NaN,
     });
 
+    // ===== UseEffects =====
     useEffect(() => {
         if (sliderRef.current) {
             const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
@@ -44,18 +43,29 @@ const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, value, setMask
 
             startPosInfo.current = { ...startPosInfo.current, initialTop: top, initialLeft: left };
 
-            // sliderRef.current.style.left = `${top + mapMaskingRangeToValue(value)}px`;
-            // sliderRef.current.style.top = `${startPosInfo.current.initialTop}px`;
+            setPosition(direction, startPosInfo.current, maskingValue, sliderRef.current);
         }
+
+        return () => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onEndDrag);
+        };
     }, []);
 
+    useEffect(() => {
+        if (!sliderRef.current) return;
+
+        maskingValueRef.current = maskingValue;
+
+        setPosition(direction, startPosInfo.current, maskingValue, sliderRef.current);
+    }, [maskingValue]);
+
+    // ===== Event Handlers =====
     const onStartDrag = (event: PointerEvent<HTMLSpanElement>) => {
         if (!sliderRef.current) return;
 
         setIsDragging(true);
-        if (Number.isNaN(startPosInfo.current.X) || Number.isNaN(startPosInfo.current.Y)) {
-            startPosInfo.current = { ...startPosInfo.current, X: event.pageX, Y: event.pageY };
-        }
+        startPosInfo.current = { ...startPosInfo.current, X: event.pageX, Y: event.pageY };
 
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onEndDrag);
@@ -64,32 +74,25 @@ const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, value, setMask
     const onMove = (event: globalThis.PointerEvent) => {
         if (!sliderRef.current) return;
 
-        console.log(direction + ': ' + maskingValueRef.current);
-
-        let diffX = 0;
-        let diffY = 0;
+        let diffValue = 0;
 
         switch (direction) {
             case 'left':
-                diffX = limitVal(event.pageX - startPosInfo.current.X);
-                setMaskingValue(direction, mapValueToMaskingRange(diffX));
+                diffValue = event.pageX - startPosInfo.current.X;
                 break;
             case 'right':
-                diffX = -limitVal(startPosInfo.current.X - event.pageX);
-                setMaskingValue(direction, mapValueToMaskingRange(diffX));
+                diffValue = startPosInfo.current.X - event.pageX;
                 break;
             case 'upper':
-                diffY = limitVal(event.pageY - startPosInfo.current.Y);
-                setMaskingValue(direction, mapValueToMaskingRange(diffY));
+                diffValue = event.pageY - startPosInfo.current.Y;
                 break;
             case 'lower':
-                diffY = -limitVal(startPosInfo.current.Y - event.pageY);
-                setMaskingValue(direction, mapValueToMaskingRange(diffY));
+                diffValue = startPosInfo.current.Y - event.pageY;
                 break;
         }
 
-        sliderRef.current.style.left = `${startPosInfo.current.initialLeft + diffX}px`;
-        sliderRef.current.style.top = `${startPosInfo.current.initialTop + diffY}px`;
+        const newMaskingValue = maskingValue + mapValueToMaskingRange(diffValue);
+        setMaskingValue(direction, limitMaskingRange(newMaskingValue));
     };
 
     const onEndDrag = () => {
@@ -114,11 +117,39 @@ const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, value, setMask
 };
 
 // Map from CSS value [0..400] to Masking Range [0..5]
-const mapValueToMaskingRange = (val: number): number => (Math.abs(val) / 400) * 0.5;
+const mapValueToMaskingRange = (value: number): number => (value / 400) * 0.5;
 
 // Map from Masking Range [0..5] to CSS value [0..400]
-const mapMaskingRangeToValue = (maskingVal: number): number => maskingVal * 2 * 400;
+const mapMaskingRangeToValue = (maskingValue: number): number => maskingValue * 2 * 400;
 
-const limitVal = (val: number): number => Math.min(400, Math.max(0, val));
+const limitMaskingRange = (maskingValue: number): number => Math.min(0.5, Math.max(0, maskingValue));
+
+const setPosition = (
+    direction: SliderDirection,
+    startPosInfo: SliderPosInfo,
+    maskingValue: number,
+    slider: HTMLSpanElement
+): void => {
+    let { initialLeft: left, initialTop: top } = startPosInfo;
+    const value = mapMaskingRangeToValue(maskingValue);
+
+    switch (direction) {
+        case 'left':
+            left += value;
+            break;
+        case 'right':
+            left -= value;
+            break;
+        case 'upper':
+            top += value;
+            break;
+        case 'lower':
+            top -= value;
+            break;
+    }
+
+    slider.style.left = `${left}px`;
+    slider.style.top = `${top}px`;
+};
 
 export default MaskingSlider;
