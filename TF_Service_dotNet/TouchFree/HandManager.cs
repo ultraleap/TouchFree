@@ -185,12 +185,12 @@ namespace Ultraleap.TouchFree.Library
 
         private Vector3 LeapToCameraFrame(Leap.Vector leapVector, Leap.Image image)
         {
-            var ray = new Leap.Vector((float)Math.Atan2(leapVector.x, leapVector.y), (float)Math.Atan2(leapVector.z, leapVector.y), -(float)Math.Sqrt(leapVector.x * leapVector.x + leapVector.z * leapVector.z + leapVector.y * leapVector.y));
+            var ray = new Leap.Vector((float)Math.Atan2(leapVector.x, leapVector.y), (float)Math.Atan2(leapVector.z, leapVector.y), (float)Math.Sqrt(leapVector.x * leapVector.x + leapVector.z * leapVector.z + leapVector.y * leapVector.y));
 
             var leftPosition = image.RectilinearToPixel(Image.CameraType.LEFT, ray);
             var rightPosition = image.RectilinearToPixel(Image.CameraType.RIGHT, ray);
 
-            return new Vector3(leftPosition.x, leftPosition.y, leftPosition.z);
+            return new Vector3(leftPosition.x / image.Width, leftPosition.y / image.Width, ray.z);
         }
 
         public void UpdateRawHands(object sender, ImageEventArgs e)

@@ -1,13 +1,15 @@
 import React from 'react';
 
 export class HandSvgCoordinate {
-    constructor(_x: number, _y: number) {
+    constructor(_x: number, _y: number, _z: number) {
         this.x = _x;
         this.y = _y;
+        this.z = _z;
     }
 
     x: number;
     y: number;
+    z: number;
 }
 
 export class HandSvgProps {
@@ -21,7 +23,9 @@ export class HandSvgProps {
         _littleTip: HandSvgCoordinate,
         _littleKnuckle: HandSvgCoordinate,
         _thumbTip: HandSvgCoordinate,
+        _thumbKnuckle: HandSvgCoordinate,
         _wrist: HandSvgCoordinate,
+        _primaryHand: boolean,
         _dotColor: string
     ) {
         this.indexTip = _indexTip;
@@ -33,7 +37,10 @@ export class HandSvgProps {
         this.littleTip = _littleTip;
         this.littleKnuckle = _littleKnuckle;
         this.thumbTip = _thumbTip;
+        this.thumbKnuckle = _thumbKnuckle;
         this.wrist = _wrist;
+
+        this.primaryHand = _primaryHand;
 
         this.dotColor = _dotColor;
     }
@@ -51,8 +58,11 @@ export class HandSvgProps {
     littleKnuckle: HandSvgCoordinate;
 
     thumbTip: HandSvgCoordinate;
+    thumbKnuckle: HandSvgCoordinate;
 
     wrist: HandSvgCoordinate;
+
+    primaryHand: boolean;
 
     dotColor: string;
 }
@@ -62,59 +72,71 @@ interface DataWrapper {
 }
 
 export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
-    const pointRadius = 5;
-    const pointLineWidth = 1;
-    const strokeWidth = 5;
-
     if (!data?.dotColor) {
         return <svg style={{ marginLeft: '-800px' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800"></svg>;
     }
+
+    const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600/data.middleKnuckle.z;
+    const pointRadius = 5 * scalingFactor;
+    const pointLineWidth = 1;
+    const strokeWidth = 5 * scalingFactor;
+
+    const dotColor = 'url(\'#dotGradient\')';
+    const lineColor = 'white';
+    const dotBorderColour = 'black';
+
     return (
         <svg style={{ marginLeft: '-800px' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800">
+            <defs>
+            <radialGradient id="dotGradient">
+                <stop offset="0%" stopColor="#00EB85" />
+                <stop offset="100%" stopColor="#00CCCE" />
+            </radialGradient>
+            </defs>
             <line
-                id="inde.X"
+                id="index"
                 x1={data.indexTip.x}
                 y1={data.indexTip.y}
                 x2={data.indexKnuckle.x}
                 y2={data.indexKnuckle.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <line
-                id="inde.X-wrist"
+                id="index-wrist"
                 x1={data.indexKnuckle.x}
                 y1={data.indexKnuckle.y}
-                x2={data.wrist.x}
-                y2={data.wrist.y}
-                stroke="black"
+                x2={data.thumbKnuckle.x}
+                y2={data.thumbKnuckle.y}
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <line
-                id="inde.X-middle"
+                id="index-middle"
                 x1={data.indexKnuckle.x}
                 y1={data.indexKnuckle.y}
                 x2={data.middleKnuckle.x}
                 y2={data.middleKnuckle.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <circle
-                id="inde.X-tip"
+                id="index-tip"
                 cx={data.indexTip.x}
                 cy={data.indexTip.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
             <circle
-                id="inde.X-knuckle"
+                id="index-knuckle"
                 cx={data.indexKnuckle.x}
                 cy={data.indexKnuckle.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
 
             <line
@@ -123,7 +145,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 y1={data.middleTip.y}
                 x2={data.middleKnuckle.x}
                 y2={data.middleKnuckle.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <line
@@ -132,7 +154,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 y1={data.middleKnuckle.y}
                 x2={data.ringKnuckle.x}
                 y2={data.ringKnuckle.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <circle
@@ -140,18 +162,18 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 cx={data.middleTip.x}
                 cy={data.middleTip.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
             <circle
                 id="middle-knuckle"
                 cx={data.middleKnuckle.x}
                 cy={data.middleKnuckle.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
 
             <line
@@ -160,7 +182,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 y1={data.ringTip.y}
                 x2={data.ringKnuckle.x}
                 y2={data.ringKnuckle.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <line
@@ -169,7 +191,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 y1={data.ringKnuckle.y}
                 x2={data.littleKnuckle.x}
                 y2={data.littleKnuckle.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <circle
@@ -177,18 +199,18 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 cx={data.ringTip.x}
                 cy={data.ringTip.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
             <circle
                 id="ring-knuckle"
                 cx={data.ringKnuckle.x}
                 cy={data.ringKnuckle.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
 
             <line
@@ -197,7 +219,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 y1={data.littleTip.y}
                 x2={data.littleKnuckle.x}
                 y2={data.littleKnuckle.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <line
@@ -206,7 +228,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 y1={data.littleKnuckle.y}
                 x2={data.wrist.x}
                 y2={data.wrist.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <circle
@@ -214,27 +236,36 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 cx={data.littleTip.x}
                 cy={data.littleTip.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
             <circle
                 id="little-knuckle"
                 cx={data.littleKnuckle.x}
                 cy={data.littleKnuckle.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
 
             <line
-                id="thumb-wrist"
+                id="thumb"
                 x1={data.thumbTip.x}
                 y1={data.thumbTip.y}
+                x2={data.thumbKnuckle.x}
+                y2={data.thumbKnuckle.y}
+                stroke={lineColor}
+                strokeWidth={strokeWidth}
+            />
+            <line
+                id="thumb-wrist"
+                x1={data.thumbKnuckle.x}
+                y1={data.thumbKnuckle.y}
                 x2={data.wrist.x}
                 y2={data.wrist.y}
-                stroke="black"
+                stroke={lineColor}
                 strokeWidth={strokeWidth}
             />
             <circle
@@ -242,9 +273,18 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 cx={data.thumbTip.x}
                 cy={data.thumbTip.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
+            />
+            <circle
+                id="thumb-knuckle"
+                cx={data.thumbKnuckle.x}
+                cy={data.thumbKnuckle.y}
+                r={pointRadius}
+                stroke={dotBorderColour}
+                strokeWidth={pointLineWidth}
+                fill={dotColor}
             />
 
             <circle
@@ -252,38 +292,10 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 cx={data.wrist.x}
                 cy={data.wrist.y}
                 r={pointRadius}
-                stroke="black"
+                stroke={dotBorderColour}
                 strokeWidth={pointLineWidth}
-                fill={data.dotColor}
+                fill={dotColor}
             />
-
-            {/* <line
-                id="wrist"
-                x1={data.wristA.x}
-                y1={data.wristA.y}
-                x2={data.wristB.x}
-                y2={data.wristB.y}
-                stroke="black"
-                strokeWidth={strokeWidth}
-            />
-            <circle
-                id="wrist-a"
-                cx={data.wristA.x}
-                cy={data.wristA.y}
-                r={pointRadius}
-                stroke="black"
-                strokeWidth={pointLineWidth}
-                fill={data.dotColor}
-            />
-            <circle
-                id="wrist-b"
-                cx={data.wristB.x}
-                cy={data.wristB.y}
-                r={pointRadius}
-                stroke="black"
-                strokeWidth={pointLineWidth}
-                fill={data.dotColor}
-            /> */}
         </svg>
     );
 };

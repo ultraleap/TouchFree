@@ -204,7 +204,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             var queueHandler = messageQueueHandlers.SingleOrDefault(x => x.ActionCodes.Contains(action));
             if (queueHandler != null)
             {
-                queueHandler.Queue.Enqueue(new IncomingRequest(action, null, content));
+                queueHandler.AddItemToQueue(new IncomingRequest(action, null, content));
             }
             else if (action.ExpectedToBeHandled())
             {

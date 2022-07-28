@@ -34,29 +34,31 @@ enum Lens {
 const MaskingScreen = () => {
     const [handData, setHandData] = useState<HandRenderState>({
         handOne: {
-            indexTip: new HandSvgCoordinate(40, 10),
-            indexKnuckle: new HandSvgCoordinate(40, 90),
-            middleTip: new HandSvgCoordinate(70, 10),
-            middleKnuckle: new HandSvgCoordinate(70, 90),
-            ringTip: new HandSvgCoordinate(100, 10),
-            ringKnuckle: new HandSvgCoordinate(100, 90),
-            littleTip: new HandSvgCoordinate(130, 10),
-            littleKnuckle: new HandSvgCoordinate(130, 90),
-            thumbTip: new HandSvgCoordinate(10, 40),
-            wrist: new HandSvgCoordinate(80, 160),
+            indexTip: new HandSvgCoordinate(40, 10, 1),
+            indexKnuckle: new HandSvgCoordinate(40, 90, 1),
+            middleTip: new HandSvgCoordinate(70, 10, 1),
+            middleKnuckle: new HandSvgCoordinate(70, 90, 1),
+            ringTip: new HandSvgCoordinate(100, 10, 1),
+            ringKnuckle: new HandSvgCoordinate(100, 90, 1),
+            littleTip: new HandSvgCoordinate(130, 10, 1),
+            littleKnuckle: new HandSvgCoordinate(130, 90, 1),
+            thumbTip: new HandSvgCoordinate(10, 40, 1),
+            thumbKnuckle: new HandSvgCoordinate(60, 160, 1),
+            wrist: new HandSvgCoordinate(80, 160, 1),
             dotColor: 'blue',
         },
         handTwo: {
-            indexTip: new HandSvgCoordinate(40, 10),
-            indexKnuckle: new HandSvgCoordinate(40, 90),
-            middleTip: new HandSvgCoordinate(70, 10),
-            middleKnuckle: new HandSvgCoordinate(70, 90),
-            ringTip: new HandSvgCoordinate(100, 10),
-            ringKnuckle: new HandSvgCoordinate(100, 90),
-            littleTip: new HandSvgCoordinate(130, 10),
-            littleKnuckle: new HandSvgCoordinate(130, 90),
-            thumbTip: new HandSvgCoordinate(10, 40),
-            wrist: new HandSvgCoordinate(80, 160),
+            indexTip: new HandSvgCoordinate(40, 10, 1),
+            indexKnuckle: new HandSvgCoordinate(40, 90, 1),
+            middleTip: new HandSvgCoordinate(70, 10, 1),
+            middleKnuckle: new HandSvgCoordinate(70, 90, 1),
+            ringTip: new HandSvgCoordinate(100, 10, 1),
+            ringKnuckle: new HandSvgCoordinate(100, 90, 1),
+            littleTip: new HandSvgCoordinate(130, 10, 1),
+            littleKnuckle: new HandSvgCoordinate(130, 90, 1),
+            thumbTip: new HandSvgCoordinate(10, 40, 1),
+            thumbKnuckle: new HandSvgCoordinate(60, 160, 1),
+            wrist: new HandSvgCoordinate(80, 160, 1),
             dotColor: 'red',
         },
     });
@@ -168,10 +170,10 @@ const MaskingScreen = () => {
             };
 
             if (handOne) {
-                updatedHandData.handOne = handToSvgData(handOne);
+                updatedHandData.handOne = handToSvgData(handOne, 0);
             }
             if (handTwo) {
-                updatedHandData.handTwo = handToSvgData(handTwo);
+                updatedHandData.handTwo = handToSvgData(handTwo, 1);
             }
             setHandData(updatedHandData);
         }
@@ -185,19 +187,16 @@ const MaskingScreen = () => {
         };
     }, []);
 
-    const cameraRenderSize = 350;
-
     const translateToCoordinate = (coordinate: any) => {
-        return new HandSvgCoordinate(
-            (800 * (cameraRenderSize - coordinate.X)) / cameraRenderSize,
-            (800 * (coordinate.Y)) / cameraRenderSize
+        return new HandSvgCoordinate(800 * (1.13 - (coordinate.X * 1.2)),
+            800 * coordinate.Y, coordinate.Z
         );
     };
 
     const tipJointIndex = 3;
     const knuckleJointIndex = 1;
 
-    const handToSvgData = (hand: any): any => {
+    const handToSvgData = (hand: any, handIndex: number): any => {
         const indexFinger = hand.Fingers.find((f: any) => f.Type == 1);
         const middleFinger = hand.Fingers.find((f: any) => f.Type == 2);
         const ringFinger = hand.Fingers.find((f: any) => f.Type == 3);
@@ -214,8 +213,10 @@ const MaskingScreen = () => {
             littleTip: translateToCoordinate(littleFinger.Bones[tipJointIndex].NextJoint),
             littleKnuckle: translateToCoordinate(littleFinger.Bones[knuckleJointIndex].PrevJoint),
             thumbTip: translateToCoordinate(thumbFinger.Bones[tipJointIndex].NextJoint),
+            thumbKnuckle: translateToCoordinate(thumbFinger.Bones[knuckleJointIndex].PrevJoint),
             wrist: translateToCoordinate(wrist),
-            dotColor: 'blue',
+            primaryHand: hand.primaryHand,
+            dotColor: handIndex ? 'blue' : 'red',
         };
     };
 
