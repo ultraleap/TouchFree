@@ -6,6 +6,18 @@
     border: 1px solid #ffffff1a;
     border-radius: 10px;
 
+    user-select: none;
+
+    &--pressed {
+        transform: scale(1.02);
+        box-shadow: 0px 0px 40px white;
+    }
+
+    &--hovered {
+        transform: scale(1.04);
+        box-shadow: 0px 0px 30px v.$ultraleap-green;
+    }
+
     h1 {
         color: white;
         text-align: left;
@@ -24,6 +36,10 @@
         opacity: 0.5;
         padding-left: 20px;
         min-height: 40px;
+    }
+
+    img {
+        pointer-events: none;
     }
 }
 
@@ -53,14 +69,4 @@
         text-align: center;
         line-height: 40px;
     }
-}
-
-.tf-button-hovered {
-    transform: scale(1.04);
-    box-shadow: 0px 0px 30px v.$ultraleap-green;
-}
-
-.tf-button-pressed {
-    transform: scale(1.02);
-    box-shadow: 0px 0px 40px white;
 }

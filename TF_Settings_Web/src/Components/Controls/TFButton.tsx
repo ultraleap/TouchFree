@@ -2,13 +2,15 @@ import 'Styles/Controls/TFButton.scss';
 
 import React, { CSSProperties } from 'react';
 
+import { TFClickEvent } from 'Components/SettingsTypes';
+
 interface TextButtonProps {
     buttonStyle: React.CSSProperties;
     title: string;
     titleStyle?: React.CSSProperties;
     text: string;
     textStyle?: React.CSSProperties;
-    onClick: () => void;
+    onClick: (event: React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) => void;
     canHover?: boolean;
 }
 
@@ -90,7 +92,7 @@ const TFButton = (
     buttonClass: string,
     canHover: boolean,
     buttonStyle: CSSProperties,
-    onClick: () => void,
+    onClick: (event: TFClickEvent) => void,
     content: JSX.Element
 ) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
@@ -98,8 +100,8 @@ const TFButton = (
 
     return (
         <button
-            className={`${buttonClass} tf-button ${canHover && hovered ? 'tf-button-hovered' : ''} ${
-                pressed ? 'tf-button-pressed' : ''
+            className={`${buttonClass} tf-button ${canHover && hovered ? 'tf-button--hovered' : ''} ${
+                pressed ? 'tf-button--pressed' : ''
             }`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
@@ -109,11 +111,15 @@ const TFButton = (
             }}
             onPointerDown={() => {
                 setPressed(true);
-                onClick();
             }}
-            onPointerUp={() => setPressed(false)}
+            onPointerUp={(event) => {
+                if (pressed) {
+                    onClick(event);
+                }
+                setPressed(false);
+            }}
             onKeyDown={(keyEvent) => {
-                if (keyEvent.key === 'Enter') onClick();
+                if (keyEvent.key === 'Enter') onClick(keyEvent);
             }}
         >
             {content}
