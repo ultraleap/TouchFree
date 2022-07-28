@@ -118,9 +118,15 @@ const MaskingScreen = () => {
         socket.addEventListener('open', openHandler);
         socket.addEventListener('message', (event) => messageHandler(socket, event));
 
+        HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
+        setHandRenderState(true);
+
         return () => {
             socket.removeEventListener('open', openHandler);
             socket.removeEventListener('message', (event) => messageHandler(socket, event));
+
+            HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
+            setHandRenderState(false);
         };
     }, []);
 
@@ -181,14 +187,6 @@ const MaskingScreen = () => {
         }
     };
 
-    useEffect(() => {
-        HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
-
-        return () => {
-            HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
-        };
-    }, []);
-
     const translateToCoordinate = (coordinate: Vector | undefined) => {
         if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, -1);
         return new HandSvgCoordinate(800 * (1.13 - coordinate.X * 1.2), 800 * coordinate.Y, coordinate.Z);
@@ -220,8 +218,6 @@ const MaskingScreen = () => {
             dotColor: handIndex ? 'blue' : 'red',
         };
     };
-
-    setHandRenderState(true);
 
     return (
         <div>
