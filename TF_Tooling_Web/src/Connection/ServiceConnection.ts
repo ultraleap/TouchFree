@@ -11,7 +11,6 @@ import {
   ServiceStatusCallback,
   ServiceStatusRequest,
   SimpleRequest,
-  TrackingState,
   TrackingStateCallback,
   TrackingStateResponse,
   WebSocketResponse,
@@ -148,8 +147,7 @@ export class ServiceConnection {
         let response: WebSocketResponse = looseData.content;
         ConnectionManager.messageReceiver.responseQueue.push(response);
         break;
-      case ActionCode.GET_TRACKING_STATE_RESPONSE:
-      case ActionCode.SET_TRACKING_STATE_RESPONSE:
+      case ActionCode.TRACKING_STATE:
         const trackingResponse: TrackingStateResponse = looseData.content;
         ConnectionManager.messageReceiver.trackingStateQueue.push(
           trackingResponse
@@ -166,7 +164,7 @@ export class ServiceConnection {
   SendMessage(
     _message: string,
     _requestID: string,
-    _callback: (detail: WebSocketResponse) => void
+    _callback: ((detail: WebSocketResponse) => void) | null
   ): void {
     if (_requestID === "") {
       if (_callback !== null) {
@@ -335,11 +333,5 @@ export class ServiceConnection {
         ActionCode.GET_TRACKING_STATE,
         request
       );
-    const message: string = JSON.stringify(wrapper);
-
-    ConnectionManager.messageReceiver.trackingStateCallbacks[guid] =
-      new TrackingStateCallback(Date.now(), _callback);
-
-    this.webSocket.send(message);
   }
 }

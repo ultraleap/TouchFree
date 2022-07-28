@@ -5,7 +5,7 @@ import {
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
-    TrackingState,
+    TrackingStateRequest,
     TrackingStateCallback,
     TrackingStateResponse,
     WebSocketResponse

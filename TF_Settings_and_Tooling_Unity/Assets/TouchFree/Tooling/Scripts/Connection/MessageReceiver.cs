@@ -163,12 +163,12 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // match, calls the callback action in the matching <TrackingStateCallback>.
         void HandleTrackingStateResponse(TrackingStateResponse _trackingStateResponse)
         {
-            foreach (KeyValuePair<string, ServiceStatusCallback> callback in this.trackingStateCallbacks)
+            foreach (KeyValuePair<string, TrackingStateCallback> callback in trackingStateCallbacks)
             {
                 if (callback.Key == _trackingStateResponse.requestID)
                 {
-                    callbackClearTimer.Value.callback.Invoke(_trackingStateResponse);
-                    trackingStateCallbacks.Remove(callbackClearTimer.Key);
+                    callback.Value.callback.Invoke(_trackingStateResponse);
+                    trackingStateCallbacks.Remove(callback.Key);
                     return;
                 }
             };

@@ -31,9 +31,8 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         QUICK_SETUP_RESPONSE,
 
         GET_TRACKING_STATE,
-        GET_TRACKING_STATE_RESPONSE,
         SET_TRACKING_STATE,
-        SET_TRACKING_STATE_RESPONSE,
+        TRACKING_STATE,
     }
 
     internal enum Compatibility
@@ -88,7 +87,7 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
     {
         public bool succeeded;
         public string msg;
-        public T content;
+        public T? content;
 
         public SuccessWrapper(bool _success, string _message, T _content)
         {
