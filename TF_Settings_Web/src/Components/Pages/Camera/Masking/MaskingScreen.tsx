@@ -67,7 +67,7 @@ const MaskingScreen = () => {
         },
     });
     // ===== State =====
-    const [mainLens, setMainLens] = useState<Lens>(Lens.Left);
+    const [mainLens, _setMainLens] = useState<Lens>(Lens.Left);
     const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
     // Config options
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
@@ -93,6 +93,10 @@ const MaskingScreen = () => {
     const setIsFrameProcessing = (value: boolean) => {
         _setIsFrameProcessing(value);
         isFrameProcessingRef.current = value;
+    };
+    const setMainLens = (lens: Lens) => {
+        _setMainLens(lens);
+        setHandRenderState(true, lens === Lens.Left ? 'left' : 'right');
     };
 
     // ===== Canvas Refs =====
