@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import 'Styles/Camera/Calibrate.scss';
 
 import React, { useEffect } from 'react';
@@ -40,6 +39,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
 
     const navigate = useNavigate();
 
+    /* eslint-disable @typescript-eslint/no-empty-function */
     useEffect(() => {
         setCursorDisplay(false);
         // Save current config then change it to use config for calibration
@@ -79,6 +79,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
 
     const resetCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
+    /* eslint-enable @typescript-eslint/no-empty-function */
 
     const onCancel = (event?: TFClickEvent) => {
         event?.stopPropagation();

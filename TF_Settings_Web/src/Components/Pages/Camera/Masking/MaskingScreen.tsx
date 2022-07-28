@@ -2,6 +2,10 @@ import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
 
+import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
+import { Mask } from 'TouchFree/Tracking/TrackingTypes';
+
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
 import MaskingOption from './MaskingOptions';
@@ -18,8 +22,12 @@ const MaskingScreen = () => {
     const [mainLens, setMainLens] = useState<Lens>(Lens.Left);
     const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
     // Config options
+    const [maskingInfo, _setMaskingInfo] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
+    const [allowImages, _setAllowImages] = useState<boolean>(false);
+
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
+
     const [isFrameProcessing, _setIsFrameProcessing] = useState<boolean>(false);
 
     // ===== State Refs =====
@@ -30,10 +38,24 @@ const MaskingScreen = () => {
     const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
 
     // ===== State Setters =====
+    /* eslint-disable @typescript-eslint/no-empty-function */
+    const setMaskingInfo = (direction: SliderDirection, value: number) => {
+        const mask: Mask = { ...maskingInfo, [direction]: value };
+        // console.log(mask);
+        _setMaskingInfo(mask);
+        TrackingManager.RequestTrackingChange(() => {}, mask, null, null, null);
+    };
+    const setAllowImages = (value: boolean) => {
+        _setAllowImages(value);
+        TrackingManager.RequestTrackingChange(() => {}, null, value, null, null);
+    };
     const setIsCameraReversed = (value: boolean) => {
         _setIsCamReversed(value);
         isCamReversedRef.current = value;
+        TrackingManager.RequestTrackingChange(() => {}, null, null, value, null);
     };
+    /* eslint-enable @typescript-eslint/no-empty-function */
+
     const setShowOverexposedAreas = (value: boolean) => {
         _setShowOverexposed(value);
         showOverexposedRef.current = value;
@@ -50,10 +72,11 @@ const MaskingScreen = () => {
     // ===== Variables =====
     const byteConversionArray = new Uint32Array(256);
     const byteConversionArrayOverExposed = new Uint32Array(256);
-    const sliderDirections: SliderDirection[] = ['left', 'right', 'top', 'bottom'];
 
     // ===== UseEffect =====
     useEffect(() => {
+        TrackingManager.RequestTrackingState(handleInitialTrackingState);
+
         for (let i = 0; i < 256; i++) {
             byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
             // -13434625 = #FFFF0033 in signed 2's complement
@@ -63,21 +86,39 @@ const MaskingScreen = () => {
         const socket = new WebSocket('ws://127.0.0.1:1024');
         socket.binaryType = 'arraybuffer';
 
-        socket.addEventListener('open', openHandler);
-        socket.addEventListener('message', (event) => messageHandler(socket, event));
+        socket.addEventListener('open', handleWSOpen);
+        socket.addEventListener('message', (event) => handleMessage(socket, event));
 
         return () => {
-            socket.removeEventListener('open', openHandler);
-            socket.removeEventListener('message', (event) => messageHandler(socket, event));
+            socket.removeEventListener('open', handleWSOpen);
+            socket.removeEventListener('message', (event) => handleMessage(socket, event));
         };
     }, []);
 
-    // ===== EventListeners =====
-    const openHandler = () => {
+    // ===== Event Handlers =====
+    const handleInitialTrackingState = (state: TrackingStateResponse) => {
+        const allowImages = state.allowImages?.content;
+        if (allowImages) {
+            _setAllowImages(allowImages);
+        }
+
+        const isCamReversed = state.cameraReversed?.content;
+        if (isCamReversed) {
+            _setIsCamReversed(isCamReversed);
+            isCamReversedRef.current = isCamReversed;
+        }
+
+        const masking = state.mask?.content;
+        if (masking) {
+            _setMaskingInfo({ left: masking.left, right: masking.right, upper: masking.upper, lower: masking.lower });
+        }
+    };
+
+    const handleWSOpen = () => {
         console.log('WebSocket open');
     };
 
-    const messageHandler = (socket: WebSocket, event: MessageEvent) => {
+    const handleMessage = (socket: WebSocket, event: MessageEvent) => {
         if (
             isFrameProcessingRef.current ||
             !leftLensRef.current ||
@@ -121,8 +162,13 @@ const MaskingScreen = () => {
                 </p>
             </div>
             <div className="cam-feed-box--main">
-                {sliderDirections.map((direction) => (
-                    <MaskingSlider key={direction} direction={direction} />
+                {Object.entries(maskingInfo).map((sliderInfo) => (
+                    <MaskingSlider
+                        key={sliderInfo[0]}
+                        direction={sliderInfo[0] as SliderDirection}
+                        value={sliderInfo[1]}
+                        setMaskingValue={setMaskingInfo}
+                    />
                 ))}
                 <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
                 <p>{Lens[mainLens]} Lens</p>
@@ -144,6 +190,12 @@ const MaskingScreen = () => {
                     </span>
                 </div>
                 <div className="cam-feeds-options-container">
+                    <MaskingOption
+                        title="Allow Images"
+                        description="Allow images to be sent from the TouchFree Camera"
+                        value={allowImages}
+                        onChange={setAllowImages}
+                    />
                     <MaskingOption
                         title="Reverse Camera Orientation"
                         description="Reverse the camera orientation (hand should enter from the bottom)"

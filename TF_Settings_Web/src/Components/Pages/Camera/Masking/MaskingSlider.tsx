@@ -1,8 +1,10 @@
 import 'Styles/Camera/CameraMasking.scss';
 
-import React, { PointerEvent, useRef, useState } from 'react';
+import React, { PointerEvent, useEffect, useRef, useState } from 'react';
 
-export type SliderDirection = 'left' | 'right' | 'top' | 'bottom';
+import { Mask } from 'TouchFree/Tracking/TrackingTypes';
+
+export type SliderDirection = keyof Mask;
 
 interface SliderPosInfo {
     X: number;
@@ -11,9 +13,22 @@ interface SliderPosInfo {
     initialLeft: number;
 }
 
-const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) => {
+interface MaskingSliderProps {
+    direction: SliderDirection;
+    value: number;
+    setMaskingValue: (direction: SliderDirection, value: number) => void;
+}
+
+const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, value, setMaskingValue }) => {
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [isDragging, setIsDragging] = useState<boolean>(false);
+
+    const sliderRef = useRef<HTMLSpanElement>(null);
+    const maskingValueRef = useRef<number>(value);
+
+    useEffect(() => {
+        maskingValueRef.current = value;
+    }, [value]);
 
     const startPosInfo = useRef<SliderPosInfo>({
         X: Number.NaN,
@@ -22,17 +37,24 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
         initialLeft: Number.NaN,
     });
 
-    const sliderRef = useRef<HTMLSpanElement>(null);
+    useEffect(() => {
+        if (sliderRef.current) {
+            const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
+            const left = Number.parseFloat(getComputedStyle(sliderRef.current).left);
+
+            startPosInfo.current = { ...startPosInfo.current, initialTop: top, initialLeft: left };
+
+            // sliderRef.current.style.left = `${top + mapMaskingRangeToValue(value)}px`;
+            // sliderRef.current.style.top = `${startPosInfo.current.initialTop}px`;
+        }
+    }, []);
 
     const onStartDrag = (event: PointerEvent<HTMLSpanElement>) => {
         if (!sliderRef.current) return;
 
         setIsDragging(true);
         if (Number.isNaN(startPosInfo.current.X) || Number.isNaN(startPosInfo.current.Y)) {
-            const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
-            const left = Number.parseFloat(getComputedStyle(sliderRef.current).left);
-
-            startPosInfo.current = { X: event.pageX, Y: event.pageY, initialTop: top, initialLeft: left };
+            startPosInfo.current = { ...startPosInfo.current, X: event.pageX, Y: event.pageY };
         }
 
         window.addEventListener('pointermove', onMove);
@@ -42,52 +64,38 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
     const onMove = (event: globalThis.PointerEvent) => {
         if (!sliderRef.current) return;
 
+        console.log(direction + ': ' + maskingValueRef.current);
+
+        let diffX = 0;
+        let diffY = 0;
+
         switch (direction) {
             case 'left':
-                sliderRef.current.style.left = `${
-                    startPosInfo.current.initialLeft + limitVal(event.pageX - startPosInfo.current.X)
-                }px`;
+                diffX = limitVal(event.pageX - startPosInfo.current.X);
+                setMaskingValue(direction, mapValueToMaskingRange(diffX));
                 break;
             case 'right':
-                sliderRef.current.style.left = `${
-                    startPosInfo.current.initialLeft - limitVal(startPosInfo.current.X - event.pageX)
-                }px`;
+                diffX = -limitVal(startPosInfo.current.X - event.pageX);
+                setMaskingValue(direction, mapValueToMaskingRange(diffX));
                 break;
-            case 'top':
-                sliderRef.current.style.top = `${
-                    startPosInfo.current.initialTop + limitVal(event.pageY - startPosInfo.current.Y)
-                }px`;
+            case 'upper':
+                diffY = limitVal(event.pageY - startPosInfo.current.Y);
+                setMaskingValue(direction, mapValueToMaskingRange(diffY));
                 break;
-            case 'bottom':
-                sliderRef.current.style.top = `${
-                    startPosInfo.current.initialTop - limitVal(startPosInfo.current.Y - event.pageY)
-                }px`;
+            case 'lower':
+                diffY = -limitVal(startPosInfo.current.Y - event.pageY);
+                setMaskingValue(direction, mapValueToMaskingRange(diffY));
                 break;
         }
+
+        sliderRef.current.style.left = `${startPosInfo.current.initialLeft + diffX}px`;
+        sliderRef.current.style.top = `${startPosInfo.current.initialTop + diffY}px`;
     };
 
-    const onEndDrag = (event: globalThis.PointerEvent) => {
+    const onEndDrag = () => {
         setIsDragging(false);
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onEndDrag);
-
-        let dragVal = 0;
-        switch (direction) {
-            case 'left':
-                dragVal = limitVal(event.pageX - startPosInfo.current.X);
-                break;
-            case 'right':
-                dragVal = limitVal(startPosInfo.current.X - event.pageX);
-                break;
-            case 'top':
-                dragVal = limitVal(event.pageY - startPosInfo.current.Y);
-                break;
-            case 'bottom':
-                dragVal = limitVal(startPosInfo.current.Y - event.pageY);
-                break;
-        }
-
-        console.log('Drag end: ' + dragVal);
     };
 
     return (
@@ -104,6 +112,12 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
         </span>
     );
 };
+
+// Map from CSS value [0..400] to Masking Range [0..5]
+const mapValueToMaskingRange = (val: number): number => (Math.abs(val) / 400) * 0.5;
+
+// Map from Masking Range [0..5] to CSS value [0..400]
+const mapMaskingRangeToValue = (maskingVal: number): number => maskingVal * 2 * 400;
 
 const limitVal = (val: number): number => Math.min(400, Math.max(0, val));
 

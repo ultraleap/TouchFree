@@ -174,12 +174,12 @@
     border-radius: 50% 0 0 50%;
 }
 
-.masking-slider--top {
+.masking-slider--upper {
     @include masking-slider(95px, 100px, $vertical: false);
     border-radius: 0 0 50% 50%;
 }
 
-.masking-slider--bottom {
+.masking-slider--lower {
     @include masking-slider(895px, 100px, $vertical: false);
     border-radius: 50% 50% 0 0;
 }
