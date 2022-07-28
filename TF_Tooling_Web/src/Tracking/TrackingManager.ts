@@ -2,12 +2,11 @@ import { ConnectionManager } from '../Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
-    TrackingState,
     TrackingStateResponse,
     WebSocketResponse,
 } from '../Connection/TouchFreeServiceTypes';
 import { v4 as uuidgen } from 'uuid';
-import { Mask } from './TrackingTypes';
+import { TrackingState } from './TrackingTypes';
 
 // class: TrackingManager
 // This class provides methods for getting and setting the settings of the tracking software.
@@ -34,23 +33,10 @@ export class TrackingManager {
     //
     // Provide a _callback if you require confirmation that your settings were used correctly.
     // If your _callback requires context it should be bound to that context via .bind().
-    public static RequestTrackingChange(
-        _callback: (detail: WebSocketResponse) => void | null,
-        _mask: Mask | null,
-        _allowImages: boolean | null,
-        _cameraReversed: boolean | null,
-        _analyticsEnabled: boolean | null
-    ) {
+    public static RequestTrackingChange(_state: Partial<TrackingState>,
+                                        _callback: ((detail: WebSocketResponse) => void) | null): void {
         const requestID = uuidgen();
-
-        const content = new TrackingState(
-            requestID,
-            _mask,
-            _cameraReversed,
-            _allowImages,
-            _analyticsEnabled
-        );
-        const request = new CommunicationWrapper(ActionCode.SET_TRACKING_STATE, content);
+        const request = new CommunicationWrapper(ActionCode.SET_TRACKING_STATE, _state);
 
         const jsonContent = JSON.stringify(request);
 

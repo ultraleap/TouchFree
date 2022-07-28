@@ -14,7 +14,6 @@ import {
     ServiceStatusCallback,
     ServiceStatusRequest,
     SimpleRequest,
-    TrackingState,
     TrackingStateCallback,
     TrackingStateResponse,
     WebSocketResponse
@@ -154,7 +153,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     SendMessage(
         _message: string, _requestID: string,
-        _callback: (detail: WebSocketResponse) => void): void {
+        _callback: ((detail: WebSocketResponse) => void) | null): void {
         if (_requestID === "") {
             if (_callback !== null) {
                 let response: WebSocketResponse = new WebSocketResponse(

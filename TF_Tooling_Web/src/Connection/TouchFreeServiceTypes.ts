@@ -284,7 +284,7 @@ export interface TrackingStateResponse {
 
 // Class: TrackingState
 // Used to construct a SET_TRACKING_STATE request.
-export class TrackingState {
+export class TrackingStateRequest {
     // Variable: requestID
     requestID: string;
     // Variable: mask
