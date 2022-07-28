@@ -4,6 +4,7 @@ import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
 
+import { Vector } from 'TouchFree/Configuration/ConfigurationTypes';
 import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import {
     ActionCode,
@@ -11,10 +12,11 @@ import {
     HandRenderDataStateRequest,
 } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
+import { HandFrame, RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
 
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
-import { HandSvg } from 'Components/Controls/HandsSvg';
+import { HandSvg, HandSvgProps } from 'Components/Controls/HandsSvg';
 import { HandSvgCoordinate } from 'Components/Controls/HandsSvg';
 
 import MaskingOption from './MaskingOptions';
@@ -22,8 +24,8 @@ import MaskingSlider, { SliderDirection } from './MaskingSlider';
 import { displayLensFeeds } from './displayLensFeeds';
 
 interface HandRenderState {
-    handOne: any;
-    handTwo: any;
+    handOne: HandSvgProps | undefined;
+    handTwo: HandSvgProps | undefined;
 }
 
 enum Lens {
@@ -45,6 +47,7 @@ const MaskingScreen = () => {
             thumbTip: new HandSvgCoordinate(10, 40, 1),
             thumbKnuckle: new HandSvgCoordinate(60, 160, 1),
             wrist: new HandSvgCoordinate(80, 160, 1),
+            primaryHand: true,
             dotColor: 'blue',
         },
         handTwo: {
@@ -59,6 +62,7 @@ const MaskingScreen = () => {
             thumbTip: new HandSvgCoordinate(10, 40, 1),
             thumbKnuckle: new HandSvgCoordinate(60, 160, 1),
             wrist: new HandSvgCoordinate(80, 160, 1),
+            primaryHand: false,
             dotColor: 'red',
         },
     });
@@ -160,22 +164,20 @@ const MaskingScreen = () => {
         }, 32);
     };
 
-    const handleTFInput = (evt: CustomEvent<any>): void => {
+    const handleTFInput = (evt: CustomEvent<HandFrame>): void => {
         if (evt.detail?.Hands) {
             const handOne = evt.detail.Hands[0];
             const handTwo = evt.detail.Hands[1];
-            const updatedHandData = {
-                handOne: {},
-                handTwo: {},
-            };
+            let convertedHandOne: HandSvgProps | undefined = undefined;
+            let convertedHandTwo: HandSvgProps | undefined = undefined;
 
             if (handOne) {
-                updatedHandData.handOne = handToSvgData(handOne, 0);
+                convertedHandOne = handToSvgData(handOne, 0);
             }
             if (handTwo) {
-                updatedHandData.handTwo = handToSvgData(handTwo, 1);
+                convertedHandTwo = handToSvgData(handTwo, 1);
             }
-            setHandData(updatedHandData);
+            setHandData({ handOne: convertedHandOne, handTwo: convertedHandTwo });
         }
     };
 
@@ -187,35 +189,34 @@ const MaskingScreen = () => {
         };
     }, []);
 
-    const translateToCoordinate = (coordinate: any) => {
-        return new HandSvgCoordinate(800 * (1.13 - (coordinate.X * 1.2)),
-            800 * coordinate.Y, coordinate.Z
-        );
+    const translateToCoordinate = (coordinate: Vector | undefined) => {
+        if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, -1);
+        return new HandSvgCoordinate(800 * (1.13 - coordinate.X * 1.2), 800 * coordinate.Y, coordinate.Z);
     };
 
     const tipJointIndex = 3;
     const knuckleJointIndex = 1;
 
-    const handToSvgData = (hand: any, handIndex: number): any => {
-        const indexFinger = hand.Fingers.find((f: any) => f.Type == 1);
-        const middleFinger = hand.Fingers.find((f: any) => f.Type == 2);
-        const ringFinger = hand.Fingers.find((f: any) => f.Type == 3);
-        const littleFinger = hand.Fingers.find((f: any) => f.Type == 4);
-        const thumbFinger = hand.Fingers.find((f: any) => f.Type == 0);
+    const handToSvgData = (hand: RawHand, handIndex: number): HandSvgProps => {
+        const indexFinger = hand.Fingers.find((f: RawFinger) => f.Type == 1);
+        const middleFinger = hand.Fingers.find((f: RawFinger) => f.Type == 2);
+        const ringFinger = hand.Fingers.find((f: RawFinger) => f.Type == 3);
+        const littleFinger = hand.Fingers.find((f: RawFinger) => f.Type == 4);
+        const thumbFinger = hand.Fingers.find((f: RawFinger) => f.Type == 0);
         const wrist = hand.WristPosition;
         return {
-            indexTip: translateToCoordinate(indexFinger.Bones[tipJointIndex].NextJoint),
-            indexKnuckle: translateToCoordinate(indexFinger.Bones[knuckleJointIndex].PrevJoint),
-            middleTip: translateToCoordinate(middleFinger.Bones[tipJointIndex].NextJoint),
-            middleKnuckle: translateToCoordinate(middleFinger.Bones[knuckleJointIndex].PrevJoint),
-            ringTip: translateToCoordinate(ringFinger.Bones[tipJointIndex].NextJoint),
-            ringKnuckle: translateToCoordinate(ringFinger.Bones[knuckleJointIndex].PrevJoint),
-            littleTip: translateToCoordinate(littleFinger.Bones[tipJointIndex].NextJoint),
-            littleKnuckle: translateToCoordinate(littleFinger.Bones[knuckleJointIndex].PrevJoint),
-            thumbTip: translateToCoordinate(thumbFinger.Bones[tipJointIndex].NextJoint),
-            thumbKnuckle: translateToCoordinate(thumbFinger.Bones[knuckleJointIndex].PrevJoint),
+            indexTip: translateToCoordinate(indexFinger?.Bones[tipJointIndex]?.NextJoint),
+            indexKnuckle: translateToCoordinate(indexFinger?.Bones[knuckleJointIndex]?.PrevJoint),
+            middleTip: translateToCoordinate(middleFinger?.Bones[tipJointIndex]?.NextJoint),
+            middleKnuckle: translateToCoordinate(middleFinger?.Bones[knuckleJointIndex]?.PrevJoint),
+            ringTip: translateToCoordinate(ringFinger?.Bones[tipJointIndex]?.NextJoint),
+            ringKnuckle: translateToCoordinate(ringFinger?.Bones[knuckleJointIndex]?.PrevJoint),
+            littleTip: translateToCoordinate(littleFinger?.Bones[tipJointIndex]?.NextJoint),
+            littleKnuckle: translateToCoordinate(littleFinger?.Bones[knuckleJointIndex]?.PrevJoint),
+            thumbTip: translateToCoordinate(thumbFinger?.Bones[tipJointIndex]?.NextJoint),
+            thumbKnuckle: translateToCoordinate(thumbFinger?.Bones[knuckleJointIndex]?.PrevJoint),
             wrist: translateToCoordinate(wrist),
-            primaryHand: hand.primaryHand,
+            primaryHand: hand.CurrentPrimary,
             dotColor: handIndex ? 'blue' : 'red',
         };
     };

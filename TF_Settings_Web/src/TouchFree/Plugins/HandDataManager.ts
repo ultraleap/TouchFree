@@ -1,3 +1,4 @@
+import { HandFrame } from "TouchFree/TouchFreeToolingTypes";
 import { InputActionPlugin } from "./InputActionPlugin";
 
 // Class: InputActionManager
@@ -40,10 +41,10 @@ export class HandDataManager extends EventTarget {
     // Function: HandleInputAction
     // Called by the <messageReceiver> to relay a <TouchFreeInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
-    public static HandleInputAction(_data: any): void {
+    public static HandleInputAction(_data: HandFrame): void {
         const currentTimeStamp = Date.now();
         if (!HandDataManager.lastFrame || HandDataManager.lastFrame + 100 < currentTimeStamp ) {
-            let rawHandsEvent: CustomEvent<any> = new CustomEvent<any>(
+            let rawHandsEvent: CustomEvent<HandFrame> = new CustomEvent<HandFrame>(
                 'TransmitHandData',
                 { detail: _data }
             );

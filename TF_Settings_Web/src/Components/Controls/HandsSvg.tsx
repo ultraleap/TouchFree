@@ -68,7 +68,7 @@ export class HandSvgProps {
 }
 
 interface DataWrapper {
-    data: HandSvgProps;
+    data: HandSvgProps | undefined;
 }
 
 export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
@@ -76,7 +76,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
         return <svg style={{ marginLeft: '-800px' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800"></svg>;
     }
 
-    const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600/data.middleKnuckle.z;
+    const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600 / data.middleKnuckle.z;
     const pointRadius = 5 * scalingFactor;
     const pointLineWidth = 0;
     const strokeWidth = 5 * scalingFactor;
@@ -88,10 +88,10 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
     return (
         <svg style={{ marginLeft: '-800px' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800">
             <defs>
-            <radialGradient id="dotGradient">
-                <stop offset="0%" stopColor="#00EB85" />
-                <stop offset="100%" stopColor="#00CCCE" />
-            </radialGradient>
+                <radialGradient id="dotGradient">
+                    <stop offset="0%" stopColor="#00EB85" />
+                    <stop offset="100%" stopColor="#00CCCE" />
+                </radialGradient>
             </defs>
             <line
                 id="index"
