@@ -2,7 +2,10 @@
     "InteractionTuning": {
         "VelocitySwipeSettings": {
             "MinScrollVelocity_mmps": 500,
+            "UpwardsMinVelocityDecrease_mmps": 50,
+            "DownwardsMinVelocityIncrease_mmps": 50,
             "MaxReleaseVelocity_mmps": 0,
+            "MaxLateralVelocity_mmps": 250,
             "MaxOpposingVelocity_mmps": 150,
             "ScrollDelayMs": 500,
             "AllowVerticalScroll": true,
