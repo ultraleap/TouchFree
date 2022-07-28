@@ -25,6 +25,7 @@ const MaskingScreen = () => {
     const [maskingInfo, _setMaskingInfo] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
     const [allowImages, _setAllowImages] = useState<boolean>(false);
+    const [allowAnalytics, _setAllowAnalytics] = useState<boolean>(false);
 
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
 
@@ -39,7 +40,6 @@ const MaskingScreen = () => {
     const timeoutRef = useRef<number>();
 
     // ===== State Setters =====
-    /* eslint-disable @typescript-eslint/no-empty-function */
     const setMaskingInfo = (direction: SliderDirection, maskingValue: number) => {
         const mask: Mask = { ...maskingInfo, [direction]: maskingValue };
         _setMaskingInfo(mask);
@@ -54,7 +54,10 @@ const MaskingScreen = () => {
         isCamReversedRef.current = value;
         TrackingManager.RequestTrackingChange({ cameraReversed: value }, null);
     };
-    /* eslint-enable @typescript-eslint/no-empty-function */
+    const setAllowAnalytics = (value: boolean) => {
+        _setAllowAnalytics(value);
+        TrackingManager.RequestTrackingChange({ analyticsEnabled: value }, null);
+    };
 
     const setShowOverexposedAreas = (value: boolean) => {
         _setShowOverexposed(value);
@@ -98,6 +101,7 @@ const MaskingScreen = () => {
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
+        console.log('GOT TRACKING STATE');
         const allowImages = state.allowImages?.content;
         if (allowImages) {
             _setAllowImages(allowImages);
@@ -107,6 +111,11 @@ const MaskingScreen = () => {
         if (isCamReversed) {
             _setIsCamReversed(isCamReversed);
             isCamReversedRef.current = isCamReversed;
+        }
+
+        const analytics = state.analyticsEnabled?.content;
+        if (analytics) {
+            _setAllowAnalytics(analytics);
         }
 
         const masking = state.mask?.content;
@@ -192,6 +201,12 @@ const MaskingScreen = () => {
                 </div>
                 <div className="cam-feeds-options-container">
                     <MaskingOption
+                        title="Display Overexposed Areas"
+                        description="Areas, where hand tracking may be an issue will be highlighted"
+                        value={showOverexposed}
+                        onChange={setShowOverexposedAreas}
+                    />
+                    <MaskingOption
                         title="Allow Images"
                         description="Allow images to be sent from the TouchFree Camera"
                         value={allowImages}
@@ -204,10 +219,10 @@ const MaskingScreen = () => {
                         onChange={setIsCameraReversed}
                     />
                     <MaskingOption
-                        title="Display Overexposed Areas"
-                        description="Areas, where hand tracking may be an issue will be highlighted"
-                        value={showOverexposed}
-                        onChange={setShowOverexposedAreas}
+                        title="Allow Analytics"
+                        description="Allow analytic data to be collected"
+                        value={allowAnalytics}
+                        onChange={setAllowAnalytics}
                     />
                 </div>
             </div>
