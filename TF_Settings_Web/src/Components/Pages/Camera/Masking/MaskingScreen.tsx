@@ -43,16 +43,16 @@ const MaskingScreen = () => {
     const setMaskingInfo = (direction: SliderDirection, maskingValue: number) => {
         const mask: Mask = { ...maskingInfo, [direction]: maskingValue };
         _setMaskingInfo(mask);
-        TrackingManager.RequestTrackingChange(() => {}, mask, null, null, null);
+        TrackingManager.RequestTrackingChange({ mask: mask }, null);
     };
     const setAllowImages = (value: boolean) => {
         _setAllowImages(value);
-        TrackingManager.RequestTrackingChange(() => {}, null, value, null, null);
+        TrackingManager.RequestTrackingChange({ allowImages: value }, null);
     };
     const setIsCameraReversed = (value: boolean) => {
         _setIsCamReversed(value);
         isCamReversedRef.current = value;
-        TrackingManager.RequestTrackingChange(() => {}, null, null, value, null);
+        TrackingManager.RequestTrackingChange({ cameraReversed: value }, null);
     };
     /* eslint-enable @typescript-eslint/no-empty-function */
 
