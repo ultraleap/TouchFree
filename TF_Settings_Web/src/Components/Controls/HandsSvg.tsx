@@ -78,7 +78,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
 
     const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600/data.middleKnuckle.z;
     const pointRadius = 5 * scalingFactor;
-    const pointLineWidth = 1;
+    const pointLineWidth = 0;
     const strokeWidth = 5 * scalingFactor;
 
     const dotColor = 'url(\'#dotGradient\')';
