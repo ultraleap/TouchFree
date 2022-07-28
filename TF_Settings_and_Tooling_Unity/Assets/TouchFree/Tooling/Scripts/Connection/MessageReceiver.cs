@@ -63,7 +63,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
         // Used to store HandPresenceState changes as they are recieved and emit messages
         // appropriately. "PROCESSED" when there are no unprocessed changes.
-        internal HandPresenceState handState = HandPresenceState.PROCESSED;
+        public HandPresenceState handState = HandPresenceState.PROCESSED;
 
         // Used to ensure UP events are sent at the correct position relative to the previous
         // MOVE event.
@@ -163,12 +163,12 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // match, calls the callback action in the matching <TrackingStateCallback>.
         void HandleTrackingStateResponse(TrackingStateResponse _trackingStateResponse)
         {
-            foreach (KeyValuePair<string, ServiceStatusCallback> callback in this.trackingStateCallbacks)
+            foreach (KeyValuePair<string, TrackingStateCallback> callback in this.trackingStateCallbacks)
             {
                 if (callback.Key == _trackingStateResponse.requestID)
                 {
-                    callbackClearTimer.Value.callback.Invoke(_trackingStateResponse);
-                    trackingStateCallbacks.Remove(callbackClearTimer.Key);
+                    callback.Value.callback.Invoke(_trackingStateResponse);
+                    trackingStateCallbacks.Remove(callback.Key);
                     return;
                 }
             };

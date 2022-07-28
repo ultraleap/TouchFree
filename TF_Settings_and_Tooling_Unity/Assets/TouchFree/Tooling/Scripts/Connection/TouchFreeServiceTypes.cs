@@ -311,7 +311,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public struct TrackingStateResponse
     {
         // Variable: requestID
-        string requestID;
+        public string requestID;
 
         // Variable: mask
         SuccessWrapper<MaskData>? mask;
@@ -331,7 +331,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public class TrackingState
     {
         // Variable: requestID
-        string requestID;
+        public string requestID;
         // Variable: mask
         MaskData? mask;
         // Variable: cameraOrientation
@@ -386,7 +386,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         float timestamp;
 
         // Variable: callback
-        Action<TrackingStateResponse> callback;
+        public Action<TrackingStateResponse> callback;
 
         public TrackingStateCallback(float _timestamp, Action<TrackingStateResponse> _callback)
         {
