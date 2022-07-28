@@ -91,6 +91,7 @@ namespace Ultraleap.TouchFree.Library
         HOVER = 1024,
         PUSH = 2048,
         TOUCHPLANE = 4096,
+        VELOCITYSWIPE = 8192,
 
         // Adding elements to this list is a breaking change, and should cause at
         // least a minor iteration of the API version UNLESS adding them at the end

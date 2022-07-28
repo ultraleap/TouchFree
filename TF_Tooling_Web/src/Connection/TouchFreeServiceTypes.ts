@@ -84,20 +84,37 @@ export class HandPresenceEvent {
     }
 }
 
+export abstract class TouchFreeRequestCallback<T> {
+    // Variable: timestamp
+    timestamp: number;
+    // Variable: callback
+    callback: (detail: T) => void;
+
+    constructor(_timestamp: number, _callback: (detail: T) => void) {
+        this.timestamp = _timestamp;
+        this.callback = _callback;
+    }
+}
+
+export abstract class TouchFreeRequest {
+    requestID: string;
+    constructor(_requestID: string) {
+        this.requestID = _requestID;
+    }
+}
+
 // Class: PartialConfigState
 // This data structure is used to send requests for changes to configuration or to configuration files.
 //
 // When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
-export class PartialConfigState {
-    // Variable: requestID
-    requestID: string;
+export class PartialConfigState extends TouchFreeRequest {
     // Variable: interaction
     interaction: Partial<InteractionConfig> | null;
     // Variable: physical
     physical: Partial<PhysicalConfig> | null;
 
     constructor(_id: string, _interaction: Partial<InteractionConfig> | null, _physical: Partial<PhysicalConfig> | null) {
-        this.requestID = _id;
+        super(_id);
         this.interaction = _interaction;
         this.physical = _physical;
     }
@@ -108,16 +125,14 @@ export class PartialConfigState {
 // or its config files.
 //
 // When receiving a configuration from the Service this structure contains ALL configuration data
-export class ConfigState {
-    // Variable: requestID
-    requestID: string;
+export class ConfigState extends TouchFreeRequest {
     // Variable: interaction
     interaction: InteractionConfigFull;
     // Variable: physical
     physical: PhysicalConfig;
 
     constructor(_id: string, _interaction: InteractionConfigFull, _physical: PhysicalConfig) {
-        this.requestID = _id;
+        super(_id);
         this.interaction = _interaction;
         this.physical = _physical;
     }
@@ -127,13 +142,7 @@ export class ConfigState {
 // Used to request the current state of the configuration on the Service. This is received as
 // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
 // use of the data received.
-export class ConfigChangeRequest {
-    // Variable: requestID
-    requestID: string;
-
-    constructor(_id: string) {
-        this.requestID = _id;
-    }
+export class ConfigChangeRequest extends TouchFreeRequest {
 }
 
 // Class: ConfigStateCallback
@@ -141,32 +150,21 @@ export class ConfigChangeRequest {
 // with a <ConfigState> as a parameter to allow users to make use of the new
 // <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ConfigStateCallback {
-    // Variable: timestamp
-    timestamp: number;
-    // Variable: callback
-    callback: (detail: ConfigState) => void;
-
-    constructor(_timestamp: number, _callback: (detail: ConfigState) => void) {
-        this.timestamp = _timestamp;
-        this.callback = _callback;
-    }
+export class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {
 }
 
 // Class: ServiceStatus
 // This data structure is used to receive service status.
 //
 // When receiving a configuration from the Service this structure contains ALL status data
-export class ServiceStatus {
-    // Variable: requestID
-    requestID: string;
+export class ServiceStatus extends TouchFreeRequest {
     // Variable: trackingServiceState
     trackingServiceState: TrackingServiceState | null;
     // Variable: configurationState
     configurationState: ConfigurationState | null;
 
     constructor(_id: string, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null) {
-        this.requestID = _id;
+        super(_id);
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
     }
@@ -176,13 +174,7 @@ export class ServiceStatus {
 // Used to request the current state of the status of the Service. This is received as
 // a <ServiceStatus> which should be linked to a <ServiceStatusCallback> via requestID to make
 // use of the data received.
-export class ServiceStatusRequest {
-    // Variable: requestID
-    requestID: string;
-
-    constructor(_id: string) {
-        this.requestID = _id;
-    }
+export class ServiceStatusRequest extends TouchFreeRequest {
 }
 
 // Class: ServiceStatusCallback
@@ -190,25 +182,14 @@ export class ServiceStatusRequest {
 // with a <ServiceStatus> as a parameter to allow users to make use of the new
 // <ServiceStatusResponse>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ServiceStatusCallback {
-    // Variable: timestamp
-    timestamp: number;
-    // Variable: callback
-    callback: (detail: ServiceStatus) => void;
-
-    constructor(_timestamp: number, _callback: (detail: ServiceStatus) => void) {
-        this.timestamp = _timestamp;
-        this.callback = _callback;
-    }
+export class ServiceStatusCallback extends TouchFreeRequestCallback<ServiceStatus> {
 }
 
 // Class: WebSocketResponse
 // The structure seen when the Service responds to a request. This is to verify whether it was
 // successful or not and will include the original request if it fails, to allow for
 // troubleshooting.
-export class WebSocketResponse {
-    // Variable: requestID
-    requestID: string;
+export class WebSocketResponse extends TouchFreeRequest {
     // Variable: status
     status: string;
     // Variable: message
@@ -217,7 +198,7 @@ export class WebSocketResponse {
     originalRequest: string;
 
     constructor(_id: string, _status: string, _msg: string, _request: string) {
-        this.requestID = _id;
+        super(_id);
         this.status = _status;
         this.message = _msg;
         this.originalRequest = _request;
@@ -229,16 +210,7 @@ export class WebSocketResponse {
 // with a <WebSocketResponse> as a parameter to allow users to deal with failed
 // <WebSocketResponses>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ResponseCallback {
-    // Variable: timestamp
-    timestamp: number;
-    // Variable: callback
-    callback: (detail: WebSocketResponse) => void;
-
-    constructor(_timestamp: number, _callback: (detail: WebSocketResponse) => void) {
-        this.timestamp = _timestamp;
-        this.callback = _callback;
-    }
+export class ResponseCallback extends TouchFreeRequestCallback<WebSocketResponse> {
 }
 
 // Class: CommunicationWrapper

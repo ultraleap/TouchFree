@@ -100,8 +100,8 @@ const TFButton = (
 
     return (
         <button
-            className={`${buttonClass} tf-button ${canHover && hovered ? 'tf-button-hovered' : ''} ${
-                pressed ? 'tf-button-pressed' : ''
+            className={`${buttonClass} tf-button ${canHover && hovered ? 'tf-button--hovered' : ''} ${
+                pressed ? 'tf-button--pressed' : ''
             }`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
@@ -109,11 +109,15 @@ const TFButton = (
                 setHovered(false);
                 setPressed(false);
             }}
-            onPointerDown={(event) => {
+            onPointerDown={() => {
                 setPressed(true);
-                onClick(event);
             }}
-            onPointerUp={() => setPressed(false)}
+            onPointerUp={(event) => {
+                if (pressed) {
+                    onClick(event);
+                }
+                setPressed(false);
+            }}
             onKeyDown={(keyEvent) => {
                 if (keyEvent.key === 'Enter') onClick(keyEvent);
             }}

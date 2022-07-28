@@ -105,6 +105,7 @@ export enum InteractionType {
     HOVER,
     PUSH,
     TOUCHPLANE,
+    VELOCITYSWIPE,
 }
 
 // Enum: TrackingServiceState
@@ -153,6 +154,7 @@ export enum BitmaskFlags {
     HOVER = 1024,
     PUSH = 2048,
     TOUCHPLANE = 4096,
+    VELOCITYSWIPE = 8192,
 
     // Adding elements to this list is a breaking change, and should cause at
     // least a minor iteration of the API version UNLESS adding them at the end
@@ -261,6 +263,10 @@ export class FlagUtilities {
             case InteractionType.TOUCHPLANE:
                 returnVal ^= BitmaskFlags.TOUCHPLANE;
                 break;
+
+            case InteractionType.VELOCITYSWIPE:
+                returnVal ^= BitmaskFlags.VELOCITYSWIPE;
+                break;
         }
 
         return returnVal;
@@ -345,6 +351,9 @@ export class FlagUtilities {
         }
         else if (_flags & BitmaskFlags.TOUCHPLANE) {
             interactionType = InteractionType.TOUCHPLANE;
+        }
+        else if (_flags & BitmaskFlags.VELOCITYSWIPE) {
+            interactionType = InteractionType.VELOCITYSWIPE;
         }
         else {
             console.error("InputActionData missing: No InteractionType found. Defaulting to 'PUSH'");
