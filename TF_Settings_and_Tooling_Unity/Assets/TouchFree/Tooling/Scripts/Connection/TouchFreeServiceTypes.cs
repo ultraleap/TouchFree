@@ -283,6 +283,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             content = _content;
         }
     }
+
     // Enum: QuickSetupPosition
     // The position used for quick setup
     public enum QuickSetupPosition
@@ -296,13 +297,20 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public struct SuccessWrapper<T>
     {
         // Variable: succeeded
-        bool succeeded;
+        public bool succeeded;
 
         // Variable: msg
-        string msg;
+        public string msg;
 
         // Variable: content
-        T? content;
+        public T content;
+
+        public SuccessWrapper(bool _success, string _message, T _content)
+        {
+            succeeded = _success;
+            msg = _message;
+            content = _content;
+        }
     }
 
     // Class: TrackingStateResponse
@@ -313,21 +321,69 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         public string requestID;
 
         // Variable: mask
-        public SuccessWrapper<MaskData>? mask;
+        public SuccessWrapper<MaskData?>? mask;
 
         // Variable: cameraOrientation
-        public SuccessWrapper<bool>? cameraReversed;
+        public SuccessWrapper<bool?>? cameraReversed;
 
         // Variable: allowImages
-        public SuccessWrapper<bool>? allowImages;
+        public SuccessWrapper<bool?>? allowImages;
 
         // Variable: analyticsEnabled
-        public SuccessWrapper<bool>? analyticsEnabled;
+        public SuccessWrapper<bool?>? analyticsEnabled;
     }
 
     // Class: TrackingState
+    // Represents the settings available for modification in the Tracking API
+    public struct TrackingState
+    {
+        // Variable: mask
+        public MaskData? mask;
+        // Variable: cameraOrientation
+        public bool? cameraReversed;
+        // Variable: allowImages
+        public bool? allowImages;
+        // Variable: analyticsEnabled
+        public bool? analyticsEnabled;
+
+        public TrackingState(MaskData? _mask,
+                       bool? _cameraReversed,
+                       bool? _allowImages,
+                       bool? _analyticsEnabled)
+        {
+            this.mask = _mask;
+            this.cameraReversed = _cameraReversed;
+            this.allowImages = _allowImages;
+            this.analyticsEnabled = _analyticsEnabled;
+        }
+
+        public TrackingState(TrackingStateResponse _response)
+        {
+            if (_response.mask.HasValue)
+            { this.mask = _response.mask.Value.content; }
+            else
+            { this.mask = null; }
+
+            if (_response.cameraReversed.HasValue)
+            { this.cameraReversed = _response.cameraReversed.Value.content; }
+            else
+            { this.cameraReversed = null; }
+
+            if (_response.allowImages.HasValue)
+            { this.allowImages = _response.allowImages.Value.content; }
+            else
+            { this.allowImages = null; }
+
+            if (_response.analyticsEnabled.HasValue)
+            { this.analyticsEnabled = _response.analyticsEnabled.Value.content; }
+            else
+            { this.analyticsEnabled = null; }
+        }
+    }
+
+    // Class: TrackingStateRequest
     // Used to construct a SET_TRACKING_STATE request.
-    public class TrackingState
+    public class TrackingStateRequest
     {
         // Variable: requestID
         string requestID;
@@ -340,7 +396,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Variable: analyticsEnabled
         bool? analyticsEnabled;
 
-        public TrackingState(string _id,
+        public TrackingStateRequest(string _id,
                        MaskData? _mask,
                        bool? _cameraReversed,
                        bool? _allowImages,
@@ -360,6 +416,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         public float upper;
         public float right;
         public float left;
+
+        public MaskData(float _lower, float _upper, float _right, float _left)
+        {
+            this.lower = _lower;
+            this.upper = _upper;
+            this.right = _right;
+            this.left = _left;
+        }
     }
 
 

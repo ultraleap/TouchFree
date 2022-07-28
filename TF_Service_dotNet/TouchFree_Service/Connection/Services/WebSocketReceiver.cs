@@ -311,17 +311,8 @@ namespace Ultraleap.TouchFree.Service.Connection
                 TrackingResponse response = trackingApiResponse.Value;
                 trackingApiResponse = null;
 
-                SendDApiResponse(response);
+                clientMgr.SendTrackingState(response.state);
             }
-        }
-
-        void SendDApiResponse(TrackingResponse _response)
-        {
-            var content = JsonConvert.SerializeObject(_response.state);
-
-            ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE: ActionCode.SET_TRACKING_STATE;
-
-            clientMgr.SendTrackingState(_response.state);
         }
 
         public bool ResponseIsReady(TrackingResponse _response)

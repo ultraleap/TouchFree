@@ -161,7 +161,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Used internally to send or request information from the Service via the <webSocket>. To
         // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
         // via the _callback parameter.
-        internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback)
+        internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback = null)
         {
             if (_requestID == "")
             {
@@ -289,6 +289,39 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             string jsonMessage = JsonUtility.ToJson(message);
 
             webSocket.Send(jsonMessage);
+        }
+
+        internal void RequestTrackingChange(string _message, string _requestID, Action<TrackingStateResponse> _stateCallback = null) {
+            if (_requestID == "")
+            {
+                if (_stateCallback != null)
+                {
+                    string message = "Tracking State change request failed. This is due to a missing or invalid requestID";
+
+                    var maskResponse = new SuccessWrapper<MaskData?>(false, message, null);
+                    var boolResponse = new SuccessWrapper<bool?>(false, message, null);
+
+                    TrackingStateResponse response = new TrackingStateResponse() {
+                        requestID =  "",
+                        mask = maskResponse,
+                        allowImages = boolResponse,
+                        cameraReversed = boolResponse,
+                        analyticsEnabled= boolResponse
+                    };
+
+                    _stateCallback.Invoke(response);
+                }
+
+                Debug.LogError("Tracking State change request failed. This is due to a missing or invalid requestID");
+                return;
+            }
+
+            if (_stateCallback != null)
+            {
+                ConnectionManager.messageReceiver.trackingStateCallbacks.Add(_requestID, new TrackingStateCallback(DateTime.Now.Millisecond, _stateCallback));
+            }
+
+            webSocket.Send(_message);
         }
     }
 }
