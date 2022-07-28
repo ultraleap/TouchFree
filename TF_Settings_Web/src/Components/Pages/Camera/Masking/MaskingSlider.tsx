@@ -91,8 +91,13 @@ const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, 
                 break;
         }
 
-        const newMaskingValue = maskingValue + mapValueToMaskingRange(diffValue);
-        setMaskingValue(direction, limitMaskingRange(newMaskingValue));
+        // Convert value from CSS value range [0..400] to masking range[0..0.5]
+        const newMaskingValue = maskingValue + diffValue / 800;
+
+        // Limit masking value to [0..0.5]
+        const limitedNewMaskingValue = Math.min(0.5, Math.max(0, newMaskingValue));
+
+        setMaskingValue(direction, limitedNewMaskingValue);
     };
 
     const onEndDrag = () => {
@@ -116,14 +121,6 @@ const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, 
     );
 };
 
-// Map from CSS value [0..400] to Masking Range [0..5]
-const mapValueToMaskingRange = (value: number): number => (value / 400) * 0.5;
-
-// Map from Masking Range [0..5] to CSS value [0..400]
-const mapMaskingRangeToValue = (maskingValue: number): number => maskingValue * 2 * 400;
-
-const limitMaskingRange = (maskingValue: number): number => Math.min(0.5, Math.max(0, maskingValue));
-
 const setPosition = (
     direction: SliderDirection,
     startPosInfo: SliderPosInfo,
@@ -131,7 +128,9 @@ const setPosition = (
     slider: HTMLSpanElement
 ): void => {
     let { initialLeft: left, initialTop: top } = startPosInfo;
-    const value = mapMaskingRangeToValue(maskingValue);
+
+    // Map from masking range [0..0.5] to CSS value range [0..400]
+    const value = maskingValue * 800;
 
     switch (direction) {
         case 'left':
