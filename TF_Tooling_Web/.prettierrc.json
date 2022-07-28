@@ -1,0 +1,24 @@
+{
+    "singleQuote": true,
+    "tabWidth": 4,
+    "endOfLine": "crlf",
+    "printWidth": 120,
+    "importOrder": [
+        "(.*).css$",
+        "(.*)react(.*)|canvas-confetti",
+        "index",
+        "^TouchFree/(.*)",
+        "^(Videos|Images)/(.*)",
+        "^(Components/)(.*)",
+        "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "overrides": [
+        {
+            "files": ["*.md"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}

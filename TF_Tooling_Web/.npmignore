@@ -1,0 +1,11 @@
+/NaturalDocs_Config
+/node_modules
+/Plugins
+/quick-start
+/src
+/test
+jest**
+Version.txt
+tsconfig.json
+webpack**
+.prettierrc.json

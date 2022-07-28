@@ -6,6 +6,12 @@
 ./src/**.js
 ./test/*.js
 ./test/**/*.js
-dist
 
-./Plugins/**/Snapping_Plugin.js
+# Build
+**Snapping_Plugin.js
+dist
+lib
+
+# Pack
+**.tgz
+/package
