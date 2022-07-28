@@ -60,6 +60,7 @@ namespace Ultraleap.TouchFree.ServiceShared
         HOVER,
         PUSH,
         TOUCHPLANE,
+        VELOCITYSWIPE,
     }
 
     [Flags]
@@ -87,6 +88,7 @@ namespace Ultraleap.TouchFree.ServiceShared
         HOVER = 1024,
         PUSH = 2048,
         TOUCHPLANE = 4096,
+        VELOCITYSWIPE = 8192,
 
         // Adding elements to this list is a breaking change, and should cause at
         // least a minor iteration of the API version UNLESS adding them at the end
@@ -176,6 +178,9 @@ namespace Ultraleap.TouchFree.ServiceShared
                     break;
                 case InteractionType.TOUCHPLANE:
                     returnVal ^= BitmaskFlags.TOUCHPLANE;
+                    break;
+                case InteractionType.VELOCITYSWIPE:
+                    returnVal ^= BitmaskFlags.VELOCITYSWIPE;
                     break;
             }
 

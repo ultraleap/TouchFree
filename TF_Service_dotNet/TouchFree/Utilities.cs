@@ -73,6 +73,9 @@ namespace Ultraleap.TouchFree.Library
                 case InteractionType.TOUCHPLANE:
                     returnVal ^= BitmaskFlags.TOUCHPLANE;
                     break;
+                case InteractionType.VELOCITYSWIPE:
+                    returnVal ^= BitmaskFlags.VELOCITYSWIPE;
+                    break;
             }
 
             return returnVal;
