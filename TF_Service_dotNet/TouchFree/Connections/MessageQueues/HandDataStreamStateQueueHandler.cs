@@ -6,12 +6,14 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     public class HandDataStreamStateQueueHandler : MessageQueueHandler
     {
         private readonly ITrackingConnectionManager trackingConnectionManager;
+        private readonly IHandManager handManager;
 
         public override ActionCode[] ActionCodes => new[] { ActionCode.SET_HAND_DATA_STREAM_STATE };
 
-        public HandDataStreamStateQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingConnectionManager _trackingConnectionManager) : base(_updateBehaviour, _clientMgr)
+        public HandDataStreamStateQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingConnectionManager _trackingConnectionManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
         {
             trackingConnectionManager = _trackingConnectionManager;
+            handManager = _handManager;
         }
 
         protected override void Handle(IncomingRequest _request)
@@ -32,6 +34,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
 
             trackingConnectionManager.SetImagesState(contentObj.GetValue("enabled").ToString() == true.ToString());
+            var lens = contentObj.GetValue("lens")?.ToString()?.ToLower() == Leap.Image.CameraType.LEFT.ToString().ToLower() ? Leap.Image.CameraType.LEFT : Leap.Image.CameraType.RIGHT;
+            handManager.HandRenderLens = lens;
 
             ResponseToClient response = new ResponseToClient(contentObj.GetValue("requestID").ToString(), "Success", string.Empty, _request.content);
             clientMgr.SendHandDataStreamStateResponse(response);

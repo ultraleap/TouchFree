@@ -146,10 +146,12 @@ export class ConfigChangeRequest extends TouchFreeRequest {
 // use of the data received.
 export class HandRenderDataStateRequest extends TouchFreeRequest {
     enabled: boolean;
+    lens: string;
 
-    constructor(_id: string, enabled: boolean) {
+    constructor(_id: string, enabled: boolean, lens: string) {
         super(_id);
         this.enabled = enabled;
+        this.lens = lens;
     }
 }
 

@@ -191,7 +191,7 @@ const MaskingScreen = () => {
 
     const translateToCoordinate = (coordinate: Vector | undefined) => {
         if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, -1);
-        return new HandSvgCoordinate(800 * (1.13 - coordinate.X * 1.2), 800 * coordinate.Y, coordinate.Z);
+        return new HandSvgCoordinate(1000 * (1 - coordinate.X * 1) - 100, 1000 * coordinate.Y - 100, coordinate.Z);
     };
 
     const tipJointIndex = 3;
@@ -221,7 +221,7 @@ const MaskingScreen = () => {
         };
     };
 
-    setHandRenderState(true);
+    setHandRenderState(true, mainLens === Lens.Left ? 'left' : 'right');
 
     return (
         <div>
@@ -275,10 +275,10 @@ const MaskingScreen = () => {
     );
 };
 
-const setHandRenderState = (handRenderState: boolean): void => {
+const setHandRenderState = (handRenderState: boolean, lens: string): void => {
     const requestID = uuidgen();
 
-    const content = new HandRenderDataStateRequest(requestID, handRenderState);
+    const content = new HandRenderDataStateRequest(requestID, handRenderState, lens);
     const request = new CommunicationWrapper(ActionCode.SET_HAND_DATA_STREAM_STATE, content);
 
     const jsonContent = JSON.stringify(request);
