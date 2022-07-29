@@ -119,7 +119,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 {
                     connectionMethod(connection);
                 }
-                else
+                else if (connection.Socket.State != WebSocketState.Connecting)  
                 {
                     // Clear down connections that have closed
                     RemoveConnection(connection.Socket);
