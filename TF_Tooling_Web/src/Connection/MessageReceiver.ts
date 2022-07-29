@@ -2,9 +2,11 @@ import {
     ConfigState,
     ConfigStateCallback,
     HandPresenceState,
+    TouchFreeRequestCallback,
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
+    TouchFreeRequest,
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 import {
@@ -114,85 +116,63 @@ export class MessageReceiver {
     }
 
     // Function: CheckForResponse
-    // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to <HandleResponse> if
-    // there is one.
+    // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to Sends it to <HandleCallbackList> with
+    // the <responseCallbacks> dictionary if there is one.
     CheckForResponse(): void {
         let response: WebSocketResponse | undefined = this.responseQueue.shift();
 
         if (response !== undefined) {
-            this.HandleResponse(response);
-        }
-    }
+            const handledResponse = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
 
-    // Function: HandleResponse
-    // Checks the dictionary of <responseCallbacks> for a matching request ID. If there is a
-    // match, calls the callback action in the matching <ResponseCallback>.
-    HandleResponse(_response: WebSocketResponse): void {
-        if (this.responseCallbacks !== undefined) {
-            for (let key in this.responseCallbacks) {
-                if (key === _response.requestID) {
-                    // This is logged to aid users in debugging
-                    console.log(_response.message);
-                    this.responseCallbacks[key].callback(_response);
-                    delete this.responseCallbacks[key];
-                    return;
-                }
-            };
+            if (!handledResponse) {
+                console.log("Received a WebSocketResponse that did not match a callback." +
+                    "This is the content of the response: \n Response ID: " + response.requestID +
+                    "\n Status: " + response.status + "\n Message: " + response.message +
+                    "\n Original request - " + response.originalRequest);
+            } else {
+                // This is logged to aid users in debugging
+                console.log(response.message);
+            }
         }
-
-        console.log("Received a WebSocketResponse that did not match a callback." +
-            "This is the content of the response: \n Response ID: " + _response.requestID +
-            "\n Status: " + _response.status + "\n Message: " + _response.message +
-            "\n Original request - " + _response.originalRequest);
     }
 
     // Function: CheckForConfigState
-    // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleConfigState> if there is one.
+    // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleCallbackList> with
+    // the <configStateCallbacks> dictionary if there is one.
     CheckForConfigState(): void {
         let configState: ConfigState | undefined = this.configStateQueue.shift();
 
         if (configState !== undefined) {
-            this.HandleConfigState(configState);
+            MessageReceiver.HandleCallbackList(configState, this.configStateCallbacks);
         }
     }
 
-    // Function: HandleConfigState
-    // Checks the dictionary of <configStateCallbacks> for a matching request ID. If there is a
-    // match, calls the callback action in the matching <ConfigStateCallback>.
-    HandleConfigState(_configState: ConfigState): void {
-        if (this.configStateCallbacks !== undefined) {
-            for (let key in this.configStateCallbacks) {
-                if (key === _configState.requestID) {
-                    this.configStateCallbacks[key].callback(_configState);
-                    delete this.configStateCallbacks[key];
-                    return;
+    // Function: HandleCallbackList
+    // Checks the dictionary of <callbacks> for a matching request ID. If there is a
+    // match, calls the callback action in the matching <TouchFreeRequestCallback>.
+    // Returns true if it was able to find a callback, returns false if not
+    private static HandleCallbackList<T extends TouchFreeRequest>(callbackResult: T, callbacks: {[id: string]: TouchFreeRequestCallback<T>}) : boolean {
+        if (callbacks !== undefined) {
+            for (let key in callbacks) {
+                if (key === callbackResult.requestID) {
+                    callbacks[key].callback(callbackResult);
+                    delete callbacks[key];
+                    return true;
                 }
             };
         }
+
+        return false;
     }
 
     // Function: CheckForServiceStatus
-    // Used to check the <serviceStatusQueue> for a <ServiceStatus>. Sends it to <HandleServiceStatus> if there is one.
+    // Used to check the <serviceStatusQueue> for a <ServiceStatus>. Sends it to <HandleCallbackList> with
+    // the <serviceStatusCallbacks> dictionary if there is one.
     CheckForServiceStatus(): void {
         let serviceStatus: ServiceStatus | undefined = this.serviceStatusQueue.shift();
 
         if (serviceStatus !== undefined) {
-            this.HandleServiceStatus(serviceStatus);
-        }
-    }
-
-    // Function: HandleServiceStatus
-    // Checks the dictionary of <serviceStatusCallbacks> for a matching request ID. If there is a
-    // match, calls the callback action in the matching <ServiceStatusCallback>.
-    HandleServiceStatus(_serviceStatus: ServiceStatus): void {
-        if (this.serviceStatusCallbacks !== undefined) {
-            for (let key in this.serviceStatusCallbacks) {
-                if (key === _serviceStatus.requestID) {
-                    this.serviceStatusCallbacks[key].callback(_serviceStatus);
-                    delete this.serviceStatusCallbacks[key];
-                    return;
-                }
-            };
+            MessageReceiver.HandleCallbackList(serviceStatus, this.serviceStatusCallbacks);
         }
     }
 
@@ -250,20 +230,16 @@ export class MessageReceiver {
     ClearUnresponsivePromises(): void {
         let lastClearTime: number = Date.now();
 
-        if (this.responseCallbacks !== undefined) {
-            for (let key in this.responseCallbacks) {
-                if (this.responseCallbacks[key].timestamp < lastClearTime) {
-                    delete this.responseCallbacks[key];
-                } else {
-                    break;
-                }
-            };
-        }
+        MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.responseCallbacks);
+        MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.configStateCallbacks);
+        MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.serviceStatusCallbacks);
+    }
 
-        if (this.configStateCallbacks !== undefined) {
-            for (let key in this.configStateCallbacks) {
-                if (this.configStateCallbacks[key].timestamp < lastClearTime) {
-                    delete this.configStateCallbacks[key];
+    private static ClearUnresponsiveItems<T>(lastClearTime: number, callbacks: {[id: string]: TouchFreeRequestCallback<T>}) {
+        if (callbacks !== undefined) {
+            for (let key in callbacks) {
+                if (callbacks[key].timestamp < lastClearTime) {
+                    delete callbacks[key];
                 } else {
                     break;
                 }
