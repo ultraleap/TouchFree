@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 
 using Ultraleap.TouchFree.Library.Configuration;
@@ -12,6 +13,11 @@ namespace Ultraleap.TouchFree.Library.Connections
         // * Dependency Inject the InteractionManager reference
 
         private ConcurrentDictionary<Guid, IClientConnection> activeConnections = new ConcurrentDictionary<Guid, IClientConnection>();
+
+        public IEnumerable<IClientConnection> clientConnections
+        {
+            get { return activeConnections.Values; }
+        }
 
         public event Action LostAllConnections;
 
@@ -105,7 +111,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-        private void SendMessageToWebSockets(Action<ClientConnection> connectionMethod)
+        private void SendMessageToWebSockets(Action<IClientConnection> connectionMethod)
         {
             if (activeConnections == null ||
                 activeConnections.IsEmpty)
@@ -113,7 +119,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 return;
             }
 
-            foreach (ClientConnection connection in activeConnections.Values)
+            foreach (IClientConnection connection in activeConnections.Values)
             {
                 if (connection.Socket.State == WebSocketState.Open)
                 {
@@ -127,7 +133,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-        public void SendInputActionToWebsocket(InputAction _data)
+        public void SendInputAction(InputAction _data)
         {
             SendMessageToWebSockets((connection) =>
             {
@@ -135,7 +141,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             });
         }
 
-        public void SendHandDataToWebsocket(HandFrame _data)
+        public void SendHandData(HandFrame _data)
         {
             SendMessageToWebSockets((connection) =>
             {

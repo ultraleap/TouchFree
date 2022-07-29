@@ -6,8 +6,8 @@ namespace Ultraleap.TouchFree.Library
     public interface IClientConnectionManager
     {
         HandPresenceEvent MissedHandPresenceEvent { get; }
-        void SendInputActionToWebsocket(InputAction _data);
-        void SendHandDataToWebsocket(HandFrame _data);
+        void SendInputAction(InputAction _data);
+        void SendHandData(HandFrame _data);
         void AddConnection(IClientConnection _connection);
         void RemoveConnection(WebSocket _socket);
         void SendConfigChangeResponse(ResponseToClient response);

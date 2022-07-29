@@ -2,7 +2,7 @@
 using System;
 using Ultraleap.TouchFree.Library.Connections;
 
-namespace TouchFreeTests.Connection
+namespace TouchFreeTests.Connections
 {
     public class ActionCodeTests
     {

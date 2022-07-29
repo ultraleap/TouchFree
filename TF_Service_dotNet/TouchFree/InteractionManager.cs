@@ -84,7 +84,7 @@ namespace Ultraleap.TouchFree.Library
 
         public void Update()
         {
-            connectionManager.SendHandDataToWebsocket(handManager.RawHands);
+            connectionManager.SendHandData(handManager.RawHands);
 
             if (activeInteractions != null)
             {
@@ -187,7 +187,7 @@ namespace Ultraleap.TouchFree.Library
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
                             updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
                     }
-                    connectionManager.SendInputActionToWebsocket(inputAction.Value);
+                    connectionManager.SendInputAction(inputAction.Value);
                 }
             }
         }
