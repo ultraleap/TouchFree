@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 
 namespace Ultraleap.TouchFree.Service.Connection

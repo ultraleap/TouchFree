@@ -1,4 +1,4 @@
-namespace Ultraleap.TouchFree.Service.ConnectionTypes
+﻿namespace Ultraleap.TouchFree.Library.Connections
 {
     internal enum Compatibility
     {

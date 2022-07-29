@@ -7,13 +7,10 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Connections.MessageQueues;
-using Ultraleap.TouchFree.Service.ConnectionTypes;
 
-namespace Ultraleap.TouchFree.Service.Connection
+namespace Ultraleap.TouchFree.Library.Connections
 {
     public class ClientConnection : IClientConnection
     {
@@ -123,11 +120,14 @@ namespace Ultraleap.TouchFree.Service.Connection
             SendResponse(_response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
         }
 
-        internal void SendTrackingResponse<T>(T _state, ActionCode _action)
+        public void SendTrackingResponse<T>(T _state, ActionCode _action)
         {
-            if (_action == ActionCode.GET_TRACKING_STATE) {
+            if (_action == ActionCode.GET_TRACKING_STATE)
+            {
                 SendResponse(_state, ActionCode.GET_TRACKING_STATE_RESPONSE);
-            } else if (_action == ActionCode.SET_TRACKING_STATE) {
+            }
+            else if (_action == ActionCode.SET_TRACKING_STATE)
+            {
                 SendResponse(_state, ActionCode.SET_TRACKING_STATE_RESPONSE);
             }
         }
@@ -181,7 +181,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             return Compatibility.COMPATIBLE;
         }
 
-        internal void OnMessage(string _message)
+        public void OnMessage(string _message)
         {
             // Find key areas of the rawData, the "action" and the "content"
             var match = Regex.Match(_message, "{\\s*?\"action\"\\s*?:\\s*?\"([\\w\\d_]+?)\"\\s*?,\\s*?\"content\"\\s*?:\\s*?({.+?})\\s*?}$");
@@ -215,7 +215,7 @@ namespace Ultraleap.TouchFree.Service.Connection
                 TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
             }
             else
-            { 
+            {
                 TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not recognised.");
             }
         }
