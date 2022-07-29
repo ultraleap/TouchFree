@@ -39,6 +39,7 @@ namespace Ultraleap.TouchFree.Service
             app.UseWebSockets();
             app.UseStaticFiles("/settings");
 
+            var configFileWatcher = app.ApplicationServices.GetService<ConfigFileWatcher>();
             var configManager = app.ApplicationServices.GetService<IConfigManager>();
 
             app.UseTouchFreeRouter(configManager);

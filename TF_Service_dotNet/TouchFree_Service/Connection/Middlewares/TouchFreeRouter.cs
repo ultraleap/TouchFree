@@ -18,9 +18,9 @@ namespace Ultraleap.TouchFree.Service.Connection
         private readonly RequestDelegate next;
         private readonly IClientConnectionManager clientMgr;
         private readonly IEnumerable<IMessageQueueHandler> messageQueueHandlers;
-        private readonly ConfigManager configManager;
+        private readonly IConfigManager configManager;
 
-        public TouchFreeRouter(RequestDelegate _next, IClientConnectionManager _clientMgr, IEnumerable<IMessageQueueHandler> _messageQueueHandlers, ConfigManager _configManager)
+        public TouchFreeRouter(RequestDelegate _next, IClientConnectionManager _clientMgr, IEnumerable<IMessageQueueHandler> _messageQueueHandlers, IConfigManager _configManager)
         {
             next = _next;
             clientMgr = _clientMgr;

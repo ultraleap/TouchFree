@@ -10,7 +10,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         private bool configFileChanged = false;
 
-        public ConfigFileWatcher(IConfigManager _configManager)
+        public ConfigFileWatcher(IUpdateBehaviour updateBehaviour, IConfigManager _configManager)
         {
             // We ask the config manager for references for these as this will cause the
             // files to be created if they don't already exist, and FileSystemWatchers will
@@ -35,6 +35,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
             physicalWatcher.Changed += new FileSystemEventHandler(FileUpdated);
             physicalWatcher.IncludeSubdirectories = true;
             physicalWatcher.EnableRaisingEvents = true;
+
+            updateBehaviour.OnUpdate += Update;
         }
 
         public void Update()
