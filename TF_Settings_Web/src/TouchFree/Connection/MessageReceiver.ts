@@ -18,6 +18,7 @@ import {
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
+import { CursorManager } from 'Components/CursorManager';
 
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
@@ -203,6 +204,10 @@ export class MessageReceiver {
 
             // Parse newly received messages & distribute them
             let converted: TouchFreeInputAction = ConvertInputAction(action);
+
+            if (converted.InputType === InputType.DOWN) {
+                CursorManager.instance.cursor.HideCloseToSwipe();
+            }
 
             //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
             if (converted.InputType !== InputType.UP) {

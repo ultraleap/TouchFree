@@ -44,6 +44,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private Vector2 scrollOrigin = Vector2.Zero;
         private Vector2? potentialScrollOrigin;
 
+        public event Action CloseToSwipe;
+
 
         public VelocitySwipeInteraction(
             IHandManager _handManager,
@@ -203,6 +205,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     (VerticalVelocityOverMinScrollVelocity(_dPerp) && (_absPerp.X < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.X))
                 {
                     return true;
+                }
+                else if (((_absPerp.X * 1.2f > minScrollVelocity_mmps) && (_absPerp.Y < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
+                    (VerticalVelocityOverMinScrollVelocity(_dPerp * 1.2f) && (_absPerp.X < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.X))
+                {
+                    CloseToSwipe?.Invoke();
                 }
             }
 

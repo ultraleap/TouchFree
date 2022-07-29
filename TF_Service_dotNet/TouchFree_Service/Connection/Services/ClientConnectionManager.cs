@@ -137,6 +137,23 @@ namespace Ultraleap.TouchFree.Service.Connection
             }
         }
 
+        public void SendCloseToSwipe()
+        {
+            if (activeConnections == null ||
+                activeConnections.Count < 1)
+            {
+                return;
+            }
+
+            foreach (ClientConnection connection in activeConnections)
+            {
+                if (connection.Socket.State == WebSocketState.Open)
+                {
+                    connection.SendCloseToSwipe();
+                }
+            }
+        }
+
         public void SendConfigChangeResponse(ResponseToClient _response)
         {
             foreach (ClientConnection connection in activeConnections)

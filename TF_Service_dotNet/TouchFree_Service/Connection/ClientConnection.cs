@@ -153,6 +153,11 @@ namespace Ultraleap.TouchFree.Service.Connection
             return Compatibility.COMPATIBLE;
         }
 
+        internal void SendCloseToSwipe()
+        {
+            SendResponse(new ResponseToClient(), ActionCode.CLOSE_TO_SWIPE);
+        }
+
         internal void OnMessage(string _message)
         {
             // Find key areas of the rawData, the "action" and the "content"

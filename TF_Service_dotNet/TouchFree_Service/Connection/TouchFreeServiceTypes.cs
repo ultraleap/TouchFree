@@ -29,6 +29,7 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
         QUICK_SETUP,
         QUICK_SETUP_CONFIG,
         QUICK_SETUP_RESPONSE,
+        CLOSE_TO_SWIPE,
     }
 
     internal enum Compatibility

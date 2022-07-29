@@ -19,6 +19,7 @@ import {
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
+
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
 
@@ -44,6 +45,7 @@ export enum ActionCode {
     QUICK_SETUP = "QUICK_SETUP",
     QUICK_SETUP_CONFIG = "QUICK_SETUP_CONFIG",
     QUICK_SETUP_RESPONSE = "QUICK_SETUP_RESPONSE",
+    CLOSE_TO_SWIPE = "CLOSE_TO_SWIPE"
 }
 
 // Enum: HandPresenceState

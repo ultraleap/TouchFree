@@ -8,6 +8,7 @@ export class SVGCursor extends TouchlessCursor {
     yPositionAttribute: string;
     cursorCanvas: any;
     cursorRing: any;
+    cursorText: HTMLElement| undefined = undefined;
     ringSizeMultiplier: number;
     cursorStartSize: number;
     currentAnimationInterval: NodeJS.Timeout | undefined = undefined;
@@ -27,6 +28,10 @@ export class SVGCursor extends TouchlessCursor {
         this.ringSizeMultiplier = _ringSizeMultiplier;
         this.cursorStartSize = this.GetCurrentCursorRadius();
 
+        if (!this.cursorText) {
+            this.cursorText = document.getElementById('svg-cursor-scroll-text') ?? undefined;
+        }
+
         if (!_darkCursor) {
             _cursorCanvas.classList.add('light');
         }
@@ -44,6 +49,9 @@ export class SVGCursor extends TouchlessCursor {
 
         this.cursorRing.setAttribute(this.xPositionAttribute, _inputAction.CursorPosition[0]);
         this.cursorRing.setAttribute(this.yPositionAttribute, _inputAction.CursorPosition[1]);
+        
+        this.cursorText?.setAttribute('x', _inputAction.CursorPosition[0] + 20);
+        this.cursorText?.setAttribute('y', _inputAction.CursorPosition[1] + 20);
 
         this.cursor.setAttribute(this.xPositionAttribute, _inputAction.CursorPosition[0]);
         this.cursor.setAttribute(this.yPositionAttribute, _inputAction.CursorPosition[1]);
@@ -91,5 +99,20 @@ export class SVGCursor extends TouchlessCursor {
         let radiusAsNumber = parseFloat(radius);
 
         return radiusAsNumber;
+    }
+
+    ShowCloseToSwipe(): void {
+        if (this.cursorText != undefined) {
+            this.cursorText.style.opacity = '1';
+            setTimeout(() => {
+                this.HideCloseToSwipe()
+            }, 2000);
+        }
+    }
+
+    HideCloseToSwipe(): void {
+        if (this.cursorText != undefined) {
+            this.cursorText.style.opacity = '0';
+        }
     }
 }

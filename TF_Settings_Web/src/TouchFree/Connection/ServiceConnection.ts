@@ -17,6 +17,7 @@ import {
 } from './TouchFreeServiceTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
+import { CursorManager } from 'Components/CursorManager';
 
 // Class: ServiceConnection
 // This represents a connection to a TouchFree Service. It should be created by a
@@ -119,6 +120,10 @@ export class ServiceConnection {
             case ActionCode.SERVICE_STATUS:
                 let serviceStatus: ServiceStatus = looseData.content;
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
+                break;
+
+            case ActionCode.CLOSE_TO_SWIPE:
+                CursorManager.instance.cursor.ShowCloseToSwipe();
                 break;
 
             case ActionCode.CONFIGURATION_STATE:
