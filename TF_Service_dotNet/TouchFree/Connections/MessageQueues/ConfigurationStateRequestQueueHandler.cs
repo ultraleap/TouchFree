@@ -10,7 +10,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_CONFIGURATION_STATE };
 
-        public ConfigurationStateRequestQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager) : base(_updateBehaviour, _clientMgr)
+        public ConfigurationStateRequestQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager) : base(_updateBehaviour, _clientMgr)
         {
             configManager = _configManager;
         }

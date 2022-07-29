@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_SERVICE_STATUS };
 
-        public ServiceStatusQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
+        public ServiceStatusQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
         {
             configManager = _configManager;
             handManager = _handManager;

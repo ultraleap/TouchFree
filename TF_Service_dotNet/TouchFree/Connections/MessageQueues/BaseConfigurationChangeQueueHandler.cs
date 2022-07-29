@@ -7,7 +7,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public abstract class BaseConfigurationChangeQueueHandler : MessageQueueHandler
     {
-        protected BaseConfigurationChangeQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
+        protected BaseConfigurationChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
         {
         }
 

@@ -10,7 +10,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         public override ActionCode[] ActionCodes => new[] { ActionCode.SET_HAND_DATA_STREAM_STATE };
 
-        public HandDataStreamStateQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingConnectionManager _trackingConnectionManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
+        public HandDataStreamStateQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingConnectionManager _trackingConnectionManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
         {
             trackingConnectionManager = _trackingConnectionManager;
             handManager = _handManager;

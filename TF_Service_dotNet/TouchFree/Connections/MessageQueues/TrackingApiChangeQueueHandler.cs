@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         public TrackingResponse? trackingApiResponse = null;
         private readonly ITrackingDiagnosticApi diagnosticApi;
 
-        public TrackingApiChangeQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
+        public TrackingApiChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
         {
             diagnosticApi = _diagnosticApi;
 

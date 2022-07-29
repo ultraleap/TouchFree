@@ -8,7 +8,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     {
         public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_CONFIGURATION_FILE };
 
-        public ConfigurationFileRequestQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
+        public ConfigurationFileRequestQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
         {
         }
 

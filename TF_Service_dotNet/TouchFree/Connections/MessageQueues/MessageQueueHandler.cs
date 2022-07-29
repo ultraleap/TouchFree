@@ -8,11 +8,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     {
         public abstract ActionCode[] ActionCodes { get; }
 
-        private readonly ConcurrentQueue<IncomingRequest> queue = new ConcurrentQueue<IncomingRequest>();
-        private readonly UpdateBehaviour updateBehaviour;
+        private readonly ConcurrentQueue<IncomingRequest> queue = new();
+        private readonly IUpdateBehaviour updateBehaviour;
         protected readonly IClientConnectionManager clientMgr;
 
-        public MessageQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr)
+        public MessageQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr)
         {
             updateBehaviour = _updateBehaviour;
 
@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         {
             if (!ActionCodes.Contains(content.action))
             {
-                throw new System.Exception("Unexpected action type");
+                throw new System.ArgumentException("Unexpected action type", nameof(content));
             }
             queue.Enqueue(new IncomingRequest(content.action, content.requestId, content.content));
         }
@@ -46,7 +46,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected abstract void Handle(IncomingRequest _content);
 
-        protected bool RequestIdExists(JObject _content)
+        public static bool RequestIdExists(JObject _content)
         {
             if (!_content.ContainsKey("requestID") || _content.GetValue("requestID").ToString() == string.Empty)
             {

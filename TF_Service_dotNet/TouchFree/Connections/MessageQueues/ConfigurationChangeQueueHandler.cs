@@ -7,7 +7,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     {
         private readonly IConfigManager configManager;
 
-        public ConfigurationChangeQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager) : base(_updateBehaviour, _clientMgr)
+        public ConfigurationChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager) : base(_updateBehaviour, _clientMgr)
         {
             configManager = _configManager;
         }

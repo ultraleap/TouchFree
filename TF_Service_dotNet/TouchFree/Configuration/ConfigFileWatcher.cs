@@ -1,14 +1,12 @@
-﻿using System;
-using System.Timers;
-using System.IO;
+﻿using System.IO;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigFileWatcher
     {
         private readonly IConfigManager configManager;
-        private FileSystemWatcher interactionWatcher;
-        private FileSystemWatcher physicalWatcher;
+        private readonly FileSystemWatcher interactionWatcher;
+        private readonly FileSystemWatcher physicalWatcher;
 
         private bool configFileChanged = false;
 
@@ -41,7 +39,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public void Update()
         {
-            if(configFileChanged)
+            if (configFileChanged)
             {
                 try
                 {

@@ -13,7 +13,7 @@ namespace Ultraleap.TouchFree.Library
         private readonly IEnumerable<IInteraction> interactions;
         private readonly InteractionTuning interactionTuning;
         private readonly IHandManager handManager;
-        private readonly UpdateBehaviour updateBehaviour;
+        private readonly IUpdateBehaviour updateBehaviour;
         private readonly IClientConnectionManager connectionManager;
 
         public Dictionary<IInteraction, float> activeInteractions { get; private set; }
@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Library
         private Vector2? lastDownPosition;
 
         public InteractionManager(
-            UpdateBehaviour _updateBehaviour,
+            IUpdateBehaviour _updateBehaviour,
             IClientConnectionManager _connectionManager,
             IEnumerable<IInteraction> _interactions,
             IOptions<InteractionTuning> _interactionTuning,

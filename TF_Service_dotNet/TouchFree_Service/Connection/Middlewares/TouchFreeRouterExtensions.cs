@@ -40,7 +40,7 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public static IServiceCollection AddUpdateBehaviour(this IServiceCollection services)
         {
-            services.AddSingleton<UpdateBehaviour>();
+            services.AddSingleton<IUpdateBehaviour, UpdateBehaviour>();
             return services;
         }
 
@@ -63,7 +63,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IQuickSetupHandler, QuickSetupHandler>();
             var watcher = new ConfigFileWatcher(configManager);
 
-            services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
+            services.BuildServiceProvider().GetService<IUpdateBehaviour>().OnUpdate += watcher.Update;
 
             services.AddSingleton(watcher);
 

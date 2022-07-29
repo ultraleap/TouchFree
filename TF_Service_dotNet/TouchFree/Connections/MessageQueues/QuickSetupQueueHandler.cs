@@ -10,7 +10,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         private readonly IQuickSetupHandler quickSetupHandler;
 
-        public QuickSetupQueueHandler(UpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IQuickSetupHandler _quickSetupHandler) : base(_updateBehaviour, _clientMgr)
+        public QuickSetupQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IQuickSetupHandler _quickSetupHandler) : base(_updateBehaviour, _clientMgr)
         {
             quickSetupHandler = _quickSetupHandler;
         }
