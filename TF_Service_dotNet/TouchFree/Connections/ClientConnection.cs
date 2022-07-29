@@ -151,7 +151,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             this.SendHandPresenceEvent(clientMgr.MissedHandPresenceEvent);
         }
 
-        private Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)
+        public Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)
         {
             Version clientVersionParsed = new Version(_clientVersion);
 

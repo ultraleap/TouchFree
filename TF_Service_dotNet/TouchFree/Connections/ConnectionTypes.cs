@@ -1,6 +1,6 @@
 ﻿namespace Ultraleap.TouchFree.Library.Connections
 {
-    internal enum Compatibility
+    public enum Compatibility
     {
         COMPATIBLE,
         SERVICE_OUTDATED,
