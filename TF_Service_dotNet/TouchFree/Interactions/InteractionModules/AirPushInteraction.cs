@@ -169,9 +169,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 {
                     if ((!isDragging && appliedForce < unclickThreshold) ||
                         (isDragging && appliedForce < unclickThresholdDrag) ||
-                        ignoreDragging ||
                         (clickHoldStopwatch.IsRunning && clickHoldStopwatch.ElapsedMilliseconds >= clickHoldTimerMs))
                     {
+                        if (clickHoldStopwatch.IsRunning && clickHoldStopwatch.ElapsedMilliseconds >= clickHoldTimerMs)
+                        {
+                            appliedForce = 0f;
+                        }
+
                         pressing = false;
                         isDragging = false;
                         cursorPressPosition = Vector2.Zero;
@@ -180,7 +184,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
                         decayingForce = true;
                     }
-                    else
+                    else if (!ignoreDragging)
                     {
                         if (isDragging)
                         {
@@ -193,6 +197,21 @@ namespace Ultraleap.TouchFree.Library.Interactions
                             inputActionResult = CreateInputActionResult(InputType.MOVE, positions, appliedForce);
                             positionStabiliser.StartShrinkingDeadzone(dragDeadzoneShrinkRate);
                             clickHoldStopwatch.Stop();
+                        }
+                        else
+                        {
+                            // NONE causes the client to react to data without using Input.
+                            inputActionResult = CreateInputActionResult(InputType.NONE, positions, appliedForce);
+                        }
+                    }
+                    else
+                    {
+                        if (positions.CursorPosition != previousScreenPos)
+                        {
+                            // Pressing with scroll and drag disabled and the position has changed so
+                            // send the cancel event
+                            inputActionResult = CreateInputActionResult(InputType.CANCEL, positions, appliedForce);
+                            pressing = false;
                         }
                         else
                         {
