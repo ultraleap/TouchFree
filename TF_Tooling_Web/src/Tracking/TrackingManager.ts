@@ -36,7 +36,8 @@ export class TrackingManager {
     public static RequestTrackingChange(_state: Partial<TrackingState>,
                                         _callback: ((detail: WebSocketResponse) => void) | null = null): void {
         const requestID = uuidgen();
-        const request = new CommunicationWrapper(ActionCode.SET_TRACKING_STATE, _state);
+        const requestContent = {requestID: requestID, ..._state};
+        const request = new CommunicationWrapper(ActionCode.SET_TRACKING_STATE, requestContent);
 
         const jsonContent = JSON.stringify(request);
 
