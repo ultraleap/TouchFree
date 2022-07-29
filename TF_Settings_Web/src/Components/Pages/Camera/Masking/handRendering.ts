@@ -40,7 +40,7 @@ export const defaultHandState = {
         primaryHand: false,
         dotColor: 'red',
     },
-}
+};
 
 export const setHandRenderState = (handRenderState: boolean, lens: string): void => {
     const requestID = uuidgen();
