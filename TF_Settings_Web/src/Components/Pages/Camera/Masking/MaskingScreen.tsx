@@ -1,27 +1,18 @@
-import { v4 as uuidgen } from 'uuid';
-
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Vector } from 'TouchFree/Configuration/ConfigurationTypes';
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
-import {
-    ActionCode,
-    CommunicationWrapper,
-    HandRenderDataStateRequest,
-} from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
-import { HandFrame, RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
+import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
 import { HandSvg, HandSvgProps } from 'Components/Controls/HandsSvg';
-import { HandSvgCoordinate } from 'Components/Controls/HandsSvg';
 
 import MaskingOption from './MaskingOptions';
 import MaskingSlider, { SliderDirection } from './MaskingSlider';
 import { displayLensFeeds } from './displayLensFeeds';
+import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
 
 interface HandRenderState {
     handOne: HandSvgProps | undefined;
@@ -34,38 +25,7 @@ enum Lens {
 }
 
 const MaskingScreen = () => {
-    const [handData, setHandData] = useState<HandRenderState>({
-        handOne: {
-            indexTip: new HandSvgCoordinate(40, 10, 1),
-            indexKnuckle: new HandSvgCoordinate(40, 90, 1),
-            middleTip: new HandSvgCoordinate(70, 10, 1),
-            middleKnuckle: new HandSvgCoordinate(70, 90, 1),
-            ringTip: new HandSvgCoordinate(100, 10, 1),
-            ringKnuckle: new HandSvgCoordinate(100, 90, 1),
-            littleTip: new HandSvgCoordinate(130, 10, 1),
-            littleKnuckle: new HandSvgCoordinate(130, 90, 1),
-            thumbTip: new HandSvgCoordinate(10, 40, 1),
-            thumbKnuckle: new HandSvgCoordinate(60, 160, 1),
-            wrist: new HandSvgCoordinate(80, 160, 1),
-            primaryHand: true,
-            dotColor: 'blue',
-        },
-        handTwo: {
-            indexTip: new HandSvgCoordinate(40, 10, 1),
-            indexKnuckle: new HandSvgCoordinate(40, 90, 1),
-            middleTip: new HandSvgCoordinate(70, 10, 1),
-            middleKnuckle: new HandSvgCoordinate(70, 90, 1),
-            ringTip: new HandSvgCoordinate(100, 10, 1),
-            ringKnuckle: new HandSvgCoordinate(100, 90, 1),
-            littleTip: new HandSvgCoordinate(130, 10, 1),
-            littleKnuckle: new HandSvgCoordinate(130, 90, 1),
-            thumbTip: new HandSvgCoordinate(10, 40, 1),
-            thumbKnuckle: new HandSvgCoordinate(60, 160, 1),
-            wrist: new HandSvgCoordinate(80, 160, 1),
-            primaryHand: false,
-            dotColor: 'red',
-        },
-    });
+    const [handData, setHandData] = useState<HandRenderState>(defaultHandState);
     // ===== State =====
     const [mainLens, _setMainLens] = useState<Lens>(Lens.Left);
     const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
@@ -191,38 +151,6 @@ const MaskingScreen = () => {
         }
     };
 
-    const translateToCoordinate = (coordinate: Vector | undefined) => {
-        if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, -1);
-        return new HandSvgCoordinate(1000 * (1 - coordinate.X * 1) - 100, 1000 * coordinate.Y - 100, coordinate.Z);
-    };
-
-    const tipJointIndex = 3;
-    const knuckleJointIndex = 1;
-
-    const handToSvgData = (hand: RawHand, handIndex: number): HandSvgProps => {
-        const indexFinger = hand.Fingers.find((f: RawFinger) => f.Type == 1);
-        const middleFinger = hand.Fingers.find((f: RawFinger) => f.Type == 2);
-        const ringFinger = hand.Fingers.find((f: RawFinger) => f.Type == 3);
-        const littleFinger = hand.Fingers.find((f: RawFinger) => f.Type == 4);
-        const thumbFinger = hand.Fingers.find((f: RawFinger) => f.Type == 0);
-        const wrist = hand.WristPosition;
-        return {
-            indexTip: translateToCoordinate(indexFinger?.Bones[tipJointIndex]?.NextJoint),
-            indexKnuckle: translateToCoordinate(indexFinger?.Bones[knuckleJointIndex]?.PrevJoint),
-            middleTip: translateToCoordinate(middleFinger?.Bones[tipJointIndex]?.NextJoint),
-            middleKnuckle: translateToCoordinate(middleFinger?.Bones[knuckleJointIndex]?.PrevJoint),
-            ringTip: translateToCoordinate(ringFinger?.Bones[tipJointIndex]?.NextJoint),
-            ringKnuckle: translateToCoordinate(ringFinger?.Bones[knuckleJointIndex]?.PrevJoint),
-            littleTip: translateToCoordinate(littleFinger?.Bones[tipJointIndex]?.NextJoint),
-            littleKnuckle: translateToCoordinate(littleFinger?.Bones[knuckleJointIndex]?.PrevJoint),
-            thumbTip: translateToCoordinate(thumbFinger?.Bones[tipJointIndex]?.NextJoint),
-            thumbKnuckle: translateToCoordinate(thumbFinger?.Bones[knuckleJointIndex]?.PrevJoint),
-            wrist: translateToCoordinate(wrist),
-            primaryHand: hand.CurrentPrimary,
-            dotColor: handIndex ? 'blue' : 'red',
-        };
-    };
-
     return (
         <div>
             <div className="title-line" style={{ flexDirection: 'column' }}>
@@ -273,19 +201,6 @@ const MaskingScreen = () => {
             </div>
         </div>
     );
-};
-
-const setHandRenderState = (handRenderState: boolean, lens: string): void => {
-    const requestID = uuidgen();
-
-    const content = new HandRenderDataStateRequest(requestID, handRenderState, lens);
-    const request = new CommunicationWrapper(ActionCode.SET_HAND_DATA_STREAM_STATE, content);
-
-    const jsonContent = JSON.stringify(request);
-
-    ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, () => {
-        return true;
-    });
 };
 
 export default MaskingScreen;
