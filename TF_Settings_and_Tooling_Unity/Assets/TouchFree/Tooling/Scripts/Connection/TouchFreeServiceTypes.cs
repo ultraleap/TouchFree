@@ -19,9 +19,9 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // QUICK_SETUP_CONFIG - Represents a response from a quick setup with an updated configuration
     // QUICK_SETUP_RESPONSE - Represents a Success/Failure response from quick setup that has not completed
     // GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
-    // GET_TRACKING_STATE_RESPONSE - Represents a response from a GET_TRACKING_STATE with the current state of the tracking settings
     // SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
-    // SET_TRACKING_STATE_RESPONSE - Represents a response from a SET_TRACKING_STATE with the updated state of the tracking settings
+    // TRACKING_STATE - Represents the state of the TouchFree-Controllable Tracking settings, received
+    //                  as a response to a GET_TRACKING_STATE or SET_TRACKING_STATE
     internal enum ActionCode
     {
         INPUT_ACTION,
