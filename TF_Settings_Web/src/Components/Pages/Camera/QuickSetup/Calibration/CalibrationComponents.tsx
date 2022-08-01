@@ -288,7 +288,9 @@ export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ pro
     if (isZoomed) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
-                <p>Browser is not at 100% zoom. This is not recommended.</p>
+                <p>
+                    100% Zoom Recommended: <span style={{ fontWeight: 'bold' }}>Press Ctrl + 0</span>
+                </p>
             </div>
         );
     }
