@@ -94,7 +94,7 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         public bool succeeded;
         public string msg;
-        public T content;
+        public T? content;
 
         public SuccessWrapper(bool _success, string _message, T _content)
         {

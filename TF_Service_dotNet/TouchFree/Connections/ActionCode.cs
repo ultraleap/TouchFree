@@ -34,9 +34,8 @@ namespace Ultraleap.TouchFree.Library.Connections
         SET_HAND_DATA_STREAM_STATE_RESPONSE,
 
         GET_TRACKING_STATE,
-        GET_TRACKING_STATE_RESPONSE,
         SET_TRACKING_STATE,
-        SET_TRACKING_STATE_RESPONSE,
+        TRACKING_STATE,
     }
 
     public static class ActionCodeExtensions

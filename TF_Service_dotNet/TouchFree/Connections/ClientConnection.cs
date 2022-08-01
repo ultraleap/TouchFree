@@ -120,16 +120,9 @@ namespace Ultraleap.TouchFree.Library.Connections
             SendResponse(_response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
         }
 
-        public void SendTrackingResponse<T>(T _state, ActionCode _action)
+        public void SendTrackingState(TrackingApiState _state)
         {
-            if (_action == ActionCode.GET_TRACKING_STATE)
-            {
-                SendResponse(_state, ActionCode.GET_TRACKING_STATE_RESPONSE);
-            }
-            else if (_action == ActionCode.SET_TRACKING_STATE)
-            {
-                SendResponse(_state, ActionCode.SET_TRACKING_STATE_RESPONSE);
-            }
+            SendResponse(_state, ActionCode.TRACKING_STATE);
         }
 
         internal void SendResponse<T>(T _response, ActionCode actionCode)

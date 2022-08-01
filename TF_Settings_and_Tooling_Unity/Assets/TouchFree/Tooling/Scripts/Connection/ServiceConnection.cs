@@ -140,6 +140,11 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     ConnectionManager.messageReceiver.serviceStatusQueue.Enqueue(serviceStatus);
                     break;
 
+                case ActionCode.TRACKING_STATE:
+                    TrackingStateResponse trackingResponse = DeserializeTrackingApiResponse(content);
+                    ConnectionManager.messageReceiver.trackingStateQueue.Enqueue(trackingResponse);
+                    break;
+
                 case ActionCode.CONFIGURATION_RESPONSE:
                 case ActionCode.VERSION_HANDSHAKE_RESPONSE:
                 case ActionCode.SERVICE_STATUS_RESPONSE:
@@ -149,11 +154,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     ConnectionManager.messageReceiver.responseQueue.Enqueue(response);
                     break;
 
-                case ActionCode.GET_TRACKING_STATE_RESPONSE:
-                case ActionCode.SET_TRACKING_STATE_RESPONSE:
-                    TrackingStateResponse trackingResponse = JsonUtility.FromJson<TrackingStateResponse>(content);
-                    ConnectionManager.messageReceiver.trackingStateQueue.Enqueue(trackingResponse);
-                    break;
             }
         }
 
@@ -161,7 +161,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Used internally to send or request information from the Service via the <webSocket>. To
         // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
         // via the _callback parameter.
-        internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback)
+        internal void SendMessage(string _message, string _requestID, Action<WebSocketResponse> _callback = null)
         {
             if (_requestID == "")
             {
@@ -254,7 +254,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             {
                 ConnectionManager.messageReceiver.responseCallbacks.Add(requestID, new ResponseCallback(DateTime.Now.Millisecond, _callback));
             }
-            if (_callback != null)
+            if (_configCallback != null)
             {
                 ConnectionManager.messageReceiver.configStateCallbacks.Add(requestID, new ConfigStateCallback(DateTime.Now.Millisecond, _configCallback));
             }
@@ -267,9 +267,13 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             webSocket.Send(jsonMessage);
         }
 
-        internal void RequestTrackingState(Action<TrackingStateResponse> _trackingCallback)
+        // Function: SendQuickSetupMessage
+        // Used internally to send data about quick setup to the Service via the <webSocket>
+        // Provides an asynchronous <TrackingStateResponse> via the _stateCallback parameter on a successful response.
+        // Provides an asynchronous <WebSocketResponse> via the _responseCallback parameter if there are issues to communicate why.
+        internal void RequestTrackingState(Action<TrackingStateResponse> _stateCallback)
         {
-            if (_trackingCallback == null)
+            if (_stateCallback == null)
             {
                 Debug.Log("Request for tracking state failed. This is due to a missing callback");
                 return;
@@ -277,7 +281,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
             string requestID = Guid.NewGuid().ToString();
 
-            ConnectionManager.messageReceiver.trackingStateCallbacks.Add(requestID, new TrackingStateCallback(DateTime.Now.Millisecond, _trackingCallback));
+            ConnectionManager.messageReceiver.trackingStateCallbacks.Add(requestID, new TrackingStateCallback(DateTime.Now.Millisecond, _stateCallback));
 
             var request = new ServiceStatusRequest(requestID);
             var message = new CommunicationWrapper<ServiceStatusRequest>(ActionCode.GET_TRACKING_STATE.ToString(), request);
@@ -285,6 +289,120 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             string jsonMessage = JsonUtility.ToJson(message);
 
             webSocket.Send(jsonMessage);
+        }
+
+        internal void RequestTrackingChange(string _message, string _requestID, Action<TrackingStateResponse> _stateCallback = null)
+        {
+            if (_requestID == "")
+            {
+                if (_stateCallback != null)
+                {
+                    string message = "Tracking State change request failed. This is due to a missing or invalid requestID";
+
+                    var maskResponse = new SuccessWrapper<MaskData?>(false, message, null);
+                    var boolResponse = new SuccessWrapper<bool?>(false, message, null);
+
+                    TrackingStateResponse response = new TrackingStateResponse()
+                    {
+                        requestID = "",
+                        mask = maskResponse,
+                        allowImages = boolResponse,
+                        cameraReversed = boolResponse,
+                        analyticsEnabled = boolResponse
+                    };
+
+                    _stateCallback.Invoke(response);
+                }
+
+                Debug.LogError("Tracking State change request failed. This is due to a missing or invalid requestID");
+                return;
+            }
+
+            if (_stateCallback != null)
+            {
+                ConnectionManager.messageReceiver.trackingStateCallbacks.Add(_requestID, new TrackingStateCallback(DateTime.Now.Millisecond, _stateCallback));
+            }
+
+            webSocket.Send(_message);
+        }
+
+        private static TrackingStateResponse DeserializeTrackingApiResponse(string raw)
+        {
+            var response = new TrackingStateResponse();
+
+            Regex requestIdExtractor = new Regex(@"""requestID"":""([\w-]+?)"",");
+            Regex memberIdentifier = new Regex(@"(?:""(\w+?)"":(?:(?:{""succeeded"":((?:true)|(?:false)),""msg"":""([\w\s]+?)"",(?:""content"":((?:{.+?})|(?:(?:true)|(?:false)))})?)),?)");
+
+            Match requestIdMatch = requestIdExtractor.Match(raw);
+
+            response.requestID = requestIdMatch.Groups[1].Value;
+
+            // each member of matches is 1 member of the TrackingApiResponse bar the requestID, extracted seperately
+            MatchCollection matches = memberIdentifier.Matches(raw);
+
+            // Debug.Log($"Got {matches.Count} members with the member identifier");
+
+            foreach (Match match in matches)
+            {
+                switch (match.Groups[1].Value)
+                {
+                    case "mask":
+                        response.mask = GenerateMaskDataFromMatch(match);
+                        break;
+                    case "allowImages":
+                        response.allowImages = GenerateBoolDataFromMatch(match);
+                        break;
+                    case "cameraReversed":
+                        response.cameraReversed = GenerateBoolDataFromMatch(match);
+                        break;
+                    case "analyticsEnabled":
+                        response.analyticsEnabled = GenerateBoolDataFromMatch(match);
+                        break;
+                }
+            }
+
+            return response;
+        }
+
+        private static SuccessWrapper<MaskData?> GenerateMaskDataFromMatch(Match match)
+        {
+            var result = new SuccessWrapper<MaskData?>();
+
+            result.succeeded = Convert.ToBoolean(match.Groups[2].Value);
+            result.msg = match.Groups[3].Value;
+
+            if (match.Groups.Count > 3)
+            {
+                Regex maskSplitter = new Regex(@"\{""lower"":([\d.]+?),""upper"":([\d.]+?),""right"":([\d.]+?),""left"":([\d.]+?)\}");
+                Match maskMatch = maskSplitter.Match(match.Groups[4].Value);
+
+                result.content = new MaskData(
+                    Convert.ToSingle(maskMatch.Groups[1].Value),
+                    Convert.ToSingle(maskMatch.Groups[2].Value),
+                    Convert.ToSingle(maskMatch.Groups[3].Value),
+                    Convert.ToSingle(maskMatch.Groups[4].Value)
+                );
+            }
+
+            return result;
+        }
+
+        private static SuccessWrapper<bool?> GenerateBoolDataFromMatch(Match match)
+        {
+            var result = new SuccessWrapper<bool?>();
+
+            result.succeeded = Convert.ToBoolean(match.Groups[2].Value);
+            result.msg = match.Groups[3].Value;
+
+            if (match.Groups.Count > 3)
+            {
+                Regex maskSplitter = new Regex(@"\{""lower"":([\d.]+?),""upper"":([\d.]+?),""right"":([\d.]+?),""left"":([\d.]+?)\}");
+                Match maskMatch = maskSplitter.Match(match.Groups[4].Value);
+
+                result.content = Convert.ToBoolean(match.Groups[4].Value);
+            }
+
+            return result;
         }
     }
 }

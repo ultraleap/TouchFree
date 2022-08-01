@@ -84,7 +84,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 };
                 webSocket.OnError += (sender, e) =>
                 {
-                    Console.WriteLine("DiagnosticAPI error! " + e.Message + "\n" + e.Exception.ToString());
+                    Console.WriteLine("DiagnosticAPI error! " + e.Message + "\n");
                     status = Status.Expired;
                 };
                 webSocket.OnClose += (sender, e) =>

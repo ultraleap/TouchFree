@@ -19,9 +19,9 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // QUICK_SETUP_CONFIG - Represents a response from a quick setup with an updated configuration
     // QUICK_SETUP_RESPONSE - Represents a Success/Failure response from quick setup that has not completed
     // GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
-    // GET_TRACKING_STATE_RESPONSE - Represents a response from a GET_TRACKING_STATE with the current state of the tracking settings
     // SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
-    // SET_TRACKING_STATE_RESPONSE - Represents a response from a SET_TRACKING_STATE with the updated state of the tracking settings
+    // TRACKING_STATE - Represents the state of the TouchFree-Controllable Tracking settings, received
+    //                  as a response to a GET_TRACKING_STATE or SET_TRACKING_STATE
     internal enum ActionCode
     {
         INPUT_ACTION,
@@ -50,9 +50,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         QUICK_SETUP_RESPONSE,
 
         GET_TRACKING_STATE,
-        GET_TRACKING_STATE_RESPONSE,
         SET_TRACKING_STATE,
-        SET_TRACKING_STATE_RESPONSE,
+        TRACKING_STATE,
     }
 
     // Enum: HandPresenceState
@@ -284,6 +283,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             content = _content;
         }
     }
+
     // Enum: QuickSetupPosition
     // The position used for quick setup
     public enum QuickSetupPosition
@@ -297,13 +297,20 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public struct SuccessWrapper<T>
     {
         // Variable: succeeded
-        bool succeeded;
+        public bool succeeded;
 
         // Variable: msg
-        string msg;
+        public string msg;
 
         // Variable: content
-        T? content;
+        public T content;
+
+        public SuccessWrapper(bool _success, string _message, T _content)
+        {
+            succeeded = _success;
+            msg = _message;
+            content = _content;
+        }
     }
 
     // Class: TrackingStateResponse
@@ -314,21 +321,69 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         public string requestID;
 
         // Variable: mask
-        SuccessWrapper<MaskData>? mask;
+        public SuccessWrapper<MaskData?>? mask;
 
         // Variable: cameraOrientation
-        SuccessWrapper<bool>? cameraReversed;
+        public SuccessWrapper<bool?>? cameraReversed;
 
         // Variable: allowImages
-        SuccessWrapper<bool>? allowImages;
+        public SuccessWrapper<bool?>? allowImages;
 
         // Variable: analyticsEnabled
-        SuccessWrapper<bool>? analyticsEnabled;
+        public SuccessWrapper<bool?>? analyticsEnabled;
     }
 
     // Class: TrackingState
+    // Represents the settings available for modification in the Tracking API
+    public struct TrackingState
+    {
+        // Variable: mask
+        public MaskData? mask;
+        // Variable: cameraOrientation
+        public bool? cameraReversed;
+        // Variable: allowImages
+        public bool? allowImages;
+        // Variable: analyticsEnabled
+        public bool? analyticsEnabled;
+
+        public TrackingState(MaskData? _mask,
+                       bool? _cameraReversed,
+                       bool? _allowImages,
+                       bool? _analyticsEnabled)
+        {
+            this.mask = _mask;
+            this.cameraReversed = _cameraReversed;
+            this.allowImages = _allowImages;
+            this.analyticsEnabled = _analyticsEnabled;
+        }
+
+        public TrackingState(TrackingStateResponse _response)
+        {
+            if (_response.mask.HasValue)
+            { this.mask = _response.mask.Value.content; }
+            else
+            { this.mask = null; }
+
+            if (_response.cameraReversed.HasValue)
+            { this.cameraReversed = _response.cameraReversed.Value.content; }
+            else
+            { this.cameraReversed = null; }
+
+            if (_response.allowImages.HasValue)
+            { this.allowImages = _response.allowImages.Value.content; }
+            else
+            { this.allowImages = null; }
+
+            if (_response.analyticsEnabled.HasValue)
+            { this.analyticsEnabled = _response.analyticsEnabled.Value.content; }
+            else
+            { this.analyticsEnabled = null; }
+        }
+    }
+
+    // Class: TrackingStateRequest
     // Used to construct a SET_TRACKING_STATE request.
-    public class TrackingState
+    public class TrackingStateRequest
     {
         // Variable: requestID
         public string requestID;
@@ -341,7 +396,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // Variable: analyticsEnabled
         bool? analyticsEnabled;
 
-        public TrackingState(string _id,
+        public TrackingStateRequest(string _id,
                        MaskData? _mask,
                        bool? _cameraReversed,
                        bool? _allowImages,
@@ -355,11 +410,20 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         }
     }
 
-    public struct MaskData {
+    public struct MaskData
+    {
         public float lower;
         public float upper;
         public float right;
         public float left;
+
+        public MaskData(float _lower, float _upper, float _right, float _left)
+        {
+            this.lower = _lower;
+            this.upper = _upper;
+            this.right = _right;
+            this.left = _left;
+        }
     }
 
 
@@ -383,7 +447,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public struct TrackingStateCallback
     {
         // Variable: timestamp
-        float timestamp;
+        public float timestamp;
 
         // Variable: callback
         public Action<TrackingStateResponse> callback;

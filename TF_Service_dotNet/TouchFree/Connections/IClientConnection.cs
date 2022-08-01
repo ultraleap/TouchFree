@@ -17,7 +17,7 @@ namespace Ultraleap.TouchFree.Library
         void SendStatus(ServiceStatus response);
         void SendQuickSetupConfigFile(ConfigState config);
         void SendQuickSetupResponse(ResponseToClient response);
-        void SendTrackingResponse<T>(T state, ActionCode action);
+        void SendTrackingState(TrackingApiState state);
         void SendHandDataStreamStateResponse(ResponseToClient response);
         void SendHandPresenceEvent(HandPresenceEvent handsLostEvent);
     }

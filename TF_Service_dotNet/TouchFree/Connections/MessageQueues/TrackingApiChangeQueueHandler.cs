@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
@@ -10,6 +9,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         public TrackingResponse? trackingApiResponse = null;
         private readonly ITrackingDiagnosticApi diagnosticApi;
+        private readonly object trackingResponseLock = new object();
 
         public TrackingApiChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
         {
@@ -21,6 +21,18 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             diagnosticApi.OnAnalyticsResponse += OnAnalytics;
         }
 
+        protected override void OnUpdate()
+        {
+            if (trackingApiResponse.HasValue)
+            {
+                CheckDApiResponse();
+            }
+            else
+            {
+                base.OnUpdate();
+            }
+        }
+
         protected override void Handle(IncomingRequest _request)
         {
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
@@ -28,12 +40,23 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             // Explicitly check for requestID else we can't respond
             if (!RequestIdExists(contentObj))
             {
-                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _request.content);
-                response.message = "Tracking State change request failed. This is due to a missing or invalid requestID";
+                string message = "Tracking State change request failed. This is due to a missing or invalid requestID";
 
-                // This is a failed request, do not continue with sending the status,
+                var maskResponse = new SuccessWrapper<MaskingData?>(false, message, null);
+                var boolResponse = new SuccessWrapper<bool?>(false, message, null);
+
+                TrackingApiState state = new TrackingApiState()
+                {
+                    requestID = "",
+                    mask = maskResponse,
+                    allowImages = boolResponse,
+                    cameraReversed = boolResponse,
+                    analyticsEnabled = boolResponse
+                };
+
+                // This is a failed request, do not continue with processing the request,
                 // the Client will have no way to handle the config state
-                clientMgr.SendTrackingResponse(response, _request.action);
+                clientMgr.SendTrackingState(state);
                 return;
             }
 
@@ -49,25 +72,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        void CheckDApiResponse()
-        {
-            if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
-            {
-                TrackingResponse response = trackingApiResponse.Value;
-                trackingApiResponse = null;
-
-                SendDApiResponse(response);
-            }
-        }
-
-        void SendDApiResponse(TrackingResponse _response)
-        {
-            var content = JsonConvert.SerializeObject(_response.state);
-
-            ActionCode action = _response.isGetRequest ? ActionCode.GET_TRACKING_STATE : ActionCode.SET_TRACKING_STATE;
-
-            clientMgr.SendTrackingResponse(_response, action);
-        }
+        #region DiagnosticAPI_Requests
 
         void HandleGetTrackingStateRequest(IncomingRequest _request)
         {
@@ -118,21 +123,23 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        private bool CheckSuccess<T>(SuccessWrapper<T>? wrapper)
+        void CheckDApiResponse()
         {
-            if (wrapper.HasValue)
+            lock (trackingResponseLock)
             {
-                return wrapper.Value.succeeded;
-            }
-            else
-            {
-                return true;
+                if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
+                {
+                    TrackingResponse response = trackingApiResponse.Value;
+                    trackingApiResponse = null;
+
+                    clientMgr.SendTrackingState(response.state);
+                }
             }
         }
 
         public bool ResponseIsReady(TrackingResponse _response)
         {
-            return !_response.needsMask && !_response.needsImages && !_response.needsOrientation && !_response.needsAnalytics;
+            return (!_response.needsMask && !_response.needsImages && !_response.needsOrientation && !_response.needsAnalytics);
         }
 
         public void OnMasking(ImageMaskData? _mask, string _message)
@@ -217,5 +224,6 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 trackingApiResponse = response;
             }
         }
+        #endregion
     }
 }

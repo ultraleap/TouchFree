@@ -36,28 +36,50 @@ namespace Ultraleap.TouchFree.Tooling.Tracking
         // Provide a _callback if you require confirmation that your settings were used correctly.
         // If your _callback requires context it should be bound to that context via .bind().
         public static void RequestTrackingChange(
-            Action<WebSocketResponse>? _callback,
-            MaskData? _mask,
-            bool? _allowImages,
-            bool? _cameraReversed,
-            bool? _analyticsEnabled
-        )
+            TrackingState _state,
+            Action<TrackingStateResponse> _callback = null)
         {
             Guid requestID = Guid.NewGuid();
 
-            var content = new TrackingState(
-                requestID.ToString(),
-                _mask,
-                _cameraReversed,
-                _allowImages,
-                _analyticsEnabled
-            );
+            var content = StringifyTrackingState(_state);
 
-            var request = new CommunicationWrapper<TrackingState>(ActionCode.SET_TRACKING_STATE.ToString(), content);
+            string jsonContent = "";
+            jsonContent += "{\"action\":\"";
+            jsonContent += ActionCode.SET_TRACKING_STATE + "\",\"content\":{\"requestID\":\"";
+            jsonContent += requestID + "\",";
+            jsonContent += content + "}}";
 
-            var jsonContent = JsonUtility.ToJson(request);
+            Debug.Log("Sending Tracking Request:");
+            Debug.Log(jsonContent);
 
-            ConnectionManager.serviceConnection?.SendMessage(jsonContent, requestID.ToString(), _callback);
+            if (_callback == null) {
+                ConnectionManager.serviceConnection?.RequestTrackingChange(jsonContent, requestID.ToString());
+            } else {
+                ConnectionManager.serviceConnection?.RequestTrackingChange(jsonContent, requestID.ToString(), _callback);
+            }
+        }
+
+        private static string StringifyTrackingState(TrackingState _state)
+        {
+            string newContent = "";
+
+            Debug.Log(JsonUtility.ToJson(_state));
+
+            if (_state.mask.HasValue) {
+                newContent += "\"mask\": " + JsonUtility.ToJson(_state.mask.Value) + ",";
+            }
+
+            if (_state.allowImages.HasValue) {
+                newContent += $"\"allowImages\": {_state.allowImages.Value.ToString().ToLower()},";
+            }
+            if (_state.cameraReversed.HasValue) {
+                newContent += $"\"cameraReversed\": {_state.cameraReversed.Value.ToString().ToLower()},";
+            }
+            if (_state.analyticsEnabled.HasValue) {
+                newContent += $"\"analyticsEnabled\": {_state.analyticsEnabled.Value.ToString().ToLower()},";
+            }
+
+            return newContent;
         }
     }
 }

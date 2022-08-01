@@ -213,11 +213,11 @@ namespace Ultraleap.TouchFree.Library.Connections
             });
         }
 
-        public void SendTrackingResponse<T>(T _state, ActionCode _action)
+        public void SendTrackingState(TrackingApiState _state)
         {
             SendMessageToWebSockets((connection) =>
             {
-                connection.SendTrackingResponse(_state, _action);
+                connection.SendTrackingState(_state);
             });
         }
 

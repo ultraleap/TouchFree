@@ -16,7 +16,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         {
             updateBehaviour = _updateBehaviour;
 
-            updateBehaviour.OnUpdate += CheckQueue;
+            updateBehaviour.OnUpdate += OnUpdate;
             clientMgr = _clientMgr;
         }
 
@@ -29,7 +29,12 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             queue.Enqueue(new IncomingRequest(content.action, content.requestId, content.content));
         }
 
-        void CheckQueue()
+        protected virtual void OnUpdate()
+        {
+            CheckQueue();
+        }
+
+        protected void CheckQueue()
         {
             IncomingRequest content;
             if (queue.TryPeek(out content))
