@@ -96,7 +96,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             bool needsOrientation = contentObj.TryGetValue("cameraReversed", out cameraReversedToken);
             bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
 
-            trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsMask);
+            trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsAnalytics);
 
             if (needsMask)
             {
