@@ -68,7 +68,7 @@ export class ConfigurationManager {
   public static RequestConfigFileChange(
     _interaction: Partial<InteractionConfig> | null,
     _physical: Partial<PhysicalConfig> | null,
-    _callback: (detail: WebSocketResponse) => void
+    _callback: (detail: WebSocketResponse) => void | null
   ): void {
     ConfigurationManager.BaseConfigChangeRequest(
       _interaction,
@@ -81,7 +81,7 @@ export class ConfigurationManager {
   private static BaseConfigChangeRequest(
     _interaction: Partial<InteractionConfig> | null,
     _physical: Partial<PhysicalConfig> | null,
-    _callback: (detail: WebSocketResponse) => void,
+    _callback: (detail: WebSocketResponse) => void | null,
     action: ActionCode
   ): void {
     let requestID = uuidgen();

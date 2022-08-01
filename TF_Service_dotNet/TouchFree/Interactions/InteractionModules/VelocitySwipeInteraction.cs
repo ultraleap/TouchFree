@@ -12,26 +12,38 @@ namespace Ultraleap.TouchFree.Library.Interactions
     {
         public override InteractionType InteractionType { get; } = InteractionType.VELOCITYSWIPE;
 
-        private Vector2 previousScreenPos = Vector2.Zero;
+        private readonly float minScrollVelocity_mmps = 625f;
+        private readonly float upwardsMinVelocityDecrease_mmps = 50f;
+        private readonly float downwardsMinVelocityIncrease_mmps = 50f;
+        private readonly float maxReleaseVelocity_mmps = 200f;
 
-        float minScrollVelocity_mmps = 500f;
-        float maxReleaseVelocity_mmps = 0f;
+        private readonly float maxLateralVelocity_mmps = 300f;
+        private readonly float maxOpposingVelocity_mmps = 65f;
 
-        float maxOpposingVelocity_mmps = 150f;
+        private readonly float minSwipeLength = 10f;
+        private readonly float maxSwipeWidth = 10f;
+        private readonly float swipeWidthScaling = 0.2f;
 
-        bool pressing = false;
-        Direction currentDirection;
+        private readonly double scrollDelayMs = 450;
+        private readonly Stopwatch scrollDelayStopwatch = new Stopwatch();
 
-        double scrollDelayMs = 500;
-        Stopwatch scrollDelayStopwatch = new Stopwatch();
-        bool scrollDisallowed = false;
-
-        long previousTime = 0;
-
-        Axis lockAxisToOnly = Axis.NONE;
-        bool allowBidirectional = false;
+        private readonly Axis lockAxisToOnly = Axis.NONE;
+        private readonly bool allowBidirectional = false;
 
         private readonly PositionFilter filter;
+
+
+        private bool pressing = false;
+        private Direction currentDirection;
+
+        private bool scrollDisallowed = false;
+
+        private long previousTime = 0;
+
+        private Vector2 previousScreenPos = Vector2.Zero;
+        private Vector2 scrollOrigin = Vector2.Zero;
+        private Vector2? potentialScrollOrigin;
+
 
         public VelocitySwipeInteraction(
             IHandManager _handManager,
@@ -44,9 +56,15 @@ namespace Ultraleap.TouchFree.Library.Interactions
             if (_interactionTuning?.Value?.VelocitySwipeSettings != null)
             {
                 minScrollVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MinScrollVelocity_mmps;
+                upwardsMinVelocityDecrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.UpwardsMinVelocityDecrease_mmps;
+                downwardsMinVelocityIncrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.DownwardsMinVelocityIncrease_mmps;
                 maxReleaseVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxReleaseVelocity_mmps;
+                maxLateralVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxLateralVelocity_mmps;
                 maxOpposingVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxOpposingVelocity_mmps;
                 scrollDelayMs = _interactionTuning.Value.VelocitySwipeSettings.ScrollDelayMs;
+                minSwipeLength = _interactionTuning.Value.VelocitySwipeSettings.MinSwipeLength;
+                maxSwipeWidth = _interactionTuning.Value.VelocitySwipeSettings.MaxSwipeWidth;
+                swipeWidthScaling = _interactionTuning.Value.VelocitySwipeSettings.SwipeWidthScaling;
 
                 if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll && _interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
                 {
@@ -110,13 +128,31 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             if (!pressing && CheckIfScrollStart(dPerp, absPerp))
             {
-                pressing = true;
+                if (potentialScrollOrigin.HasValue)
+                {
+                    var changeFromPossibleOrigin = Vector2.Abs(positions.CursorPosition - potentialScrollOrigin.Value);
+                    if (changeFromPossibleOrigin.X > minSwipeLength || changeFromPossibleOrigin.Y > minSwipeLength)
+                    {
+                        pressing = true;
+                        scrollOrigin = previousScreenPos;
+                        potentialScrollOrigin = null;
 
-                SetDirection(dPerp, absPerp);
+                        SetDirection(dPerp, absPerp);
 
-                inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 0);
+                        inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 1f);
+                    }
+                    else
+                    {
+                        inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 0);
+                    }
+                }
+                else
+                {
+                    potentialScrollOrigin = previousScreenPos;
+                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 0);
+                }
             }
-            else if (pressing && CheckIfChangedDirection(dPerp))
+            else if (pressing && CheckIfScrollEnd(dPerp))
             {
                 scrollDelayStopwatch.Restart();
                 scrollDisallowed = true;
@@ -125,14 +161,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
             }
             else
             {
-                if (pressing)
-                {
-                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 1);
-                }
-                else
-                {
-                    inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 0);
-                }
+                potentialScrollOrigin = null;
+                inputActionResult = CreateInputActionResult(InputType.MOVE, positions, pressing ? 1 : 0);
             }
 
             previousScreenPos = positions.CursorPosition;
@@ -143,27 +173,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         void SetDirection(Vector2 _dPerp, Vector2 _absPerp)
         {
-            if (_absPerp.X > minScrollVelocity_mmps)
+            if (_absPerp.X >= _absPerp.Y)
             {
-                if(_dPerp.X > 0)
-                {
-                    currentDirection = Direction.RIGHT;
-                }
-                else
-                {
-                    currentDirection = Direction.LEFT;
-                }
+                currentDirection = _dPerp.X > 0 ? Direction.RIGHT : Direction.LEFT;
             }
             else
             {
-                if (_dPerp.Y > 0)
-                {
-                    currentDirection = Direction.UP;
-                }
-                else
-                {
-                    currentDirection = Direction.DOWN;
-                }
+                currentDirection = _dPerp.Y > 0 ? Direction.UP : Direction.DOWN;
             }
         }
 
@@ -176,21 +192,26 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             if (allowBidirectional)
             {
-                if (_absPerp.X > minScrollVelocity_mmps || _absPerp.Y > minScrollVelocity_mmps)
+                if (_absPerp.X > minScrollVelocity_mmps || VerticalVelocityOverMinScrollVelocity(_dPerp))
                 {
                     return true;
                 }
             }
             else
             {
-                if (((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxOpposingVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
-                    ((_absPerp.Y > minScrollVelocity_mmps) && (_absPerp.X < maxOpposingVelocity_mmps) && lockAxisToOnly != Axis.X))
+                if (((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
+                    (VerticalVelocityOverMinScrollVelocity(_dPerp) && (_absPerp.X < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.X))
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        bool VerticalVelocityOverMinScrollVelocity(Vector2 _dPerp)
+        {
+            return _dPerp.Y > (minScrollVelocity_mmps - upwardsMinVelocityDecrease_mmps) || -_dPerp.Y > (downwardsMinVelocityIncrease_mmps + minScrollVelocity_mmps);
         }
 
         bool CheckIfScrollAllowed(Vector2 _dPerp)
@@ -202,28 +223,16 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     switch (currentDirection)
                     {
                         case Direction.LEFT:
-                            if (_dPerp.X < maxOpposingVelocity_mmps)
-                            {
-                                scrollDisallowed = false;
-                            }
+                            scrollDisallowed = _dPerp.X >= maxOpposingVelocity_mmps;
                             break;
                         case Direction.RIGHT:
-                            if (_dPerp.X > -maxOpposingVelocity_mmps)
-                            {
-                                scrollDisallowed = false;
-                            }
+                            scrollDisallowed = _dPerp.X <= -maxOpposingVelocity_mmps;
                             break;
                         case Direction.UP:
-                            if (_dPerp.Y > -maxOpposingVelocity_mmps)
-                            {
-                                scrollDisallowed = false;
-                            }
+                            scrollDisallowed = _dPerp.Y <= -maxOpposingVelocity_mmps;
                             break;
                         case Direction.DOWN:
-                            if (_dPerp.Y < maxOpposingVelocity_mmps)
-                            {
-                                scrollDisallowed = false;
-                            }
+                            scrollDisallowed = _dPerp.Y >= maxOpposingVelocity_mmps;
                             break;
                     }
                 }
@@ -234,37 +243,24 @@ namespace Ultraleap.TouchFree.Library.Interactions
             return true;
         }
 
-        bool CheckIfChangedDirection(Vector2 _dPerp)
+        bool CheckIfScrollEnd(Vector2 _dPerp)
         {
+            var changeFromScrollOriginPx = positions.CursorPosition - scrollOrigin;
+            var changeFromScrollOriginMm = Vector2.Abs(virtualScreen.PixelsToMillimeters(changeFromScrollOriginPx));
+
             switch (currentDirection)
             {
                 case Direction.LEFT:
-                    if(_dPerp.X > -maxReleaseVelocity_mmps)
-                    {
-                        return true;
-                    }
-                    break;
+                    return _dPerp.X > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
                 case Direction.RIGHT:
-                    if (_dPerp.X < maxReleaseVelocity_mmps)
-                    {
-                        return true;
-                    }
-                    break;
+                    return _dPerp.X < maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
                 case Direction.UP:
-                    if (_dPerp.Y < maxReleaseVelocity_mmps)
-                    {
-                        return true;
-                    }
-                    break;
+                    return _dPerp.Y < maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
                 case Direction.DOWN:
-                    if (_dPerp.Y > -maxReleaseVelocity_mmps)
-                    {
-                        return true;
-                    }
-                    break;
+                    return _dPerp.Y > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         enum Direction
