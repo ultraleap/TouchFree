@@ -284,13 +284,8 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
 
 export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ promptStyle }) => {
     const { isFullScreen, isZoomed } = useWindowSize();
-    const [display, setDisplay] = useState({ zoom: false, fullscreen: false });
 
-    useEffect(() => {
-        setDisplay({ zoom: isZoomed, fullscreen: !isFullScreen });
-    }, [isFullScreen, isZoomed]);
-
-    if (display.zoom) {
+    if (isZoomed) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
                 <p>Browser is not at 100% zoom. This is not recommended.</p>
@@ -298,7 +293,7 @@ export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ pro
         );
     }
 
-    if (display.fullscreen) {
+    if (!isFullScreen) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
                 <p>
