@@ -1,13 +1,15 @@
 import { v4 as uuidgen } from 'uuid';
+
+import { Vector } from 'TouchFree/Configuration/ConfigurationTypes';
 import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
     HandRenderDataStateRequest,
 } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
 import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
-import { Vector } from 'TouchFree/Configuration/ConfigurationTypes';
+
+import { HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
 
 export const defaultHandState = {
     handOne: {
@@ -54,7 +56,6 @@ export const setHandRenderState = (handRenderState: boolean, lens: string): void
         return true;
     });
 };
-
 
 const translateToCoordinate = (coordinate: Vector | undefined) => {
     if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, -1);

@@ -78,12 +78,9 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
 
     const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600 / data.middleKnuckle.z;
     const pointRadius = 5 * scalingFactor;
-    const pointLineWidth = 0;
     const strokeWidth = 5 * scalingFactor;
 
-    const dotColor = 'url(\'#dotGradient\')';
-    const lineColor = 'white';
-    const dotBorderColour = 'black';
+    const strokeData: LineStrokeData = { stroke: 'white', strokeWidth: strokeWidth };
 
     return (
         <svg style={{ marginLeft: '-800px' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800">
@@ -93,209 +90,106 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                     <stop offset="100%" stopColor="#00CCCE" />
                 </radialGradient>
             </defs>
-            <line
+
+            <LineSvg id="index-wrist" point1={data.indexKnuckle} point2={data.thumbKnuckle} strokeData={strokeData} />
+            <LineSvg id="index-middle" point1={data.indexKnuckle} point2={data.middleKnuckle} strokeData={strokeData} />
+            <LineSvg id="middle-ring" point1={data.middleKnuckle} point2={data.ringKnuckle} strokeData={strokeData} />
+            <LineSvg id="ring-little" point1={data.ringKnuckle} point2={data.littleKnuckle} strokeData={strokeData} />
+
+            <LineSvg id="little-wrist" point1={data.littleKnuckle} point2={data.wrist} strokeData={strokeData} />
+            <LineSvg id="thumb-wrist" point1={data.thumbKnuckle} point2={data.wrist} strokeData={strokeData} />
+
+            <FingerSvg
                 id="index"
-                x1={data.indexTip.x}
-                y1={data.indexTip.y}
-                x2={data.indexKnuckle.x}
-                y2={data.indexKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
+                point1={data.indexTip}
+                point2={data.indexKnuckle}
+                pointRadius={pointRadius}
+                strokeData={strokeData}
             />
-            <line
-                id="index-wrist"
-                x1={data.indexKnuckle.x}
-                y1={data.indexKnuckle.y}
-                x2={data.thumbKnuckle.x}
-                y2={data.thumbKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
-            />
-            <line
-                id="index-middle"
-                x1={data.indexKnuckle.x}
-                y1={data.indexKnuckle.y}
-                x2={data.middleKnuckle.x}
-                y2={data.middleKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
-            />
-            <circle
-                id="index-tip"
-                cx={data.indexTip.x}
-                cy={data.indexTip.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-            <circle
-                id="index-knuckle"
-                cx={data.indexKnuckle.x}
-                cy={data.indexKnuckle.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-
-            <line
+            <FingerSvg
                 id="middle"
-                x1={data.middleTip.x}
-                y1={data.middleTip.y}
-                x2={data.middleKnuckle.x}
-                y2={data.middleKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
+                point1={data.middleTip}
+                point2={data.middleKnuckle}
+                pointRadius={pointRadius}
+                strokeData={strokeData}
             />
-            <line
-                id="middle-ring"
-                x1={data.middleKnuckle.x}
-                y1={data.middleKnuckle.y}
-                x2={data.ringKnuckle.x}
-                y2={data.ringKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
-            />
-            <circle
-                id="middle-tip"
-                cx={data.middleTip.x}
-                cy={data.middleTip.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-            <circle
-                id="middle-knuckle"
-                cx={data.middleKnuckle.x}
-                cy={data.middleKnuckle.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-
-            <line
+            <FingerSvg
                 id="ring"
-                x1={data.ringTip.x}
-                y1={data.ringTip.y}
-                x2={data.ringKnuckle.x}
-                y2={data.ringKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
+                point1={data.ringTip}
+                point2={data.ringKnuckle}
+                pointRadius={pointRadius}
+                strokeData={strokeData}
             />
-            <line
-                id="ring-little"
-                x1={data.ringKnuckle.x}
-                y1={data.ringKnuckle.y}
-                x2={data.littleKnuckle.x}
-                y2={data.littleKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
-            />
-            <circle
-                id="ring-tip"
-                cx={data.ringTip.x}
-                cy={data.ringTip.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-            <circle
-                id="ring-knuckle"
-                cx={data.ringKnuckle.x}
-                cy={data.ringKnuckle.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-
-            <line
+            <FingerSvg
                 id="little"
-                x1={data.littleTip.x}
-                y1={data.littleTip.y}
-                x2={data.littleKnuckle.x}
-                y2={data.littleKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
+                point1={data.littleTip}
+                point2={data.littleKnuckle}
+                pointRadius={pointRadius}
+                strokeData={strokeData}
             />
-            <line
-                id="little-wrist"
-                x1={data.littleKnuckle.x}
-                y1={data.littleKnuckle.y}
-                x2={data.wrist.x}
-                y2={data.wrist.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
-            />
-            <circle
-                id="little-tip"
-                cx={data.littleTip.x}
-                cy={data.littleTip.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-            <circle
-                id="little-knuckle"
-                cx={data.littleKnuckle.x}
-                cy={data.littleKnuckle.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-
-            <line
+            <FingerSvg
                 id="thumb"
-                x1={data.thumbTip.x}
-                y1={data.thumbTip.y}
-                x2={data.thumbKnuckle.x}
-                y2={data.thumbKnuckle.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
-            />
-            <line
-                id="thumb-wrist"
-                x1={data.thumbKnuckle.x}
-                y1={data.thumbKnuckle.y}
-                x2={data.wrist.x}
-                y2={data.wrist.y}
-                stroke={lineColor}
-                strokeWidth={strokeWidth}
-            />
-            <circle
-                id="thumb-tip"
-                cx={data.thumbTip.x}
-                cy={data.thumbTip.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
-            <circle
-                id="thumb-knuckle"
-                cx={data.thumbKnuckle.x}
-                cy={data.thumbKnuckle.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
+                point1={data.thumbTip}
+                point2={data.thumbKnuckle}
+                pointRadius={pointRadius}
+                strokeData={strokeData}
             />
 
-            <circle
-                id="wrist"
-                cx={data.wrist.x}
-                cy={data.wrist.y}
-                r={pointRadius}
-                stroke={dotBorderColour}
-                strokeWidth={pointLineWidth}
-                fill={dotColor}
-            />
+            <CircleSvg id="wrist" point={data.wrist} radius={pointRadius} />
         </svg>
     );
+};
+
+interface FingerData {
+    id: string;
+    point1: HandSvgCoordinate;
+    point2: HandSvgCoordinate;
+    strokeData: LineStrokeData;
+    pointRadius: number;
+}
+
+const FingerSvg: React.FC<FingerData> = (data) => {
+    return (
+        <g id={data.id}>
+            <LineSvg id={data.id + '-line'} point1={data.point1} point2={data.point2} strokeData={data.strokeData} />
+            <CircleSvg id={data.id + '-tip'} point={data.point1} radius={data.pointRadius} />
+            <CircleSvg id={data.id + '-knuckle'} point={data.point2} radius={data.pointRadius} />
+        </g>
+    );
+};
+
+interface LineData {
+    id: string;
+    point1: HandSvgCoordinate;
+    point2: HandSvgCoordinate;
+    strokeData: LineStrokeData;
+}
+
+interface LineStrokeData {
+    stroke: string;
+    strokeWidth: number;
+}
+
+const LineSvg: React.FC<LineData> = (data) => {
+    return (
+        <line
+            id={data.id}
+            x1={data.point1.x}
+            y1={data.point1.y}
+            x2={data.point2.x}
+            y2={data.point2.y}
+            stroke={data.strokeData.stroke}
+            strokeWidth={data.strokeData.strokeWidth}
+        />
+    );
+};
+
+interface CircleData {
+    id: string;
+    point: HandSvgCoordinate;
+    radius: number;
+}
+
+const CircleSvg: React.FC<CircleData> = (data) => {
+    return <circle id={data.id} cx={data.point.x} cy={data.point.y} r={data.radius} fill="url('#dotGradient')" />;
 };
