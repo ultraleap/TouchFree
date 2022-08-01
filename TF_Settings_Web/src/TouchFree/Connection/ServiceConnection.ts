@@ -333,5 +333,11 @@ export class ServiceConnection {
         ActionCode.GET_TRACKING_STATE,
         request
       );
+
+    const message: string = JSON.stringify(wrapper);
+
+    ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new TrackingStateCallback(Date.now(), _callback);
+
+    this.webSocket.send(message);
   }
 }
