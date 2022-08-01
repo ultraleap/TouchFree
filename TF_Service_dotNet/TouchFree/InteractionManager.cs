@@ -55,15 +55,15 @@ namespace Ultraleap.TouchFree.Library
                 {
                     interactionsToUse.Add(InteractionType.AIRCLICK);
                 }
-
-                if (interactionTuning?.EnableVelocitySwipeWithAirPush == true)
-                {
-                    interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
-                }
             }
             else
             {
                 interactionsToUse.Add(_config.InteractionType);
+            }
+
+            if (_config.InteractionType != InteractionType.GRAB && _config?.UseSwipeInteraction == true)
+            {
+                interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
             }
 
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
@@ -97,7 +97,8 @@ namespace Ultraleap.TouchFree.Library
                     {
                         lastLocationActionToUpdate = inputAction;
                     }
-                    else if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
+
+                    if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
                     {
                         if (interactionCurrentlyDown != locationInteraction)
                         {

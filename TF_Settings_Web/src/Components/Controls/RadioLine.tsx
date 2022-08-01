@@ -14,7 +14,7 @@ export class RadioLine extends React.Component<RadioProps, {}> {
 
     render() {
         return (
-            <label className="horizontalContainer backgroundLabel">
+            <label className="horizontalContainer input-label-container">
                 <p className="sliderLabel"> {this.props.name} </p>
                 {this.props.options.map((option, index) => (
                     <div

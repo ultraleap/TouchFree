@@ -19,6 +19,11 @@ export interface InteractionConfig {
     // and every down will function like a click of its own.
     UseScrollingOrDragging: boolean;
 
+    // Property: UseSwipeInteraction
+    // If true, enables the swipe interaction alongside AirPush, Hover and Hold or TouchPlane if
+    // one of those interactions is configured
+    UseSwipeInteraction: boolean;
+
     // Property: DeadzoneRadius
     // All interactions use a small deadzone to stabilise the position of the cursor, to prevent
     // small user movements from making the cursor shake in place. This setting controls the
@@ -52,6 +57,8 @@ export interface InteractionConfig {
 // the current state of the Service's config or its config files.
 export interface InteractionConfigFull {
     UseScrollingOrDragging: boolean;
+    
+    UseSwipeInteraction: boolean;
 
     DeadzoneRadius: number;
 

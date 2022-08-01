@@ -2,12 +2,18 @@
     "InteractionTuning": {
         "VelocitySwipeSettings": {
             "MinScrollVelocity_mmps": 500,
+            "UpwardsMinVelocityDecrease_mmps": 50,
+            "DownwardsMinVelocityIncrease_mmps": 50,
             "MaxReleaseVelocity_mmps": 0,
+            "MaxLateralVelocity_mmps": 250,
             "MaxOpposingVelocity_mmps": 150,
             "ScrollDelayMs": 500,
             "AllowVerticalScroll": true,
             "AllowHorizontalScroll": true,
-            "AllowBidirectionalScroll": false
+            "AllowBidirectionalScroll": false,
+            "MinSwipeLength": 10,
+            "MaxSwipeWidth": 10,
+            "SwipeWidthScaling": 0.2
         },
         "AirPushSettings": {
             "SpeedMin": 150,
@@ -26,7 +32,6 @@
         },
         "EnableInteractionConfidence": false,
         "EnableAirClickWithAirPush": false,
-        "EnableVelocitySwipeWithAirPush": false,
         "EnableOneEuroFilter": false,
         "EnableExtrapolation": false
     }

@@ -1,0 +1,17 @@
+@use 'Styles/variables' as v;
+
+.tf-button-container {
+    width: 95%;
+    min-height: 450px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 2.5%;
+}
+
+.camera-page-divider {
+    height: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    background-color: #363636;
+}

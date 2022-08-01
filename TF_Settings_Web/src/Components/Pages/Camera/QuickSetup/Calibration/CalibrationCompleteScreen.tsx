@@ -1,12 +1,13 @@
-import 'Styles/Camera/Calibrate.css';
+import 'Styles/Camera/Calibrate.scss';
+import cssVariables from 'Styles/_variables.scss';
 
-import React, { CSSProperties, useEffect } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
 import { InputType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
 
-import IconTextButton from 'Components/Controls/IconTextButton';
+import { TextButton } from 'Components/Controls/TFButton';
 
 import { CalibrationHandLostMessage, CalibrationPracticeButton } from './CalibrationComponents';
 
@@ -14,7 +15,7 @@ const buttonStyle: CSSProperties = {
     width: '60%',
     height: '25%',
     borderRadius: '33px',
-    background: 'transparent linear-gradient(180deg, #5c5c5c 0%, #454545 100%) 0% 0% no-repeat padding-box',
+    background: cssVariables.lightGreyGradient,
 };
 
 const titleStyle: CSSProperties = {
@@ -34,6 +35,7 @@ interface CalibrationCompleteProps {
 
 const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad, onRedo, isHandPresent }) => {
     const [progressToClick, setProgressToClick] = React.useState<number>(0);
+    const isNewClick = useRef(false);
 
     useEffect(() => {
         onLoad();
@@ -46,9 +48,25 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     }, []);
 
     const handleTFInput = (evt: CustomEvent<TouchFreeInputAction>): void => {
-        if (evt.detail.InputType === InputType.MOVE || evt.detail.InputType === InputType.DOWN) {
-            setProgressToClick(evt.detail.ProgressToClick);
+        const { detail } = evt;
+        if (!isNewClick.current) {
+            isNewClick.current = detail.InputType === InputType.UP;
+            return;
         }
+        if (detail.InputType === InputType.MOVE || detail.InputType === InputType.DOWN) {
+            setProgressToClick(detail.ProgressToClick);
+        }
+    };
+
+    const doneClickHandler = () => {
+        if (!isNewClick) return;
+        navigate('/settings/camera');
+    };
+
+    const redoClickHandler = () => {
+        if (!isNewClick) return;
+        onRedo();
+        navigate('/settings/camera/quick/calibrate/top');
     };
 
     const navigate = useNavigate();
@@ -56,35 +74,28 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
         <div style={{ height: '100%', alignItems: 'center' }}>
             {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
             <div style={{ paddingTop: '200px' }}>
-                <h1 className="setupCompleteText">
+                <h1 className="setup-complete-title">
                     Setup <br />
                     Complete
                 </h1>
             </div>
-            <div className="setupCompleteOptionsContainer">
-                <CalibrationPracticeButton progress={progressToClick} />
-                <IconTextButton
+            <div className="setup-complete-options-container">
+                <CalibrationPracticeButton isHandPresent={isHandPresent} progress={progressToClick} />
+                <TextButton
                     buttonStyle={buttonStyle}
-                    icon={''}
-                    alt=""
                     title="Done"
                     titleStyle={titleStyle}
                     text={''}
                     textStyle={{ display: 'none' }}
-                    onClick={() => navigate('/settings/camera')}
+                    onClick={doneClickHandler}
                 />
-                <IconTextButton
+                <TextButton
                     buttonStyle={buttonStyle}
-                    icon={''}
-                    alt=""
                     title="Redo Auto Calibration"
                     titleStyle={titleStyle}
                     text={''}
                     textStyle={{ display: 'none' }}
-                    onClick={() => {
-                        onRedo();
-                        navigate('/settings/camera/quick/calibrate/top');
-                    }}
+                    onClick={redoClickHandler}
                 />
             </div>
         </div>
