@@ -25,7 +25,8 @@ namespace Ultraleap.TouchFree.Service.Connection
         public ConcurrentQueue<string> quickSetupQueue = new ConcurrentQueue<string>();
 
         public ConcurrentQueue<IncomingRequest> trackingApiChangeQueue = new ConcurrentQueue<IncomingRequest>();
-        public TrackingResponse? trackingApiResponse = null;
+        private TrackingResponse? trackingApiResponse = null;
+        private readonly object trackingResponseLock = new object();
 
         private readonly UpdateBehaviour updateBehaviour;
         private readonly ClientConnectionManager clientMgr;
@@ -306,12 +307,15 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         void CheckDApiResponse()
         {
-            if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
+            lock (trackingResponseLock)
             {
-                TrackingResponse response = trackingApiResponse.Value;
-                trackingApiResponse = null;
+                if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
+                {
+                    TrackingResponse response = trackingApiResponse.Value;
+                    trackingApiResponse = null;
 
-                clientMgr.SendTrackingState(response.state);
+                    clientMgr.SendTrackingState(response.state);
+                }
             }
         }
 

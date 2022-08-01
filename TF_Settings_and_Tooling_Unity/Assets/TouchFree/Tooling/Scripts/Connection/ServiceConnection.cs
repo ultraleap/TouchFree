@@ -141,7 +141,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     break;
 
                 case ActionCode.TRACKING_STATE:
-                    TrackingStateResponse trackingResponse = JsonUtility.FromJson<TrackingStateResponse>(content);
+                    TrackingStateResponse trackingResponse = DeserializeTrackingApiResponse(content);
                     ConnectionManager.messageReceiver.trackingStateQueue.Enqueue(trackingResponse);
                     break;
 
@@ -291,7 +291,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             webSocket.Send(jsonMessage);
         }
 
-        internal void RequestTrackingChange(string _message, string _requestID, Action<TrackingStateResponse> _stateCallback = null) {
+        internal void RequestTrackingChange(string _message, string _requestID, Action<TrackingStateResponse> _stateCallback = null)
+        {
             if (_requestID == "")
             {
                 if (_stateCallback != null)
@@ -301,12 +302,13 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     var maskResponse = new SuccessWrapper<MaskData?>(false, message, null);
                     var boolResponse = new SuccessWrapper<bool?>(false, message, null);
 
-                    TrackingStateResponse response = new TrackingStateResponse() {
-                        requestID =  "",
+                    TrackingStateResponse response = new TrackingStateResponse()
+                    {
+                        requestID = "",
                         mask = maskResponse,
                         allowImages = boolResponse,
                         cameraReversed = boolResponse,
-                        analyticsEnabled= boolResponse
+                        analyticsEnabled = boolResponse
                     };
 
                     _stateCallback.Invoke(response);
@@ -322,6 +324,85 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             }
 
             webSocket.Send(_message);
+        }
+
+        private static TrackingStateResponse DeserializeTrackingApiResponse(string raw)
+        {
+            var response = new TrackingStateResponse();
+
+            Regex requestIdExtractor = new Regex(@"""requestID"":""([\w-]+?)"",");
+            Regex memberIdentifier = new Regex(@"(?:""(\w+?)"":(?:(?:{""succeeded"":((?:true)|(?:false)),""msg"":""([\w\s]+?)"",(?:""content"":((?:{.+?})|(?:(?:true)|(?:false)))})?)),?)");
+
+            Match requestIdMatch = requestIdExtractor.Match(raw);
+
+            response.requestID = requestIdMatch.Groups[1].Value;
+
+            // each member of matches is 1 member of the TrackingApiResponse bar the requestID, extracted seperately
+            MatchCollection matches = memberIdentifier.Matches(raw);
+
+            // Debug.Log($"Got {matches.Count} members with the member identifier");
+
+            foreach (Match match in matches)
+            {
+                switch (match.Groups[1].Value)
+                {
+                    case "mask":
+                        response.mask = GenerateMaskDataFromMatch(match);
+                        break;
+                    case "allowImages":
+                        response.allowImages = GenerateBoolDataFromMatch(match);
+                        break;
+                    case "cameraReversed":
+                        response.cameraReversed = GenerateBoolDataFromMatch(match);
+                        break;
+                    case "analyticsEnabled":
+                        response.analyticsEnabled = GenerateBoolDataFromMatch(match);
+                        break;
+                }
+            }
+
+            return response;
+        }
+
+        private static SuccessWrapper<MaskData?> GenerateMaskDataFromMatch(Match match)
+        {
+            var result = new SuccessWrapper<MaskData?>();
+
+            result.succeeded = Convert.ToBoolean(match.Groups[2].Value);
+            result.msg = match.Groups[3].Value;
+
+            if (match.Groups.Count > 3)
+            {
+                Regex maskSplitter = new Regex(@"\{""lower"":([\d.]+?),""upper"":([\d.]+?),""right"":([\d.]+?),""left"":([\d.]+?)\}");
+                Match maskMatch = maskSplitter.Match(match.Groups[4].Value);
+
+                result.content = new MaskData(
+                    Convert.ToSingle(maskMatch.Groups[1].Value),
+                    Convert.ToSingle(maskMatch.Groups[2].Value),
+                    Convert.ToSingle(maskMatch.Groups[3].Value),
+                    Convert.ToSingle(maskMatch.Groups[4].Value)
+                );
+            }
+
+            return result;
+        }
+
+        private static SuccessWrapper<bool?> GenerateBoolDataFromMatch(Match match)
+        {
+            var result = new SuccessWrapper<bool?>();
+
+            result.succeeded = Convert.ToBoolean(match.Groups[2].Value);
+            result.msg = match.Groups[3].Value;
+
+            if (match.Groups.Count > 3)
+            {
+                Regex maskSplitter = new Regex(@"\{""lower"":([\d.]+?),""upper"":([\d.]+?),""right"":([\d.]+?),""left"":([\d.]+?)\}");
+                Match maskMatch = maskSplitter.Match(match.Groups[4].Value);
+
+                result.content = Convert.ToBoolean(match.Groups[4].Value);
+            }
+
+            return result;
         }
     }
 }
