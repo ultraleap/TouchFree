@@ -1,6 +1,5 @@
 import 'Styles/Camera/Camera.scss';
 
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CameraMaskingIcon from 'Images/Camera/Camera_Masking_Icon.png';
@@ -11,22 +10,6 @@ import { HorizontalIconTextButton, VerticalIconTextButton } from 'Components/Con
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
-    const [isFullscreen, setIsFullscreen] = useState(false);
-
-    const resizeHandler = () => {
-        if (window.innerWidth === screen.width && window.innerHeight === screen.height) {
-            setIsFullscreen(true);
-            return;
-        }
-
-        setIsFullscreen(false);
-    };
-
-    useEffect(() => {
-        resizeHandler();
-        window.addEventListener('resize', resizeHandler);
-        return () => window.removeEventListener('resize', resizeHandler);
-    }, []);
 
     return (
         <div>
@@ -34,21 +17,15 @@ const CameraSetupScreen = () => {
                 <h1> Camera Setup </h1>
             </div>
             <div className="tf-button-container">
-                <div className="quick-setup-container">
-                    <VerticalIconTextButton
-                        buttonStyle={{ width: '100%', height: '100%' }}
-                        icon={QuickSetupIcon}
-                        alt="Icon for Quick Setup option"
-                        iconStyle={{ margin: '30px 0px', height: '250px' }}
-                        title="Auto Calibration"
-                        text="Our automatic calibration enables you to set up quickly"
-                        onClick={() => navigate('quick')}
-                    />
-                    <div className="quick-setup-overlay" style={{ display: isFullscreen ? 'none' : 'flex' }}>
-                        <p>{String.fromCodePoint(9432)} Fullscreen recommended for Quick Setup</p>
-                        <p>Press F11</p>
-                    </div>
-                </div>
+                <VerticalIconTextButton
+                    buttonStyle={{ width: '63.75%' }}
+                    icon={QuickSetupIcon}
+                    alt="Icon for Quick Setup option"
+                    iconStyle={{ margin: '30px 0px', height: '250px' }}
+                    title="Auto Calibration"
+                    text="Our automatic calibration enables you to set up quickly"
+                    onClick={() => navigate('quick')}
+                />
                 <VerticalIconTextButton
                     buttonStyle={{ width: '33.75%' }}
                     icon={ManualSetupIcon}

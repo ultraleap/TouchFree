@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import 'Styles/Camera/Calibrate.scss';
-import styles from 'Styles/Camera/Calibrate.scss';
 
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
 import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
 import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
+
+import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 
 import { TFClickEvent } from 'Components/SettingsTypes';
 
@@ -17,9 +19,8 @@ import {
     CalibrationInstructions,
     CalibrationTutorialVideo,
     CalibrationProgressCircle,
+    FullScreenPrompt,
 } from './CalibrationComponents';
-
-const { handNotFoundHeight } = styles;
 
 interface CalibrationScreenProps {
     isHandPresent: boolean;
@@ -78,6 +79,14 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
         }
     };
 
+    const sendScreenSizeToConfig = () => {
+        ConfigurationManager.RequestConfigChange(
+            null,
+            { ScreenWidthPX: window.innerWidth, ScreenHeightPX: window.innerHeight },
+            () => {}
+        );
+    };
+
     useEffect(() => {
         let initialWait: number;
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
@@ -90,6 +99,17 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
         return () => {
             InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
             clearTimeout(initialWait);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isTop) {
+            sendScreenSizeToConfig();
+            window.addEventListener('resize', sendScreenSizeToConfig);
+        }
+
+        return () => {
+            window.removeEventListener('resize', sendScreenSizeToConfig);
         };
     }, []);
 
@@ -124,30 +144,43 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     if (location.pathname.endsWith('top')) {
         return (
             <div className="content-container">
-                <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '5vh' }} />
-                <CalibrationProgressCircle progress={progress} style={{ top: '15.5vh' }} />
-                {displayHandIndicator ? (
-                    <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
-                ) : (
-                    <div style={{ height: handNotFoundHeight }} />
-                )}
-                <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
-                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30.5vh' }} />
+                <FullScreenPrompt promptStyle={{ position: 'fixed', top: '5vh' }} />
+                <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', top: '15.5vh' }} />
+                <img
+                    className="touch-circle"
+                    style={{ position: 'fixed', top: '17.5vh' }}
+                    src={FingerprintIcon}
+                    alt="Fingerprint Icon showing where to place finger for Quick Setup"
+                />
+                <CalibrationInstructions top progress={progress} containerStyle={{ position: 'fixed', top: '25vh' }} />
+                <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '40vh' }} />
+                <CalibrationHandLostMessage
+                    display={displayHandIndicator}
+                    timeToPosSelect={timeToPosSelect}
+                    handsLostStyle={{ position: 'fixed', bottom: '10vh' }}
+                />
+                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ position: 'fixed', bottom: '3vh' }} />
             </div>
         );
     }
 
     return (
         <div className="content-container">
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
-            <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '2.5vh' }} />
-            <CalibrationProgressCircle progress={progress} style={{ bottom: '15.5vh' }} />
-            {displayHandIndicator ? (
-                <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
-            ) : (
-                <div style={{ height: handNotFoundHeight }} />
-            )}
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
+            <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '30vh' }} />
+            <CalibrationInstructions progress={progress} containerStyle={{ position: 'fixed', bottom: '27vh' }} />
+            <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', bottom: '15.5vh' }} />
+            <img
+                className="touch-circle"
+                style={{ position: 'fixed', bottom: '17.5vh' }}
+                src={FingerprintIcon}
+                alt="Fingerprint Icon showing where to place finger for Quick Setup"
+            />
+            <CalibrationHandLostMessage
+                display={displayHandIndicator}
+                timeToPosSelect={timeToPosSelect}
+                handsLostStyle={{ position: 'fixed', bottom: '10vh' }}
+            />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ position: 'fixed', bottom: '3vh' }} />
         </div>
     );
 };
