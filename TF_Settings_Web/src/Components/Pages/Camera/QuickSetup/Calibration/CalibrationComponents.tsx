@@ -108,12 +108,12 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
 );
 
 interface HandsLostProps {
-    display?: boolean;
+    display: boolean;
     timeToPosSelect?: number;
     handsLostStyle?: CSSProperties;
 }
 
-const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSelect }) => {
+const ReturnToPositionScreenMessage: React.FC<{ timeToPosSelect?: number }> = ({ timeToPosSelect }) => {
     if (!timeToPosSelect) {
         return <></>;
     }
