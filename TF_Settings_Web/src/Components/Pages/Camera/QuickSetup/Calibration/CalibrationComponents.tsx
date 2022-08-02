@@ -284,8 +284,15 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
 
 export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ promptStyle }) => {
     const { isFullScreen, isZoomed } = useWindowSize();
+    const [isReady, setIsReady] = useState(false);
 
-    if (isZoomed) {
+    useEffect(() => {
+        const timeout = setTimeout(() => setIsReady(true), 200);
+
+        return () => clearTimeout(timeout);
+    }, []);
+
+    if (isZoomed && isReady) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
                 <p>
@@ -295,7 +302,7 @@ export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ pro
         );
     }
 
-    if (!isFullScreen) {
+    if (!isFullScreen && isReady) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
                 <p>
