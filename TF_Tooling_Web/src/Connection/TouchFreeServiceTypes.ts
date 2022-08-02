@@ -260,20 +260,20 @@ export class TrackingStateRequest {
     // Variable: requestID
     requestID: string;
     // Variable: mask
-    mask: Mask | null;
+    mask: Mask;
     // Variable: cameraOrientation
-    cameraReversed: boolean | null;
+    cameraReversed: boolean;
     // Variable: allowImages
-    allowImages: boolean | null;
+    allowImages: boolean;
     // Variable: analyticsEnabled
-    analyticsEnabled: boolean | null;
+    analyticsEnabled: boolean;
 
     constructor(
         _id: string,
-        _mask: Mask | null,
-        _cameraReversed: boolean | null,
-        _allowImages: boolean | null,
-        _analyticsEnabled: boolean | null
+        _mask: Mask,
+        _cameraReversed: boolean,
+        _allowImages: boolean,
+        _analyticsEnabled: boolean
     ) {
         this.requestID = _id;
         this.mask = _mask;
