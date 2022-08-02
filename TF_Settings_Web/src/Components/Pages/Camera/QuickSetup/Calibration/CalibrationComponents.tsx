@@ -23,9 +23,13 @@ import { TIMEOUT_S } from './CalibrationScreen';
 interface CalibrationInstructionsProps {
     progress: number;
     containerStyle: CSSProperties;
-    top?: boolean;
+    isTop?: boolean;
 }
-export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = ({ progress, containerStyle, top }) => {
+export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = ({
+    progress,
+    containerStyle,
+    isTop,
+}) => {
     const instructionsText = (
         <h1>
             Hold INDEX FINGER against <br /> this <span className="greenText">GREEN CIRCLE</span>
@@ -42,7 +46,7 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
         </h1>
     );
 
-    if (top) {
+    if (isTop) {
         return (
             <div className="instructions" style={containerStyle}>
                 <img src={DownArrow} alt="Down arrow" className="arrow" style={{ transform: 'rotate(180deg)' }} />
