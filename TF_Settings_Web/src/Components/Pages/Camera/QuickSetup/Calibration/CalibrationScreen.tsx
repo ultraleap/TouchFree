@@ -79,14 +79,6 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
         }
     };
 
-    const sendScreenSizeToConfig = () => {
-        ConfigurationManager.RequestConfigChange(
-            null,
-            { ScreenWidthPX: window.innerWidth, ScreenHeightPX: window.innerHeight },
-            () => {}
-        );
-    };
-
     useEffect(() => {
         let initialWait: number;
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
@@ -99,17 +91,6 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
         return () => {
             InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
             clearTimeout(initialWait);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (isTop) {
-            sendScreenSizeToConfig();
-            window.addEventListener('resize', sendScreenSizeToConfig);
-        }
-
-        return () => {
-            window.removeEventListener('resize', sendScreenSizeToConfig);
         };
     }, []);
 
@@ -152,7 +133,11 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
                     src={FingerprintIcon}
                     alt="Fingerprint Icon showing where to place finger for Quick Setup"
                 />
-                <CalibrationInstructions top progress={progress} containerStyle={{ position: 'fixed', top: '25vh' }} />
+                <CalibrationInstructions
+                    isTop
+                    progress={progress}
+                    containerStyle={{ position: 'fixed', top: '25vh' }}
+                />
                 <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '40vh' }} />
                 <CalibrationHandLostMessage
                     display={displayHandIndicator}
