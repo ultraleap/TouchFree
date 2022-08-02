@@ -12,9 +12,11 @@ import {
   ServiceStatusRequest,
   SimpleRequest,
   TrackingStateCallback,
+  TrackingStateRequest,
   TrackingStateResponse,
   WebSocketResponse,
 } from "./TouchFreeServiceTypes";
+import { TrackingState } from "../Tracking/TrackingTypes";
 import { ConnectionManager } from "./ConnectionManager";
 import { v4 as uuidgen } from "uuid";
 
@@ -333,5 +335,33 @@ export class ServiceConnection {
         ActionCode.GET_TRACKING_STATE,
         request
       );
+  }
+
+  RequestTrackingChange(
+    _state: Partial<TrackingState>,
+    _callback: ((detail: TrackingStateResponse) => void) | null
+  ) {
+    const requestID = uuidgen();
+    const requestContent: TrackingStateRequest = new TrackingStateRequest(
+      requestID,
+      _state.mask !== undefined ? _state.mask : null,
+      _state.cameraReversed !== undefined ? _state.cameraReversed : null,
+      _state.allowImages !== undefined ? _state.allowImages : null,
+      _state.analyticsEnabled !== undefined ? _state.analyticsEnabled : null
+    );
+
+    const wrapper: CommunicationWrapper<TrackingStateRequest> =
+      new CommunicationWrapper<TrackingStateRequest>(
+        ActionCode.SET_TRACKING_STATE,
+        requestContent
+      );
+    const message: string = JSON.stringify(wrapper);
+
+    if (_callback !== null) {
+      ConnectionManager.messageReceiver.trackingStateCallbacks[requestID] =
+        new TrackingStateCallback(Date.now(), _callback);
+    }
+
+    this.webSocket.send(message);
   }
 }

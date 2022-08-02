@@ -396,9 +396,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
             if (match.Groups.Count > 3)
             {
-                Regex maskSplitter = new Regex(@"\{""lower"":([\d.]+?),""upper"":([\d.]+?),""right"":([\d.]+?),""left"":([\d.]+?)\}");
-                Match maskMatch = maskSplitter.Match(match.Groups[4].Value);
-
                 result.content = Convert.ToBoolean(match.Groups[4].Value);
             }
 

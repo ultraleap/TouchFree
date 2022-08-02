@@ -254,7 +254,7 @@ export interface TrackingStateResponse {
     analyticsEnabled: SuccessWrapper<boolean> | null;
 }
 
-// Class: TrackingState
+// Class: TrackingStateRequest
 // Used to construct a SET_TRACKING_STATE request.
 export class TrackingStateRequest {
     // Variable: requestID
