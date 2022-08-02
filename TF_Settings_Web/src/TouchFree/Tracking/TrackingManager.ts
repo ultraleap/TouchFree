@@ -34,13 +34,7 @@ export class TrackingManager {
     // Provide a _callback if you require confirmation that your settings were used correctly.
     // If your _callback requires context it should be bound to that context via .bind().
     public static RequestTrackingChange(_state: Partial<TrackingState>,
-                                        _callback: ((detail: WebSocketResponse) => void) | null = null): void {
-        const requestID = uuidgen();
-        const requestContent = {requestID: requestID, ..._state};
-        const request = new CommunicationWrapper(ActionCode.SET_TRACKING_STATE, requestContent);
-
-        const jsonContent = JSON.stringify(request);
-
-        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
+                                        _callback: ((detail: TrackingStateResponse) => void) | null = null): void {
+        ConnectionManager.serviceConnection()?.RequestTrackingChange(_state, _callback);
     }
 }
