@@ -196,7 +196,7 @@ interface CalibrationCancelButtonProps {
 export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
         <TextButton
-            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
+            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle, width: 'auto', padding: '0 30px' }}
             title=""
             titleStyle={{ display: 'none' }}
             text="Cancel Setup"

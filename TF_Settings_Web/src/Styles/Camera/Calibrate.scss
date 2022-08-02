@@ -103,10 +103,10 @@
     margin: auto;
     background: linear-gradient(180deg, #e1164d 0%, #d11882 100%);
     border-radius: 15px;
-    height: 3vh;
+    height: auto;
     justify-content: center;
     align-items: center;
-    padding: 0 30px;
+    padding: 5px 30px;
 
     p {
         flex: none;
@@ -168,12 +168,12 @@
 .full-screen-prompt {
     display: inline-flex;
     margin: auto;
-    height: 2vh;
+    height: auto;
     border-radius: 15px;
     border: 1px solid white;
     justify-content: center;
     align-items: center;
-    padding: 0 30px;
+    padding: 5px 30px;
 
     p {
         flex: none;
