@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
@@ -8,6 +9,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         public override ActionCode[] ActionCodes => new[] { ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE };
 
         public TrackingResponse? trackingApiResponse = null;
+        private float? responseOriginTime = null;
         private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly object trackingResponseLock = new object();
 
@@ -78,6 +80,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         {
             trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true);
 
+            responseOriginTime = DateTime.Now.Millisecond;
             diagnosticApi.GetAllowImages();
             diagnosticApi.GetImageMask();
             diagnosticApi.GetCameraOrientation();
@@ -98,6 +101,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
             trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsAnalytics);
 
+            responseOriginTime = DateTime.Now.Millisecond;
             if (needsMask)
             {
                 var mask = maskToken!.ToObject<MaskingData>();
@@ -131,6 +135,40 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 {
                     TrackingResponse response = trackingApiResponse.Value;
                     trackingApiResponse = null;
+                    responseOriginTime = null;
+
+                    clientMgr.SendTrackingState(response.state);
+                }
+                else if (responseOriginTime.HasValue && DateTime.Now.Millisecond - responseOriginTime.Value > 30000f)
+                {
+                    TrackingResponse response = trackingApiResponse.Value;
+                    trackingApiResponse = null;
+                    responseOriginTime = null;
+
+                    string message = "Tracking State change request failed; no response from Tracking within timeout period";
+
+                    var maskResponse = new SuccessWrapper<MaskingData?>(false, message, null);
+                    var boolResponse = new SuccessWrapper<bool?>(false, message, null);
+
+                    if (response.needsMask)
+                    {
+                        response.state.mask = maskResponse;
+                    }
+
+                    if (response.needsImages)
+                    {
+                        response.state.allowImages = boolResponse;
+                    }
+
+                    if (response.needsOrientation)
+                    {
+                        response.state.cameraReversed = boolResponse;
+                    }
+
+                    if (response.needsAnalytics)
+                    {
+                        response.state.analyticsEnabled = boolResponse;
+                    }
 
                     clientMgr.SendTrackingState(response.state);
                 }
