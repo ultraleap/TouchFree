@@ -72,7 +72,7 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>
-            {!isHandPresent ? <CalibrationHandLostMessage /> : <div style={{ height: '3vh' }} />}
+            <CalibrationHandLostMessage display={!isHandPresent} handsLostStyle={{ height: '3vh' }} />
             <div style={{ paddingTop: '200px' }}>
                 <h1 className="setup-complete-title">
                     Setup <br />

@@ -142,7 +142,7 @@ const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSele
 
 export const CalibrationHandLostMessage: React.FC<HandsLostProps> = ({ display, timeToPosSelect, handsLostStyle }) => {
     if (!display) {
-        return <></>;
+        return <div style={handsLostStyle}></div>;
     }
     return (
         <div className={'hand-not-found-container'} style={handsLostStyle}>
