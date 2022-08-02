@@ -35,6 +35,7 @@ const MaskingScreen = () => {
     // Refs to be able to use current state in eventListeners
     const maskingRef = useRef<Mask>(masking);
     const isCamReversedRef = useRef<boolean>(isCamReversed);
+    const allowImagesRef = useRef<boolean>(allowImages);
     const showOverexposedRef = useRef<boolean>(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
     const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
@@ -47,13 +48,12 @@ const MaskingScreen = () => {
         _setMasking(mask);
     };
     const sendMaskingRequest = () => {
-        console.log('SEND');
-        // console.log(masking);
         TrackingManager.RequestTrackingChange({ mask: maskingRef.current }, null);
     };
 
     const setAllowImages = (value: boolean) => {
         _setAllowImages(value);
+        allowImagesRef.current = value;
         TrackingManager.RequestTrackingChange({ allowImages: value }, null);
     };
     const setIsCameraReversed = (value: boolean) => {
@@ -108,7 +108,6 @@ const MaskingScreen = () => {
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
-        console.log(state);
         const allowImages = state.allowImages?.content;
         if (allowImages) {
             _setAllowImages(allowImages);
@@ -136,14 +135,10 @@ const MaskingScreen = () => {
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (
-            isFrameProcessingRef.current ||
-            !leftLensRef.current ||
-            !rightLensRef.current ||
-            typeof event.data == 'string'
-        ) {
-            return;
-        }
+        if (!leftLensRef.current || !rightLensRef.current) return;
+        if (isFrameProcessingRef.current || !allowImagesRef.current) return;
+
+        if (typeof event.data == 'string') return;
 
         setIsFrameProcessing(true);
 
