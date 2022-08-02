@@ -303,7 +303,11 @@ export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ pro
         return () => clearTimeout(timeout);
     }, []);
 
-    if (isZoomed && isReady) {
+    if (!isReady) {
+        return <></>;
+    }
+
+    if (isZoomed) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
                 <p>
@@ -313,7 +317,7 @@ export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ pro
         );
     }
 
-    if (!isFullScreen && isReady) {
+    if (!isFullScreen) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
                 <p>
