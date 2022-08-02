@@ -303,15 +303,27 @@ export class ServiceConnection {
 
     RequestTrackingChange(_state: Partial<TrackingState>, _callback:((detail: TrackingStateResponse) => void) | null) {
         const requestID = uuidgen();
-        const requestContent: TrackingStateRequest = new TrackingStateRequest(
-            requestID,
-            _state.mask !== undefined? _state.mask : null,
-            _state.cameraReversed !== undefined ? _state.cameraReversed : null,
-            _state.allowImages !== undefined ? _state.allowImages : null,
-            _state.analyticsEnabled !== undefined ? _state.analyticsEnabled : null
-        );
+        const requestContent: Partial<TrackingStateRequest> = {
+            requestID
+        };
 
-        const wrapper: CommunicationWrapper<TrackingStateRequest> = new CommunicationWrapper<TrackingStateRequest>(
+        if (_state.mask !== undefined) {
+            requestContent.mask = _state.mask;
+        }
+
+        if (_state.allowImages !== undefined) {
+            requestContent.allowImages = _state.allowImages;
+        }
+
+        if (_state.cameraReversed !== undefined) {
+            requestContent.cameraReversed= _state.cameraReversed;
+        }
+
+        if (_state.analyticsEnabled !== undefined) {
+            requestContent.analyticsEnabled= _state.analyticsEnabled;
+        }
+
+        const wrapper: CommunicationWrapper<Partial<TrackingStateRequest>> = new CommunicationWrapper<Partial<TrackingStateRequest>>(
             ActionCode.SET_TRACKING_STATE,
             requestContent
         );
