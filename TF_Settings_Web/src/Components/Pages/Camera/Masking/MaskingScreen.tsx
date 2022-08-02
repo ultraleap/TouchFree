@@ -22,7 +22,7 @@ const MaskingScreen = () => {
     const [mainLens, setMainLens] = useState<Lens>(Lens.Left);
     const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
     // Config options
-    const [maskingInfo, _setMaskingInfo] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
+    const [masking, _setMasking] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
     const [allowImages, _setAllowImages] = useState<boolean>(false);
     const [allowAnalytics, _setAllowAnalytics] = useState<boolean>(false);
@@ -33,18 +33,25 @@ const MaskingScreen = () => {
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
-    const isCamReversedRef = useRef(isCamReversed);
-    const showOverexposedRef = useRef(showOverexposed);
+    const maskingRef = useRef<Mask>(masking);
+    const isCamReversedRef = useRef<boolean>(isCamReversed);
+    const showOverexposedRef = useRef<boolean>(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
     const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
     const timeoutRef = useRef<number>();
 
     // ===== State Setters =====
-    const setMaskingInfo = (direction: SliderDirection, maskingValue: number) => {
-        const mask: Mask = { ...maskingInfo, [direction]: maskingValue };
-        _setMaskingInfo(mask);
-        TrackingManager.RequestTrackingChange({ mask: mask }, null);
+    const setMasking = (direction: SliderDirection, maskingValue: number) => {
+        const mask: Mask = { ...masking, [direction]: maskingValue };
+        maskingRef.current = mask;
+        _setMasking(mask);
     };
+    const sendMaskingRequest = () => {
+        console.log('SEND');
+        // console.log(masking);
+        TrackingManager.RequestTrackingChange({ mask: maskingRef.current }, null);
+    };
+
     const setAllowImages = (value: boolean) => {
         _setAllowImages(value);
         TrackingManager.RequestTrackingChange({ allowImages: value }, null);
@@ -101,7 +108,7 @@ const MaskingScreen = () => {
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
-        console.log('GOT TRACKING STATE');
+        console.log(state);
         const allowImages = state.allowImages?.content;
         if (allowImages) {
             _setAllowImages(allowImages);
@@ -120,7 +127,7 @@ const MaskingScreen = () => {
 
         const masking = state.mask?.content;
         if (masking) {
-            _setMaskingInfo({ left: masking.left, right: masking.right, upper: masking.upper, lower: masking.lower });
+            _setMasking({ left: masking.left, right: masking.right, upper: masking.upper, lower: masking.lower });
         }
     };
 
@@ -172,12 +179,13 @@ const MaskingScreen = () => {
                 </p>
             </div>
             <div className="cam-feed-box--main">
-                {Object.entries(maskingInfo).map((sliderInfo) => (
+                {Object.entries(masking).map((sliderInfo) => (
                     <MaskingSlider
                         key={sliderInfo[0]}
                         direction={sliderInfo[0] as SliderDirection}
                         maskingValue={sliderInfo[1]}
-                        setMaskingValue={setMaskingInfo}
+                        onDrag={setMasking}
+                        onDragEnd={sendMaskingRequest}
                     />
                 ))}
                 <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />

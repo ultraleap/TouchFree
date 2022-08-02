@@ -16,10 +16,11 @@ interface SliderPosInfo {
 interface MaskingSliderProps {
     direction: SliderDirection;
     maskingValue: number;
-    setMaskingValue: (direction: SliderDirection, maskingValue: number) => void;
+    onDrag: (direction: SliderDirection, maskingValue: number) => void;
+    onDragEnd: () => void;
 }
 
-const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, setMaskingValue }) => {
+const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, onDrag, onDragEnd }) => {
     // ===== State =====
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -97,13 +98,15 @@ const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, 
         // Limit masking value to [0..0.5]
         const limitedNewMaskingValue = Math.min(0.5, Math.max(0, newMaskingValue));
 
-        setMaskingValue(direction, limitedNewMaskingValue);
+        onDrag(direction, limitedNewMaskingValue);
     };
 
     const onEndDrag = () => {
         setIsDragging(false);
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onEndDrag);
+
+        onDragEnd();
     };
 
     return (
