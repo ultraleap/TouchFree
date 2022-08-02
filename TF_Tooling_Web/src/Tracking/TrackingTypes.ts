@@ -13,19 +13,19 @@ export interface Mask {
 // Represents the settings available for modification in the Tracking API
 export class TrackingState {
     // Variable: mask
-    mask: Mask | null;
+    mask: Mask;
     // Variable: cameraOrientation
-    cameraReversed: boolean | null;
+    cameraReversed: boolean;
     // Variable: allowImages
-    allowImages: boolean | null;
+    allowImages: boolean;
     // Variable: analyticsEnabled
-    analyticsEnabled: boolean | null;
+    analyticsEnabled: boolean;
 
     constructor(
-        _mask: Mask | null,
-        _cameraReversed: boolean | null,
-        _allowImages: boolean | null,
-        _analyticsEnabled: boolean | null
+        _mask: Mask,
+        _cameraReversed: boolean,
+        _allowImages: boolean,
+        _analyticsEnabled: boolean
     ) {
         this.mask = _mask;
         this.cameraReversed = _cameraReversed;

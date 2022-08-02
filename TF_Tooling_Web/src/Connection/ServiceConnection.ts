@@ -307,19 +307,19 @@ export class ServiceConnection {
             requestID
         };
 
-        if (_state.mask) {
+        if (_state.mask !== undefined) {
             requestContent.mask = _state.mask;
         }
 
-        if (_state.allowImages) {
+        if (_state.allowImages !== undefined) {
             requestContent.allowImages = _state.allowImages;
         }
 
-        if (_state.cameraReversed) {
+        if (_state.cameraReversed !== undefined) {
             requestContent.cameraReversed= _state.cameraReversed;
         }
 
-        if (_state.analyticsEnabled) {
+        if (_state.analyticsEnabled !== undefined) {
             requestContent.analyticsEnabled= _state.analyticsEnabled;
         }
 
