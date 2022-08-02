@@ -4,12 +4,9 @@ import 'Styles/Camera/Calibrate.scss';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
 import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
 import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
-
-import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 
 import { TFClickEvent } from 'Components/SettingsTypes';
 
@@ -127,12 +124,6 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             <div className="content-container">
                 <FullScreenPrompt promptStyle={{ position: 'fixed', top: '5vh' }} />
                 <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', top: '15.5vh' }} />
-                <img
-                    className="touch-circle"
-                    style={{ position: 'fixed', top: '17.5vh' }}
-                    src={FingerprintIcon}
-                    alt="Fingerprint Icon showing where to place finger for Quick Setup"
-                />
                 <CalibrationInstructions
                     isTop
                     progress={progress}
@@ -154,12 +145,6 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '30vh' }} />
             <CalibrationInstructions progress={progress} containerStyle={{ position: 'fixed', bottom: '27vh' }} />
             <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', bottom: '15.5vh' }} />
-            <img
-                className="touch-circle"
-                style={{ position: 'fixed', bottom: '17.5vh' }}
-                src={FingerprintIcon}
-                alt="Fingerprint Icon showing where to place finger for Quick Setup"
-            />
             <CalibrationHandLostMessage
                 display={displayHandIndicator}
                 timeToPosSelect={timeToPosSelect}

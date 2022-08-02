@@ -11,6 +11,7 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
+import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import DownArrow from 'Images/Down_Arrow.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
@@ -96,6 +97,12 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
                 trailColor: 'transparent',
                 pathTransitionDuration: 0.08,
             })}
+        />
+        <img
+            className="touch-circle"
+            style={{ position: 'absolute', top: '22%', left: '22%' }}
+            src={FingerprintIcon}
+            alt="Fingerprint Icon showing where to place finger for Quick Setup"
         />
     </div>
 );
