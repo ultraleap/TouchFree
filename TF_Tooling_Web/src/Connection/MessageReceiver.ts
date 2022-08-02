@@ -7,10 +7,8 @@ import {
     ServiceStatus,
     ServiceStatusCallback,
     TouchFreeRequest,
-    TrackingStateRequest,
     TrackingStateCallback,
     TrackingStateResponse,
-    TouchFreeRequest,
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 import {
