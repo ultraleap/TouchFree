@@ -15,31 +15,3 @@
     margin-bottom: 40px;
     background-color: #363636;
 }
-
-.quick-setup-container {
-    position: relative;
-    width: 63.75%;
-}
-
-.quick-setup-overlay {
-    position: absolute;
-    flex-direction: column;
-    justify-content: space-evenly;
-    background-color: v.$ultraleap-green;
-    width: 70%;
-    height: 20%;
-    top: 0px;
-    left: 15%;
-    opacity: 90%;
-    border-radius: v.$button-border-radius;
-    font-family: v.$base-font;
-    font-size: 20px;
-    color: black;
-    margin: 10px;
-    pointer-events: none;
-
-    p {
-        text-align: center;
-        flex: 0 0 auto;
-    }
-}

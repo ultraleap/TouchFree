@@ -7,7 +7,6 @@ export interface GlobalCSS {
     lightGreyGradient: string;
     darkGreyGradient: string;
     baseFont: string;
-    buttonBorderRadius: string;
 }
 
 export let styles: GlobalCSS;

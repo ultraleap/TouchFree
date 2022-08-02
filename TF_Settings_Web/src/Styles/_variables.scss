@@ -6,7 +6,6 @@ $ultraleap-green: #00eb85;
 $light-grey-gradient: linear-gradient(180deg, #5c5c5c 0%, #454545 100%);
 $dark-grey-gradient: linear-gradient(180deg, #373737 0%, #2c2c2c 100%);
 $base-font: MontserratRegular, Arial;
-$button-border-radius: 10px;
 
 :export {
     appWidth: $app-width;
@@ -17,5 +16,4 @@ $button-border-radius: 10px;
     lightGreyGradient: $light-grey-gradient;
     darkGreyGradient: $dark-grey-gradient;
     baseFont: $base-font;
-    buttonBorderRadius: $button-border-radius;
 }
