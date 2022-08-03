@@ -1,4 +1,4 @@
-import { useWindowSize } from 'customHooks';
+import { useIsFullScreen } from 'customHooks';
 
 import 'Styles/Camera/Calibrate.scss';
 import cssVariables from 'Styles/_variables.scss';
@@ -294,7 +294,7 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
 };
 
 export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ promptStyle }) => {
-    const { isFullScreen, isZoomed } = useWindowSize();
+    const isFullScreen = useIsFullScreen();
     const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
@@ -307,22 +307,13 @@ export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ pro
         return <></>;
     }
 
-    if (isZoomed) {
-        return (
-            <div className="full-screen-prompt" style={promptStyle}>
-                <p>
-                    100% Zoom Recommended: <span style={{ fontWeight: 'bold' }}>Press Ctrl + 0</span>
-                </p>
-            </div>
-        );
-    }
-
     if (!isFullScreen) {
         return (
             <div className="full-screen-prompt" style={promptStyle}>
-                <p>
-                    Full Screen Recommended: <span style={{ fontWeight: 'bold' }}>Press F11</span>
-                </p>
+                <span>
+                    <p>Full screen and 100% zoom recommended: </p>
+                    <p style={{ fontWeight: 'bold' }}>Please reset zoom and/or enter full screen</p>
+                </span>
             </div>
         );
     }

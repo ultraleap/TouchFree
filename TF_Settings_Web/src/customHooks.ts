@@ -1,26 +1,18 @@
 import { useEffect, useState } from 'react';
 
-export const useWindowSize = () => {
+export const useIsFullScreen = () => {
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const [isZoomed, setIsZoomed] = useState(false);
 
     const resizeHandler = (event?: UIEvent) => {
         const target = event ? (event.currentTarget as Window) : null;
 
         const viewHeight = target?.innerHeight || window.innerHeight;
         const viewWidth = target?.innerWidth || window.innerWidth;
-        const pixelRatio = target?.devicePixelRatio || window.devicePixelRatio;
 
-        if (viewWidth * pixelRatio === screen.width && viewHeight * pixelRatio === screen.height) {
+        if (viewWidth === screen.width && viewHeight === screen.height) {
             setIsFullScreen(true);
         } else {
             setIsFullScreen(false);
-        }
-
-        if (pixelRatio != 1) {
-            setIsZoomed(true);
-        } else {
-            setIsZoomed(false);
         }
     };
 
@@ -30,5 +22,5 @@ export const useWindowSize = () => {
         return () => window.removeEventListener('resize', resizeHandler);
     }, []);
 
-    return { isFullScreen, isZoomed };
+    return isFullScreen;
 };
