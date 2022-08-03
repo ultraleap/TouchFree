@@ -103,7 +103,7 @@ const MaskingScreen = () => {
     };
 
     const messageHandler = (socket: WebSocket, event: MessageEvent) => {
-        if (!isFrameProcessingRef.current && typeof event.data == 'string') {
+        if (isFrameProcessingRef.current || typeof event.data == 'string') {
             return;
         }
 
@@ -127,7 +127,7 @@ const MaskingScreen = () => {
                     }
                     setTimeout(() => {
                         setIsFrameProcessing(false);
-                    }, 32);
+                    }, 67);
                 });
             });
         } else if (!successfullySubscribed.current) {
@@ -160,7 +160,7 @@ const MaskingScreen = () => {
             // Settimeout with 32ms for ~30fps if we have the performance
             setTimeout(() => {
                 isHandProcessingRef.current = false;
-            }, 32);
+            }, 67);
         });
     };
 
