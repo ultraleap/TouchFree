@@ -119,9 +119,9 @@ const MaskingScreen = () => {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
 
-        const data = new DataView(event.data);
+        const dataAsUint8 = new Uint8Array(event.data.slice(0, 10));
 
-        if (data.getUint8(0) === 1) {
+        if (dataAsUint8[0] === 1) {
             const leftLens = leftLensRef.current;
             const rightLens = rightLensRef.current;
             setTimeout(() => {
@@ -130,7 +130,7 @@ const MaskingScreen = () => {
                 successfullySubscribed.current = true;
 
                 displayLensFeeds(
-                    data,
+                    event.data,
                     leftLens,
                     rightLens,
                     isCamReversedRef.current,

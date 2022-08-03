@@ -1,5 +1,5 @@
 export const displayLensFeeds = (
-    data: DataView,
+    data: ArrayBuffer,
     leftLensRef: HTMLCanvasElement,
     rightLensRef: HTMLCanvasElement,
     isCameraReversed: boolean,
@@ -9,8 +9,10 @@ export const displayLensFeeds = (
     const rightContext = rightLensRef.getContext('2d');
     if (!leftContext || !rightContext) return;
 
-    const dim1 = data.getUint32(1);
-    const dim2 = data.getUint32(5);
+    const startOfBuffer = new DataView(data.slice(0, 10));
+
+    const dim1 = startOfBuffer.getUint32(1);
+    const dim2 = startOfBuffer.getUint32(5);
 
     const width = Math.min(dim1, dim2);
     const lensHeight = Math.max(dim1, dim2) / 2;
@@ -28,7 +30,7 @@ export const displayLensFeeds = (
 
     if (rotated90) {
         let rowBase = 0;
-        const offsetView = new DataView(data.buffer.slice(offset, offset + width * lensHeight * 2));
+        const offsetView = new DataView(data.slice(offset, offset + width * lensHeight * 2));
 
         for (let rowIndex = 0; rowIndex < width; rowIndex++) {
             let rowStart = rowBase * 2;
@@ -44,13 +46,13 @@ export const displayLensFeeds = (
             rowBase += lensHeight;
         }
     } else {
-        let offsetView = new DataView(data.buffer.slice(offset, offset + width * lensHeight));
+        let offsetView = new DataView(data.slice(offset, offset + width * lensHeight));
 
         for (let i = 0; i < width * lensHeight; i++) {
             rightBuf32[i] = byteConversionArray[offsetView.getUint8(i)];
         }
 
-        offsetView = new DataView(data.buffer.slice(offset + width * lensHeight, offset + width * lensHeight * 2));
+        offsetView = new DataView(data.slice(offset + width * lensHeight, offset + width * lensHeight * 2));
         for (let i = 0; i < width * lensHeight; i++) {
             leftBuf32[i] = byteConversionArray[offsetView.getUint8(i)];
         }
