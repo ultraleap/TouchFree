@@ -184,8 +184,16 @@ const MaskingScreen = () => {
             <div className="cam-feeds-bottom-container">
                 <div
                     className="cam-feed-box--sub"
-                    onPointerEnter={() => setIsSubFeedHovered(true)}
-                    onPointerLeave={() => setIsSubFeedHovered(false)}
+                    onPointerEnter={(e) => {
+                        setIsSubFeedHovered(true);
+                        console.log('ENTER');
+                        console.log(e);
+                    }}
+                    onPointerLeave={(e) => {
+                        setIsSubFeedHovered(false);
+                        console.log('EXIT');
+                        console.log(e);
+                    }}
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
                     <canvas ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />

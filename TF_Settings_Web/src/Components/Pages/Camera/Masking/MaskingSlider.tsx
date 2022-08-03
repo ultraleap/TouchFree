@@ -42,6 +42,8 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
     const onMove = (event: globalThis.PointerEvent) => {
         if (!sliderRef.current) return;
 
+        console.log('onMove');
+
         switch (direction) {
             case 'left':
                 sliderRef.current.style.left = `${
