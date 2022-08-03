@@ -9,7 +9,7 @@ import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
 import MaskingOption from './MaskingOptions';
-import MaskingSlider, { SliderDirection } from './MaskingSlider';
+import { MaskingSlider, MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { displayLensFeeds } from './displayLensFeeds';
 
 enum Lens {
@@ -111,6 +111,7 @@ const MaskingScreen = () => {
         const allowImages = state.allowImages?.content;
         if (allowImages) {
             _setAllowImages(allowImages);
+            allowImagesRef.current = allowImages;
         }
 
         const isCamReversed = state.cameraReversed?.content;
@@ -175,10 +176,11 @@ const MaskingScreen = () => {
             </div>
             <div className="cam-feed-box--main">
                 {Object.entries(masking).map((sliderInfo) => (
-                    <MaskingSlider
+                    <MaskingSliderDraggable
                         key={sliderInfo[0]}
                         direction={sliderInfo[0] as SliderDirection}
                         maskingValue={sliderInfo[1]}
+                        canvasInfo={{ size: 800, offset: 100 }}
                         onDrag={setMasking}
                         onDragEnd={sendMaskingRequest}
                     />
@@ -193,6 +195,14 @@ const MaskingScreen = () => {
                     onPointerLeave={() => setIsSubFeedHovered(false)}
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
+                    {Object.entries(masking).map((sliderInfo) => (
+                        <MaskingSlider
+                            key={sliderInfo[0]}
+                            direction={sliderInfo[0] as SliderDirection}
+                            maskingValue={sliderInfo[1]}
+                            canvasInfo={{ size: 360, offset: 60 }}
+                        />
+                    ))}
                     <canvas ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
                     <p>{Lens[1 - mainLens]} Lens</p>
                     <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>

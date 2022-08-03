@@ -82,24 +82,30 @@
 }
 
 // ===== Masking Sliders =====
-@mixin masking-slider($top, $left, $vertical) {
+@mixin masking-slider($top, $left, $canvas-size, $vertical) {
     position: absolute;
-    top: $top;
-    left: $left;
+    $size: 10px;
+
+    $canvas-margin: calc($canvas-size / 8);
+    $canvas-padding: calc($canvas-size / 2 - $canvas-margin);
 
     // Fix these colors so same for top and side
     $gradient-color: #00000000 0%, v.$ultraleap-green 50%, #00000000 100%;
     @if $vertical {
+        top: $top;
+        left: calc($left - ($size / 2));
         height: 0px;
-        width: 10px;
-        padding: 300px 0 300px 0;
-        margin: 100px 0 100px 0;
+        width: $size;
+        padding: $canvas-padding 0 $canvas-padding 0;
+        margin: $canvas-margin 0 $canvas-margin 0;
         background: linear-gradient(0deg, $gradient-color);
     } @else {
-        height: 10px;
+        top: calc($top - ($size / 2));
+        left: $left;
+        height: $size;
         width: 0px;
-        padding: 0 300px 0 300px;
-        margin: 0 100px 0 100px;
+        padding: 0 $canvas-padding 0 $canvas-padding;
+        margin: 0 $canvas-margin 0 $canvas-margin;
         background: linear-gradient(90deg, $gradient-color);
     }
 
@@ -164,23 +170,30 @@
     }
 }
 
+.masking-slider {
+    --canvas-size: 800px;
+    --close-offset: 100px;
+    --far-offset: calc(var(--canvas-size) + var(--close-offset));
+}
+
 .masking-slider--left {
-    @include masking-slider(100px, 95px, $vertical: true);
+    @include masking-slider(var(--close-offset), var(--close-offset), var(--canvas-size), $vertical: true);
     border-radius: 0 50% 50% 0;
+    // background: var(--close-offset);
 }
 
 .masking-slider--right {
-    @include masking-slider(100px, 895px, $vertical: true);
+    @include masking-slider(var(--close-offset), var(--far-offset), var(--canvas-size), $vertical: true);
     border-radius: 50% 0 0 50%;
 }
 
 .masking-slider--upper {
-    @include masking-slider(95px, 100px, $vertical: false);
+    @include masking-slider(var(--close-offset), var(--close-offset), var(--canvas-size), $vertical: false);
     border-radius: 0 0 50% 50%;
 }
 
 .masking-slider--lower {
-    @include masking-slider(895px, 100px, $vertical: false);
+    @include masking-slider(var(--far-offset), var(--close-offset), var(--canvas-size), $vertical: false);
     border-radius: 50% 50% 0 0;
 }
 
