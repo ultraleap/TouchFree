@@ -23,8 +23,7 @@ const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value
             <p>{description}</p>
         </div>
         <div className="cam-feeds-option-toggle">
-            {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-            <ToggleSwitch value={value} onChange={() => {}} />
+            <ToggleSwitch value={value} />
         </div>
     </label>
 );
