@@ -61,6 +61,7 @@ export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, masking
 };
 
 interface MaskingSliderDraggableProps extends MaskingSliderProps {
+    clearMasking: () => void;
     onDrag: (direction: SliderDirection, maskingValue: number) => void;
     onDragEnd: () => void;
 }
@@ -69,6 +70,7 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
     direction,
     maskingValue,
     canvasInfo,
+    clearMasking,
     onDrag,
     onDragEnd,
 }) => {
@@ -90,6 +92,7 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
     }, []);
     // ===== Event Handlers =====
     const onStartDrag = (event: PointerEvent<HTMLSpanElement>) => {
+        clearMasking();
         setIsDragging(true);
         dragStartPos.current = { X: event.pageX, Y: event.pageY };
 

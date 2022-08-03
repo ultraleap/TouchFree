@@ -50,6 +50,9 @@ const MaskingScreen = () => {
     const sendMaskingRequest = () => {
         TrackingManager.RequestTrackingChange({ mask: maskingRef.current }, null);
     };
+    const clearMasking = () => {
+        TrackingManager.RequestTrackingChange({ mask: { left: 0, right: 0, upper: 0, lower: 0 } }, null);
+    };
 
     const setAllowImages = (value: boolean) => {
         _setAllowImages(value);
@@ -181,6 +184,7 @@ const MaskingScreen = () => {
                         direction={sliderInfo[0] as SliderDirection}
                         maskingValue={sliderInfo[1]}
                         canvasInfo={{ size: 800, offset: 100 }}
+                        clearMasking={clearMasking}
                         onDrag={setMasking}
                         onDragEnd={sendMaskingRequest}
                     />
