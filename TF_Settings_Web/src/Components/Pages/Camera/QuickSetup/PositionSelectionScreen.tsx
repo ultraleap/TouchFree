@@ -49,7 +49,7 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
             <div className="title-line">
                 <h1> Where is Your Camera Positioned? </h1>
             </div>
-            <div className="title-line" style={{ fontStyle: 'italic', paddingBottom: '1vh' }}>
+            <div className="title-line" style={{ fontStyle: 'italic', paddingBottom: '1vh', marginTop: '-0.5vh' }}>
                 <p>Full screen is recommended for optimal calibration</p>
             </div>
             <div className="tf-button-container">
