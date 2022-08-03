@@ -33,6 +33,7 @@ const MaskingScreen = () => {
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
     const [isFrameProcessing, _setIsFrameProcessing] = useState<boolean>(false);
+    const [isHandProcessing, _setIsHandProcessing] = useState<boolean>(false);
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
@@ -40,6 +41,7 @@ const MaskingScreen = () => {
     const showOverexposedRef = useRef(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
     const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
+    const isHandProcessingRef = useRef<boolean>(isHandProcessing);
 
     // ===== State Setters =====
     const setIsCameraReversed = (value: boolean) => {
@@ -53,6 +55,10 @@ const MaskingScreen = () => {
     const setIsFrameProcessing = (value: boolean) => {
         _setIsFrameProcessing(value);
         isFrameProcessingRef.current = value;
+    };
+    const setIsHandProcessing = (value: boolean) => {
+        _setIsHandProcessing(value);
+        isHandProcessingRef.current = value;
     };
     const setMainLens = (lens: Lens) => {
         _setMainLens(lens);
@@ -109,46 +115,63 @@ const MaskingScreen = () => {
             return;
         }
 
-        setIsFrameProcessing(true);
-
         if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
 
         const data = new DataView(event.data);
+
         if (data.getUint8(0) === 1) {
-            successfullySubscribed.current = true;
+            const leftLens = leftLensRef.current;
+            const rightLens = rightLensRef.current;
+            setTimeout(() => {
+                setIsFrameProcessing(true);
 
-            displayLensFeeds(
-                data,
-                leftLensRef.current,
-                rightLensRef.current,
-                isCamReversedRef.current,
-                showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
-            );
+                successfullySubscribed.current = true;
+
+                displayLensFeeds(
+                    data,
+                    leftLens,
+                    rightLens,
+                    isCamReversedRef.current,
+                    showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
+                );
+
+                // Settimeout with 32ms for ~30fps if we have the performance
+                setTimeout(() => {
+                    setIsFrameProcessing(false);
+                }, 32);
+            });
         }
-
-        // Settimeout with 32ms for ~30fps if we have the performance
-        setTimeout(() => {
-            setIsFrameProcessing(false);
-        }, 32);
     };
 
     const handleTFInput = (evt: CustomEvent<HandFrame>): void => {
-        if (evt.detail?.Hands) {
-            const handOne = evt.detail.Hands[0];
-            const handTwo = evt.detail.Hands[1];
-            let convertedHandOne: HandSvgProps | undefined = undefined;
-            let convertedHandTwo: HandSvgProps | undefined = undefined;
-
-            if (handOne) {
-                convertedHandOne = handToSvgData(handOne, 0);
-            }
-            if (handTwo) {
-                convertedHandTwo = handToSvgData(handTwo, 1);
-            }
-            setHandData({ handOne: convertedHandOne, handTwo: convertedHandTwo });
+        if (isHandProcessingRef.current) {
+            return;
         }
+
+        setIsHandProcessing(true);
+        setTimeout(() => {
+            if (evt.detail?.Hands) {
+                const handOne = evt.detail.Hands[0];
+                const handTwo = evt.detail.Hands[1];
+                let convertedHandOne: HandSvgProps | undefined = undefined;
+                let convertedHandTwo: HandSvgProps | undefined = undefined;
+
+                if (handOne) {
+                    convertedHandOne = handToSvgData(handOne, 0);
+                }
+                if (handTwo) {
+                    convertedHandTwo = handToSvgData(handTwo, 1);
+                }
+                setHandData({ handOne: convertedHandOne, handTwo: convertedHandTwo });
+            }
+
+            // Settimeout with 32ms for ~30fps if we have the performance
+            setTimeout(() => {
+                setIsHandProcessing(false);
+            }, 32);
+        });
     };
 
     return (
