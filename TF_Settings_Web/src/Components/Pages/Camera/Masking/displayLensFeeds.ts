@@ -47,7 +47,8 @@ export const putBufferToImage = (
     context: CanvasRenderingContext2D,
     buf8: Uint8ClampedArray,
     width: number,
-    lensHeight: number) => {
+    lensHeight: number
+) => {
     lensRef.width = width;
     lensRef.height = lensHeight;
     context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
