@@ -68,19 +68,14 @@ export class HandSvgProps {
 }
 
 interface DataWrapper {
-    data: HandSvgProps | undefined;
+    one: HandSvgProps | undefined;
+    two: HandSvgProps | undefined;
 }
 
-export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
-    if (!data?.dotColor) {
+export const HandsSvg: React.FC<DataWrapper> = ({ one, two }) => {
+    if (one === undefined && two === undefined) {
         return <svg style={{ marginLeft: '-800px' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800"></svg>;
     }
-
-    const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600 / data.middleKnuckle.z;
-    const pointRadius = 5 * scalingFactor;
-    const strokeWidth = 5 * scalingFactor;
-
-    const strokeData: LineStrokeData = { stroke: 'white', strokeWidth: strokeWidth };
 
     return (
         <svg style={{ marginLeft: '-800px', zIndex: 999 }} xmlns="http://www.w3.org/2000/svg" height="800" width="800">
@@ -91,6 +86,29 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
                 </radialGradient>
             </defs>
 
+            <HandSvg data={one} />
+            <HandSvg data={two} />
+        </svg>
+    );
+};
+
+interface HandDataWrapper {
+    data: HandSvgProps | undefined;
+}
+
+export const HandSvg: React.FC<HandDataWrapper> = ({ data }) => {
+    if (!data?.dotColor) {
+        return <g></g>;
+    }
+
+    const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600 / data.middleKnuckle.z;
+    const pointRadius = 5 * scalingFactor;
+    const strokeWidth = 5 * scalingFactor;
+
+    const strokeData: LineStrokeData = { stroke: 'white', strokeWidth: strokeWidth };
+
+    return (
+        <g>
             <LineSvg id="index-wrist" point1={data.indexKnuckle} point2={data.thumbKnuckle} strokeData={strokeData} />
             <LineSvg id="index-middle" point1={data.indexKnuckle} point2={data.middleKnuckle} strokeData={strokeData} />
             <LineSvg id="middle-ring" point1={data.middleKnuckle} point2={data.ringKnuckle} strokeData={strokeData} />
@@ -136,7 +154,7 @@ export const HandSvg: React.FC<DataWrapper> = ({ data }) => {
             />
 
             <CircleSvg id="wrist" point={data.wrist} radius={pointRadius} />
-        </svg>
+        </g>
     );
 };
 

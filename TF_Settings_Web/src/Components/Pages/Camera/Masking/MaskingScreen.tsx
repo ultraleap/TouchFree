@@ -7,7 +7,7 @@ import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
-import { HandSvg, HandSvgProps } from 'Components/Controls/HandsSvg';
+import { HandsSvg, HandSvgProps } from 'Components/Controls/HandsSvg';
 
 import MaskingOption from './MaskingOptions';
 import MaskingSlider, { SliderDirection } from './MaskingSlider';
@@ -136,7 +136,7 @@ const MaskingScreen = () => {
     };
 
     const handleTFInput = (evt: CustomEvent<HandFrame>): void => {
-        if (isHandProcessingRef.current) {
+        if (isHandProcessingRef.current || !successfullySubscribed.current) {
             return;
         }
 
@@ -177,8 +177,11 @@ const MaskingScreen = () => {
                     <MaskingSlider key={direction} direction={direction} />
                 ))}
                 <canvas style={{ zIndex: 100 }} ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
-                <HandSvg key="hand-data-1" data={handData.handOne} />
-                <HandSvg key="hand-data-2" data={handData.handTwo} />
+                {successfullySubscribed.current ? (
+                    <HandsSvg key="hand-data" one={handData.handOne} two={handData.handTwo} />
+                ) : (
+                    <span></span>
+                )}
                 <p>{Lens[mainLens]} Lens</p>
             </div>
             <div className="cam-feeds-bottom-container">
@@ -188,7 +191,7 @@ const MaskingScreen = () => {
                     onPointerLeave={() => setIsSubFeedHovered(false)}
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
-                    {/* <canvas style={{ zIndex: 100 }} ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} /> */}
+                    <canvas style={{ zIndex: 100 }} ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
                     <p>{Lens[1 - mainLens]} Lens</p>
                     <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
                         <div className="sub-feed-overlay--content">
