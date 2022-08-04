@@ -1,3 +1,5 @@
+import { useIsFullScreen } from 'customHooks';
+
 import 'Styles/Camera/Calibrate.scss';
 import cssVariables from 'Styles/_variables.scss';
 import 'react-circular-progressbar/dist/styles.css';
@@ -22,8 +24,13 @@ import { TIMEOUT_S } from './CalibrationScreen';
 interface CalibrationInstructionsProps {
     progress: number;
     containerStyle: CSSProperties;
+    isTop?: boolean;
 }
-export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = ({ progress, containerStyle }) => {
+export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = ({
+    progress,
+    containerStyle,
+    isTop,
+}) => {
     const instructionsText = (
         <h1>
             Hold INDEX FINGER against <br /> this <span className="greenText">GREEN CIRCLE</span>
@@ -33,12 +40,29 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
     const calibratingText = (
         <h1 className="greenText">
             <div style={{ display: 'flex', height: '3.2vh' }}>
-                <span style={{ width: '25%', paddingLeft: '37.5%' }}>Calibrating</span>
-                <span style={{ width: '4%', textAlign: 'left' }} className="loading" />
+                <span>Calibrating</span>
+                <span style={{ width: '1vw', textAlign: 'left' }} className="loading" />
             </div>
-            {Math.ceil(progress * 100).toFixed(0)}%
+            <div style={{ paddingTop: '0.5rem' }}>{Math.ceil(progress * 100).toFixed(0)}%</div>
         </h1>
     );
+
+    if (isTop) {
+        return (
+            <div className="instructions" style={containerStyle}>
+                <img src={DownArrow} alt="Down arrow" className="arrow" style={{ transform: 'rotate(180deg)' }} />
+                <SwitchTransition>
+                    <CSSTransition
+                        key={progress > 0 ? 'calibratingText' : 'instructionText'}
+                        addEndListener={(node, done) => node.addEventListener('transitionend', done, false)}
+                        classNames="fade"
+                    >
+                        {progress > 0 ? calibratingText : instructionsText}
+                    </CSSTransition>
+                </SwitchTransition>
+            </div>
+        );
+    }
 
     return (
         <div className="instructions" style={containerStyle}>
@@ -52,11 +76,6 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
                 </CSSTransition>
             </SwitchTransition>
             <img src={DownArrow} alt="Down arrow" className="arrow" />
-            <img
-                className="touch-circle"
-                src={FingerprintIcon}
-                alt="Fingerprint Icon showing where to place finger for Quick Setup"
-            />
         </div>
     );
 };
@@ -79,14 +98,22 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
                 pathTransitionDuration: 0.08,
             })}
         />
+        <img
+            className="touch-circle"
+            style={{ position: 'absolute', top: '22%', left: '22%' }}
+            src={FingerprintIcon}
+            alt="Fingerprint Icon showing where to place finger for Quick Setup"
+        />
     </div>
 );
 
 interface HandsLostProps {
+    display: boolean;
     timeToPosSelect?: number;
+    handsLostStyle?: CSSProperties;
 }
 
-const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSelect }) => {
+const ReturnToPositionScreenMessage: React.FC<{ timeToPosSelect?: number }> = ({ timeToPosSelect }) => {
     if (!timeToPosSelect) {
         return <></>;
     }
@@ -113,14 +140,15 @@ const ReturnToPositionScreenMessage: React.FC<HandsLostProps> = ({ timeToPosSele
     );
 };
 
-export const CalibrationHandLostMessage: React.FC<HandsLostProps> = ({ timeToPosSelect }) => {
+export const CalibrationHandLostMessage: React.FC<HandsLostProps> = ({ display, timeToPosSelect, handsLostStyle }) => {
+    if (!display) {
+        return <div style={handsLostStyle}></div>;
+    }
     return (
-        <div>
-            <div className={'hand-not-found-container'}>
-                <img src={HandIcon} alt="Hand Icon" />
-                <p>No Hand Detected{timeToPosSelect ? ':' : ''}</p>
-                <ReturnToPositionScreenMessage timeToPosSelect={timeToPosSelect} />
-            </div>
+        <div className={'hand-not-found-container'} style={handsLostStyle}>
+            <img src={HandIcon} alt="Hand Icon" />
+            <p>No Hand Detected{timeToPosSelect ? ':' : ''}</p>
+            <ReturnToPositionScreenMessage timeToPosSelect={timeToPosSelect} />
         </div>
     );
 };
@@ -168,7 +196,7 @@ interface CalibrationCancelButtonProps {
 export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
         <TextButton
-            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
+            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle, width: 'auto', padding: '0 30px' }}
             title=""
             titleStyle={{ display: 'none' }}
             text="Cancel Setup"
@@ -263,4 +291,32 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
         background: 'linear-gradient(107deg, #e2164d 0%, #d11883 100%)',
         boxShadow: '0px 5px 25px #000000',
     };
+};
+
+export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ promptStyle }) => {
+    const isFullScreen = useIsFullScreen();
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => setIsReady(true), 200);
+
+        return () => clearTimeout(timeout);
+    }, []);
+
+    if (!isReady) {
+        return <></>;
+    }
+
+    if (!isFullScreen) {
+        return (
+            <div className="full-screen-prompt" style={promptStyle}>
+                <span>
+                    <p>Full screen and 100% zoom recommended: </p>
+                    <p style={{ fontWeight: 'bold' }}>Please reset zoom and/or enter full screen</p>
+                </span>
+            </div>
+        );
+    }
+
+    return <></>;
 };

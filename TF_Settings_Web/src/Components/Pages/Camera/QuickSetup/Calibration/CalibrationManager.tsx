@@ -65,6 +65,23 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
         };
     }, []);
 
+    const sendScreenSizeToConfig = () => {
+        ConfigurationManager.RequestConfigChange(
+            null,
+            { ScreenWidthPX: window.innerWidth, ScreenHeightPX: window.innerHeight },
+            () => {}
+        );
+    };
+
+    useEffect(() => {
+        sendScreenSizeToConfig();
+        window.addEventListener('resize', sendScreenSizeToConfig);
+
+        return () => {
+            window.removeEventListener('resize', sendScreenSizeToConfig);
+        };
+    }, []);
+
     const setHandPresence = (evt: Event) => {
         setIsHandPresent(evt.type === 'HandFound');
     };
