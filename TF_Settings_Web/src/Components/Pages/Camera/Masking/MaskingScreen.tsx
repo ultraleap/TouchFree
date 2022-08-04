@@ -41,6 +41,7 @@ const MaskingScreen = () => {
     const successfullySubscribed = useRef<boolean>(false);
     const isFrameProcessingRef = useRef<boolean>(false);
     const isHandProcessingRef = useRef<boolean>(false);
+    const mainLensRef = useRef<Lens>(mainLens);
 
     // ===== State Setters =====
     const setIsCameraReversed = (value: boolean) => {
@@ -60,11 +61,12 @@ const MaskingScreen = () => {
     const setMainLens = (lens: Lens) => {
         _setMainLens(lens);
         setHandRenderState(true, lens === Lens.Left ? 'left' : 'right');
+        mainLensRef.current = lens;
     };
 
     // ===== Canvas Refs =====
-    const leftLensRef = useRef<HTMLCanvasElement>(null);
-    const rightLensRef = useRef<HTMLCanvasElement>(null);
+    const mainLensCanvasRef = useRef<HTMLCanvasElement>(null);
+    const backgroundLensCanvasRef = useRef<HTMLCanvasElement>(null);
 
     // ===== Variables =====
     const byteConversionArray = new Uint32Array(256);
@@ -113,8 +115,10 @@ const MaskingScreen = () => {
             successfullySubscribed.current = true;
             setTimeout(() => {
                 setIsFrameProcessing(true);
-                const leftLens = leftLensRef.current;
-                const rightLens = rightLensRef.current;
+                const leftLens =
+                    mainLensRef.current == Lens.Left ? mainLensCanvasRef.current : backgroundLensCanvasRef.current;
+                const rightLens =
+                    mainLensRef.current == Lens.Left ? backgroundLensCanvasRef.current : mainLensCanvasRef.current;
                 setTimeout(() => {
                     if (leftLens || rightLens) {
                         displayLensFeeds(
@@ -176,7 +180,7 @@ const MaskingScreen = () => {
                 {sliderDirections.map((direction) => (
                     <MaskingSlider key={direction} direction={direction} />
                 ))}
-                <canvas style={{ zIndex: 100 }} ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
+                <canvas style={{ zIndex: 100 }} ref={mainLensCanvasRef} />
                 {successfullySubscribed.current ? (
                     <HandsSvg key="hand-data" one={handData.handOne} two={handData.handTwo} />
                 ) : (
@@ -191,7 +195,7 @@ const MaskingScreen = () => {
                     onPointerLeave={() => setIsSubFeedHovered(false)}
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
-                    <canvas style={{ zIndex: 100 }} ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
+                    <canvas style={{ zIndex: 100 }} ref={backgroundLensCanvasRef} />
                     <p>{Lens[1 - mainLens]} Lens</p>
                     <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
                         <div className="sub-feed-overlay--content">
