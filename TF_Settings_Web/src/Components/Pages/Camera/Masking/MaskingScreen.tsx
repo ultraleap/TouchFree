@@ -188,7 +188,7 @@ const MaskingScreen = () => {
                     onPointerLeave={() => setIsSubFeedHovered(false)}
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
-                    <canvas style={{display: 'none'}} ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
+                    <canvas ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
                     <p>{Lens[1 - mainLens]} Lens</p>
                     <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
                         <div className="sub-feed-overlay--content">
