@@ -1,13 +1,13 @@
 export const displayLensFeeds = (
     data: ArrayBuffer,
-    leftLensRef: HTMLCanvasElement,
-    rightLensRef: HTMLCanvasElement,
+    leftLensRef: HTMLCanvasElement | null,
+    rightLensRef: HTMLCanvasElement | null,
     isCameraReversed: boolean,
     byteConversionArray: Uint32Array
 ) => {
     const leftContext = getContext(leftLensRef);
     const rightContext = getContext(rightLensRef);
-    if (!leftContext || !rightContext) return;
+    if (!leftContext && !rightContext) return;
 
     const startOfBuffer = new DataView(data, 0, 10);
 
@@ -38,8 +38,13 @@ export const displayLensFeeds = (
     rightBuf32.fill(0xff000000, startOffset, startOffset + width);
     leftBuf32.fill(0xff000000, startOffset, startOffset + width);
 
-    putBufferToImage(leftLensRef, leftContext, leftBuf8, width, lensHeight);
-    putBufferToImage(rightLensRef, rightContext, rightBuf8, width, lensHeight);
+    if (leftLensRef && leftContext) {
+        putBufferToImage(leftLensRef, leftContext, leftBuf8, width, lensHeight);
+    }
+
+    if (rightLensRef && rightContext) {
+        putBufferToImage(rightLensRef, rightContext, rightBuf8, width, lensHeight);
+    }
 };
 
 export const putBufferToImage = (
@@ -98,7 +103,10 @@ export const processScreen = (
     }
 };
 
-export const getContext = (canvasElement: HTMLCanvasElement) => {
+export const getContext = (canvasElement: HTMLCanvasElement | null) => {
+    if (!canvasElement) {
+        return undefined;
+    }
     const canvasIndex = canvasElements.indexOf(canvasElement);
     if (canvasIndex < 0) {
         const context = canvasElement.getContext('2d');

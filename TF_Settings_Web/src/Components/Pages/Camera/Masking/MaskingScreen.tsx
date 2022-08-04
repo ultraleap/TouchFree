@@ -116,7 +116,7 @@ const MaskingScreen = () => {
                 const leftLens = leftLensRef.current;
                 const rightLens = rightLensRef.current;
                 setTimeout(() => {
-                    if (leftLens && rightLens) {
+                    if (leftLens || rightLens) {
                         displayLensFeeds(
                             event.data as ArrayBuffer,
                             leftLens,
@@ -188,7 +188,7 @@ const MaskingScreen = () => {
                     onPointerLeave={() => setIsSubFeedHovered(false)}
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
-                    <canvas style={{ zIndex: 100 }} ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
+                    {/* <canvas style={{ zIndex: 100 }} ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} /> */}
                     <p>{Lens[1 - mainLens]} Lens</p>
                     <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
                         <div className="sub-feed-overlay--content">
