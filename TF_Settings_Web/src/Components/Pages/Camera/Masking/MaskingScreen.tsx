@@ -97,6 +97,10 @@ const MaskingScreen = () => {
         socket.addEventListener('open', handleWSOpen);
         socket.addEventListener('message', (event) => handleMessage(socket, event));
 
+        window.addEventListener('pointermove', (e) => {
+            console.log('MOVING', e);
+        });
+
         return () => {
             socket.removeEventListener('open', handleWSOpen);
             socket.removeEventListener('message', (event) => handleMessage(socket, event));
@@ -106,6 +110,7 @@ const MaskingScreen = () => {
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
+        console.log('Recieved Tracking Config');
         const allowImages = state.allowImages?.content;
         if (allowImages) {
             _setAllowImages(allowImages);
