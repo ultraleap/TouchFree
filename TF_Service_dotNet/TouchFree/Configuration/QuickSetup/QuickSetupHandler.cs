@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Numerics;
 
+using Ultraleap.TouchFree.Library.Connections;
+
 namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
 {
     public class QuickSetupHandler : IQuickSetupHandler

@@ -53,6 +53,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // A dictionary of unique request IDs and <ServiceStatusCallback> that represent requests that are awaiting response from the Service.
         public Dictionary<string, ServiceStatusCallback> serviceStatusCallbacks = new Dictionary<string, ServiceStatusCallback>();
 
+        // Variable: trackingStateQueue
+        // A queue of <TrackingStateResponse>s that have been received from the Service.
+        public ConcurrentQueue<TrackingStateResponse> trackingStateQueue = new ConcurrentQueue<TrackingStateResponse>();
+
+        // Variable: trackingStatusCallbacks
+        // A dictionary of unique request IDs and <TrackingStateCallback> that represent requests that are awaiting response from the Service.
+        public Dictionary<string, TrackingStateCallback> trackingStateCallbacks = new Dictionary<string, TrackingStateCallback>();
+
         // Used to store HandPresenceState changes as they are recieved and emit messages
         // appropriately. "PROCESSED" when there are no unprocessed changes.
         internal HandPresenceState handState = HandPresenceState.PROCESSED;
@@ -77,6 +85,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         {
             CheckQueue<WebSocketResponse>(responseQueue, HandleResponse);
             CheckQueue<ConfigState>(configStateQueue, HandleConfigState);
+            CheckQueue<TrackingStateResponse>(trackingStateQueue, HandleTrackingStateResponse);
 
             CheckForAction();
         }
@@ -147,6 +156,22 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     break;
                 }
             }
+        }
+
+        // Function: HandleTrackingStateResponse
+        // Checks the dictionary of <trackingStateCallbacks> for a matching request ID. If there is a
+        // match, calls the callback action in the matching <TrackingStateCallback>.
+        void HandleTrackingStateResponse(TrackingStateResponse _trackingStateResponse)
+        {
+            foreach (KeyValuePair<string, TrackingStateCallback> callback in trackingStateCallbacks)
+            {
+                if (callback.Key == _trackingStateResponse.requestID)
+                {
+                    callback.Value.callback.Invoke(_trackingStateResponse);
+                    trackingStateCallbacks.Remove(callback.Key);
+                    return;
+                }
+            };
         }
 
         // Function: CheckForAction
