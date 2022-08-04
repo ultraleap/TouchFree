@@ -27,12 +27,6 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
     const onStartDrag = (event: PointerEvent<HTMLSpanElement>) => {
         if (!sliderRef.current) return;
 
-        console.log('START');
-        console.log('INNER W: ' + window.innerWidth);
-        console.log('INNER H: ' + window.innerHeight);
-        console.log('OUTER W: ' + window.outerWidth);
-        console.log('OUTER H: ' + window.outerHeight);
-
         setIsDragging(true);
         if (Number.isNaN(startPosInfo.current.X) || Number.isNaN(startPosInfo.current.Y)) {
             const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
@@ -47,8 +41,6 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
 
     const onMove = (event: globalThis.PointerEvent) => {
         if (!sliderRef.current) return;
-
-        console.log('onMove');
 
         switch (direction) {
             case 'left':
@@ -75,7 +67,6 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
     };
 
     const onEndDrag = () => {
-        console.log('UP');
         setIsDragging(false);
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onEndDrag);
