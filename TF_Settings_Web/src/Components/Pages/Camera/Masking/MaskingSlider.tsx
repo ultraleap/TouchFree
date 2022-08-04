@@ -88,6 +88,8 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
         Y: Number.NaN,
     });
 
+    const dragPointerType = useRef<string>('');
+
     // ===== UseEffects =====
     useEffect(() => {
         return () => {
@@ -100,12 +102,15 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
         clearMasking();
         setIsDragging(true);
         dragStartPos.current = { X: event.pageX, Y: event.pageY };
+        dragPointerType.current = event.pointerType;
 
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onEndDrag);
     };
 
     const onMove = (event: globalThis.PointerEvent) => {
+        if (event.pointerType !== dragPointerType.current) return;
+
         let diffValue = 0;
 
         const { X: startX, Y: startY } = dragStartPos.current;
@@ -134,12 +139,15 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
         onDrag(direction, limitedNewMaskingValue);
     };
 
-    const onEndDrag = () => {
+    const onEndDrag = (event: globalThis.PointerEvent) => {
+        if (event.pointerType !== dragPointerType.current) return;
+
         setIsDragging(false);
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onEndDrag);
 
         onDragEnd();
+        dragPointerType.current === '';
     };
 
     const content = (
