@@ -74,27 +74,11 @@ const MaskingSlider: React.FC<{ direction: SliderDirection }> = ({ direction }) 
         }
     };
 
-    const onEndDrag = (event: globalThis.PointerEvent) => {
+    const onEndDrag = () => {
         console.log('UP');
         setIsDragging(false);
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onEndDrag);
-
-        let dragVal = 0;
-        switch (direction) {
-            case 'left':
-                dragVal = limitVal(event.pageX - startPosInfo.current.X);
-                break;
-            case 'right':
-                dragVal = limitVal(startPosInfo.current.X - event.pageX);
-                break;
-            case 'top':
-                dragVal = limitVal(event.pageY - startPosInfo.current.Y);
-                break;
-            case 'bottom':
-                dragVal = limitVal(startPosInfo.current.Y - event.pageY);
-                break;
-        }
     };
 
     return (
