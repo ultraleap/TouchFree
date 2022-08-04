@@ -180,7 +180,9 @@ const MaskingScreen = () => {
                 {sliderDirections.map((direction) => (
                     <MaskingSlider key={direction} direction={direction} />
                 ))}
-                <canvas style={{ zIndex: 100 }} ref={mainLensCanvasRef} />
+                <div>
+                    <canvas ref={mainLensCanvasRef} />
+                </div>
                 <div className="cam-feed-box-hand-renders">
                     <HandsSvg key="hand-data" one={handData.handOne} two={handData.handTwo} />
                 </div>
@@ -193,7 +195,9 @@ const MaskingScreen = () => {
                     onPointerLeave={() => setIsSubFeedHovered(false)}
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
-                    <canvas style={{ zIndex: 100 }} ref={backgroundLensCanvasRef} />
+                    <div>
+                        <canvas ref={backgroundLensCanvasRef} />
+                    </div>
                     <p>{Lens[1 - mainLens]} Lens</p>
                     <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
                         <div className="sub-feed-overlay--content">

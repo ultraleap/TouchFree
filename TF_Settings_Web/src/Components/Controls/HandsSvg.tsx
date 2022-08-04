@@ -78,7 +78,7 @@ export const HandsSvg: React.FC<DataWrapper> = ({ one, two }) => {
     }
 
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" height="800" width="800">
+        <svg style={{ position: 'relative' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800">
             <defs>
                 <radialGradient id="dotGradient">
                     <stop offset="0%" stopColor="#00EB85" />

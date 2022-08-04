@@ -15,11 +15,26 @@
 
     user-select: none;
 
-    > canvas {
+    > div {
+        $canvas-size: $size - $padding;
+        margin-top: calc((100% - $canvas-size) / 2);
+        display: inline-block;
+        z-index: 10;
+    }
+
+    > div.cam-feed-box-hand-renders {
+        $canvas-size: $size - $padding;
+        height: $canvas-size;
+        width: $canvas-size;
+        margin-left: -$canvas-size;
+        z-index: 11;
+        display: inline-block;
+    }
+
+    > div > canvas {
         $canvas-size: $size - $padding;
         width: $canvas-size;
         height: $canvas-size;
-        margin-top: calc((100% - $canvas-size) / 2);
 
         border: 1px solid #717171;
     }
@@ -44,14 +59,6 @@
 .cam-feed-box--sub {
     @include cam-feed-box(480px, 120px);
     margin: 0;
-}
-
-.cam-feed-box-hand-renders {
-    height: 800px;
-    width: 800px;
-    margin-left: -800px;
-    z-index: 999;
-    display: inline-block;
 }
 
 .sub-feed-overlay {
