@@ -37,6 +37,9 @@
 
 .cam-feed-box--main {
     @include cam-feed-box(1000px, 200px);
+    > canvas {
+        margin-top: 50px;
+    }
     margin-top: 3%;
     margin-bottom: 3%;
 }
@@ -46,38 +49,43 @@
     margin: 0;
 }
 
-.sub-feed-overlay {
-    position: absolute;
-    height: 102%;
-    width: 102%;
-    left: -1%;
-    top: -1%;
-
-    background: linear-gradient(180deg, #373737 0%, #2c2c2c 100%);
-    border: 1px solid #ffffff1a;
-    border-radius: 10px;
-    opacity: 0.85;
-
+.lens-toggle-container {
     display: flex;
+    width: 28%;
+    height: 5%;
+    margin: auto;
+    margin-top: 4.5%;
     align-items: center;
-
-    box-shadow: 0px 0px 30px v.$ultraleap-green;
 }
 
-.sub-feed-overlay--content {
-    width: 100%;
-    user-select: none;
+.lens-toggle {
+    color: white;
+    font-family: v.$base-font;
+    width: 50%;
+    height: 100%;
 
-    > p {
-        color: white;
-        font-family: v.$base-font;
-        text-align: center;
-        font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: v.$light-grey-gradient;
+    border: 1px solid #ffffff29;
+    border-radius: 50px 0px 0px 50px;
+    box-shadow: inset 0px 1px 4px #000000d0;
+
+    &--left {
+        @extend .lens-toggle;
+        border-radius: 50px 0 0 50px;
     }
 
-    > img {
-        height: 45px;
-        margin-bottom: 10px;
+    &--right {
+        @extend .lens-toggle;
+        border-radius: 0 50px 50px 0;
+    }
+
+    &--active {
+        background: v.$ultraleap-green-gradient;
+        border: 1px solid #fdfdfd73;
+        color: black;
     }
 }
 
@@ -172,28 +180,29 @@
 
 .masking-slider {
     --canvas-size: 800px;
-    --close-offset: 100px;
-    --far-offset: calc(var(--canvas-size) + var(--close-offset));
+    --top-offset: 100px;
+    --bottom-offset: calc(var(--top-offset) + var(--canvas-size));
+    --left-offset: 100px;
+    --right-offset: calc(var(--left-offset) + var(--canvas-size));
 }
 
 .masking-slider--left {
-    @include masking-slider(var(--close-offset), var(--close-offset), var(--canvas-size), $vertical: true);
+    @include masking-slider(var(--top-offset), var(--left-offset), var(--canvas-size), $vertical: true);
     border-radius: 0 50% 50% 0;
-    // background: var(--close-offset);
 }
 
 .masking-slider--right {
-    @include masking-slider(var(--close-offset), var(--far-offset), var(--canvas-size), $vertical: true);
+    @include masking-slider(var(--top-offset), var(--right-offset), var(--canvas-size), $vertical: true);
     border-radius: 50% 0 0 50%;
 }
 
 .masking-slider--upper {
-    @include masking-slider(var(--close-offset), var(--close-offset), var(--canvas-size), $vertical: false);
+    @include masking-slider(var(--top-offset), var(--left-offset), var(--canvas-size), $vertical: false);
     border-radius: 0 0 50% 50%;
 }
 
 .masking-slider--lower {
-    @include masking-slider(var(--far-offset), var(--close-offset), var(--canvas-size), $vertical: false);
+    @include masking-slider(var(--bottom-offset), var(--left-offset), var(--canvas-size), $vertical: false);
     border-radius: 50% 50% 0 0;
 }
 

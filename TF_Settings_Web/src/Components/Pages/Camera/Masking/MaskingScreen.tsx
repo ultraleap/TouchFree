@@ -6,21 +6,16 @@ import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceType
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
-import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
-
+import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSlider, MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { displayLensFeeds } from './displayLensFeeds';
 
-enum Lens {
-    Left,
-    Right,
-}
+export type Lens = 'Left' | 'Right';
 
 const MaskingScreen = () => {
     // ===== State =====
-    const [mainLens, setMainLens] = useState<Lens>(Lens.Left);
-    const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
+    const [mainLens, setMainLens] = useState<Lens>('Left');
     // Config options
     const [masking, _setMasking] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
@@ -183,38 +178,30 @@ const MaskingScreen = () => {
                         key={sliderInfo[0]}
                         direction={sliderInfo[0] as SliderDirection}
                         maskingValue={sliderInfo[1]}
-                        canvasInfo={{ size: 800, offset: 100 }}
+                        canvasInfo={{ size: 800, topOffset: 50, leftOffset: 100 }}
                         clearMasking={clearMasking}
                         onDrag={setMasking}
                         onDragEnd={sendMaskingRequest}
                     />
                 ))}
-                <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
-                <p>{Lens[mainLens]} Lens</p>
+                <canvas ref={mainLens === 'Left' ? leftLensRef : rightLensRef} />
+                <div className="lens-toggle-container">
+                    <MaskingLensToggle lens={'Left'} isMainLens={mainLens === 'Left'} setMainLens={setMainLens} />
+                    <MaskingLensToggle lens={'Right'} isMainLens={mainLens === 'Right'} setMainLens={setMainLens} />
+                </div>
             </div>
             <div className="cam-feeds-bottom-container">
-                <div
-                    className="cam-feed-box--sub"
-                    onPointerEnter={() => setIsSubFeedHovered(true)}
-                    onPointerLeave={() => setIsSubFeedHovered(false)}
-                    onPointerDown={() => setMainLens(1 - mainLens)}
-                >
+                <div className="cam-feed-box--sub">
                     {Object.entries(masking).map((sliderInfo) => (
                         <MaskingSlider
                             key={sliderInfo[0]}
                             direction={sliderInfo[0] as SliderDirection}
                             maskingValue={sliderInfo[1]}
-                            canvasInfo={{ size: 360, offset: 60 }}
+                            canvasInfo={{ size: 360, topOffset: 60, leftOffset: 60 }}
                         />
                     ))}
-                    <canvas ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
-                    <p>{Lens[1 - mainLens]} Lens</p>
-                    <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
-                        <div className="sub-feed-overlay--content">
-                            <img src={SwapMainLensIcon} alt="Swap Camera Lens icon" />
-                            <p>Swap as main lens view</p>
-                        </div>
-                    </span>
+                    <canvas ref={mainLens === 'Left' ? rightLensRef : leftLensRef} />
+                    <p>{mainLens} Lens</p>
                 </div>
                 <div className="cam-feeds-options-container">
                     <MaskingOption

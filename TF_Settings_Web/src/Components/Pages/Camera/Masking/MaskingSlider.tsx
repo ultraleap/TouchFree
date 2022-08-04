@@ -7,7 +7,8 @@ import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 export type SliderDirection = keyof Mask;
 export interface CanvasInfo {
     size: number;
-    offset: number;
+    topOffset: number;
+    leftOffset: number;
 }
 
 interface MaskingSliderProps {
@@ -52,7 +53,11 @@ export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, masking
             ref={sliderRef}
             className={`masking-slider masking-slider--${direction}`}
             style={
-                { '--canvas-size': `${canvasInfo.size}px`, '--close-offset': `${canvasInfo.offset}px` } as CSSProperties
+                {
+                    '--canvas-size': `${canvasInfo.size}px`,
+                    '--top-offset': `${canvasInfo.topOffset}px`,
+                    '--left-offset': `${canvasInfo.leftOffset}px`,
+                } as CSSProperties
             }
         >
             {content}
