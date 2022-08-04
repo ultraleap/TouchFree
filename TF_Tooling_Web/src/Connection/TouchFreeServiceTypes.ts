@@ -7,6 +7,7 @@ import {
     ConfigurationState,
     TrackingServiceState
 } from '../TouchFreeToolingTypes';
+import { Mask } from '../Tracking/TrackingTypes';
 
 // Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data
@@ -19,6 +20,10 @@ import {
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
+// GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
+// SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
+// TRACKING_STATE - Represents a response from the Service with the current state of the tracking settings,
+//                  recieved following either a GET_TRACKING_STATE or a SET_TRACKING_STATE
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
 
@@ -44,13 +49,17 @@ export enum ActionCode {
     QUICK_SETUP = "QUICK_SETUP",
     QUICK_SETUP_CONFIG = "QUICK_SETUP_CONFIG",
     QUICK_SETUP_RESPONSE = "QUICK_SETUP_RESPONSE",
+
+    GET_TRACKING_STATE = "GET_TRACKING_STATE",
+    SET_TRACKING_STATE = "SET_TRACKING_STATE",
+    TRACKING_STATE = "TRACKING_STATE",
 }
 
 // Enum: HandPresenceState
 // HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
 // HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
 // PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
-//             use in <MessageReciever> for more details.
+//             use in <MessageReceiver> for more details.
 export enum HandPresenceState {
     HAND_FOUND,
     HANDS_LOST,
@@ -216,5 +225,87 @@ export class CommunicationWrapper<T> {
     constructor(_actionCode: ActionCode, _content: T) {
         this.action = _actionCode;
         this.content = _content;
+    }
+}
+
+// Class: SuccessWrapper
+// Type extension for <TrackingStateResponse> to capture the success state, clarifying message and response content.
+export interface SuccessWrapper<T> {
+    // Variable: succeeded
+    succeeded: boolean;
+    // Variable: msg
+    msg: string;
+    // Variable: content
+    content?: T;
+}
+
+// Class: TrackingStateResponse
+// Type of the response from a GET/SET tracking state request.
+export interface TrackingStateResponse {
+    // Variable: requestID
+    requestID: string;
+    // Variable: mask
+    mask: SuccessWrapper<Mask> | null;
+    // Variable: cameraOrientation
+    cameraReversed: SuccessWrapper<boolean> | null;
+    // Variable: allowImages
+    allowImages: SuccessWrapper<boolean> | null;
+    // Variable: analyticsEnabled
+    analyticsEnabled: SuccessWrapper<boolean> | null;
+}
+
+// Class: TrackingStateRequest
+// Used to construct a SET_TRACKING_STATE request.
+export class TrackingStateRequest {
+    // Variable: requestID
+    requestID: string;
+    // Variable: mask
+    mask: Mask;
+    // Variable: cameraOrientation
+    cameraReversed: boolean;
+    // Variable: allowImages
+    allowImages: boolean;
+    // Variable: analyticsEnabled
+    analyticsEnabled: boolean;
+
+    constructor(
+        _id: string,
+        _mask: Mask,
+        _cameraReversed: boolean,
+        _allowImages: boolean,
+        _analyticsEnabled: boolean
+    ) {
+        this.requestID = _id;
+        this.mask = _mask;
+        this.cameraReversed = _cameraReversed;
+        this.allowImages = _allowImages;
+        this.analyticsEnabled = _analyticsEnabled;
+    }
+}
+
+// class: SimpleRequest
+// Used to make a basic request to the service. To be used with <CommunicationWrapper> to create a more complex request.
+export class SimpleRequest {
+    // Variable: requestID
+    requestID: string;
+
+    constructor(_id: string) {
+        this.requestID = _id;
+    }
+}
+
+// Class: TrackingStateCallback
+// Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a
+// <TrackingStateResponse> as a parameter. Stores a timestamp of its creation so the response has the ability to
+// timeout if not seen within a reasonable timeframe.
+export class TrackingStateCallback {
+    // Variable: timestamp
+    timestamp: number;
+    // Variable: callback
+    callback: (detail: TrackingStateResponse) => void;
+
+    constructor(_timestamp: number, _callback: (detail: TrackingStateResponse) => void) {
+        this.timestamp = _timestamp;
+        this.callback = _callback;
     }
 }
