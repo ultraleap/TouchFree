@@ -115,7 +115,7 @@ export class WebInputController extends BaseInputController {
 
         switch (_inputData.InputType) {
             case InputType.CANCEL:
-                let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
+                let cancelEvent: PointerEvent = new PointerEvent("pointercancel", this.activeEventProps);
 
                 if (elementAtPos !== null) {
                     let parentTree = this.GetOrderedParents(elementAtPos);
