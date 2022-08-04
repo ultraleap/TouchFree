@@ -206,7 +206,7 @@ const MaskingScreen = () => {
                         />
                     ))}
                     <canvas ref={mainLens === 'Left' ? rightLensRef : leftLensRef} />
-                    <p>{mainLens} Lens</p>
+                    <p>{mainLens === 'Left' ? 'Right' : 'Left'} Lens</p>
                 </div>
                 <div className="cam-feeds-options-container">
                     <MaskingOption
