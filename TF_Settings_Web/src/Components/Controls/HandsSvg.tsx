@@ -74,11 +74,11 @@ interface DataWrapper {
 
 export const HandsSvg: React.FC<DataWrapper> = ({ one, two }) => {
     if (one === undefined && two === undefined) {
-        return <svg style={{ marginLeft: '-800px' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800"></svg>;
+        return <svg xmlns="http://www.w3.org/2000/svg" height="800" width="800"></svg>;
     }
 
     return (
-        <svg style={{ marginLeft: '-800px', zIndex: 999 }} xmlns="http://www.w3.org/2000/svg" height="800" width="800">
+        <svg xmlns="http://www.w3.org/2000/svg" height="800" width="800">
             <defs>
                 <radialGradient id="dotGradient">
                     <stop offset="0%" stopColor="#00EB85" />

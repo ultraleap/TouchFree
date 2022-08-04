@@ -46,6 +46,14 @@
     margin: 0;
 }
 
+.cam-feed-box-hand-renders {
+    height: 800px;
+    width: 800px;
+    margin-left: -800px;
+    z-index: 999;
+    display: inline-block;
+}
+
 .sub-feed-overlay {
     position: absolute;
     height: 102%;

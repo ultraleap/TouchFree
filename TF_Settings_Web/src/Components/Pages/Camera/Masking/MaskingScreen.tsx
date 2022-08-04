@@ -181,11 +181,9 @@ const MaskingScreen = () => {
                     <MaskingSlider key={direction} direction={direction} />
                 ))}
                 <canvas style={{ zIndex: 100 }} ref={mainLensCanvasRef} />
-                {successfullySubscribed.current ? (
+                <div className="cam-feed-box-hand-renders">
                     <HandsSvg key="hand-data" one={handData.handOne} two={handData.handTwo} />
-                ) : (
-                    <span></span>
-                )}
+                </div>
                 <p>{Lens[mainLens]} Lens</p>
             </div>
             <div className="cam-feeds-bottom-container">
