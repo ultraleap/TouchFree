@@ -16,6 +16,8 @@ export class SVGCursor extends TouchlessCursor {
     growQueued: boolean = false;
     hidingCursor: boolean = false;
     currentFadingInterval: NodeJS.Timeout | undefined = undefined;
+    swipeNotificationTimeout: NodeJS.Timeout | undefined = undefined;
+
 
     constructor(_cursorCanvas: any, _cursorDot: any, _cursorRing: any, _xPositionAttribute = "cx", _yPositionAttribute = "cx", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(_cursorDot);
@@ -103,9 +105,14 @@ export class SVGCursor extends TouchlessCursor {
 
     ShowCloseToSwipe(): void {
         if (this.cursorText != undefined) {
+            if (this.swipeNotificationTimeout) {
+                clearTimeout(this.swipeNotificationTimeout);
+            }
+
             this.cursorText.style.opacity = '1';
-            setTimeout(() => {
-                this.HideCloseToSwipe()
+
+            this.swipeNotificationTimeout = setTimeout(() => {
+                this.HideCloseToSwipe();
             }, 2000);
         }
     }
