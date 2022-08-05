@@ -127,7 +127,7 @@ const MaskingScreen = () => {
         }
 
         isHandProcessingRef.current = true;
-        
+
         if (evt.detail?.Hands) {
             const handOne = evt.detail.Hands[0];
             const handTwo = evt.detail.Hands[1];

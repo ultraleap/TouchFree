@@ -1,5 +1,4 @@
 import { HandFrame } from "TouchFree/TouchFreeToolingTypes";
-import { InputActionPlugin } from "./InputActionPlugin";
 
 // Class: HandDataManager
 // The manager for all <HandFrame> to be handled and distributed. This distributes the data

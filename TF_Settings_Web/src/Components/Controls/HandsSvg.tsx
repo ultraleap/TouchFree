@@ -88,7 +88,7 @@ export const HandsSvg: React.FC<HandState> = ({ one, two }) => {
     );
 };
 
-export const HandSvg: React.FC<{data?: HandSvgProps}> = ({ data }) => {
+export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
     if (!data?.dotColor) {
         return <g></g>;
     }
