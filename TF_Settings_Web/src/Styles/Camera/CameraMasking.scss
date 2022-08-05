@@ -20,23 +20,23 @@
         margin-top: calc((100% - $canvas-size) / 2);
         display: inline-block;
         z-index: 10;
-    }
 
-    > div.cam-feed-box-hand-renders {
-        $canvas-size: $size - $padding;
-        height: $canvas-size;
-        width: $canvas-size;
-        margin-left: -$canvas-size;
-        z-index: 11;
-        display: inline-block;
-    }
+        &.cam-feed-box-hand-renders {
+            $canvas-size: $size - $padding;
+            height: $canvas-size;
+            width: $canvas-size;
+            margin-left: -$canvas-size;
+            z-index: 11;
+            display: inline-block;
+        }
 
-    > div > canvas {
-        $canvas-size: $size - $padding;
-        width: $canvas-size;
-        height: $canvas-size;
+        > canvas {
+            $canvas-size: $size - $padding;
+            width: $canvas-size;
+            height: $canvas-size;
 
-        border: 1px solid #717171;
+            border: 1px solid #717171;
+        }
     }
 
     > p {
