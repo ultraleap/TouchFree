@@ -9,7 +9,6 @@ import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSlider, MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
-import { displayLensFeeds } from './displayLensFeeds';
 
 export type Lens = 'Left' | 'Right';
 
@@ -149,13 +148,37 @@ const MaskingScreen = () => {
         if (data.getUint8(0) === 1) {
             successfullySubscribed.current = true;
 
-            displayLensFeeds(
-                data,
-                leftLensRef.current,
-                rightLensRef.current,
-                isCamReversedRef.current,
-                showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
-            );
+            // displayLensFeeds(
+            //     data,
+            //     leftLensRef.current,
+            //     rightLensRef.current,
+            //     isCamReversedRef.current,
+            //     showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
+            // );
+
+            // Image data
+            const width = data.getUint32(1);
+            const height = data.getUint32(5);
+
+            const buf = new ArrayBuffer(width * height * 4);
+            const buf8 = new Uint8ClampedArray(buf);
+            const buf32 = new Uint32Array(buf);
+
+            for (let i = 0; i < width * height; i++) {
+                const px = data.getUint8(6 + i);
+                buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
+            }
+
+            const image = new ImageData(buf8, width, height);
+            const mainCanvas = leftLensRef.current;
+
+            mainCanvas.width = width;
+            mainCanvas.height = height;
+
+            const context = mainCanvas.getContext('2d');
+            if (context) {
+                context.putImageData(image, 0, 0);
+            }
         }
 
         // Settimeout with 32ms for ~30fps if we have the performance
