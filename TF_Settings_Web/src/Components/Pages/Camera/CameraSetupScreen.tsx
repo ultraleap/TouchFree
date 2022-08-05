@@ -10,6 +10,7 @@ import { HorizontalIconTextButton, VerticalIconTextButton } from 'Components/Con
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
+
     return (
         <div>
             <div className="title-line">

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import 'Styles/Camera/Calibrate.scss';
-import styles from 'Styles/Camera/Calibrate.scss';
 
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -17,9 +16,8 @@ import {
     CalibrationInstructions,
     CalibrationTutorialVideo,
     CalibrationProgressCircle,
+    FullScreenPrompt,
 } from './CalibrationComponents';
-
-const { handNotFoundHeight } = styles;
 
 interface CalibrationScreenProps {
     isHandPresent: boolean;
@@ -124,30 +122,35 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     if (location.pathname.endsWith('top')) {
         return (
             <div className="content-container">
-                <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '5vh' }} />
-                <CalibrationProgressCircle progress={progress} style={{ top: '15.5vh' }} />
-                {displayHandIndicator ? (
-                    <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
-                ) : (
-                    <div style={{ height: handNotFoundHeight }} />
-                )}
-                <CalibrationTutorialVideo videoStyle={{ paddingTop: '3vh' }} />
-                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '30.5vh' }} />
+                <FullScreenPrompt promptStyle={{ position: 'fixed', top: '5vh' }} />
+                <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', top: '15.5vh' }} />
+                <CalibrationInstructions
+                    isTop
+                    progress={progress}
+                    containerStyle={{ position: 'fixed', top: '25vh' }}
+                />
+                <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '40vh' }} />
+                <CalibrationHandLostMessage
+                    display={displayHandIndicator}
+                    timeToPosSelect={timeToPosSelect}
+                    handsLostStyle={{ position: 'fixed', bottom: '10vh' }}
+                />
+                <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ position: 'fixed', bottom: '3vh' }} />
             </div>
         );
     }
 
     return (
         <div className="content-container">
-            <CalibrationTutorialVideo videoStyle={{ paddingTop: '30.5vh' }} />
-            <CalibrationInstructions progress={progress} containerStyle={{ paddingTop: '2.5vh' }} />
-            <CalibrationProgressCircle progress={progress} style={{ bottom: '15.5vh' }} />
-            {displayHandIndicator ? (
-                <CalibrationHandLostMessage timeToPosSelect={timeToPosSelect} />
-            ) : (
-                <div style={{ height: handNotFoundHeight }} />
-            )}
-            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ marginTop: '5.5vh' }} />
+            <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '30vh' }} />
+            <CalibrationInstructions progress={progress} containerStyle={{ position: 'fixed', bottom: '27vh' }} />
+            <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', bottom: '15.5vh' }} />
+            <CalibrationHandLostMessage
+                display={displayHandIndicator}
+                timeToPosSelect={timeToPosSelect}
+                handsLostStyle={{ position: 'fixed', bottom: '10vh' }}
+            />
+            <CalibrationCancelButton onCancel={onCancel} buttonStyle={{ position: 'fixed', bottom: '3vh' }} />
         </div>
     );
 };
