@@ -140,10 +140,8 @@ export class ConfigState extends TouchFreeRequest {
 export class ConfigChangeRequest extends TouchFreeRequest {
 }
 
-// class: ConfigChangeRequest
-// Used to request the current state of the configuration on the Service. This is received as
-// a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
-// use of the data received.
+// class: HandRenderDataStateRequest
+// Used to set the state of the Hand Render Data stream.
 export class HandRenderDataStateRequest extends TouchFreeRequest {
     enabled: boolean;
     lens: string;

@@ -7,17 +7,12 @@ import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
-import { HandsSvg, HandSvgProps } from 'Components/Controls/HandsSvg';
+import { HandsSvg, HandState, HandSvgProps } from 'Components/Controls/HandsSvg';
 
 import MaskingOption from './MaskingOptions';
 import MaskingSlider, { SliderDirection } from './MaskingSlider';
 import { displayLensFeeds } from './displayLensFeeds';
 import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
-
-interface HandRenderState {
-    handOne: HandSvgProps | undefined;
-    handTwo: HandSvgProps | undefined;
-}
 
 enum Lens {
     Left,
@@ -25,10 +20,10 @@ enum Lens {
 }
 
 const MaskingScreen = () => {
-    const [handData, setHandData] = useState<HandRenderState>(defaultHandState);
     // ===== State =====
     const [mainLens, _setMainLens] = useState<Lens>(Lens.Left);
     const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
+    const [handData, setHandData] = useState<HandState>(defaultHandState);
     // Config options
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
@@ -67,18 +62,10 @@ const MaskingScreen = () => {
     const rightLensRef = useRef<HTMLCanvasElement>(null);
 
     // ===== Variables =====
-    const byteConversionArray = new Uint32Array(256);
-    const byteConversionArrayOverExposed = new Uint32Array(256);
     const sliderDirections: SliderDirection[] = ['left', 'right', 'top', 'bottom'];
 
     // ===== UseEffect =====
     useEffect(() => {
-        for (let i = 0; i < 256; i++) {
-            byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
-            // -13434625 = #FFFF0033 in signed 2's complement
-            byteConversionArrayOverExposed[i] = i > 128 ? -13434625 : byteConversionArray[i];
-        }
-
         const socket = new WebSocket('ws://127.0.0.1:1024');
         socket.binaryType = 'arraybuffer';
 
@@ -111,25 +98,24 @@ const MaskingScreen = () => {
 
         if (dataAsUint8[0] === 1) {
             successfullySubscribed.current = true;
+            setIsFrameProcessing(true);
+
+            const leftLens = leftLensRef.current;
+            const rightLens = rightLensRef.current;
+            if (leftLens || rightLens) {
+                displayLensFeeds(
+                    event.data as ArrayBuffer,
+                    leftLens,
+                    rightLens,
+                    isCamReversedRef.current,
+                    showOverexposedRef.current
+                );
+            }
+
+            // ignore any messages for 67ms to allow clearing of message handling
             setTimeout(() => {
-                setIsFrameProcessing(true);
-                const leftLens = leftLensRef.current;
-                const rightLens = rightLensRef.current;
-                setTimeout(() => {
-                    if (leftLens || rightLens) {
-                        displayLensFeeds(
-                            event.data as ArrayBuffer,
-                            leftLens,
-                            rightLens,
-                            isCamReversedRef.current,
-                            showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
-                        );
-                    }
-                    setTimeout(() => {
-                        setIsFrameProcessing(false);
-                    }, 67);
-                });
-            });
+                setIsFrameProcessing(false);
+            }, 67);
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
@@ -141,27 +127,26 @@ const MaskingScreen = () => {
         }
 
         isHandProcessingRef.current = true;
-        setTimeout(() => {
-            if (evt.detail?.Hands) {
-                const handOne = evt.detail.Hands[0];
-                const handTwo = evt.detail.Hands[1];
-                let convertedHandOne: HandSvgProps | undefined = undefined;
-                let convertedHandTwo: HandSvgProps | undefined = undefined;
+        
+        if (evt.detail?.Hands) {
+            const handOne = evt.detail.Hands[0];
+            const handTwo = evt.detail.Hands[1];
+            let convertedHandOne: HandSvgProps | undefined = undefined;
+            let convertedHandTwo: HandSvgProps | undefined = undefined;
 
-                if (handOne) {
-                    convertedHandOne = handToSvgData(handOne, 0);
-                }
-                if (handTwo) {
-                    convertedHandTwo = handToSvgData(handTwo, 1);
-                }
-                setHandData({ handOne: convertedHandOne, handTwo: convertedHandTwo });
+            if (handOne) {
+                convertedHandOne = handToSvgData(handOne, 0);
             }
+            if (handTwo) {
+                convertedHandTwo = handToSvgData(handTwo, 1);
+            }
+            setHandData({ one: convertedHandOne, two: convertedHandTwo });
+        }
 
-            // Settimeout with 32ms for ~30fps if we have the performance
-            setTimeout(() => {
-                isHandProcessingRef.current = false;
-            }, 67);
-        });
+        // ignore any messages for 67ms to allow clearing of message handling
+        setTimeout(() => {
+            isHandProcessingRef.current = false;
+        }, 67);
     };
 
     return (
@@ -180,7 +165,7 @@ const MaskingScreen = () => {
                     <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
                 </div>
                 <div className="cam-feed-box-hand-renders">
-                    <HandsSvg key="hand-data" one={handData.handOne} two={handData.handTwo} />
+                    <HandsSvg key="hand-data" one={handData.one} two={handData.two} />
                 </div>
                 <p>{Lens[mainLens]} Lens</p>
             </div>

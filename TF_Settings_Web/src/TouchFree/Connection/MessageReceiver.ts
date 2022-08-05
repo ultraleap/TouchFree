@@ -48,9 +48,9 @@ export class MessageReceiver {
     // A queue of <TouchFreeInputActions> that have been received from the Service.
     actionQueue: Array<WebsocketInputAction> = [];
 
-    // Variable: handDataQueue
-    // A queue of <TouchFreeInputActions> that have been received from the Service.
-    handDataQueue: Array<any> = [];
+    // Variable: latestHandDataItem
+    // The latest <HandFrame> that has been received from the Service.
+    latestHandDataItem: any = undefined;
 
     // Variable: responseQueue
     // A queue of <WebSocketResponses> that have been received from the Service.
@@ -230,26 +230,16 @@ export class MessageReceiver {
         }
     }
     
-    // Function: CheckForAction
-    // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
-    // clears out non-essential <TouchFreeInputActions> down to the number specified by
-    // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
-    // <InputActionManager> to handle the action.
-    // UP <InputType>s have their positions set to the last known position to ensure
-    // input events trigger correctly.
+    // Function: CheckForHandData
+    // Checks <latestHandDataItem> and if the <HandFrame> is not undefined sends it to
+    // <HandDataManager> to handle the frame.
     CheckForHandData(): void {
-        while (this.handDataQueue.length > this.actionCullToCount) {
-            if (this.handDataQueue[0] !== undefined) {
-                this.handDataQueue.shift();
-            }
-        }
+        let handFrame = this.latestHandDataItem;
 
-        let action: any | undefined = this.handDataQueue.shift();
-
-        if (action !== undefined) {
+        if (handFrame !== undefined) {
             // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
             setTimeout(() => {
-                HandDataManager.HandleInputAction(action);
+                HandDataManager.HandleHandFrame(handFrame);
             });
         }
     }

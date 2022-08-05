@@ -67,16 +67,12 @@ export class HandSvgProps {
     dotColor: string;
 }
 
-interface DataWrapper {
-    one: HandSvgProps | undefined;
-    two: HandSvgProps | undefined;
+export class HandState {
+    one?: HandSvgProps;
+    two?: HandSvgProps;
 }
 
-export const HandsSvg: React.FC<DataWrapper> = ({ one, two }) => {
-    if (one === undefined && two === undefined) {
-        return <svg xmlns="http://www.w3.org/2000/svg" height="800" width="800"></svg>;
-    }
-
+export const HandsSvg: React.FC<HandState> = ({ one, two }) => {
     return (
         <svg style={{ position: 'relative' }} xmlns="http://www.w3.org/2000/svg" height="800" width="800">
             <defs>
@@ -92,11 +88,7 @@ export const HandsSvg: React.FC<DataWrapper> = ({ one, two }) => {
     );
 };
 
-interface HandDataWrapper {
-    data: HandSvgProps | undefined;
-}
-
-export const HandSvg: React.FC<HandDataWrapper> = ({ data }) => {
+export const HandSvg: React.FC<{data?: HandSvgProps}> = ({ data }) => {
     if (!data?.dotColor) {
         return <g></g>;
     }

@@ -123,7 +123,7 @@ export class ServiceConnection {
                 
             case ActionCode.HAND_DATA:
                 let wsHandData: any = looseData.content;
-                ConnectionManager.messageReceiver.handDataQueue.push(wsHandData);
+                ConnectionManager.messageReceiver.latestHandDataItem = wsHandData;
                 break;
 
             case ActionCode.CONFIGURATION_STATE:

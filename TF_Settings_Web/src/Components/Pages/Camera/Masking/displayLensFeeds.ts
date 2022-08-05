@@ -3,11 +3,22 @@ export const displayLensFeeds = (
     leftLensRef: HTMLCanvasElement | null,
     rightLensRef: HTMLCanvasElement | null,
     isCameraReversed: boolean,
-    byteConversionArray: Uint32Array
+    showOverexposedAreas: boolean
 ) => {
     const leftContext = getContext(leftLensRef);
     const rightContext = getContext(rightLensRef);
     if (!leftContext && !rightContext) return;
+
+    if (!conversionArraysInitialised) {
+        for (let i = 0; i < 256; i++) {
+            byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
+            // -13434625 = #FFFF0033 in signed 2's complement
+            byteConversionArrayOverExposed[i] = i > 128 ? -13434625 : byteConversionArray[i];
+        }
+        conversionArraysInitialised = true;
+    }
+
+    const conversionArrayToUse = showOverexposedAreas ? byteConversionArrayOverExposed : byteConversionArray;
 
     const startOfBuffer = new DataView(data, 0, 10);
 
@@ -29,9 +40,9 @@ export const displayLensFeeds = (
     const offset = 9;
 
     if (rotated90) {
-        processRotatedScreen(data, rightBuf32, leftBuf32, byteConversionArray, offset, width, lensHeight);
+        processRotatedScreen(data, rightBuf32, leftBuf32, conversionArrayToUse, offset, width, lensHeight);
     } else {
-        processScreen(data, rightBuf32, leftBuf32, byteConversionArray, offset, width, lensHeight);
+        processScreen(data, rightBuf32, leftBuf32, conversionArrayToUse, offset, width, lensHeight);
     }
     // Set black pixels to remove flashing camera bytes
     const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
@@ -47,7 +58,7 @@ export const displayLensFeeds = (
     }
 };
 
-export const putBufferToImage = (
+const putBufferToImage = (
     lensRef: HTMLCanvasElement,
     context: CanvasRenderingContext2D,
     buf8: Uint8ClampedArray,
@@ -59,7 +70,7 @@ export const putBufferToImage = (
     context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
 };
 
-export const processRotatedScreen = (
+const processRotatedScreen = (
     data: ArrayBuffer,
     rightBuf32: Uint32Array,
     leftBuf32: Uint32Array,
@@ -86,7 +97,7 @@ export const processRotatedScreen = (
     }
 };
 
-export const processScreen = (
+const processScreen = (
     data: ArrayBuffer,
     rightBuf32: Uint32Array,
     leftBuf32: Uint32Array,
@@ -103,7 +114,7 @@ export const processScreen = (
     }
 };
 
-export const getContext = (canvasElement: HTMLCanvasElement | null) => {
+const getContext = (canvasElement: HTMLCanvasElement | null) => {
     if (!canvasElement) {
         return undefined;
     }
@@ -123,3 +134,7 @@ export const getContext = (canvasElement: HTMLCanvasElement | null) => {
 
 const canvasElements: HTMLCanvasElement[] = [];
 const canvasContexts: CanvasRenderingContext2D[] = [];
+
+const byteConversionArray = new Uint32Array(256);
+const byteConversionArrayOverExposed = new Uint32Array(256);
+let conversionArraysInitialised = false;

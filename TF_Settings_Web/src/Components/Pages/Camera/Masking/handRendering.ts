@@ -9,7 +9,7 @@ import {
 } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
 
-import { HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
+import { HandState, HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
 
 export const setHandRenderState = (handRenderState: boolean, lens: string): void => {
     const requestID = uuidgen();
@@ -56,8 +56,8 @@ export const handToSvgData = (hand: RawHand, handIndex: number): HandSvgProps =>
     };
 };
 
-export const defaultHandState = {
-    handOne: {
+export const defaultHandState: HandState = {
+    one: {
         indexTip: translateToCoordinate(undefined),
         indexKnuckle: translateToCoordinate(undefined),
         middleTip: translateToCoordinate(undefined),
@@ -72,7 +72,7 @@ export const defaultHandState = {
         primaryHand: true,
         dotColor: 'blue',
     },
-    handTwo: {
+    two: {
         indexTip: translateToCoordinate(undefined),
         indexKnuckle: translateToCoordinate(undefined),
         middleTip: translateToCoordinate(undefined),
