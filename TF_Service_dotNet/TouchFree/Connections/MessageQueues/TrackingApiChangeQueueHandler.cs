@@ -79,8 +79,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         void HandleGetTrackingStateRequest(IncomingRequest _request)
         {
             trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true);
+            responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            responseOriginTime = DateTime.Now.Millisecond;
             diagnosticApi.GetAllowImages();
             diagnosticApi.GetImageMask();
             diagnosticApi.GetCameraOrientation();
@@ -100,8 +100,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
 
             trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsAnalytics);
+            responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            responseOriginTime = DateTime.Now.Millisecond;
             if (needsMask)
             {
                 var mask = maskToken!.ToObject<MaskingData>();
@@ -139,7 +139,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
                     clientMgr.SendTrackingState(response.state);
                 }
-                else if (responseOriginTime.HasValue && DateTime.Now.Millisecond - responseOriginTime.Value > 30000f)
+                else if (responseOriginTime.HasValue && DateTimeOffset.Now.ToUnixTimeMilliseconds() - responseOriginTime.Value > 30000f)
                 {
                     TrackingResponse response = trackingApiResponse.Value;
                     trackingApiResponse = null;
