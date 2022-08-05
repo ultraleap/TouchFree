@@ -98,7 +98,13 @@ const MaskingScreen = () => {
         socket.addEventListener('message', (event) => handleMessage(socket, event));
 
         window.addEventListener('pointermove', (e) => {
-            console.log('MOVING', e);
+            console.log('POINT MOVING', e);
+        });
+        window.addEventListener('touchmove', (e) => {
+            console.log('TOUCH MOVING', e);
+        });
+        window.addEventListener('mousemove', (e) => {
+            console.log('MOUSE MOVING', e);
         });
 
         return () => {
