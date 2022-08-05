@@ -28,7 +28,7 @@ namespace Ultraleap.TouchFree.Service
             services.AddPositioning();
 
             services.AddClientConnectionManager();
-            services.AddWebSocketReceiver();
+            services.AddMessageQueueHandlers();
 
             services.AddInteractions();
         }

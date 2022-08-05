@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Linq;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
@@ -41,11 +42,14 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             {
                 // Parse newly received messages
                 queue.TryDequeue(out content);
-                if (!ActionCodes.Contains(content.action))
+                if (ActionCodes.Contains(content.action))
                 {
-                    throw new System.Exception("Unexpected action type");
+                    Handle(content);
                 }
-                Handle(content);
+                else
+                {
+                    TouchFreeLog.ErrorWriteLine($"Unexpected ActionType of {content.action} in {GetType().Name}");
+                }
             }
         }
 

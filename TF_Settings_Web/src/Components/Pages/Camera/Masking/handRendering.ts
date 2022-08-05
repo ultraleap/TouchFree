@@ -11,39 +11,6 @@ import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
 
 import { HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
 
-export const defaultHandState = {
-    handOne: {
-        indexTip: new HandSvgCoordinate(40, 10, 600),
-        indexKnuckle: new HandSvgCoordinate(40, 90, 600),
-        middleTip: new HandSvgCoordinate(70, 10, 600),
-        middleKnuckle: new HandSvgCoordinate(70, 90, 600),
-        ringTip: new HandSvgCoordinate(100, 10, 600),
-        ringKnuckle: new HandSvgCoordinate(100, 90, 600),
-        littleTip: new HandSvgCoordinate(130, 10, 600),
-        littleKnuckle: new HandSvgCoordinate(130, 90, 600),
-        thumbTip: new HandSvgCoordinate(10, 40, 600),
-        thumbKnuckle: new HandSvgCoordinate(60, 160, 600),
-        wrist: new HandSvgCoordinate(80, 160, 600),
-        primaryHand: true,
-        dotColor: 'blue',
-    },
-    handTwo: {
-        indexTip: new HandSvgCoordinate(40, 10, 600),
-        indexKnuckle: new HandSvgCoordinate(40, 90, 600),
-        middleTip: new HandSvgCoordinate(70, 10, 600),
-        middleKnuckle: new HandSvgCoordinate(70, 90, 600),
-        ringTip: new HandSvgCoordinate(100, 10, 600),
-        ringKnuckle: new HandSvgCoordinate(100, 90, 600),
-        littleTip: new HandSvgCoordinate(130, 10, 600),
-        littleKnuckle: new HandSvgCoordinate(130, 90, 600),
-        thumbTip: new HandSvgCoordinate(10, 40, 600),
-        thumbKnuckle: new HandSvgCoordinate(60, 160, 600),
-        wrist: new HandSvgCoordinate(80, 160, 600),
-        primaryHand: false,
-        dotColor: 'red',
-    },
-};
-
 export const setHandRenderState = (handRenderState: boolean, lens: string): void => {
     const requestID = uuidgen();
 
@@ -58,7 +25,7 @@ export const setHandRenderState = (handRenderState: boolean, lens: string): void
 };
 
 const translateToCoordinate = (coordinate: Vector | undefined) => {
-    if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, -1);
+    if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, 600);
     return new HandSvgCoordinate(1000 * (1 - coordinate.X * 1) - 100, 1000 * coordinate.Y - 100, coordinate.Z);
 };
 
@@ -87,4 +54,37 @@ export const handToSvgData = (hand: RawHand, handIndex: number): HandSvgProps =>
         primaryHand: hand.CurrentPrimary,
         dotColor: handIndex ? 'blue' : 'red',
     };
+};
+
+export const defaultHandState = {
+    handOne: {
+        indexTip: translateToCoordinate(undefined),
+        indexKnuckle: translateToCoordinate(undefined),
+        middleTip: translateToCoordinate(undefined),
+        middleKnuckle: translateToCoordinate(undefined),
+        ringTip: translateToCoordinate(undefined),
+        ringKnuckle: translateToCoordinate(undefined),
+        littleTip: translateToCoordinate(undefined),
+        littleKnuckle: translateToCoordinate(undefined),
+        thumbTip: translateToCoordinate(undefined),
+        thumbKnuckle: translateToCoordinate(undefined),
+        wrist: translateToCoordinate(undefined),
+        primaryHand: true,
+        dotColor: 'blue',
+    },
+    handTwo: {
+        indexTip: translateToCoordinate(undefined),
+        indexKnuckle: translateToCoordinate(undefined),
+        middleTip: translateToCoordinate(undefined),
+        middleKnuckle: translateToCoordinate(undefined),
+        ringTip: translateToCoordinate(undefined),
+        ringKnuckle: translateToCoordinate(undefined),
+        littleTip: translateToCoordinate(undefined),
+        littleKnuckle: translateToCoordinate(undefined),
+        thumbTip: translateToCoordinate(undefined),
+        thumbKnuckle: translateToCoordinate(undefined),
+        wrist: translateToCoordinate(undefined),
+        primaryHand: false,
+        dotColor: 'red',
+    },
 };

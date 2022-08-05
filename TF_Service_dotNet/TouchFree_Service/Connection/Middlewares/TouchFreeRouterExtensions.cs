@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
-        public static IServiceCollection AddWebSocketReceiver(this IServiceCollection services)
+        public static IServiceCollection AddMessageQueueHandlers(this IServiceCollection services)
         {
             services.AddSingleton<IMessageQueueHandler, ConfigurationChangeQueueHandler>();
             services.AddSingleton<IMessageQueueHandler, ConfigurationFileChangeQueueHandler>();
@@ -35,6 +35,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IMessageQueueHandler, QuickSetupQueueHandler>();
             services.AddSingleton<IMessageQueueHandler, ServiceStatusQueueHandler>();
             services.AddSingleton<IMessageQueueHandler, HandDataStreamStateQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, TrackingApiChangeQueueHandler>();
             return services;
         }
 

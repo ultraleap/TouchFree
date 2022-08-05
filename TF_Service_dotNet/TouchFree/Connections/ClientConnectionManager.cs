@@ -9,12 +9,9 @@ namespace Ultraleap.TouchFree.Library.Connections
 {
     public class ClientConnectionManager : IClientConnectionManager
     {
-        // TODO:
-        // * Dependency Inject the InteractionManager reference
+        private readonly ConcurrentDictionary<Guid, IClientConnection> activeConnections = new ConcurrentDictionary<Guid, IClientConnection>();
 
-        private ConcurrentDictionary<Guid, IClientConnection> activeConnections = new ConcurrentDictionary<Guid, IClientConnection>();
-
-        public IEnumerable<IClientConnection> clientConnections
+        public IEnumerable<IClientConnection> ClientConnections
         {
             get { return activeConnections.Values; }
         }
@@ -30,18 +27,12 @@ namespace Ultraleap.TouchFree.Library.Connections
         public ClientConnectionManager(IHandManager _handManager)
         {
             MissedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
-            // InteractionManager.HandleInputAction += Instance.SendInputActionToWebsocket;
             handManager = _handManager;
             handManager.HandFound += OnHandFound;
             handManager.HandsLost += OnHandsLost;
 
             // This is here so the test infrastructure has some sign that the app is ready
             TouchFreeLog.WriteLine("Service Setup Complete");
-        }
-
-        ~ClientConnectionManager()
-        {
-            //InteractionManager.HandleInputAction -= Instance.SendInputActionToWebsocket;
         }
 
         private void OnHandFound()

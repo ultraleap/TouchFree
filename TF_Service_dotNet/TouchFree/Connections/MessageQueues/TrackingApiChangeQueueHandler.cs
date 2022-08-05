@@ -4,7 +4,7 @@ using System;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
-    internal class TrackingApiChangeQueueHandler : MessageQueueHandler
+    public class TrackingApiChangeQueueHandler : MessageQueueHandler
     {
         public override ActionCode[] ActionCodes => new[] { ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE };
 

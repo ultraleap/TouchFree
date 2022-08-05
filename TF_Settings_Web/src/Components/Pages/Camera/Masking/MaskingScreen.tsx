@@ -41,7 +41,6 @@ const MaskingScreen = () => {
     const successfullySubscribed = useRef<boolean>(false);
     const isFrameProcessingRef = useRef<boolean>(false);
     const isHandProcessingRef = useRef<boolean>(false);
-    const mainLensRef = useRef<Lens>(mainLens);
 
     // ===== State Setters =====
     const setIsCameraReversed = (value: boolean) => {
@@ -61,12 +60,11 @@ const MaskingScreen = () => {
     const setMainLens = (lens: Lens) => {
         _setMainLens(lens);
         setHandRenderState(true, lens === Lens.Left ? 'left' : 'right');
-        mainLensRef.current = lens;
     };
 
     // ===== Canvas Refs =====
-    const mainLensCanvasRef = useRef<HTMLCanvasElement>(null);
-    const backgroundLensCanvasRef = useRef<HTMLCanvasElement>(null);
+    const leftLensRef = useRef<HTMLCanvasElement>(null);
+    const rightLensRef = useRef<HTMLCanvasElement>(null);
 
     // ===== Variables =====
     const byteConversionArray = new Uint32Array(256);
@@ -115,10 +113,8 @@ const MaskingScreen = () => {
             successfullySubscribed.current = true;
             setTimeout(() => {
                 setIsFrameProcessing(true);
-                const leftLens =
-                    mainLensRef.current == Lens.Left ? mainLensCanvasRef.current : backgroundLensCanvasRef.current;
-                const rightLens =
-                    mainLensRef.current == Lens.Left ? backgroundLensCanvasRef.current : mainLensCanvasRef.current;
+                const leftLens = leftLensRef.current;
+                const rightLens = rightLensRef.current;
                 setTimeout(() => {
                     if (leftLens || rightLens) {
                         displayLensFeeds(
@@ -181,7 +177,7 @@ const MaskingScreen = () => {
                     <MaskingSlider key={direction} direction={direction} />
                 ))}
                 <div>
-                    <canvas ref={mainLensCanvasRef} />
+                    <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
                 </div>
                 <div className="cam-feed-box-hand-renders">
                     <HandsSvg key="hand-data" one={handData.handOne} two={handData.handTwo} />
@@ -196,7 +192,7 @@ const MaskingScreen = () => {
                     onPointerDown={() => setMainLens(1 - mainLens)}
                 >
                     <div>
-                        <canvas ref={backgroundLensCanvasRef} />
+                        <canvas ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
                     </div>
                     <p>{Lens[1 - mainLens]} Lens</p>
                     <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>

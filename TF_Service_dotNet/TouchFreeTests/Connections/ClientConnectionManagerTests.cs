@@ -58,7 +58,7 @@ namespace TouchFreeTests.Connections
             clientConnectionManager.AddConnection(mockClientConnection.Object);
 
             // Assert
-            Assert.AreSame(mockClientConnection.Object, clientConnectionManager.clientConnections.Single());
+            Assert.AreSame(mockClientConnection.Object, clientConnectionManager.ClientConnections.Single());
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace TouchFreeTests.Connections
             clientConnectionManager.RemoveConnection(mockClientConnection.Object.Socket);
 
             // Assert
-            Assert.AreEqual(0, clientConnectionManager.clientConnections.Count());
+            Assert.AreEqual(0, clientConnectionManager.ClientConnections.Count());
             mockHandManager.Verify(x => x.DisconnectFromTracking(), Times.Once);
         }
 
@@ -93,8 +93,8 @@ namespace TouchFreeTests.Connections
             clientConnectionManager.RemoveConnection(mockClientConnection.Object.Socket);
 
             // Assert
-            Assert.AreEqual(1, clientConnectionManager.clientConnections.Count());
-            Assert.AreSame(mockSecondClientConnection.Object, clientConnectionManager.clientConnections.Single());
+            Assert.AreEqual(1, clientConnectionManager.ClientConnections.Count());
+            Assert.AreSame(mockSecondClientConnection.Object, clientConnectionManager.ClientConnections.Single());
             mockHandManager.Verify(x => x.DisconnectFromTracking(), Times.Never);
         }
     }
