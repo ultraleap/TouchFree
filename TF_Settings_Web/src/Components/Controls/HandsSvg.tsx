@@ -100,7 +100,7 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
     const strokeData: LineStrokeData = {
         stroke: 'white',
         strokeWidth: strokeWidth,
-        opacity: data.primaryHand ? 1 : 0.5,
+        opacity: data.primaryHand ? 1 : 0.3,
     };
 
     return (
