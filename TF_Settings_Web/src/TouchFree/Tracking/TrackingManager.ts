@@ -1,11 +1,7 @@
 import { ConnectionManager } from '../Connection/ConnectionManager';
 import {
-    ActionCode,
-    CommunicationWrapper,
     TrackingStateResponse,
-    WebSocketResponse,
 } from '../Connection/TouchFreeServiceTypes';
-import { v4 as uuidgen } from 'uuid';
 import { TrackingState } from './TrackingTypes';
 
 // class: TrackingManager
@@ -34,7 +30,23 @@ export class TrackingManager {
     // Provide a _callback if you require confirmation that your settings were used correctly.
     // If your _callback requires context it should be bound to that context via .bind().
     public static RequestTrackingChange(_state: Partial<TrackingState>,
-                                        _callback: ((detail: TrackingStateResponse) => void) | null = null): void {
+        _callback: ((detail: TrackingStateResponse) => void) | null = null): void {
         ConnectionManager.serviceConnection()?.RequestTrackingChange(_state, _callback);
+    }
+
+    // Function: ConvertResponseToState
+    // Converts a TrackingStateResponse to a Partial<TrackingState> to make the response easier to consume.
+    public static ConvertResponseToState(_response: TrackingStateResponse): Partial<TrackingState> {
+        var response: Partial<TrackingState> = {};
+
+        if (_response.mask !== undefined && _response.mask !== null) { response.mask = _response.mask.content; }
+
+        if (_response.cameraReversed !== undefined && _response.cameraReversed !== null) { response.cameraReversed = _response.cameraReversed.content; }
+
+        if (_response.allowImages !== undefined && _response.allowImages !== null) { response.allowImages = _response.allowImages.content; }
+
+        if (_response.analyticsEnabled !== undefined && _response.analyticsEnabled !== null) { response.analyticsEnabled = _response.analyticsEnabled.content; }
+
+        return response;
     }
 }
