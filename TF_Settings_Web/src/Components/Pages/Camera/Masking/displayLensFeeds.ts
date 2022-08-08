@@ -1,3 +1,7 @@
+let conversionArraysInitialised = false;
+const byteConversionArray = new Uint32Array(256);
+const byteConversionArrayOverExposed = new Uint32Array(256);
+
 export const displayLensFeeds = (
     data: ArrayBuffer,
     leftLensRef: HTMLCanvasElement | null,
@@ -114,14 +118,17 @@ const processScreen = (
     }
 };
 
+const canvasElements: HTMLCanvasElement[] = [];
+const canvasContexts: CanvasRenderingContext2D[] = [];
+
 const getContext = (canvasElement: HTMLCanvasElement | null) => {
     if (!canvasElement) {
-        return undefined;
+        return null;
     }
     const canvasIndex = canvasElements.indexOf(canvasElement);
     if (canvasIndex < 0) {
         const context = canvasElement.getContext('2d');
-        if (context == null) {
+        if (context === null) {
             return context;
         }
         const newIndex = canvasElements.length;
@@ -131,10 +138,3 @@ const getContext = (canvasElement: HTMLCanvasElement | null) => {
     }
     return canvasContexts[canvasIndex];
 };
-
-const canvasElements: HTMLCanvasElement[] = [];
-const canvasContexts: CanvasRenderingContext2D[] = [];
-
-const byteConversionArray = new Uint32Array(256);
-const byteConversionArrayOverExposed = new Uint32Array(256);
-let conversionArraysInitialised = false;

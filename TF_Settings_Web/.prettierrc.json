@@ -4,8 +4,9 @@
     "endOfLine": "crlf",
     "printWidth": 120,
     "importOrder": [
-        "(.*).css$",
+        "(.*)css$",
         "(.*)react(.*)|canvas-confetti",
+        "uuid",
         "index",
         "^TouchFree/(.*)",
         "^(Videos|Images)/(.*)",

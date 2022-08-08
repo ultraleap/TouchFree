@@ -24,7 +24,7 @@ export const setHandRenderState = (handRenderState: boolean, lens: string): void
     });
 };
 
-const translateToCoordinate = (coordinate: Vector | undefined) => {
+const translateToCoordinate = (coordinate?: Vector) => {
     if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, 600);
     return new HandSvgCoordinate(1000 * (1 - coordinate.X * 1) - 100, 1000 * coordinate.Y - 100, coordinate.Z);
 };
@@ -52,7 +52,7 @@ export const handToSvgData = (hand: RawHand, handIndex: number): HandSvgProps =>
         thumbKnuckle: translateToCoordinate(thumbFinger?.Bones[knuckleJointIndex]?.PrevJoint),
         wrist: translateToCoordinate(wrist),
         primaryHand: hand.CurrentPrimary,
-        dotColor: handIndex ? 'blue' : 'red',
+        dotColor: handIndex === 0 ? 'blue' : 'red',
     };
 };
 

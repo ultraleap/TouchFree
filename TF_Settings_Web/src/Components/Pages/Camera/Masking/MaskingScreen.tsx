@@ -7,7 +7,7 @@ import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 
 import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
 
-import { HandsSvg, HandState, HandSvgProps } from 'Components/Controls/HandsSvg';
+import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
 
 import MaskingOption from './MaskingOptions';
 import MaskingSlider, { SliderDirection } from './MaskingSlider';
@@ -18,6 +18,8 @@ enum Lens {
     Left,
     Right,
 }
+
+const FRAME_PROCESSING_TIMEOUT = 67;
 
 const MaskingScreen = () => {
     // ===== State =====
@@ -112,10 +114,10 @@ const MaskingScreen = () => {
                 );
             }
 
-            // ignore any messages for 67ms to allow clearing of message handling
+            // Ignore any messages for short period to allow clearing of message handling
             setTimeout(() => {
                 setIsFrameProcessing(false);
-            }, 67);
+            }, FRAME_PROCESSING_TIMEOUT);
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
@@ -128,25 +130,20 @@ const MaskingScreen = () => {
 
         isHandProcessingRef.current = true;
 
-        if (evt.detail?.Hands) {
-            const handOne = evt.detail.Hands[0];
-            const handTwo = evt.detail.Hands[1];
-            let convertedHandOne: HandSvgProps | undefined = undefined;
-            let convertedHandTwo: HandSvgProps | undefined = undefined;
+        const hands = evt.detail?.Hands;
+        if (hands) {
+            const handOne = hands[0];
+            const handTwo = hands[1];
+            const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
+            const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
 
-            if (handOne) {
-                convertedHandOne = handToSvgData(handOne, 0);
-            }
-            if (handTwo) {
-                convertedHandTwo = handToSvgData(handTwo, 1);
-            }
             setHandData({ one: convertedHandOne, two: convertedHandTwo });
         }
 
-        // ignore any messages for 67ms to allow clearing of message handling
+        // Inore any messages for a short period to allow clearing of message handling
         setTimeout(() => {
             isHandProcessingRef.current = false;
-        }, 67);
+        }, FRAME_PROCESSING_TIMEOUT);
     };
 
     return (
