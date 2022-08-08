@@ -6,6 +6,8 @@ interface ToggleSwitchProps {
     value: boolean;
 }
 
+// ToggleSwitch doesn't react to onChange, it only displays the current value.
+// Changing the value should be handle by the <label> parent of the ToggleSwitch.
 export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ value }) => (
     <>
         {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
