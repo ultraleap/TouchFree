@@ -1,4 +1,5 @@
 
+import { DelegatedEventTarget } from "../TouchFreeToolingTypes";
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
 import { HandPresenceState, ServiceStatus } from "./TouchFreeServiceTypes";
@@ -6,7 +7,7 @@ import { HandPresenceState, ServiceStatus } from "./TouchFreeServiceTypes";
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
 // for ease of use and is a Singleton to allow for easy referencing.
-export class ConnectionManager extends EventTarget {
+export class ConnectionManager extends DelegatedEventTarget {
 
     // Group: Events
 

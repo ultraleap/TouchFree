@@ -1,4 +1,4 @@
-import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
+import { DelegatedEventTarget, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { InputActionPlugin } from "./InputActionPlugin";
 
 // Class: InputActionManager
@@ -6,7 +6,7 @@ import { InputActionPlugin } from "./InputActionPlugin";
 // received data through any <InputActionPlugins> given to it and finaly distributes the data
 // via the  <TransmitInputAction> event which should be listened to by any class hoping to make
 // use of incoming <TouchFreeInputActions>.
-export class InputActionManager extends EventTarget {
+export class InputActionManager extends DelegatedEventTarget {
     // Event: TransmitInputAction
     // An event for transmitting <TouchFreeInputActions> that are received via the <messageReceiver> to
     // be listened to.
