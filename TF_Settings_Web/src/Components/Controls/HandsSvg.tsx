@@ -97,7 +97,11 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
     const pointRadius = 5 * scalingFactor;
     const strokeWidth = 5 * scalingFactor;
 
-    const strokeData: LineStrokeData = { stroke: 'white', strokeWidth: strokeWidth };
+    const strokeData: LineStrokeData = {
+        stroke: 'white',
+        strokeWidth: strokeWidth,
+        opacity: data.primaryHand ? 1 : 0.5,
+    };
 
     return (
         <g>
@@ -145,7 +149,7 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
                 strokeData={strokeData}
             />
 
-            <CircleSvg id="wrist" point={data.wrist} radius={pointRadius} />
+            <CircleSvg id="wrist" point={data.wrist} radius={pointRadius} opacity={strokeData.opacity} />
         </g>
     );
 };
@@ -162,8 +166,18 @@ const FingerSvg: React.FC<FingerData> = (data) => {
     return (
         <g id={data.id}>
             <LineSvg id={data.id + '-line'} point1={data.point1} point2={data.point2} strokeData={data.strokeData} />
-            <CircleSvg id={data.id + '-tip'} point={data.point1} radius={data.pointRadius} />
-            <CircleSvg id={data.id + '-knuckle'} point={data.point2} radius={data.pointRadius} />
+            <CircleSvg
+                id={data.id + '-tip'}
+                point={data.point1}
+                radius={data.pointRadius}
+                opacity={data.strokeData.opacity}
+            />
+            <CircleSvg
+                id={data.id + '-knuckle'}
+                point={data.point2}
+                radius={data.pointRadius}
+                opacity={data.strokeData.opacity}
+            />
         </g>
     );
 };
@@ -178,6 +192,7 @@ interface LineData {
 interface LineStrokeData {
     stroke: string;
     strokeWidth: number;
+    opacity: number;
 }
 
 const LineSvg: React.FC<LineData> = (data) => {
@@ -190,6 +205,7 @@ const LineSvg: React.FC<LineData> = (data) => {
             y2={data.point2.y}
             stroke={data.strokeData.stroke}
             strokeWidth={data.strokeData.strokeWidth}
+            opacity={data.strokeData.opacity}
         />
     );
 };
@@ -198,8 +214,18 @@ interface CircleData {
     id: string;
     point: HandSvgCoordinate;
     radius: number;
+    opacity: number;
 }
 
 const CircleSvg: React.FC<CircleData> = (data) => {
-    return <circle id={data.id} cx={data.point.x} cy={data.point.y} r={data.radius} fill="url('#dotGradient')" />;
+    return (
+        <circle
+            id={data.id}
+            cx={data.point.x}
+            cy={data.point.y}
+            r={data.radius}
+            fill={'url(#dotGradient)'}
+            opacity={data.opacity}
+        />
+    );
 };
