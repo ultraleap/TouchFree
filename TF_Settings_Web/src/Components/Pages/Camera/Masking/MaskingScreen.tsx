@@ -8,14 +8,14 @@ import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
-import { MaskingSlider, MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
+import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { displayLensFeeds } from './displayLensFeeds';
 
 export type Lens = 'Left' | 'Right';
 
 const MaskingScreen = () => {
     // ===== State =====
-    const [mainLens, setMainLens] = useState<Lens>('Left');
+    const [mainLens, _setMainLens] = useState<Lens>('Left');
     // Config options
     const [masking, _setMasking] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
@@ -28,6 +28,7 @@ const MaskingScreen = () => {
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
+    const mainLensRef = useRef<Lens>(mainLens);
     const maskingRef = useRef<Mask>(masking);
     const isCamReversedRef = useRef<boolean>(isCamReversed);
     const allowImagesRef = useRef<boolean>(allowImages);
@@ -38,6 +39,10 @@ const MaskingScreen = () => {
     const frameTimeoutRef = useRef<number>();
 
     // ===== State Setters =====
+    const setMainLens = (value: Lens) => {
+        mainLensRef.current = value;
+        _setMainLens(value);
+    };
     const setMasking = (direction: SliderDirection, maskingValue: number) => {
         const mask: Mask = { ...masking, [direction]: maskingValue };
         maskingRef.current = mask;
@@ -75,8 +80,7 @@ const MaskingScreen = () => {
     };
 
     // ===== Canvas Refs =====
-    const leftLensRef = useRef<HTMLCanvasElement>(null);
-    const rightLensRef = useRef<HTMLCanvasElement>(null);
+    const mainCanvasRef = useRef<HTMLCanvasElement>(null);
 
     // ===== Variables =====
     const byteConversionArray = new Uint32Array(256);
@@ -140,7 +144,7 @@ const MaskingScreen = () => {
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (!leftLensRef.current || !rightLensRef.current) return;
+        if (!mainCanvasRef.current) return;
         if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
         if (typeof event.data == 'string') return;
@@ -157,8 +161,8 @@ const MaskingScreen = () => {
 
             displayLensFeeds(
                 data,
-                leftLensRef.current,
-                rightLensRef.current,
+                mainCanvasRef.current,
+                mainLensRef.current,
                 isCamReversedRef.current,
                 showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
             );
@@ -190,25 +194,13 @@ const MaskingScreen = () => {
                         onDragEnd={sendMaskingRequest}
                     />
                 ))}
-                <canvas ref={mainLens === 'Left' ? leftLensRef : rightLensRef} />
+                <canvas ref={mainCanvasRef} />
                 <div className="lens-toggle-container">
                     <MaskingLensToggle lens={'Left'} isMainLens={mainLens === 'Left'} setMainLens={setMainLens} />
                     <MaskingLensToggle lens={'Right'} isMainLens={mainLens === 'Right'} setMainLens={setMainLens} />
                 </div>
             </div>
             <div className="cam-feeds-bottom-container">
-                <div className="cam-feed-box--sub">
-                    {Object.entries(masking).map((sliderInfo) => (
-                        <MaskingSlider
-                            key={sliderInfo[0]}
-                            direction={sliderInfo[0] as SliderDirection}
-                            maskingValue={sliderInfo[1]}
-                            canvasInfo={{ size: 360, topOffset: 60, leftOffset: 60 }}
-                        />
-                    ))}
-                    <canvas ref={mainLens === 'Left' ? rightLensRef : leftLensRef} />
-                    <p>{mainLens === 'Left' ? 'Right' : 'Left'} Lens</p>
-                </div>
                 <div className="cam-feeds-options-container">
                     <MaskingOption
                         title="Display Overexposed Areas"
