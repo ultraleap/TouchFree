@@ -8,13 +8,14 @@ import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
-import { MaskingSlider, MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
+import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
+import { displayLensFeeds } from './displayLensFeeds';
 
 export type Lens = 'Left' | 'Right';
 
 const MaskingScreen = () => {
     // ===== State =====
-    const [mainLens, setMainLens] = useState<Lens>('Left');
+    const [mainLens, _setMainLens] = useState<Lens>('Left');
     // Config options
     const [masking, _setMasking] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
@@ -27,6 +28,7 @@ const MaskingScreen = () => {
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
+    const mainLensRef = useRef<Lens>(mainLens);
     const maskingRef = useRef<Mask>(masking);
     const isCamReversedRef = useRef<boolean>(isCamReversed);
     const allowImagesRef = useRef<boolean>(allowImages);
@@ -36,6 +38,10 @@ const MaskingScreen = () => {
     const timeoutRef = useRef<number>();
 
     // ===== State Setters =====
+    const setMainLens = (value: Lens) => {
+        mainLensRef.current = value;
+        _setMainLens(value);
+    };
     const setMasking = (direction: SliderDirection, maskingValue: number) => {
         const mask: Mask = { ...masking, [direction]: maskingValue };
         maskingRef.current = mask;
@@ -73,8 +79,7 @@ const MaskingScreen = () => {
     };
 
     // ===== Canvas Refs =====
-    const leftLensRef = useRef<HTMLCanvasElement>(null);
-    const rightLensRef = useRef<HTMLCanvasElement>(null);
+    const mainCanvasRef = useRef<HTMLCanvasElement>(null);
 
     // ===== Variables =====
     const byteConversionArray = new Uint32Array(256);
@@ -133,7 +138,7 @@ const MaskingScreen = () => {
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (!leftLensRef.current || !rightLensRef.current) return;
+        if (!mainCanvasRef.current) return;
         if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
         if (typeof event.data == 'string') return;
@@ -148,43 +153,19 @@ const MaskingScreen = () => {
         if (data.getUint8(0) === 1) {
             successfullySubscribed.current = true;
 
-            // displayLensFeeds(
-            //     data,
-            //     leftLensRef.current,
-            //     rightLensRef.current,
-            //     isCamReversedRef.current,
-            //     showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
-            // );
-
-            // Image data
-            const width = data.getUint32(1);
-            const height = data.getUint32(5);
-
-            const buf = new ArrayBuffer(width * height * 4);
-            const buf8 = new Uint8ClampedArray(buf);
-            const buf32 = new Uint32Array(buf);
-
-            for (let i = 0; i < width * height; i++) {
-                const px = data.getUint8(6 + i);
-                buf32[i] = (255 << 24) | (px << 16) | (px << 8) | px;
-            }
-
-            const image = new ImageData(buf8, width, height);
-            const mainCanvas = leftLensRef.current;
-
-            mainCanvas.width = width;
-            mainCanvas.height = height;
-
-            const context = mainCanvas.getContext('2d');
-            if (context) {
-                context.putImageData(image, 0, 0);
-            }
+            displayLensFeeds(
+                data,
+                mainCanvasRef.current,
+                mainLensRef.current,
+                isCamReversedRef.current,
+                showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
+            );
         }
 
         // Settimeout with 32ms for ~30fps if we have the performance
         timeoutRef.current = window.setTimeout(() => {
             setIsFrameProcessing(false);
-        }, 32);
+        }, 1);
     };
 
     return (
@@ -207,25 +188,13 @@ const MaskingScreen = () => {
                         onDragEnd={sendMaskingRequest}
                     />
                 ))}
-                <canvas ref={mainLens === 'Left' ? leftLensRef : rightLensRef} />
+                <canvas ref={mainCanvasRef} />
                 <div className="lens-toggle-container">
                     <MaskingLensToggle lens={'Left'} isMainLens={mainLens === 'Left'} setMainLens={setMainLens} />
                     <MaskingLensToggle lens={'Right'} isMainLens={mainLens === 'Right'} setMainLens={setMainLens} />
                 </div>
             </div>
             <div className="cam-feeds-bottom-container">
-                <div className="cam-feed-box--sub">
-                    {Object.entries(masking).map((sliderInfo) => (
-                        <MaskingSlider
-                            key={sliderInfo[0]}
-                            direction={sliderInfo[0] as SliderDirection}
-                            maskingValue={sliderInfo[1]}
-                            canvasInfo={{ size: 360, topOffset: 60, leftOffset: 60 }}
-                        />
-                    ))}
-                    <canvas ref={mainLens === 'Left' ? rightLensRef : leftLensRef} />
-                    <p>{mainLens === 'Left' ? 'Right' : 'Left'} Lens</p>
-                </div>
                 <div className="cam-feeds-options-container">
                     <MaskingOption
                         title="Display Overexposed Areas"
