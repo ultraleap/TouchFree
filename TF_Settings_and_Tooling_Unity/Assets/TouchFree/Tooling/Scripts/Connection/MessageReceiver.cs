@@ -85,6 +85,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         {
             CheckQueue<WebSocketResponse>(responseQueue, HandleResponse);
             CheckQueue<ConfigState>(configStateQueue, HandleConfigState);
+            CheckQueue<ServiceStatus>(serviceStatusQueue, HandleServiceStatus);
             CheckQueue<TrackingStateResponse>(trackingStateQueue, HandleTrackingStateResponse);
 
             CheckForAction();
