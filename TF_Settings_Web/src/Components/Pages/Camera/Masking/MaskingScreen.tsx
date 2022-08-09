@@ -165,7 +165,7 @@ const MaskingScreen = () => {
         // Settimeout with 32ms for ~30fps if we have the performance
         timeoutRef.current = window.setTimeout(() => {
             setIsFrameProcessing(false);
-        }, 1);
+        }, 32);
     };
 
     return (
