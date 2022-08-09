@@ -59,8 +59,6 @@
 }
 
 .lens-toggle {
-    color: white;
-    font-family: v.$base-font;
     width: 50%;
     height: 100%;
 
@@ -72,20 +70,44 @@
     border-radius: 50px 0px 0px 50px;
     box-shadow: inset 0px 1px 4px #000000d0;
 
+    > p {
+        color: white;
+        font-size: 16px;
+        font-family: v.$base-font;
+        text-align: center;
+    }
+
     &--left {
         @extend .lens-toggle;
         border-radius: 50px 0 0 50px;
+
+        > p {
+            margin-left: 10px;
+        }
     }
 
     &--right {
         @extend .lens-toggle;
         border-radius: 0 50px 50px 0;
+
+        > p {
+            margin-right: 5px;
+        }
     }
 
     &--active {
         background: v.$ultraleap-green-gradient;
         border: 1px solid #fdfdfd73;
-        color: black;
+        > p {
+            color: black;
+        }
+    }
+
+    &--hovered {
+        box-shadow: inset 0px 1px 4px #000000d0, 0px 0px 30px v.$ultraleap-green;
+        > p {
+            font-size: 18px;
+        }
     }
 }
 

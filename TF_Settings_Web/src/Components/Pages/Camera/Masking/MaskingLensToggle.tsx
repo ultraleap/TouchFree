@@ -1,6 +1,6 @@
 import 'Styles/Camera/CameraMasking.scss';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Lens } from './MaskingScreen';
 
@@ -10,13 +10,21 @@ interface MaskingLensToggle {
     setMainLens: (value: Lens) => void;
 }
 
-const MaskingLensToggle: React.FC<MaskingLensToggle> = ({ lens, isMainLens, setMainLens }) => (
-    <div
-        onPointerDown={() => setMainLens(lens)}
-        className={`${isMainLens ? 'lens-toggle--active' : ''} lens-toggle--${lens.toLowerCase()}`}
-    >
-        {lens} Lens
-    </div>
-);
+const MaskingLensToggle: React.FC<MaskingLensToggle> = ({ lens, isMainLens, setMainLens }) => {
+    const [hovered, setHovered] = useState<boolean>(false);
+
+    return (
+        <div
+            onPointerDown={() => setMainLens(lens)}
+            onPointerEnter={() => setHovered(true)}
+            onPointerLeave={() => setHovered(false)}
+            className={`${isMainLens ? 'lens-toggle--active' : ''} ${
+                hovered ? 'lens-toggle--hovered' : ''
+            } lens-toggle--${lens.toLowerCase()}`}
+        >
+            <p>{lens} Lens</p>
+        </div>
+    );
+};
 
 export default MaskingLensToggle;
