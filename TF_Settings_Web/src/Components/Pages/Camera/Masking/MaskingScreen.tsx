@@ -33,8 +33,9 @@ const MaskingScreen = () => {
     const allowImagesRef = useRef<boolean>(allowImages);
     const showOverexposedRef = useRef<boolean>(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
+    const trackingIntervalRef = useRef<number>();
     const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
-    const timeoutRef = useRef<number>();
+    const frameTimeoutRef = useRef<number>();
 
     // ===== State Setters =====
     const setMasking = (direction: SliderDirection, maskingValue: number) => {
@@ -84,6 +85,10 @@ const MaskingScreen = () => {
     // ===== UseEffect =====
     useEffect(() => {
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
+        trackingIntervalRef.current = window.setInterval(
+            () => TrackingManager.RequestTrackingState(handleInitialTrackingState),
+            500
+        );
 
         for (let i = 0; i < 256; i++) {
             byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
@@ -100,12 +105,13 @@ const MaskingScreen = () => {
         return () => {
             socket.removeEventListener('open', handleWSOpen);
             socket.removeEventListener('message', (event) => handleMessage(socket, event));
-            window.clearTimeout(timeoutRef.current);
+            window.clearTimeout(frameTimeoutRef.current);
         };
     }, []);
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
+        window.clearInterval(trackingIntervalRef.current);
         const allowImages = state.allowImages?.content;
         if (allowImages) {
             _setAllowImages(allowImages);
@@ -159,7 +165,7 @@ const MaskingScreen = () => {
         }
 
         // Settimeout with 32ms for ~30fps if we have the performance
-        timeoutRef.current = window.setTimeout(() => {
+        frameTimeoutRef.current = window.setTimeout(() => {
             setIsFrameProcessing(false);
         }, 32);
     };
