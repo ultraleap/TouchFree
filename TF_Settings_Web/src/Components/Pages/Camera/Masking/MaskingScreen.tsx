@@ -85,10 +85,6 @@ const MaskingScreen = () => {
     // ===== UseEffect =====
     useEffect(() => {
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
-        trackingIntervalRef.current = window.setInterval(
-            () => TrackingManager.RequestTrackingState(handleInitialTrackingState),
-            500
-        );
 
         const socket = new WebSocket('ws://127.0.0.1:1024');
         socket.binaryType = 'arraybuffer';
@@ -207,6 +203,7 @@ const MaskingScreen = () => {
                         description="Reverse the camera orientation (hand should enter from the bottom)"
                         value={isCamReversed}
                         onChange={setIsCameraReversed}
+                        isMouseOnly
                     />
                     <MaskingOption
                         title="Allow Analytics"

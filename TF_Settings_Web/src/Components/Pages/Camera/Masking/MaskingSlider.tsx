@@ -2,6 +2,7 @@ import 'Styles/Camera/CameraMasking.scss';
 
 import React, { CSSProperties, PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
 export type SliderDirection = keyof Mask;
@@ -81,7 +82,8 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
 }) => {
     // ===== State =====
     const [isHovered, setIsHovered] = useState<boolean>(false);
-    const [isDragging, setIsDragging] = useState<boolean>(false);
+
+    const isDraggingRef = useRef<boolean>(false);
 
     const dragStartPos = useRef<{ X: number; Y: number }>({
         X: Number.NaN,
@@ -92,23 +94,28 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
 
     // ===== UseEffects =====
     useEffect(() => {
+        ConnectionManager.instance.addEventListener('HandsLost', () => endTFDrag);
+
         return () => {
             window.removeEventListener('pointermove', onMove);
-            window.removeEventListener('pointerup', onEndDrag);
+            window.removeEventListener('pointerup', onEndDragEvent);
+            ConnectionManager.instance.removeEventListener('HandsLost', () => endTFDrag);
         };
     }, []);
+
     // ===== Event Handlers =====
     const onStartDrag = (event: PointerEvent<HTMLSpanElement>) => {
         clearMasking();
-        setIsDragging(true);
-        dragStartPos.current = { X: event.pageX, Y: event.pageY };
+        isDraggingRef.current = true;
         dragPointerType.current = event.pointerType;
+        dragStartPos.current = { X: event.pageX, Y: event.pageY };
 
         window.addEventListener('pointermove', onMove);
-        window.addEventListener('pointerup', onEndDrag);
+        window.addEventListener('pointerup', onEndDragEvent);
     };
 
     const onMove = (event: globalThis.PointerEvent) => {
+        if (!isDraggingRef.current) return;
         if (event.pointerType !== dragPointerType.current) return;
 
         let diffValue = 0;
@@ -139,20 +146,29 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
         onDrag(direction, limitedNewMaskingValue);
     };
 
-    const onEndDrag = (event: globalThis.PointerEvent) => {
-        if (event.pointerType !== dragPointerType.current) return;
+    const onEndDragEvent = (event: globalThis.PointerEvent) => onEndDrag(event.pointerType);
 
-        setIsDragging(false);
+    const endTFDrag = () => {
+        onEndDrag('pen');
+    };
+
+    const onEndDrag = (pointerType: string) => {
+        if (!isDraggingRef.current) return;
+        if (pointerType !== dragPointerType.current) return;
+
         window.removeEventListener('pointermove', onMove);
-        window.removeEventListener('pointerup', onEndDrag);
+        window.removeEventListener('pointerup', onEndDragEvent);
 
+        isDraggingRef.current = false;
         onDragEnd();
         dragPointerType.current === '';
     };
 
     const content = (
         <div
-            className={`masking-slider-knob ${isHovered || isDragging ? 'masking-slider-knob--dragging' : ''}`}
+            className={`masking-slider-knob ${
+                isHovered || isDraggingRef.current ? 'masking-slider-knob--dragging' : ''
+            }`}
             onPointerDown={onStartDrag}
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => setIsHovered(false)}
