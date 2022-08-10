@@ -37,18 +37,17 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     const [progressToClick, setProgressToClick] = useState<number>(0);
     const [showButtons, setShowButtons] = useState<boolean>(false);
     const isNewClick = useRef(false);
-    const timeoutRef = useRef<number>();
 
     useEffect(() => {
         onLoad();
 
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
 
-        timeoutRef.current = window.setTimeout(() => setShowButtons(true), 1000);
+        const timerID = window.setTimeout(() => setShowButtons(true), 1000);
 
         return () => {
             InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
-            window.clearTimeout(timeoutRef.current);
+            window.clearTimeout(timerID);
         };
     }, []);
 
