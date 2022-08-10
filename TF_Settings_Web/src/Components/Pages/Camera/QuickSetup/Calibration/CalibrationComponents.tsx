@@ -242,7 +242,7 @@ export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps>
             refAnimationInstance.current({
                 spread: 360,
                 startVelocity: 50,
-                origin: { y: 0.42 },
+                origin: { y: 0.7 },
                 particleCount: 50,
                 gravity: 0.4,
                 scalar: 1.5,

@@ -305,9 +305,8 @@
     display: flex;
     align-items: center;
 
-    user-select: none;
-
     > p {
+        user-select: none;
         font-size: 18px;
         font-weight: bold;
         text-align: center;

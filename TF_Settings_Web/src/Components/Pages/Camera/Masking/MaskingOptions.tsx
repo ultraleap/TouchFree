@@ -1,6 +1,7 @@
 import 'Styles/Camera/CameraMasking.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { CSSTransition } from 'react-transition-group';
 
 import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
 
@@ -30,7 +31,7 @@ const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value
                 if (isMouseOnly && event.pointerType === 'pen') {
                     setShowMousePrompt(true);
                     window.clearTimeout(timeoutRef.current);
-                    timeoutRef.current = window.setTimeout(() => setShowMousePrompt(false), 2000);
+                    timeoutRef.current = window.setTimeout(() => setShowMousePrompt(false), 3000);
                 } else {
                     onChange(!value);
                 }
@@ -43,16 +44,18 @@ const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value
             <div className="cam-feeds-option-toggle">
                 <ToggleSwitch value={value} />
             </div>
-            {showMousePrompt ? (
-                <div className="cam-feeds-option--no-TF" onPointerDown={(e) => e.stopPropagation()}>
-                    <div className="cam-feeds-option--no-TF--triangle" />
-                    <p>Cannot be selected using the TouchFree cursor</p>
-                </div>
-            ) : (
-                <></>
-            )}
+            <CSSTransition in={showMousePrompt} timeout={500} classNames="fade" unmountOnExit>
+                <MousePrompt />
+            </CSSTransition>
         </label>
     );
 };
+
+const MousePrompt: React.FC = () => (
+    <div className="cam-feeds-option--no-TF" onPointerDown={(e) => e.stopPropagation()}>
+        <div className="cam-feeds-option--no-TF--triangle" />
+        <p>Cannot be selected using the TouchFree cursor</p>
+    </div>
+);
 
 export default MaskingOption;
