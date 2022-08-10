@@ -82,10 +82,6 @@ const MaskingScreen = () => {
     // ===== Canvas Refs =====
     const mainCanvasRef = useRef<HTMLCanvasElement>(null);
 
-    // ===== Variables =====
-    const byteConversionArray = new Uint32Array(256);
-    const byteConversionArrayOverExposed = new Uint32Array(256);
-
     // ===== UseEffect =====
     useEffect(() => {
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
@@ -93,12 +89,6 @@ const MaskingScreen = () => {
             () => TrackingManager.RequestTrackingState(handleInitialTrackingState),
             500
         );
-
-        for (let i = 0; i < 256; i++) {
-            byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
-            // -13434625 = #FFFF0033 in signed 2's complement
-            byteConversionArrayOverExposed[i] = i > 128 ? -13434625 : byteConversionArray[i];
-        }
 
         const socket = new WebSocket('ws://127.0.0.1:1024');
         socket.binaryType = 'arraybuffer';
@@ -149,29 +139,27 @@ const MaskingScreen = () => {
 
         if (typeof event.data == 'string') return;
 
-        setIsFrameProcessing(true);
+        const dataAsUint8 = new Uint8Array(event.data, 0, 10);
 
-        if (!successfullySubscribed.current) {
-            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
-        }
-
-        const data = new DataView(event.data);
-        if (data.getUint8(0) === 1) {
+        if (dataAsUint8[0] === 1) {
+            setIsFrameProcessing(true);
             successfullySubscribed.current = true;
 
             displayLensFeeds(
-                data,
+                event.data as ArrayBuffer,
                 mainCanvasRef.current,
                 mainLensRef.current,
                 isCamReversedRef.current,
-                showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
+                showOverexposedRef.current
             );
-        }
 
-        // Settimeout with 32ms for ~30fps if we have the performance
-        frameTimeoutRef.current = window.setTimeout(() => {
-            setIsFrameProcessing(false);
-        }, 32);
+            // Settimeout with 32ms for ~30fps if we have the performance
+            frameTimeoutRef.current = window.setTimeout(() => {
+                setIsFrameProcessing(false);
+            }, 32);
+        } else if (!successfullySubscribed.current) {
+            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
+        }
     };
 
     return (
