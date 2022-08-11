@@ -19,3 +19,25 @@ $base-font: MontserratRegular, Arial;
     darkGreyGradient: $dark-grey-gradient;
     baseFont: $base-font;
 }
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInOutAnimation {
+    0% {
+        opacity: 0;
+    }
+    20%,
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
