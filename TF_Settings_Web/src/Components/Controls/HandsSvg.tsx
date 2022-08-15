@@ -103,6 +103,50 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
         opacity: data.primaryHand ? 1 : 0.3,
     };
 
+    const elements = [
+        ...CreateFingerElements({
+            id: 'index',
+            point1: data.indexTip,
+            point2: data.indexKnuckle,
+            pointRadius: pointRadius,
+            strokeData: strokeData,
+        }),
+        ...CreateFingerElements({
+            id: 'middle',
+            point1: data.middleTip,
+            point2: data.middleKnuckle,
+            pointRadius: pointRadius,
+            strokeData: strokeData,
+        }),
+        ...CreateFingerElements({
+            id: 'ring',
+            point1: data.ringTip,
+            point2: data.ringKnuckle,
+            pointRadius: pointRadius,
+            strokeData: strokeData,
+        }),
+        ...CreateFingerElements({
+            id: 'little',
+            point1: data.littleTip,
+            point2: data.littleKnuckle,
+            pointRadius: pointRadius,
+            strokeData: strokeData,
+        }),
+        ...CreateFingerElements({
+            id: 'thumb',
+            point1: data.thumbTip,
+            point2: data.thumbKnuckle,
+            pointRadius: pointRadius,
+            strokeData: strokeData,
+        }),
+        {
+            z: data.wrist.z,
+            element: <CircleSvg id="wrist" point={data.wrist} radius={pointRadius} opacity={strokeData.opacity} />,
+        },
+    ]
+        .sort((a, b) => b.z - a.z)
+        .map((x) => x.element);
+
     return (
         <g>
             <LineSvg id="index-wrist" point1={data.indexKnuckle} point2={data.thumbKnuckle} strokeData={strokeData} />
@@ -113,43 +157,7 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
             <LineSvg id="little-wrist" point1={data.littleKnuckle} point2={data.wrist} strokeData={strokeData} />
             <LineSvg id="thumb-wrist" point1={data.thumbKnuckle} point2={data.wrist} strokeData={strokeData} />
 
-            <FingerSvg
-                id="index"
-                point1={data.indexTip}
-                point2={data.indexKnuckle}
-                pointRadius={pointRadius}
-                strokeData={strokeData}
-            />
-            <FingerSvg
-                id="middle"
-                point1={data.middleTip}
-                point2={data.middleKnuckle}
-                pointRadius={pointRadius}
-                strokeData={strokeData}
-            />
-            <FingerSvg
-                id="ring"
-                point1={data.ringTip}
-                point2={data.ringKnuckle}
-                pointRadius={pointRadius}
-                strokeData={strokeData}
-            />
-            <FingerSvg
-                id="little"
-                point1={data.littleTip}
-                point2={data.littleKnuckle}
-                pointRadius={pointRadius}
-                strokeData={strokeData}
-            />
-            <FingerSvg
-                id="thumb"
-                point1={data.thumbTip}
-                point2={data.thumbKnuckle}
-                pointRadius={pointRadius}
-                strokeData={strokeData}
-            />
-
-            <CircleSvg id="wrist" point={data.wrist} radius={pointRadius} opacity={strokeData.opacity} />
+            {elements}
         </g>
     );
 };
@@ -162,24 +170,44 @@ interface FingerData {
     pointRadius: number;
 }
 
-const FingerSvg: React.FC<FingerData> = (data) => {
-    return (
-        <g id={data.id}>
-            <LineSvg id={data.id + '-line'} point1={data.point1} point2={data.point2} strokeData={data.strokeData} />
-            <CircleSvg
-                id={data.id + '-tip'}
-                point={data.point1}
-                radius={data.pointRadius}
-                opacity={data.strokeData.opacity}
-            />
-            <CircleSvg
-                id={data.id + '-knuckle'}
-                point={data.point2}
-                radius={data.pointRadius}
-                opacity={data.strokeData.opacity}
-            />
-        </g>
-    );
+const CreateFingerElements = (data: FingerData) => {
+    const points = [
+        {
+            z: data.point1.z > data.point2.z ? data.point1.z : data.point2.z,
+            element: (
+                <LineSvg
+                    id={data.id + '-line'}
+                    point1={data.point1}
+                    point2={data.point2}
+                    strokeData={data.strokeData}
+                />
+            ),
+        },
+        {
+            z: data.point1.z,
+            element: (
+                <CircleSvg
+                    id={data.id + '-tip'}
+                    point={data.point1}
+                    radius={data.pointRadius}
+                    opacity={data.strokeData.opacity}
+                />
+            ),
+        },
+        {
+            z: data.point2.z,
+            element: (
+                <CircleSvg
+                    id={data.id + '-knuckle'}
+                    point={data.point2}
+                    radius={data.pointRadius}
+                    opacity={data.strokeData.opacity}
+                />
+            ),
+        },
+    ];
+
+    return points;
 };
 
 interface LineData {
