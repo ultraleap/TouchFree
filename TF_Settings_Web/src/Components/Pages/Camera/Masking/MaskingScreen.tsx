@@ -19,7 +19,7 @@ enum Lens {
     Right,
 }
 
-const FRAME_PROCESSING_TIMEOUT = 67;
+const FRAME_PROCESSING_TIMEOUT = 30;
 
 const MaskingScreen = () => {
     // ===== State =====
@@ -102,22 +102,25 @@ const MaskingScreen = () => {
             successfullySubscribed.current = true;
             setIsFrameProcessing(true);
 
-            const leftLens = leftLensRef.current;
-            const rightLens = rightLensRef.current;
-            if (leftLens || rightLens) {
-                displayLensFeeds(
-                    event.data as ArrayBuffer,
-                    leftLens,
-                    rightLens,
-                    isCamReversedRef.current,
-                    showOverexposedRef.current
-                );
-            }
-
-            // Ignore any messages for short period to allow clearing of message handling
+            // This set timeout allows more regular cleardown of the received messages
             setTimeout(() => {
-                setIsFrameProcessing(false);
-            }, FRAME_PROCESSING_TIMEOUT);
+                const leftLens = leftLensRef.current;
+                const rightLens = rightLensRef.current;
+                if (leftLens || rightLens) {
+                    displayLensFeeds(
+                        event.data as ArrayBuffer,
+                        leftLens,
+                        rightLens,
+                        isCamReversedRef.current,
+                        showOverexposedRef.current
+                    );
+                }
+
+                // Ignore any messages for short period to allow clearing of message handling
+                setTimeout(() => {
+                    setIsFrameProcessing(false);
+                }, FRAME_PROCESSING_TIMEOUT);
+            });
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
