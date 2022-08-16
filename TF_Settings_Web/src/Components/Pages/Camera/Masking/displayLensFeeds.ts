@@ -33,7 +33,7 @@ export const displayLensFeeds = (
     const width = Math.min(dim1, dim2);
     const lensHeight = Math.max(dim1, dim2) / 2;
 
-    const buf = new ArrayBuffer(width * lensHeight * 4);
+    const buf = new ArrayBuffer(width * lensHeight);
     const buf8 = new Uint8ClampedArray(buf);
     const buf32 = new Uint32Array(buf);
 
@@ -47,12 +47,12 @@ export const displayLensFeeds = (
     }
 
     // Set black pixels to remove flashing camera bytes
-    const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
+    const startOffset = isCameraReversed ? 0 : ((lensHeight / 2 - 1) * width) / 2;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    canvasRef.width = width;
-    canvasRef.height = lensHeight;
-    context.putImageData(new ImageData(buf8, width, lensHeight), 0, 0);
+    canvasRef.width = width / 2;
+    canvasRef.height = lensHeight / 2;
+    context.putImageData(new ImageData(buf8, width / 2, lensHeight / 2), 0, 0);
 };
 
 const processRotatedScreen = (
@@ -66,23 +66,29 @@ const processRotatedScreen = (
 ) => {
     let rowBase = 0;
     const offsetView = new Uint8Array(data, offset, width * lensHeight * 2);
+    const resultWidth = width / 2;
+    const resultHeight = lensHeight / 2;
 
-    for (let rowIndex = 0; rowIndex < width; rowIndex++) {
-        let rowStart = rowBase * 2;
+    for (let rowIndex = 0; rowIndex < resultWidth; rowIndex++) {
+        const resultStartIndex = rowBase / 8;
+
         if (lens === 'Right') {
-            for (let i = 0; i < lensHeight; i++) {
-                buf32[i + rowBase] = byteConversionArray[offsetView[i + rowStart]];
+            for (let i = 0; i < resultHeight; i++) {
+                buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
             }
         }
 
-        rowStart += lensHeight;
+        rowBase += width;
         if (lens === 'Left') {
-            for (let i = 0; i < lensHeight; i++) {
-                buf32[i + rowBase] = byteConversionArray[offsetView[i + rowStart]];
+            for (let i = 0; i < resultHeight; i++) {
+                buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
             }
         }
 
-        rowBase += lensHeight;
+        rowBase += width;
+
+        // Skip entire row
+        rowBase += width * 2;
     }
 };
 
@@ -97,8 +103,10 @@ const processScreen = (
 ) => {
     const offsetView = new Uint8Array(data, offset + (lens === 'Left' ? width * lensHeight : 0), width * lensHeight);
 
-    for (let i = 0; i < width * lensHeight; i++) {
-        buf32[i] = byteConversionArray[offsetView[i]];
+    for (let i = 0; i < width / 2; i++) {
+        for (let j = 0; j < lensHeight / 2; j++) {
+            buf32[(i * lensHeight) / 2 + j] = byteConversionArray[offsetView[i * lensHeight * 2 + j * 2]];
+        }
     }
 };
 
