@@ -105,35 +105,35 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
 
     const elements = [
         ...CreateFingerElements({
-            id: 'index',
+            id: 'index-' + data.primaryHand ? 'p' : 's',
             point1: data.indexTip,
             point2: data.indexKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'middle',
+            id: 'middle-' + data.primaryHand ? 'p' : 's',
             point1: data.middleTip,
             point2: data.middleKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'ring',
+            id: 'ring-' + data.primaryHand ? 'p' : 's',
             point1: data.ringTip,
             point2: data.ringKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'little',
+            id: 'little-' + data.primaryHand ? 'p' : 's',
             point1: data.littleTip,
             point2: data.littleKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'thumb',
+            id: 'thumb-' + data.primaryHand ? 'p' : 's',
             point1: data.thumbTip,
             point2: data.thumbKnuckle,
             pointRadius: pointRadius,
@@ -141,7 +141,15 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
         }),
         {
             z: data.wrist.z,
-            element: <CircleSvg id="wrist" point={data.wrist} radius={pointRadius} opacity={strokeData.opacity} />,
+            element: (
+                <CircleSvg
+                    key={'wrist-' + data.primaryHand ? 'p' : 's'}
+                    id="wrist"
+                    point={data.wrist}
+                    radius={pointRadius}
+                    opacity={strokeData.opacity}
+                />
+            ),
         },
     ]
         .sort((a, b) => b.z - a.z)
@@ -176,6 +184,7 @@ const CreateFingerElements = (data: FingerData) => {
             z: data.point1.z > data.point2.z ? data.point1.z : data.point2.z,
             element: (
                 <LineSvg
+                    key={data.id + '-line'}
                     id={data.id + '-line'}
                     point1={data.point1}
                     point2={data.point2}
@@ -187,6 +196,7 @@ const CreateFingerElements = (data: FingerData) => {
             z: data.point1.z,
             element: (
                 <CircleSvg
+                    key={data.id + '-tip'}
                     id={data.id + '-tip'}
                     point={data.point1}
                     radius={data.pointRadius}
@@ -198,6 +208,7 @@ const CreateFingerElements = (data: FingerData) => {
             z: data.point2.z,
             element: (
                 <CircleSvg
+                    key={data.id + '-knuckle'}
                     id={data.id + '-knuckle'}
                     point={data.point2}
                     radius={data.pointRadius}
@@ -234,6 +245,7 @@ const LineSvg: React.FC<LineData> = (data) => {
             stroke={data.strokeData.stroke}
             strokeWidth={data.strokeData.strokeWidth}
             opacity={data.strokeData.opacity}
+            strokeLinecap="round"
         />
     );
 };
