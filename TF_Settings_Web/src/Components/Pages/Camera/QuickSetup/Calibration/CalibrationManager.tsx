@@ -19,7 +19,7 @@ const handEventTypes = ['HandsLost', 'HandFound'];
 
 const calibInteractionConfig: Partial<InteractionConfig> = {
     InteractionType: InteractionType.HOVER,
-    DeadzoneRadius: 0.007,
+    DeadzoneRadius: 0.01,
     HoverAndHold: {
         HoverStartTimeS: 1,
         HoverCompleteTimeS: 5,

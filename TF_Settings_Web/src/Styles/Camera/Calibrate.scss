@@ -22,7 +22,11 @@
         margin-bottom: 0;
     }
 
-    .greenText {
+    .instruction-text {
+        animation: fadeInAnimation ease 0.5s;
+    }
+
+    .green-text {
         color: v.$ultraleap-green;
     }
 }

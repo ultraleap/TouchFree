@@ -80,7 +80,7 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                 display={!isHandPresent}
                 handsLostStyle={{ height: '3vh', padding: '5px 30px' }}
             />
-            <div style={{ paddingTop: '200px' }}>
+            <div style={{ paddingTop: '100px' }}>
                 <h1 className="setup-complete-title">
                     Setup <br />
                     Complete
