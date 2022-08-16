@@ -105,35 +105,35 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
 
     const elements = [
         ...CreateFingerElements({
-            id: 'index-' + data.primaryHand ? 'p' : 's',
+            id: 'index-' + (data.primaryHand ? 'p' : 's'),
             point1: data.indexTip,
             point2: data.indexKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'middle-' + data.primaryHand ? 'p' : 's',
+            id: 'middle-' + (data.primaryHand ? 'p' : 's'),
             point1: data.middleTip,
             point2: data.middleKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'ring-' + data.primaryHand ? 'p' : 's',
+            id: 'ring-' + (data.primaryHand ? 'p' : 's'),
             point1: data.ringTip,
             point2: data.ringKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'little-' + data.primaryHand ? 'p' : 's',
+            id: 'little-' + (data.primaryHand ? 'p' : 's'),
             point1: data.littleTip,
             point2: data.littleKnuckle,
             pointRadius: pointRadius,
             strokeData: strokeData,
         }),
         ...CreateFingerElements({
-            id: 'thumb-' + data.primaryHand ? 'p' : 's',
+            id: 'thumb-' + (data.primaryHand ? 'p' : 's'),
             point1: data.thumbTip,
             point2: data.thumbKnuckle,
             pointRadius: pointRadius,
@@ -143,7 +143,7 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
             z: data.wrist.z,
             element: (
                 <CircleSvg
-                    key={'wrist-' + data.primaryHand ? 'p' : 's'}
+                    key={'wrist-' + (data.primaryHand ? 'p' : 's')}
                     id="wrist"
                     point={data.wrist}
                     radius={pointRadius}

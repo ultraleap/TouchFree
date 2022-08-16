@@ -57,7 +57,7 @@ export interface InteractionConfig {
 // the current state of the Service's config or its config files.
 export interface InteractionConfigFull {
     UseScrollingOrDragging: boolean;
-
+    
     UseSwipeInteraction: boolean;
 
     DeadzoneRadius: number;

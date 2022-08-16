@@ -22,6 +22,7 @@
         z-index: 10;
 
         &.cam-feed-box-hand-renders {
+            pointer-events: none;
             $canvas-size: $size - $padding;
             height: $canvas-size;
             width: $canvas-size;
@@ -52,6 +53,9 @@
 
 .cam-feed-box--main {
     @include cam-feed-box(1000px, 200px);
+    > canvas {
+        margin-top: 50px;
+    }
     margin-top: 3%;
     margin-bottom: 3%;
 }
@@ -61,60 +65,93 @@
     margin: 0;
 }
 
-.sub-feed-overlay {
-    position: absolute;
-    height: 102%;
-    width: 102%;
-    left: -1%;
-    top: -1%;
-
-    background: linear-gradient(180deg, #373737 0%, #2c2c2c 100%);
-    border: 1px solid #ffffff1a;
-    border-radius: 10px;
-    opacity: 0.85;
-
+.lens-toggle-container {
     display: flex;
+    width: 28%;
+    height: 5%;
+    margin: auto;
+    margin-top: 4.5%;
     align-items: center;
-
-    box-shadow: 0px 0px 30px v.$ultraleap-green;
 }
 
-.sub-feed-overlay--content {
-    width: 100%;
-    user-select: none;
+.lens-toggle {
+    width: 50%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: v.$light-grey-gradient;
+    border: 1px solid #ffffff29;
+    border-radius: 50px 0px 0px 50px;
+    box-shadow: inset 0px 1px 4px #000000d0;
 
     > p {
         color: white;
+        font-size: 16px;
         font-family: v.$base-font;
         text-align: center;
-        font-size: 25px;
     }
 
-    > img {
-        height: 45px;
-        margin-bottom: 10px;
+    &--left {
+        @extend .lens-toggle;
+        border-radius: 50px 0 0 50px;
+
+        > p {
+            margin-left: 10px;
+        }
+    }
+
+    &--right {
+        @extend .lens-toggle;
+        border-radius: 0 50px 50px 0;
+
+        > p {
+            margin-right: 5px;
+        }
+    }
+
+    &--active {
+        background: v.$ultraleap-green-gradient;
+        border: 1px solid #fdfdfd73;
+        > p {
+            color: black;
+        }
+    }
+
+    &--hovered {
+        box-shadow: inset 0px 1px 4px #000000d0, 0px 0px 30px v.$ultraleap-green;
+        > p {
+            font-size: 18px;
+        }
     }
 }
 
 // ===== Masking Sliders =====
-@mixin masking-slider($top, $left, $vertical) {
+@mixin masking-slider($top, $left, $canvas-size, $vertical) {
     position: absolute;
-    top: $top;
-    left: $left;
+    $size: 10px;
+
+    $canvas-margin: calc($canvas-size / 8);
+    $canvas-padding: calc($canvas-size / 2 - $canvas-margin);
 
     // Fix these colors so same for top and side
     $gradient-color: #00000000 0%, v.$ultraleap-green 50%, #00000000 100%;
     @if $vertical {
+        top: $top;
+        left: calc($left - ($size / 2));
         height: 0px;
-        width: 10px;
-        padding: 300px 0 300px 0;
-        margin: 100px 0 100px 0;
+        width: $size;
+        padding: $canvas-padding 0 $canvas-padding 0;
+        margin: $canvas-margin 0 $canvas-margin 0;
         background: linear-gradient(0deg, $gradient-color);
     } @else {
-        height: 10px;
+        top: calc($top - ($size / 2));
+        left: $left;
+        height: $size;
         width: 0px;
-        padding: 0 300px 0 300px;
-        margin: 0 100px 0 100px;
+        padding: 0 $canvas-padding 0 $canvas-padding;
+        margin: 0 $canvas-margin 0 $canvas-margin;
         background: linear-gradient(90deg, $gradient-color);
     }
 
@@ -179,55 +216,67 @@
     }
 }
 
+.masking-slider {
+    --canvas-size: 800px;
+    --top-offset: 100px;
+    --bottom-offset: calc(var(--top-offset) + var(--canvas-size));
+    --left-offset: 100px;
+    --right-offset: calc(var(--left-offset) + var(--canvas-size));
+}
+
 .masking-slider--left {
-    @include masking-slider(100px, 95px, $vertical: true);
+    @include masking-slider(var(--top-offset), var(--left-offset), var(--canvas-size), $vertical: true);
     border-radius: 0 50% 50% 0;
 }
 
 .masking-slider--right {
-    @include masking-slider(100px, 895px, $vertical: true);
+    @include masking-slider(var(--top-offset), var(--right-offset), var(--canvas-size), $vertical: true);
     border-radius: 50% 0 0 50%;
 }
 
-.masking-slider--top {
-    @include masking-slider(95px, 100px, $vertical: false);
+.masking-slider--upper {
+    @include masking-slider(var(--top-offset), var(--left-offset), var(--canvas-size), $vertical: false);
     border-radius: 0 0 50% 50%;
 }
 
-.masking-slider--bottom {
-    @include masking-slider(895px, 100px, $vertical: false);
+.masking-slider--lower {
+    @include masking-slider(var(--bottom-offset), var(--left-offset), var(--canvas-size), $vertical: false);
     border-radius: 50% 50% 0 0;
 }
 
 // ===== Bottom container =====
 .cam-feeds-bottom-container {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     width: 1000px;
     margin: auto;
 }
 
 .cam-feeds-options-container {
-    width: 480px;
+    width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 // ===== Camera Feed Option =====
 .cam-feeds-option {
     background: v.$dark-grey-gradient;
-    width: 100%;
+    width: 48.5%;
     height: 100px;
     box-shadow: 0px 2px 14px #000000;
     border: 1px solid #ffffff1a;
     border-radius: 10px;
     margin-bottom: 20px;
     display: flex;
+    position: relative;
     justify-content: space-evenly;
 }
 
 .cam-feeds-option-text {
-    width: 75%;
+    width: 72%;
     text-align: left;
     font-family: v.$base-font;
     color: white;
@@ -256,4 +305,43 @@
     > div {
         margin: 0;
     }
+}
+
+.cam-feeds-option--no-TF {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(180deg, #e2164d 0%, #d11883 100%);
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 10px;
+
+    position: absolute;
+    bottom: -70px;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+
+    > p {
+        user-select: none;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        font-family: v.$base-font;
+    }
+
+    &--triangle {
+        width: 30px;
+        height: 20px;
+
+        position: absolute;
+        top: -20px;
+        left: calc(50% - 15px);
+
+        width: 0;
+        height: 0;
+        border-left: 15px solid transparent;
+        border-right: 15px solid transparent;
+        border-bottom: 20px solid #e2164d;
+    }
+    animation: fadeInOutAnimation ease-in-out 4s;
 }
