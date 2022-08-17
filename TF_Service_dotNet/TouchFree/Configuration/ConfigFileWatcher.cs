@@ -7,6 +7,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private readonly IConfigManager configManager;
         private readonly FileSystemWatcher interactionWatcher;
         private readonly FileSystemWatcher physicalWatcher;
+        private readonly FileSystemWatcher trackingWatcher;
 
         private bool configFileChanged = false;
 
@@ -17,26 +18,28 @@ namespace Ultraleap.TouchFree.Library.Configuration
             // error if the file they need to watch does not exist.
             InteractionConfigInternal InteractionCfg = _configManager.InteractionConfig;
             PhysicalConfigInternal PhysicalCfg = _configManager.PhysicalConfig;
+            TrackingConfigInternal TrackingCfg = _configManager.TrackingConfig;
 
             configManager = _configManager;
 
-            interactionWatcher = new FileSystemWatcher();
-            interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            interactionWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
-            interactionWatcher.Filter = InteractionConfigFile.ConfigFileName;
-            interactionWatcher.Changed += new FileSystemEventHandler(FileUpdated);
-            interactionWatcher.IncludeSubdirectories = true;
-            interactionWatcher.EnableRaisingEvents = true;
-
-            physicalWatcher = new FileSystemWatcher();
-            physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            physicalWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
-            physicalWatcher.Filter = PhysicalConfigFile.ConfigFileName;
-            physicalWatcher.Changed += new FileSystemEventHandler(FileUpdated);
-            physicalWatcher.IncludeSubdirectories = true;
-            physicalWatcher.EnableRaisingEvents = true;
+            interactionWatcher = CreateWatcherForFile(InteractionConfigFile.ConfigFileName);
+            physicalWatcher = CreateWatcherForFile(PhysicalConfigFile.ConfigFileName);
+            trackingWatcher = CreateWatcherForFile(TrackingConfigFile.ConfigFileName);
 
             updateBehaviour.OnUpdate += Update;
+        }
+
+        public FileSystemWatcher CreateWatcherForFile(string fileName)
+        {
+            var fileWatcher = new FileSystemWatcher();
+            fileWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+            fileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
+            fileWatcher.Filter = fileName;
+            fileWatcher.Changed += new FileSystemEventHandler(FileUpdated);
+            fileWatcher.IncludeSubdirectories = true;
+            fileWatcher.EnableRaisingEvents = true;
+
+            return fileWatcher;
         }
 
         public void Update()
@@ -48,6 +51,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                     ConfigFileUtils.CheckForConfigDirectoryChange();
                     interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                    trackingWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     configManager.LoadConfigsFromFiles();
                     TouchFreeLog.WriteLine("A config file was changed. Re-loading configs from files.");
                     configFileChanged = false;

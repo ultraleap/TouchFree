@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
-
-using Newtonsoft.Json;
+using System.Threading.Tasks;
+using Ultraleap.TouchFree.Library.Configuration;
 using WebSocketSharp;
 
 namespace Ultraleap.TouchFree.Library.Connections
@@ -11,11 +11,11 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         private static string uri = "ws://127.0.0.1:1024/";
         private const string minimumMaskingAPIVerison = "2.1.0";
-
+        private readonly IConfigManager configManager;
         public string trackingServiceVersion;
         public Version version;
 
-        public uint connectedDeviceID;
+        public uint? connectedDeviceID;
         public string connectedDeviceFirmware;
         public string connectedDeviceSerial;
         public bool maskingAllowed = false;
@@ -36,11 +36,25 @@ namespace Ultraleap.TouchFree.Library.Connections
         private WebSocket webSocket = null;
 
         ConcurrentQueue<string> newMessages = new ConcurrentQueue<string>();
+        private bool loadingAllowImagesConfiguration;
+        private bool loadingAnalyticsModeConfiguration;
+        private bool loadingCameraOrientationConfiguration;
+        private bool loadingImageMaskConfiguration;
 
-        public TrackingDiagnosticApi()
+        private TrackingConfig trackingConfig = new TrackingConfig();
+
+        public TrackingDiagnosticApi(IConfigManager _configManager)
         {
+            configManager = _configManager;
             Connect();
             MessageQueueReader();
+
+            configManager.OnTrackingConfigUpdated += EnforceTrackingConfiguration;
+
+            OnMaskingResponse += TrackingDiagnosticApi_OnMaskingResponse;
+            OnAnalyticsResponse += TrackingDiagnosticApi_OnAnalyticsResponse;
+            OnAllowImagesResponse += TrackingDiagnosticApi_OnAllowImagesResponse;
+            OnCameraOrientationResponse += TrackingDiagnosticApi_OnCameraOrientationResponse;
         }
 
         async Task MessageQueueReader()
@@ -53,6 +67,11 @@ namespace Ultraleap.TouchFree.Library.Connections
                     HandleMessage(message);
                 }
             }
+        }
+
+        public void TriggerUpdatingTrackingConfiguration()
+        {
+            GetDevices();
         }
 
         private void Connect()
@@ -151,6 +170,8 @@ namespace Ultraleap.TouchFree.Library.Connections
                             {
                                 connectedDeviceID = devicesResponse.payload[0].device_id;
                             }
+
+                            HandleDeviceConnectedRequests();
                         }
                         catch
                         {
@@ -256,6 +277,102 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
+        private void EnforceTrackingConfiguration(TrackingConfigInternal trackingConfig)
+        {
+            SetAllowImages(trackingConfig.AllowImages);
+            SetAnalyticsMode(trackingConfig.AnalyticsEnabled);
+            SetCameraOrientation(trackingConfig.CameraReversed);
+            SetMasking(trackingConfig.Mask.Left, trackingConfig.Mask.Right, trackingConfig.Mask.Upper, trackingConfig.Mask.Lower);
+        }
+
+        private void LoadTrackingConfigurationWithDelay()
+        {
+            if (connectedDeviceID.HasValue)
+            {
+                loadingAllowImagesConfiguration = true;
+                loadingAnalyticsModeConfiguration = true;
+                loadingCameraOrientationConfiguration = true;
+                loadingImageMaskConfiguration = true;
+
+                GetAllowImages();
+                GetAnalyticsMode();
+                GetCameraOrientation();
+                GetImageMask();
+            }
+            // TODO: handle no device cases
+        }
+
+        public void HandleDeviceConnectedRequests()
+        {
+            // Delay enforcing tracking configuration until we have a device connected
+            if (configManager.TrackingConfig != null)
+            {
+                EnforceTrackingConfiguration(configManager.TrackingConfig);
+            }
+            else
+            {
+                LoadTrackingConfigurationWithDelay();
+            }
+        }
+
+        private void TrackingDiagnosticApi_OnCameraOrientationResponse(bool? arg1, string arg2)
+        {
+            if (loadingCameraOrientationConfiguration && arg1.HasValue)
+            {
+                loadingCameraOrientationConfiguration = false;
+                trackingConfig.CameraReversed = arg1.Value;
+
+                SaveTrackingConfiguration();
+            }
+        }
+
+        private void TrackingDiagnosticApi_OnAllowImagesResponse(bool? arg1, string arg2)
+        {
+            if (loadingAllowImagesConfiguration && arg1.HasValue)
+            {
+                loadingAllowImagesConfiguration = false;
+                trackingConfig.AllowImages = arg1.Value;
+
+                SaveTrackingConfiguration();
+            }
+        }
+
+        private void TrackingDiagnosticApi_OnAnalyticsResponse(bool? arg1, string arg2)
+        {
+            if (loadingAnalyticsModeConfiguration && arg1.HasValue)
+            {
+                loadingAnalyticsModeConfiguration = false;
+                trackingConfig.AnalyticsEnabled = arg1.Value;
+
+                SaveTrackingConfiguration();
+            }
+        }
+
+        private void TrackingDiagnosticApi_OnMaskingResponse(ImageMaskData? arg1, string arg2)
+        {
+            if (loadingImageMaskConfiguration && arg1.HasValue)
+            {
+                loadingImageMaskConfiguration = false;
+                trackingConfig.Mask.Upper = (float)arg1.Value.upper;
+                trackingConfig.Mask.Right = (float)arg1.Value.right;
+                trackingConfig.Mask.Lower = (float)arg1.Value.lower;
+                trackingConfig.Mask.Left = (float)arg1.Value.left;
+
+                SaveTrackingConfiguration();
+            }
+        }
+
+        private void SaveTrackingConfiguration()
+        {
+            if (!loadingAllowImagesConfiguration &&
+                !loadingAnalyticsModeConfiguration &&
+                !loadingCameraOrientationConfiguration &&
+                !loadingImageMaskConfiguration)
+            {
+                TrackingConfigFile.SaveConfig(trackingConfig);
+            }
+        }
+
         public void HandleDiagnosticAPIVersion(string _version)
         {
             Version curVersion = new Version(_version);
@@ -280,7 +397,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             if (!TrySendRequest(payload))
             {
                 Connect();
-                for(var attempt = 0; attempt < 10; attempt++)
+                for (var attempt = 0; attempt < 10; attempt++)
                 {
                     await Task.Delay(1000);
                     if (TrySendRequest(payload))
@@ -315,21 +432,29 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public void GetImageMask()
         {
-            var payload = new DeviceIdPayload { device_id = connectedDeviceID };
-            Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetImageMask, payload));
+            if (connectedDeviceID.HasValue)
+            {
+                var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
+                Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetImageMask, payload));
+            }
+            // TODO: handle not having a connected device
         }
 
         public void SetMasking(float _left, float _right, float _top, float _bottom)
         {
-            var payload = new ImageMaskData()
+            if (connectedDeviceID.HasValue)
             {
-                device_id = connectedDeviceID,
-                left = _left,
-                right = _right,
-                upper = _top,
-                lower = _bottom
-            };
-            Request(new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload));
+                var payload = new ImageMaskData()
+                {
+                    device_id = connectedDeviceID.Value,
+                    left = _left,
+                    right = _right,
+                    upper = _top,
+                    lower = _bottom
+                };
+                Request(new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload));
+            }
+            // TODO: handle not having a connected device
         }
 
 
@@ -346,20 +471,32 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public void GetCameraOrientation()
         {
-            var payload = new DeviceIdPayload() { device_id = connectedDeviceID };
-            Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetCameraOrientation, payload));
+            if (connectedDeviceID.HasValue)
+            {
+                var payload = new DeviceIdPayload() { device_id = connectedDeviceID.Value };
+                Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetCameraOrientation, payload));
+            }
+            // TODO: handle not having a connected device
         }
 
         public void SetCameraOrientation(bool reverseOrientation)
         {
-            var payload = new CameraOrientationPayload() { device_id = connectedDeviceID, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" };
-            Request(new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload));
+            if (connectedDeviceID.HasValue)
+            {
+                var payload = new CameraOrientationPayload() { device_id = connectedDeviceID.Value, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" };
+                Request(new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload));
+            }
+            // TODO: handle not having a connected device
         }
 
         public void GetDeviceInfo()
         {
-            var payload = new DeviceIdPayload() { device_id = connectedDeviceID };
-            Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
+            if (connectedDeviceID.HasValue)
+            {
+                var payload = new DeviceIdPayload() { device_id = connectedDeviceID.Value };
+                Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
+            }
+            // TODO: handle not having a connected device
         }
 
         public void GetDevices()

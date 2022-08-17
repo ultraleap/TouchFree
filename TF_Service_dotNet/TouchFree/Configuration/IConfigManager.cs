@@ -4,12 +4,15 @@
     {
         InteractionConfigInternal InteractionConfig { get; set; }
         PhysicalConfigInternal PhysicalConfig { get; set; }
+        TrackingConfigInternal TrackingConfig { get; set; }
         InteractionConfig InteractionConfigFromApi { set; }
         PhysicalConfig PhysicalConfigFromApi { set; }
         delegate void InteractionConfigEvent(InteractionConfigInternal config = null);
         delegate void PhysicalConfigEvent(PhysicalConfigInternal config = null);
+        delegate void TrackingConfigEvent(TrackingConfigInternal config = null);
         event InteractionConfigEvent OnInteractionConfigUpdated;
         event PhysicalConfigEvent OnPhysicalConfigUpdated;
+        event TrackingConfigEvent OnTrackingConfigUpdated;
         void PhysicalConfigWasUpdated();
         void InteractionConfigWasUpdated();
         void LoadConfigsFromFiles();

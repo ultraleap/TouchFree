@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
@@ -10,11 +11,13 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         public TrackingResponse? trackingApiResponse = null;
         private float? responseOriginTime = null;
+        private readonly IConfigManager configManager;
         private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly object trackingResponseLock = new object();
 
-        public TrackingApiChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
+        public TrackingApiChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IConfigManager _configManager, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
         {
+            configManager = _configManager;
             diagnosticApi = _diagnosticApi;
 
             diagnosticApi.OnMaskingResponse += OnMasking;
@@ -102,29 +105,40 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsAnalytics);
             responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
+            var trackingFromFile = configManager.TrackingConfig;
+
             if (needsMask)
             {
                 var mask = maskToken!.ToObject<MaskingData>();
                 diagnosticApi.SetMasking(mask.left, mask.right, mask.upper, mask.lower);
+                trackingFromFile.Mask.Left = mask.left;
+                trackingFromFile.Mask.Right = mask.right;
+                trackingFromFile.Mask.Upper = mask.upper;
+                trackingFromFile.Mask.Lower = mask.lower;
             }
 
             if (needsImages)
             {
                 var allowImages = allowImagesToken!.ToObject<bool>();
                 diagnosticApi.SetAllowImages(allowImages);
+                trackingFromFile.AllowImages = allowImages;
             }
 
             if (needsOrientation)
             {
                 var reversed = cameraReversedToken!.ToObject<bool>();
                 diagnosticApi.SetCameraOrientation(reversed);
+                trackingFromFile.CameraReversed = reversed;
             }
 
             if (needsAnalytics)
             {
                 var analyticsEnable = analyticsEnabledToken!.ToObject<bool>();
                 diagnosticApi.SetAnalyticsMode(analyticsEnable);
+                trackingFromFile.AnalyticsEnabled = analyticsEnable;
             }
+
+            TrackingConfigFile.SaveConfig(trackingFromFile.ForApi());
         }
 
         void CheckDApiResponse()
