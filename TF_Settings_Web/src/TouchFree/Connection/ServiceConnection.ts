@@ -300,6 +300,8 @@ export class ServiceConnection {
         );
         const message: string = JSON.stringify(wrapper);
 
+        console.log("TRACKING REQUESTED");
+
         ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new TrackingStateCallback(Date.now(), _callback);
 
         this.webSocket.send(message);

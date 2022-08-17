@@ -208,6 +208,7 @@ export class MessageReceiver {
     // Checks the dictionary of <trackingStateCallbacks> for a matching request ID. If there is a
     // match, calls the callback action in the matching <TrackingStateCallback>.
     HandleTrackingStateResponse(trackingStateResponse: TrackingStateResponse): void {
+        console.log("TRACKING RESPONSE", trackingStateResponse);
         if (this.trackingStateCallbacks !== undefined) {
             for (let key in this.trackingStateCallbacks) {
                 if (key === trackingStateResponse.requestID) {
