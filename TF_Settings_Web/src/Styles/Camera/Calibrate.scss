@@ -12,6 +12,8 @@
     display: block;
     align-items: center;
     height: 10vh;
+    width: 100%;
+    text-align: center;
 
     > h1 {
         height: 7vh;
@@ -23,6 +25,13 @@
     }
 
     .instruction-text {
+        animation: fadeInAnimation ease 1s;
+    }
+
+    .calibrating-text {
+        display: flex;
+        justify-content: center;
+        height: 3.2vh;
         animation: fadeInAnimation ease 0.5s;
     }
 
