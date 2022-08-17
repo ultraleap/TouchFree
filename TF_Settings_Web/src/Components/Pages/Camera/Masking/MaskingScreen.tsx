@@ -101,6 +101,7 @@ const MaskingScreen = () => {
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
+        console.log('GOT TRACKING');
         window.clearInterval(trackingIntervalRef.current);
         const allowImages = state.allowImages?.content;
         if (allowImages) {
@@ -138,6 +139,7 @@ const MaskingScreen = () => {
         const dataAsUint8 = new Uint8Array(event.data, 0, 10);
 
         if (dataAsUint8[0] === 1) {
+            console.log('GOT IMAGE');
             setIsFrameProcessing(true);
             successfullySubscribed.current = true;
 
@@ -154,6 +156,7 @@ const MaskingScreen = () => {
                 setIsFrameProcessing(false);
             }, 32);
         } else if (!successfullySubscribed.current) {
+            console.log('GOT NOT IMAGE');
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
     };
@@ -211,6 +214,12 @@ const MaskingScreen = () => {
                         value={allowAnalytics}
                         onChange={setAllowAnalytics}
                     />
+                    <button
+                        onPointerDown={() => TrackingManager.RequestTrackingState(handleInitialTrackingState)}
+                        style={{ height: '200px', width: '600px' }}
+                    >
+                        GET TRACKING
+                    </button>
                 </div>
             </div>
         </div>
