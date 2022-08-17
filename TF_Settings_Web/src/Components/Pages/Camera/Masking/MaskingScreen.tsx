@@ -101,7 +101,6 @@ const MaskingScreen = () => {
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
-        console.log('GOT TRACKING');
         window.clearInterval(trackingIntervalRef.current);
         const allowImages = state.allowImages?.content;
         if (allowImages) {
@@ -127,13 +126,11 @@ const MaskingScreen = () => {
     };
 
     const handleWSOpen = () => {
-        console.log('WebSocket open');
+        console.log('WebSocket Open');
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
         if (!mainCanvasRef.current) return;
-        console.log('GOT MESSAGE');
-
         if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
         if (typeof event.data == 'string') return;
@@ -141,7 +138,6 @@ const MaskingScreen = () => {
         const dataAsUint8 = new Uint8Array(event.data, 0, 10);
 
         if (dataAsUint8[0] === 1) {
-            console.log('GOT IMAGE');
             setIsFrameProcessing(true);
             successfullySubscribed.current = true;
 
@@ -158,7 +154,6 @@ const MaskingScreen = () => {
                 setIsFrameProcessing(false);
             }, 32);
         } else if (!successfullySubscribed.current) {
-            console.log('GOT NOT IMAGE');
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
     };
@@ -216,15 +211,6 @@ const MaskingScreen = () => {
                         value={allowAnalytics}
                         onChange={setAllowAnalytics}
                     />
-                    <button
-                        onPointerDown={() => {
-                            console.log('TRACKING CLICKED');
-                            TrackingManager.RequestTrackingState(handleInitialTrackingState);
-                        }}
-                        style={{ height: '200px', width: '600px' }}
-                    >
-                        GET TRACKING
-                    </button>
                 </div>
             </div>
         </div>
