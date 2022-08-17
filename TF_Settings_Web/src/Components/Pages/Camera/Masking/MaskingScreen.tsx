@@ -132,6 +132,8 @@ const MaskingScreen = () => {
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
         if (!mainCanvasRef.current) return;
+        console.log('GOT MESSAGE');
+
         if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
         if (typeof event.data == 'string') return;
@@ -215,7 +217,10 @@ const MaskingScreen = () => {
                         onChange={setAllowAnalytics}
                     />
                     <button
-                        onPointerDown={() => TrackingManager.RequestTrackingState(handleInitialTrackingState)}
+                        onPointerDown={() => {
+                            console.log('TRACKING CLICKED');
+                            TrackingManager.RequestTrackingState(handleInitialTrackingState);
+                        }}
                         style={{ height: '200px', width: '600px' }}
                     >
                         GET TRACKING
