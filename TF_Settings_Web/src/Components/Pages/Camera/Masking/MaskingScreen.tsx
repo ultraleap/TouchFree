@@ -9,7 +9,7 @@ import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
-import { displayLensFeeds } from './displayLensFeeds';
+import { createCanvasUpdate as updateCanvas } from './displayLensFeeds';
 
 export type Lens = 'Left' | 'Right';
 
@@ -92,9 +92,13 @@ const MaskingScreen = () => {
         socket.addEventListener('open', handleWSOpen);
         socket.addEventListener('message', (event) => handleMessage(socket, event));
 
+        addEventListener('updateCanvas', timeoutFrame as EventListener);
+
         return () => {
             socket.removeEventListener('open', handleWSOpen);
             socket.removeEventListener('message', (event) => handleMessage(socket, event));
+            removeEventListener('updateCanvas', timeoutFrame as EventListener);
+
             window.clearTimeout(frameTimeoutRef.current);
         };
     }, []);
@@ -133,29 +137,35 @@ const MaskingScreen = () => {
         if (!mainCanvasRef.current) return;
         if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
-        if (typeof event.data == 'string') return;
+        const data = event.data as ArrayBuffer;
+        if (!data) return;
 
-        const dataAsUint8 = new Uint8Array(event.data, 0, 10);
+        const dataIdentifier = new Uint8Array(data, 0, 1)[0];
 
-        if (dataAsUint8[0] === 1) {
+        if (dataIdentifier === 1) {
             setIsFrameProcessing(true);
             successfullySubscribed.current = true;
 
-            displayLensFeeds(
-                event.data as ArrayBuffer,
+            const updateEvent = updateCanvas(
+                data,
                 mainCanvasRef.current,
                 mainLensRef.current,
                 isCamReversedRef.current,
                 showOverexposedRef.current
             );
 
-            // Settimeout with 32ms for ~30fps if we have the performance
-            frameTimeoutRef.current = window.setTimeout(() => {
-                setIsFrameProcessing(false);
-            }, 32);
+            if (updateEvent) {
+                dispatchEvent(updateEvent);
+            }
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
+    };
+
+    const timeoutFrame = () => {
+        frameTimeoutRef.current = window.setTimeout(() => {
+            setIsFrameProcessing(false);
+        }, 32);
     };
 
     return (
