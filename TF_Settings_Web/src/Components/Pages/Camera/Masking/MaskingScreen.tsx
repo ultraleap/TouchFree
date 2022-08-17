@@ -2,10 +2,9 @@ import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
 
+import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
 import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
-
-import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
@@ -211,16 +210,14 @@ const MaskingScreen = () => {
                         key={sliderInfo[0]}
                         direction={sliderInfo[0] as SliderDirection}
                         maskingValue={sliderInfo[1]}
-                        canvasInfo={{ size: 800, topOffset: 100, leftOffset: 100 }}
+                        canvasInfo={{ size: 800, topOffset: 50, leftOffset: 100 }}
                         clearMasking={clearMasking}
                         onDrag={setMasking}
                         onDragEnd={sendMaskingRequest}
                     />
                 ))}
-                <div>
+                <div className="cam-feed-box-feed">
                     <canvas ref={mainCanvasRef} />
-                </div>
-                <div className="cam-feed-box-hand-renders">
                     <HandsSvg key="hand-data" one={handData.one} two={handData.two} />
                 </div>
                 <div className="lens-toggle-container">
@@ -229,7 +226,7 @@ const MaskingScreen = () => {
                 </div>
             </div>
             <div className="cam-feeds-bottom-container">
-                <div>
+                <div className="cam-feeds-options-container">
                     <MaskingOption
                         title="Display Overexposed Areas"
                         description="Areas, where hand tracking may be an issue will be highlighted"

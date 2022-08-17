@@ -15,20 +15,17 @@
 
     user-select: none;
 
-    > div {
+    > div.cam-feed-box-feed {
         $canvas-size: $size - $padding;
         margin-top: calc((100% - $canvas-size) / 2);
-        display: inline-block;
         z-index: 10;
 
-        &.cam-feed-box-hand-renders {
+        > svg {
             pointer-events: none;
-            $canvas-size: $size - $padding;
-            height: $canvas-size;
-            width: $canvas-size;
-            margin-left: -$canvas-size;
+            top: 50px;
+            left: 100px;
             z-index: 11;
-            display: inline-block;
+            position: absolute;
         }
 
         > canvas {
@@ -53,7 +50,7 @@
 
 .cam-feed-box--main {
     @include cam-feed-box(1000px, 200px);
-    > canvas {
+    > div.cam-feed-box-feed {
         margin-top: 50px;
     }
     margin-top: 3%;
