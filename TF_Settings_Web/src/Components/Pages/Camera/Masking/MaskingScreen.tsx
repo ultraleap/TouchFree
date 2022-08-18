@@ -130,7 +130,7 @@ const MaskingScreen = () => {
     };
 
     const handleWSOpen = () => {
-        console.log('WebSocket Open');
+        console.log('Connected to Tracking Service');
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
