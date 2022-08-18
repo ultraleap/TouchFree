@@ -201,15 +201,15 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
             else if (action.ExpectedToBeHandled())
             {
-                TouchFreeLog.ErrorWriteLine("Expected to be able to handle a " + action + " action but unable to find queue.");
+                TouchFreeLog.ErrorWriteLine($"Expected to be able to handle a {action} action but unable to find queue.");
             }
             else if (action.UnexpectedByTheService())
             {
-                TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not expected on the Service.");
+                TouchFreeLog.ErrorWriteLine($"Received a {action} action. This action is not expected on the Service.");
             }
             else
             {
-                TouchFreeLog.ErrorWriteLine("Received a " + action + " action. This action is not recognised.");
+                TouchFreeLog.ErrorWriteLine($"Received a {action} action. This action is not recognised.");
             }
         }
 
@@ -255,19 +255,19 @@ namespace Ultraleap.TouchFree.Library.Connections
             switch (compatibility)
             {
                 case Compatibility.COMPATIBLE:
-                    SendAndHandleHandshakeSuccess("Handshake Successful." + configurationWarning, response);
+                    SendAndHandleHandshakeSuccess($"Handshake Successful.{configurationWarning}", response);
                     return;
                 case Compatibility.CLIENT_OUTDATED_WARNING:
-                    SendAndHandleHandshakeSuccess("Handshake Warning: Client is outdated relative to Service." + configurationWarning, response);
+                    SendAndHandleHandshakeSuccess($"Handshake Warning: Client is outdated relative to Service.{configurationWarning}", response);
                     return;
                 case Compatibility.SERVICE_OUTDATED_WARNING:
-                    SendAndHandleHandshakeSuccess("Handshake Warning: Service is outdated relative to Client." + configurationWarning, response);
+                    SendAndHandleHandshakeSuccess($"Handshake Warning: Service is outdated relative to Client.{configurationWarning}", response);
                     return;
                 case Compatibility.CLIENT_OUTDATED:
-                    SendAndHandleHandshakeFailure("Handshake Failed: Client is outdated relative to Service." + configurationWarning, response);
+                    SendAndHandleHandshakeFailure($"Handshake Failed: Client is outdated relative to Service.{configurationWarning}", response);
                     return;
                 case Compatibility.SERVICE_OUTDATED:
-                    SendAndHandleHandshakeFailure("Handshake Failed: Service is outdated relative to Client." + configurationWarning, response);
+                    SendAndHandleHandshakeFailure($"Handshake Failed: Service is outdated relative to Client.{configurationWarning}", response);
                     return;
             }
 

@@ -11,10 +11,7 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         private readonly ConcurrentDictionary<Guid, IClientConnection> activeConnections = new ConcurrentDictionary<Guid, IClientConnection>();
 
-        public IEnumerable<IClientConnection> ClientConnections
-        {
-            get { return activeConnections.Values; }
-        }
+        public IEnumerable<IClientConnection> ClientConnections => activeConnections.Values;
 
         public event Action LostAllConnections;
 
