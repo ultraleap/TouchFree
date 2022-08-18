@@ -1,6 +1,7 @@
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
@@ -83,6 +84,8 @@ const MaskingScreen = () => {
     const mainCanvasRef = useRef<HTMLCanvasElement>(null);
 
     // ===== UseEffect =====
+    const navigate = useNavigate();
+
     useEffect(() => {
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
@@ -91,14 +94,18 @@ const MaskingScreen = () => {
 
         socket.addEventListener('open', handleWSOpen);
         socket.addEventListener('message', (event) => handleMessage(socket, event));
+        socket.addEventListener('close', handleWSClose);
 
         addEventListener('updateCanvas', timeoutFrame as EventListener);
 
         return () => {
             socket.removeEventListener('open', handleWSOpen);
             socket.removeEventListener('message', (event) => handleMessage(socket, event));
-            removeEventListener('updateCanvas', timeoutFrame as EventListener);
+            socket.removeEventListener('close', handleWSClose);
 
+            socket.close();
+
+            removeEventListener('updateCanvas', timeoutFrame as EventListener);
             window.clearTimeout(frameTimeoutRef.current);
         };
     }, []);
@@ -131,6 +138,10 @@ const MaskingScreen = () => {
 
     const handleWSOpen = () => {
         console.log('Connected to Tracking Service');
+    };
+    const handleWSClose = () => {
+        console.log('Disconnected from Tracking Service');
+        navigate('../');
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {

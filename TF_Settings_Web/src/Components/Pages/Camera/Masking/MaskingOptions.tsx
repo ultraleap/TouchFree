@@ -28,7 +28,7 @@ const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value
         <label
             className="cam-feeds-option"
             onPointerDown={(event) => {
-                if (isMouseOnly && event.pointerType !== 'pen') {
+                if (isMouseOnly && event.pointerType === 'pen') {
                     if (!showMousePrompt) {
                         setShowMousePrompt(true);
                         timeoutRef.current = window.setTimeout(() => setShowMousePrompt(false), 4000);
