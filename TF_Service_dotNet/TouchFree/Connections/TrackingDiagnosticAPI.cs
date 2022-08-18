@@ -277,7 +277,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-        private void EnforceTrackingConfiguration(TrackingConfigInternal trackingConfig)
+        private void EnforceTrackingConfiguration(TrackingConfig trackingConfig)
         {
             SetAllowImages(trackingConfig.AllowImages);
             SetAnalyticsMode(trackingConfig.AnalyticsEnabled);

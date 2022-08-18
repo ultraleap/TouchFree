@@ -18,7 +18,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             // error if the file they need to watch does not exist.
             InteractionConfigInternal InteractionCfg = _configManager.InteractionConfig;
             PhysicalConfigInternal PhysicalCfg = _configManager.PhysicalConfig;
-            TrackingConfigInternal TrackingCfg = _configManager.TrackingConfig;
+            TrackingConfig TrackingCfg = _configManager.TrackingConfig;
 
             configManager = _configManager;
 

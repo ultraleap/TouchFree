@@ -9,7 +9,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
-        private TrackingConfigInternal _tracking;
+        private TrackingConfig _tracking;
 
         public bool ErrorLoadingConfigFiles { get; private set; }
 
@@ -65,14 +65,13 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
-        public TrackingConfigInternal TrackingConfig
+        public TrackingConfig TrackingConfig
         {
             get
             {
                 if (_tracking == null && TrackingConfigFile.DoesConfigFileExist())
                 {
-                    TrackingConfig fromFile = TrackingConfigFile.LoadConfig();
-                    _tracking = new TrackingConfigInternal(fromFile);
+                    _tracking = TrackingConfigFile.LoadConfig();
                 }
 
                 return _tracking;
@@ -93,8 +92,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             if (TrackingConfigFile.DoesConfigFileExist())
             {
-                TrackingConfig fromFile = TrackingConfigFile.LoadConfig();
-                _tracking = new TrackingConfigInternal(fromFile);
+                _tracking = TrackingConfigFile.LoadConfig();
             }
 
             InteractionConfigWasUpdated();

@@ -138,7 +138,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 trackingFromFile.AnalyticsEnabled = analyticsEnable;
             }
 
-            TrackingConfigFile.SaveConfig(trackingFromFile.ForApi());
+            TrackingConfigFile.SaveConfig(trackingFromFile);
         }
 
         void CheckDApiResponse()

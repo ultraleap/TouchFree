@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
@@ -22,14 +21,6 @@ namespace Ultraleap.TouchFree.Library.Configuration
             AllowImages = true;
             CameraReversed = false;
             AnalyticsEnabled = true;
-        }
-
-        public TrackingConfig(TrackingConfigInternal _internal)
-        {
-            Mask = _internal.Mask;
-            AllowImages = _internal.AllowImages;
-            CameraReversed = _internal.CameraReversed;
-            AnalyticsEnabled = _internal.AnalyticsEnabled;
         }
     }
 
