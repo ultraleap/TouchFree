@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Alert from 'Components/Controls/Alert';
 import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
 
-interface MaskingOptionProps {
+export interface MaskingOptionProps {
     title: string;
     description: string;
     value: boolean;

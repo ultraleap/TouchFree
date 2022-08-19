@@ -1,6 +1,6 @@
 import 'Styles/Camera/CameraMasking.scss';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
@@ -8,15 +8,34 @@ import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
 import MaskingLensToggle from './MaskingLensToggle';
-import MaskingOption from './MaskingOptions';
+import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { createCanvasUpdate as updateCanvas } from './displayLensFeeds';
 
 export type Lens = 'Left' | 'Right';
 
+const useStatefulRef = function <T>(initialValue: T): {
+    current: T;
+} {
+    const [currentVal, setCurrentVal] = useState<T>(initialValue);
+    const valRef = useRef<T>(currentVal);
+
+    const [statefulRef] = useState({
+        get current() {
+            return valRef.current;
+        },
+        set current(value: T) {
+            valRef.current = value;
+            setCurrentVal(value);
+        },
+    });
+
+    return statefulRef;
+};
+
 const MaskingScreen = () => {
     // ===== State =====
-    const [mainLens, _setMainLens] = useState<Lens>('Left');
+    const mainLens = useStatefulRef<Lens>('Left');
     // Config options
     const [masking, _setMasking] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
@@ -29,7 +48,7 @@ const MaskingScreen = () => {
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
-    const mainLensRef = useRef<Lens>(mainLens);
+    // const mainLensRef = useRef<Lens>(mainLens);
     const maskingRef = useRef<Mask>(masking);
     const isCamReversedRef = useRef<boolean>(isCamReversed);
     const allowImagesRef = useRef<boolean>(allowImages);
@@ -40,10 +59,10 @@ const MaskingScreen = () => {
     const frameTimeoutRef = useRef<number>();
 
     // ===== State Setters =====
-    const setMainLens = (value: Lens) => {
-        mainLensRef.current = value;
-        _setMainLens(value);
-    };
+    // const setMainLens = (value: Lens) => {
+    //     mainLensRef.current = value;
+    //     _setMainLens(value);
+    // };
     const setMasking = (direction: SliderDirection, maskingValue: number) => {
         const mask: Mask = { ...masking, [direction]: maskingValue };
         maskingRef.current = mask;
@@ -160,12 +179,14 @@ const MaskingScreen = () => {
             const updateEvent = updateCanvas(
                 data,
                 mainCanvasRef.current,
-                mainLensRef.current,
+                mainLens.current,
                 isCamReversedRef.current,
                 showOverexposedRef.current
             );
 
             if (updateEvent) {
+                console.log('DISPATCH');
+                console.log(mainLens.current);
                 dispatchEvent(updateEvent);
             }
         } else if (!successfullySubscribed.current) {
@@ -175,8 +196,56 @@ const MaskingScreen = () => {
 
     const timeoutFrame = () => {
         frameTimeoutRef.current = window.setTimeout(() => {
+            // console.log('timeout');
             setIsFrameProcessing(false);
-        }, 32);
+        }, 100);
+    };
+
+    // ===== Components =====
+    const sliders = useMemo(
+        () =>
+            Object.entries(masking).map((sliderInfo) => (
+                <MaskingSliderDraggable
+                    key={sliderInfo[0]}
+                    direction={sliderInfo[0] as SliderDirection}
+                    maskingValue={sliderInfo[1]}
+                    canvasInfo={{ size: 800, topOffset: 50, leftOffset: 100 }}
+                    clearMasking={clearMasking}
+                    onDrag={setMasking}
+                    onDragEnd={sendMaskingRequest}
+                />
+            )),
+        [masking]
+    );
+
+    const lensToggles = useMemo(
+        () => (
+            <>
+                <MaskingLensToggle
+                    lens={'Left'}
+                    isMainLens={mainLens.current === 'Left'}
+                    setMainLens={(value: Lens) => (mainLens.current = value)}
+                />
+                <MaskingLensToggle
+                    lens={'Right'}
+                    isMainLens={mainLens.current === 'Right'}
+                    setMainLens={(value: Lens) => (mainLens.current = value)}
+                />
+            </>
+        ),
+        [mainLens.current]
+    );
+
+    const createMaskingOption = (input: MaskingOptionProps) => {
+        return (
+            <MaskingOption
+                title={input.title}
+                description={input.description}
+                value={input.value}
+                onChange={input.onChange}
+                isMouseOnly={input.isMouseOnly}
+            />
+        );
     };
 
     return (
@@ -188,50 +257,53 @@ const MaskingScreen = () => {
                 </p>
             </div>
             <div className="cam-feed-box--main">
-                {Object.entries(masking).map((sliderInfo) => (
-                    <MaskingSliderDraggable
-                        key={sliderInfo[0]}
-                        direction={sliderInfo[0] as SliderDirection}
-                        maskingValue={sliderInfo[1]}
-                        canvasInfo={{ size: 800, topOffset: 50, leftOffset: 100 }}
-                        clearMasking={clearMasking}
-                        onDrag={setMasking}
-                        onDragEnd={sendMaskingRequest}
-                    />
-                ))}
+                {sliders}
                 <canvas ref={mainCanvasRef} />
-                <div className="lens-toggle-container">
-                    <MaskingLensToggle lens={'Left'} isMainLens={mainLens === 'Left'} setMainLens={setMainLens} />
-                    <MaskingLensToggle lens={'Right'} isMainLens={mainLens === 'Right'} setMainLens={setMainLens} />
-                </div>
+                <div className="lens-toggle-container">{lensToggles}</div>
             </div>
             <div className="cam-feeds-bottom-container">
                 <div className="cam-feeds-options-container">
-                    <MaskingOption
-                        title="Display Overexposed Areas"
-                        description="Areas, where hand tracking may be an issue will be highlighted"
-                        value={showOverexposed}
-                        onChange={setShowOverexposedAreas}
-                    />
-                    <MaskingOption
-                        title="Allow Images"
-                        description="Allow images to be sent from the TouchFree Camera"
-                        value={allowImages}
-                        onChange={setAllowImages}
-                    />
-                    <MaskingOption
-                        title="Reverse Camera Orientation"
-                        description="Reverse the camera orientation (hand should enter from the bottom)"
-                        value={isCamReversed}
-                        onChange={setIsCameraReversed}
-                        isMouseOnly
-                    />
-                    <MaskingOption
-                        title="Allow Analytics"
-                        description="Allow analytic data to be collected"
-                        value={allowAnalytics}
-                        onChange={setAllowAnalytics}
-                    />
+                    {useMemo(
+                        () =>
+                            createMaskingOption({
+                                title: 'Display Overexposed Areas',
+                                description: 'Areas, where hand tracking may be an issue will be highlighted',
+                                value: showOverexposed,
+                                onChange: setShowOverexposedAreas,
+                            }),
+                        [showOverexposed]
+                    )}
+                    {useMemo(
+                        () =>
+                            createMaskingOption({
+                                title: 'Allow Images',
+                                description: 'Allow images to be sent from the TouchFree Camera',
+                                value: allowImages,
+                                onChange: setAllowImages,
+                            }),
+                        [allowImages]
+                    )}
+                    {useMemo(
+                        () =>
+                            createMaskingOption({
+                                title: 'Reverse Camera Orientation',
+                                description: 'Reverse the camera orientation (hand should enter from the bottom)',
+                                value: isCamReversed,
+                                onChange: setIsCameraReversed,
+                                isMouseOnly: true,
+                            }),
+                        [isCamReversed]
+                    )}
+                    {useMemo(
+                        () =>
+                            createMaskingOption({
+                                title: 'Allow Analytics',
+                                description: 'Allow analytic data to be collected',
+                                value: allowAnalytics,
+                                onChange: setAllowAnalytics,
+                            }),
+                        [allowAnalytics]
+                    )}
                 </div>
             </div>
         </div>
