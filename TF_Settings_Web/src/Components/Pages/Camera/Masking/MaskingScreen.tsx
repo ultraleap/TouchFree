@@ -126,7 +126,7 @@ const MaskingScreen = () => {
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (!canvasRef.current || !canvasContextRef.current) return;
+        if (!canvasContextRef.current) return;
         if (isFrameProcessing.current || !allowImages.current) return;
 
         const data = event.data as ArrayBuffer;
@@ -139,17 +139,14 @@ const MaskingScreen = () => {
 
             updateCanvas(
                 data,
-                canvasRef.current,
                 canvasContextRef.current,
                 mainLens.current,
                 isCamReversed.current,
                 showOverexposed.current
             );
 
-            console.log('DISPATCH', data.byteLength);
             dispatchEvent(new CustomEvent('frameRendered'));
         } else if (!successfullySubscribed.current) {
-            console.log('SUBSCRIBE');
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
     };
@@ -157,7 +154,7 @@ const MaskingScreen = () => {
     const timeoutFrame = () => {
         frameTimeoutRef.current = window.setTimeout(() => {
             isFrameProcessing.current = false;
-        }, 100);
+        }, 32);
     };
 
     // ===== Components =====

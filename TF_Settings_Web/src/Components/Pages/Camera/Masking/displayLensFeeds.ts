@@ -7,7 +7,6 @@ let cameraBuffer: ArrayBuffer;
 
 export const createCanvasUpdate = (
     data: ArrayBuffer,
-    canvas: HTMLCanvasElement,
     context: CanvasRenderingContext2D,
     lens: Lens,
     isCameraReversed: boolean,
@@ -52,8 +51,6 @@ export const createCanvasUpdate = (
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
     context.putImageData(new ImageData(buf8, width / 2, lensHeight / 2), 0, 0);
-
-    return;
 };
 
 const processRotatedScreen = (
