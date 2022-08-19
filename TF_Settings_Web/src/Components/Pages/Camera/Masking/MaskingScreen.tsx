@@ -64,7 +64,7 @@ const MaskingScreen = () => {
 
     useEffect(() => {
         if (canvasRef.current) {
-            canvasContextRef.current = canvasRef.current.getContext('2d');
+            canvasContextRef.current = canvasRef.current.getContext('2d', { alpha: false });
         }
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
