@@ -70,62 +70,13 @@ namespace Ultraleap.TouchFree.Library.Connections
             SendResponse(_response, ActionCode.HAND_PRESENCE_EVENT);
         }
 
+
         public void SendHandshakeResponse(ResponseToClient _response)
         {
             SendResponse(_response, ActionCode.VERSION_HANDSHAKE_RESPONSE);
         }
 
-        public void SendConfigChangeResponse(ResponseToClient _response)
-        {
-            SendResponse(_response, ActionCode.CONFIGURATION_RESPONSE);
-        }
-
-        public void SendConfigFileChangeResponse(ResponseToClient _response)
-        {
-            SendResponse(_response, ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE);
-        }
-
-        public void SendConfigState(ConfigState _configState)
-        {
-            SendResponse(_configState, ActionCode.CONFIGURATION_STATE);
-        }
-
-        public void SendConfigFile(ConfigState _configState)
-        {
-            SendResponse(_configState, ActionCode.CONFIGURATION_FILE_STATE);
-        }
-
-        public void SendStatusResponse(ResponseToClient _response)
-        {
-            SendResponse(_response, ActionCode.SERVICE_STATUS_RESPONSE);
-        }
-
-        public void SendStatus(ServiceStatus _status)
-        {
-            SendResponse(_status, ActionCode.SERVICE_STATUS);
-        }
-
-        public void SendQuickSetupConfigFile(ConfigState _configState)
-        {
-            SendResponse(_configState, ActionCode.QUICK_SETUP_CONFIG);
-        }
-
-        public void SendQuickSetupResponse(ResponseToClient _response)
-        {
-            SendResponse(_response, ActionCode.QUICK_SETUP_RESPONSE);
-        }
-
-        public void SendHandDataStreamStateResponse(ResponseToClient _response)
-        {
-            SendResponse(_response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
-        }
-
-        public void SendTrackingState(TrackingApiState _state)
-        {
-            SendResponse(_state, ActionCode.TRACKING_STATE);
-        }
-
-        internal void SendResponse<T>(T _response, ActionCode actionCode)
+        public void SendResponse<T>(T _response, ActionCode actionCode)
         {
             CommunicationWrapper<T> message =
                 new CommunicationWrapper<T>(actionCode.ToString(), _response);

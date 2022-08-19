@@ -9,14 +9,16 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     {
         public override ActionCode[] ActionCodes => new[] { ActionCode.SET_CONFIGURATION_FILE };
 
+        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE;
+
         public ConfigurationFileChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
         {
         }
 
-        protected override void Handle(IncomingRequest _request)
+        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
             // Validate the incoming change
-            ResponseToClient response = ValidateConfigChange(_request.content);
+            ResponseToClient response = ValidateConfigChange(_request.content, _contentObject);
 
             if (response.status == "Success")
             {
@@ -27,7 +29,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 {
                     ChangeConfigFile(_request.content);
                 }
-                catch (UnauthorizedAccessException _)
+                catch (UnauthorizedAccessException)
                 {
                     // Return some response indicating access authorisation issues
                     string errorMsg = "Did not have appropriate file access to modify the config file(s).";
@@ -35,7 +37,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 }
             }
 
-            clientMgr.SendConfigFileChangeResponse(response);
+            clientMgr.SendResponse(response, ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE);
         }
 
         void ChangeConfigFile(string _content)

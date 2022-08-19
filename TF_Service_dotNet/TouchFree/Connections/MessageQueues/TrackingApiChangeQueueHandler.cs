@@ -8,6 +8,10 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     {
         public override ActionCode[] ActionCodes => new[] { ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE };
 
+        protected override string noRequestIdFailureMessage => "Tracking State change request failed. This is due to a missing or invalid requestID";
+
+        protected override ActionCode noRequestIdFailureActionCode => ActionCode.TRACKING_STATE;
+
         public TrackingResponse? trackingApiResponse = null;
         private float? responseOriginTime = null;
         private readonly ITrackingDiagnosticApi diagnosticApi;
@@ -35,34 +39,28 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        protected override void Handle(IncomingRequest _request)
+        protected override void CreateAndSendNoRequestIdError(IncomingRequest _request)
         {
-            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
+            var maskResponse = new SuccessWrapper<MaskingData?>(false, noRequestIdFailureMessage, null);
+            var boolResponse = new SuccessWrapper<bool?>(false, noRequestIdFailureMessage, null);
 
-            // Explicitly check for requestID else we can't respond
-            if (!RequestIdExists(contentObj))
+            TrackingApiState state = new TrackingApiState()
             {
-                string message = "Tracking State change request failed. This is due to a missing or invalid requestID";
+                requestID = "",
+                mask = maskResponse,
+                allowImages = boolResponse,
+                cameraReversed = boolResponse,
+                analyticsEnabled = boolResponse
+            };
 
-                var maskResponse = new SuccessWrapper<MaskingData?>(false, message, null);
-                var boolResponse = new SuccessWrapper<bool?>(false, message, null);
+            // This is a failed request, do not continue with processing the request,
+            // the Client will have no way to handle the config state
+            clientMgr.SendResponse(state, noRequestIdFailureActionCode);
+        }
 
-                TrackingApiState state = new TrackingApiState()
-                {
-                    requestID = "",
-                    mask = maskResponse,
-                    allowImages = boolResponse,
-                    cameraReversed = boolResponse,
-                    analyticsEnabled = boolResponse
-                };
-
-                // This is a failed request, do not continue with processing the request,
-                // the Client will have no way to handle the config state
-                clientMgr.SendTrackingState(state);
-                return;
-            }
-
-            _request.requestId = contentObj.GetValue("requestID").ToString();
+        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+        {
+            _request.requestId = requestId;
 
             if (_request.action == ActionCode.GET_TRACKING_STATE)
             {
@@ -70,7 +68,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
             else
             {
-                HandleSetTrackingStateRequest(contentObj, _request);
+                HandleSetTrackingStateRequest(_contentObject, _request);
             }
         }
 
@@ -137,7 +135,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                     trackingApiResponse = null;
                     responseOriginTime = null;
 
-                    clientMgr.SendTrackingState(response.state);
+                    clientMgr.SendResponse(response.state, ActionCode.TRACKING_STATE);
                 }
                 else if (responseOriginTime.HasValue && DateTimeOffset.Now.ToUnixTimeMilliseconds() - responseOriginTime.Value > 30000f)
                 {
@@ -170,7 +168,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                         response.state.analyticsEnabled = boolResponse;
                     }
 
-                    clientMgr.SendTrackingState(response.state);
+                    clientMgr.SendResponse(response.state, ActionCode.TRACKING_STATE);
                 }
             }
         }

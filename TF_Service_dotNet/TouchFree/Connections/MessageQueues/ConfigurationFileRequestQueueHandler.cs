@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
@@ -8,35 +7,25 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     {
         public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_CONFIGURATION_FILE };
 
+        protected override string noRequestIdFailureMessage => "Config state request failed. This is due to a missing or invalid requestID";
+
+        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
+
         public ConfigurationFileRequestQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
         {
         }
 
-        protected override void Handle(IncomingRequest _request)
+        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
-            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
-
-            // Explicitly check for requestID because it is the only required key
-            if (!RequestIdExists(contentObj))
-            {
-                ResponseToClient response = new ResponseToClient(string.Empty, "Failure", string.Empty, _request.content);
-                response.message = "Config state request failed. This is due to a missing or invalid requestID";
-
-                // This is a failed request, do not continue with sending the configuration,
-                // the Client will have no way to handle the config state
-                clientMgr.SendConfigChangeResponse(response);
-                return;
-            }
-
             InteractionConfig interactions = InteractionConfigFile.LoadConfig();
             PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
 
             ConfigState currentConfig = new ConfigState(
-                contentObj.GetValue("requestID").ToString(),
+                requestId,
                 interactions,
                 physical);
 
-            clientMgr.SendConfigFile(currentConfig);
+            clientMgr.SendResponse(currentConfig, ActionCode.CONFIGURATION_FILE_STATE);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -12,6 +13,9 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         private readonly ConcurrentQueue<IncomingRequest> queue = new();
         private readonly IUpdateBehaviour updateBehaviour;
         protected readonly IClientConnectionManager clientMgr;
+
+        protected abstract string noRequestIdFailureMessage { get; }
+        protected abstract ActionCode noRequestIdFailureActionCode { get; }
 
         public MessageQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr)
         {
@@ -44,7 +48,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 queue.TryDequeue(out content);
                 if (ActionCodes.Contains(content.action))
                 {
-                    Handle(content);
+                    ValidateRequestIdAndHandleRequest(content);
                 }
                 else
                 {
@@ -53,11 +57,34 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        protected abstract void Handle(IncomingRequest _content);
+        private void ValidateRequestIdAndHandleRequest(IncomingRequest _request)
+        {
+            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
+
+            if (!RequestIdExists(contentObj))
+            {
+                CreateAndSendNoRequestIdError(_request);
+            }
+            else
+            {
+                Handle(_request, contentObj, contentObj.GetValue("requestID").ToString());
+            }
+        }
+
+        protected virtual void CreateAndSendNoRequestIdError(IncomingRequest _request)
+        {
+            ResponseToClient failureResponse = new ResponseToClient(string.Empty, "Failure", noRequestIdFailureMessage, _request.content);
+
+            // This is a failed request, do not continue with sending the status,
+            // the Client will have no way to handle the config state
+            clientMgr.SendResponse(failureResponse, noRequestIdFailureActionCode);
+        }
+
+        protected abstract void Handle(IncomingRequest _request, JObject _contentObject, string requestId);
 
         public static bool RequestIdExists(JObject _content)
         {
-            if (!_content.ContainsKey("requestID") || _content.GetValue("requestID").ToString() == string.Empty)
+            if (_content?.ContainsKey("requestID") != true || _content.GetValue("requestID").ToString() == string.Empty)
             {
                 return false;
             }

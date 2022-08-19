@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
@@ -13,17 +14,18 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         }
 
         public override ActionCode[] ActionCodes => new[] { ActionCode.SET_CONFIGURATION_STATE };
+        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
 
-        protected override void Handle(IncomingRequest _request)
+        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
-            ResponseToClient response = ValidateConfigChange(_request.content);
+            ResponseToClient response = ValidateConfigChange(_request.content, _contentObject);
 
             if (response.status == "Success")
             {
                 ChangeConfig(_request.content);
             }
 
-            clientMgr.SendConfigChangeResponse(response);
+            clientMgr.SendResponse(response, ActionCode.CONFIGURATION_RESPONSE);
         }
 
         void ChangeConfig(string _content)

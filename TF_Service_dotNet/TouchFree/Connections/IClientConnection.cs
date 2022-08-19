@@ -9,16 +9,7 @@ namespace Ultraleap.TouchFree.Library
 
         void SendInputAction(InputAction data);
         void SendHandData(HandFrame data);
-        void SendConfigChangeResponse(ResponseToClient response);
-        void SendConfigFileChangeResponse(ResponseToClient response);
-        void SendConfigState(ConfigState config);
-        void SendConfigFile(ConfigState config);
-        void SendStatusResponse(ResponseToClient response);
-        void SendStatus(ServiceStatus response);
-        void SendQuickSetupConfigFile(ConfigState config);
-        void SendQuickSetupResponse(ResponseToClient response);
-        void SendTrackingState(TrackingApiState state);
-        void SendHandDataStreamStateResponse(ResponseToClient response);
         void SendHandPresenceEvent(HandPresenceEvent handsLostEvent);
+        void SendResponse<T>(T _response, ActionCode actionCode);
     }
 }
