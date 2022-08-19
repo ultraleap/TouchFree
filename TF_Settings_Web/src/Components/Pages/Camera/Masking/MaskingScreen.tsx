@@ -105,7 +105,7 @@ const MaskingScreen = () => {
         socket.binaryType = 'arraybuffer';
 
         socket.addEventListener('open', handleWSOpen);
-        socket.addEventListener('message', (event) => handleMessage(socket, event));
+        socket.addEventListener('message', (event) => messageHandler(socket, event));
         socket.addEventListener('close', handleWSClose);
 
         HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
@@ -115,7 +115,7 @@ const MaskingScreen = () => {
 
         return () => {
             socket.removeEventListener('open', handleWSOpen);
-            socket.removeEventListener('message', (event) => handleMessage(socket, event));
+            socket.removeEventListener('message', (event) => messageHandler(socket, event));
             socket.removeEventListener('close', handleWSClose);
 
             socket.close();
