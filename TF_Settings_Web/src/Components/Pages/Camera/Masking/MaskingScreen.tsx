@@ -1,6 +1,7 @@
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
@@ -13,7 +14,7 @@ import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
-import { displayLensFeeds } from './displayLensFeeds';
+import { createCanvasUpdate as updateCanvas } from './displayLensFeeds';
 import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
 
 export type Lens = 'Left' | 'Right';
@@ -95,6 +96,8 @@ const MaskingScreen = () => {
     const mainCanvasRef = useRef<HTMLCanvasElement>(null);
 
     // ===== UseEffect =====
+    const navigate = useNavigate();
+
     useEffect(() => {
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
@@ -102,14 +105,22 @@ const MaskingScreen = () => {
         socket.binaryType = 'arraybuffer';
 
         socket.addEventListener('open', handleWSOpen);
-        socket.addEventListener('message', (event) => messageHandler(socket, event));
+        socket.addEventListener('message', (event) => handleMessage(socket, event));
+        socket.addEventListener('close', handleWSClose);
 
         HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
         setHandRenderState(true, mainLens === 'Left' ? 'left' : 'right');
 
+        addEventListener('updateCanvas', timeoutFrame as EventListener);
+
         return () => {
             socket.removeEventListener('open', handleWSOpen);
-            socket.removeEventListener('message', (event) => messageHandler(socket, event));
+            socket.removeEventListener('message', (event) => handleMessage(socket, event));
+            socket.removeEventListener('close', handleWSClose);
+
+            socket.close();
+
+            removeEventListener('updateCanvas', timeoutFrame as EventListener);
 
             HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens === 'Left' ? 'left' : 'right');
@@ -119,7 +130,6 @@ const MaskingScreen = () => {
 
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
-        console.log('GOT TRACKING');
         window.clearInterval(trackingIntervalRef.current);
         const allowImages = state.allowImages?.content;
         if (allowImages) {
@@ -145,35 +155,38 @@ const MaskingScreen = () => {
     };
 
     const handleWSOpen = () => {
-        console.log('WebSocket open');
+        console.log('Connected to Tracking Service');
+    };
+    const handleWSClose = () => {
+        console.log('Disconnected from Tracking Service');
+        navigate('../');
     };
 
     const messageHandler = (socket: WebSocket, event: MessageEvent) => {
         if (!mainCanvasRef.current) return;
-        console.log('GOT MESSAGE');
-
         if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
-        const dataAsUint8 = new Uint8Array(event.data, 0, 10);
-        if (dataAsUint8[0] === 1) {
-            console.log('GOT IMAGE');
+        const data = event.data as ArrayBuffer;
+        if (!data) return;
+
+        const dataIdentifier = new Uint8Array(data, 0, 1)[0];
+
+        if (dataIdentifier === 1) {
             setIsFrameProcessing(true);
             successfullySubscribed.current = true;
 
-            displayLensFeeds(
-                event.data as ArrayBuffer,
+            const updateEvent = updateCanvas(
+                data,
                 mainCanvasRef.current,
                 mainLensRef.current,
                 isCamReversedRef.current,
                 showOverexposedRef.current
             );
 
-            // Ignore any messages for short period to allow clearing of message handling
-            setTimeout(() => {
-                setIsFrameProcessing(false);
-            }, FRAME_PROCESSING_TIMEOUT);
+            if (updateEvent) {
+                dispatchEvent(updateEvent);
+            }
         } else if (!successfullySubscribed.current) {
-            console.log('GOT NOT IMAGE');
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
     };
@@ -198,6 +211,12 @@ const MaskingScreen = () => {
         // Inore any messages for a short period to allow clearing of message handling
         setTimeout(() => {
             isHandProcessingRef.current = false;
+        }, FRAME_PROCESSING_TIMEOUT);
+    };
+
+    const timeoutFrame = () => {
+        frameTimeoutRef.current = window.setTimeout(() => {
+            setIsFrameProcessing(false);
         }, FRAME_PROCESSING_TIMEOUT);
     };
 
@@ -257,15 +276,6 @@ const MaskingScreen = () => {
                         value={allowAnalytics}
                         onChange={setAllowAnalytics}
                     />
-                    <button
-                        onPointerDown={() => {
-                            console.log('TRACKING CLICKED');
-                            TrackingManager.RequestTrackingState(handleInitialTrackingState);
-                        }}
-                        style={{ height: '200px', width: '600px' }}
-                    >
-                        GET TRACKING
-                    </button>
                 </div>
             </div>
         </div>

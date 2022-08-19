@@ -94,18 +94,12 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
 
     // ===== UseEffects =====
     useEffect(() => {
-        ConnectionManager.instance.addEventListener('HandsLost', () => {
-            console.log('HANDLOST');
-            endTFDrag();
-        });
+        ConnectionManager.instance.addEventListener('HandsLost', endTFDrag);
 
         return () => {
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onEndDragEvent);
-            ConnectionManager.instance.removeEventListener('HandsLost', () => {
-                console.log('HANDLOST');
-                endTFDrag();
-            });
+            ConnectionManager.instance.removeEventListener('HandsLost', endTFDrag);
         };
     }, []);
 
@@ -159,7 +153,6 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
     };
 
     const onEndDrag = (pointerType: string) => {
-        console.log('end', pointerType);
         if (!isDraggingRef.current) return;
         if (pointerType !== dragPointerType.current) return;
 

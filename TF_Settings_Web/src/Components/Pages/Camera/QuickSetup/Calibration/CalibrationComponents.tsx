@@ -38,7 +38,7 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
 
     const calibratingText = (
         <h1 className="green-text">
-            <div style={{ display: 'flex', height: '3.2vh' }}>
+            <div className="calibrating-text">
                 <span>Calibrating</span>
                 <span style={{ width: '1vw', textAlign: 'left' }} className="loading" />
             </div>

@@ -3,14 +3,15 @@ import { Lens } from './MaskingScreen';
 let conversionArraysInitialised = false;
 const byteConversionArray = new Uint32Array(256);
 const byteConversionArrayOverExposed = new Uint32Array(256);
+let cameraBuffer: ArrayBuffer;
 
-export const displayLensFeeds = (
+export const createCanvasUpdate = (
     data: ArrayBuffer,
     canvasRef: HTMLCanvasElement,
     lens: Lens,
     isCameraReversed: boolean,
     showOverexposedAreas: boolean
-) => {
+): CustomEvent | undefined => {
     const context = getContext(canvasRef);
     if (!context) return;
 
@@ -25,20 +26,22 @@ export const displayLensFeeds = (
 
     const conversionArrayToUse = showOverexposedAreas ? byteConversionArrayOverExposed : byteConversionArray;
 
-    const startOfBuffer = new DataView(data, 0, 10);
+    const offset = 9;
+    const startOfBuffer = new DataView(data, 1, offset);
 
-    const dim1 = startOfBuffer.getUint32(1);
-    const dim2 = startOfBuffer.getUint32(5);
+    const dim1 = startOfBuffer.getUint32(0);
+    const dim2 = startOfBuffer.getUint32(4);
 
     const width = Math.min(dim1, dim2);
     const lensHeight = Math.max(dim1, dim2) / 2;
 
-    const buf = new ArrayBuffer(width * lensHeight);
-    const buf8 = new Uint8ClampedArray(buf);
-    const buf32 = new Uint32Array(buf);
+    if (!cameraBuffer) {
+        cameraBuffer = new ArrayBuffer(width * lensHeight);
+    }
+    const buf8 = new Uint8ClampedArray(cameraBuffer);
+    const buf32 = new Uint32Array(cameraBuffer);
 
     const rotated90 = dim2 < dim1;
-    const offset = 9;
 
     if (rotated90) {
         processRotatedScreen(data, lens, buf32, conversionArrayToUse, offset, width, lensHeight);
@@ -53,6 +56,8 @@ export const displayLensFeeds = (
     canvasRef.width = width / 2;
     canvasRef.height = lensHeight / 2;
     context.putImageData(new ImageData(buf8, width / 2, lensHeight / 2), 0, 0);
+
+    return new CustomEvent('updateCanvas');
 };
 
 const processRotatedScreen = (
