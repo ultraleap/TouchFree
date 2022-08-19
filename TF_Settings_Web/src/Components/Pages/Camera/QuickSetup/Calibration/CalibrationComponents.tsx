@@ -9,7 +9,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import DownArrow from 'Images/Down_Arrow.svg';
@@ -32,14 +31,14 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
     isTop,
 }) => {
     const instructionsText = (
-        <h1>
-            Hold INDEX FINGER against <br /> this <span className="greenText">GREEN CIRCLE</span>
+        <h1 className="instruction-text">
+            Hold INDEX FINGER against <br /> this <span className="green-text">GREEN CIRCLE</span>
         </h1>
     );
 
     const calibratingText = (
-        <h1 className="greenText">
-            <div style={{ display: 'flex', height: '3.2vh' }}>
+        <h1 className="green-text">
+            <div className="calibrating-text">
                 <span>Calibrating</span>
                 <span style={{ width: '1vw', textAlign: 'left' }} className="loading" />
             </div>
@@ -51,30 +50,14 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
         return (
             <div className="instructions" style={containerStyle}>
                 <img src={DownArrow} alt="Down arrow" className="arrow" style={{ transform: 'rotate(180deg)' }} />
-                <SwitchTransition>
-                    <CSSTransition
-                        key={progress > 0 ? 'calibratingText' : 'instructionText'}
-                        addEndListener={(node, done) => node.addEventListener('transitionend', done, false)}
-                        classNames="fade"
-                    >
-                        {progress > 0 ? calibratingText : instructionsText}
-                    </CSSTransition>
-                </SwitchTransition>
+                {progress > 0 ? calibratingText : instructionsText}
             </div>
         );
     }
 
     return (
         <div className="instructions" style={containerStyle}>
-            <SwitchTransition>
-                <CSSTransition
-                    key={progress > 0 ? 'calibratingText' : 'instructionText'}
-                    addEndListener={(node, done) => node.addEventListener('transitionend', done, false)}
-                    classNames="fade"
-                >
-                    {progress > 0 ? calibratingText : instructionsText}
-                </CSSTransition>
-            </SwitchTransition>
+            {progress > 0 ? calibratingText : instructionsText}
             <img src={DownArrow} alt="Down arrow" className="arrow" />
         </div>
     );
@@ -95,7 +78,7 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
                 strokeLinecap: 'butt',
                 pathColor: cssVariables.ultraleapGreen,
                 trailColor: 'transparent',
-                pathTransitionDuration: 0.08,
+                pathTransition: progress === 0 ? 'none' : 'stroke-dashoffset 0.1s ease 0s',
             })}
         />
         <img
@@ -242,7 +225,7 @@ export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps>
             refAnimationInstance.current({
                 spread: 360,
                 startVelocity: 50,
-                origin: { y: 0.42 },
+                origin: { y: 0.7 },
                 particleCount: 50,
                 gravity: 0.4,
                 scalar: 1.5,

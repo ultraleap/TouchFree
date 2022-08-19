@@ -1,39 +1,76 @@
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import SwapMainLensIcon from 'Images/Camera/Swap_Main_Lens_Icon.svg';
+import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
+import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
+import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
-import MaskingSlider, { SliderDirection } from './MaskingSlider';
-import { displayLensFeeds } from './displayLensFeeds';
+import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
+import { createCanvasUpdate as updateCanvas } from './displayLensFeeds';
 
-enum Lens {
-    Left,
-    Right,
-}
+export type Lens = 'Left' | 'Right';
 
 const MaskingScreen = () => {
     // ===== State =====
-    const [mainLens, setMainLens] = useState<Lens>(Lens.Left);
-    const [isSubFeedHovered, setIsSubFeedHovered] = useState<boolean>(false);
+    const [mainLens, _setMainLens] = useState<Lens>('Left');
     // Config options
+    const [masking, _setMasking] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const [isCamReversed, _setIsCamReversed] = useState<boolean>(false);
+    const [allowImages, _setAllowImages] = useState<boolean>(false);
+    const [allowAnalytics, _setAllowAnalytics] = useState<boolean>(false);
+
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
+
     const [isFrameProcessing, _setIsFrameProcessing] = useState<boolean>(false);
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
-    const isCamReversedRef = useRef(isCamReversed);
-    const showOverexposedRef = useRef(showOverexposed);
+    const mainLensRef = useRef<Lens>(mainLens);
+    const maskingRef = useRef<Mask>(masking);
+    const isCamReversedRef = useRef<boolean>(isCamReversed);
+    const allowImagesRef = useRef<boolean>(allowImages);
+    const showOverexposedRef = useRef<boolean>(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
+    const trackingIntervalRef = useRef<number>();
     const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
+    const frameTimeoutRef = useRef<number>();
 
     // ===== State Setters =====
+    const setMainLens = (value: Lens) => {
+        mainLensRef.current = value;
+        _setMainLens(value);
+    };
+    const setMasking = (direction: SliderDirection, maskingValue: number) => {
+        const mask: Mask = { ...masking, [direction]: maskingValue };
+        maskingRef.current = mask;
+        _setMasking(mask);
+    };
+    const sendMaskingRequest = () => {
+        TrackingManager.RequestTrackingChange({ mask: maskingRef.current }, null);
+    };
+    const clearMasking = () => {
+        TrackingManager.RequestTrackingChange({ mask: { left: 0, right: 0, upper: 0, lower: 0 } }, null);
+    };
+
+    const setAllowImages = (value: boolean) => {
+        _setAllowImages(value);
+        allowImagesRef.current = value;
+        TrackingManager.RequestTrackingChange({ allowImages: value }, null);
+    };
     const setIsCameraReversed = (value: boolean) => {
         _setIsCamReversed(value);
         isCamReversedRef.current = value;
+        TrackingManager.RequestTrackingChange({ cameraReversed: value }, null);
     };
+    const setAllowAnalytics = (value: boolean) => {
+        _setAllowAnalytics(value);
+        TrackingManager.RequestTrackingChange({ analyticsEnabled: value }, null);
+    };
+
     const setShowOverexposedAreas = (value: boolean) => {
         _setShowOverexposed(value);
         showOverexposedRef.current = value;
@@ -44,70 +81,100 @@ const MaskingScreen = () => {
     };
 
     // ===== Canvas Refs =====
-    const leftLensRef = useRef<HTMLCanvasElement>(null);
-    const rightLensRef = useRef<HTMLCanvasElement>(null);
-
-    // ===== Variables =====
-    const byteConversionArray = new Uint32Array(256);
-    const byteConversionArrayOverExposed = new Uint32Array(256);
-    const sliderDirections: SliderDirection[] = ['left', 'right', 'top', 'bottom'];
+    const mainCanvasRef = useRef<HTMLCanvasElement>(null);
 
     // ===== UseEffect =====
+    const navigate = useNavigate();
+
     useEffect(() => {
-        for (let i = 0; i < 256; i++) {
-            byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
-            // -13434625 = #FFFF0033 in signed 2's complement
-            byteConversionArrayOverExposed[i] = i > 128 ? -13434625 : byteConversionArray[i];
-        }
+        TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
         const socket = new WebSocket('ws://127.0.0.1:1024');
         socket.binaryType = 'arraybuffer';
 
-        socket.addEventListener('open', openHandler);
-        socket.addEventListener('message', (event) => messageHandler(socket, event));
+        socket.addEventListener('open', handleWSOpen);
+        socket.addEventListener('message', (event) => handleMessage(socket, event));
+        socket.addEventListener('close', handleWSClose);
+
+        addEventListener('updateCanvas', timeoutFrame as EventListener);
 
         return () => {
-            socket.removeEventListener('open', openHandler);
-            socket.removeEventListener('message', (event) => messageHandler(socket, event));
+            socket.removeEventListener('open', handleWSOpen);
+            socket.removeEventListener('message', (event) => handleMessage(socket, event));
+            socket.removeEventListener('close', handleWSClose);
+
+            socket.close();
+
+            removeEventListener('updateCanvas', timeoutFrame as EventListener);
+            window.clearTimeout(frameTimeoutRef.current);
         };
     }, []);
 
-    // ===== EventListeners =====
-    const openHandler = () => {
-        console.log('WebSocket open');
+    // ===== Event Handlers =====
+    const handleInitialTrackingState = (state: TrackingStateResponse) => {
+        window.clearInterval(trackingIntervalRef.current);
+        const allowImages = state.allowImages?.content;
+        if (allowImages) {
+            _setAllowImages(allowImages);
+            allowImagesRef.current = allowImages;
+        }
+
+        const isCamReversed = state.cameraReversed?.content;
+        if (isCamReversed) {
+            _setIsCamReversed(isCamReversed);
+            isCamReversedRef.current = isCamReversed;
+        }
+
+        const analytics = state.analyticsEnabled?.content;
+        if (analytics) {
+            _setAllowAnalytics(analytics);
+        }
+
+        const masking = state.mask?.content;
+        if (masking) {
+            _setMasking({ left: masking.left, right: masking.right, upper: masking.upper, lower: masking.lower });
+        }
     };
 
-    const messageHandler = (socket: WebSocket, event: MessageEvent) => {
-        if (
-            isFrameProcessingRef.current ||
-            !leftLensRef.current ||
-            !rightLensRef.current ||
-            typeof event.data == 'string'
-        ) {
-            return;
-        }
+    const handleWSOpen = () => {
+        console.log('Connected to Tracking Service');
+    };
+    const handleWSClose = () => {
+        console.log('Disconnected from Tracking Service');
+        navigate('../');
+    };
 
-        setIsFrameProcessing(true);
+    const handleMessage = (socket: WebSocket, event: MessageEvent) => {
+        if (!mainCanvasRef.current) return;
+        if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
-        if (!successfullySubscribed.current) {
-            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
-        }
+        const data = event.data as ArrayBuffer;
+        if (!data) return;
 
-        const data = new DataView(event.data);
-        if (data.getUint8(0) === 1) {
+        const dataIdentifier = new Uint8Array(data, 0, 1)[0];
+
+        if (dataIdentifier === 1) {
+            setIsFrameProcessing(true);
             successfullySubscribed.current = true;
 
-            displayLensFeeds(
+            const updateEvent = updateCanvas(
                 data,
-                leftLensRef.current,
-                rightLensRef.current,
+                mainCanvasRef.current,
+                mainLensRef.current,
                 isCamReversedRef.current,
-                showOverexposedRef.current ? byteConversionArrayOverExposed : byteConversionArray
+                showOverexposedRef.current
             );
-        }
 
-        // Settimeout with 32ms for ~30fps if we have the performance
-        setTimeout(() => {
+            if (updateEvent) {
+                dispatchEvent(updateEvent);
+            }
+        } else if (!successfullySubscribed.current) {
+            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
+        }
+    };
+
+    const timeoutFrame = () => {
+        frameTimeoutRef.current = window.setTimeout(() => {
             setIsFrameProcessing(false);
         }, 32);
     };
@@ -121,40 +188,49 @@ const MaskingScreen = () => {
                 </p>
             </div>
             <div className="cam-feed-box--main">
-                {sliderDirections.map((direction) => (
-                    <MaskingSlider key={direction} direction={direction} />
+                {Object.entries(masking).map((sliderInfo) => (
+                    <MaskingSliderDraggable
+                        key={sliderInfo[0]}
+                        direction={sliderInfo[0] as SliderDirection}
+                        maskingValue={sliderInfo[1]}
+                        canvasInfo={{ size: 800, topOffset: 50, leftOffset: 100 }}
+                        clearMasking={clearMasking}
+                        onDrag={setMasking}
+                        onDragEnd={sendMaskingRequest}
+                    />
                 ))}
-                <canvas ref={mainLens === Lens.Left ? leftLensRef : rightLensRef} />
-                <p>{Lens[mainLens]} Lens</p>
+                <canvas ref={mainCanvasRef} />
+                <div className="lens-toggle-container">
+                    <MaskingLensToggle lens={'Left'} isMainLens={mainLens === 'Left'} setMainLens={setMainLens} />
+                    <MaskingLensToggle lens={'Right'} isMainLens={mainLens === 'Right'} setMainLens={setMainLens} />
+                </div>
             </div>
             <div className="cam-feeds-bottom-container">
-                <div
-                    className="cam-feed-box--sub"
-                    onPointerEnter={() => setIsSubFeedHovered(true)}
-                    onPointerLeave={() => setIsSubFeedHovered(false)}
-                    onPointerDown={() => setMainLens(1 - mainLens)}
-                >
-                    <canvas ref={mainLens === Lens.Left ? rightLensRef : leftLensRef} />
-                    <p>{Lens[1 - mainLens]} Lens</p>
-                    <span className="sub-feed-overlay" style={{ opacity: isSubFeedHovered ? 0.85 : 0 }}>
-                        <div className="sub-feed-overlay--content">
-                            <img src={SwapMainLensIcon} alt="Swap Camera Lens icon" />
-                            <p>Swap as main lens view</p>
-                        </div>
-                    </span>
-                </div>
                 <div className="cam-feeds-options-container">
-                    <MaskingOption
-                        title="Reverse Camera Orientation"
-                        description="Reverse the camera orientation (hand should enter from the bottom)"
-                        value={isCamReversed}
-                        onChange={setIsCameraReversed}
-                    />
                     <MaskingOption
                         title="Display Overexposed Areas"
                         description="Areas, where hand tracking may be an issue will be highlighted"
                         value={showOverexposed}
                         onChange={setShowOverexposedAreas}
+                    />
+                    <MaskingOption
+                        title="Allow Images"
+                        description="Allow images to be sent from the TouchFree Camera"
+                        value={allowImages}
+                        onChange={setAllowImages}
+                    />
+                    <MaskingOption
+                        title="Reverse Camera Orientation"
+                        description="Reverse the camera orientation (hand should enter from the bottom)"
+                        value={isCamReversed}
+                        onChange={setIsCameraReversed}
+                        isMouseOnly
+                    />
+                    <MaskingOption
+                        title="Allow Analytics"
+                        description="Allow analytic data to be collected"
+                        value={allowAnalytics}
+                        onChange={setAllowAnalytics}
                     />
                 </div>
             </div>

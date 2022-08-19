@@ -62,14 +62,14 @@ export class ConfigurationManager {
     public static RequestConfigFileChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
-        _callback: (detail: WebSocketResponse) => void): void {
+        _callback: (detail: WebSocketResponse) => void | null): void {
         ConfigurationManager.BaseConfigChangeRequest(_interaction, _physical, _callback, ActionCode.SET_CONFIGURATION_FILE);
     }
 
     private static BaseConfigChangeRequest(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
-        _callback: (detail: WebSocketResponse) => void,
+        _callback: (detail: WebSocketResponse) => void | null,
         action: ActionCode): void {
 
         let requestID = uuidgen();

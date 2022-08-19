@@ -1,7 +1,7 @@
 import 'Styles/Camera/Calibrate.scss';
 import cssVariables from 'Styles/_variables.scss';
 
-import React, { CSSProperties, useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
@@ -34,7 +34,8 @@ interface CalibrationCompleteProps {
 }
 
 const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad, onRedo, isHandPresent }) => {
-    const [progressToClick, setProgressToClick] = React.useState<number>(0);
+    const [progressToClick, setProgressToClick] = useState<number>(0);
+    const [showButtons, setShowButtons] = useState<boolean>(false);
     const isNewClick = useRef(false);
 
     useEffect(() => {
@@ -42,8 +43,11 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
 
         InputActionManager._instance.addEventListener('TransmitInputAction', handleTFInput as EventListener);
 
+        const timerID = window.setTimeout(() => setShowButtons(true), 1000);
+
         return () => {
             InputActionManager._instance.removeEventListener('TransmitInputAction', handleTFInput as EventListener);
+            window.clearTimeout(timerID);
         };
     }, []);
 
@@ -72,23 +76,17 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
     const navigate = useNavigate();
     return (
         <div style={{ height: '100%', alignItems: 'center' }}>
-            <CalibrationHandLostMessage display={!isHandPresent} handsLostStyle={{ height: '3vh' }} />
-            <div style={{ paddingTop: '200px' }}>
+            <CalibrationHandLostMessage
+                display={!isHandPresent}
+                handsLostStyle={{ height: '3vh', padding: '5px 30px' }}
+            />
+            <div style={{ paddingTop: '100px' }}>
                 <h1 className="setup-complete-title">
                     Setup <br />
                     Complete
                 </h1>
             </div>
-            <div className="setup-complete-options-container">
-                <CalibrationPracticeButton isHandPresent={isHandPresent} progress={progressToClick} />
-                <TextButton
-                    buttonStyle={buttonStyle}
-                    title="Done"
-                    titleStyle={titleStyle}
-                    text={''}
-                    textStyle={{ display: 'none' }}
-                    onClick={doneClickHandler}
-                />
+            <div className="setup-complete-options-container" style={{ pointerEvents: showButtons ? 'all' : 'none' }}>
                 <TextButton
                     buttonStyle={buttonStyle}
                     title="Redo Auto Calibration"
@@ -97,6 +95,15 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                     textStyle={{ display: 'none' }}
                     onClick={redoClickHandler}
                 />
+                <TextButton
+                    buttonStyle={buttonStyle}
+                    title="Done"
+                    titleStyle={titleStyle}
+                    text={''}
+                    textStyle={{ display: 'none' }}
+                    onClick={doneClickHandler}
+                />
+                <CalibrationPracticeButton isHandPresent={isHandPresent} progress={progressToClick} />
             </div>
         </div>
     );

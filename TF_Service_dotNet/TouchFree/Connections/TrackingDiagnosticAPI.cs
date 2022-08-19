@@ -275,17 +275,32 @@ namespace Ultraleap.TouchFree.Library.Connections
             OnTrackingApiVersionResponse?.Invoke();
         }
 
-        public void Request(object payload)
+        public async void Request(object payload)
         {
-            if (status == Status.Connected)
+            if (!TrySendRequest(payload))
+            {
+                Connect();
+                for(var attempt = 0; attempt < 10; attempt++)
+                {
+                    await Task.Delay(1000);
+                    if (TrySendRequest(payload))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        public bool TrySendRequest(object payload)
+        {
+            var canSendRequest = status == Status.Connected;
+            if (canSendRequest)
             {
                 var requestMessage = JsonConvert.SerializeObject(payload);
                 webSocket.Send(requestMessage);
             }
-            else
-            {
-                Connect();
-            }
+
+            return canSendRequest;
         }
 
         public void GetAnalyticsMode()

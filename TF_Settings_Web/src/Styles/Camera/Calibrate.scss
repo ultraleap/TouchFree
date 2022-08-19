@@ -12,6 +12,8 @@
     display: block;
     align-items: center;
     height: 10vh;
+    width: 100%;
+    text-align: center;
 
     > h1 {
         height: 7vh;
@@ -22,26 +24,20 @@
         margin-bottom: 0;
     }
 
-    .greenText {
+    .instruction-text {
+        animation: fadeInAnimation ease 1s;
+    }
+
+    .calibrating-text {
+        display: flex;
+        justify-content: center;
+        height: 3.2vh;
+        animation: fadeInAnimation ease 0.5s;
+    }
+
+    .green-text {
         color: v.$ultraleap-green;
     }
-}
-
-.fade-enter {
-    opacity: 0;
-}
-.fade-exit {
-    opacity: 1;
-}
-.fade-enter-active {
-    opacity: 1;
-}
-.fade-exit-active {
-    opacity: 0;
-}
-.fade-enter-active,
-.fade-exit-active {
-    transition: opacity 150ms;
 }
 
 .loading {
@@ -139,6 +135,8 @@
     align-items: center;
     display: flex;
     flex-direction: column;
+
+    animation: fadeInAnimation ease 1s;
 }
 
 .setup-complete-title {

@@ -13,8 +13,13 @@ import {
     ServiceStatus,
     ServiceStatusCallback,
     ServiceStatusRequest,
+    SimpleRequest,
+    TrackingStateCallback,
+    TrackingStateRequest,
+    TrackingStateResponse,
     WebSocketResponse
 } from './TouchFreeServiceTypes';
+import { TrackingState } from '../Tracking/TrackingTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
 
@@ -136,6 +141,9 @@ export class ServiceConnection {
                 let response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
+            case ActionCode.TRACKING_STATE:
+                const trackingResponse: TrackingStateResponse = looseData.content;
+                ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
         }
     }
 
@@ -147,7 +155,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     SendMessage(
         _message: string, _requestID: string,
-        _callback: (detail: WebSocketResponse) => void): void {
+        _callback: ((detail: WebSocketResponse) => void) | null): void {
         if (_requestID === "") {
             if (_callback !== null) {
                 let response: WebSocketResponse = new WebSocketResponse(
@@ -176,7 +184,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for config state failed. This is due to a missing callback");
             return;
         }
 
@@ -198,7 +206,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for service status failed. This is due to a missing callback");
             return;
         }
 
@@ -220,7 +228,7 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigFile(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error("Request for config file failed. This is due to a missing callback");
             return;
         }
 
@@ -248,7 +256,7 @@ export class ServiceConnection {
         _configurationCallback: (detail: ConfigState) => void): void {
         const position = atTopTarget ? 'Top' : 'Bottom';
         let guid: string = uuidgen();
-        
+
         let request: any = {
             requestID: guid,
             position
@@ -264,6 +272,65 @@ export class ServiceConnection {
         if (_configurationCallback !== null) {
             ConnectionManager.messageReceiver.configStateCallbacks[guid] =
                 new ConfigStateCallback(Date.now(), _configurationCallback);
+        }
+
+        this.webSocket.send(message);
+    }
+
+    // Function: RequestTrackingState
+    // Used internally to request information from the Service via the <webSocket>.
+    // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
+    RequestTrackingState(_callback: (detail: TrackingStateResponse) => void) {
+        if (!_callback) {
+            console.error('Request for tracking state failed. This is due to a missing callback');
+            return;
+        }
+        const guid: string = uuidgen();
+        const request: SimpleRequest = new SimpleRequest(guid);
+        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<SimpleRequest>(
+            ActionCode.GET_TRACKING_STATE,
+            request
+        );
+        const message: string = JSON.stringify(wrapper);
+
+        ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new TrackingStateCallback(Date.now(), _callback);
+
+        this.webSocket.send(message);
+    }
+
+
+    RequestTrackingChange(_state: Partial<TrackingState>, _callback:((detail: TrackingStateResponse) => void) | null) {
+        const requestID = uuidgen();
+        const requestContent: Partial<TrackingStateRequest> = {
+            requestID
+        };
+
+        if (_state.mask !== undefined) {
+            requestContent.mask = _state.mask;
+        }
+
+        if (_state.allowImages !== undefined) {
+            requestContent.allowImages = _state.allowImages;
+        }
+
+        if (_state.cameraReversed !== undefined) {
+            requestContent.cameraReversed= _state.cameraReversed;
+        }
+
+        if (_state.analyticsEnabled !== undefined) {
+            requestContent.analyticsEnabled= _state.analyticsEnabled;
+        }
+
+        const wrapper: CommunicationWrapper<Partial<TrackingStateRequest>> = new CommunicationWrapper<Partial<TrackingStateRequest>>(
+            ActionCode.SET_TRACKING_STATE,
+            requestContent
+        );
+        const message: string = JSON.stringify(wrapper);
+
+        if (_callback !== null) {
+            ConnectionManager.messageReceiver.trackingStateCallbacks[requestID] = new TrackingStateCallback(Date.now(), _callback);
         }
 
         this.webSocket.send(message);
