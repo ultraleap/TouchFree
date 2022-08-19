@@ -7,14 +7,12 @@ let cameraBuffer: ArrayBuffer;
 
 export const createCanvasUpdate = (
     data: ArrayBuffer,
-    canvasRef: HTMLCanvasElement,
+    canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
     lens: Lens,
     isCameraReversed: boolean,
     showOverexposedAreas: boolean
-): CustomEvent | undefined => {
-    const context = getContext(canvasRef);
-    if (!context) return;
-
+) => {
     if (!conversionArraysInitialised) {
         for (let i = 0; i < 256; i++) {
             byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
@@ -53,11 +51,9 @@ export const createCanvasUpdate = (
     const startOffset = isCameraReversed ? 0 : ((lensHeight / 2 - 1) * width) / 2;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    canvasRef.width = width / 2;
-    canvasRef.height = lensHeight / 2;
     context.putImageData(new ImageData(buf8, width / 2, lensHeight / 2), 0, 0);
 
-    return new CustomEvent('updateCanvas');
+    return;
 };
 
 const processRotatedScreen = (
@@ -113,25 +109,4 @@ const processScreen = (
             buf32[(i * lensHeight) / 2 + j] = byteConversionArray[offsetView[i * lensHeight * 2 + j * 2]];
         }
     }
-};
-
-const canvasElements: HTMLCanvasElement[] = [];
-const canvasContexts: CanvasRenderingContext2D[] = [];
-
-const getContext = (canvasElement: HTMLCanvasElement | null) => {
-    if (!canvasElement) {
-        return null;
-    }
-    const canvasIndex = canvasElements.indexOf(canvasElement);
-    if (canvasIndex < 0) {
-        const context = canvasElement.getContext('2d');
-        if (context === null) {
-            return context;
-        }
-        const newIndex = canvasElements.length;
-        canvasElements[newIndex] = canvasElement;
-        canvasContexts[newIndex] = context;
-        return context;
-    }
-    return canvasContexts[canvasIndex];
 };

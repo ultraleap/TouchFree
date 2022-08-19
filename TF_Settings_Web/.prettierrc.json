@@ -6,7 +6,7 @@
     "importOrder": [
         "(.*).css$",
         "(.*)react(.*)|canvas-confetti",
-        "index",
+        "(index|customHooks)",
         "^TouchFree/(.*)",
         "^(Videos|Images)/(.*)",
         "^(Components/)(.*)",
