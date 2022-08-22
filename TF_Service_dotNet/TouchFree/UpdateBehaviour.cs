@@ -3,14 +3,13 @@ using System.Timers;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public class UpdateBehaviour : IDisposable
+    public class UpdateBehaviour : IDisposable, IUpdateBehaviour
     {
-        public delegate void UpdateEvent();
-        public event UpdateEvent OnUpdate;
+        public event IUpdateBehaviour.UpdateEvent OnUpdate;
 
         private Timer updateLoop;
         private const float TargetFPS = 60f;
-        
+
         public UpdateBehaviour(float framerate = TargetFPS)
         {
             SetTimer(framerate);

@@ -63,7 +63,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
         // Used to store HandPresenceState changes as they are recieved and emit messages
         // appropriately. "PROCESSED" when there are no unprocessed changes.
-        internal HandPresenceState handState = HandPresenceState.PROCESSED;
+        public HandPresenceState handState = HandPresenceState.PROCESSED;
 
         // Used to ensure UP events are sent at the correct position relative to the previous
         // MOVE event.

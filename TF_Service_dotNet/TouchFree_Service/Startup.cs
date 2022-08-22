@@ -30,7 +30,7 @@ namespace Ultraleap.TouchFree.Service
             services.AddPositioning();
 
             services.AddClientConnectionManager();
-            services.AddWebSocketReceiver();
+            services.AddMessageQueueHandlers();
 
             services.AddInteractions();
         }
@@ -50,6 +50,7 @@ namespace Ultraleap.TouchFree.Service
                 });
             });
 
+            var configFileWatcher = app.ApplicationServices.GetService<ConfigFileWatcher>();
             var configManager = app.ApplicationServices.GetService<IConfigManager>();
 
             app.UseTouchFreeRouter(configManager);

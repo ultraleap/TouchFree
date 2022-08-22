@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -7,6 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
+using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -14,14 +17,14 @@ namespace Ultraleap.TouchFree.Service.Connection
     {
         private readonly RequestDelegate next;
         private readonly IClientConnectionManager clientMgr;
-        private readonly WebSocketReceiver receiver;
-        private readonly ConfigManager configManager;
+        private readonly IEnumerable<IMessageQueueHandler> messageQueueHandlers;
+        private readonly IConfigManager configManager;
 
-        public TouchFreeRouter(RequestDelegate _next, IClientConnectionManager _clientMgr, WebSocketReceiver _receiver, ConfigManager _configManager)
+        public TouchFreeRouter(RequestDelegate _next, IClientConnectionManager _clientMgr, IEnumerable<IMessageQueueHandler> _messageQueueHandlers, IConfigManager _configManager)
         {
             next = _next;
             clientMgr = _clientMgr;
-            receiver = _receiver;
+            messageQueueHandlers = _messageQueueHandlers;
             configManager = _configManager;
         }
 
@@ -31,7 +34,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             {
                 WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                ClientConnection connection = new ClientConnection(webSocket, receiver, clientMgr, configManager);
+                ClientConnection connection = new ClientConnection(webSocket, messageQueueHandlers, clientMgr, configManager);
                 clientMgr.AddConnection(connection);
 
                 TouchFreeLog.WriteLine("WebSocket Connected");

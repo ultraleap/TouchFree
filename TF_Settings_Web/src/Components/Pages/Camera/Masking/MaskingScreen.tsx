@@ -4,18 +4,26 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
+import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
+
+import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { createCanvasUpdate as updateCanvas } from './displayLensFeeds';
+import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
 
 export type Lens = 'Left' | 'Right';
 
+const FRAME_PROCESSING_TIMEOUT = 30;
+
 const MaskingScreen = () => {
     // ===== State =====
+    const [handData, setHandData] = useState<HandState>(defaultHandState);
     const [mainLens, _setMainLens] = useState<Lens>('Left');
     // Config options
     const [masking, _setMasking] = useState<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
@@ -25,7 +33,7 @@ const MaskingScreen = () => {
 
     const [showOverexposed, _setShowOverexposed] = useState<boolean>(false);
 
-    const [isFrameProcessing, _setIsFrameProcessing] = useState<boolean>(false);
+    const [frameUpdateToggle, setFrameUpdateToggle] = useState<boolean>(false);
 
     // ===== State Refs =====
     // Refs to be able to use current state in eventListeners
@@ -36,13 +44,15 @@ const MaskingScreen = () => {
     const showOverexposedRef = useRef<boolean>(showOverexposed);
     const successfullySubscribed = useRef<boolean>(false);
     const trackingIntervalRef = useRef<number>();
-    const isFrameProcessingRef = useRef<boolean>(isFrameProcessing);
+    const isFrameProcessingRef = useRef<boolean>(false);
+    const isHandProcessingRef = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
 
     // ===== State Setters =====
     const setMainLens = (value: Lens) => {
         mainLensRef.current = value;
         _setMainLens(value);
+        setHandRenderState(true, value === 'Left' ? 'left' : 'right');
     };
     const setMasking = (direction: SliderDirection, maskingValue: number) => {
         const mask: Mask = { ...masking, [direction]: maskingValue };
@@ -76,7 +86,9 @@ const MaskingScreen = () => {
         showOverexposedRef.current = value;
     };
     const setIsFrameProcessing = (value: boolean) => {
-        _setIsFrameProcessing(value);
+        if (!value) {
+            setFrameUpdateToggle(!frameUpdateToggle);
+        }
         isFrameProcessingRef.current = value;
     };
 
@@ -93,19 +105,25 @@ const MaskingScreen = () => {
         socket.binaryType = 'arraybuffer';
 
         socket.addEventListener('open', handleWSOpen);
-        socket.addEventListener('message', (event) => handleMessage(socket, event));
+        socket.addEventListener('message', (event) => messageHandler(socket, event));
         socket.addEventListener('close', handleWSClose);
+
+        HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
+        setHandRenderState(true, mainLens === 'Left' ? 'left' : 'right');
 
         addEventListener('updateCanvas', timeoutFrame as EventListener);
 
         return () => {
             socket.removeEventListener('open', handleWSOpen);
-            socket.removeEventListener('message', (event) => handleMessage(socket, event));
+            socket.removeEventListener('message', (event) => messageHandler(socket, event));
             socket.removeEventListener('close', handleWSClose);
 
             socket.close();
 
             removeEventListener('updateCanvas', timeoutFrame as EventListener);
+
+            HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
+            setHandRenderState(false, mainLens === 'Left' ? 'left' : 'right');
             window.clearTimeout(frameTimeoutRef.current);
         };
     }, []);
@@ -144,7 +162,7 @@ const MaskingScreen = () => {
         navigate('../');
     };
 
-    const handleMessage = (socket: WebSocket, event: MessageEvent) => {
+    const messageHandler = (socket: WebSocket, event: MessageEvent) => {
         if (!mainCanvasRef.current) return;
         if (isFrameProcessingRef.current || !allowImagesRef.current) return;
 
@@ -173,10 +191,33 @@ const MaskingScreen = () => {
         }
     };
 
+    const handleTFInput = (evt: CustomEvent<HandFrame>): void => {
+        if (isHandProcessingRef.current || !successfullySubscribed.current) {
+            return;
+        }
+
+        isHandProcessingRef.current = true;
+
+        const hands = evt.detail?.Hands;
+        if (hands) {
+            const handOne = hands[0];
+            const handTwo = hands[1];
+            const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
+            const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
+
+            setHandData({ one: convertedHandOne, two: convertedHandTwo });
+        }
+
+        // Inore any messages for a short period to allow clearing of message handling
+        setTimeout(() => {
+            isHandProcessingRef.current = false;
+        }, FRAME_PROCESSING_TIMEOUT);
+    };
+
     const timeoutFrame = () => {
         frameTimeoutRef.current = window.setTimeout(() => {
             setIsFrameProcessing(false);
-        }, 32);
+        }, FRAME_PROCESSING_TIMEOUT);
     };
 
     return (
@@ -199,7 +240,10 @@ const MaskingScreen = () => {
                         onDragEnd={sendMaskingRequest}
                     />
                 ))}
-                <canvas ref={mainCanvasRef} />
+                <div className="cam-feed-box-feed">
+                    <canvas ref={mainCanvasRef} />
+                    <HandsSvg key="hand-data" one={handData.one} two={handData.two} />
+                </div>
                 <div className="lens-toggle-container">
                     <MaskingLensToggle lens={'Left'} isMainLens={mainLens === 'Left'} setMainLens={setMainLens} />
                     <MaskingLensToggle lens={'Right'} isMainLens={mainLens === 'Right'} setMainLens={setMainLens} />

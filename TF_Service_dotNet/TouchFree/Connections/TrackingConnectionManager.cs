@@ -163,5 +163,17 @@ namespace Ultraleap.TouchFree.Library.Connections
                     break;
             }
         }
+
+        public void SetImagesState(bool enabled)
+        {
+            if (enabled)
+            {
+                controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
+            }
+            else
+            {
+                controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
+            }
+        }
     }
 }

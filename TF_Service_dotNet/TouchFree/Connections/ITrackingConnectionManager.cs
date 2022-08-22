@@ -6,5 +6,6 @@
         Leap.Controller controller { get; }
         void Connect();
         void Disconnect();
+        void SetImagesState(bool enabled);
     }
 }

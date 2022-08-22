@@ -1,18 +1,16 @@
-﻿using System;
-using System.Timers;
-using System.IO;
+﻿using System.IO;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigFileWatcher
     {
         private readonly IConfigManager configManager;
-        private FileSystemWatcher interactionWatcher;
-        private FileSystemWatcher physicalWatcher;
+        private readonly FileSystemWatcher interactionWatcher;
+        private readonly FileSystemWatcher physicalWatcher;
 
         private bool configFileChanged = false;
 
-        public ConfigFileWatcher(IConfigManager _configManager)
+        public ConfigFileWatcher(IUpdateBehaviour updateBehaviour, IConfigManager _configManager)
         {
             // We ask the config manager for references for these as this will cause the
             // files to be created if they don't already exist, and FileSystemWatchers will
@@ -37,11 +35,13 @@ namespace Ultraleap.TouchFree.Library.Configuration
             physicalWatcher.Changed += new FileSystemEventHandler(FileUpdated);
             physicalWatcher.IncludeSubdirectories = true;
             physicalWatcher.EnableRaisingEvents = true;
+
+            updateBehaviour.OnUpdate += Update;
         }
 
         public void Update()
         {
-            if(configFileChanged)
+            if (configFileChanged)
             {
                 try
                 {

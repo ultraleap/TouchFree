@@ -1,49 +1,8 @@
-using System;
+﻿using System;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Service.ConnectionTypes
+namespace Ultraleap.TouchFree.Library.Connections
 {
-    public enum ActionCode
-    {
-        INPUT_ACTION,
-
-        CONFIGURATION_STATE,
-        CONFIGURATION_RESPONSE,
-        SET_CONFIGURATION_STATE,
-        REQUEST_CONFIGURATION_STATE,
-
-        VERSION_HANDSHAKE,
-        VERSION_HANDSHAKE_RESPONSE,
-
-        HAND_PRESENCE_EVENT,
-
-        REQUEST_SERVICE_STATUS,
-        SERVICE_STATUS_RESPONSE,
-        SERVICE_STATUS,
-
-        REQUEST_CONFIGURATION_FILE,
-        CONFIGURATION_FILE_STATE,
-        SET_CONFIGURATION_FILE,
-        CONFIGURATION_FILE_CHANGE_RESPONSE,
-
-        QUICK_SETUP,
-        QUICK_SETUP_CONFIG,
-        QUICK_SETUP_RESPONSE,
-
-        GET_TRACKING_STATE,
-        SET_TRACKING_STATE,
-        TRACKING_STATE,
-    }
-
-    internal enum Compatibility
-    {
-        COMPATIBLE,
-        SERVICE_OUTDATED,
-        CLIENT_OUTDATED,
-        SERVICE_OUTDATED_WARNING,
-        CLIENT_OUTDATED_WARNING
-    }
-
     public enum TrackingServiceState
     {
         UNAVAILABLE,
@@ -74,6 +33,54 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
     }
 
     [Serializable]
+    public struct ServiceStatus
+    {
+        public string requestID;
+        public TrackingServiceState trackingServiceState;
+        public ConfigurationState configurationState;
+
+        public ServiceStatus(string _id, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
+        {
+            requestID = _id;
+            trackingServiceState = _trackingServiceState;
+            configurationState = _configurationState;
+        }
+    }
+
+    [Serializable]
+    public struct ResponseToClient
+    {
+        public string requestID;
+        public string status;
+        public string message;
+        public string originalRequest;
+
+        public ResponseToClient(string _id, string _status, string _msg, string _request)
+        {
+            requestID = _id;
+            status = _status;
+            message = _msg;
+            originalRequest = _request;
+        }
+    }
+
+    public struct MaskingData
+    {
+        public float lower;
+        public float upper;
+        public float right;
+        public float left;
+
+        public MaskingData(float _lower, float _upper, float _right, float _left)
+        {
+            lower = _lower;
+            upper = _upper;
+            right = _right;
+            left = _left;
+        }
+    }
+
+    [Serializable]
     public struct TrackingApiState
     {
         public string requestID;
@@ -94,21 +101,6 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
             succeeded = _success;
             msg = _message;
             content = _content;
-        }
-    }
-
-    [Serializable]
-    public struct ServiceStatus
-    {
-        public string requestID;
-        public TrackingServiceState trackingServiceState;
-        public ConfigurationState configurationState;
-
-        public ServiceStatus(string _id, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
-        {
-            requestID = _id;
-            trackingServiceState = _trackingServiceState;
-            configurationState = _configurationState;
         }
     }
 
@@ -154,51 +146,6 @@ namespace Ultraleap.TouchFree.Service.ConnectionTypes
 
             state = new TrackingApiState();
             state.requestID = _requestId;
-        }
-    }
-
-    [Serializable]
-    public struct ResponseToClient
-    {
-        public string requestID;
-        public string status;
-        public string message;
-        public string originalRequest;
-
-        public ResponseToClient(string _id, string _status, string _msg, string _request)
-        {
-            requestID = _id;
-            status = _status;
-            message = _msg;
-            originalRequest = _request;
-        }
-    }
-
-    internal struct CommunicationWrapper<T>
-    {
-        public string action;
-        public T content;
-
-        public CommunicationWrapper(string _actionCode, T _content)
-        {
-            action = _actionCode;
-            content = _content;
-        }
-    }
-
-    public struct MaskingData
-    {
-        public float lower;
-        public float upper;
-        public float right;
-        public float left;
-
-        public MaskingData(float _lower, float _upper, float _right, float _left)
-        {
-            lower = _lower;
-            upper = _upper;
-            right = _right;
-            left = _left;
         }
     }
 }
