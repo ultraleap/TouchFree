@@ -52,7 +52,7 @@ export const updateCanvas = (
     if (!cameraBuffer) {
         cameraBuffer = new ArrayBuffer(width * lensHeight);
     }
-    const buf8 = new Uint8ClampedArray(cameraBuffer);
+    const buf8 = new Uint8Array(cameraBuffer);
     const buf32 = new Uint32Array(cameraBuffer);
 
     const rotated90 = dim2 < dim1;
