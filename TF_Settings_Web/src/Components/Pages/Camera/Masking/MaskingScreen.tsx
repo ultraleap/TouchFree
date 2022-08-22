@@ -55,7 +55,7 @@ const MaskingScreen = () => {
 
     // ===== Refs =====
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const canvasContextRef = useRef<CanvasRenderingContext2D | null>(null);
+    const canvasContextRef = useRef<WebGLRenderingContext | null>(null);
     const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
 
@@ -64,7 +64,7 @@ const MaskingScreen = () => {
 
     useEffect(() => {
         if (canvasRef.current) {
-            canvasContextRef.current = canvasRef.current.getContext('2d', { alpha: false });
+            canvasContextRef.current = canvasRef.current.getContext('webgl', { preserveDrawingBuffer: true });
         }
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
@@ -145,8 +145,10 @@ const MaskingScreen = () => {
                 showOverexposed.current
             );
 
+            console.log('DISPATCH', data.byteLength);
             dispatchEvent(new CustomEvent('frameRendered'));
         } else if (!successfullySubscribed.current) {
+            console.log('SUBSCRIBE');
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
     };
@@ -154,7 +156,7 @@ const MaskingScreen = () => {
     const timeoutFrame = () => {
         frameTimeoutRef.current = window.setTimeout(() => {
             isFrameProcessing.current = false;
-        }, 32);
+        }, 5);
     };
 
     // ===== Components =====
