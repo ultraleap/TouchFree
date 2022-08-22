@@ -55,28 +55,5 @@
         </svg>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
-        <script id="vs" type="notjs">
-            attribute vec4 position;
-
-            varying vec2 v_texcoord;
-
-            void main() {
-              gl_Position = position;
-
-              // Since we know we'll be passing in -1 to +1 for position
-              v_texcoord = position.xy * 0.5 + 0.5;
-            }
-        </script>
-        <script id="fs" type="notjs">
-            precision mediump float;
-
-            uniform sampler2D u_texture;
-
-            varying vec2 v_texcoord;
-
-            void main() {
-              gl_FragColor = texture2D(u_texture, v_texcoord);
-            }
-        </script>
     </body>
 </html>

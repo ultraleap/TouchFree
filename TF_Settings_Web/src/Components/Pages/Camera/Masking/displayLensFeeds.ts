@@ -1,10 +1,4 @@
-import {
-    createBufferInfoFromArrays,
-    createProgramInfo,
-    drawBufferInfo,
-    setBuffersAndAttributes,
-    setUniforms,
-} from 'twgl.js';
+import { createBufferInfoFromArrays, createProgramInfo, setBuffersAndAttributes } from 'twgl.js';
 
 import { Lens } from './MaskingScreen';
 
@@ -13,10 +7,24 @@ const byteConversionArray = new Uint32Array(256);
 const byteConversionArrayOverExposed = new Uint32Array(256);
 let cameraBuffer: ArrayBuffer;
 
+const vs = `attribute vec4 position;
+            varying vec2 v_texcoord;
+
+            void main() {
+                gl_Position = position;
+                v_texcoord = position.xy * 0.5 + 0.5;
+            }`;
+const fs = `precision mediump float;
+            uniform sampler2D u_texture;
+            varying vec2 v_texcoord;
+
+            void main() {
+                gl_FragColor = texture2D(u_texture, v_texcoord);
+            }`;
+
 export const updateCanvas = (
     data: ArrayBuffer,
     gl: WebGLRenderingContext,
-    texture: WebGLTexture,
     lens: Lens,
     isCameraReversed: boolean,
     showOverexposedAreas: boolean
@@ -59,28 +67,21 @@ export const updateCanvas = (
     const startOffset = isCameraReversed ? 0 : ((lensHeight / 2 - 1) * width) / 2;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    drawWebGLImage(gl, texture, buf8);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.canvas.width, gl.canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, buf8);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
 
-export const drawWebGLImage = (
-    gl: WebGLRenderingContext,
-    tex?: WebGLTexture,
-    data?: Uint8ClampedArray
-): WebGLTexture | null => {
-    const texture = tex ?? gl.createTexture();
+export const setupWebGL = (gl: WebGLRenderingContext) => {
+    const texture = gl.createTexture();
 
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    if (!data) {
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-    } else {
-        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.canvas.width, gl.canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    }
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-    const programInfo = createProgramInfo(gl, ['vs', 'fs']);
+    const programInfo = createProgramInfo(gl, [vs, fs]);
     const arrays = {
         position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
     };
@@ -88,10 +89,6 @@ export const drawWebGLImage = (
 
     gl.useProgram(programInfo.program);
     setBuffersAndAttributes(gl, programInfo, bufferInfo);
-    setUniforms(programInfo, { u_texture: texture });
-    drawBufferInfo(gl, bufferInfo, gl.TRIANGLES);
-
-    return texture;
 };
 
 const processRotatedScreen = (

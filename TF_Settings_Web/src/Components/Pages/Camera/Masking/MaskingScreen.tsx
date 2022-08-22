@@ -1,11 +1,3 @@
-import {
-    createBufferInfoFromArrays,
-    createProgramInfo,
-    drawBufferInfo,
-    setBuffersAndAttributes,
-    setUniforms,
-} from 'twgl.js';
-
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -20,7 +12,7 @@ import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
-import { drawWebGLImage, updateCanvas } from './displayLensFeeds';
+import { setupWebGL, updateCanvas } from './displayLensFeeds';
 
 export type Lens = 'Left' | 'Right';
 
@@ -64,7 +56,6 @@ const MaskingScreen = () => {
     // ===== Refs =====
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasContextRef = useRef<WebGLRenderingContext | null>(null);
-    const canvasTextureRef = useRef<WebGLTexture | null>(null);
     const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
 
@@ -75,7 +66,7 @@ const MaskingScreen = () => {
         if (canvasRef.current) {
             canvasContextRef.current = canvasRef.current.getContext('webgl', { preserveDrawingBuffer: true });
             if (canvasContextRef.current) {
-                canvasTextureRef.current = drawWebGLImage(canvasContextRef.current);
+                setupWebGL(canvasContextRef.current);
             }
         }
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
@@ -138,7 +129,7 @@ const MaskingScreen = () => {
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (!canvasContextRef.current || !canvasTextureRef.current) return;
+        if (!canvasContextRef.current) return;
         if (isFrameProcessing.current || !allowImages.current) return;
 
         const data = event.data as ArrayBuffer;
@@ -152,7 +143,6 @@ const MaskingScreen = () => {
             updateCanvas(
                 data,
                 canvasContextRef.current,
-                canvasTextureRef.current,
                 mainLens.current,
                 isCamReversed.current,
                 showOverexposed.current
@@ -169,7 +159,7 @@ const MaskingScreen = () => {
     const timeoutFrame = () => {
         frameTimeoutRef.current = window.setTimeout(() => {
             isFrameProcessing.current = false;
-        }, 5);
+        }, 0);
     };
 
     // ===== Components =====
