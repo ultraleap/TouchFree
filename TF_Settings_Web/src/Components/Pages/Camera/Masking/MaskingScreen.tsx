@@ -159,7 +159,7 @@ const MaskingScreen = () => {
     const timeoutFrame = () => {
         frameTimeoutRef.current = window.setTimeout(() => {
             isFrameProcessing.current = false;
-        }, 0);
+        }, 32);
     };
 
     // ===== Components =====
