@@ -187,7 +187,7 @@ namespace Ultraleap.TouchFree.Library
 
         private Vector3 LeapToCameraFrame(Leap.Vector leapVector, Leap.Image image)
         {
-            var lensAdjustment = HandRenderLens == Image.CameraType.RIGHT ? -25 : 25;
+            var lensAdjustment = HandRenderLens == Image.CameraType.RIGHT ? -32.5f : 32.5f;
             var updatedVector = new Leap.Vector(leapVector.x + lensAdjustment, leapVector.y, leapVector.z);
             var ray = new Leap.Vector((float)Math.Atan2(updatedVector.x, updatedVector.y), (float)Math.Atan2(updatedVector.z, updatedVector.y), (float)Math.Sqrt(updatedVector.x * updatedVector.x + updatedVector.z * updatedVector.z + updatedVector.y * updatedVector.y));
 
