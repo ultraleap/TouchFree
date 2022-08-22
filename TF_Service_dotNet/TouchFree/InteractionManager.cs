@@ -127,11 +127,11 @@ namespace Ultraleap.TouchFree.Library
                             }
                         }
 
-                        if (interactionCurrentlyDown == null && interactionInputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.InputType == InputType.DOWN)
+                        if (interactionCurrentlyDown == null && interactionInputAction?.inputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.Value.InputType == InputType.DOWN)
                         {
                             inputAction = interactionInputAction.inputAction;
                             interactionCurrentlyDown = interaction.Key;
-                            nonLocationRelativeInputAction = interactionInputAction.inputAction;
+                            nonLocationRelativeInputAction = interactionInputAction.inputAction.Value;
 
                             if (interactionTuning?.EnableInteractionConfidence == true)
                             {
@@ -146,9 +146,9 @@ namespace Ultraleap.TouchFree.Library
                             }
                         }
 
-                        if (currentMaxProgress < interactionInputAction.inputAction.ProgressToClick)
+                        if (interactionInputAction?.inputAction != null && currentMaxProgress < interactionInputAction.inputAction.Value.ProgressToClick)
                         {
-                            currentMaxProgress = interactionInputAction.inputAction.ProgressToClick;
+                            currentMaxProgress = interactionInputAction.inputAction.Value.ProgressToClick;
                         }
                     }
                 }
