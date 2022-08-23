@@ -88,8 +88,6 @@ const MaskingScreen = () => {
         socket.addEventListener('message', (event) => handleMessage(socket, event));
         socket.addEventListener('close', handleWSClose);
 
-        addEventListener('frameRendered', timeoutFrame as EventListener);
-
         HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
         setHandRenderState(true, mainLens.current === 'Left' ? 'left' : 'right');
 
@@ -100,7 +98,6 @@ const MaskingScreen = () => {
 
             socket.close();
 
-            removeEventListener('frameRendered', timeoutFrame as EventListener);
             HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
             window.clearTimeout(frameTimeoutRef.current);
@@ -165,7 +162,10 @@ const MaskingScreen = () => {
                 isCamReversed.current,
                 showOverexposed.current
             );
-            dispatchEvent(new CustomEvent('frameRendered'));
+            // dispatchEvent(new CustomEvent('frameRendered'));
+            frameTimeoutRef.current = window.setTimeout(() => {
+                isFrameProcessing.current = false;
+            }, FRAME_PROCESSING_TIMEOUT * 3);
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
@@ -189,12 +189,6 @@ const MaskingScreen = () => {
         // Inore any messages for a short period to allow clearing of message handling
         handTimeoutRef.current = window.setTimeout(() => {
             isHandProcessing.current = false;
-        }, FRAME_PROCESSING_TIMEOUT);
-    };
-
-    const timeoutFrame = () => {
-        frameTimeoutRef.current = window.setTimeout(() => {
-            isFrameProcessing.current = false;
         }, FRAME_PROCESSING_TIMEOUT);
     };
 
@@ -245,11 +239,6 @@ const MaskingScreen = () => {
         );
     };
 
-    const handSVG = useMemo(
-        () => <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />,
-        [handData.current]
-    );
-
     return (
         <div>
             <div className="title-line" style={{ flexDirection: 'column' }}>
@@ -262,11 +251,8 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <canvas ref={canvasRef} width={'192px'} height={'192px'} />
-                    {allowAnalytics ? (
-                        <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
-                    ) : (
-                        handSVG
-                    )}
+
+                    <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>
