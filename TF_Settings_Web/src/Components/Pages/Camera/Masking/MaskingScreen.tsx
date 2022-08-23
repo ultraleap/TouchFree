@@ -108,6 +108,8 @@ const MaskingScreen = () => {
         };
     }, []);
 
+    useEffect(() => setHandRenderState(true, mainLens.current === 'Left' ? 'left' : 'right'), [mainLens.current]);
+
     // ===== Event Handlers =====
     const handleInitialTrackingState = (state: TrackingStateResponse) => {
         const configAllowImages = state.allowImages?.content;
