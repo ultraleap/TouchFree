@@ -262,7 +262,11 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <canvas ref={canvasRef} width={'192px'} height={'192px'} />
-                    {handSVG}
+                    {allowAnalytics ? (
+                        <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
+                    ) : (
+                        handSVG
+                    )}
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>
