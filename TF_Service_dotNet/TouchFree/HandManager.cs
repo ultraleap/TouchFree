@@ -132,15 +132,9 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        public bool TrackingServiceConnected()
-        {
-            return trackingProvider?.controller?.IsServiceConnected ?? false;
-        }
+        public bool IsTrackingServiceConnected() => trackingProvider?.controller?.IsServiceConnected ?? false;
 
-        public bool CameraConnected()
-        {
-            return trackingProvider?.controller?.Devices?.ActiveDevice != null;
-        }
+        public bool IsCameraConnected() => trackingProvider?.controller?.Devices?.ActiveDevice != null;
 
         public void UpdateTrackingTransform(PhysicalConfigInternal _config)
         {

@@ -6,7 +6,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 {
     public class TrackingConnectionManager : ITrackingConnectionManager
     {
-        public Leap.Controller controller { get; private set; }
+        public Leap.Controller controller { get; }
 
         private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly IConfigManager configManager;
@@ -16,13 +16,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         private bool ShouldConnect = false;
 
         public bool ShouldSendHandData { get; private set; }
-
-        private TrackingMode currentTrackingMode;
-
-        public TrackingMode CurrentTrackingMode
-        {
-            get { return currentTrackingMode; }
-        }
+        public TrackingMode CurrentTrackingMode { get; private set; }
 
         public TrackingConnectionManager(IConfigManager _configManager, ITrackingDiagnosticApi _diagnosticApi)
         {
@@ -156,7 +150,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
 
-            currentTrackingMode = _mode;
+            CurrentTrackingMode = _mode;
 
             switch (_mode)
             {
