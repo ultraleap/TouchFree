@@ -26,7 +26,7 @@ const FRAME_PROCESSING_TIMEOUT = 30;
 const MaskingScreen = () => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
-    const [handData, setHandData] = useState<HandState>(defaultHandState);
+    const handData = useStatefulRef<HandState>(defaultHandState);
     // Config options
     const masking = useStatefulRef<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const isCamReversed = useStatefulRef<boolean>(false);
@@ -175,13 +175,13 @@ const MaskingScreen = () => {
         isHandProcessing.current = true;
 
         const hands = evt.detail?.Hands;
-        if (hands) {
+        if (hands.length > 0 || handData.current.one || handData.current.two) {
             const handOne = hands[0];
             const handTwo = hands[1];
             const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
             const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
 
-            setHandData({ one: convertedHandOne, two: convertedHandTwo });
+            handData.current = { one: convertedHandOne, two: convertedHandTwo };
         }
 
         // Inore any messages for a short period to allow clearing of message handling
@@ -243,6 +243,11 @@ const MaskingScreen = () => {
         );
     };
 
+    const handSVG = useMemo(
+        () => <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />,
+        [handData.current]
+    );
+
     return (
         <div>
             <div className="title-line" style={{ flexDirection: 'column' }}>
@@ -255,7 +260,7 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <canvas ref={canvasRef} width={'192px'} height={'192px'} />
-                    <HandsSvg key="hand-data" one={handData.one} two={handData.two} />
+                    {handSVG}
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>
