@@ -285,8 +285,9 @@ namespace Ultraleap.TouchFree.Library.Connections
             SetMasking(trackingConfig.Mask.Left, trackingConfig.Mask.Right, trackingConfig.Mask.Upper, trackingConfig.Mask.Lower);
         }
 
-        private void LoadTrackingConfigurationWithDelay()
+        private void LoadTrackingConfiguration()
         {
+            // No device connected so do nothing until a device is connected
             if (connectedDeviceID.HasValue)
             {
                 loadingAllowImagesConfiguration = true;
@@ -299,7 +300,6 @@ namespace Ultraleap.TouchFree.Library.Connections
                 GetCameraOrientation();
                 GetImageMask();
             }
-            // TODO: handle no device cases
         }
 
         public void HandleDeviceConnectedRequests()
@@ -311,52 +311,52 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
             else
             {
-                LoadTrackingConfigurationWithDelay();
+                LoadTrackingConfiguration();
             }
         }
 
-        private void TrackingDiagnosticApi_OnCameraOrientationResponse(bool? arg1, string arg2)
+        private void TrackingDiagnosticApi_OnCameraOrientationResponse(bool? cameraReversed, string _)
         {
-            if (loadingCameraOrientationConfiguration && arg1.HasValue)
+            if (loadingCameraOrientationConfiguration && cameraReversed.HasValue)
             {
                 loadingCameraOrientationConfiguration = false;
-                trackingConfig.CameraReversed = arg1.Value;
+                trackingConfig.CameraReversed = cameraReversed.Value;
 
                 SaveTrackingConfiguration();
             }
         }
 
-        private void TrackingDiagnosticApi_OnAllowImagesResponse(bool? arg1, string arg2)
+        private void TrackingDiagnosticApi_OnAllowImagesResponse(bool? allowImages, string _)
         {
-            if (loadingAllowImagesConfiguration && arg1.HasValue)
+            if (loadingAllowImagesConfiguration && allowImages.HasValue)
             {
                 loadingAllowImagesConfiguration = false;
-                trackingConfig.AllowImages = arg1.Value;
+                trackingConfig.AllowImages = allowImages.Value;
 
                 SaveTrackingConfiguration();
             }
         }
 
-        private void TrackingDiagnosticApi_OnAnalyticsResponse(bool? arg1, string arg2)
+        private void TrackingDiagnosticApi_OnAnalyticsResponse(bool? analyticsEnabled, string _)
         {
-            if (loadingAnalyticsModeConfiguration && arg1.HasValue)
+            if (loadingAnalyticsModeConfiguration && analyticsEnabled.HasValue)
             {
                 loadingAnalyticsModeConfiguration = false;
-                trackingConfig.AnalyticsEnabled = arg1.Value;
+                trackingConfig.AnalyticsEnabled = analyticsEnabled.Value;
 
                 SaveTrackingConfiguration();
             }
         }
 
-        private void TrackingDiagnosticApi_OnMaskingResponse(ImageMaskData? arg1, string arg2)
+        private void TrackingDiagnosticApi_OnMaskingResponse(ImageMaskData? maskData, string _)
         {
-            if (loadingImageMaskConfiguration && arg1.HasValue)
+            if (loadingImageMaskConfiguration && maskData.HasValue)
             {
                 loadingImageMaskConfiguration = false;
-                trackingConfig.Mask.Upper = (float)arg1.Value.upper;
-                trackingConfig.Mask.Right = (float)arg1.Value.right;
-                trackingConfig.Mask.Lower = (float)arg1.Value.lower;
-                trackingConfig.Mask.Left = (float)arg1.Value.left;
+                trackingConfig.Mask.Upper = (float)maskData.Value.upper;
+                trackingConfig.Mask.Right = (float)maskData.Value.right;
+                trackingConfig.Mask.Lower = (float)maskData.Value.lower;
+                trackingConfig.Mask.Left = (float)maskData.Value.left;
 
                 SaveTrackingConfiguration();
             }
@@ -432,16 +432,17 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public void GetImageMask()
         {
+            // Only get the masking if we have a device
             if (connectedDeviceID.HasValue)
             {
                 var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
                 Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetImageMask, payload));
             }
-            // TODO: handle not having a connected device
         }
 
         public void SetMasking(float _left, float _right, float _top, float _bottom)
         {
+            // Only set the masking if we have a device
             if (connectedDeviceID.HasValue)
             {
                 var payload = new ImageMaskData()
@@ -454,7 +455,6 @@ namespace Ultraleap.TouchFree.Library.Connections
                 };
                 Request(new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload));
             }
-            // TODO: handle not having a connected device
         }
 
 
@@ -471,32 +471,32 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public void GetCameraOrientation()
         {
+            // Only get the camera orientation if we have a device
             if (connectedDeviceID.HasValue)
             {
                 var payload = new DeviceIdPayload() { device_id = connectedDeviceID.Value };
                 Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetCameraOrientation, payload));
             }
-            // TODO: handle not having a connected device
         }
 
         public void SetCameraOrientation(bool reverseOrientation)
         {
+            // Only set the camera orientation if we have a device
             if (connectedDeviceID.HasValue)
             {
                 var payload = new CameraOrientationPayload() { device_id = connectedDeviceID.Value, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" };
                 Request(new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload));
             }
-            // TODO: handle not having a connected device
         }
 
         public void GetDeviceInfo()
         {
+            // Only get the device info if we have a device
             if (connectedDeviceID.HasValue)
             {
                 var payload = new DeviceIdPayload() { device_id = connectedDeviceID.Value };
                 Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
             }
-            // TODO: handle not having a connected device
         }
 
         public void GetDevices()
