@@ -11,10 +11,7 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         private readonly ConcurrentDictionary<Guid, IClientConnection> activeConnections = new ConcurrentDictionary<Guid, IClientConnection>();
 
-        public IEnumerable<IClientConnection> ClientConnections
-        {
-            get { return activeConnections.Values; }
-        }
+        public IEnumerable<IClientConnection> ClientConnections => activeConnections.Values;
 
         public event Action LostAllConnections;
 
@@ -140,83 +137,11 @@ namespace Ultraleap.TouchFree.Library.Connections
             });
         }
 
-        public void SendConfigChangeResponse(ResponseToClient _response)
+        public void SendResponse<T>(T _response, ActionCode _actionCode)
         {
             SendMessageToWebSockets((connection) =>
             {
-                connection.SendConfigChangeResponse(_response);
-            });
-        }
-
-        public void SendConfigFileChangeResponse(ResponseToClient _response)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendConfigFileChangeResponse(_response);
-            });
-        }
-
-        public void SendConfigState(ConfigState _config)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendConfigState(_config);
-            });
-        }
-
-        public void SendConfigFile(ConfigState _config)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendConfigFile(_config);
-            });
-        }
-
-        public void SendStatusResponse(ResponseToClient _response)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendStatusResponse(_response);
-            });
-        }
-
-        public void SendStatus(ServiceStatus _response)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendStatus(_response);
-            });
-        }
-
-        public void SendQuickSetupConfigFile(ConfigState _config)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendQuickSetupConfigFile(_config);
-            });
-        }
-
-        public void SendQuickSetupResponse(ResponseToClient _response)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendQuickSetupResponse(_response);
-            });
-        }
-
-        public void SendTrackingState(TrackingApiState _state)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendTrackingState(_state);
-            });
-        }
-
-        public void SendHandDataStreamStateResponse(ResponseToClient _response)
-        {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendHandDataStreamStateResponse(_response);
+                connection.SendResponse(_response, _actionCode);
             });
         }
     }

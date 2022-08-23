@@ -2,10 +2,6 @@
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Connections.MessageQueues;
@@ -62,7 +58,7 @@ namespace TouchFreeTests.Connections.MessageQueues
             var updateBehaviour = new TestUpdateBehaviour();
             var mockClientConnectionManager = new Mock<IClientConnectionManager>();
             var sut = new TestMessageQueueHandler(new[] { ActionCode.HAND_DATA }, updateBehaviour, mockClientConnectionManager.Object);
-            var request = new IncomingRequest(ActionCode.HAND_DATA, "", "");
+            var request = new IncomingRequest(ActionCode.HAND_DATA, "", "{\"requestID\": \"1\"}");
 
             // Act
             sut.AddItemToQueue(request);
@@ -99,12 +95,16 @@ namespace TouchFreeTests.Connections.MessageQueues
             public override ActionCode[] ActionCodes => ConfiguredActionCodes;
             public ActionCode[] ConfiguredActionCodes { get; set; }
 
-            protected override void Handle(IncomingRequest _content)
+            protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
             {
-                LastRequestHandleWasCalledAgainst = _content;
+                LastRequestHandleWasCalledAgainst = _request;
             }
 
             public IncomingRequest? LastRequestHandleWasCalledAgainst { get; set; }
+
+            protected override string noRequestIdFailureMessage => string.Empty;
+
+            protected override ActionCode noRequestIdFailureActionCode => ActionCode.INPUT_ACTION;
         }
 
         private class TestUpdateBehaviour : IUpdateBehaviour

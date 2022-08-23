@@ -11,32 +11,23 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         {
         }
 
+        protected override string noRequestIdFailureMessage => "Setting configuration failed. This is due to a missing or invalid requestID";
+
         /// <summary>
         /// Checks for invalid states of the config request
         /// </summary>
         /// <param name="_content">The whole json content of the request</param>
         /// <returns>Returns a response as to the validity of the _content</returns>
-        protected ResponseToClient ValidateConfigChange(string _content)
+        protected ResponseToClient ValidateConfigChange(string _content, JObject _contentObj)
         {
             ResponseToClient response = new ResponseToClient(string.Empty, "Success", string.Empty, _content);
-
-            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_content);
-
-            // Explicitly check for requestID because it is the only required key
-            if (!RequestIdExists(contentObj))
-            {
-                // Validation has failed because there is no valid requestID
-                response.status = "Failure";
-                response.message = "Setting configuration failed. This is due to a missing or invalid requestID";
-                return response;
-            }
 
             var configRequestFields = typeof(ConfigState).GetFields();
             var interactionFields = typeof(InteractionConfig).GetFields();
             var hoverAndHoldFields = typeof(HoverAndHoldInteractionSettings).GetFields();
             var physicalFields = typeof(PhysicalConfig).GetFields();
 
-            foreach (var contentElement in contentObj)
+            foreach (var contentElement in _contentObj)
             {
                 // first layer of _content should contain only fields that ConfigRequest owns
                 bool validField = IsFieldValid(contentElement, configRequestFields);

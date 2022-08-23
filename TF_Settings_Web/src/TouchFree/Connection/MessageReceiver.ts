@@ -208,7 +208,6 @@ export class MessageReceiver {
     // Checks the dictionary of <trackingStateCallbacks> for a matching request ID. If there is a
     // match, calls the callback action in the matching <TrackingStateCallback>.
     HandleTrackingStateResponse(trackingStateResponse: TrackingStateResponse): void {
-        console.log("TRACKING RESPONSE", trackingStateResponse);
         if (this.trackingStateCallbacks !== undefined) {
             for (let key in this.trackingStateCallbacks) {
                 if (key === trackingStateResponse.requestID) {
@@ -232,7 +231,7 @@ export class MessageReceiver {
             if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
                 if (this.actionQueue[0].InteractionFlags & BitmaskFlags.MOVE ||
-                    this.actionQueue[0].InteractionFlags & BitmaskFlags.NONE) {
+                    this.actionQueue[0].InteractionFlags & BitmaskFlags.NONE_INPUT) {
                     // We want to ignore non-move results
                     this.actionQueue.shift();
                 } else {
