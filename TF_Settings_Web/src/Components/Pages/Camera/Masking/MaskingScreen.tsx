@@ -74,7 +74,7 @@ const MaskingScreen = () => {
 
     useEffect(() => {
         if (canvasRef.current) {
-            canvasContextRef.current = canvasRef.current.getContext('webgl', { preserveDrawingBuffer: true });
+            canvasContextRef.current = canvasRef.current.getContext('webgl');
             if (canvasContextRef.current) {
                 setupWebGL(canvasContextRef.current);
             }
@@ -101,6 +101,7 @@ const MaskingScreen = () => {
             socket.close();
 
             removeEventListener('frameRendered', timeoutFrame as EventListener);
+            HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
             window.clearTimeout(frameTimeoutRef.current);
             window.clearTimeout(handTimeoutRef.current);
