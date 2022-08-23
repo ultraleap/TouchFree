@@ -165,7 +165,7 @@ const MaskingScreen = () => {
             // dispatchEvent(new CustomEvent('frameRendered'));
             frameTimeoutRef.current = window.setTimeout(() => {
                 isFrameProcessing.current = false;
-            }, FRAME_PROCESSING_TIMEOUT * 3);
+            }, FRAME_PROCESSING_TIMEOUT * 2);
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
