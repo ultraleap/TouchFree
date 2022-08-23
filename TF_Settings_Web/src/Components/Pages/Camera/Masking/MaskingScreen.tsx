@@ -67,6 +67,7 @@ const MaskingScreen = () => {
     const canvasContextRef = useRef<WebGLRenderingContext | null>(null);
     const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
+    const handTimeoutRef = useRef<number>();
 
     // ===== Hooks =====
     const navigate = useNavigate();
@@ -87,10 +88,10 @@ const MaskingScreen = () => {
         socket.addEventListener('message', (event) => handleMessage(socket, event));
         socket.addEventListener('close', handleWSClose);
 
-        addEventListener('updateCanvas', timeoutFrame as EventListener);
+        addEventListener('frameRendered', timeoutFrame as EventListener);
 
         HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
-        setHandRenderState(true, mainLens.current.toLowerCase());
+        setHandRenderState(true, mainLens.current === 'Left' ? 'left' : 'right');
 
         return () => {
             socket.removeEventListener('open', handleWSOpen);
@@ -99,9 +100,10 @@ const MaskingScreen = () => {
 
             socket.close();
 
-            removeEventListener('updateCanvas', timeoutFrame as EventListener);
-            setHandRenderState(false, mainLens.current.toLowerCase());
+            removeEventListener('frameRendered', timeoutFrame as EventListener);
+            setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
             window.clearTimeout(frameTimeoutRef.current);
+            window.clearTimeout(handTimeoutRef.current);
         };
     }, []);
 
@@ -182,7 +184,7 @@ const MaskingScreen = () => {
         }
 
         // Inore any messages for a short period to allow clearing of message handling
-        setTimeout(() => {
+        handTimeoutRef.current = window.setTimeout(() => {
             isHandProcessing.current = false;
         }, FRAME_PROCESSING_TIMEOUT);
     };

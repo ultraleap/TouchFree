@@ -11,7 +11,7 @@ import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
 
 import { HandState, HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
 
-export const setHandRenderState = (handRenderState: boolean, lens: string): void => {
+export const setHandRenderState = (handRenderState: boolean, lens: 'left' | 'right'): void => {
     const requestID = uuidgen();
 
     const content = new HandRenderDataStateRequest(requestID, handRenderState, lens);
