@@ -386,7 +386,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     public class TrackingStateRequest
     {
         // Variable: requestID
-        string requestID;
+        public string requestID;
         // Variable: mask
         MaskData? mask;
         // Variable: cameraOrientation

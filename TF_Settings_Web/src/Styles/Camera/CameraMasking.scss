@@ -15,13 +15,26 @@
 
     user-select: none;
 
-    > canvas {
+    > div.cam-feed-box-feed {
         $canvas-size: $size - $padding;
-        width: $canvas-size;
-        height: $canvas-size;
         margin-top: calc((100% - $canvas-size) / 2);
+        z-index: 10;
 
-        border: 1px solid #717171;
+        > svg {
+            pointer-events: none;
+            top: 50px;
+            left: 100px;
+            z-index: 11;
+            position: absolute;
+        }
+
+        > canvas {
+            $canvas-size: $size - $padding;
+            width: $canvas-size;
+            height: $canvas-size;
+
+            border: 1px solid #717171;
+        }
     }
 
     > p {
@@ -37,7 +50,7 @@
 
 .cam-feed-box--main {
     @include cam-feed-box(1000px, 200px);
-    > canvas {
+    > div.cam-feed-box-feed {
         margin-top: 50px;
     }
     margin-top: 3%;

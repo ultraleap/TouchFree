@@ -8,6 +8,7 @@ using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
+using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {
@@ -25,15 +26,22 @@ namespace Ultraleap.TouchFree.Service.Connection
             return services;
         }
 
-        public static IServiceCollection AddWebSocketReceiver(this IServiceCollection services)
+        public static IServiceCollection AddMessageQueueHandlers(this IServiceCollection services)
         {
-            services.AddSingleton<WebSocketReceiver>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationChangeQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationFileChangeQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationStateRequestQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationFileRequestQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, QuickSetupQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ServiceStatusQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, HandDataStreamStateQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, TrackingApiChangeQueueHandler>();
             return services;
         }
 
         public static IServiceCollection AddUpdateBehaviour(this IServiceCollection services)
         {
-            services.AddSingleton<UpdateBehaviour>();
+            services.AddSingleton<IUpdateBehaviour, UpdateBehaviour>();
             return services;
         }
 
@@ -51,14 +59,9 @@ namespace Ultraleap.TouchFree.Service.Connection
 
         public static IServiceCollection AddConfig(this IServiceCollection services)
         {
-            var configManager = new ConfigManager();
-            services.AddSingleton<IConfigManager>(configManager);
+            services.AddSingleton<IConfigManager, ConfigManager>();
             services.AddSingleton<IQuickSetupHandler, QuickSetupHandler>();
-            var watcher = new ConfigFileWatcher(configManager);
-
-            services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
-
-            services.AddSingleton(watcher);
+            services.AddSingleton<ConfigFileWatcher>();
 
             return services;
         }

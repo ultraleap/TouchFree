@@ -8,6 +8,7 @@ namespace Ultraleap.TouchFree.Library
     {
         Hand PrimaryHand { get; }
         Hand SecondaryHand { get; }
+        HandFrame RawHands { get; }
         List<Vector> RawHandPositions { get; }
         long Timestamp { get; }
         void ConnectToTracking();
@@ -16,5 +17,6 @@ namespace Ultraleap.TouchFree.Library
         bool CameraConnected();
         event Action HandFound;
         event Action HandsLost;
+        Leap.Image.CameraType HandRenderLens { set; }
     }
 }

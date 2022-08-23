@@ -6,19 +6,27 @@ import { useNavigate } from 'react-router-dom';
 import { useStatefulRef } from 'customHooks';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
+import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
+
+import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { setupWebGL, updateCanvas } from './displayLensFeeds';
+import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
 
 export type Lens = 'Left' | 'Right';
+
+const FRAME_PROCESSING_TIMEOUT = 30;
 
 const MaskingScreen = () => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
+    const [handData, setHandData] = useState<HandState>(defaultHandState);
     // Config options
     const masking = useStatefulRef<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const isCamReversed = useStatefulRef<boolean>(false);
@@ -28,6 +36,7 @@ const MaskingScreen = () => {
     const showOverexposed = useStatefulRef<boolean>(false);
 
     const isFrameProcessing = useStatefulRef<boolean>(false);
+    const isHandProcessing = useStatefulRef<boolean>(false);
 
     // ===== State Setters =====
     const setMasking = (direction: SliderDirection, maskingValue: number) => {
@@ -78,7 +87,10 @@ const MaskingScreen = () => {
         socket.addEventListener('message', (event) => handleMessage(socket, event));
         socket.addEventListener('close', handleWSClose);
 
-        addEventListener('frameRendered', timeoutFrame as EventListener);
+        addEventListener('updateCanvas', timeoutFrame as EventListener);
+
+        HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
+        setHandRenderState(true, mainLens.current.toLowerCase());
 
         return () => {
             socket.removeEventListener('open', handleWSOpen);
@@ -87,8 +99,9 @@ const MaskingScreen = () => {
 
             socket.close();
 
+            removeEventListener('updateCanvas', timeoutFrame as EventListener);
+            setHandRenderState(false, mainLens.current.toLowerCase());
             window.clearTimeout(frameTimeoutRef.current);
-            removeEventListener('frameRendered', timeoutFrame as EventListener);
         };
     }, []);
 
@@ -147,19 +160,37 @@ const MaskingScreen = () => {
                 isCamReversed.current,
                 showOverexposed.current
             );
-
-            console.log('DISPATCH', data.byteLength);
             dispatchEvent(new CustomEvent('frameRendered'));
         } else if (!successfullySubscribed.current) {
-            console.log('SUBSCRIBE');
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
+    };
+
+    const handleTFInput = (evt: CustomEvent<HandFrame>): void => {
+        if (isHandProcessing.current || !successfullySubscribed.current) return;
+
+        isHandProcessing.current = true;
+
+        const hands = evt.detail?.Hands;
+        if (hands) {
+            const handOne = hands[0];
+            const handTwo = hands[1];
+            const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
+            const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
+
+            setHandData({ one: convertedHandOne, two: convertedHandTwo });
+        }
+
+        // Inore any messages for a short period to allow clearing of message handling
+        setTimeout(() => {
+            isHandProcessing.current = false;
+        }, FRAME_PROCESSING_TIMEOUT);
     };
 
     const timeoutFrame = () => {
         frameTimeoutRef.current = window.setTimeout(() => {
             isFrameProcessing.current = false;
-        }, 32);
+        }, FRAME_PROCESSING_TIMEOUT);
     };
 
     // ===== Components =====
@@ -219,7 +250,10 @@ const MaskingScreen = () => {
             </div>
             <div className="cam-feed-box--main">
                 {sliders}
-                <canvas ref={canvasRef} width={'192px'} height={'192px'} />
+                <div className="cam-feed-box-feed">
+                    <canvas ref={canvasRef} width={'192px'} height={'192px'} />
+                    <HandsSvg key="hand-data" one={handData.one} two={handData.two} />
+                </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>
             <div className="cam-feeds-bottom-container">

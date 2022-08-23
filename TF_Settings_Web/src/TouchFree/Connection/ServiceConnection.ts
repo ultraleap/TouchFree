@@ -125,6 +125,11 @@ export class ServiceConnection {
                 let serviceStatus: ServiceStatus = looseData.content;
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
                 break;
+                
+            case ActionCode.HAND_DATA:
+                let wsHandData: any = looseData.content;
+                ConnectionManager.messageReceiver.latestHandDataItem = wsHandData;
+                break;
 
             case ActionCode.CONFIGURATION_STATE:
             case ActionCode.CONFIGURATION_FILE_STATE:
