@@ -49,7 +49,7 @@ export const updateCanvas = (
     const lensHeight = Math.max(dim1, dim2) / 2;
 
     if (!cameraBuffer) {
-        cameraBuffer = new ArrayBuffer(width * lensHeight);
+        cameraBuffer = new ArrayBuffer(width * lensHeight * 4);
     }
     const buf8 = new Uint8Array(cameraBuffer);
     const buf32 = new Uint32Array(cameraBuffer);
@@ -63,10 +63,10 @@ export const updateCanvas = (
     }
 
     // Set black pixels to remove flashing camera bytes
-    const startOffset = isCameraReversed ? 0 : ((lensHeight / 2 - 1) * width) / 2;
+    const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    cameraTexture = new DataTexture(buf8, width / 2, lensHeight / 2);
+    cameraTexture = new DataTexture(buf8, width, lensHeight);
     cameraTexture.flipY = true;
     cameraFeedPlane.material.color.setHex(0xffffff);
     cameraFeedPlane.material.map = cameraTexture;
@@ -77,14 +77,15 @@ export const updateCanvas = (
 
 export const setupRenderScene = (div: HTMLDivElement) => {
     scene = new Scene();
-    camera = new PerspectiveCamera(50, 1, 0.1, 1000);
-    camera.position.z = 5;
+    camera = new PerspectiveCamera(90);
+    camera.position.z = 1;
 
     renderer = new WebGLRenderer();
     renderer.setSize(div.clientWidth, div.clientHeight);
     div.appendChild(renderer.domElement);
 
-    cameraFeedPlane = new Mesh(new PlaneGeometry(4.6, 4.6), new MeshBasicMaterial({ color: 0x000000 }));
+    cameraFeedPlane = new Mesh(new PlaneGeometry(2, 2), new MeshBasicMaterial({ color: 0x000000 }));
+    console.log(cameraFeedPlane.position.z);
     scene.add(cameraFeedPlane);
 
     renderer.render(scene, camera);
@@ -101,29 +102,24 @@ const processRotatedScreen = (
 ) => {
     let rowBase = 0;
     const offsetView = new Uint8Array(data, offset, width * lensHeight * 2);
-    const resultWidth = width / 2;
-    const resultHeight = lensHeight / 2;
 
-    for (let rowIndex = 0; rowIndex < resultWidth; rowIndex++) {
-        const resultStartIndex = rowBase / 8;
+    for (let rowIndex = 0; rowIndex < width; rowIndex++) {
+        const rowStart = rowBase * 2;
 
         if (lens === 'Right') {
-            for (let i = 0; i < resultHeight; i++) {
-                buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
+            for (let i = 0; i < lensHeight; i++) {
+                buf32[i + rowStart] = byteConversionArray[offsetView[i + rowStart]];
             }
         }
 
         rowBase += width;
         if (lens === 'Left') {
-            for (let i = 0; i < resultHeight; i++) {
-                buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
+            for (let i = 0; i < lensHeight; i++) {
+                buf32[i + rowStart] = byteConversionArray[offsetView[i + rowStart]];
             }
         }
 
-        rowBase += width;
-
-        // Skip entire row
-        rowBase += width * 2;
+        rowBase += lensHeight;
     }
 };
 
@@ -138,9 +134,7 @@ const processScreen = (
 ) => {
     const offsetView = new Uint8Array(data, offset + (lens === 'Left' ? width * lensHeight : 0), width * lensHeight);
 
-    for (let i = 0; i < width / 2; i++) {
-        for (let j = 0; j < lensHeight / 2; j++) {
-            buf32[(i * lensHeight) / 2 + j] = byteConversionArray[offsetView[i * lensHeight * 2 + j * 2]];
-        }
+    for (let i = 0; i < width * lensHeight; i++) {
+        buf32[i] = byteConversionArray[offsetView[i]];
     }
 };
