@@ -11,7 +11,7 @@ import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
-import { HandState } from 'Components/Controls/HandsSvg';
+import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
@@ -239,8 +239,7 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <div className="cam-feed-box-feed--render" ref={camFeedRef} />
-                    {/* <canvas ref={canvasRef} width={'192px'} height={'192px'} /> */}
-                    {/* <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} /> */}
+                    <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>
