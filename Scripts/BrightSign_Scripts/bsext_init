@@ -10,11 +10,11 @@ export LIBTRACK_CONFIG_DIR="/storage/sd/ultraleap/tracking"
 cd $(dirname $(readlink -f $0))
 
 if [[ $1 == "start" ]]; then
-    sleep 10
     export LD_LIBRARY_PATH=./Tracking/bin/
     start-stop-daemon --start \
         --pidfile $TRK_PIDFILE --make-pidfile \
         --background --exec $TRK_DAEMON
+    sleep 10
     export LD_LIBRARY_PATH=./TouchFree
     start-stop-daemon --start \
         --pidfile $TF_PIDFILE --make-pidfile \
