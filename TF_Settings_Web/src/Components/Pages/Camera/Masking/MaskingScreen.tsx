@@ -11,13 +11,11 @@ import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
-import { HandsSvg, HandState, HandSvgCoordinate } from 'Components/Controls/HandsSvg';
-
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { setupRenderScene, updateCanvas } from './displayLensFeeds';
-import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
+import { defaultHandState, HandState, rawHandToHandData, setHandRenderState } from './handRendering';
 
 export type Lens = 'Left' | 'Right';
 
@@ -67,7 +65,6 @@ const MaskingScreen = () => {
     const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
     const handTimeoutRef = useRef<number>();
-    const fingerData = useRef<HandSvgCoordinate>();
 
     // ===== Hooks =====
     const navigate = useNavigate();
@@ -151,7 +148,7 @@ const MaskingScreen = () => {
             isFrameProcessing.current = true;
             successfullySubscribed.current = true;
 
-            updateCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current, fingerData.current);
+            updateCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current, handData.current);
             frameTimeoutRef.current = window.setTimeout(() => {
                 isFrameProcessing.current = false;
             }, FRAME_PROCESSING_TIMEOUT);
@@ -169,9 +166,8 @@ const MaskingScreen = () => {
         if (hands.length > 0 || handData.current.one || handData.current.two) {
             const handOne = hands[0];
             const handTwo = hands[1];
-            const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
-            const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
-            fingerData.current = convertedHandOne?.indexTip;
+            const convertedHandOne = handOne ? rawHandToHandData(handOne) : undefined;
+            const convertedHandTwo = handTwo ? rawHandToHandData(handTwo) : undefined;
 
             handData.current = { one: convertedHandOne, two: convertedHandTwo };
         }

@@ -7,12 +7,12 @@ import {
     PerspectiveCamera,
     PlaneGeometry,
     Scene,
+    Vector3,
     WebGLRenderer,
 } from 'three';
 
-import { HandSvgCoordinate } from 'Components/Controls/HandsSvg';
-
 import { Lens } from './MaskingScreen';
+import { FingerData, HandState, INVALD_POSITION } from './handRendering';
 
 let conversionArraysInitialised = false;
 const byteConversionArray = new Uint32Array(256);
@@ -31,7 +31,7 @@ export const updateCanvas = (
     lens: Lens,
     isCameraReversed: boolean,
     showOverexposedAreas: boolean,
-    fingerData?: HandSvgCoordinate
+    handData?: HandState
 ) => {
     if (!conversionArraysInitialised) {
         for (let i = 0; i < 256; i++) {
@@ -78,26 +78,46 @@ export const updateCanvas = (
     cameraFeedPlane.material.needsUpdate = true;
     cameraTexture.needsUpdate = true;
 
-    if (fingerData) {
-        const { x, y, z } = fingerData;
-        circle.position.set(x, y, z);
+    const handDataOne = handData?.one;
+    if (handData && handDataOne) {
+        scene.clear();
+        scene.add(cameraFeedPlane);
+        Object.values(handDataOne.fingers).forEach((finger: FingerData) => {
+            if (finger.tip !== INVALD_POSITION) {
+                scene.add(getFingerPointMesh(finger.tip));
+            }
+            if (finger.knuckle !== INVALD_POSITION) {
+                scene.add(getFingerPointMesh(finger.knuckle));
+            }
+        });
+        scene.add(getFingerPointMesh(handDataOne.wrist));
     }
 
     renderer.render(scene, camera);
 };
 
+const getFingerPointMesh = (position: Vector3): Mesh<BufferGeometry, MeshBasicMaterial> => {
+    const circle1 = new Mesh(new CircleGeometry(0.03, 8), new MeshBasicMaterial({ color: 0xffff00 }));
+    circle1.position.set(position.x, position.y, position.z);
+    const scale = 1 + 2 * position.z;
+    circle1.scale.set(scale, scale, 1);
+
+    return circle1;
+};
+
 export const setupRenderScene = (div: HTMLDivElement) => {
     scene = new Scene();
     camera = new PerspectiveCamera(90);
-    camera.position.z = 1;
+    camera.position.z = 2;
 
     renderer = new WebGLRenderer();
     renderer.setSize(div.clientWidth, div.clientHeight);
     div.appendChild(renderer.domElement);
 
-    cameraFeedPlane = new Mesh(new PlaneGeometry(2, 2), new MeshBasicMaterial({ color: 0x000000 }));
+    cameraFeedPlane = new Mesh(new PlaneGeometry(4, 4), new MeshBasicMaterial({ color: 0x000000 }));
     scene.add(cameraFeedPlane);
-    circle = new Mesh(new CircleGeometry(0.01, 8), new MeshBasicMaterial({ color: 0xffff00 }));
+    circle = new Mesh(new CircleGeometry(0.06, 8), new MeshBasicMaterial({ color: 0x000000 }));
+    circle.position.set(-1, -1, -1);
     scene.add(circle);
 
     renderer.render(scene, camera);
