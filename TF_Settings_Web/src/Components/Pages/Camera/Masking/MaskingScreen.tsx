@@ -11,7 +11,7 @@ import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
-import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
+import { HandsSvg, HandState, HandSvgCoordinate } from 'Components/Controls/HandsSvg';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
@@ -21,7 +21,7 @@ import { defaultHandState, handToSvgData, setHandRenderState } from './handRende
 
 export type Lens = 'Left' | 'Right';
 
-const FRAME_PROCESSING_TIMEOUT = 60;
+const FRAME_PROCESSING_TIMEOUT = 120;
 
 const MaskingScreen = () => {
     // ===== State =====
@@ -67,6 +67,7 @@ const MaskingScreen = () => {
     const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
     const handTimeoutRef = useRef<number>();
+    const fingerData = useRef<HandSvgCoordinate>();
 
     // ===== Hooks =====
     const navigate = useNavigate();
@@ -150,7 +151,7 @@ const MaskingScreen = () => {
             isFrameProcessing.current = true;
             successfullySubscribed.current = true;
 
-            updateCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current);
+            updateCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current, fingerData.current);
             frameTimeoutRef.current = window.setTimeout(() => {
                 isFrameProcessing.current = false;
             }, FRAME_PROCESSING_TIMEOUT);
@@ -170,6 +171,7 @@ const MaskingScreen = () => {
             const handTwo = hands[1];
             const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
             const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
+            fingerData.current = convertedHandOne?.indexTip;
 
             handData.current = { one: convertedHandOne, two: convertedHandTwo };
         }
@@ -239,7 +241,7 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <div className="cam-feed-box-feed--render" ref={camFeedRef} />
-                    <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
+                    {/* <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} /> */}
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>

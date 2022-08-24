@@ -8,6 +8,7 @@ import {
     HandRenderDataStateRequest,
 } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
+import { MapRangeToRange } from 'TouchFree/Utilities';
 
 import { HandState, HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
 
@@ -24,9 +25,19 @@ export const setHandRenderState = (handRenderState: boolean, lens: 'left' | 'rig
     });
 };
 
+const zLimits = [100, 600];
+const zMax = 0.1;
+
 const translateToCoordinate = (coordinate?: Vector) => {
-    if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, 600);
-    return new HandSvgCoordinate(1000 * (1 - coordinate.X * 1) - 100, 1000 * coordinate.Y - 100, coordinate.Z);
+    if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, -1);
+    const { X, Y, Z } = coordinate;
+    // Map Z between 0 and 0.1
+    const mappedZ = Z < zLimits[0] ? zMax : Z > zLimits[1] ? 0 : zMax - Z / (zLimits[1] / zMax);
+    return new HandSvgCoordinate(
+        1.25 * MapRangeToRange(1 - X, 0, 1, -1, 1) - 0.125,
+        1.25 * MapRangeToRange(1 - Y, 0, 1, -1, 1) - 0.125,
+        mappedZ
+    );
 };
 
 const tipJointIndex = 3;

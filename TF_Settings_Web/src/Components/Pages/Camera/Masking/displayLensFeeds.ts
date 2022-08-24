@@ -1,5 +1,6 @@
 import {
     BufferGeometry,
+    CircleGeometry,
     DataTexture,
     Mesh,
     MeshBasicMaterial,
@@ -8,6 +9,8 @@ import {
     Scene,
     WebGLRenderer,
 } from 'three';
+
+import { HandSvgCoordinate } from 'Components/Controls/HandsSvg';
 
 import { Lens } from './MaskingScreen';
 
@@ -21,12 +24,14 @@ let renderer: WebGLRenderer;
 let camera: PerspectiveCamera;
 let cameraFeedPlane: Mesh<BufferGeometry, MeshBasicMaterial>;
 let cameraTexture: DataTexture;
+let circle: Mesh<BufferGeometry, MeshBasicMaterial>;
 
 export const updateCanvas = (
     data: ArrayBuffer,
     lens: Lens,
     isCameraReversed: boolean,
-    showOverexposedAreas: boolean
+    showOverexposedAreas: boolean,
+    fingerData?: HandSvgCoordinate
 ) => {
     if (!conversionArraysInitialised) {
         for (let i = 0; i < 256; i++) {
@@ -72,6 +77,12 @@ export const updateCanvas = (
     cameraFeedPlane.material.map = cameraTexture;
     cameraFeedPlane.material.needsUpdate = true;
     cameraTexture.needsUpdate = true;
+
+    if (fingerData) {
+        const { x, y, z } = fingerData;
+        circle.position.set(x, y, z);
+    }
+
     renderer.render(scene, camera);
 };
 
@@ -85,8 +96,9 @@ export const setupRenderScene = (div: HTMLDivElement) => {
     div.appendChild(renderer.domElement);
 
     cameraFeedPlane = new Mesh(new PlaneGeometry(2, 2), new MeshBasicMaterial({ color: 0x000000 }));
-    console.log(cameraFeedPlane.position.z);
     scene.add(cameraFeedPlane);
+    circle = new Mesh(new CircleGeometry(0.01, 8), new MeshBasicMaterial({ color: 0xffff00 }));
+    scene.add(circle);
 
     renderer.render(scene, camera);
 };
