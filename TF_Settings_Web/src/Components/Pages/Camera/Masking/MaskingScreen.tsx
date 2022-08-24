@@ -21,7 +21,7 @@ import { defaultHandState, handToSvgData, setHandRenderState } from './handRende
 
 export type Lens = 'Left' | 'Right';
 
-const FRAME_PROCESSING_TIMEOUT = 30;
+const FRAME_PROCESSING_TIMEOUT = 60;
 
 const MaskingScreen = () => {
     // ===== State =====
@@ -162,10 +162,9 @@ const MaskingScreen = () => {
                 isCamReversed.current,
                 showOverexposed.current
             );
-            // dispatchEvent(new CustomEvent('frameRendered'));
             frameTimeoutRef.current = window.setTimeout(() => {
                 isFrameProcessing.current = false;
-            }, FRAME_PROCESSING_TIMEOUT * 2);
+            }, FRAME_PROCESSING_TIMEOUT);
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
