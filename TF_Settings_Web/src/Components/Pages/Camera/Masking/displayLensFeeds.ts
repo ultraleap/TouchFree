@@ -1,4 +1,13 @@
-import { createBufferInfoFromArrays, createProgramInfo, setBuffersAndAttributes } from 'twgl.js';
+import {
+    BufferGeometry,
+    DataTexture,
+    Mesh,
+    MeshBasicMaterial,
+    PerspectiveCamera,
+    PlaneGeometry,
+    Scene,
+    WebGLRenderer,
+} from 'three';
 
 import { Lens } from './MaskingScreen';
 
@@ -7,24 +16,14 @@ const byteConversionArray = new Uint32Array(256);
 const byteConversionArrayOverExposed = new Uint32Array(256);
 let cameraBuffer: ArrayBuffer;
 
-const vs = `attribute vec4 position;
-            varying vec2 v_texcoord;
-
-            void main() {
-                gl_Position = position;
-                v_texcoord = position.xy * 0.5 + 0.5;
-            }`;
-const fs = `precision mediump float;
-            uniform sampler2D u_texture;
-            varying vec2 v_texcoord;
-
-            void main() {
-                gl_FragColor = texture2D(u_texture, v_texcoord);
-            }`;
+let scene: Scene;
+let renderer: WebGLRenderer;
+let camera: PerspectiveCamera;
+let cameraFeedPlane: Mesh<BufferGeometry, MeshBasicMaterial>;
+let cameraTexture: DataTexture;
 
 export const updateCanvas = (
     data: ArrayBuffer,
-    gl: WebGLRenderingContext,
     lens: Lens,
     isCameraReversed: boolean,
     showOverexposedAreas: boolean
@@ -67,29 +66,28 @@ export const updateCanvas = (
     const startOffset = isCameraReversed ? 0 : ((lensHeight / 2 - 1) * width) / 2;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.canvas.width, gl.canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, buf8);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    cameraTexture = new DataTexture(buf8, width / 2, lensHeight / 2);
+    cameraTexture.flipY = true;
+    cameraFeedPlane.material.color.setHex(0xffffff);
+    cameraFeedPlane.material.map = cameraTexture;
+    cameraFeedPlane.material.needsUpdate = true;
+    cameraTexture.needsUpdate = true;
+    renderer.render(scene, camera);
 };
 
-export const setupWebGL = (gl: WebGLRenderingContext) => {
-    const texture = gl.createTexture();
+export const setupRenderScene = (div: HTMLDivElement) => {
+    scene = new Scene();
+    camera = new PerspectiveCamera(50, 1, 0.1, 1000);
+    camera.position.z = 5;
 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    renderer = new WebGLRenderer();
+    renderer.setSize(div.clientWidth, div.clientHeight);
+    div.appendChild(renderer.domElement);
 
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    cameraFeedPlane = new Mesh(new PlaneGeometry(4.6, 4.6), new MeshBasicMaterial({ color: 0x000000 }));
+    scene.add(cameraFeedPlane);
 
-    const programInfo = createProgramInfo(gl, [vs, fs]);
-    const arrays = {
-        position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
-    };
-    const bufferInfo = createBufferInfoFromArrays(gl, arrays);
-
-    gl.useProgram(programInfo.program);
-    setBuffersAndAttributes(gl, programInfo, bufferInfo);
+    renderer.render(scene, camera);
 };
 
 const processRotatedScreen = (

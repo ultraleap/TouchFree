@@ -15,7 +15,7 @@
 
     user-select: none;
 
-    > div.cam-feed-box-feed {
+    .cam-feed-box-feed {
         $canvas-size: $size - $padding;
         margin-top: calc((100% - $canvas-size) / 2);
         z-index: 10;
@@ -28,10 +28,11 @@
             position: absolute;
         }
 
-        > canvas {
+        &--render {
             $canvas-size: $size - $padding;
             width: $canvas-size;
             height: $canvas-size;
+            margin-left: calc($padding / 2);
 
             border: 1px solid #717171;
         }
@@ -50,7 +51,7 @@
 
 .cam-feed-box--main {
     @include cam-feed-box(1000px, 200px);
-    > div.cam-feed-box-feed {
+    .cam-feed-box-feed {
         margin-top: 50px;
     }
     margin-top: 3%;

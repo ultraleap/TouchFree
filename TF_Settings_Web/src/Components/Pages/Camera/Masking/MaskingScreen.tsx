@@ -11,12 +11,12 @@ import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
-import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
+import { HandState } from 'Components/Controls/HandsSvg';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
-import { setupWebGL, updateCanvas } from './displayLensFeeds';
+import { setupRenderScene, updateCanvas } from './displayLensFeeds';
 import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
 
 export type Lens = 'Left' | 'Right';
@@ -63,8 +63,7 @@ const MaskingScreen = () => {
     };
 
     // ===== Refs =====
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const canvasContextRef = useRef<WebGLRenderingContext | null>(null);
+    const camFeedRef = useRef<HTMLDivElement>(null);
     const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
     const handTimeoutRef = useRef<number>();
@@ -73,11 +72,8 @@ const MaskingScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (canvasRef.current) {
-            canvasContextRef.current = canvasRef.current.getContext('webgl');
-            if (canvasContextRef.current) {
-                setupWebGL(canvasContextRef.current);
-            }
+        if (camFeedRef.current) {
+            setupRenderScene(camFeedRef.current);
         }
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
@@ -144,7 +140,6 @@ const MaskingScreen = () => {
     };
 
     const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (!canvasContextRef.current) return;
         if (isFrameProcessing.current || !allowImages.current) return;
 
         const data = event.data as ArrayBuffer;
@@ -155,13 +150,7 @@ const MaskingScreen = () => {
             isFrameProcessing.current = true;
             successfullySubscribed.current = true;
 
-            updateCanvas(
-                data,
-                canvasContextRef.current,
-                mainLens.current,
-                isCamReversed.current,
-                showOverexposed.current
-            );
+            updateCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current);
             frameTimeoutRef.current = window.setTimeout(() => {
                 isFrameProcessing.current = false;
             }, FRAME_PROCESSING_TIMEOUT);
@@ -249,9 +238,9 @@ const MaskingScreen = () => {
             <div className="cam-feed-box--main">
                 {sliders}
                 <div className="cam-feed-box-feed">
-                    <canvas ref={canvasRef} width={'192px'} height={'192px'} />
-
-                    <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
+                    <div className="cam-feed-box-feed--render" ref={camFeedRef} />
+                    {/* <canvas ref={canvasRef} width={'192px'} height={'192px'} /> */}
+                    {/* <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} /> */}
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>
