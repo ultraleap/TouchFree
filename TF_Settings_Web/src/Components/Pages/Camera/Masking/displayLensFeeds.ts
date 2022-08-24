@@ -104,18 +104,18 @@ const processRotatedScreen = (
     const offsetView = new Uint8Array(data, offset, width * lensHeight * 2);
 
     for (let rowIndex = 0; rowIndex < width; rowIndex++) {
-        const rowStart = rowBase * 2;
+        let rowStart = rowBase * 2;
 
         if (lens === 'Right') {
             for (let i = 0; i < lensHeight; i++) {
-                buf32[i + rowStart] = byteConversionArray[offsetView[i + rowStart]];
+                buf32[i + rowBase] = byteConversionArray[offsetView[i + rowStart]];
             }
         }
 
-        rowBase += width;
+        rowStart += lensHeight;
         if (lens === 'Left') {
             for (let i = 0; i < lensHeight; i++) {
-                buf32[i + rowStart] = byteConversionArray[offsetView[i + rowStart]];
+                buf32[i + rowBase] = byteConversionArray[offsetView[i + rowStart]];
             }
         }
 
