@@ -121,14 +121,14 @@ namespace Ultraleap.TouchFree.Library.Configuration
             TouchFreeLog.WriteLine($"Unable to load settings from config {typeof(TData)}");
         }
 
-        private bool DoesConfigFileExist()
+        public static bool DoesConfigFileExist()
         {
             if (!Directory.Exists(ConfigFileUtils.ConfigFileDirectory))
             {
                 return false;
             }
 
-            if (!File.Exists(_ConfigFilePath))
+            if (!File.Exists(Instance._ConfigFilePath))
             {
                 return false;
             }
