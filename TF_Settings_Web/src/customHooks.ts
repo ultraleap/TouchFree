@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const useIsFullScreen = () => {
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -23,4 +23,23 @@ export const useIsFullScreen = () => {
     }, []);
 
     return isFullScreen;
+};
+
+export const useStatefulRef = function <T>(initialValue: T): {
+    current: T;
+} {
+    const [currentVal, setCurrentVal] = useState<T>(initialValue);
+    const valRef = useRef<T>(currentVal);
+
+    const statefulRef = {
+        get current() {
+            return valRef.current;
+        },
+        set current(value: T) {
+            valRef.current = value;
+            setCurrentVal(value);
+        },
+    };
+
+    return statefulRef;
 };

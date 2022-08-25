@@ -4,10 +4,10 @@
     "endOfLine": "crlf",
     "printWidth": 120,
     "importOrder": [
-        "(.*)css$",
-        "(.*)react(.*)|canvas-confetti",
+        "(.*)(.css|.scss)$",
+        "(.*)react(.*)|canvas-confetti|twgl.js",
         "uuid",
-        "index",
+        "(index|customHooks)",
         "^TouchFree/(.*)",
         "^(Videos|Images)/(.*)",
         "^(Components/)(.*)",
