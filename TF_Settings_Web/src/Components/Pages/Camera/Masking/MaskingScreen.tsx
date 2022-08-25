@@ -15,16 +15,16 @@ import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { setupRenderScene, updateCanvas } from './displayLensFeeds';
-import { defaultHandState, HandState, rawHandToHandData, setHandRenderState } from './handRendering';
+import { HandState, rawHandToHandData, setHandRenderState } from './handRendering';
 
 export type Lens = 'Left' | 'Right';
 
-const FRAME_PROCESSING_TIMEOUT = 120;
+const FRAME_PROCESSING_TIMEOUT = 30;
 
 const MaskingScreen = () => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
-    const handData = useStatefulRef<HandState>(defaultHandState);
+    const handData = useStatefulRef<HandState>({});
     // Config options
     const masking = useStatefulRef<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const isCamReversed = useStatefulRef<boolean>(false);
@@ -148,10 +148,10 @@ const MaskingScreen = () => {
             isFrameProcessing.current = true;
             successfullySubscribed.current = true;
 
-            updateCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current, handData.current);
             frameTimeoutRef.current = window.setTimeout(() => {
+                updateCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current, handData.current);
                 isFrameProcessing.current = false;
-            }, FRAME_PROCESSING_TIMEOUT);
+            }, FRAME_PROCESSING_TIMEOUT * 2);
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
@@ -168,7 +168,6 @@ const MaskingScreen = () => {
             const handTwo = hands[1];
             const convertedHandOne = handOne ? rawHandToHandData(handOne) : undefined;
             const convertedHandTwo = handTwo ? rawHandToHandData(handTwo) : undefined;
-
             handData.current = { one: convertedHandOne, two: convertedHandTwo };
         }
 
@@ -237,7 +236,6 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <div className="cam-feed-box-feed--render" ref={camFeedRef} />
-                    {/* <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} /> */}
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>

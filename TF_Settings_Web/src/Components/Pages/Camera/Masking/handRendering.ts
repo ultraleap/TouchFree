@@ -9,7 +9,7 @@ import {
     CommunicationWrapper,
     HandRenderDataStateRequest,
 } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
+import { FingerType, RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
 import { MapRangeToRange } from 'TouchFree/Utilities';
 
 export interface FingerData {
@@ -18,11 +18,11 @@ export interface FingerData {
 }
 export interface HandData {
     fingers: {
-        index: FingerData;
-        middle: FingerData;
-        ring: FingerData;
-        little: FingerData;
-        thumb: FingerData;
+        [FingerType.TYPE_THUMB]: FingerData;
+        [FingerType.TYPE_INDEX]: FingerData;
+        [FingerType.TYPE_MIDDLE]: FingerData;
+        [FingerType.TYPE_RING]: FingerData;
+        [FingerType.TYPE_PINKY]: FingerData;
     };
     wrist: Vector3;
     primaryHand: boolean;
@@ -46,25 +46,25 @@ export const setHandRenderState = (handRenderState: boolean, lens: 'left' | 'rig
     });
 };
 
-export const INVALD_POSITION = new Vector3(Number.NaN, Number.NaN, Number.NaN);
-
 const translateToCoordinate = (coordinate?: Vector) => {
-    if (coordinate === undefined) return INVALD_POSITION;
+    if (coordinate === undefined) return new Vector3(-1, -1, -1);
     const { X, Y, Z } = coordinate;
-    // Map Z between 0 and 0.1
-    const mappedZ = Z > 600 ? 0 : 1 - MapRangeToRange(Z, 0, 600, 0, 1);
-    return new Vector3(1.2 * MapRangeToRange(1 - X, 0, 1, -1, 1), 1.25 * MapRangeToRange(1 - Y, 0, 1, -1, 1), mappedZ);
+    // Map Z between 0 and 1
+    // const mappedZ = Z > 600 ? 0 : 1 - MapRangeToRange(Z, 0, 600, 0, 1);
+    const mappedZ = 0;
+    return new Vector3(1.2 * MapRangeToRange(1 - X, 0, 1, -2, 2), 1 * MapRangeToRange(1 - Y, 0, 1, -2, 2), mappedZ);
 };
 
 export const rawHandToHandData = (hand: RawHand): HandData => {
-    const fingers = hand.Fingers;
+    const fingersData = hand.Fingers;
+
     return {
         fingers: {
-            thumb: createFingerData(fingers, 0),
-            index: createFingerData(fingers, 1),
-            middle: createFingerData(fingers, 2),
-            ring: createFingerData(fingers, 3),
-            little: createFingerData(fingers, 4),
+            [FingerType.TYPE_THUMB]: createFingerData(fingersData, FingerType.TYPE_THUMB),
+            [FingerType.TYPE_INDEX]: createFingerData(fingersData, FingerType.TYPE_INDEX),
+            [FingerType.TYPE_MIDDLE]: createFingerData(fingersData, FingerType.TYPE_MIDDLE),
+            [FingerType.TYPE_RING]: createFingerData(fingersData, FingerType.TYPE_RING),
+            [FingerType.TYPE_PINKY]: createFingerData(fingersData, FingerType.TYPE_PINKY),
         },
         wrist: translateToCoordinate(hand.WristPosition),
         primaryHand: hand.CurrentPrimary,
@@ -79,28 +79,4 @@ const createFingerData = (fingers: RawFinger[], fingerType: number): FingerData 
         tip: translateToCoordinate(finger?.Bones[tipJointIndex]?.NextJoint),
         knuckle: translateToCoordinate(finger?.Bones[knuckleJointIndex]?.PrevJoint),
     };
-};
-
-const createEmptyFingerData = (): FingerData => {
-    return {
-        tip: translateToCoordinate(undefined),
-        knuckle: translateToCoordinate(undefined),
-    };
-};
-
-const emptyHand: HandData = {
-    fingers: {
-        thumb: createEmptyFingerData(),
-        index: createEmptyFingerData(),
-        middle: createEmptyFingerData(),
-        ring: createEmptyFingerData(),
-        little: createEmptyFingerData(),
-    },
-    wrist: translateToCoordinate(undefined),
-    primaryHand: true,
-};
-
-export const defaultHandState: HandState = {
-    one: { ...emptyHand },
-    two: { ...emptyHand, primaryHand: false },
 };
