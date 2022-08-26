@@ -12,7 +12,7 @@ import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
 import MaskingLensToggle from './MaskingLensToggle';
-import MaskingOption, { MaskingOptionProps } from './MaskingOptions';
+import MaskingOption from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { setupRenderScene, updateCanvas } from './displayLensFeeds';
 import { HandState, rawHandToHandData, setHandRenderState } from './handRendering';
@@ -171,7 +171,7 @@ const MaskingScreen = () => {
             handData.current = { one: convertedHandOne, two: convertedHandTwo };
         }
 
-        // Inore any messages for a short period to allow clearing of message handling
+        // Ignore any messages for a short period to allow clearing of message handling
         handTimeoutRef.current = window.setTimeout(() => {
             isHandProcessing.current = false;
         }, FRAME_PROCESSING_TIMEOUT);
@@ -212,18 +212,6 @@ const MaskingScreen = () => {
         [mainLens.current]
     );
 
-    const createMaskingOption = (input: MaskingOptionProps) => {
-        return (
-            <MaskingOption
-                title={input.title}
-                description={input.description}
-                value={input.value}
-                onChange={input.onChange}
-                isMouseOnly={input.isMouseOnly}
-            />
-        );
-    };
-
     return (
         <div>
             <div className="title-line" style={{ flexDirection: 'column' }}>
@@ -242,44 +230,48 @@ const MaskingScreen = () => {
             <div className="cam-feeds-bottom-container">
                 <div className="cam-feeds-options-container">
                     {useMemo(
-                        () =>
-                            createMaskingOption({
-                                title: 'Display Overexposed Areas',
-                                description: 'Areas, where hand tracking may be an issue will be highlighted',
-                                value: showOverexposed.current,
-                                onChange: (value) => (showOverexposed.current = value),
-                            }),
+                        () => (
+                            <MaskingOption
+                                title="Display Overexposed Areas"
+                                description="Areas, where hand tracking may be an issue will be highlighted"
+                                value={showOverexposed.current}
+                                onChange={(value) => (showOverexposed.current = value)}
+                            />
+                        ),
                         [showOverexposed.current]
                     )}
                     {useMemo(
-                        () =>
-                            createMaskingOption({
-                                title: 'Allow Images',
-                                description: 'Allow images to be sent from the TouchFree Camera',
-                                value: allowImages.current,
-                                onChange: setAllowImages,
-                            }),
+                        () => (
+                            <MaskingOption
+                                title="Allow Images"
+                                description="Allow images to be sent from the TouchFree Camera"
+                                value={allowImages.current}
+                                onChange={setAllowImages}
+                            />
+                        ),
                         [allowImages.current]
                     )}
                     {useMemo(
-                        () =>
-                            createMaskingOption({
-                                title: 'Reverse Camera Orientation',
-                                description: 'Reverse the camera orientation (hand should enter from the bottom)',
-                                value: isCamReversed.current,
-                                onChange: setIsCameraReversed,
-                                isMouseOnly: true,
-                            }),
+                        () => (
+                            <MaskingOption
+                                title="Reverse Camera Orientation"
+                                description="Reverse the camera orientation (hand should enter from the bottom)"
+                                value={isCamReversed.current}
+                                onChange={setIsCameraReversed}
+                                isMouseOnly
+                            />
+                        ),
                         [isCamReversed.current]
                     )}
                     {useMemo(
-                        () =>
-                            createMaskingOption({
-                                title: 'Allow Analytics',
-                                description: 'Allow analytic data to be collected',
-                                value: allowAnalytics,
-                                onChange: setAllowAnalytics,
-                            }),
+                        () => (
+                            <MaskingOption
+                                title="Allow Analytics"
+                                description="Allow analytic data to be collected"
+                                value={allowAnalytics}
+                                onChange={setAllowAnalytics}
+                            />
+                        ),
                         [allowAnalytics]
                     )}
                 </div>
