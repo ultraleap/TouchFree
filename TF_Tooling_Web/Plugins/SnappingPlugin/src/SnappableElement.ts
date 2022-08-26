@@ -27,7 +27,7 @@ export class SnappableElement {
 
     public static Compute(element: Element, distant_point: Vector2): SnappableElement {
         const rect: DOMRect = element.getBoundingClientRect();
-        const center: Vector2 = new Vector2(rect.x + (rect.width / 2), rect.y + (rect.height / 2));
+        const center: Vector2 = new Vector2(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
         const center_distance: number = Math.sqrt(
             Math.pow(distant_point.x - center.x, 2) +
             Math.pow(distant_point.y - center.y, 2)
