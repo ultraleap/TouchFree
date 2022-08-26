@@ -1,3 +1,5 @@
+import { createBufferInfoFromArrays, createProgramInfo, setBuffersAndAttributes } from 'twgl.js';
+
 import { Lens } from './MaskingScreen';
 
 let conversionArraysInitialised = false;
@@ -5,16 +7,28 @@ const byteConversionArray = new Uint32Array(256);
 const byteConversionArrayOverExposed = new Uint32Array(256);
 let cameraBuffer: ArrayBuffer;
 
-export const createCanvasUpdate = (
+const vs = `attribute vec4 position;
+            varying vec2 v_texcoord;
+
+            void main() {
+                gl_Position = position;
+                v_texcoord = position.xy * 0.5 + 0.5;
+            }`;
+const fs = `precision mediump float;
+            uniform sampler2D u_texture;
+            varying vec2 v_texcoord;
+
+            void main() {
+                gl_FragColor = texture2D(u_texture, v_texcoord);
+            }`;
+
+export const updateCanvas = (
     data: ArrayBuffer,
-    canvasRef: HTMLCanvasElement,
+    gl: WebGLRenderingContext,
     lens: Lens,
     isCameraReversed: boolean,
     showOverexposedAreas: boolean
-): CustomEvent | undefined => {
-    const context = getContext(canvasRef);
-    if (!context) return;
-
+) => {
     if (!conversionArraysInitialised) {
         for (let i = 0; i < 256; i++) {
             byteConversionArray[i] = (255 << 24) | (i << 16) | (i << 8) | i;
@@ -38,7 +52,7 @@ export const createCanvasUpdate = (
     if (!cameraBuffer) {
         cameraBuffer = new ArrayBuffer(width * lensHeight);
     }
-    const buf8 = new Uint8ClampedArray(cameraBuffer);
+    const buf8 = new Uint8Array(cameraBuffer);
     const buf32 = new Uint32Array(cameraBuffer);
 
     const rotated90 = dim2 < dim1;
@@ -53,11 +67,29 @@ export const createCanvasUpdate = (
     const startOffset = isCameraReversed ? 0 : ((lensHeight / 2 - 1) * width) / 2;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    canvasRef.width = width / 2;
-    canvasRef.height = lensHeight / 2;
-    context.putImageData(new ImageData(buf8, width / 2, lensHeight / 2), 0, 0);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.canvas.width, gl.canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, buf8);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+};
 
-    return new CustomEvent('updateCanvas');
+export const setupWebGL = (gl: WebGLRenderingContext) => {
+    const texture = gl.createTexture();
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    const programInfo = createProgramInfo(gl, [vs, fs]);
+    const arrays = {
+        position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+    };
+    const bufferInfo = createBufferInfoFromArrays(gl, arrays);
+
+    gl.useProgram(programInfo.program);
+    setBuffersAndAttributes(gl, programInfo, bufferInfo);
 };
 
 const processRotatedScreen = (
@@ -113,25 +145,4 @@ const processScreen = (
             buf32[(i * lensHeight) / 2 + j] = byteConversionArray[offsetView[i * lensHeight * 2 + j * 2]];
         }
     }
-};
-
-const canvasElements: HTMLCanvasElement[] = [];
-const canvasContexts: CanvasRenderingContext2D[] = [];
-
-const getContext = (canvasElement: HTMLCanvasElement | null) => {
-    if (!canvasElement) {
-        return null;
-    }
-    const canvasIndex = canvasElements.indexOf(canvasElement);
-    if (canvasIndex < 0) {
-        const context = canvasElement.getContext('2d');
-        if (context === null) {
-            return context;
-        }
-        const newIndex = canvasElements.length;
-        canvasElements[newIndex] = canvasElement;
-        canvasContexts[newIndex] = context;
-        return context;
-    }
-    return canvasContexts[canvasIndex];
 };

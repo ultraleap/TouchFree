@@ -8,6 +8,7 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         public Leap.Controller controller { get; private set; }
 
+        private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly IConfigManager configManager;
 
         private const int maximumWaitTimeSeconds = 30;
@@ -21,8 +22,9 @@ namespace Ultraleap.TouchFree.Library.Connections
             get { return currentTrackingMode; }
         }
 
-        public TrackingConnectionManager(IConfigManager _configManager)
+        public TrackingConnectionManager(IConfigManager _configManager, ITrackingDiagnosticApi _diagnosticApi)
         {
+            diagnosticApi = _diagnosticApi;
             configManager = _configManager;
             controller = new Leap.Controller();
             controller.Connect += Controller_Connect;
@@ -30,6 +32,8 @@ namespace Ultraleap.TouchFree.Library.Connections
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
             controller.StopConnection();
+
+            controller.Device += Controller_CameraConnected;
         }
 
         public void Connect()
@@ -45,6 +49,11 @@ namespace Ultraleap.TouchFree.Library.Connections
             {
                 controller.StopConnection();
             }
+        }
+
+        public void Controller_CameraConnected(object sender, Leap.DeviceEventArgs e)
+        {
+            diagnosticApi.TriggerUpdatingTrackingConfiguration();
         }
 
         private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)

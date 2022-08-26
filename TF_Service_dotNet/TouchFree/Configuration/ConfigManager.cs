@@ -6,8 +6,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
     {
         public event IConfigManager.InteractionConfigEvent OnInteractionConfigUpdated;
         public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
+        public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
+        private TrackingConfig _tracking;
 
         public bool ErrorLoadingConfigFiles { get; private set; }
 
@@ -63,6 +65,23 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
+        public TrackingConfig TrackingConfig
+        {
+            get
+            {
+                if (_tracking == null && TrackingConfigFile.DoesConfigFileExist())
+                {
+                    _tracking = TrackingConfigFile.LoadConfig();
+                }
+
+                return _tracking;
+            }
+            set
+            {
+                _tracking = value;
+            }
+        }
+
         public void LoadConfigsFromFiles()
         {
             InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
@@ -71,8 +90,14 @@ namespace Ultraleap.TouchFree.Library.Configuration
             PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
             _physical = new PhysicalConfigInternal(physFromFile);
 
+            if (TrackingConfigFile.DoesConfigFileExist())
+            {
+                _tracking = TrackingConfigFile.LoadConfig();
+            }
+
             InteractionConfigWasUpdated();
             PhysicalConfigWasUpdated();
+            TrackingConfigWasUpdated();
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
@@ -85,6 +110,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public void InteractionConfigWasUpdated()
         {
             OnInteractionConfigUpdated?.Invoke(_interactions);
+        }
+
+        public void TrackingConfigWasUpdated()
+        {
+            OnTrackingConfigUpdated?.Invoke(_tracking);
         }
 
         public bool AreConfigsInGoodState()

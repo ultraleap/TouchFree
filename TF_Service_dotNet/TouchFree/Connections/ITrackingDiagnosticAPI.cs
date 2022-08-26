@@ -1,4 +1,5 @@
 ﻿using System;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections
 {
@@ -32,5 +33,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         void HandleDiagnosticAPIVersion(string _version);
         void Request(object payload);
+
+        void TriggerUpdatingTrackingConfiguration();
     }
 }
