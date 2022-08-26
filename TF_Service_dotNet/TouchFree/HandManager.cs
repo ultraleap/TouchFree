@@ -101,6 +101,7 @@ namespace Ultraleap.TouchFree.Library
         public HandFrame RawHands { get; private set; }
         public List<Hand> PreConversionRawHands { get; private set; }
         public bool RawHandsUpdated { get; private set; }
+        private Leap.Image LastImage;
 
         public void ConnectToTracking()
         {
@@ -198,28 +199,7 @@ namespace Ultraleap.TouchFree.Library
 
         public void UpdateRawHands(object sender, ImageEventArgs e)
         {
-            if (PreConversionRawHands != null && e.image != null && RawHandsUpdated)
-            {
-                RawHandsUpdated = false;
-                RawHands = new HandFrame()
-                {
-                    Hands = PreConversionRawHands.Select(x => new RawHand()
-                    {
-                        CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
-                        Fingers = x.Fingers.Select(f => new RawFinger()
-                        {
-                            Type = (FingerType)f.Type,
-                            Bones = f.bones.Select(b => new RawBone()
-                            {
-                                NextJoint = LeapToCameraFrame(b.NextJoint, e.image),
-                                PrevJoint = LeapToCameraFrame(b.PrevJoint, e.image)
-                            }).ToArray()
-                        }).ToArray(),
-                        WristPosition = LeapToCameraFrame(x.WristPosition, e.image),
-                        WristWidth = x.PalmWidth
-                    }).ToArray()
-                };
-            }
+            LastImage = e.image;
         }
 
         public void Update(object sender, FrameEventArgs e)
@@ -319,6 +299,35 @@ namespace Ultraleap.TouchFree.Library
             UpdateHandStatus(SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
 
             HandsUpdated?.Invoke(PrimaryHand, SecondaryHand);
+            ConvertHands();
+        }
+
+        private void ConvertHands()
+        {
+            var imageToUse = LastImage;
+
+            if (PreConversionRawHands != null && imageToUse != null && RawHandsUpdated)
+            {
+                RawHandsUpdated = false;
+                RawHands = new HandFrame()
+                {
+                    Hands = PreConversionRawHands.Select(x => new RawHand()
+                    {
+                        CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
+                        Fingers = x.Fingers.Select(f => new RawFinger()
+                        {
+                            Type = (FingerType)f.Type,
+                            Bones = f.bones.Select((b, i) => new RawBone()
+                            {
+                                NextJoint = LeapToCameraFrame(b.NextJoint, imageToUse),
+                                PrevJoint = LeapToCameraFrame(b.PrevJoint, imageToUse)
+                            }).ToArray()
+                        }).ToArray(),
+                        WristPosition = LeapToCameraFrame(x.WristPosition, imageToUse),
+                        WristWidth = x.PalmWidth
+                    }).ToArray()
+                };
+            }
         }
 
         private bool HandActivityInSwapThreshold()

@@ -51,7 +51,6 @@ export const updateCanvas = (
     if (!cameraBuffer) {
         cameraBuffer = new ArrayBuffer(width * lensHeight * 4);
     }
-    const buf8 = new Uint8Array(cameraBuffer);
     const buf32 = new Uint32Array(cameraBuffer);
 
     const rotated90 = dim2 < dim1;
@@ -66,8 +65,12 @@ export const updateCanvas = (
     const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    cameraTexture = new DataTexture(buf8, width, lensHeight);
-    cameraTexture.flipY = true;
+    if (!cameraTexture) {
+        cameraTexture = new DataTexture(new Uint8Array(cameraBuffer), width, lensHeight);
+        cameraTexture.flipY = true;
+    } else {
+        cameraTexture.image = new ImageData(new Uint8ClampedArray(cameraBuffer), width, lensHeight);
+    }
     cameraFeedPlane.material.color.setHex(0xffffff);
     cameraFeedPlane.material.map = cameraTexture;
     cameraFeedPlane.material.needsUpdate = true;
@@ -103,23 +106,25 @@ const processRotatedScreen = (
     let rowBase = 0;
     const offsetView = new Uint8Array(data, offset, width * lensHeight * 2);
 
-    for (let rowIndex = 0; rowIndex < width; rowIndex++) {
-        let rowStart = rowBase * 2;
+    if (lens === 'Right') {
+        for (let rowIndex = 0; rowIndex < width; rowIndex++) {
+            const rowStart = rowBase * 2;
 
-        if (lens === 'Right') {
             for (let i = 0; i < lensHeight; i++) {
                 buf32[i + rowBase] = byteConversionArray[offsetView[i + rowStart]];
             }
+            rowBase += lensHeight;
         }
+    } else if (lens === 'Left') {
+        for (let rowIndex = 0; rowIndex < width; rowIndex++) {
+            const rowStart = rowBase * 2 + lensHeight;
 
-        rowStart += lensHeight;
-        if (lens === 'Left') {
             for (let i = 0; i < lensHeight; i++) {
                 buf32[i + rowBase] = byteConversionArray[offsetView[i + rowStart]];
             }
+            
+            rowBase += lensHeight;
         }
-
-        rowBase += lensHeight;
     }
 };
 
