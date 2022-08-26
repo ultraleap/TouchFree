@@ -1,10 +1,9 @@
+import cssVariables from 'Styles/_variables.scss';
+
 import {
     BufferGeometry,
     CircleGeometry,
     DataTexture,
-    Line,
-    Line3,
-    LineBasicMaterial,
     Mesh,
     MeshBasicMaterial,
     PerspectiveCamera,
@@ -16,8 +15,6 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
-
-import cssVariables from 'Styles/_variables.scss';
 
 import { FingerType } from 'TouchFree/TouchFreeToolingTypes';
 

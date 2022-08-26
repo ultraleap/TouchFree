@@ -1,5 +1,3 @@
-import { useIsFullScreen } from 'customHooks';
-
 import 'Styles/Camera/Calibrate.scss';
 import cssVariables from 'Styles/_variables.scss';
 import 'react-circular-progressbar/dist/styles.css';
@@ -9,6 +7,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
+
+import { useIsFullScreen } from 'customHooks';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import DownArrow from 'Images/Down_Arrow.svg';

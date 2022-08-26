@@ -48,7 +48,7 @@ export const setHandRenderState = (handRenderState: boolean, lens: 'left' | 'rig
 
 const translateToCoordinate = (coordinate?: Vector) => {
     if (coordinate === undefined) return new Vector3(-1, -1, -1);
-    const { X, Y, Z } = coordinate;
+    const { X, Y } = coordinate;
     // Map Z between 0 and 1
     // const mappedZ = Z > 600 ? 0 : 1 - MapRangeToRange(Z, 0, 600, 0, 1);
     const mappedZ = 0;

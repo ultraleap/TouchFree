@@ -5,7 +5,7 @@
     "printWidth": 120,
     "importOrder": [
         "(.*)(.css|.scss)$",
-        "(.*)react(.*)|canvas-confetti|twgl.js",
+        "(.*)react(.*)|canvas-confetti|(.*)three(.*)",
         "uuid",
         "(index|customHooks)",
         "^TouchFree/(.*)",
