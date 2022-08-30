@@ -1,5 +1,3 @@
-const { Compiler } = require('webpack');
-
 module.exports = {
     entry: {
         TouchFree_Tooling: {
@@ -17,7 +15,7 @@ module.exports = {
                 name: "SnappingPlugin",
                 type: "umd",
             },
-            filename: 'Plugins/SnappingPlugin/Snapping_Plugin.js'
+            filename: 'dist/Plugins/Snapping_Plugin.js'
         },
     },
     mode: 'production',
