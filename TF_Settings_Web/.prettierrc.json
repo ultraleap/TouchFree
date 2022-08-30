@@ -5,7 +5,8 @@
     "printWidth": 120,
     "importOrder": [
         "(.*)(.css|.scss)$",
-        "(.*)react(.*)|canvas-confetti|(.*)three(.*)",
+        "(.*)three(.*)",
+        "(.*)react(.*)|canvas-confetti",
         "uuid",
         "(index|customHooks)",
         "^TouchFree/(.*)",

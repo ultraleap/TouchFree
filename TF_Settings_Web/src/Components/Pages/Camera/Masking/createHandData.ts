@@ -46,15 +46,6 @@ export const setHandRenderState = (handRenderState: boolean, lens: 'left' | 'rig
     });
 };
 
-const translateToCoordinate = (coordinate?: Vector) => {
-    if (coordinate === undefined) return new Vector3(-1, -1, -1);
-    const { X, Y } = coordinate;
-    // Map Z between 0 and 1
-    // const mappedZ = Z > 600 ? 0 : 1 - MapRangeToRange(Z, 0, 600, 0, 1);
-    const mappedZ = 0;
-    return new Vector3(1.2 * MapRangeToRange(1 - X, 0, 1, -2, 2), 1 * MapRangeToRange(1 - Y, 0, 1, -2, 2), mappedZ);
-};
-
 export const rawHandToHandData = (hand: RawHand): HandData => {
     const fingersData = hand.Fingers;
 
@@ -73,10 +64,20 @@ export const rawHandToHandData = (hand: RawHand): HandData => {
 
 const tipJointIndex = 3;
 const knuckleJointIndex = 1;
+
 const createFingerData = (fingers: RawFinger[], fingerType: number): FingerData => {
     const finger = fingers.find((f: RawFinger) => f.Type == fingerType);
     return {
         tip: translateToCoordinate(finger?.Bones[tipJointIndex]?.NextJoint),
         knuckle: translateToCoordinate(finger?.Bones[knuckleJointIndex]?.PrevJoint),
     };
+};
+
+const translateToCoordinate = (coordinate?: Vector) => {
+    if (coordinate === undefined) return new Vector3(-1, -1, -1);
+    const { X, Y } = coordinate;
+    // Map Z between 0 and 1
+    // const mappedZ = Z > 600 ? 0 : 1 - MapRangeToRange(Z, 0, 600, 0, 1);
+    const mappedZ = 0;
+    return new Vector3(1.2 * MapRangeToRange(1 - X, 0, 1, -2, 2), 1 * MapRangeToRange(1 - Y, 0, 1, -2, 2), mappedZ);
 };
