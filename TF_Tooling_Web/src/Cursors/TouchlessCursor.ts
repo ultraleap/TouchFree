@@ -13,7 +13,7 @@ export abstract class TouchlessCursor {
 
     // Variable: cursor
     // The HTMLElement that represents this cursor
-    cursor: HTMLElement;
+    cursor: HTMLElement | SVGElement | undefined;
 
     // Group: Functions
 
@@ -22,7 +22,7 @@ export abstract class TouchlessCursor {
     //
     // If you intend to make use of the <WebInputController>, make sure that _cursor has the
     // "touchfreecursor" class. This prevents it blocking other elements from recieving events.
-    constructor(_cursor: HTMLElement) {
+    constructor(_cursor: HTMLElement | SVGElement | undefined) {
         InputActionManager.instance.addEventListener('TransmitInputAction', ((e: CustomEvent<TouchFreeInputAction>) => {
             this.HandleInputAction(e.detail);
         }) as EventListener);
@@ -33,8 +33,10 @@ export abstract class TouchlessCursor {
     // Function: UpdateCursor
     // Sets the position of the cursor, should be run after <HandleInputAction>.
     UpdateCursor(_inputAction: TouchFreeInputAction): void {
-        this.cursor.style.left = (_inputAction.CursorPosition[0] - (this.cursor.clientWidth / 2)) + "px";
-        this.cursor.style.top = (_inputAction.CursorPosition[1] - (this.cursor.clientHeight / 2)) + "px";
+        if (this.cursor !== undefined){
+            this.cursor.style.left = (_inputAction.CursorPosition[0] - (this.cursor.clientWidth / 2)) + "px";
+            this.cursor.style.top = (_inputAction.CursorPosition[1] - (this.cursor.clientHeight / 2)) + "px";
+        }
     }
 
     // Function: HandleInputAction
@@ -50,12 +52,16 @@ export abstract class TouchlessCursor {
     // Function: ShowCursor
     // Used to make the cursor visible
     ShowCursor(): void {
+        if (this.cursor !== undefined){
         this.cursor.style.opacity = "1";
+        }
     }
 
     // Function: HideCursor
     // Used to make the cursor invisible
     HideCursor(): void {
-        this.cursor.style.opacity = "0";
+        if (this.cursor !== undefined){
+            this.cursor.style.opacity = "0";
+        }
     }
 }
