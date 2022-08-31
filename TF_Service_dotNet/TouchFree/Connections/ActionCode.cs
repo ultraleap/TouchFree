@@ -36,6 +36,8 @@ namespace Ultraleap.TouchFree.Library.Connections
         GET_TRACKING_STATE,
         SET_TRACKING_STATE,
         TRACKING_STATE,
+
+        CLOSE_TO_SWIPE
     }
 
     public static class ActionCodeExtensions
@@ -67,7 +69,8 @@ namespace Ultraleap.TouchFree.Library.Connections
             ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE,
             ActionCode.QUICK_SETUP_RESPONSE,
             ActionCode.TRACKING_STATE,
-            ActionCode.QUICK_SETUP_CONFIG
+            ActionCode.QUICK_SETUP_CONFIG,
+            ActionCode.CLOSE_TO_SWIPE
         };
 
         public static bool ExpectedToBeHandled(this ActionCode actionCode)

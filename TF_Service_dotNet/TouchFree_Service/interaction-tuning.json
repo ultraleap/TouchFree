@@ -1,32 +1,31 @@
 {
     "InteractionTuning": {
         "VelocitySwipeSettings": {
-            "MinScrollVelocity_mmps": 500,
-            "UpwardsMinVelocityDecrease_mmps": 50,
-            "DownwardsMinVelocityIncrease_mmps": 50,
-            "MaxReleaseVelocity_mmps": 0,
-            "MaxLateralVelocity_mmps": 250,
-            "MaxOpposingVelocity_mmps": 150,
-            "ScrollDelayMs": 500,
+            "MinScrollVelocity_mmps": 1000,
+	    "UpwardsMinVelocityDecrease_mmps": 0,
+            "DownwardsMinVelocityIncrease_mmps": 165,
+            "MaxReleaseVelocity_mmps": 1,
+            "MaxOpposingVelocity_mmps": 70,
+            "ScrollDelayMs": 100,
             "AllowVerticalScroll": true,
-            "AllowHorizontalScroll": true,
+            "AllowHorizontalScroll": false,
             "AllowBidirectionalScroll": false,
-            "MinSwipeLength": 10,
-            "MaxSwipeWidth": 10,
-            "SwipeWidthScaling": 0.2
+            "MinSwipeLength": 35,
+            "MaxSwipeWidth": 30,
+            "SwipeWidthScaling": 0.20,
+	    "MaxLateralVelocity_mmps": 250
         },
         "AirPushSettings": {
-            "SpeedMin": 150,
+            "SpeedMin": 100,
             "SpeedMax": 500,
-            "DistAtSpeedMinMm": 42,
-            "DistAtSpeedMaxMm": 8,
-            "HorizontalDecayDistMm": 50,
-            "ThetaOne": 22,
+            "DistAtSpeedMinMm": 100,
+            "DistAtSpeedMaxMm": 60,
+            "HorizontalDecayDistMm": 100,
+            "ThetaOne": 13,
             "ThetaTwo": 135,
             // If a hand moves an angle less than thetaOne, this is "towards" the screen
             // If a hand moves an angle greater than thetaTwo, this is "backwards" from the screen
             // If a hand moves between the two angles, this is "horizontal" to the screen
-
             "UnclickThreshold": 0.97,
             "UnclickThresholdDrag": 0.97
         },

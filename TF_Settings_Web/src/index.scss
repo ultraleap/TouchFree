@@ -39,12 +39,22 @@ code {
     pointer-events: none;
 }
 
-#svg-cursor.light #svg-cursor-ring {
-    stroke: white;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
-}
+#svg-cursor.light {
+    #svg-cursor-ring {
+        stroke: white;
+        filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+    }
 
-#svg-cursor.light #svg-cursor-dot {
-    fill: white;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+    #svg-cursor-dot {
+        fill: white;
+        filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+    }
+
+    #svg-cursor-scroll-rect {
+        fill: white;
+    }
+
+    #svg-cursor-scroll-text {
+        fill: black;
+    }
 }

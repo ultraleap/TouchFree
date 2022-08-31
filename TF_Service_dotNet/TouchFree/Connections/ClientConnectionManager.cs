@@ -144,5 +144,10 @@ namespace Ultraleap.TouchFree.Library.Connections
                 connection.SendResponse(_response, _actionCode);
             });
         }
+
+        public void SendCloseToSwipe()
+        {
+            SendResponse(new ResponseToClient(), ActionCode.CLOSE_TO_SWIPE);
+        }
     }
 }

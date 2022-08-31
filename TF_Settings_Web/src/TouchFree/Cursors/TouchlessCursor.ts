@@ -64,4 +64,7 @@ export abstract class TouchlessCursor {
             this.cursor.style.opacity = "0";
         }
     }
+
+    abstract ShowCloseToSwipe(): void;
+    abstract HideCloseToSwipe(): void;
 }

@@ -56,6 +56,8 @@ export enum ActionCode {
 
     HAND_DATA = "HAND_DATA",
     SET_HAND_DATA_STREAM_STATE = "SET_HAND_DATA_STREAM_STATE",
+
+    CLOSE_TO_SWIPE = "CLOSE_TO_SWIPE"
 }
 
 // Enum: HandPresenceState

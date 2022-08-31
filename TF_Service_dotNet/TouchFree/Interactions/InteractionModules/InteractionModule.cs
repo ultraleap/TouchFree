@@ -77,7 +77,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected InputActionResult CreateInputActionResult(InputType _inputType, Positions _positions, float _progressToClick)
         {
             return new InputActionResult(new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick), _progressToClick);
-        } 
+        }
 
         Leap.Hand GetHand()
         {
