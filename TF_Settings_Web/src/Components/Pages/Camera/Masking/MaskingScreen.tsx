@@ -20,7 +20,7 @@ import { setupRenderScene, updateHandRenders } from './sceneRendering';
 
 export type Lens = 'Left' | 'Right';
 
-const FRAME_PROCESSING_TIMEOUT = 30;
+const FRAME_PROCESSING_TIMEOUT = 60;
 
 const MaskingScreen = () => {
     // ===== State =====

@@ -17,6 +17,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 
 import { FingerType } from 'TouchFree/TouchFreeToolingTypes';
+import { MapRangeToRange } from 'TouchFree/Utilities';
 
 import { FingerData, HandData, HandState } from './createHandData';
 
@@ -54,13 +55,15 @@ let _cameraFeedTexture: DataTexture;
 let _handOneMesh: HandMesh;
 let _handTwoMesh: HandMesh;
 
+const BASE_LINE_THICKNESS = 0.005;
+
 export const setupRenderScene = (div: HTMLDivElement) => {
     _scene = new Scene();
     _camera = new PerspectiveCamera(90);
     _camera.position.z = 2;
 
-    _renderer = new WebGLRenderer({ antialias: false });
-    _renderer.setPixelRatio(window.devicePixelRatio * 0.1);
+    _renderer = new WebGLRenderer();
+    _renderer.setPixelRatio(window.devicePixelRatio * 0.35);
     _renderer.setSize(div.clientWidth, div.clientHeight);
     div.appendChild(_renderer.domElement);
 
@@ -120,7 +123,7 @@ const addBasicWristMesh = (scene: Scene): WristMesh => ({
 
 const addBasicCircleMesh = (scene: Scene): BasicMesh => {
     const mesh = new Mesh(
-        new CircleGeometry(0.04, 10),
+        new CircleGeometry(0.02, 16),
         new MeshBasicMaterial({ color: cssVariables.ultraleapGreen, transparent: true })
     );
     mesh.visible = false;
@@ -130,7 +133,10 @@ const addBasicCircleMesh = (scene: Scene): BasicMesh => {
 
 const addBasicLine = (scene: Scene): Line2 => {
     const geometry = new LineGeometry();
-    const line = new Line2(geometry, new LineMaterial({ color: 0xffffff, linewidth: 0.008, transparent: true }));
+    const line = new Line2(
+        geometry,
+        new LineMaterial({ color: 0xffffff, linewidth: BASE_LINE_THICKNESS, transparent: true })
+    );
     line.visible = false;
     scene.add(line);
     return line;
@@ -184,6 +190,8 @@ const updateWristMesh = (wristMesh: WristMesh, isPrimary: boolean, wrist?: Vecto
 
 const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean) => {
     line.geometry.setPositions([start.x, start.y, start.z, end.x, end.y, end.z]);
+    const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 4);
+    line.material.linewidth = BASE_LINE_THICKNESS * scale;
     line.material.opacity = isPrimary ? 1 : 0.5;
     line.material.needsUpdate = true;
     line.visible = true;
@@ -194,6 +202,7 @@ const moveMesh = (mesh: BasicMesh, position: Vector3, isPrimary: boolean) => {
     mesh.material.opacity = isPrimary ? 1 : 0.5;
     mesh.material.needsUpdate = true;
     mesh.visible = true;
-    // const scale = 1 + 2 * position.z;
-    // mesh.scale.set(scale, scale, 1);
+
+    const scale = MapRangeToRange(position.z, 0, 0.1, 1, 4);
+    mesh.scale.set(scale, scale, 1);
 };
