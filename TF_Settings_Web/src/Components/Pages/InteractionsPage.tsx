@@ -29,6 +29,7 @@ const TouchPlaneTrackingOptions: Record<string, TrackedPosition> = {
 
 interface InteractionsState {
     interactionConfig: InteractionConfigFull;
+    resetButtonClass?: string;
 }
 
 export class InteractionsPage extends Component<{}, InteractionsState> {
@@ -209,6 +210,18 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
         });
     }
 
+    onResetEnter = () => {
+        this.setState((state) => {
+            return { ...state, resetButtonClass: 'reset-button hover' };
+        });
+    };
+
+    onResetLeave = () => {
+        this.setState((state) => {
+            return { ...state, resetButtonClass: 'reset-button' };
+        });
+    };
+
     render(): JSX.Element {
         let coreBody: JSX.Element = <div />;
         const interactionControls: JSX.Element[] = [];
@@ -380,7 +393,9 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     <button
                         onClick={this.resetToDefaults.bind(this)}
                         onPointerUp={this.resetToDefaults.bind(this)}
-                        className="reset-button"
+                        onPointerEnter={this.onResetEnter}
+                        onPointerLeave={this.onResetLeave}
+                        className={this.state ? this.state.resetButtonClass || 'reset-button' : 'reset-button'}
                     >
                         <p> Reset to Default </p>
                     </button>
