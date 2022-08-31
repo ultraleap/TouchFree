@@ -91,14 +91,11 @@ export const setupRenderScene = (div: HTMLDivElement) => {
 
 export const renderScene = () => _renderer.render(_scene, _camera);
 
-export const updateCameraRender = (data: Uint8ClampedArray, width: number, height: number) => {
-    if (!_cameraFeedTexture) {
-        _cameraFeedTexture = new DataTexture(data, width, height);
-        _cameraFeedTexture.flipY = true;
-    } else {
-        _cameraFeedTexture.image = new ImageData(data, width, height);
-    }
+export const updateCameraRender = (data: Uint8Array, width: number, height: number) => {
+    _cameraFeedTexture = new DataTexture(data, width, height);
+    _cameraFeedTexture.flipY = true;
     _cameraFeedTexture.needsUpdate = true;
+
     _cameraFeedMesh.material.map = _cameraFeedTexture;
     _cameraFeedMesh.material.needsUpdate = true;
 };

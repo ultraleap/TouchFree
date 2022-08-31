@@ -49,7 +49,7 @@ export const updateCameraCanvas = (
     const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
     buf32.fill(0xff000000, startOffset, startOffset + width);
 
-    updateCameraRender(new Uint8ClampedArray(cameraBuffer), width, lensHeight);
+    updateCameraRender(new Uint8Array(cameraBuffer), width, lensHeight);
     renderScene();
 };
 
