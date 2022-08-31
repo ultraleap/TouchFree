@@ -21,7 +21,7 @@ export abstract class TouchlessCursor {
     // Registers the Cursor for updates from the <InputActionManager>
     //
     // If you intend to make use of the <WebInputController>, make sure that _cursor has the
-    // "touchfreecursor" class. This prevents it blocking other elements from recieving events.
+    // "touchfree-cursor" class. This prevents it blocking other elements from recieving events.
     constructor(_cursor: HTMLElement | SVGElement | undefined) {
         InputActionManager.instance.addEventListener('TransmitInputAction', ((e: CustomEvent<TouchFreeInputAction>) => {
             this.HandleInputAction(e.detail);

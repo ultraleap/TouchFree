@@ -48,7 +48,7 @@ export class DotCursor extends TouchlessCursor {
     // the size that the <cursorRing> is relative to the _cursor.
     //
     // If you intend to make use of the <WebInputController>, make sure that both _cursor and
-    // _cursorRing have the "touchfreecursor" class. This prevents them blocking other elements
+    // _cursorRing have the "touchfree-cursor" class. This prevents them blocking other elements
     // from recieving events.
     constructor(_cursor: HTMLElement, _cursorRing: HTMLElement, _animationDuration: number = 0.2, _ringSizeMultiplier: number = 2) {
         super(_cursor);

@@ -22,7 +22,7 @@ export class SVGCursor extends TouchlessCursor {
         const documentBody = document.querySelector('body');
         
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg','svg');
-        svgElement.classList.add('touchfreecursor');
+        svgElement.classList.add('touchfree-cursor');
         svgElement.style.opacity = '0';
         svgElement.style.position = 'fixed';
         svgElement.style.top = '0px';
@@ -34,7 +34,7 @@ export class SVGCursor extends TouchlessCursor {
         documentBody?.appendChild(svgElement);
         
         const svgRingElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        svgRingElement.classList.add('touchfreecursor');
+        svgRingElement.classList.add('touchfree-cursor');
         svgRingElement.setAttribute('r', '15');
         svgRingElement.setAttribute('fill-opacity', '0');
         svgRingElement.setAttribute('stroke-width', '5');
@@ -46,7 +46,7 @@ export class SVGCursor extends TouchlessCursor {
         this.cursorRing = svgRingElement;
         
         const svgDotElement = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        svgDotElement.classList.add('touchfreecursor');
+        svgDotElement.classList.add('touchfree-cursor');
         svgDotElement.setAttribute('r', '15');
         svgDotElement.setAttribute('fill', _darkCursor ? 'black' : 'white');
         svgDotElement.setAttribute('cx', '100');

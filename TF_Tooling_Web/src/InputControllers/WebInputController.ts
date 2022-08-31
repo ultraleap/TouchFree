@@ -8,7 +8,7 @@ import { BaseInputController } from './BaseInputController'
 // Provides web PointerEvents based on the incoming data from TouchFree Service via a
 // <ServiceConnection>.
 //
-// If you are using cursors with this InputController, ensure they have the "touchfreecursor"
+// If you are using cursors with this InputController, ensure they have the "touchfree-cursor"
 // class. This allows this class to ignore them when determining which elements should recieve
 // new pointer events. If you don't do this, none of the events transmitted here are guaranteed
 // to make it to their intended targets, as they will be captured by the cursor.
@@ -144,7 +144,7 @@ export class WebInputController extends BaseInputController {
                     _inputData.CursorPosition[0],
                     _inputData.CursorPosition[1])
                     .map(e => e as HTMLElement)
-                    .filter(e => e && !e.classList.contains("touchfreecursor"));
+                    .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor") && !e.classList.contains("touchfree-no-scroll"));
 
                 this.lastPosition = _inputData.CursorPosition;
 
@@ -266,7 +266,7 @@ export class WebInputController extends BaseInputController {
         if (elementsAtPos !== null) {
             for (let i = 0; i < elementsAtPos.length; i++) {
 
-                if (!elementsAtPos[i].classList.contains("touchfreecursor")) {
+                if (!elementsAtPos[i].classList.contains("touchfreecursor") && !elementsAtPos[i].classList.contains("touchfree-cursor")) {
                     elementAtPos = elementsAtPos[i];
                     break;
                 }
