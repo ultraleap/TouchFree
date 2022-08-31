@@ -27,7 +27,7 @@ export class WebInputController extends BaseInputController {
     private readonly activeEventProps: PointerEventInit;
     private elementsOnDown: HTMLElement[] | null = null;
     private lastPosition: Array<number> | null = null;
-    private scrollDirection: 'u' | 'd' | 'l' | 'r' | undefined = undefined;
+    private scrollDirection: ScrollDirection | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
 
     // Group: Methods
@@ -140,9 +140,7 @@ export class WebInputController extends BaseInputController {
 
             case InputType.DOWN:
                 this.ResetScrollData();
-                this.elementsOnDown = document.elementsFromPoint(
-                    _inputData.CursorPosition[0],
-                    _inputData.CursorPosition[1])
+                this.elementsOnDown = document.elementsFromPoint(_inputData.CursorPosition[0], _inputData.CursorPosition[1])
                     .map(e => e as HTMLElement)
                     .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor") && !e.classList.contains("touchfree-no-scroll"));
 
@@ -174,15 +172,15 @@ export class WebInputController extends BaseInputController {
 
             if (!this.scrollDirection && (Math.abs(changeInPositionX) > 5 || Math.abs(changeInPositionY) > 5)) {
                 if (Math.abs(changeInPositionX) > Math.abs(changeInPositionY)) {
-                    this.scrollDirection = changeInPositionX > 0 ? 'r' : 'l';
+                    this.scrollDirection = changeInPositionX > 0 ? ScrollDirection.Right : ScrollDirection.Left;
                 } else {
-                    this.scrollDirection = changeInPositionY > 0 ? 'd' : 'u';
+                    this.scrollDirection = changeInPositionY > 0 ? ScrollDirection.Down : ScrollDirection.Up;
                 }
             }
 
             this.lastPosition = _position;
 
-            if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === 'd')) {
+            if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Down)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
@@ -193,7 +191,7 @@ export class WebInputController extends BaseInputController {
                 }
             }
 
-            if (changeInPositionY < 0 && (this.scrollDirection === undefined || this.scrollDirection === 'u')) {
+            if (changeInPositionY < 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Up)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop > 0,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
@@ -204,7 +202,7 @@ export class WebInputController extends BaseInputController {
                 }
             }
             
-            if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === 'r')) {
+            if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Right)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
@@ -215,7 +213,7 @@ export class WebInputController extends BaseInputController {
                 }
             }
 
-            if (changeInPositionX < 0 && (this.scrollDirection === undefined || this.scrollDirection === 'l')) {
+            if (changeInPositionX < 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Left)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft > 0,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
@@ -235,20 +233,24 @@ export class WebInputController extends BaseInputController {
         if (this.elementToScroll) return this.elementToScroll;
         if (!this.elementsOnDown) return;
         
-
         for (let i = 0; i < this.elementsOnDown.length; i++) {
             let elementToCheckScroll = this.elementsOnDown[i];
             if (!scrollValidation(elementToCheckScroll)) continue;
 
+            let parentSelected = false;
             let parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
             while (parentAsHtmlElement) {
                 if (!parentScrollValidation(elementToCheckScroll, parentAsHtmlElement)) {
-                    return elementToCheckScroll;
+                    break;
                 }
 
+                parentSelected = true;
                 elementToCheckScroll = parentAsHtmlElement;
                 parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
             }
+
+            if (parentSelected && !scrollValidation(elementToCheckScroll)) continue;
+
             return elementToCheckScroll;
         }
     }
@@ -344,4 +346,11 @@ export class WebInputController extends BaseInputController {
             document.dispatchEvent(event);
         }
     }
+}
+
+enum ScrollDirection {
+    Up = 0,
+    Down = 1,
+    Left = 2,
+    Right = 3
 }
