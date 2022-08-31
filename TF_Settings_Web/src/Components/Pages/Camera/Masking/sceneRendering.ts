@@ -25,7 +25,13 @@ export type BasicMesh = Mesh<BufferGeometry, MeshBasicMaterial>;
 interface FingerMesh {
     tip: BasicMesh;
     knuckle: BasicMesh;
-    line: Line2;
+    lineToTip: Line2;
+    lineToNextKnuckle: Line2;
+}
+
+interface WristMesh {
+    point: BasicMesh;
+    lineToThumb: Line2;
 }
 
 interface HandMesh {
@@ -36,7 +42,7 @@ interface HandMesh {
         [FingerType.TYPE_RING]: FingerMesh;
         [FingerType.TYPE_PINKY]: FingerMesh;
     };
-    wrist: BasicMesh;
+    wrist: WristMesh;
 }
 
 let _scene: Scene;
@@ -68,7 +74,7 @@ export const setupRenderScene = (div: HTMLDivElement) => {
             [FingerType.TYPE_RING]: addBasicFingerMesh(_scene),
             [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene),
         },
-        wrist: addBasicCircleMesh(_scene),
+        wrist: addBasicWristMesh(_scene),
     };
 
     _handTwoMesh = {
@@ -79,7 +85,7 @@ export const setupRenderScene = (div: HTMLDivElement) => {
             [FingerType.TYPE_RING]: addBasicFingerMesh(_scene),
             [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene),
         },
-        wrist: addBasicCircleMesh(_scene),
+        wrist: addBasicWristMesh(_scene),
     };
 };
 
@@ -102,9 +108,17 @@ export const updateHandRenders = (handData: HandState) => {
     updateHandMesh(_handTwoMesh, handData?.two);
 };
 
-const addBasicFingerMesh = (scene: Scene): FingerMesh => {
-    return { tip: addBasicCircleMesh(scene), knuckle: addBasicCircleMesh(scene), line: addBasicLine(scene) };
-};
+const addBasicFingerMesh = (scene: Scene): FingerMesh => ({
+    tip: addBasicCircleMesh(scene),
+    knuckle: addBasicCircleMesh(scene),
+    lineToTip: addBasicLine(scene),
+    lineToNextKnuckle: addBasicLine(scene),
+});
+
+const addBasicWristMesh = (scene: Scene): WristMesh => ({
+    point: addBasicCircleMesh(scene),
+    lineToThumb: addBasicLine(scene),
+});
 
 const addBasicCircleMesh = (scene: Scene): BasicMesh => {
     const mesh = new Mesh(
@@ -128,25 +142,45 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
     const isPrimary = handData?.primaryHand ?? false;
     Object.keys(handMesh.fingers).forEach((finger) => {
         const fingerType = Number(finger) as Exclude<FingerType, FingerType.TYPE_UNKNOWN>;
-        updateFingerMesh(handMesh.fingers[fingerType], isPrimary, handData?.fingers[fingerType]);
+        let nextKnucklePos: Vector3 | undefined;
+        if (fingerType === FingerType.TYPE_PINKY) {
+            nextKnucklePos = handData?.wrist;
+        } else {
+            nextKnucklePos =
+                handData?.fingers[(fingerType + 1) as Exclude<FingerType, FingerType.TYPE_UNKNOWN>].knuckle;
+        }
+        updateFingerMesh(handMesh.fingers[fingerType], isPrimary, handData?.fingers[fingerType], nextKnucklePos);
     });
 
-    if (handData) {
-        moveMesh(handMesh.wrist, handData.wrist, isPrimary);
-    } else {
-        handMesh.wrist.visible = false;
-    }
+    updateWristMesh(handMesh.wrist, isPrimary, handData?.wrist, handData?.fingers[FingerType.TYPE_THUMB].knuckle);
 };
 
-const updateFingerMesh = (fingerMesh: FingerMesh, isPrimary: boolean, finger?: FingerData) => {
-    if (finger) {
+const updateFingerMesh = (
+    fingerMesh: FingerMesh,
+    isPrimary: boolean,
+    finger?: FingerData,
+    nextKnucklePos?: Vector3
+) => {
+    if (finger && nextKnucklePos) {
         moveMesh(fingerMesh.tip, finger.tip, isPrimary);
         moveMesh(fingerMesh.knuckle, finger.knuckle, isPrimary);
-        moveLine(fingerMesh.line, finger.knuckle, finger.tip, isPrimary);
+        moveLine(fingerMesh.lineToTip, finger.knuckle, finger.tip, isPrimary);
+        moveLine(fingerMesh.lineToNextKnuckle, finger.knuckle, nextKnucklePos, isPrimary);
     } else {
         fingerMesh.tip.visible = false;
         fingerMesh.knuckle.visible = false;
-        fingerMesh.line.visible = false;
+        fingerMesh.lineToTip.visible = false;
+        fingerMesh.lineToNextKnuckle.visible = false;
+    }
+};
+
+const updateWristMesh = (wristMesh: WristMesh, isPrimary: boolean, wrist?: Vector3, thumbKnucklePos?: Vector3) => {
+    if (wrist && thumbKnucklePos) {
+        moveMesh(wristMesh.point, wrist, isPrimary);
+        moveLine(wristMesh.lineToThumb, wrist, thumbKnucklePos, isPrimary);
+    } else {
+        wristMesh.point.visible = false;
+        wristMesh.lineToThumb.visible = false;
     }
 };
 
