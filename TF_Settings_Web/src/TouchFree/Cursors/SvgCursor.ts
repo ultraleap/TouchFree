@@ -9,12 +9,7 @@ export class SVGCursor extends TouchlessCursor {
     cursorCanvas: any;
     cursorRing: any;
     ringSizeMultiplier: number;
-    cursorStartSize: number;
-    currentAnimationInterval: NodeJS.Timeout | undefined = undefined;
-    animationUpdateDuration: number | undefined;
-    growQueued: boolean = false;
     hidingCursor: boolean = false;
-    currentFadingInterval: NodeJS.Timeout | undefined = undefined;
 
     constructor(_xPositionAttribute = "cx", _yPositionAttribute = "cy", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
@@ -71,7 +66,6 @@ export class SVGCursor extends TouchlessCursor {
         this.yPositionAttribute = _yPositionAttribute;
 
         this.ringSizeMultiplier = _ringSizeMultiplier;
-        this.cursorStartSize = this.GetCurrentCursorRadius();
 
         ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
         ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
