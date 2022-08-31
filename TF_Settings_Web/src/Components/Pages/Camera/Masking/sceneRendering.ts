@@ -60,7 +60,7 @@ export const setupRenderScene = (div: HTMLDivElement) => {
     _camera.position.z = 2;
 
     _renderer = new WebGLRenderer({ antialias: false });
-    _renderer.setPixelRatio(window.devicePixelRatio * 0.5);
+    _renderer.setPixelRatio(window.devicePixelRatio * 0.1);
     _renderer.setSize(div.clientWidth, div.clientHeight);
     div.appendChild(_renderer.domElement);
 
@@ -183,14 +183,14 @@ const updateWristMesh = (wristMesh: WristMesh, isPrimary: boolean, wrist?: Vecto
 };
 
 const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean) => {
-    line.geometry.setPositions([start.x, start.y, start.z + 0.01, end.x, end.y, end.z + 0.01]);
+    line.geometry.setPositions([start.x, start.y, start.z, end.x, end.y, end.z]);
     line.material.opacity = isPrimary ? 1 : 0.5;
     line.material.needsUpdate = true;
     line.visible = true;
 };
 
 const moveMesh = (mesh: BasicMesh, position: Vector3, isPrimary: boolean) => {
-    mesh.position.set(position.x, position.y, position.z);
+    mesh.position.set(position.x, position.y, position.z + 0.0001);
     mesh.material.opacity = isPrimary ? 1 : 0.5;
     mesh.material.needsUpdate = true;
     mesh.visible = true;
