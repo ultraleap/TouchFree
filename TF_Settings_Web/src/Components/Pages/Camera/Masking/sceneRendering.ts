@@ -104,8 +104,6 @@ export const updateCameraRender = (data: Uint8Array, width: number, height: numb
 
     _cameraFeedMesh.material.map = _cameraFeedTexture;
     _cameraFeedMesh.material.needsUpdate = true;
-
-    console.log(_renderer.info);
 };
 
 export const updateHandRenders = (handData: HandState) => {

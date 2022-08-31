@@ -15,16 +15,17 @@ import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { updateCameraCanvas } from './createCameraData';
-import { rawHandToHandData, setHandRenderState } from './createHandData';
+import { HandState, rawHandToHandData, setHandRenderState } from './createHandData';
 import { setupRenderScene, updateHandRenders } from './sceneRendering';
 
 export type Lens = 'Left' | 'Right';
 
-const FRAME_PROCESSING_TIMEOUT = 60;
+const FRAME_PROCESSING_TIMEOUT = 100;
 
 const MaskingScreen = () => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
+    const handState = useStatefulRef<HandState>({});
     // Config options
     const masking = useStatefulRef<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const isCamReversed = useStatefulRef<boolean>(false);
@@ -64,7 +65,6 @@ const MaskingScreen = () => {
     const camFeedRef = useRef<HTMLDivElement>(null);
     const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
-    const hasHandRenders = useRef<boolean>(false);
     const handTimeoutRef = useRef<number>();
 
     // ===== Hooks =====
@@ -149,6 +149,8 @@ const MaskingScreen = () => {
             isFrameProcessing.current = true;
             successfullySubscribed.current = true;
 
+            updateHandRenders(handState.current);
+
             frameTimeoutRef.current = window.setTimeout(() => {
                 updateCameraCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current);
                 isFrameProcessing.current = false;
@@ -164,15 +166,13 @@ const MaskingScreen = () => {
         isHandProcessing.current = true;
 
         const hands = evt.detail?.Hands;
-        if (hasHandRenders.current || hands.length > 0) {
+        if (handState.current.one || handState.current.two || hands.length > 0) {
             const handOne = hands[0];
             const handTwo = hands[1];
             const convertedHandOne = handOne ? rawHandToHandData(handOne) : undefined;
             const convertedHandTwo = handTwo ? rawHandToHandData(handTwo) : undefined;
 
-            hasHandRenders.current = convertedHandOne !== undefined || convertedHandTwo !== undefined;
-
-            updateHandRenders({ one: convertedHandOne, two: convertedHandTwo });
+            handState.current = { one: convertedHandOne, two: convertedHandTwo };
         }
 
         // Ignore any messages for a short period to allow clearing of message handling
