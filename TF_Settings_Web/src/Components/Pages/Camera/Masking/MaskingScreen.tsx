@@ -152,7 +152,7 @@ const MaskingScreen = () => {
             frameTimeoutRef.current = window.setTimeout(() => {
                 updateCameraCanvas(data, mainLens.current, isCamReversed.current, showOverexposed.current);
                 isFrameProcessing.current = false;
-            }, FRAME_PROCESSING_TIMEOUT * 2);
+            }, FRAME_PROCESSING_TIMEOUT);
         } else if (!successfullySubscribed.current) {
             socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
         }
