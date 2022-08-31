@@ -190,7 +190,7 @@ const updateWristMesh = (wristMesh: WristMesh, isPrimary: boolean, wrist?: Vecto
 
 const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean) => {
     line.geometry.setPositions([start.x, start.y, start.z, end.x, end.y, end.z]);
-    const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 4);
+    const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 3);
     line.material.linewidth = BASE_LINE_THICKNESS * scale;
     line.material.opacity = isPrimary ? 1 : 0.5;
     line.material.needsUpdate = true;
@@ -203,6 +203,6 @@ const moveMesh = (mesh: BasicMesh, position: Vector3, isPrimary: boolean) => {
     mesh.material.needsUpdate = true;
     mesh.visible = true;
 
-    const scale = MapRangeToRange(position.z, 0, 0.1, 1, 4);
+    const scale = MapRangeToRange(position.z, 0, 0.1, 1, 3);
     mesh.scale.set(scale, scale, 1);
 };
