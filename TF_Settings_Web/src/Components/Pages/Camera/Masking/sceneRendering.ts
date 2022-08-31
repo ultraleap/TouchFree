@@ -59,7 +59,8 @@ export const setupRenderScene = (div: HTMLDivElement) => {
     _camera = new PerspectiveCamera(90);
     _camera.position.z = 2;
 
-    _renderer = new WebGLRenderer();
+    _renderer = new WebGLRenderer({ antialias: false });
+    _renderer.setPixelRatio(window.devicePixelRatio * 0.5);
     _renderer.setSize(div.clientWidth, div.clientHeight);
     div.appendChild(_renderer.domElement);
 
@@ -119,7 +120,7 @@ const addBasicWristMesh = (scene: Scene): WristMesh => ({
 
 const addBasicCircleMesh = (scene: Scene): BasicMesh => {
     const mesh = new Mesh(
-        new CircleGeometry(0.05, 16),
+        new CircleGeometry(0.04, 10),
         new MeshBasicMaterial({ color: cssVariables.ultraleapGreen, transparent: true })
     );
     mesh.visible = false;
@@ -129,7 +130,7 @@ const addBasicCircleMesh = (scene: Scene): BasicMesh => {
 
 const addBasicLine = (scene: Scene): Line2 => {
     const geometry = new LineGeometry();
-    const line = new Line2(geometry, new LineMaterial({ color: 0xffffff, linewidth: 0.01, transparent: true }));
+    const line = new Line2(geometry, new LineMaterial({ color: 0xffffff, linewidth: 0.008, transparent: true }));
     line.visible = false;
     scene.add(line);
     return line;
