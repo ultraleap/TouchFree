@@ -30,16 +30,11 @@ export class WebInputController extends BaseInputController {
     private lastPosition: Array<number> | null = null;
     private scrollDirection: 'u' | 'd' | 'l' | 'r' | undefined;
 
-    enableScroll: boolean = false;
-
     // Group: Methods
 
     // Function: constructor
     // Sets up the basic event properties for all events transmitted from this InputController.
-    //
-    // Parameters:
-    //     _enableScroll - Whether the web input controller should handle scrolling
-    constructor(_enableScroll: boolean = false) {
+    constructor() {
         super();
 
         this.baseEventProps = {
@@ -54,7 +49,6 @@ export class WebInputController extends BaseInputController {
         };
 
         this.activeEventProps = this.baseEventProps;
-        this.enableScroll = _enableScroll;
     }
 
     // Function: HandleMove
@@ -170,7 +164,7 @@ export class WebInputController extends BaseInputController {
     }
 
     private HandleScroll(_position: Array<number>): void {
-        if (this.enableScroll && this.elementsOnDown && this.lastPosition) {
+        if (this.elementsOnDown && this.lastPosition) {
             const changeInPositionX = this.lastPosition[0] - _position[0];
             const changeInPositionY = this.lastPosition[1] - _position[1];
 
