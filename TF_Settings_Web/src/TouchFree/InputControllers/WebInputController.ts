@@ -1,4 +1,3 @@
-import { NIL } from 'uuid';
 import {
     TouchFreeInputAction,
     InputType
@@ -26,6 +25,10 @@ export class WebInputController extends BaseInputController {
     private readonly pointerId: number = 0;
     private readonly baseEventProps: PointerEventInit;
     private readonly activeEventProps: PointerEventInit;
+    private elementsOnDown: HTMLElement[] | null = null;
+    private lastPosition: Array<number> | null = null;
+    private scrollDirection: 'u' | 'd' | 'l' | 'r' | undefined = undefined;
+    private elementToScroll: HTMLElement | undefined = undefined;
 
     // Group: Methods
 
@@ -115,6 +118,7 @@ export class WebInputController extends BaseInputController {
 
         switch (_inputData.InputType) {
             case InputType.CANCEL:
+                this.ResetScrollData();
                 let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
 
                 if (elementAtPos !== null) {
@@ -130,17 +134,132 @@ export class WebInputController extends BaseInputController {
 
             case InputType.MOVE:
                 this.HandleMove(elementAtPos);
+
+                this.HandleScroll(_inputData.CursorPosition);
                 break;
 
             case InputType.DOWN:
+                this.ResetScrollData();
+                this.elementsOnDown = document.elementsFromPoint(
+                    _inputData.CursorPosition[0],
+                    _inputData.CursorPosition[1])
+                    .map(e => e as HTMLElement)
+                    .filter(e => e && !e.classList.contains("touchfreecursor"));
+
+                this.lastPosition = _inputData.CursorPosition;
+
                 let downEvent: PointerEvent = new PointerEvent("pointerdown", this.activeEventProps);
                 this.DispatchToTarget(downEvent, elementAtPos);
                 break;
 
             case InputType.UP:
+                this.ResetScrollData();
+
                 let upEvent: PointerEvent = new PointerEvent("pointerup", this.activeEventProps);
                 this.DispatchToTarget(upEvent, elementAtPos);
                 break;
+        }
+    }
+
+    private ResetScrollData(): void {
+        this.elementsOnDown = null;
+        this.scrollDirection = undefined;
+        this.elementToScroll = undefined;
+    }
+
+    private HandleScroll(_position: Array<number>): void {
+        if (this.elementsOnDown && this.lastPosition) {
+            const changeInPositionX = this.lastPosition[0] - _position[0];
+            const changeInPositionY = this.lastPosition[1] - _position[1];
+
+            if (!this.scrollDirection && (Math.abs(changeInPositionX) > 5 || Math.abs(changeInPositionY) > 5)) {
+                if (Math.abs(changeInPositionX) > Math.abs(changeInPositionY)) {
+                    this.scrollDirection = changeInPositionX > 0 ? 'r' : 'l';
+                } else {
+                    this.scrollDirection = changeInPositionY > 0 ? 'd' : 'u';
+                }
+            }
+
+            this.lastPosition = _position;
+
+            if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === 'd')) {
+                const element = WebInputController.GetElementToScroll(
+                    this.elementToScroll,
+                    this.elementsOnDown,
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+                    
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollTop = Math.min(element.scrollHeight - element.clientHeight, element.scrollTop + changeInPositionY);
+                }
+            }
+
+            if (changeInPositionY < 0 && (this.scrollDirection === undefined || this.scrollDirection === 'u')) {
+                const element = WebInputController.GetElementToScroll(
+                    this.elementToScroll,
+                    this.elementsOnDown,
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop > 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollTop = Math.max(0, element.scrollTop + changeInPositionY);
+                }
+            }
+            
+            if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === 'r')) {
+                const element = WebInputController.GetElementToScroll(
+                    this.elementToScroll,
+                    this.elementsOnDown,
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+                    
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollLeft = Math.min(element.scrollWidth - element.clientWidth, element.scrollLeft + changeInPositionX);
+                }
+            }
+
+            if (changeInPositionX < 0 && (this.scrollDirection === undefined || this.scrollDirection === 'l')) {
+                const element = WebInputController.GetElementToScroll(
+                    this.elementToScroll,
+                    this.elementsOnDown,
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft > 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+                    
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollLeft = Math.max(0, element.scrollLeft + changeInPositionX);
+                }
+            }
+        }
+    }
+
+    private static GetElementToScroll(
+        elementToScroll: HTMLElement | undefined,
+        elements: HTMLElement[],
+        scrollValidation: (element: HTMLElement) => boolean,
+        parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean): HTMLElement | undefined {
+
+        if (elementToScroll) {
+            return elementToScroll;
+        } else {
+            for (let i = 0; i < elements.length; i++) {
+                let elementToCheckScroll = elements[i];
+                if (scrollValidation(elementToCheckScroll)) {
+                    let parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+                    while (parentAsHtmlElement) {
+                        if (parentScrollValidation(elementToCheckScroll, parentAsHtmlElement)) {
+                            elementToCheckScroll = parentAsHtmlElement;
+                            parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+                        } else {
+                            return elementToCheckScroll;
+                        }
+                    }
+                    return elementToCheckScroll;
+                }
+            }
         }
     }
 
