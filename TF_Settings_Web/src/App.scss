@@ -27,3 +27,18 @@
         flex: 1 1 auto;
     }
 }
+
+.fade-enter {
+    opacity: 0;
+}
+.fade-exit {
+    opacity: 1;
+}
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 500ms;
+}
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 500ms;
+}

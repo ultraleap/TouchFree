@@ -1,4 +1,4 @@
-﻿namespace Ultraleap.TouchFree.Library
+﻿namespace Ultraleap.TouchFree.Library.Connections
 {
     public interface ITrackingConnectionManager
     {
@@ -6,5 +6,6 @@
         Leap.Controller controller { get; }
         void Connect();
         void Disconnect();
+        void SetImagesState(bool enabled);
     }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import 'Styles/Camera/Calibrate.scss';
 
 import React, { useEffect } from 'react';
@@ -20,7 +19,7 @@ const handEventTypes = ['HandsLost', 'HandFound'];
 
 const calibInteractionConfig: Partial<InteractionConfig> = {
     InteractionType: InteractionType.HOVER,
-    DeadzoneRadius: 0.007,
+    DeadzoneRadius: 0.01,
     HoverAndHold: {
         HoverStartTimeS: 1,
         HoverCompleteTimeS: 5,
@@ -40,6 +39,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
 
     const navigate = useNavigate();
 
+    /* eslint-disable @typescript-eslint/no-empty-function */
     useEffect(() => {
         setCursorDisplay(false);
         // Save current config then change it to use config for calibration
@@ -65,6 +65,23 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
         };
     }, []);
 
+    const sendScreenSizeToConfig = () => {
+        ConfigurationManager.RequestConfigChange(
+            null,
+            { ScreenWidthPX: window.innerWidth, ScreenHeightPX: window.innerHeight },
+            () => {}
+        );
+    };
+
+    useEffect(() => {
+        sendScreenSizeToConfig();
+        window.addEventListener('resize', sendScreenSizeToConfig);
+
+        return () => {
+            window.removeEventListener('resize', sendScreenSizeToConfig);
+        };
+    }, []);
+
     const setHandPresence = (evt: Event) => {
         setIsHandPresent(evt.type === 'HandFound');
     };
@@ -79,6 +96,7 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
 
     const resetCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
+    /* eslint-enable @typescript-eslint/no-empty-function */
 
     const onCancel = (event?: TFClickEvent) => {
         event?.stopPropagation();

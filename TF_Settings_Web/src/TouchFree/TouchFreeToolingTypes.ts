@@ -1,4 +1,7 @@
 // Class: VersionInfo
+
+import { Vector } from "./Configuration/ConfigurationTypes";
+
 // This class is used when comparing the <ApiVersion> of the Tooling and the Service.
 export class VersionInfo
 {
@@ -188,6 +191,42 @@ export class WebsocketInputAction {
         this.DistanceFromScreen = _distanceFromScreen;
         this.ProgressToClick = _progressToClick;
     }
+}
+
+
+export class HandFrame
+{
+    Hands: RawHand[] = [];
+}
+
+export class RawHand
+{
+    CurrentPrimary: boolean = false;
+    Fingers: RawFinger[] = [];
+    WristWidth: number = 0;
+    WristPosition: Vector = {X:0,Y:0,Z:0};
+}
+
+export class RawFinger
+{
+    Bones: RawBone[] = []
+    Type: FingerType = FingerType.TYPE_UNKNOWN;
+}
+
+export enum FingerType
+{
+    TYPE_THUMB = 0,
+    TYPE_INDEX = 1,
+    TYPE_MIDDLE = 2,
+    TYPE_RING = 3,
+    TYPE_PINKY = 4,
+    TYPE_UNKNOWN = -1
+}
+
+export class RawBone
+{
+    NextJoint: Vector = {X:0,Y:0,Z:0};
+    PrevJoint: Vector = {X:0,Y:0,Z:0};
 }
 
 // Class: FlagUtilities

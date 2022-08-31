@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library.Connections
 {
     public class TrackingConnectionManager : ITrackingConnectionManager
     {
         public Leap.Controller controller { get; private set; }
 
+        private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly IConfigManager configManager;
 
         private const int maximumWaitTimeSeconds = 30;
@@ -21,8 +22,9 @@ namespace Ultraleap.TouchFree.Library
             get { return currentTrackingMode; }
         }
 
-        public TrackingConnectionManager(IConfigManager _configManager)
+        public TrackingConnectionManager(IConfigManager _configManager, ITrackingDiagnosticApi _diagnosticApi)
         {
+            diagnosticApi = _diagnosticApi;
             configManager = _configManager;
             controller = new Leap.Controller();
             controller.Connect += Controller_Connect;
@@ -30,6 +32,8 @@ namespace Ultraleap.TouchFree.Library
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
             controller.StopConnection();
+
+            controller.Device += Controller_CameraConnected;
         }
 
         public void Connect()
@@ -45,6 +49,11 @@ namespace Ultraleap.TouchFree.Library
             {
                 controller.StopConnection();
             }
+        }
+
+        public void Controller_CameraConnected(object sender, Leap.DeviceEventArgs e)
+        {
+            diagnosticApi.TriggerUpdatingTrackingConfiguration();
         }
 
         private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
@@ -161,6 +170,18 @@ namespace Ultraleap.TouchFree.Library
                     controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
                     controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
+            }
+        }
+
+        public void SetImagesState(bool enabled)
+        {
+            if (enabled)
+            {
+                controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
+            }
+            else
+            {
+                controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
             }
         }
     }

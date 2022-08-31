@@ -3,7 +3,7 @@
     public class InputActionResult
     {
         public readonly bool actionDetected = false;
-        public readonly InputAction inputAction;
+        public readonly InputAction? inputAction;
         public readonly float confidence;
 
         public InputActionResult () { }

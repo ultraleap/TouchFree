@@ -2,6 +2,8 @@ using System;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -21,13 +23,14 @@ namespace Ultraleap.TouchFree.Service
             services.AddConfig();
 
             services.AddTrackingConnectionManager();
+            services.AddTrackingDiagnosticApi();
             services.AddHandManager();
             services.AddVirtualScreen();
 
             services.AddPositioning();
 
             services.AddClientConnectionManager();
-            services.AddWebSocketReceiver();
+            services.AddMessageQueueHandlers();
 
             services.AddInteractions();
         }
@@ -38,6 +41,16 @@ namespace Ultraleap.TouchFree.Service
             app.UseWebSockets();
             app.UseStaticFiles("/settings");
 
+            app.UseRouting();
+            app.UseEndpoints(endpoint =>
+            {
+                endpoint.MapGet("/settings/{**path}", (HttpContext context) =>
+                {
+                    context.Response.Redirect("/settings/index.html");
+                });
+            });
+
+            var configFileWatcher = app.ApplicationServices.GetService<ConfigFileWatcher>();
             var configManager = app.ApplicationServices.GetService<IConfigManager>();
 
             app.UseTouchFreeRouter(configManager);

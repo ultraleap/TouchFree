@@ -12,7 +12,8 @@ namespace Ultraleap.TouchFree.Library
     {
         private readonly IEnumerable<IInteraction> interactions;
         private readonly InteractionTuning interactionTuning;
-        private readonly UpdateBehaviour updateBehaviour;
+        private readonly IHandManager handManager;
+        private readonly IUpdateBehaviour updateBehaviour;
         private readonly IClientConnectionManager connectionManager;
 
         public Dictionary<IInteraction, float> activeInteractions { get; private set; }
@@ -25,16 +26,18 @@ namespace Ultraleap.TouchFree.Library
         private Vector2? lastDownPosition;
 
         public InteractionManager(
-            UpdateBehaviour _updateBehaviour,
+            IUpdateBehaviour _updateBehaviour,
             IClientConnectionManager _connectionManager,
             IEnumerable<IInteraction> _interactions,
             IOptions<InteractionTuning> _interactionTuning,
-            IConfigManager _configManager)
+            IConfigManager _configManager,
+            IHandManager _handManager)
         {
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
             interactions = _interactions;
             interactionTuning = _interactionTuning?.Value;
+            handManager = _handManager;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
@@ -89,6 +92,8 @@ namespace Ultraleap.TouchFree.Library
 
         public void Update()
         {
+            connectionManager.SendHandData(handManager.RawHands);
+
             if (activeInteractions != null)
             {
                 InputAction? inputAction = null;
@@ -130,11 +135,11 @@ namespace Ultraleap.TouchFree.Library
                             }
                         }
 
-                        if (interactionCurrentlyDown == null && interactionInputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.InputType == InputType.DOWN)
+                        if (interactionCurrentlyDown == null && interactionInputAction?.inputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.Value.InputType == InputType.DOWN)
                         {
                             inputAction = interactionInputAction.inputAction;
                             interactionCurrentlyDown = interaction.Key;
-                            nonLocationRelativeInputAction = interactionInputAction.inputAction;
+                            nonLocationRelativeInputAction = interactionInputAction.inputAction.Value;
 
                             if (interactionTuning?.EnableInteractionConfidence == true)
                             {
@@ -149,9 +154,9 @@ namespace Ultraleap.TouchFree.Library
                             }
                         }
 
-                        if (currentMaxProgress < interactionInputAction.inputAction.ProgressToClick)
+                        if (interactionInputAction?.inputAction != null && currentMaxProgress < interactionInputAction.inputAction.Value.ProgressToClick)
                         {
-                            currentMaxProgress = interactionInputAction.inputAction.ProgressToClick;
+                            currentMaxProgress = interactionInputAction.inputAction.Value.ProgressToClick;
                         }
                     }
                 }
@@ -190,7 +195,7 @@ namespace Ultraleap.TouchFree.Library
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
                             updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
                     }
-                    connectionManager.SendInputActionToWebsocket(inputAction.Value);
+                    connectionManager.SendInputAction(inputAction.Value);
                 }
             }
         }
