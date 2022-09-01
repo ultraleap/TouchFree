@@ -2,6 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+using Ultraleap.TouchFree.Tooling.Tracking;
+using Ultraleap.TouchFree.Tooling.Connection;
+
 public class CameraPreviewScreen : MonoBehaviour
 {
     public Toggle enableOverexposureHighlighting;
@@ -20,8 +23,6 @@ public class CameraPreviewScreen : MonoBehaviour
     float currentMaskLeft, currentMaskRight, currentMaskTop, currentMaskBottom;
     bool newMaskDataReceived = false;
 
-    public GameObject maskingDiabledWarningObject;
-
     public GameObject handsCameraObject;
 
     public Scrollbar contentScrollbar;
@@ -31,32 +32,18 @@ public class CameraPreviewScreen : MonoBehaviour
         leapImageRetriever.enabled = false;
         leapImageRetriever.enabled = true;
         leapImageRetriever.Reconstruct();
-        if (DiagnosticAPIManager.diagnosticAPI.allowImages.HasValue && !DiagnosticAPIManager.diagnosticAPI.allowImages.Value)
-        {
-            Leap.Unity.LeapImageRetriever.EyeTextureData.ResetGlobalShaderValues();
-        }
+
         handsCameraObject.SetActive(true);
         enableOverexposureHighlighting.onValueChanged.AddListener(OnOverExposureValueChanged);
         cameraReversedToggle.onValueChanged.AddListener(OnCameraReversedChanged);
         OnOverExposureValueChanged(enableOverexposureHighlighting.isOn);
 
-        if (DiagnosticAPIManager.diagnosticAPI == null)
-        {
-            DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
-        }
-
-        DiagnosticAPI.OnGetMaskingResponse += HandleMaskingResponse;
-        DiagnosticAPI.OnTrackingApiVersionResponse += HandleMaskingVersionCheck;
-        DiagnosticAPI.OnCameraOrientationResponse += HandleCameraOrientationCheck;
+        TrackingManager.RequestTrackingState(HandleTrackingResponse);
 
         maskingSiderL.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderR.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderT.onValueChanged.AddListener(OnSliderChanged);
         maskingSiderB.onValueChanged.AddListener(OnSliderChanged);
-
-        DiagnosticAPIManager.diagnosticAPI.GetDevices();
-        DiagnosticAPIManager.diagnosticAPI.GetImageMask();
-        DiagnosticAPIManager.diagnosticAPI.GetCameraOrientation();
 
         contentScrollbar.value = 1;
     }
@@ -66,9 +53,6 @@ public class CameraPreviewScreen : MonoBehaviour
         handsCameraObject.SetActive(false);
         enableOverexposureHighlighting.onValueChanged.RemoveListener(OnOverExposureValueChanged);
         cameraReversedToggle.onValueChanged.RemoveListener(OnCameraReversedChanged);
-        DiagnosticAPI.OnGetMaskingResponse -= HandleMaskingResponse;
-        DiagnosticAPI.OnTrackingApiVersionResponse -= HandleMaskingVersionCheck;
-        DiagnosticAPI.OnCameraOrientationResponse -= HandleCameraOrientationCheck;
 
         maskingSiderL.onValueChanged.RemoveListener(OnSliderChanged);
         maskingSiderR.onValueChanged.RemoveListener(OnSliderChanged);
@@ -85,16 +69,6 @@ public class CameraPreviewScreen : MonoBehaviour
         }
     }
 
-    public void HandleMaskingVersionCheck()
-    {
-        bool maskingAvailable = DiagnosticAPIManager.diagnosticAPI.maskingAllowed;
-        maskingSiderL.gameObject.SetActive(maskingAvailable);
-        maskingSiderR.gameObject.SetActive(maskingAvailable);
-        maskingSiderT.gameObject.SetActive(maskingAvailable);
-        maskingSiderB.gameObject.SetActive(maskingAvailable);
-        maskingDiabledWarningObject.SetActive(!maskingAvailable);
-    }
-
     void OnOverExposureValueChanged(bool state)
     {
         if (state)
@@ -107,24 +81,56 @@ public class CameraPreviewScreen : MonoBehaviour
         }
     }
 
-    void SetMasking()
+    void OnCameraReversedChanged(bool state)
     {
-        currentMaskLeft = maskingSiderL.value * sliderRatio;
-        currentMaskRight = maskingSiderR.value * sliderRatio;
-        currentMaskTop = maskingSiderB.value * sliderRatio;
-        currentMaskBottom = maskingSiderT.value * sliderRatio;
+        var newState = new TrackingState(null, cameraReversedToggle.isOn, null, null);
 
-        DiagnosticAPIManager.diagnosticAPI.SetMasking(
-            currentMaskLeft,
-            currentMaskRight,
-            currentMaskTop,
-            currentMaskBottom);
+        TrackingManager.RequestTrackingChange(newState);
     }
 
-    private void HandleMaskingResponse(float _left, float _right, float _top, float _bottom)
+    public void OnSliderChanged(float _)
     {
-        HandleMaskingVersionCheck();
-        SetSliders(_left, _right, _top, _bottom);
+        SetMasking();
+    }
+
+    void SetMasking()
+    {
+        var mask = new MaskData(
+            maskingSiderT.value * sliderRatio,
+            maskingSiderB.value * sliderRatio,
+            maskingSiderR.value * sliderRatio,
+            maskingSiderL.value * sliderRatio
+        );
+
+        var newState = new TrackingState(mask, null, null, null);
+
+        TrackingManager.RequestTrackingChange(newState);
+    }
+
+    private void HandleTrackingResponse(TrackingStateResponse _response)
+    {
+        var maskData = _response.mask.Value.content;
+        var cameraReversed = _response.cameraReversed.Value.content;
+        var allowImages = _response.allowImages.Value.content;
+
+        if (maskData.HasValue) {
+            SetSliders(
+                maskData.Value.left,
+                maskData.Value.right,
+                maskData.Value.upper,
+                maskData.Value.lower
+            );
+        }
+
+        if (cameraReversed.HasValue) {
+
+            cameraReversedToggle.isOn = cameraReversed.Value;
+        }
+
+        if (allowImages.HasValue && !allowImages.Value)
+        {
+            Leap.Unity.LeapImageRetriever.EyeTextureData.ResetGlobalShaderValues();
+        }
     }
 
     public void SetSliders(float _left, float _right, float _top, float _bottom)
@@ -133,20 +139,5 @@ public class CameraPreviewScreen : MonoBehaviour
         maskingSiderR.SetValueWithoutNotify(_right / sliderRatio);
         maskingSiderT.SetValueWithoutNotify(_bottom / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
         maskingSiderB.SetValueWithoutNotify(_top / sliderRatio);// These are reversed as the shader for rendering camera feeds is upside-down
-    }
-
-    public void OnSliderChanged(float _)
-    {
-        SetMasking();
-    }
-
-    private void HandleCameraOrientationCheck()
-    {
-        cameraReversedToggle.isOn = DiagnosticAPIManager.diagnosticAPI.cameraReversed;
-    }
-
-    void OnCameraReversedChanged(bool state)
-    {
-        DiagnosticAPIManager.diagnosticAPI.SetCameraOrientation(cameraReversedToggle.isOn);
     }
 }
