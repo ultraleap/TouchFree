@@ -63,7 +63,7 @@ export const setupRenderScene = (div: HTMLDivElement) => {
     _camera.position.z = 2;
 
     _renderer = new WebGLRenderer();
-    _renderer.setPixelRatio(window.devicePixelRatio * 0.35);
+    _renderer.setPixelRatio(window.devicePixelRatio);
     _renderer.setSize(div.clientWidth, div.clientHeight);
     div.appendChild(_renderer.domElement);
 
