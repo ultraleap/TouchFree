@@ -53,6 +53,9 @@ export enum ActionCode {
     GET_TRACKING_STATE = "GET_TRACKING_STATE",
     SET_TRACKING_STATE = "SET_TRACKING_STATE",
     TRACKING_STATE = "TRACKING_STATE",
+
+    HAND_DATA = "HAND_DATA",
+    SET_HAND_DATA_STREAM_STATE = "SET_HAND_DATA_STREAM_STATE",
 }
 
 // Enum: HandPresenceState
@@ -143,6 +146,19 @@ export class ConfigState extends TouchFreeRequest {
 // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
 // use of the data received.
 export class ConfigChangeRequest extends TouchFreeRequest {
+}
+
+// class: HandRenderDataStateRequest
+// Used to set the state of the Hand Render Data stream.
+export class HandRenderDataStateRequest extends TouchFreeRequest {
+    enabled: boolean;
+    lens: string;
+
+    constructor(_id: string, enabled: boolean, lens: string) {
+        super(_id);
+        this.enabled = enabled;
+        this.lens = lens;
+    }
 }
 
 // Class: ConfigStateCallback
