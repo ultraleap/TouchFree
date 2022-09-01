@@ -22,6 +22,7 @@ import {
 import { TrackingState } from '../Tracking/TrackingTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
+import { CursorManager } from '../Cursors/CursorManager';
 
 // Class: ServiceConnection
 // This represents a connection to a TouchFree Service. It should be created by a
@@ -124,6 +125,15 @@ export class ServiceConnection {
             case ActionCode.SERVICE_STATUS:
                 let serviceStatus: ServiceStatus = looseData.content;
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
+                break;
+                
+            case ActionCode.HAND_DATA:
+                let wsHandData: any = looseData.content;
+                ConnectionManager.messageReceiver.latestHandDataItem = wsHandData;
+                break;
+
+            case ActionCode.CLOSE_TO_SWIPE:
+                CursorManager.instance.cursor.ShowCloseToSwipe();
                 break;
 
             case ActionCode.CONFIGURATION_STATE:

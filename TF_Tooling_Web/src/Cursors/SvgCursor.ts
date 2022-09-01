@@ -3,11 +3,15 @@ import { InputType } from "../TouchFreeToolingTypes";
 import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
+const MAX_SWIPE_NOTIFICATIONS = 2;
+
 export class SVGCursor extends TouchlessCursor {
     xPositionAttribute: string;
     yPositionAttribute: string;
     cursorCanvas: any;
     cursorRing: any;
+    cursorText: SVGTextElement;
+    cursorRect: SVGRectElement;
     ringSizeMultiplier: number;
     cursorStartSize: number;
     currentAnimationInterval: NodeJS.Timeout | undefined = undefined;
@@ -15,16 +19,19 @@ export class SVGCursor extends TouchlessCursor {
     growQueued: boolean = false;
     hidingCursor: boolean = false;
     currentFadingInterval: NodeJS.Timeout | undefined = undefined;
+    swipeNotificationTimeout: NodeJS.Timeout | undefined = undefined;
+    swipeDelayTimeout: NodeJS.Timeout | undefined;
+    totalSwipeNotifications: number = 0;
 
     constructor(_xPositionAttribute = "cx", _yPositionAttribute = "cy", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
 
         const documentBody = document.querySelector('body');
-        
+
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg','svg');
         svgElement.classList.add('touchfree-cursor');
         svgElement.style.opacity = '0';
-        svgElement.style.position = 'fixed';
+        svgElement.style.position = 'absolute';
         svgElement.style.top = '0px';
         svgElement.style.left = '0px';
         svgElement.style.zIndex = '1000';
@@ -32,7 +39,34 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.setAttribute('height', '100%');
         svgElement.id = 'svg-cursor';
         documentBody?.appendChild(svgElement);
-        
+
+        const svgRectElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        svgRectElement.style.opacity = '0';
+        svgRectElement.setAttribute('fill', _darkCursor ? 'black' : 'white');
+        svgRectElement.setAttribute('width', '110');
+        svgRectElement.setAttribute('rx', '10');
+        svgRectElement.setAttribute('height', '40');
+        svgRectElement.id = 'svg-cursor-rect'
+        svgElement.appendChild(svgRectElement);
+
+        const svgTextElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        svgTextElement.style.opacity = '0';
+        svgTextElement.setAttribute('fill', _darkCursor ? 'white' : 'black');
+        svgTextElement.id = 'svg-cursor-text'
+        svgElement.appendChild(svgTextElement);
+
+        const svgTextSpanElementOne = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        const svgTextSpanElementTwo = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        svgTextSpanElementOne.setAttribute('dx', '10');
+        svgTextSpanElementOne.setAttribute('dy', '1.1em');
+        svgTextSpanElementOne.style.fontWeight = 'bold';
+        svgTextSpanElementOne.textContent = 'Swipe Faster'
+        svgTextSpanElementTwo.setAttribute('dx', '-72');
+        svgTextSpanElementTwo.setAttribute('dy', '1.1em');
+        svgTextSpanElementTwo.textContent = 'to Scroll'
+        svgTextElement.appendChild(svgTextSpanElementOne);
+        svgTextElement.appendChild(svgTextSpanElementTwo);
+
         const svgRingElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgRingElement.classList.add('touchfree-cursor');
         svgRingElement.setAttribute('r', '15');
@@ -73,11 +107,18 @@ export class SVGCursor extends TouchlessCursor {
         this.ringSizeMultiplier = _ringSizeMultiplier;
         this.cursorStartSize = this.GetCurrentCursorRadius();
 
+        this.cursorRect = svgRectElement;
+        this.cursorText = svgTextElement;
+
+        if (!_darkCursor) {
+            this.cursorCanvas.classList.add('light');
+        }
+
         ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
-        ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
+        ConnectionManager.instance.addEventListener('HandsLost', this.HandleHandsLost.bind(this));
     }
 
-    UpdateCursor(_inputAction: any) {
+    UpdateCursor = (_inputAction: any) => {
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
         this.cursorRing?.setAttribute('opacity', _inputAction.ProgressToClick);
@@ -89,6 +130,12 @@ export class SVGCursor extends TouchlessCursor {
             this.ShowCursor();
             this.cursorRing?.setAttribute(this.xPositionAttribute, position[0]);
             this.cursorRing?.setAttribute(this.yPositionAttribute, position[1]);
+
+            this.cursorText?.setAttribute('x', `${position[0] - 55}`);
+            this.cursorText?.setAttribute('y', `${position[1] - 80}`);
+            
+            this.cursorRect?.setAttribute('x', `${position[0] - 55}`);
+            this.cursorRect?.setAttribute('y', `${position[1] - 80}`);
     
             if (this.cursor !== undefined) {
                 this.cursor.setAttribute(this.xPositionAttribute, position[0].toString());
@@ -148,5 +195,47 @@ export class SVGCursor extends TouchlessCursor {
             return radiusAsNumber;
         }
         return 0;
+    }
+
+    ShowCloseToSwipe(): void {
+        if (this.totalSwipeNotifications >= MAX_SWIPE_NOTIFICATIONS) {
+            return;
+        }
+
+        if (this.swipeDelayTimeout) {
+            clearTimeout(this.swipeDelayTimeout);
+        }
+
+        this.swipeDelayTimeout = setTimeout(() => {
+            if (this.cursorText && this.cursorRect) {
+                if (this.swipeNotificationTimeout) {
+                    clearTimeout(this.swipeNotificationTimeout);
+                }
+
+                this.cursorText.style.opacity = '1';
+                this.cursorRect.style.opacity = '1';
+                
+                this.totalSwipeNotifications++;
+
+                this.swipeNotificationTimeout = setTimeout(() => {
+                    this.HideCloseToSwipe();
+                }, 2000);
+            }
+        }, 200);
+    }
+
+    HandleHandsLost(): void {
+        this.totalSwipeNotifications = 0;
+        this.HideCloseToSwipe();
+    }
+
+    HideCloseToSwipe(): void {
+        if (this.cursorText) {
+            this.cursorText.style.opacity = '0';
+        }
+        
+        if (this.cursorRect) {
+            this.cursorRect.style.opacity = '0';
+        }        
     }
 }

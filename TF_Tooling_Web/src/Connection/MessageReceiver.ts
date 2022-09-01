@@ -9,7 +9,7 @@ import {
     TouchFreeRequest,
     TrackingStateCallback,
     TrackingStateResponse,
-    WebSocketResponse,
+    WebSocketResponse
 } from './TouchFreeServiceTypes';
 import {
     BitmaskFlags,
@@ -20,6 +20,8 @@ import {
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
+import { HandDataManager } from '../Plugins/HandDataManager';
+import { CursorManager } from '../Cursors/CursorManager';
 
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
@@ -48,6 +50,10 @@ export class MessageReceiver {
     // Variable: actionQueue
     // A queue of <TouchFreeInputActions> that have been received from the Service.
     actionQueue: Array<WebsocketInputAction> = [];
+
+    // Variable: latestHandDataItem
+    // The latest <HandFrame> that has been received from the Service.
+    latestHandDataItem: any = undefined;
 
     // Variable: responseQueue
     // A queue of <WebSocketResponses> that have been received from the Service.
@@ -124,6 +130,7 @@ export class MessageReceiver {
         this.CheckForServiceStatus();
         this.CheckForTrackingStateResponse();
         this.CheckForAction();
+        this.CheckForHandData();
     }
 
     // Function: CheckForResponse
@@ -240,6 +247,10 @@ export class MessageReceiver {
             // Parse newly received messages & distribute them
             let converted: TouchFreeInputAction = ConvertInputAction(action);
 
+            if (converted.InputType === InputType.DOWN) {
+                CursorManager.instance.cursor.HideCloseToSwipe();
+            }
+
             //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
             if (converted.InputType !== InputType.UP) {
                 this.lastKnownCursorPosition = Array.from(converted.CursorPosition);
@@ -257,6 +268,20 @@ export class MessageReceiver {
         if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
             ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
             this.lastStateUpdate = HandPresenceState.PROCESSED;
+        }
+    }
+    
+    // Function: CheckForHandData
+    // Checks <latestHandDataItem> and if the <HandFrame> is not undefined sends it to
+    // <HandDataManager> to handle the frame.
+    CheckForHandData(): void {
+        let handFrame = this.latestHandDataItem;
+
+        if (handFrame !== undefined) {
+            // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+            setTimeout(() => {
+                HandDataManager.HandleHandFrame(handFrame);
+            });
         }
     }
 

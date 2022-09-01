@@ -250,4 +250,7 @@ export class DotCursor extends TouchlessCursor {
             this.currentFadingInterval = -1;
         }
     }
+
+    ShowCloseToSwipe() {}
+    HideCloseToSwipe() {}
 }
