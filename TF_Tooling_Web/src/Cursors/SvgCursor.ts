@@ -104,7 +104,7 @@ export class SVGCursor extends TouchlessCursor {
         this.cursorStartSize = this.GetCurrentCursorRadius();
 
         if (!_darkCursor) {
-            this.cursorCanvas.classList.add('light');
+            this.cursorCanvas.classList.add('touchfree-cursor--light');
         }
 
         ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
