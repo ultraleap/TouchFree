@@ -55,7 +55,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.appendChild(svgDotElement);
 
         if (!_darkCursor) {
-            if (this.cursorRing !== undefined) {
+            if (this.cursorRing) {
                 this.cursorRing.style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.7))';
             }
             svgDotElement.style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.7))';

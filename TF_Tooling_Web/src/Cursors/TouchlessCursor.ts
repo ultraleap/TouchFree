@@ -33,7 +33,7 @@ export abstract class TouchlessCursor {
     // Function: UpdateCursor
     // Sets the position of the cursor, should be run after <HandleInputAction>.
     UpdateCursor(_inputAction: TouchFreeInputAction): void {
-        if (this.cursor !== undefined){
+        if (this.cursor) {
             this.cursor.style.left = (_inputAction.CursorPosition[0] - (this.cursor.clientWidth / 2)) + "px";
             this.cursor.style.top = (_inputAction.CursorPosition[1] - (this.cursor.clientHeight / 2)) + "px";
         }
@@ -52,15 +52,15 @@ export abstract class TouchlessCursor {
     // Function: ShowCursor
     // Used to make the cursor visible
     ShowCursor(): void {
-        if (this.cursor !== undefined){
-        this.cursor.style.opacity = "1";
+        if (this.cursor) {
+            this.cursor.style.opacity = "1";
         }
     }
 
     // Function: HideCursor
     // Used to make the cursor invisible
     HideCursor(): void {
-        if (this.cursor !== undefined){
+        if (this.cursor) {
             this.cursor.style.opacity = "0";
         }
     }
