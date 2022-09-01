@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Leap;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public delegate void ConnectionStatusEvent(bool oldIsConnected, bool newIsConnected);
     public interface IHandManager
     {
         Hand PrimaryHand { get; }
@@ -12,13 +12,9 @@ namespace Ultraleap.TouchFree.Library
         HandFrame RawHands { get; }
         List<Vector> RawHandPositions { get; }
         long Timestamp { get; }
-        void ConnectToTracking();
-        void DisconnectFromTracking();
-        bool IsTrackingServiceConnected();
-        bool IsCameraConnected();
         event Action HandFound;
         event Action HandsLost;
-        Leap.Image.CameraType HandRenderLens { set; }
-        event ConnectionStatusEvent Camera;
+        Image.CameraType HandRenderLens { set; }
+        ITrackingConnectionManager ConnectionManager { get; }
     }
 }

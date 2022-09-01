@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Net.WebSockets;
 using Ultraleap.TouchFree.Library;
+using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Connections;
 
 namespace TouchFreeTests.Connections
@@ -17,7 +18,7 @@ namespace TouchFreeTests.Connections
         {
             // Arrange
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(new Mock<IHandManager>().Object);
+            var clientConnectionManager = new ClientConnectionManager(new Mock<IHandManager>().Object, new Mock<IConfigManager>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
             var methodInfo = typeof(ClientConnectionManager).GetMethod(clientConnectionMethod);
             var parameterInfo = methodInfo.GetParameters();
@@ -52,7 +53,7 @@ namespace TouchFreeTests.Connections
         {
             // Arrange
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(new Mock<IHandManager>().Object);
+            var clientConnectionManager = new ClientConnectionManager(new Mock<IHandManager>().Object, new Mock<IConfigManager>().Object);
 
             // Act
             clientConnectionManager.AddConnection(mockClientConnection.Object);
@@ -67,7 +68,7 @@ namespace TouchFreeTests.Connections
             // Arrange
             var mockHandManager = new Mock<IHandManager>();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object);
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
 
             // Act
@@ -75,7 +76,7 @@ namespace TouchFreeTests.Connections
 
             // Assert
             Assert.AreEqual(0, clientConnectionManager.ClientConnections.Count());
-            mockHandManager.Verify(x => x.DisconnectFromTracking(), Times.Once);
+            mockHandManager.Verify(x => x.ConnectionManager.Disconnect(), Times.Once);
         }
 
         [Test]
@@ -85,7 +86,7 @@ namespace TouchFreeTests.Connections
             var mockHandManager = new Mock<IHandManager>();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
             var mockSecondClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object);
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
             clientConnectionManager.AddConnection(mockSecondClientConnection.Object);
 
@@ -95,7 +96,7 @@ namespace TouchFreeTests.Connections
             // Assert
             Assert.AreEqual(1, clientConnectionManager.ClientConnections.Count());
             Assert.AreSame(mockSecondClientConnection.Object, clientConnectionManager.ClientConnections.Single());
-            mockHandManager.Verify(x => x.DisconnectFromTracking(), Times.Never);
+            mockHandManager.Verify(x => x.ConnectionManager.Disconnect(), Times.Never);
         }
     }
 }

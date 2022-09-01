@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
@@ -23,15 +22,9 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
-            TrackingServiceState trackingServiceState = TrackingServiceState.UNAVAILABLE;
-            if (handManager.TrackingServiceConnected())
-            {
-                trackingServiceState = handManager.CameraConnected() ? TrackingServiceState.CONNECTED : TrackingServiceState.NO_CAMERA;
-            }
-
-            ServiceStatus currentConfig = new ServiceStatus(
+            var currentConfig = new ServiceStatus(
                 requestId,
-                trackingServiceState,
+                handManager.ConnectionManager.TrackingServiceState,
                 configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
 
 

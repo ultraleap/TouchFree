@@ -19,27 +19,34 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public HandPresenceEvent MissedHandPresenceEvent { get; private set; }
 
-        public IHandManager handManager;
+        private readonly IHandManager handManager;
+        private readonly IConfigManager configManager;
 
-        public ClientConnectionManager(IHandManager _handManager)
+        public ClientConnectionManager(IHandManager _handManager, IConfigManager _configManager)
         {
             MissedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
             handManager = _handManager;
+            configManager = _configManager;
             handManager.HandFound += OnHandFound;
             handManager.HandsLost += OnHandsLost;
+            handManager.ConnectionManager.ServiceStatusChange += ConnectionStatusChange;
 
             // This is here so the test infrastructure has some sign that the app is ready
             TouchFreeLog.WriteLine("Service Setup Complete");
         }
 
-        private void OnHandFound()
-        {
-            HandleHandPresenceEvent(HandPresenceState.HAND_FOUND);
-        }
+        private void OnHandFound() => HandleHandPresenceEvent(HandPresenceState.HAND_FOUND);
 
-        private void OnHandsLost()
+        private void OnHandsLost() => HandleHandPresenceEvent(HandPresenceState.HANDS_LOST);
+
+        private void ConnectionStatusChange(TrackingServiceState state)
         {
-            HandleHandPresenceEvent(HandPresenceState.HANDS_LOST);
+            var currentConfig = new ServiceStatus(
+                string.Empty, // No request id as this event is not a response to a request
+                state,
+                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
+            
+            SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
         }
 
         private void HandleHandPresenceEvent(HandPresenceState state)
@@ -64,7 +71,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             {
                 activeConnections.TryAdd(Guid.NewGuid(), _connection);
                 TouchFreeLog.WriteLine("Connection set up");
-                handManager.ConnectToTracking();
+                handManager.ConnectionManager.Connect();
             }
         }
 
@@ -95,7 +102,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             {
                 // there are no connections
                 LostAllConnections?.Invoke();
-                handManager.DisconnectFromTracking();
+                handManager.ConnectionManager.Disconnect();
             }
         }
 
