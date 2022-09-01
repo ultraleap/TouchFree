@@ -1,5 +1,5 @@
 import { InputActionManager } from '../Plugins/InputActionManager';
-import { TouchFreeInputAction, InputType } from "../TouchFreeToolingTypes";
+import { TouchFreeInputAction, InputType, TouchFreeEvent } from "../TouchFreeToolingTypes";
 
 // Class: InputController
 // InputControllers convert <TouchFreeInputActions> as recieved from the service into appropriate
@@ -20,7 +20,7 @@ export abstract class BaseInputController {
     constructor() {
         if (!BaseInputController.Instantiated) {
             BaseInputController.Instantiated = true;
-            InputActionManager.instance.addEventListener('TransmitInputAction',
+            InputActionManager.instance.addEventListener(TouchFreeEvent.TRAMSIT_INPUT_ACTION,
                 ((e: CustomEvent<TouchFreeInputAction>) => {
                     this.HandleInputAction(e.detail);
                 }) as EventListener);
@@ -55,7 +55,7 @@ export abstract class BaseInputController {
     }
 
     disconnect() {
-        InputActionManager.instance.removeEventListener('TransmitInputAction',
+        InputActionManager.instance.removeEventListener(TouchFreeEvent.TRAMSIT_INPUT_ACTION,
             ((e: CustomEvent<TouchFreeInputAction>) => {
                 this.HandleInputAction(e.detail);
             }) as EventListener);
