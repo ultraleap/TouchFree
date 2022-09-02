@@ -7,7 +7,6 @@ import {
     ServiceStatus,
     ServiceStatusCallback,
     TouchFreeRequest,
-    TrackingStateRequest,
     TrackingStateCallback,
     TrackingStateResponse,
     WebSocketResponse
@@ -21,7 +20,7 @@ import {
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
-import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
+import { HandDataManager } from '../Plugins/HandDataManager';
 import { CursorManager } from 'Components/CursorManager';
 
 // Class: MessageReceiver

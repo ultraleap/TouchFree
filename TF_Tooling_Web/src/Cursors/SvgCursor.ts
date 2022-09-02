@@ -1,5 +1,5 @@
 import { ConnectionManager } from "../Connection/ConnectionManager";
-import { InputType } from "../TouchFreeToolingTypes";
+import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
@@ -8,15 +8,11 @@ const MAX_SWIPE_NOTIFICATIONS = 2;
 export class SVGCursor extends TouchlessCursor {
     xPositionAttribute: string;
     yPositionAttribute: string;
-    cursorCanvas: any;
-    cursorRing: any;
+    cursorCanvas: SVGSVGElement;
+    cursorRing: SVGCircleElement;
     cursorPrompt: HTMLDivElement;
     cursorPromptWidth:number;
     ringSizeMultiplier: number;
-    cursorStartSize: number;
-    currentAnimationInterval: NodeJS.Timeout | undefined = undefined;
-    animationUpdateDuration: number | undefined;
-    growQueued: boolean = false;
     hidingCursor: boolean = false;
     currentFadingInterval: NodeJS.Timeout | undefined = undefined;
     swipeNotificationTimeout: NodeJS.Timeout | undefined = undefined;
@@ -90,7 +86,9 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.appendChild(svgDotElement);
 
         if (!_darkCursor) {
-            if (this.cursorRing !== undefined) {this.cursorRing.style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.7))';}
+            if (this.cursorRing) {
+                this.cursorRing.style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.7))';
+            }
             svgDotElement.style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.7))';
         }
 
@@ -101,7 +99,6 @@ export class SVGCursor extends TouchlessCursor {
         this.yPositionAttribute = _yPositionAttribute;
 
         this.ringSizeMultiplier = _ringSizeMultiplier;
-        this.cursorStartSize = this.GetCurrentCursorRadius();
 
         if (!_darkCursor) {
             this.cursorCanvas.classList.add('touchfree-cursor--light');
@@ -111,23 +108,23 @@ export class SVGCursor extends TouchlessCursor {
         ConnectionManager.instance.addEventListener('HandsLost', this.HandleHandsLost.bind(this));
     }
 
-    UpdateCursor = (_inputAction: any) => {
+    UpdateCursor(_inputAction: TouchFreeInputAction) {
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
-        this.cursorRing?.setAttribute('opacity', _inputAction.ProgressToClick);
-        this.cursorRing?.setAttribute('r', this.GetCurrentCursorRadius() * ringScaler);
+        this.cursorRing.setAttribute('opacity', _inputAction.ProgressToClick.toString());
+        this.cursorRing.setAttribute('r', (this.GetCurrentCursorRadius() * ringScaler).toString());
 
         const position = _inputAction.CursorPosition;
 
         if (position) {
             this.ShowCursor();
-            this.cursorRing?.setAttribute(this.xPositionAttribute, position[0]);
-            this.cursorRing?.setAttribute(this.yPositionAttribute, position[1]);
+            this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
+            this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
 
             this.cursorPrompt.style.left = `${position[0] - this.cursorPromptWidth/2}px`;
             this.cursorPrompt.style.top = `${position[1] - 80}px`;
     
-            if (this.cursor !== undefined) {
+            if (this.cursor) {
                 this.cursor.setAttribute(this.xPositionAttribute, position[0].toString());
                 this.cursor.setAttribute(this.yPositionAttribute, position[1].toString());
             }
@@ -136,8 +133,8 @@ export class SVGCursor extends TouchlessCursor {
         }
     }
 
-    HandleInputAction(_inputData: any) {
-        if (this.cursor !== undefined) {
+    HandleInputAction(_inputData: TouchFreeInputAction) {
+        if (this.cursor) {
             switch (_inputData.InputType) {
                 case InputType.MOVE:
                     this.UpdateCursor(_inputData);
@@ -156,8 +153,8 @@ export class SVGCursor extends TouchlessCursor {
         }
     }
 
-    SetCursorSize(_newWidth: any, _cursorToChange: any) {
-        _cursorToChange?.setAttribute('r', _newWidth);
+    SetCursorSize(_newWidth: number, _cursorToChange: SVGElement) {
+        _cursorToChange?.setAttribute('r', _newWidth.toString());
     }
 
     ShowCursor() {
@@ -168,13 +165,13 @@ export class SVGCursor extends TouchlessCursor {
     HideCursor() {
         this.hidingCursor = true;
         this.cursorCanvas.style.opacity = '0';
-        if (this.cursor !== undefined) {
+        if (this.cursor) {
             this.cursor.style.transform = 'scale(1)';
         }
     }
 
     GetCurrentCursorRadius(): number {
-        if (this.cursor !== undefined) {
+        if (this.cursor) {
             const radius = this.cursor.getAttribute('r');
             if (!radius) {
                 return 0;
