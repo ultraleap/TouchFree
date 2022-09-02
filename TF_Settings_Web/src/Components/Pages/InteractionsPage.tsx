@@ -395,7 +395,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                         onPointerUp={this.resetToDefaults.bind(this)}
                         onPointerEnter={this.onResetEnter}
                         onPointerLeave={this.onResetLeave}
-                        className={this.state ? this.state.resetButtonClass || 'reset-button' : 'reset-button'}
+                        className={this.state ? this.state.resetButtonClass ?? 'reset-button' : 'reset-button'}
                     >
                         <p> Reset to Default </p>
                     </button>
