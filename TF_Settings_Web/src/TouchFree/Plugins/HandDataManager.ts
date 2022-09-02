@@ -1,4 +1,4 @@
-import { HandFrame } from "TouchFree/TouchFreeToolingTypes";
+import { HandFrame } from "../TouchFreeToolingTypes";
 
 // Class: HandDataManager
 // The manager for all <HandFrame> to be handled and distributed. This distributes the data
