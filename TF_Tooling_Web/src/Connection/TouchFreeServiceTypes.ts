@@ -81,6 +81,13 @@ export enum Compatibility {
     TOOLING_OUTDATED
 }
 
+export enum SwipeDirection {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN,
+}
+
 export class HandPresenceEvent {
     state: HandPresenceState;
 

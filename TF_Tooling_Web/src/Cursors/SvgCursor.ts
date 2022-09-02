@@ -1,15 +1,17 @@
 import { ConnectionManager } from "../Connection/ConnectionManager";
+import { SwipeDirection } from "../Connection/TouchFreeServiceTypes";
 import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
-const MAX_SWIPE_NOTIFICATIONS = 2;
+const MAX_SWIPE_NOTIFICATIONS = 0;
 
 export class SVGCursor extends TouchlessCursor {
     xPositionAttribute: string;
     yPositionAttribute: string;
     cursorCanvas: SVGSVGElement;
     cursorRing: SVGCircleElement;
+    cursorTail: SVGPolygonElement;
     cursorPrompt: HTMLDivElement;
     cursorPromptWidth:number;
     ringSizeMultiplier: number;
@@ -17,11 +19,18 @@ export class SVGCursor extends TouchlessCursor {
     currentFadingInterval: NodeJS.Timeout | undefined = undefined;
     swipeNotificationTimeout: NodeJS.Timeout | undefined = undefined;
     totalSwipeNotifications: number = 0;
+    swipeDirection?: SwipeDirection;
+    previousPosition?: number[];
+    previousTime?: number;
+    tailLengthX: number = 0;
+    tailLengthY: number = 0;
 
     constructor(_xPositionAttribute = "cx", _yPositionAttribute = "cy", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
 
         const documentBody = document.querySelector('body');
+
+        const shadowColour = _darkCursor ? '#ffffffB3' : '#000000B3'
 
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg','svg');
         svgElement.classList.add('touchfree-cursor');
@@ -35,6 +44,15 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.id = 'svg-cursor';
         documentBody?.appendChild(svgElement);
 
+        const svgTailElement = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        svgTailElement.classList.add('touchfree-cursor');
+        svgTailElement.setAttribute('opacity', '1');
+        svgTailElement.setAttribute('points', '0,0 0,0 0,0');
+        svgTailElement.style.fill = _darkCursor ? 'black' : 'white';
+        svgTailElement.style.filter = `drop-shadow(0 0 10px ${shadowColour})`;
+        svgElement.appendChild(svgTailElement);
+        this.cursorTail = svgTailElement;
+
         const svgRingElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgRingElement.classList.add('touchfree-cursor');
         svgRingElement.setAttribute('r', '15');
@@ -43,7 +61,7 @@ export class SVGCursor extends TouchlessCursor {
         svgRingElement.setAttribute('stroke', _darkCursor ? 'black' : 'white');
         svgRingElement.setAttribute('cx', '100');
         svgRingElement.setAttribute('cy', '100');
-        svgRingElement.style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.7))';
+        svgRingElement.style.filter = `drop-shadow(0 0 10px ${shadowColour})`;
         svgElement.appendChild(svgRingElement);
         this.cursorRing = svgRingElement;
 
@@ -82,15 +100,8 @@ export class SVGCursor extends TouchlessCursor {
         svgDotElement.style.transformBox = 'fill-box';
         svgDotElement.style.transformOrigin = 'center';
         svgDotElement.style.transform = 'scale(1)';
-        svgDotElement.style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.7))';
+        svgDotElement.style.filter = `drop-shadow(0 0 10px ${shadowColour})`;
         svgElement.appendChild(svgDotElement);
-
-        if (!_darkCursor) {
-            if (this.cursorRing) {
-                this.cursorRing.style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.7))';
-            }
-            svgDotElement.style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.7))';
-        }
 
         this.cursor = svgDotElement;
 
@@ -115,11 +126,48 @@ export class SVGCursor extends TouchlessCursor {
         this.cursorRing.setAttribute('r', (this.GetCurrentCursorRadius() * ringScaler).toString());
 
         const position = _inputAction.CursorPosition;
+        const time = _inputAction.Timestamp;
+        let tailPoints: string;
+
+        if (!this.swipeDirection) {
+            this.tailLengthX = 0;
+            this.tailLengthY = 0;
+        }
+
+        if (this.previousPosition && this.previousTime && this.swipeDirection) {
+            const newTailLengthX = Math.round(Math.abs(position[0] - this.previousPosition[0]));
+            const newTailLengthY = Math.round(Math.abs(position[1] - this.previousPosition[1]));
+            if (newTailLengthX > this.tailLengthX) {
+                this.tailLengthX = newTailLengthX;
+            }
+            if (newTailLengthY > this.tailLengthY) {
+                this.tailLengthY = newTailLengthY;
+            }
+        }
+
+        switch (this.swipeDirection) {
+            case SwipeDirection.LEFT:
+                tailPoints = `${position[0]},${position[1] - 15} ${position[0]},${position[1] + 15} ${position[0] + this.tailLengthX},${position[1]}`
+                break;
+            case SwipeDirection.RIGHT:
+                tailPoints = `${position[0]},${position[1] - 15} ${position[0]},${position[1] + 15} ${position[0] - this.tailLengthX},${position[1]}`
+                break;
+            case SwipeDirection.UP:
+                tailPoints = `${position[0] - 15},${position[1]} ${position[0] + 15},${position[1]} ${position[0]},${position[1] + this.tailLengthY}`
+                break;
+            case SwipeDirection.DOWN:
+                tailPoints = `${position[0] - 15},${position[1]} ${position[0] + 15},${position[1]} ${position[0]},${position[1] - this.tailLengthY}`
+                break;
+            default:
+                tailPoints = '0,0 0,0 0,0';
+        }
 
         if (position) {
             this.ShowCursor();
             this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
             this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
+
+            this.cursorTail.setAttribute("points", tailPoints);
 
             this.cursorPrompt.style.left = `${position[0] - this.cursorPromptWidth/2}px`;
             this.cursorPrompt.style.top = `${position[1] - 80}px`;
@@ -131,9 +179,11 @@ export class SVGCursor extends TouchlessCursor {
         } else {
             this.HideCursor();
         }
+        this.previousPosition = position;
+        this.previousTime = time;
     }
 
-    HandleInputAction(_inputData: TouchFreeInputAction) {
+    HandleInputAction (_inputData: TouchFreeInputAction) {
         if (this.cursor) {
             switch (_inputData.InputType) {
                 case InputType.MOVE:
@@ -205,5 +255,12 @@ export class SVGCursor extends TouchlessCursor {
 
     HideCloseToSwipe(): void {
         this.cursorPrompt.style.opacity = '0';
+    }
+
+    SetSwipeDirection = (direction?: SwipeDirection) => {
+        this.swipeDirection = direction;
+        setTimeout(() => {
+            this.swipeDirection = undefined;
+        }, 1000);
     }
 }
