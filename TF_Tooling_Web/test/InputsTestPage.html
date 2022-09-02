@@ -378,7 +378,7 @@
         </div>
     </div>
 
-    <img src="../images/Ring.png" id="cursorRing" class="TouchFreecursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
+    <img src="../images/Ring.png" id="cursorRing" class="touchfree-cursor" style="width:50px;height:50px;position:absolute;z-index:1000;">
 
     <script>
         TouchFree.Connection.ConnectionManager.init();
@@ -397,7 +397,7 @@
         // make up the cursor. This is so it can ignore cursor-related objects when it is looking
         // for elements to pointerover/pointerout etc. Note that the class is also added to the
         // <img> tag foudn as "cursorRing" above
-        cursor.classList.add("TouchFreecursor");
+        cursor.classList.add("touchfree-cursor");
 
         document.body.appendChild(cursor);
 

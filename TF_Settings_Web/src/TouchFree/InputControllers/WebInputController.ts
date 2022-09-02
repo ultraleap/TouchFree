@@ -8,7 +8,7 @@ import { BaseInputController } from './BaseInputController'
 // Provides web PointerEvents based on the incoming data from TouchFree Service via a
 // <ServiceConnection>.
 //
-// If you are using cursors with this InputController, ensure they have the "touchfreecursor"
+// If you are using cursors with this InputController, ensure they have the "touchfree-cursor"
 // class. This allows this class to ignore them when determining which elements should recieve
 // new pointer events. If you don't do this, none of the events transmitted here are guaranteed
 // to make it to their intended targets, as they will be captured by the cursor.
@@ -25,6 +25,10 @@ export class WebInputController extends BaseInputController {
     private readonly pointerId: number = 0;
     private readonly baseEventProps: PointerEventInit;
     private readonly activeEventProps: PointerEventInit;
+    private elementsOnDown: HTMLElement[] | null = null;
+    private lastPosition: Array<number> | null = null;
+    private scrollDirection: ScrollDirection | undefined = undefined;
+    private elementToScroll: HTMLElement | undefined = undefined;
 
     // Group: Methods
 
@@ -107,8 +111,14 @@ export class WebInputController extends BaseInputController {
         this.activeEventProps.clientX = _inputData.CursorPosition[0];
         this.activeEventProps.clientY = _inputData.CursorPosition[1];
 
+        if (elementAtPos !== null) {
+            let inputEvent: CustomEvent = new CustomEvent(`InputAction`, {detail: _inputData})
+            elementAtPos.dispatchEvent(inputEvent);
+        }
+
         switch (_inputData.InputType) {
             case InputType.CANCEL:
+                this.ResetScrollData();
                 let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
 
                 if (elementAtPos !== null) {
@@ -124,17 +134,124 @@ export class WebInputController extends BaseInputController {
 
             case InputType.MOVE:
                 this.HandleMove(elementAtPos);
+
+                this.HandleScroll(_inputData.CursorPosition);
                 break;
 
             case InputType.DOWN:
+                this.ResetScrollData();
+                this.elementsOnDown = document.elementsFromPoint(_inputData.CursorPosition[0], _inputData.CursorPosition[1])
+                    .map(e => e as HTMLElement)
+                    .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor") && !e.classList.contains("touchfree-no-scroll"));
+
+                this.lastPosition = _inputData.CursorPosition;
+
                 let downEvent: PointerEvent = new PointerEvent("pointerdown", this.activeEventProps);
                 this.DispatchToTarget(downEvent, elementAtPos);
                 break;
 
             case InputType.UP:
+                this.ResetScrollData();
+
                 let upEvent: PointerEvent = new PointerEvent("pointerup", this.activeEventProps);
                 this.DispatchToTarget(upEvent, elementAtPos);
                 break;
+        }
+    }
+
+    private ResetScrollData(): void {
+        this.elementsOnDown = null;
+        this.scrollDirection = undefined;
+        this.elementToScroll = undefined;
+    }
+
+    private HandleScroll(_position: Array<number>): void {
+        if (this.elementsOnDown && this.lastPosition) {
+            const changeInPositionX = this.lastPosition[0] - _position[0];
+            const changeInPositionY = this.lastPosition[1] - _position[1];
+
+            if (!this.scrollDirection && (Math.abs(changeInPositionX) > 5 || Math.abs(changeInPositionY) > 5)) {
+                if (Math.abs(changeInPositionX) > Math.abs(changeInPositionY)) {
+                    this.scrollDirection = changeInPositionX > 0 ? ScrollDirection.Right : ScrollDirection.Left;
+                } else {
+                    this.scrollDirection = changeInPositionY > 0 ? ScrollDirection.Down : ScrollDirection.Up;
+                }
+            }
+
+            this.lastPosition = _position;
+
+            if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Down)) {
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+                    
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollTop = Math.min(element.scrollHeight - element.clientHeight, element.scrollTop + changeInPositionY);
+                }
+            }
+
+            if (changeInPositionY < 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Up)) {
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop > 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollTop = Math.max(0, element.scrollTop + changeInPositionY);
+                }
+            }
+            
+            if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Right)) {
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+                    
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollLeft = Math.min(element.scrollWidth - element.clientWidth, element.scrollLeft + changeInPositionX);
+                }
+            }
+
+            if (changeInPositionX < 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Left)) {
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft > 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+                    
+                if (element) {
+                    this.elementToScroll = element;
+                    element.scrollLeft = Math.max(0, element.scrollLeft + changeInPositionX);
+                }
+            }
+        }
+    }
+
+    private GetElementToScroll = (
+        scrollValidation: (element: HTMLElement) => boolean,
+        parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean): HTMLElement | undefined => {
+
+        if (this.elementToScroll) return this.elementToScroll;
+        if (!this.elementsOnDown) return;
+        
+        for (let i = 0; i < this.elementsOnDown.length; i++) {
+            let elementToCheckScroll = this.elementsOnDown[i];
+            if (!scrollValidation(elementToCheckScroll)) continue;
+
+            let parentSelected = false;
+            let parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+            while (parentAsHtmlElement) {
+                if (!parentScrollValidation(elementToCheckScroll, parentAsHtmlElement)) {
+                    break;
+                }
+
+                parentSelected = true;
+                elementToCheckScroll = parentAsHtmlElement;
+                parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+            }
+
+            if (parentSelected && !scrollValidation(elementToCheckScroll)) continue;
+
+            return elementToCheckScroll;
         }
     }
 
@@ -151,7 +268,7 @@ export class WebInputController extends BaseInputController {
         if (elementsAtPos !== null) {
             for (let i = 0; i < elementsAtPos.length; i++) {
 
-                if (!elementsAtPos[i].classList.contains("touchfreecursor")) {
+                if (!elementsAtPos[i].classList.contains("touchfreecursor") && !elementsAtPos[i].classList.contains("touchfree-cursor")) {
                     elementAtPos = elementsAtPos[i];
                     break;
                 }
@@ -229,4 +346,11 @@ export class WebInputController extends BaseInputController {
             document.dispatchEvent(event);
         }
     }
+}
+
+enum ScrollDirection {
+    Up = 0,
+    Down = 1,
+    Left = 2,
+    Right = 3
 }

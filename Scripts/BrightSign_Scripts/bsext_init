@@ -14,6 +14,7 @@ if [[ $1 == "start" ]]; then
     start-stop-daemon --start \
         --pidfile $TRK_PIDFILE --make-pidfile \
         --background --exec $TRK_DAEMON
+    sleep 10
     export LD_LIBRARY_PATH=./TouchFree
     start-stop-daemon --start \
         --pidfile $TF_PIDFILE --make-pidfile \

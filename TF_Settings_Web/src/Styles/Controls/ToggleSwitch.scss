@@ -17,12 +17,12 @@ $knob-offset--horiz: 6%;
     position: relative;
     width: 100%;
     height: 100%;
-    border: 1px solid #ffffff29;
+    border: 1px solid #5c5c5cc0;
     border-radius: 34px;
 
     background-image: linear-gradient(180deg, #5c5c5c, #454545);
     transition: 0.4s;
-    box-shadow: inset 0px 1px 4px #000000d0;
+    box-shadow: inset 0px 0px 10px #000000d0;
 
     // Switch knob
     &:before {
@@ -40,7 +40,7 @@ $knob-offset--horiz: 6%;
 }
 
 input:checked + .switch {
-    background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce);
+    background-image: v.$ultraleap-green-gradient;
 }
 
 input:checked + .switch:before {

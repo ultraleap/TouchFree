@@ -7,7 +7,9 @@ import {
     ServiceStatus,
     ServiceStatusCallback,
     TouchFreeRequest,
-    WebSocketResponse,
+    TrackingStateCallback,
+    TrackingStateResponse,
+    WebSocketResponse
 } from './TouchFreeServiceTypes';
 import {
     BitmaskFlags,
@@ -18,6 +20,7 @@ import {
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
+import { HandDataManager } from '../Plugins/HandDataManager';
 
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
@@ -47,6 +50,10 @@ export class MessageReceiver {
     // A queue of <TouchFreeInputActions> that have been received from the Service.
     actionQueue: Array<WebsocketInputAction> = [];
 
+    // Variable: latestHandDataItem
+    // The latest <HandFrame> that has been received from the Service.
+    latestHandDataItem: any = undefined;
+
     // Variable: responseQueue
     // A queue of <WebSocketResponses> that have been received from the Service.
     responseQueue: Array<WebSocketResponse> = [];
@@ -73,8 +80,16 @@ export class MessageReceiver {
 
     lastStateUpdate: HandPresenceState;
 
+    // Variable: trackingStateQueue
+    // A queue of <TrackingStates> that have been received from the Service.
+    trackingStateQueue: Array<TrackingStateResponse> = [];
+
+    // Variable: trackingSettingsStateCallbacks
+    // A dictionary of unique request IDs and <TrackingStateCallback> that represent requests that are awaiting response from the Service.
+    trackingStateCallbacks: { [id: string]: TrackingStateCallback; } = {};
+
     // Variable: callbackClearInterval
-    // Stores the reference number for the interal running <ClearUnresponsiveCallbacks>, allowing
+    // Stores the reference number for the interval running <ClearUnresponsiveCallbacks>, allowing
     // it to be cleared.
     private callbackClearInterval: number;
 
@@ -112,7 +127,9 @@ export class MessageReceiver {
         this.CheckForResponse();
         this.CheckForConfigState();
         this.CheckForServiceStatus();
+        this.CheckForTrackingStateResponse();
         this.CheckForAction();
+        this.CheckForHandData();
     }
 
     // Function: CheckForResponse
@@ -176,6 +193,31 @@ export class MessageReceiver {
         }
     }
 
+    // Function: CheckForTrackingStateResponse
+    // Used to check the <trackingStateQueue> for a <TrackingStateResponse>. Sends it to <HandleTrackingStateResponse> if there is one.
+    CheckForTrackingStateResponse(): void {
+        const trackingStateResponse: TrackingStateResponse | undefined = this.trackingStateQueue.shift();
+
+        if (trackingStateResponse !== undefined) {
+            this.HandleTrackingStateResponse(trackingStateResponse);
+        }
+    }
+
+    // Function: HandleTrackingStateResponse
+    // Checks the dictionary of <trackingStateCallbacks> for a matching request ID. If there is a
+    // match, calls the callback action in the matching <TrackingStateCallback>.
+    HandleTrackingStateResponse(trackingStateResponse: TrackingStateResponse): void {
+        if (this.trackingStateCallbacks !== undefined) {
+            for (let key in this.trackingStateCallbacks) {
+                if (key === trackingStateResponse.requestID) {
+                    this.trackingStateCallbacks[key].callback(trackingStateResponse);
+                    delete this.trackingStateCallbacks[key];
+                    return;
+                }
+            };
+        }
+    }
+
     // Function: CheckForAction
     // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
     // clears out non-essential <TouchFreeInputActions> down to the number specified by
@@ -188,7 +230,7 @@ export class MessageReceiver {
             if (this.actionQueue[0] !== undefined) {
                 // Stop shrinking the queue if we have a 'key' input event
                 if (this.actionQueue[0].InteractionFlags & BitmaskFlags.MOVE ||
-                    this.actionQueue[0].InteractionFlags & BitmaskFlags.NONE) {
+                    this.actionQueue[0].InteractionFlags & BitmaskFlags.NONE_INPUT) {
                     // We want to ignore non-move results
                     this.actionQueue.shift();
                 } else {
@@ -221,6 +263,20 @@ export class MessageReceiver {
         if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
             ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
             this.lastStateUpdate = HandPresenceState.PROCESSED;
+        }
+    }
+    
+    // Function: CheckForHandData
+    // Checks <latestHandDataItem> and if the <HandFrame> is not undefined sends it to
+    // <HandDataManager> to handle the frame.
+    CheckForHandData(): void {
+        let handFrame = this.latestHandDataItem;
+
+        if (handFrame !== undefined) {
+            // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+            setTimeout(() => {
+                HandDataManager.HandleHandFrame(handFrame);
+            });
         }
     }
 
