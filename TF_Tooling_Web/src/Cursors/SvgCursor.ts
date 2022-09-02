@@ -65,7 +65,7 @@ export class SVGCursor extends TouchlessCursor {
             'align-items': 'center',
             'font-size': '16px',
             'font-family': `'Trebuchet MS', sans-serif`,
-            'transition': 'opacity 0.5s linear'
+            'transition': 'opacity 0.2s linear'
         });
         cursorPromptDiv.innerHTML = `To Scroll: <strong>Swipe Faster</strong>`
         documentBody?.appendChild(cursorPromptDiv);
@@ -185,17 +185,17 @@ export class SVGCursor extends TouchlessCursor {
     }
 
     ShowCloseToSwipe(): void {
-        if (this.totalSwipeNotifications >= MAX_SWIPE_NOTIFICATIONS) {
+        if (this.totalSwipeNotifications >= MAX_SWIPE_NOTIFICATIONS || this.swipeNotificationTimeout ) {
             return;
         }
 
         this.cursorPrompt.style.opacity = '1';
         
-        this.totalSwipeNotifications++;
+        // this.totalSwipeNotifications++;
 
         this.swipeNotificationTimeout = setTimeout(() => {
             this.HideCloseToSwipe();
-        }, 2000);
+        }, 1500);
     }
 
     HandleHandsLost(): void {
@@ -205,5 +205,7 @@ export class SVGCursor extends TouchlessCursor {
 
     HideCloseToSwipe(): void {
         this.cursorPrompt.style.opacity = '0';
+        clearTimeout(this.swipeNotificationTimeout);
+        this.swipeNotificationTimeout = undefined;
     }
 }

@@ -208,23 +208,34 @@ export class WebInputController extends BaseInputController {
 
         } else if(elemScrollTop < this.bumpDistancePx){
             const extraBumpDistance = this.bumpDistancePx - elemScrollTop;
-
+            
             element.scrollTop = 0;
             
-            // After scroll-top set margin-top so it scrolls then bounces
-            setTimeout(() => {
+            const staggerScrollAndBump = false;
+            
+            if(staggerScrollAndBump){
+                // After scroll-top set margin-top so it scrolls then bounces
+                setTimeout(() => {
+                    element.style.marginTop =  `${extraBumpDistance}px`;
+                }, this.bumpTransitionDurationMS)
+
+                // Unset margin-top
+                setTimeout(() => {
+                    element.style.marginTop = elemMarginTop;
+                }, this.bumpTotalDurationMS - (this.bumpTransitionDurationMS * 2));
+                
+                // Unset scroll-top
+                setTimeout(() => {
+                    element.scrollTop = elemScrollTop;
+                }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+            } else {
                 element.style.marginTop =  `${extraBumpDistance}px`;
-            }, this.bumpTransitionDurationMS)
-
-            // Unset margin-top
-            setTimeout(() => {
-                element.style.marginTop = elemMarginTop;
-            }, this.bumpTotalDurationMS - (this.bumpTransitionDurationMS * 2))
-
-            // Unset scroll-top
-            setTimeout(() => {
-                element.scrollTop = elemScrollTop;
-            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+                
+                setTimeout(() => {
+                    element.style.marginTop = elemMarginTop;
+                    element.scrollTop = elemScrollTop;
+                }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+            }
 
         } else {
             element.scrollTop = elemScrollTop - this.bumpDistancePx;
