@@ -26,6 +26,8 @@ export class WebInputController extends BaseInputController {
     private readonly baseEventProps: PointerEventInit;
     private readonly activeEventProps: PointerEventInit;
     private elementsOnDown: HTMLElement[] | null = null;
+    private handlingCloseToSwipe: boolean = false;
+    private currentPosition: Array<number> = [];
     private lastPosition: Array<number> | null = null;
     private scrollDirection: 'u' | 'd' | 'l' | 'r' | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
@@ -106,6 +108,8 @@ export class WebInputController extends BaseInputController {
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         super.HandleInputAction(_inputData);
 
+        this.currentPosition = _inputData.CursorPosition;
+
         let elementAtPos: Element | null = this.GetTopNonCursorElement(_inputData.CursorPosition);
 
         this.activeEventProps.clientX = _inputData.CursorPosition[0];
@@ -140,11 +144,7 @@ export class WebInputController extends BaseInputController {
 
             case InputType.DOWN:
                 this.ResetScrollData();
-                this.elementsOnDown = document.elementsFromPoint(
-                    _inputData.CursorPosition[0],
-                    _inputData.CursorPosition[1])
-                    .map(e => e as HTMLElement)
-                    .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor") && !e.classList.contains("touchfree-no-scroll"));
+                this.elementsOnDown = this.GetElementsOnDown(_inputData.CursorPosition);
 
                 this.lastPosition = _inputData.CursorPosition;
 
@@ -161,10 +161,44 @@ export class WebInputController extends BaseInputController {
         }
     }
 
+    private GetElementsOnDown(position: number[]): HTMLElement[] {
+        return document.elementsFromPoint(position[0],position[1])
+            .map(e => e as HTMLElement)
+            .filter(
+                e => e && !e.classList.contains("touchfreecursor") 
+                && !e.classList.contains("touchfree-cursor") 
+                && !e.classList.contains("touchfree-no-scroll")
+            );
+    }
+
     private ResetScrollData(): void {
         this.elementsOnDown = null;
         this.scrollDirection = undefined;
         this.elementToScroll = undefined;
+    }
+    
+    // create bounce page here which gets element to scroll and moves it up then down
+    protected HandleCloseToSwipe(): void {
+        if(this.handlingCloseToSwipe) return;
+        const element = this.GetTopNonCursorElement(this.currentPosition) as HTMLElement | null;
+        if(!element) return;
+        
+        this.handlingCloseToSwipe = true;
+
+        const elemTransition = element.style.transition;
+        const transitionTimeS = 0.2;
+        element.style.transition += `margin-top ${transitionTimeS}s linear`;
+
+        const elemTop = element.style.marginTop;
+        element.style.marginTop =  '100px';
+
+        setTimeout(() => {
+            element.style.marginTop = elemTop;
+            setTimeout(() => {
+                element.style.transition = elemTransition;
+                this.handlingCloseToSwipe = false;
+            }, transitionTimeS * 1000)
+        }, 1000);
     }
 
     private HandleScroll(_position: Array<number>): void {

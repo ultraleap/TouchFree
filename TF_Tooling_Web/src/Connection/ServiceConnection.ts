@@ -23,6 +23,8 @@ import { TrackingState } from '../Tracking/TrackingTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
 import { CursorManager } from '../Cursors/CursorManager';
+import { WebInputController } from '../InputControllers/WebInputController';
+import { InputActionManager } from '../Plugins/InputActionManager';
 
 // Class: ServiceConnection
 // This represents a connection to a TouchFree Service. It should be created by a
@@ -134,6 +136,7 @@ export class ServiceConnection {
 
             case ActionCode.CLOSE_TO_SWIPE:
                 CursorManager.instance.cursor.ShowCloseToSwipe();
+                InputActionManager.HandleCloseToSwipe();
                 break;
 
             case ActionCode.CONFIGURATION_STATE:

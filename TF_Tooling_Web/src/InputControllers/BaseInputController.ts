@@ -24,6 +24,9 @@ export abstract class BaseInputController {
                 ((e: CustomEvent<TouchFreeInputAction>) => {
                     this.HandleInputAction(e.detail);
                 }) as EventListener);
+            
+            InputActionManager.instance.addEventListener('TransmitCloseToSwipe',
+                () => this.HandleCloseToSwipe());
         }
     }
 
@@ -53,6 +56,8 @@ export abstract class BaseInputController {
                 break;
         }
     }
+
+    protected HandleCloseToSwipe(): void {}
 
     disconnect() {
         InputActionManager.instance.removeEventListener('TransmitInputAction',

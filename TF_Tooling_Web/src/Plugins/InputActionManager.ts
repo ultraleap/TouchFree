@@ -72,4 +72,11 @@ export class InputActionManager extends EventTarget {
             InputActionManager.instance.dispatchEvent(inputActionEvent);
         }, 0);
     }
+
+    public static HandleCloseToSwipe(): void {
+        let closeToSwipeEvent: CustomEvent = new CustomEvent(
+            'TransmitCloseToSwipe'
+        );
+        InputActionManager.instance.dispatchEvent(closeToSwipeEvent);
+    }
 }
