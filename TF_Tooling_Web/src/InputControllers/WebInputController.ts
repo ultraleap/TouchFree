@@ -32,6 +32,11 @@ export class WebInputController extends BaseInputController {
     private scrollDirection: ScrollDirection | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
 
+    // Variables for Bump on almost swipe
+    private bumpTotalDurationMS = 1200;
+    private bumpTransitionDurationMS = this.bumpTotalDurationMS / 6;
+    private bumpDistancePx = 100;
+
     // Group: Methods
 
     // Function: constructor
@@ -180,25 +185,60 @@ export class WebInputController extends BaseInputController {
     // create bounce page here which gets element to scroll and moves it up then down
     protected HandleCloseToSwipe(): void {
         if(this.handlingCloseToSwipe) return;
+
         const element = this.GetTopNonCursorElement(this.currentPosition) as HTMLElement | null;
         if(!element) return;
-        
+
         this.handlingCloseToSwipe = true;
 
+        const elemMarginTop = element.style.marginTop;
+        const elemScrollTop = element.scrollTop;
+        const elemScrollBehaviour = element.style.scrollBehavior;
+        element.style.scrollBehavior = 'smooth';
+        
         const elemTransition = element.style.transition;
-        const transitionTimeS = 0.2;
-        element.style.transition += `margin-top ${transitionTimeS}s linear`;
+        element.style.transition += `scroll-top ${this.bumpTransitionDurationMS}ms, margin-top ${this.bumpTransitionDurationMS}ms`;
 
-        const elemTop = element.style.marginTop;
-        element.style.marginTop =  '100px';
+        if(elemScrollTop === 0){
+            element.style.marginTop =  `${this.bumpDistancePx}px`;
+            
+            setTimeout(() => {
+                element.style.marginTop = elemMarginTop;
+            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+
+        } else if(elemScrollTop < this.bumpDistancePx){
+            const extraBumpDistance = this.bumpDistancePx - elemScrollTop;
+
+            element.scrollTop = 0;
+            
+            // After scroll-top set margin-top so it scrolls then bounces
+            setTimeout(() => {
+                element.style.marginTop =  `${extraBumpDistance}px`;
+            }, this.bumpTransitionDurationMS)
+
+            // Unset margin-top
+            setTimeout(() => {
+                element.style.marginTop = elemMarginTop;
+            }, this.bumpTotalDurationMS - (this.bumpTransitionDurationMS * 2))
+
+            // Unset scroll-top
+            setTimeout(() => {
+                element.scrollTop = elemScrollTop;
+            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+
+        } else {
+            element.scrollTop = elemScrollTop - this.bumpDistancePx;
+
+            setTimeout(() => {
+                element.scrollTop = elemScrollTop;
+            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+        }
 
         setTimeout(() => {
-            element.style.marginTop = elemTop;
-            setTimeout(() => {
-                element.style.transition = elemTransition;
-                this.handlingCloseToSwipe = false;
-            }, transitionTimeS * 1000)
-        }, 1000);
+            element.style.transition = elemTransition;
+            element.style.scrollBehavior = elemScrollBehaviour;
+            this.handlingCloseToSwipe = false;
+        }, this.bumpTotalDurationMS)
     }
 
     private HandleScroll(_position: Array<number>): void {
