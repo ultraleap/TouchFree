@@ -8,7 +8,7 @@
             "MaxOpposingVelocity_mmps": 70,
             "ScrollDelayMs": 100,
             "AllowVerticalScroll": true,
-            "AllowHorizontalScroll": false,
+            "AllowHorizontalScroll": true,
             "AllowBidirectionalScroll": false,
             "MinSwipeLength": 35,
             "MaxSwipeWidth": 30,
