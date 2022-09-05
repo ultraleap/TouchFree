@@ -5,6 +5,7 @@ import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
 const MAX_SWIPE_NOTIFICATIONS = 0;
+const TRAIL_FADE_TIME_S = 2;
 
 export class SVGCursor extends TouchlessCursor {
     xPositionAttribute: string;
@@ -50,6 +51,7 @@ export class SVGCursor extends TouchlessCursor {
         svgTailElement.setAttribute('points', '0,0 0,0 0,0');
         svgTailElement.style.fill = _darkCursor ? 'black' : 'white';
         svgTailElement.style.filter = `drop-shadow(0 0 10px ${shadowColour})`;
+        svgTailElement.style.transition = `opacity ${TRAIL_FADE_TIME_S}s`;
         svgElement.appendChild(svgTailElement);
         this.cursorTail = svgTailElement;
 
@@ -129,10 +131,9 @@ export class SVGCursor extends TouchlessCursor {
         const time = _inputAction.Timestamp;
         let tailPoints: string;
 
-        if (this.swipeDirection === undefined) {
-            this.tailLengthX = 0;
-            this.tailLengthY = 0;
-        } else if (this.previousPosition && this.previousTime) {
+        
+        if (this.previousPosition && this.previousTime && this.swipeDirection != undefined) {
+            this.cursorTail.setAttribute('opacity', '0');
             const newTailLengthX = Math.round(Math.abs(position[0] - this.previousPosition[0]));
             const newTailLengthY = Math.round(Math.abs(position[1] - this.previousPosition[1]));
             if (newTailLengthX > this.tailLengthX) {
@@ -157,7 +158,8 @@ export class SVGCursor extends TouchlessCursor {
                 tailPoints = `${position[0] - 15},${position[1]} ${position[0] + 15},${position[1]} ${position[0]},${position[1] - this.tailLengthY}`
                 break;
             default:
-                tailPoints = '0,0 0,0 0,0';
+                this.cursorTail.setAttribute('opacity', '1');
+                tailPoints = `${position[0]},${position[1]} ${position[0]},${position[1]} ${position[0]},${position[1]}`;
         }
 
         if (position) {
@@ -259,6 +261,6 @@ export class SVGCursor extends TouchlessCursor {
         this.swipeDirection = direction;
         setTimeout(() => {
             this.swipeDirection = undefined;
-        }, 1000);
+        }, TRAIL_FADE_TIME_S * 1500);
     }
 }
