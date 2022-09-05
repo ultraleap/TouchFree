@@ -74,9 +74,9 @@ export class InputActionManager extends EventTarget {
   }
 
   public static HandleCloseToSwipe(direction?: SwipeDirection): void {
-    console.log(direction);
-    let closeToSwipeEvent: CustomEvent = new CustomEvent(
-      "TransmitCloseToSwipe"
+    let closeToSwipeEvent = new CustomEvent<SwipeDirection>(
+      "TransmitCloseToSwipe",
+      { detail: direction }  
     );
     InputActionManager.instance.dispatchEvent(closeToSwipeEvent);
   }

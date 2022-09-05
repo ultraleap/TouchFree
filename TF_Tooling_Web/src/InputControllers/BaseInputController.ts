@@ -1,3 +1,4 @@
+import { SwipeDirection } from '../Connection/TouchFreeServiceTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { TouchFreeInputAction, InputType } from "../TouchFreeToolingTypes";
 
@@ -26,7 +27,9 @@ export abstract class BaseInputController {
                 }) as EventListener);
             
             InputActionManager.instance.addEventListener('TransmitCloseToSwipe',
-                () => this.HandleCloseToSwipe());
+                ((e: CustomEvent<SwipeDirection>) => {
+                    this.HandleCloseToSwipe(e.detail);
+                }) as EventListener);
         }
     }
 
@@ -57,7 +60,7 @@ export abstract class BaseInputController {
         }
     }
 
-    protected HandleCloseToSwipe(): void {}
+    protected HandleCloseToSwipe(direction?: SwipeDirection): void {}
 
     disconnect() {
         InputActionManager.instance.removeEventListener('TransmitInputAction',
