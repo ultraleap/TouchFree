@@ -190,8 +190,26 @@ export class WebInputController extends BaseInputController {
     protected HandleCloseToSwipe(direction?: SwipeDirection): void {
         if(this.handlingCloseToSwipe || direction === undefined) return;
 
+        let element: HTMLElement | undefined; 
         this.elementsOnDown = this.GetElementsOnDown(this.currentPosition);
-        const element = this.GetDirectionalElementToScroll(direction);
+        switch (direction) {
+            case SwipeDirection.UP:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop >= 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+                case SwipeDirection.DOWN:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+            case SwipeDirection.LEFT:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft >= 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+            case SwipeDirection.RIGHT:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+        }
         this.elementsOnDown = null;
 
         if(!element) return;
@@ -280,7 +298,9 @@ export class WebInputController extends BaseInputController {
             this.lastPosition = _position;
 
             if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.DOWN)) {
-                const element = this.GetDirectionalElementToScroll(SwipeDirection.DOWN);
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
                     
                 if (element) {
                     this.elementToScroll = element;
@@ -289,8 +309,9 @@ export class WebInputController extends BaseInputController {
             }
 
             if (changeInPositionY < 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.UP)) {
-                const element = this.GetDirectionalElementToScroll(SwipeDirection.UP);
-
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop > 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
 
                 if (element) {
                     this.elementToScroll = element;
@@ -299,8 +320,9 @@ export class WebInputController extends BaseInputController {
             }
             
             if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.RIGHT)) {
-                const element = this.GetDirectionalElementToScroll(SwipeDirection.RIGHT);
-
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
                     
                 if (element) {
                     this.elementToScroll = element;
@@ -309,34 +331,15 @@ export class WebInputController extends BaseInputController {
             }
 
             if (changeInPositionX < 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.LEFT)) {
-                const element = this.GetDirectionalElementToScroll(SwipeDirection.LEFT);
+                const element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft > 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
                     
                 if (element) {
                     this.elementToScroll = element;
                     element.scrollLeft = Math.max(0, element.scrollLeft + changeInPositionX);
                 }
             }
-        }
-    }
-
-    private GetDirectionalElementToScroll(direction: SwipeDirection): HTMLElement | undefined{
-        switch (direction) {
-            case SwipeDirection.UP:
-                return this.GetElementToScroll(
-                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop > 0,
-                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
-                case SwipeDirection.DOWN:
-                return this.GetElementToScroll(
-                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
-                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
-            case SwipeDirection.LEFT:
-                return this.GetElementToScroll(
-                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft > 0,
-                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
-            case SwipeDirection.RIGHT:
-                return this.GetElementToScroll(
-                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
-                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
         }
     }
 
