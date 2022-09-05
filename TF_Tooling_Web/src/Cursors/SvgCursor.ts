@@ -129,12 +129,10 @@ export class SVGCursor extends TouchlessCursor {
         const time = _inputAction.Timestamp;
         let tailPoints: string;
 
-        if (!this.swipeDirection) {
+        if (this.swipeDirection === undefined) {
             this.tailLengthX = 0;
             this.tailLengthY = 0;
-        }
-
-        if (this.previousPosition && this.previousTime && this.swipeDirection) {
+        } else if (this.previousPosition && this.previousTime) {
             const newTailLengthX = Math.round(Math.abs(position[0] - this.previousPosition[0]));
             const newTailLengthY = Math.round(Math.abs(position[1] - this.previousPosition[1]));
             if (newTailLengthX > this.tailLengthX) {
