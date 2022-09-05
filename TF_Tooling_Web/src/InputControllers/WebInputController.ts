@@ -188,8 +188,6 @@ export class WebInputController extends BaseInputController {
     }
     
     protected HandleCloseToSwipe(direction?: SwipeDirection): void {
-        if(direction) console.log(SwipeDirection[direction]);
-        
         if(this.handlingCloseToSwipe || direction === undefined) return;
 
         const element = this.GetTopNonCursorElement(this.currentPosition) as HTMLElement | null;
