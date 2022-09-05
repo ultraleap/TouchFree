@@ -29,7 +29,8 @@ public class CameraPreviewScreen : MonoBehaviour
 
     private MaskData lastMaskData;
     private long lastMaskTime;
-    private float minMaskDelay = (1f/20f) * 1000f;
+    private float minMaskDelay = (1f / 20f) * 1000f;
+    private bool unsentMask = false;
 
 
     void OnEnable()
@@ -72,6 +73,16 @@ public class CameraPreviewScreen : MonoBehaviour
             SetSliders(currentMaskLeft, currentMaskRight, currentMaskTop, currentMaskBottom);
             newMaskDataReceived = false;
         }
+
+        if (unsentMask)
+        {
+            var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+            if (currentTime - lastMaskTime > minMaskDelay)
+            {
+                OnSliderReleased();
+            }
+        }
     }
 
     void OnOverExposureValueChanged(bool state)
@@ -107,12 +118,15 @@ public class CameraPreviewScreen : MonoBehaviour
             maskingSiderL.value * sliderRatio
         );
 
+        unsentMask = true;
         lastMaskData = mask;
 
         var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        if (currentTime - lastMaskTime > minMaskDelay) {
+        if (currentTime - lastMaskTime > minMaskDelay)
+        {
             OnSliderReleased();
+            unsentMask = false;
         }
 
         lastMaskTime = currentTime;
