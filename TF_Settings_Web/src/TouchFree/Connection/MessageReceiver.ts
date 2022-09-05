@@ -21,7 +21,7 @@ import {
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
 import { HandDataManager } from '../Plugins/HandDataManager';
-import { CursorManager } from 'Components/CursorManager';
+import { CursorManager } from '../Cursors/CursorManager';
 
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
