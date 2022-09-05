@@ -259,8 +259,5 @@ export class SVGCursor extends TouchlessCursor {
 
     SetSwipeDirection = (direction?: SwipeDirection) => {
         this.swipeDirection = direction;
-        setTimeout(() => {
-            this.swipeDirection = undefined;
-        }, TRAIL_FADE_TIME_S * 1500);
     }
 }
