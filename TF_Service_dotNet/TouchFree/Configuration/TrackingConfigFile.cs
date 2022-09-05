@@ -14,14 +14,6 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public bool AllowImages = true;
         public bool CameraReversed = false;
         public bool AnalyticsEnabled = true;
-
-        public TrackingConfig()
-        {
-            Mask = new MaskingData();
-            AllowImages = true;
-            CameraReversed = false;
-            AnalyticsEnabled = true;
-        }
     }
 
     [Serializable]

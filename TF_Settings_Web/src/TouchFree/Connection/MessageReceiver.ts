@@ -15,12 +15,16 @@ import {
     BitmaskFlags,
     ConvertInputAction,
     InputType,
+    TouchFreeEvent,
     TouchFreeInputAction,
+    TrackingServiceState,
     WebsocketInputAction,
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
 import { HandDataManager } from '../Plugins/HandDataManager';
+
+type CallbackResult = 'Success' | 'CallbacksUndefined' | 'NoCallbacksFound' | Error;
 
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
@@ -170,18 +174,21 @@ export class MessageReceiver {
     // Checks the dictionary of <callbacks> for a matching request ID. If there is a
     // match, calls the callback action in the matching <TouchFreeRequestCallback>.
     // Returns true if it was able to find a callback, returns false if not
-    private static HandleCallbackList<T extends TouchFreeRequest>(callbackResult: T, callbacks: {[id: string]: TouchFreeRequestCallback<T>}) : boolean {
-        if (callbacks !== undefined) {
-            for (let key in callbacks) {
-                if (key === callbackResult.requestID) {
-                    callbacks[key].callback(callbackResult);
-                    delete callbacks[key];
-                    return true;
-                }
-            };
+    private static HandleCallbackList<T extends TouchFreeRequest>(callbackResult: T, callbacks: {[id: string]: TouchFreeRequestCallback<T>}) : CallbackResult {
+        if (callbacks === undefined)
+        {
+            return 'CallbacksUndefined';
         }
+        
+        for (let key in callbacks) {
+            if (key === callbackResult.requestID) {
+                callbacks[key].callback(callbackResult);
+                delete callbacks[key];
+                return 'Success';
+            }
+        };
 
-        return false;
+        return 'NoCallbacksFound';
     }
 
     // Function: CheckForServiceStatus
@@ -191,7 +198,16 @@ export class MessageReceiver {
         let serviceStatus: ServiceStatus | undefined = this.serviceStatusQueue.shift();
 
         if (serviceStatus !== undefined) {
-            MessageReceiver.HandleCallbackList(serviceStatus, this.serviceStatusCallbacks);
+            const callbackResult = MessageReceiver.HandleCallbackList(serviceStatus, this.serviceStatusCallbacks);
+
+            // If callback didn't happen for known reasons, we cna be sure it's an independent status event rather than a request response
+            if (callbackResult === 'NoCallbacksFound' || callbackResult === 'CallbacksUndefined')
+            {
+                console.log(serviceStatus)
+                ConnectionManager.instance.dispatchEvent(
+                    new CustomEvent<TrackingServiceState>(TouchFreeEvent.ON_TRACKING_SERVICE_STATE_CHANGE,
+                        {detail: serviceStatus.trackingServiceState ?? undefined}));
+            }
         }
     }
 

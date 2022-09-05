@@ -9,7 +9,6 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         public IController Controller { get; }
 
-        private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly IConfigManager configManager;
 
         private const int maximumWaitTimeSeconds = 30;
@@ -30,9 +29,8 @@ namespace Ultraleap.TouchFree.Library.Connections
         
         public event Action<TrackingServiceState> ServiceStatusChange;
 
-        public TrackingConnectionManager(IConfigManager _configManager, ITrackingDiagnosticApi _diagnosticApi)
+        public TrackingConnectionManager(IConfigManager _configManager)
         {
-            diagnosticApi = _diagnosticApi;
             configManager = _configManager;
             Controller = new Controller();
             Controller.Connect += ControllerOnConnect;
@@ -49,7 +47,6 @@ namespace Ultraleap.TouchFree.Library.Connections
             // More than 1 device connected now, ignore this event as we only care about at least one device connection
             if (Controller.Devices.Count > 1) return;
             ServiceStatusChange?.Invoke(TrackingServiceState.CONNECTED);
-            diagnosticApi.TriggerUpdatingTrackingConfiguration();
         }
 
         private void ControllerOnDeviceLost(object sender, DeviceEventArgs e)

@@ -16,27 +16,26 @@ const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
     useEffect(() => {
-        const updateTfStatus = () => {
-            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-                const status = detail.trackingServiceState;
-                if (status) {
-                    setTfStatus(status);
-                }
-            });
+        ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+            const status = detail.trackingServiceState;
+            if (status) {
+                setTfStatus(status);
+            }
+        });
+
+        const updateTfStatus = (serviceStatus:TrackingServiceState) => {
+            setTfStatus(serviceStatus);
         };
 
         ConnectionManager.init();
 
-        ConnectionManager.AddConnectionListener(updateTfStatus);
+        ConnectionManager.AddServiceStatusListener(updateTfStatus);
         const controller: WebInputController = new WebInputController();
-
-        const timerID = window.setInterval(updateTfStatus, 5000);
 
         new CursorManager();
 
         return () => {
             controller.disconnect();
-            clearInterval(timerID);
         };
     }, []);
 
@@ -45,7 +44,7 @@ const App: React.FC = () => {
             <ControlBar tfStatus={tfStatus} />
             <div className="page-content">
                 <Routes>
-                    <Route path="/settings/camera/*" element={<CameraManager />} />
+                    <Route path="/settings/camera/*" element={<CameraManager tfStatus={tfStatus} />} />
                     <Route path="/settings/interactions" element={<InteractionsPage />} />
                     <Route path="*" element={<Navigate to="/settings/camera" replace />} />
                 </Routes>

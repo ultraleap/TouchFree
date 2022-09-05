@@ -7,7 +7,7 @@ import { useStatefulRef } from 'customHooks';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
-import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
+import { HandFrame, TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
@@ -23,7 +23,12 @@ export type Lens = 'Left' | 'Right';
 
 const FRAME_PROCESSING_TIMEOUT = 60;
 
-const MaskingScreen = () => {
+interface MaskingScreenProps
+{
+    tfStatus:TrackingServiceState;
+}
+
+const MaskingScreen: React.FC<MaskingScreenProps> = (props:MaskingScreenProps) => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
     const handData = useStatefulRef<HandState>(defaultHandState);
@@ -238,7 +243,6 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <canvas ref={canvasRef} width={'192px'} height={'192px'} />
-
                     <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
