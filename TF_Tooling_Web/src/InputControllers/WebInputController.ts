@@ -266,7 +266,6 @@ export class WebInputController extends BaseInputController {
                 }
             }
             
-            CursorManager.instance.cursor.SetSwipeDirection(undefined);
             this.lastPosition = _position;
 
             if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Down)) {
