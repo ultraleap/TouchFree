@@ -85,9 +85,9 @@ namespace Ultraleap.TouchFree.Library
             interactionCurrentlyDown = null;
         }
 
-        public void HandleCloseToSwipe()
+        public void HandleCloseToSwipe(Direction _direction)
         {
-            connectionManager.SendCloseToSwipe();
+            connectionManager.SendCloseToSwipe(_direction);
         }
 
         public void Update()
@@ -199,5 +199,13 @@ namespace Ultraleap.TouchFree.Library
                 }
             }
         }
+    }
+
+    public enum Direction
+    {
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
     }
 }

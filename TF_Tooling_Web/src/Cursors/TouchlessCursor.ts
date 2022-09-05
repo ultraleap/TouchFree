@@ -1,5 +1,6 @@
 import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
+import { SwipeDirection } from '../Connection/TouchFreeServiceTypes';
 
 
 // Class: TouchlessCursor
@@ -67,4 +68,5 @@ export abstract class TouchlessCursor {
 
     abstract ShowCloseToSwipe(): void;
     abstract HideCloseToSwipe(): void;
+    abstract SetSwipeDirection(direction?: SwipeDirection): void;
 }
