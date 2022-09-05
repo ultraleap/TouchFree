@@ -5,10 +5,6 @@ export class CursorManager {
     public cursor: TouchlessCursor;
 
     constructor() {
-        const svgCanvas = document.querySelector('#svg-cursor');
-        const svgDot = document.querySelector('#svg-cursor-dot');
-        const svgRing = document.querySelector('#svg-cursor-ring');
-
-        this.cursor = new SVGCursor(svgCanvas, svgDot, svgRing, 'cx', 'cy');
+        this.cursor = new SVGCursor();
     }
 }
