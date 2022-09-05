@@ -27,6 +27,8 @@ public class CameraPreviewScreen : MonoBehaviour
 
     public Scrollbar contentScrollbar;
 
+    public MaskData lastMaskData;
+
     void OnEnable()
     {
         leapImageRetriever.enabled = false;
@@ -102,7 +104,12 @@ public class CameraPreviewScreen : MonoBehaviour
             maskingSiderL.value * sliderRatio
         );
 
-        var newState = new TrackingState(mask, null, null, null);
+        lastMaskData = mask;
+    }
+
+    public void OnSliderReleased()
+    {
+        var newState = new TrackingState(lastMaskData, null, null, null);
 
         TrackingManager.RequestTrackingChange(newState);
     }
@@ -113,7 +120,8 @@ public class CameraPreviewScreen : MonoBehaviour
         var cameraReversed = _response.cameraReversed.Value.content;
         var allowImages = _response.allowImages.Value.content;
 
-        if (maskData.HasValue) {
+        if (maskData.HasValue)
+        {
             SetSliders(
                 maskData.Value.left,
                 maskData.Value.right,
@@ -122,8 +130,8 @@ public class CameraPreviewScreen : MonoBehaviour
             );
         }
 
-        if (cameraReversed.HasValue) {
-
+        if (cameraReversed.HasValue)
+        {
             cameraReversedToggle.isOn = cameraReversed.Value;
         }
 
