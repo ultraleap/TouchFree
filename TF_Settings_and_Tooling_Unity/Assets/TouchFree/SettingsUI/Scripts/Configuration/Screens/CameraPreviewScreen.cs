@@ -27,7 +27,10 @@ public class CameraPreviewScreen : MonoBehaviour
 
     public Scrollbar contentScrollbar;
 
-    public MaskData lastMaskData;
+    private MaskData lastMaskData;
+    private long lastMaskTime;
+    private float minMaskDelay = (1f/20f) * 1000f;
+
 
     void OnEnable()
     {
@@ -105,6 +108,14 @@ public class CameraPreviewScreen : MonoBehaviour
         );
 
         lastMaskData = mask;
+
+        var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        if (currentTime - lastMaskTime > minMaskDelay) {
+            OnSliderReleased();
+        }
+
+        lastMaskTime = currentTime;
     }
 
     public void OnSliderReleased()
