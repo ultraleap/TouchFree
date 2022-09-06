@@ -1,7 +1,6 @@
-// Class: VersionInfo
-
 import { Vector } from "./Configuration/ConfigurationTypes";
 
+// Class: VersionInfo
 // This class is used when comparing the <ApiVersion> of the Tooling and the Service.
 export class VersionInfo
 {

@@ -27,29 +27,22 @@
 
         .horizontalScroll {
             white-space: nowrap;
-            overflow-x: hidden;
+            overflow-x: scroll;
             overflow-y: hidden;
             width: 75vw;
-            height: 10vw;
-            position: relative;
-            left: 5vw;
+            height: 11vw;
         }
 
         .verticalScroll {
             white-space: nowrap;
             overflow-x: hidden;
-            overflow-y: hidden;
+            overflow-y: scroll;
             display: inline-block;
             width: 12vw;
             height: 95vh;
-            position: relative;
-            left: 2.5vw;
         }
 
         .topButton {
-            position: absolute;
-            top: 0px;
-            right: 10vw;
             width: 30vw;
             height: 20vh;
         }
@@ -84,7 +77,12 @@
                 Ω Button
             </button>
         </div>
-        <div style="display: inline-block; width: 70vw; height: 80vh;">
+        <div style="display: inline-block; width: 70vw; height: 80vh; position: relative;">
+            <div>
+                <button class="topButton snappable" onpointerdown="resetText()">Clear Text</button>
+                <button class="topButton snappable" style="float:right" onpointerdown="resetTextColor()">Reset Text Color</button>
+            </div>
+            <h1 id="Text to change" style="text-align: center; height: 10vh; width: auto; margin: 15%"></h1>
             <div class="horizontalScroll">
                 <button class="buttonHorizontal snappable" style="background-color:blue; color:blue" onpointerdown="textColor(this.textContent)">blue</button>
                 <button class="buttonHorizontal snappable" style="background-color:red; color:red" onpointerdown="textColor(this.textContent)">red</button>
@@ -92,9 +90,6 @@
                 <button class="buttonHorizontal snappable" style="background-color:orange; color:orange" onpointerdown="textColor(this.textContent)">orange</button>
                 <button class="buttonHorizontal snappable" style="background-color:yellow; color:yellow" onpointerdown="textColor(this.textContent)">yellow</button>
             </div>
-            <button class="topButton snappable" onpointerdown="resetText()">Clear Text</button>
-            <button class="topButton snappable" style="right: 50vw;" onpointerdown="resetTextColor()">Reset Text Color</button>
-            <h1 id="Text to change" style="text-align: center; position: absolute; top: 45vh; left: 35vw; height: 10vh; width: 30vw;"></h1>
         </div>
     </div>
 
