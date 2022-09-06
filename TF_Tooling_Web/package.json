@@ -6,6 +6,7 @@
   "typings": "index.d.ts",
   "scripts": {
     "test": "jest",
+    "dev": "webpack --watch",
     "build": "webpack"
   },
   "author": "",
