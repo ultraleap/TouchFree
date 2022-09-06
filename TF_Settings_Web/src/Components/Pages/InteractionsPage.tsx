@@ -29,7 +29,7 @@ const TouchPlaneTrackingOptions: Record<string, TrackedPosition> = {
 
 interface InteractionsState {
     interactionConfig: InteractionConfigFull;
-    resetButtonClass?: string;
+    resetButtonHovered: boolean;
 }
 
 export class InteractionsPage extends Component<{}, InteractionsState> {
@@ -38,7 +38,10 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
     }
 
     componentDidUpdate(_prevProps: {}, prevState: InteractionsState): void {
-        if (this.state !== null && this.state !== prevState) {
+        if (!this.state || !prevState) return;
+        if (!this.state.interactionConfig || !prevState.interactionConfig) return;
+
+        if (this.state.interactionConfig !== prevState.interactionConfig) {
             ConfigurationManager.RequestConfigFileChange(
                 this.state.interactionConfig,
                 null,
@@ -212,13 +215,13 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
 
     onResetEnter = () => {
         this.setState((state) => {
-            return { ...state, resetButtonClass: 'reset-button hover' };
+            return { ...state, resetButtonHovered: true };
         });
     };
 
     onResetLeave = () => {
         this.setState((state) => {
-            return { ...state, resetButtonClass: 'reset-button' };
+            return { ...state, resetButtonHovered: false};
         });
     };
 
@@ -395,7 +398,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                         onPointerUp={this.resetToDefaults.bind(this)}
                         onPointerEnter={this.onResetEnter}
                         onPointerLeave={this.onResetLeave}
-                        className={this.state ? this.state.resetButtonClass ?? 'reset-button' : 'reset-button'}
+                        className={this.state?.resetButtonHovered ? 'reset-button hover' : 'reset-button'}
                     >
                         <p> Reset to Default </p>
                     </button>
