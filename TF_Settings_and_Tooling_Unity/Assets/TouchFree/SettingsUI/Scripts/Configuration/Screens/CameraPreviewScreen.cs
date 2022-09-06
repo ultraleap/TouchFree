@@ -126,7 +126,6 @@ public class CameraPreviewScreen : MonoBehaviour
         if (currentTime - lastMaskTime > minMaskDelay)
         {
             OnSliderReleased();
-            unsentMask = false;
         }
 
         lastMaskTime = currentTime;
@@ -136,6 +135,7 @@ public class CameraPreviewScreen : MonoBehaviour
     {
         var newState = new TrackingState(lastMaskData, null, null, null);
 
+        unsentMask = false;
         TrackingManager.RequestTrackingChange(newState);
     }
 
