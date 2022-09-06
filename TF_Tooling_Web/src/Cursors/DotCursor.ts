@@ -34,7 +34,6 @@ export class DotCursor extends TouchlessCursor {
 
     private growQueued: boolean = false;
 
-    private hidingCursor: boolean = true;
     private currentFadingInterval: number = -1;
 
     private dotCursorElement: HTMLElement;
@@ -202,17 +201,19 @@ export class DotCursor extends TouchlessCursor {
     // Function: ShowCursor
     // Used to make the cursor visible, fades over time
     ShowCursor(): void {
-        this.hidingCursor = false;
-        clearInterval(this.currentFadingInterval);
-        this.currentFadingInterval = setInterval(
-            this.FadeCursorIn.bind(this) as TimerHandler,
-            this.animationUpdateDuration);
+        this.shouldShow = true;
+        if (this.enabled) {
+            clearInterval(this.currentFadingInterval);
+            this.currentFadingInterval = setInterval(
+                this.FadeCursorIn.bind(this) as TimerHandler,
+                this.animationUpdateDuration);
+        }
     }
 
     // Function: HideCursor
     // Used to make the cursor invisible, fades over time
     HideCursor(): void {
-        this.hidingCursor = true;
+        this.shouldShow = false;
         clearInterval(this.currentFadingInterval);
         this.currentFadingInterval = setInterval(
             this.FadeCursorOut.bind(this) as TimerHandler,
