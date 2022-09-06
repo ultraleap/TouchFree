@@ -77,7 +77,10 @@ namespace Ultraleap.TouchFree.Library
                 updateBehaviour.OnUpdate += Update;
 
                 var velocitySwipe = (interactions.Single(x => x.InteractionType == InteractionType.VELOCITYSWIPE) as VelocitySwipeInteraction);
-                velocitySwipe.CloseToSwipe += HandleCloseToSwipe;
+                if (velocitySwipe != null)
+                {
+                    velocitySwipe.CloseToSwipe += HandleCloseToSwipe;
+                }
             }
 
             // Reset the down position between interactions
