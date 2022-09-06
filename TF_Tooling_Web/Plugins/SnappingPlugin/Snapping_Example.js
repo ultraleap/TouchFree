@@ -3,14 +3,14 @@ TouchFree.Connection.ConnectionManager.init();
 window.onload = function () {
     var cursorRing = document.createElement('img');
     cursorRing.src = "./images/Ring.png"
-    cursorRing.style.position = "absolute";
+    cursorRing.style.position = "fixed";
     cursorRing.width = 30;
     cursorRing.height = 30;
     cursorRing.style.zIndex = "1000";
 
     var cursor = document.createElement('img');
     cursor.src = "./images/Dot.png";
-    cursor.style.position = "absolute";
+    cursor.style.position = "fixed";
     cursor.width = 30;
     cursor.height = 30;
     cursor.style.zIndex = "1001";
