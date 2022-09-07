@@ -142,6 +142,9 @@ export class SVGCursor extends TouchlessCursor {
             if (newTailLengthY > this.tailLengthY) {
                 this.tailLengthY = newTailLengthY;
             }
+        } else {
+            this.tailLengthX = 0;
+            this.tailLengthY = 0;
         }
 
         switch (this.swipeDirection) {
