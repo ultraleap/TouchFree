@@ -9,7 +9,6 @@ export class SVGCursor extends TouchlessCursor {
     cursorCanvas: SVGSVGElement;
     cursorRing: SVGCircleElement;
     ringSizeMultiplier: number;
-    hidingCursor: boolean = false;
 
     constructor(_xPositionAttribute = "cx", _yPositionAttribute = "cy", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
@@ -23,6 +22,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.style.top = '0px';
         svgElement.style.left = '0px';
         svgElement.style.zIndex = '1000';
+        svgElement.style.pointerEvents = 'none';
         svgElement.setAttribute('width', '100%');
         svgElement.setAttribute('height', '100%');
         svgElement.id = 'svg-cursor';
@@ -120,12 +120,14 @@ export class SVGCursor extends TouchlessCursor {
     }
 
     ShowCursor() {
-        this.hidingCursor = false;
-        this.cursorCanvas.style.opacity = '1';
+        this.shouldShow = true;
+        if (this.enabled) {
+            this.cursorCanvas.style.opacity = '1';
+        }
     }
 
     HideCursor() {
-        this.hidingCursor = true;
+        this.shouldShow = false;
         this.cursorCanvas.style.opacity = '0';
         if (this.cursor) {
             this.cursor.style.transform = 'scale(1)';
