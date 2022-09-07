@@ -11,12 +11,44 @@
         margin: 0;
         background-color: #0e7c7b;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        justify-content: space-evenly;
         align-items: center;
       }
 
+      .header {
+        height: 5%;
+        width: 80%;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+
+      .header-toggle{
+        height: 100%;
+        display: flex;
+        flex: 0 1 20%;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .header-toggle label{
+        color: white;
+        font-size: 25px;
+        user-select: none;
+        margin-left: 4px;
+      }
+
+      .header-toggle input {
+        width:20px;
+        height:20px;
+        background:white;
+        border-radius:5px;
+        border:2px solid black;
+      }
+
       .scrollable {
-        height: 95%;
+        height: 92%;
         width: 95%;
         overflow: scroll;
         background-color: #17bebb;
@@ -30,35 +62,25 @@
         background-size: cover;
       }
 
-      .box {
-        height: 100px;
-        width: 200px;
-        background-color: #d4f4dd;
-        position: relative;
-      }
-
-      .box-1 {
-        top: 20px;
-        left: 20px;
-      }
-
-      .box-2 {
-        top: 200vh;
-        left: 0;
-      }
-
-      .box-3 {
-        top: 200vh;
-        left: 200vw;
-      }
     </style>
   </head>
   <body>
+    <div class="header">
+      <div class="header-toggle">
+        <input type="checkbox" id="bump" !checked onchange="togglePageBump()">
+        <label for="bump">Page Bump</label>
+      </div>
+      <div class="header-toggle">
+        <input type="checkbox" id="text" !checked onchange="toggleCursorTextPrompt()">
+        <label for="text">Cursor Text</label>
+      </div>
+      <div class="header-toggle">
+        <input type="checkbox" id="tail" !checked onchange="toggleCursorTail()">
+        <label for="tail">Cursor Tail</label>
+      </div>
+    </div>
     <div class="scrollable">
       <div class="background"/>
-      <!-- <div class="box box-1"></div>
-      <div class="box box-2"></div>
-      <div class="box box-3"></div> -->
     </div>
   </body>
 </html>

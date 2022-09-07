@@ -43,6 +43,8 @@ export class WebInputController extends BaseInputController {
     private bumpTransitionDurationMS = this.bumpTotalDurationMS / 6;
     private bumpDistancePx = 100;
 
+    public allowBump = false;
+
     // Group: Methods
 
     // Function: constructor
@@ -189,7 +191,7 @@ export class WebInputController extends BaseInputController {
     }
     
     protected HandleCloseToSwipe(direction?: SwipeDirection): void {
-        if(this.handlingCloseToSwipe || direction === undefined) return;
+        if(!this.allowBump || this.handlingCloseToSwipe || direction === undefined) return;
 
         let element: HTMLElement | undefined; 
         this.elementsOnDown = this.GetElementsOnDown(this.currentPosition);
