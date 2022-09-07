@@ -1,4 +1,5 @@
 import { SwipeDirection } from '../Connection/TouchFreeServiceTypes';
+import { CursorManager } from '../Cursors/CursorManager';
 import {
     TouchFreeInputAction,
     InputType
@@ -295,6 +296,7 @@ export class WebInputController extends BaseInputController {
                 }
             }
             
+            CursorManager.instance.cursor.SetSwipeDirection(undefined);
             this.lastPosition = _position;
 
             if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.DOWN)) {

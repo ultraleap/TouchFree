@@ -1,5 +1,6 @@
 import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { InputActionManager } from "../Plugins/InputActionManager";
+import { SwipeDirection } from "../Connection/TouchFreeServiceTypes";
 
 // Class: TouchlessCursor
 // This class is a base class for creating custom Touchless cursors for use with TouchFree Tooling.
@@ -70,4 +71,5 @@ export abstract class TouchlessCursor {
 
   abstract ShowCloseToSwipe(): void;
   abstract HideCloseToSwipe(): void;
+  abstract SetSwipeDirection(direction?: SwipeDirection): void;
 }

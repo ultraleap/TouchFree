@@ -167,6 +167,8 @@ export class SVGCursor extends TouchlessCursor {
             this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
             this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
 
+            this.cursorTail.setAttribute("points", tailPoints);
+
             this.cursorPrompt.style.left = `${position[0] - this.cursorPromptWidth/2}px`;
             this.cursorPrompt.style.top = `${position[1] - 80}px`;
     
@@ -177,6 +179,8 @@ export class SVGCursor extends TouchlessCursor {
         } else {
             this.HideCursor();
         }
+        this.previousPosition = position;
+        this.previousTime = time;
     }
 
     HandleInputAction(_inputData: TouchFreeInputAction) {
