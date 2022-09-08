@@ -72,25 +72,25 @@ export class SVGCursor extends TouchlessCursor {
         this.cursorRing = svgRingElement;
 
         const cursorPromptDiv = document.createElement('div');
-        this.cursorPromptWidth = 200;
+        this.cursorPromptWidth = 300;
         Object.assign(cursorPromptDiv.style, {
             width: `${this.cursorPromptWidth}px`,
-            height: '35px',
+            height: '40px',
             position: 'absolute',
             left: '0',
             top: '0',
             'background-color': 'black',
             'border-radius': '50px',
-            'border': '5px solid white',
+            'border': '2px solid white',
             display: 'flex',
             opacity: 0,
             'pointer-events': 'none',
             color: 'white',
             'justify-content': 'center',
             'align-items': 'center',
-            'font-size': '16px',
+            'font-size': '22px',
             'font-family': `'Trebuchet MS', sans-serif`,
-            'transition': 'opacity 0.2s linear'
+            'transition': 'opacity 0.2s ease-out'
         });
         cursorPromptDiv.innerHTML = `To Scroll: <strong>Swipe Faster</strong>`
         documentBody?.appendChild(cursorPromptDiv);
@@ -256,18 +256,15 @@ export class SVGCursor extends TouchlessCursor {
 
         this.swipeNotificationTimeout = setTimeout(() => {
             this.HideCloseToSwipe();
-            console.log("TIMEOUT")
         }, 1500);
     }
 
     HandleHandsLost(): void {
-        console.log("LOST");
         this.totalSwipeNotifications = 0;
         this.HideCloseToSwipe();
     }
 
     HideCloseToSwipe(): void {
-        console.log("CLOSE");
         this.cursorPrompt.style.opacity = '0';
         clearTimeout(this.swipeNotificationTimeout);
         this.swipeNotificationTimeout = undefined;
