@@ -4,8 +4,10 @@ import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
-const MAX_SWIPE_NOTIFICATIONS = 2;
-const TRAIL_FADE_TIME_S = 2;
+const MAX_SWIPE_NOTIFICATIONS = 1;
+const TAIL_FADE_TIME_S = 1.5;
+const TAIL_FADE_TIME_MS = TAIL_FADE_TIME_S * 1000;
+const MIN_TAIL_LENGTH = 25;
 
 export class SVGCursor extends TouchlessCursor {
     xPositionAttribute: string;
@@ -23,8 +25,10 @@ export class SVGCursor extends TouchlessCursor {
     swipeDirection?: SwipeDirection;
     previousPosition?: number[];
     previousTime?: number;
-    tailLengthX: number = 0;
-    tailLengthY: number = 0;
+    tailLength = [0,0];
+    swipeTailTimeout?: NodeJS.Timeout;
+    swipeTailInterval?: NodeJS.Timeout;
+    drawNewTail = false;
     
     public allowCursorTail = false;
     public allowTextPrompt = false;
@@ -55,7 +59,6 @@ export class SVGCursor extends TouchlessCursor {
         svgTailElement.setAttribute('points', '0,0 0,0 0,0');
         svgTailElement.style.fill = _darkCursor ? 'black' : 'white';
         svgTailElement.style.filter = `drop-shadow(0 0 10px ${shadowColour})`;
-        svgTailElement.style.transition = `opacity ${TRAIL_FADE_TIME_S}s`;
         svgElement.appendChild(svgTailElement);
         this.cursorTail = svgTailElement;
 
@@ -126,7 +129,7 @@ export class SVGCursor extends TouchlessCursor {
         ConnectionManager.instance.addEventListener('HandsLost', this.HandleHandsLost.bind(this));
     }
 
-    UpdateCursor(_inputAction: TouchFreeInputAction) {
+    UpdateCursor (_inputAction: TouchFreeInputAction) {
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
         this.cursorRing.setAttribute('opacity', _inputAction.ProgressToClick.toString());
@@ -135,38 +138,65 @@ export class SVGCursor extends TouchlessCursor {
         const position = _inputAction.CursorPosition;
         const time = _inputAction.Timestamp;
         let tailPoints: string;
-
         
         if (this.previousPosition && this.previousTime && this.swipeDirection != undefined) {
-            this.cursorTail.setAttribute('opacity', '0');
-            const newTailLengthX = Math.round(Math.abs(position[0] - this.previousPosition[0]));
-            const newTailLengthY = Math.round(Math.abs(position[1] - this.previousPosition[1]));
-            if (newTailLengthX > this.tailLengthX) {
-                this.tailLengthX = newTailLengthX;
+            if (this.drawNewTail) {
+                this.tailLength = [0,0];
+                this.drawNewTail = false;
+                this.cursorTail.setAttribute('opacity', '1');
             }
-            if (newTailLengthY > this.tailLengthY) {
-                this.tailLengthY = newTailLengthY;
+
+            let timeModifier = (time - this.previousTime) / 50000;
+            timeModifier = timeModifier > 0 ? timeModifier : 1;
+
+            const newTailLength = [
+                Math.round(Math.abs(position[0] - this.previousPosition[0]) / timeModifier),
+                Math.round(Math.abs(position[1] - this.previousPosition[1]) / timeModifier),
+            ];
+
+            if (
+                newTailLength[0] > this.tailLength[0] && newTailLength[0] > MIN_TAIL_LENGTH ||
+                newTailLength[1] > this.tailLength[1] && newTailLength[1] > MIN_TAIL_LENGTH
+            ) {
+                this.tailLength = newTailLength;
+
+                clearTimeout(this.swipeTailTimeout);
+                clearInterval(this.swipeTailInterval);
+
+                this.swipeTailInterval = setInterval(() => {
+                    const currentOpacity = this.cursorTail.getAttribute('opacity');
+                    if (currentOpacity) {
+                        let opacity = parseFloat(currentOpacity);
+                        const modifier = 0.01 * (opacity + 0.5);
+                        opacity -= modifier;
+                        opacity = opacity || 0;
+                        this.cursorTail.setAttribute('opacity', opacity.toString());
+                    }
+                }, TAIL_FADE_TIME_MS / 100);
+
+                this.swipeTailTimeout = setTimeout(() => {
+                    clearInterval(this.swipeTailInterval);
+                    this.drawNewTail = true;
+                }, TAIL_FADE_TIME_MS);
             }
         } else {
-            this.tailLengthX = 0;
-            this.tailLengthY = 0;
+            this.tailLength = [0,0];
         }
 
         switch (this.swipeDirection) {
             case SwipeDirection.LEFT:
-                tailPoints = `${position[0]},${position[1] - 15} ${position[0]},${position[1] + 15} ${position[0] + this.tailLengthX},${position[1]}`
+                tailPoints = `${position[0]},${position[1] - 15} ${position[0]},${position[1] + 15} ${position[0] + this.tailLength[0]},${position[1]}`
                 break;
             case SwipeDirection.RIGHT:
-                tailPoints = `${position[0]},${position[1] - 15} ${position[0]},${position[1] + 15} ${position[0] - this.tailLengthX},${position[1]}`
+                tailPoints = `${position[0]},${position[1] - 15} ${position[0]},${position[1] + 15} ${position[0] - this.tailLength[0]},${position[1]}`
                 break;
             case SwipeDirection.UP:
-                tailPoints = `${position[0] - 15},${position[1]} ${position[0] + 15},${position[1]} ${position[0]},${position[1] + this.tailLengthY}`
+                tailPoints = `${position[0] - 15},${position[1]} ${position[0] + 15},${position[1]} ${position[0]},${position[1] + this.tailLength[1]}`
                 break;
             case SwipeDirection.DOWN:
-                tailPoints = `${position[0] - 15},${position[1]} ${position[0] + 15},${position[1]} ${position[0]},${position[1] - this.tailLengthY}`
+                tailPoints = `${position[0] - 15},${position[1]} ${position[0] + 15},${position[1]} ${position[0]},${position[1] - this.tailLength[1]}`
                 break;
             default:
-                this.cursorTail.setAttribute('opacity', '1');
                 tailPoints = `${position[0]},${position[1]} ${position[0]},${position[1]} ${position[0]},${position[1]}`;
             }
             
@@ -261,6 +291,7 @@ export class SVGCursor extends TouchlessCursor {
 
     HandleHandsLost(): void {
         this.totalSwipeNotifications = 0;
+        this.HideCursor();
         this.HideCloseToSwipe();
     }
 
@@ -272,5 +303,7 @@ export class SVGCursor extends TouchlessCursor {
 
     SetSwipeDirection = (direction?: SwipeDirection) => {
         this.swipeDirection = direction;
+        this.drawNewTail = true;
+        this.tailLength = [0,0];
     }
 }
