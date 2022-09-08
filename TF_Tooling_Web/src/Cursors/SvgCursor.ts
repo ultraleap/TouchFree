@@ -5,7 +5,7 @@ import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
 const MAX_SWIPE_NOTIFICATIONS = 0;
-const TAIL_FADE_TIME_S = 2;
+const TAIL_FADE_TIME_S = 1.5;
 const TAIL_FADE_TIME_MS = TAIL_FADE_TIME_S * 1000;
 const MIN_TAIL_LENGTH = 25;
 
@@ -152,7 +152,7 @@ export class SVGCursor extends TouchlessCursor {
             if (
                 newTailLength[0] > this.tailLength[0] && newTailLength[0] > MIN_TAIL_LENGTH ||
                 newTailLength[1] > this.tailLength[1] && newTailLength[1] > MIN_TAIL_LENGTH
-                ) {
+            ) {
                 this.tailLength = newTailLength;
 
                 clearTimeout(this.swipeTailTimeout);
