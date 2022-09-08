@@ -262,6 +262,7 @@ export class SVGCursor extends TouchlessCursor {
 
     HandleHandsLost(): void {
         this.totalSwipeNotifications = 0;
+        this.HideCursor();
         this.HideCloseToSwipe();
     }
 
