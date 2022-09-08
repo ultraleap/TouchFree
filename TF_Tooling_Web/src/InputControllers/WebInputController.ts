@@ -282,6 +282,7 @@ export class WebInputController extends BaseInputController {
         setTimeout(() => {
             element.style.transition = elemTransition;
             element.style.scrollBehavior = elemScrollBehaviour;
+            element[scrollProperty] = elemScroll;
             this.handlingCloseToSwipe = false;
         }, this.bumpTotalDurationMS)
     }
