@@ -15,6 +15,14 @@ export abstract class TouchlessCursor {
     // The HTMLElement that represents this cursor
     cursor: HTMLElement | SVGElement | undefined;
 
+    // Variable: enabled
+    // Whether the cursor should hide and show depending on hand presence
+    enabled: boolean;
+
+    // Variable: cursor
+    // Whether the cursor should be visible or not after being enabled
+    shouldShow: boolean;
+
     // Group: Functions
 
     // Function: constructor
@@ -28,6 +36,8 @@ export abstract class TouchlessCursor {
         }) as EventListener);
 
         this.cursor = _cursor;
+        this.enabled = true;
+        this.shouldShow = true;
     }
 
     // Function: UpdateCursor
@@ -52,7 +62,8 @@ export abstract class TouchlessCursor {
     // Function: ShowCursor
     // Used to make the cursor visible
     ShowCursor(): void {
-        if (this.cursor) {
+        this.shouldShow = true;
+        if (this.cursor && this.enabled) {
             this.cursor.style.opacity = "1";
         }
     }
@@ -60,8 +71,29 @@ export abstract class TouchlessCursor {
     // Function: HideCursor
     // Used to make the cursor invisible
     HideCursor(): void {
+        this.shouldShow = false;
         if (this.cursor) {
             this.cursor.style.opacity = "0";
         }
+    }
+
+    // Function: EnableCursor
+    // Used to enable the cursor so that it will show if hands are present
+    EnableCursor(): void {
+        this.enabled = true;
+        if (this.shouldShow) {
+            this.ShowCursor();
+        }
+    }
+
+    // Function: DisableCursor
+    // Used to disable the cursor so that it will never show
+    DisableCursor(): void {
+        this.enabled = false;
+        const shouldShowOnEnable = this.shouldShow;
+        if (shouldShowOnEnable) {
+            this.HideCursor();
+        }
+        this.shouldShow = shouldShowOnEnable;
     }
 }

@@ -34,7 +34,6 @@ export class DotCursor extends TouchlessCursor {
 
     private growQueued: boolean = false;
 
-    private hidingCursor: boolean = true;
     private currentFadingInterval: number = -1;
 
     private dotCursorElement: HTMLElement;
@@ -68,6 +67,7 @@ export class DotCursor extends TouchlessCursor {
     // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
     UpdateCursor(_inputAction: TouchFreeInputAction): void {
+        if (!this.enabled) return;
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
@@ -127,6 +127,7 @@ export class DotCursor extends TouchlessCursor {
     // Shrinks the cursor to half of its original size.
     // This is performed over a duration set in the <constructor>.
     ShrinkCursor(): void {
+        if (!this.enabled) return;
         let newWidth = this.dotCursorElement.clientWidth;
         let newHeight = this.dotCursorElement.clientHeight;
 
@@ -153,8 +154,7 @@ export class DotCursor extends TouchlessCursor {
                 this.currentAnimationInterval = setInterval(
                     this.GrowCursor.bind(this) as TimerHandler,
                     this.animationUpdateDuration);
-            }
-            else {
+            } else {
                 this.currentAnimationInterval = -1;
             }
         }
@@ -163,6 +163,7 @@ export class DotCursor extends TouchlessCursor {
     // Function: GrowCursor
     // Grows the cursor to its original size over time set via the <constructor>.
     GrowCursor(): void {
+        if (!this.enabled) return;
         let newWidth = this.dotCursorElement.clientWidth;
         let newHeight = this.dotCursorElement.clientHeight;
 
@@ -202,7 +203,8 @@ export class DotCursor extends TouchlessCursor {
     // Function: ShowCursor
     // Used to make the cursor visible, fades over time
     ShowCursor(): void {
-        this.hidingCursor = false;
+        this.shouldShow = true;
+        if (!this.enabled) return;
         clearInterval(this.currentFadingInterval);
         this.currentFadingInterval = setInterval(
             this.FadeCursorIn.bind(this) as TimerHandler,
@@ -212,11 +214,13 @@ export class DotCursor extends TouchlessCursor {
     // Function: HideCursor
     // Used to make the cursor invisible, fades over time
     HideCursor(): void {
-        this.hidingCursor = true;
-        clearInterval(this.currentFadingInterval);
-        this.currentFadingInterval = setInterval(
-            this.FadeCursorOut.bind(this) as TimerHandler,
-            this.animationUpdateDuration);
+        this.shouldShow = false;
+        if (parseFloat(this.dotCursorElement.style.opacity) !== 0) {
+            clearInterval(this.currentFadingInterval);
+            this.currentFadingInterval = setInterval(
+                this.FadeCursorOut.bind(this) as TimerHandler,
+                this.animationUpdateDuration);
+        }
     }
 
     private FadeCursorIn(): void {
