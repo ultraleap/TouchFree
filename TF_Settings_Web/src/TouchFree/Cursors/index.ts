@@ -1,9 +1,11 @@
 import { TouchlessCursor } from "./TouchlessCursor";
-import { DotCursor } from "./DotCursor";
 import { SVGCursor } from "./SvgCursor";
+import { DotCursor } from "./DotCursor";
+import { CursorManager } from "./CursorManager";
 
 module.exports = {
     TouchlessCursor: TouchlessCursor,
+    SVGCursor: SVGCursor,
     DotCursor: DotCursor,
-    SVGCursor: SVGCursor
+    CursorManager: CursorManager,
 }

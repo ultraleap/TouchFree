@@ -253,4 +253,5 @@ export class DotCursor extends TouchlessCursor {
 
     ShowCloseToSwipe() {}
     HideCloseToSwipe() {}
+    SetSwipeDirection() {}
 }

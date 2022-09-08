@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
+    "@types/node": "^18.7.15",
     "dts-bundle": "^0.7.3",
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",

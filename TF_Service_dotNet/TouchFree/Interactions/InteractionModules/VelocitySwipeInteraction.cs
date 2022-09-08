@@ -44,7 +44,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private Vector2 scrollOrigin = Vector2.Zero;
         private Vector2? potentialScrollOrigin;
 
-        public event Action CloseToSwipe;
+        public event Action<Direction> CloseToSwipe;
 
 
         public VelocitySwipeInteraction(
@@ -209,7 +209,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 else if (((_absPerp.X * 1.2f > minScrollVelocity_mmps) && (_absPerp.Y < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
                     (VerticalVelocityOverMinScrollVelocity(_dPerp * 1.2f) && (_absPerp.X < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.X))
                 {
-                    CloseToSwipe?.Invoke();
+                    SetDirection(_dPerp, _absPerp);
+                    CloseToSwipe?.Invoke(currentDirection);
                 }
             }
 
@@ -268,14 +269,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 default:
                     return false;
             }
-        }
-
-        enum Direction
-        {
-            LEFT,
-            RIGHT,
-            UP,
-            DOWN
         }
 
         enum Axis

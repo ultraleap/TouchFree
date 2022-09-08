@@ -1,5 +1,5 @@
-import { SVGCursor } from '../TouchFree/Cursors/SvgCursor';
-import { TouchlessCursor } from '../TouchFree/Cursors/TouchlessCursor';
+import { SVGCursor } from './SvgCursor';
+import { TouchlessCursor } from './TouchlessCursor';
 
 export class CursorManager {
     public cursor: TouchlessCursor;

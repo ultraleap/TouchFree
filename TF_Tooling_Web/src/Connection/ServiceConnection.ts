@@ -134,6 +134,7 @@ export class ServiceConnection {
 
             case ActionCode.CLOSE_TO_SWIPE:
                 CursorManager.instance.cursor.ShowCloseToSwipe();
+                CursorManager.instance.cursor.SetSwipeDirection(looseData.content);
                 break;
 
             case ActionCode.CONFIGURATION_STATE:

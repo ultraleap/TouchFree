@@ -22,7 +22,7 @@ import {
 import { TrackingState } from '../Tracking/TrackingTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
-import { CursorManager } from 'Components/CursorManager';
+import { CursorManager } from '../Cursors/CursorManager';
 
 // Class: ServiceConnection
 // This represents a connection to a TouchFree Service. It should be created by a
