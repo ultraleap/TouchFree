@@ -6,6 +6,7 @@ import { TouchlessCursor } from "./TouchlessCursor";
 
 const MAX_SWIPE_NOTIFICATIONS = 0;
 const TAIL_FADE_TIME_S = 2;
+const TAIL_FADE_TIME_MS = TAIL_FADE_TIME_S * 1000;
 
 export class SVGCursor extends TouchlessCursor {
     xPositionAttribute: string;
@@ -25,6 +26,7 @@ export class SVGCursor extends TouchlessCursor {
     previousTime?: number;
     tailLength = [0,0];
     swipeTailTimeout?: NodeJS.Timeout;
+    swipeTailInterval?: NodeJS.Timeout;
     drawNewTail = false;
 
     constructor(_xPositionAttribute = "cx", _yPositionAttribute = "cy", _ringSizeMultiplier = 2, _darkCursor = false) {
@@ -121,7 +123,7 @@ export class SVGCursor extends TouchlessCursor {
         ConnectionManager.instance.addEventListener('HandsLost', this.HandleHandsLost.bind(this));
     }
 
-    UpdateCursor(_inputAction: TouchFreeInputAction) {
+    UpdateCursor (_inputAction: TouchFreeInputAction) {
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
         this.cursorRing.setAttribute('opacity', _inputAction.ProgressToClick.toString());
@@ -135,6 +137,7 @@ export class SVGCursor extends TouchlessCursor {
             if (this.drawNewTail) {
                 this.tailLength = [0,0];
                 this.drawNewTail = false;
+                this.cursorTail.setAttribute('opacity', '1');
             }
 
             let timeModifier = (time - this.previousTime) / 50000;
@@ -149,9 +152,23 @@ export class SVGCursor extends TouchlessCursor {
                 this.tailLength = newTailLength;
 
                 clearTimeout(this.swipeTailTimeout);
+                clearInterval(this.swipeTailInterval);
+
+                this.swipeTailInterval = setInterval(() => {
+                    const currentOpacity = this.cursorTail.getAttribute('opacity');
+                    if (currentOpacity) {
+                        let opacity = parseFloat(currentOpacity);
+                        const modifier = 0.01 * (opacity + 0.5);
+                        opacity -= modifier;
+                        opacity = opacity || 0;
+                        this.cursorTail.setAttribute('opacity', opacity.toString());
+                    }
+                }, TAIL_FADE_TIME_MS / 100);
+
                 this.swipeTailTimeout = setTimeout(() => {
-                    this.tailLength = [0,0];
-                }, TAIL_FADE_TIME_S * 1000);
+                    clearInterval(this.swipeTailInterval);
+                    this.drawNewTail = true;
+                }, TAIL_FADE_TIME_MS);
             }
         } else {
             this.tailLength = [0,0];
