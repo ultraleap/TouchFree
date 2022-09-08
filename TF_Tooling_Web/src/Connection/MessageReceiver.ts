@@ -248,7 +248,8 @@ export class MessageReceiver {
             let converted: TouchFreeInputAction = ConvertInputAction(action);
 
             if (converted.InputType === InputType.DOWN) {
-                CursorManager.instance.cursor.HideCloseToSwipe();
+                // TODO NOTE TODO: SHOULD THIS BE COMMENTED OUT
+                // CursorManager.instance.cursor.HideCloseToSwipe();
             }
 
             //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference

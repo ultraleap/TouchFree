@@ -1,3 +1,4 @@
+import { SwipeDirection } from '../Connection/TouchFreeServiceTypes';
 import { CursorManager } from '../Cursors/CursorManager';
 import {
     TouchFreeInputAction,
@@ -13,6 +14,10 @@ import { BaseInputController } from './BaseInputController'
 // class. This allows this class to ignore them when determining which elements should recieve
 // new pointer events. If you don't do this, none of the events transmitted here are guaranteed
 // to make it to their intended targets, as they will be captured by the cursor.
+
+type MarginProperty = 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight';
+type ScrollProperty = 'scrollTop' | 'scrollLeft';
+
 export class WebInputController extends BaseInputController {
     // Group: Variables
 
@@ -27,9 +32,18 @@ export class WebInputController extends BaseInputController {
     private readonly baseEventProps: PointerEventInit;
     private readonly activeEventProps: PointerEventInit;
     private elementsOnDown: HTMLElement[] | null = null;
+    private handlingCloseToSwipe: boolean = false;
+    private currentPosition: Array<number> = [];
     private lastPosition: Array<number> | null = null;
-    private scrollDirection: ScrollDirection | undefined = undefined;
-    private elementToScroll: HTMLElement | undefined = undefined;
+    private scrollDirection?: SwipeDirection = undefined;
+    private elementToScroll?: HTMLElement = undefined;
+
+    // Variables for Bump on almost swipe
+    private bumpTotalDurationMS = 200;
+    private bumpTransitionDurationMS = this.bumpTotalDurationMS / 4;
+    private bumpDistancePx = 50;
+
+    public allowBump = false;
 
     // Group: Methods
 
@@ -107,6 +121,8 @@ export class WebInputController extends BaseInputController {
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         super.HandleInputAction(_inputData);
 
+        this.currentPosition = _inputData.CursorPosition;
+
         let elementAtPos: Element | null = this.GetTopNonCursorElement(_inputData.CursorPosition);
 
         this.activeEventProps.clientX = _inputData.CursorPosition[0];
@@ -141,9 +157,7 @@ export class WebInputController extends BaseInputController {
 
             case InputType.DOWN:
                 this.ResetScrollData();
-                this.elementsOnDown = document.elementsFromPoint(_inputData.CursorPosition[0], _inputData.CursorPosition[1])
-                    .map(e => e as HTMLElement)
-                    .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor") && !e.classList.contains("touchfree-no-scroll"));
+                this.elementsOnDown = this.GetElementsOnDown(_inputData.CursorPosition);
 
                 this.lastPosition = _inputData.CursorPosition;
 
@@ -160,10 +174,115 @@ export class WebInputController extends BaseInputController {
         }
     }
 
+    private GetElementsOnDown(position: number[]): HTMLElement[] {
+        return document.elementsFromPoint(position[0],position[1])
+            .map(e => e as HTMLElement)
+            .filter(
+                e => e && !e.classList.contains("touchfreecursor") 
+                && !e.classList.contains("touchfree-cursor") 
+                && !e.classList.contains("touchfree-no-scroll")
+            );
+    }
+
     private ResetScrollData(): void {
         this.elementsOnDown = null;
         this.scrollDirection = undefined;
         this.elementToScroll = undefined;
+    }
+    
+    protected HandleCloseToSwipe(direction?: SwipeDirection): void {
+        if(!this.allowBump || this.handlingCloseToSwipe || direction === undefined) return;
+
+        let element: HTMLElement | undefined; 
+        this.elementsOnDown = this.GetElementsOnDown(this.currentPosition);
+        switch (direction) {
+            case SwipeDirection.UP:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop >= 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+                case SwipeDirection.DOWN:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
+            case SwipeDirection.LEFT:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft >= 0,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+            case SwipeDirection.RIGHT:
+                element = this.GetElementToScroll(
+                    (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
+                    (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
+        }
+        this.elementsOnDown = null;
+
+        if(!element) return;
+
+        this.handlingCloseToSwipe = true;
+
+        this.BumpPage(element, direction);
+    }
+
+    protected BumpPage(element: HTMLElement, direction: SwipeDirection): void {
+        let marginProperty: MarginProperty = 'marginTop';
+        let scrollProperty: ScrollProperty = 'scrollTop';
+        let elemScrollMax = 0; 
+        let extraBumpDistance = 0;
+        let swipePolarity: -1 | 1 = 1;
+
+        switch (direction) {
+            case SwipeDirection.UP:
+                marginProperty = 'marginBottom';
+                elemScrollMax = element.scrollHeight - element.clientHeight;
+                extraBumpDistance = this.bumpDistancePx - (element.scrollHeight - element.clientHeight - element[scrollProperty]);
+                swipePolarity = -1;
+                break;
+            case SwipeDirection.DOWN:
+                extraBumpDistance = this.bumpDistancePx - element[scrollProperty];
+                break;
+            case SwipeDirection.LEFT:
+                marginProperty = 'marginRight';
+                scrollProperty = 'scrollLeft';
+                elemScrollMax = element.scrollWidth - element.clientWidth;
+                extraBumpDistance = this.bumpDistancePx - (element.scrollWidth - element.clientWidth - element[scrollProperty]);
+                swipePolarity = -1;
+                break;
+            case SwipeDirection.RIGHT:
+                marginProperty = 'marginLeft';
+                scrollProperty = 'scrollLeft';
+                extraBumpDistance = this.bumpDistancePx - element[scrollProperty];
+                break;
+        }
+
+        const elemMargin = element.style[marginProperty];
+        const elemScroll = element[scrollProperty];
+
+        const elemScrollBehaviour = element.style.scrollBehavior;
+        element.style.scrollBehavior = 'smooth';
+        const elemTransition = element.style.transition;
+        element.style.transition += `margin ${this.bumpTransitionDurationMS}ms`;
+
+        if(extraBumpDistance >= 0){
+            element[scrollProperty] = elemScrollMax;
+            element.style[marginProperty] =  `${extraBumpDistance}px`;
+            
+            setTimeout(() => {
+                element.style[marginProperty] = elemMargin;
+                element[scrollProperty] = elemScroll;
+            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+
+        } else {
+            element[scrollProperty] = elemScroll - (this.bumpDistancePx * swipePolarity);
+
+            setTimeout(() => {
+                element[scrollProperty] = elemScroll;
+            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+        }
+
+        setTimeout(() => {
+            element.style.transition = elemTransition;
+            element.style.scrollBehavior = elemScrollBehaviour;
+            this.handlingCloseToSwipe = false;
+        }, this.bumpTotalDurationMS)
     }
 
     private HandleScroll(_position: Array<number>): void {
@@ -173,16 +292,16 @@ export class WebInputController extends BaseInputController {
 
             if (!this.scrollDirection && (Math.abs(changeInPositionX) > 5 || Math.abs(changeInPositionY) > 5)) {
                 if (Math.abs(changeInPositionX) > Math.abs(changeInPositionY)) {
-                    this.scrollDirection = changeInPositionX > 0 ? ScrollDirection.Right : ScrollDirection.Left;
+                    this.scrollDirection = changeInPositionX > 0 ? SwipeDirection.RIGHT : SwipeDirection.LEFT;
                 } else {
-                    this.scrollDirection = changeInPositionY > 0 ? ScrollDirection.Down : ScrollDirection.Up;
+                    this.scrollDirection = changeInPositionY > 0 ? SwipeDirection.DOWN : SwipeDirection.UP;
                 }
             }
             
             CursorManager.instance.cursor.SetSwipeDirection(undefined);
             this.lastPosition = _position;
 
-            if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Down)) {
+            if (changeInPositionY > 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.DOWN)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
@@ -193,7 +312,7 @@ export class WebInputController extends BaseInputController {
                 }
             }
 
-            if (changeInPositionY < 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Up)) {
+            if (changeInPositionY < 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.UP)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop > 0,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
@@ -204,7 +323,7 @@ export class WebInputController extends BaseInputController {
                 }
             }
             
-            if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Right)) {
+            if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.RIGHT)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
@@ -215,7 +334,7 @@ export class WebInputController extends BaseInputController {
                 }
             }
 
-            if (changeInPositionX < 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Left)) {
+            if (changeInPositionX < 0 && (this.scrollDirection === undefined || this.scrollDirection === SwipeDirection.LEFT)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft > 0,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
@@ -348,11 +467,4 @@ export class WebInputController extends BaseInputController {
             document.dispatchEvent(event);
         }
     }
-}
-
-enum ScrollDirection {
-    Up = 0,
-    Down = 1,
-    Left = 2,
-    Right = 3
 }

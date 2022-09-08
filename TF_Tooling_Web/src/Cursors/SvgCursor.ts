@@ -4,7 +4,7 @@ import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
-const MAX_SWIPE_NOTIFICATIONS = 0;
+const MAX_SWIPE_NOTIFICATIONS = 1;
 const TAIL_FADE_TIME_S = 1.5;
 const TAIL_FADE_TIME_MS = TAIL_FADE_TIME_S * 1000;
 const MIN_TAIL_LENGTH = 25;
@@ -29,6 +29,9 @@ export class SVGCursor extends TouchlessCursor {
     swipeTailTimeout?: NodeJS.Timeout;
     swipeTailInterval?: NodeJS.Timeout;
     drawNewTail = false;
+    
+    public allowCursorTail = false;
+    public allowTextPrompt = false;
 
     constructor(_xPositionAttribute = "cx", _yPositionAttribute = "cy", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
@@ -47,6 +50,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.setAttribute('width', '100%');
         svgElement.setAttribute('height', '100%');
         svgElement.id = 'svg-cursor';
+        svgElement.style.pointerEvents = 'none';
         documentBody?.appendChild(svgElement);
 
         const svgTailElement = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -71,24 +75,25 @@ export class SVGCursor extends TouchlessCursor {
         this.cursorRing = svgRingElement;
 
         const cursorPromptDiv = document.createElement('div');
-        this.cursorPromptWidth = 200;
+        this.cursorPromptWidth = 300;
         Object.assign(cursorPromptDiv.style, {
             width: `${this.cursorPromptWidth}px`,
-            height: '35px',
+            height: '40px',
             position: 'absolute',
             left: '0',
             top: '0',
             'background-color': 'black',
             'border-radius': '50px',
-            'border': '5px solid white',
+            'border': '2px solid white',
             display: 'flex',
             opacity: 0,
+            'pointer-events': 'none',
             color: 'white',
             'justify-content': 'center',
             'align-items': 'center',
-            'font-size': '16px',
+            'font-size': '22px',
             'font-family': `'Trebuchet MS', sans-serif`,
-            'transition': 'opacity 0.5s linear'
+            'transition': 'opacity 0.2s ease-out'
         });
         cursorPromptDiv.innerHTML = `To Scroll: <strong>Swipe Faster</strong>`
         documentBody?.appendChild(cursorPromptDiv);
@@ -194,13 +199,15 @@ export class SVGCursor extends TouchlessCursor {
             default:
                 tailPoints = `${position[0]},${position[1]} ${position[0]},${position[1]} ${position[0]},${position[1]}`;
         }
-
+            
         if (position) {
             this.ShowCursor();
             this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
             this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
-
-            this.cursorTail.setAttribute("points", tailPoints);
+                
+            if(this.allowCursorTail){
+                this.cursorTail.setAttribute("points", tailPoints);
+            }
 
             this.cursorPrompt.style.left = `${position[0] - this.cursorPromptWidth/2}px`;
             this.cursorPrompt.style.top = `${position[1] - 80}px`;
@@ -212,11 +219,12 @@ export class SVGCursor extends TouchlessCursor {
         } else {
             this.HideCursor();
         }
+
         this.previousPosition = position;
         this.previousTime = time;
     }
 
-    HandleInputAction (_inputData: TouchFreeInputAction) {
+    HandleInputAction(_inputData: TouchFreeInputAction) {
         if (this.cursor) {
             switch (_inputData.InputType) {
                 case InputType.MOVE:
@@ -268,17 +276,18 @@ export class SVGCursor extends TouchlessCursor {
     }
 
     ShowCloseToSwipe(): void {
-        if (this.totalSwipeNotifications >= MAX_SWIPE_NOTIFICATIONS) {
+        if(!this.allowTextPrompt) return;
+        if (this.totalSwipeNotifications >= MAX_SWIPE_NOTIFICATIONS || this.swipeNotificationTimeout ) {
             return;
         }
 
         this.cursorPrompt.style.opacity = '1';
         
-        this.totalSwipeNotifications++;
+        // this.totalSwipeNotifications++;
 
         this.swipeNotificationTimeout = setTimeout(() => {
             this.HideCloseToSwipe();
-        }, 2000);
+        }, 1500);
     }
 
     HandleHandsLost(): void {
@@ -289,6 +298,8 @@ export class SVGCursor extends TouchlessCursor {
 
     HideCloseToSwipe(): void {
         this.cursorPrompt.style.opacity = '0';
+        clearTimeout(this.swipeNotificationTimeout);
+        this.swipeNotificationTimeout = undefined;
     }
 
     SetSwipeDirection = (direction?: SwipeDirection) => {

@@ -1,3 +1,4 @@
+import { SwipeDirection } from "../Connection/TouchFreeServiceTypes";
 import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { InputActionPlugin } from "./InputActionPlugin";
 
@@ -71,5 +72,17 @@ export class InputActionManager extends EventTarget {
         setTimeout(() => {
             InputActionManager.instance.dispatchEvent(inputActionEvent);
         }, 0);
+    }
+
+    public static HandleCloseToSwipe(direction?: SwipeDirection): void {
+      let closeToSwipeEvent = new CustomEvent<SwipeDirection>(
+        "TransmitCloseToSwipe",
+        { detail: direction }  
+      );
+
+      // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
+      setTimeout(() => {
+        InputActionManager.instance.dispatchEvent(closeToSwipeEvent);
+    }, 0);
     }
 }
