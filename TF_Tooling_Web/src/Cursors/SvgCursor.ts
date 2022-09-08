@@ -198,12 +198,12 @@ export class SVGCursor extends TouchlessCursor {
                 break;
             default:
                 tailPoints = `${position[0]},${position[1]} ${position[0]},${position[1]} ${position[0]},${position[1]}`;
-            }
+        }
             
-            if (position) {
-                this.ShowCursor();
-                this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
-                this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
+        if (position) {
+            this.ShowCursor();
+            this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
+            this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
                 
             if(this.allowCursorTail){
                 this.cursorTail.setAttribute("points", tailPoints);
@@ -219,6 +219,7 @@ export class SVGCursor extends TouchlessCursor {
         } else {
             this.HideCursor();
         }
+
         this.previousPosition = position;
         this.previousTime = time;
     }
