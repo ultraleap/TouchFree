@@ -89,7 +89,7 @@ input[type='number'] {
 .sliderText {
     background: transparent;
     border: none;
-    max-width: 3rem;
+    max-width: 4rem;
     min-height: 3rem;
     padding: 0px;
 
@@ -102,8 +102,6 @@ input[type='number'] {
 
 .sliderTextContainer {
     min-height: 3rem;
-    min-width: 3rem;
-    max-width: 3rem;
     margin-right: 1.5rem;
 
     background: v.$light-grey-gradient;

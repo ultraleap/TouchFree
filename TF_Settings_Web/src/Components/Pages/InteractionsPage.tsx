@@ -29,6 +29,7 @@ const TouchPlaneTrackingOptions: Record<string, TrackedPosition> = {
 
 interface InteractionsState {
     interactionConfig: InteractionConfigFull;
+    resetButtonHovered: boolean;
 }
 
 export class InteractionsPage extends Component<{}, InteractionsState> {
@@ -37,7 +38,10 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
     }
 
     componentDidUpdate(_prevProps: {}, prevState: InteractionsState): void {
-        if (this.state !== null && this.state !== prevState) {
+        if (!this.state || !prevState) return;
+        if (!this.state.interactionConfig || !prevState.interactionConfig) return;
+
+        if (this.state.interactionConfig !== prevState.interactionConfig) {
             ConfigurationManager.RequestConfigFileChange(
                 this.state.interactionConfig,
                 null,
@@ -208,6 +212,18 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
             interactionConfig: DefaultInteractionConfig,
         });
     }
+
+    onResetEnter = () => {
+        this.setState((state) => {
+            return { ...state, resetButtonHovered: true };
+        });
+    };
+
+    onResetLeave = () => {
+        this.setState((state) => {
+            return { ...state, resetButtonHovered: false};
+        });
+    };
 
     render(): JSX.Element {
         let coreBody: JSX.Element = <div />;
@@ -380,7 +396,9 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
                     <button
                         onClick={this.resetToDefaults.bind(this)}
                         onPointerUp={this.resetToDefaults.bind(this)}
-                        className="reset-button"
+                        onPointerEnter={this.onResetEnter}
+                        onPointerLeave={this.onResetLeave}
+                        className={this.state?.resetButtonHovered ? 'reset-button hover' : 'reset-button'}
                     >
                         <p> Reset to Default </p>
                     </button>

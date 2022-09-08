@@ -18,6 +18,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
     };
 
     private dragging = false;
+    private stepSize = 0.05;
 
     private inputElement: RefObject<HTMLInputElement>;
 
@@ -61,9 +62,10 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
             // Slider control is 1.5rem wide, so half is 1x remValue, full is 2x remValue
             const posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth - 2 * remValue);
             const outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
+            const roundedValue = Math.round(outputValue * (1 / this.stepSize)) / (1 / this.stepSize);
 
-            if (this.props.rangeMin < outputValue && outputValue < this.props.rangeMax) {
-                this.props.onChange(outputValue);
+            if (this.props.rangeMin <= roundedValue && roundedValue <= this.props.rangeMax) {
+                this.props.onChange(roundedValue);
             }
         }
     }
@@ -79,7 +81,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                 <div className="sliderContainer">
                     <input
                         type="range"
-                        step={0.05}
+                        step={this.stepSize}
                         min={this.props.rangeMin}
                         max={this.props.rangeMax}
                         value={this.props.value}
@@ -100,7 +102,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                 <label className="sliderTextContainer">
                     <input
                         type="number"
-                        step={0.05}
+                        step={this.stepSize}
                         className="sliderText"
                         value={this.props.value}
                         onChange={this.onTextChange.bind(this)}

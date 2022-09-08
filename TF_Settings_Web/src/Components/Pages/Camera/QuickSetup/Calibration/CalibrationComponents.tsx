@@ -1,5 +1,3 @@
-import { useIsFullScreen } from 'customHooks';
-
 import 'Styles/Camera/Calibrate.scss';
 import cssVariables from 'Styles/_variables.scss';
 import 'react-circular-progressbar/dist/styles.css';
@@ -9,6 +7,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
+
+import { useIsFullScreen } from 'customHooks';
 
 import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import DownArrow from 'Images/Down_Arrow.svg';
@@ -266,13 +266,13 @@ const progressStyle = (progress: number, isHovered: boolean): CSSProperties => {
     if (!isHovered) {
         return {};
     }
-    if (progress < 0.9) {
-        return { transform: `scale(${1.3 - progress * 0.4})` };
+    if (progress === 1) {
+        return {
+            background: 'linear-gradient(107deg, #e2164d 0%, #d11883 100%)',
+        };
     }
     return {
-        transform: `scale(${1.3 - progress * 0.4})`,
-        background: 'linear-gradient(107deg, #e2164d 0%, #d11883 100%)',
-        boxShadow: '0px 5px 25px #000000',
+        boxShadow: '0px 0px 30px v.$ultraleap-green',
     };
 };
 
