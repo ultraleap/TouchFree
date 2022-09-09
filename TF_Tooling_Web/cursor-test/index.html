@@ -26,25 +26,56 @@
 
       .header-toggle{
         height: 100%;
+        width: 20%;
         display: flex;
-        flex: 0 1 20%;
         align-items: center;
         justify-content: center;
       }
 
-      .header-toggle label{
+      .header-toggle--bump {
+        width: 36%;
+      }
+
+      .header-toggle >label{
         color: white;
         font-size: 25px;
         user-select: none;
         margin-left: 4px;
       }
 
-      .header-toggle input {
+      .header-toggle >input {
         width:20px;
         height:20px;
         background:white;
         border-radius:5px;
         border:2px solid black;
+      }
+
+      .bump-input--container{
+        width: 40%;
+        display: flex;
+        margin-left: 20px;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .bump-input{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 25%;
+      }
+
+      .bump-input >label{
+        width: 60%;
+        font-size: 16px;
+        text-align: left;
+        color: white
+      }
+
+      .bump-input >input{
+        width: 30%;
       }
 
       .scrollable {
@@ -66,9 +97,20 @@
   </head>
   <body>
     <div class="header">
-      <div class="header-toggle">
+      <div class="header-toggle header-toggle--bump">
         <input type="checkbox" id="bump" !checked onchange="togglePageBump()">
         <label for="bump">Page Bump</label>
+        <div class="bump-input--container">
+          <div class="bump-input">
+            <label for="bumpDistance">Distance (px) </label>
+            <input type="number" id="bumpDistance" min="0" value="50" step="5" onchange="updateBumpDistance(this.value)">
+          </div>
+          <div class="bump-input">
+            <label for="bumpTime">Duration (ms) </label>
+            <input type="number" id="bumpTime" min="0" value="200" step="5" onchange="updateBumpDuration(this.value)">
+          </div>
+        </div>
+        
       </div>
       <div class="header-toggle">
         <input type="checkbox" id="text" !checked onchange="toggleCursorTextPrompt()">

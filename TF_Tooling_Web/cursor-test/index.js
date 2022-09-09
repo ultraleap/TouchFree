@@ -18,6 +18,13 @@ function togglePageBump() {
     controller.allowBump = !controller.allowBump;
 }
 
+function updateBumpDistance(value) {
+    controller.bumpDistancePx = value;
+}
+function updateBumpDuration(value) {
+    controller.bumpTotalDurationMS = value;
+}
+
 function toggleCursorTextPrompt() {
     cursorManager.cursor.allowTextPrompt = !cursorManager.cursor.allowTextPrompt;
 }

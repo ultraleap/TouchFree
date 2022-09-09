@@ -40,7 +40,6 @@ export class WebInputController extends BaseInputController {
 
     // Variables for Bump on almost swipe
     private bumpTotalDurationMS = 200;
-    private bumpTransitionDurationMS = this.bumpTotalDurationMS / 4;
     private bumpDistancePx = 50;
 
     public allowBump = false;
@@ -256,10 +255,12 @@ export class WebInputController extends BaseInputController {
         const elemMargin = element.style[marginProperty];
         const elemScroll = element[scrollProperty];
 
+        const bumpTransitionDurationMS = this.bumpTotalDurationMS / 2;
+
         const elemScrollBehaviour = element.style.scrollBehavior;
         element.style.scrollBehavior = 'smooth';
         const elemTransition = element.style.transition;
-        element.style.transition += `margin ${this.bumpTransitionDurationMS}ms`;
+        element.style.transition += `margin ${bumpTransitionDurationMS}ms`;
 
         if(extraBumpDistance >= 0){
             element[scrollProperty] = elemScrollMax;
@@ -268,19 +269,20 @@ export class WebInputController extends BaseInputController {
             setTimeout(() => {
                 element.style[marginProperty] = elemMargin;
                 element[scrollProperty] = elemScroll;
-            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+            }, bumpTransitionDurationMS);
 
         } else {
             element[scrollProperty] = elemScroll - (this.bumpDistancePx * swipePolarity);
 
             setTimeout(() => {
                 element[scrollProperty] = elemScroll;
-            }, this.bumpTotalDurationMS - this.bumpTransitionDurationMS);
+            }, bumpTransitionDurationMS);
         }
 
         setTimeout(() => {
             element.style.transition = elemTransition;
             element.style.scrollBehavior = elemScrollBehaviour;
+            element[scrollProperty] = elemScroll;
             this.handlingCloseToSwipe = false;
         }, this.bumpTotalDurationMS)
     }
