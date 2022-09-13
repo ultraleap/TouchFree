@@ -39,10 +39,10 @@ export class WebInputController extends BaseInputController {
     private elementToScroll?: HTMLElement = undefined;
 
     // Variables for Bump on almost swipe
-    private bumpTotalDurationMS = 200;
-    private bumpDistancePx = 50;
+    private bumpTotalDurationMS = 300;
+    private bumpDistancePx = 35;
 
-    public allowBump = false;
+    public allowBump = true;
 
     // Group: Methods
 

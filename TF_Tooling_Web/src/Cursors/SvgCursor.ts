@@ -31,7 +31,7 @@ export class SVGCursor extends TouchlessCursor {
     drawNewTail = false;
     
     public allowCursorTail = false;
-    public allowTextPrompt = false;
+    public allowTextPrompt = true;
 
     constructor(_xPositionAttribute = "cx", _yPositionAttribute = "cy", _ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
@@ -287,7 +287,7 @@ export class SVGCursor extends TouchlessCursor {
 
         this.swipeNotificationTimeout = setTimeout(() => {
             this.HideCloseToSwipe();
-        }, 1500);
+        }, 2000);
     }
 
     HandleHandsLost(): void {
