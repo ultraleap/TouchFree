@@ -33,11 +33,11 @@ if os.path.isdir(trackingUnzippedDir):
 print("Downloading Artifacts from GitLab")
 
 # Tracking Project ID: 455
-# ARM Release Build Job ID: 485691 (565473 5.5.4) (642438 5.5.6)
+# ARM Release Build Job ID: 485691 (565473 5.5.4) (642438 5.5.6) (711122)
 
 TrackingProject = gl.projects.get(455)
 
-ArtefactJob = TrackingProject.jobs.get(706199)
+ArtefactJob = TrackingProject.jobs.get(711122)
 
 with open(trackingZip, "wb") as picklerFile:
 	ArtefactJob.artifacts(streamed=True, action=picklerFile.write)
