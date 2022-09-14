@@ -30,6 +30,10 @@ namespace Ultraleap.TouchFree.Library.Connections
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TData"></typeparam>
         private class ConfigurationVariable<TData>
         {
             private readonly Action<ConfigurationVariable<TData>> _onSet;
@@ -171,7 +175,19 @@ namespace Ultraleap.TouchFree.Library.Connections
                 // If nothing changed, we don't need to save - this is to avoid infinite looping caused by events
                 if (configChanged)
                 {
-                    TrackingConfigFile.SaveConfig(new TrackingConfig());
+                    TrackingConfigFile.SaveConfig(new TrackingConfig
+                    {
+                        Mask =
+                        {
+                            Left = (float)maskingData.Value.left,
+                            Right = (float)maskingData.Value.right,
+                            Lower = (float)maskingData.Value.lower,
+                            Upper = (float)maskingData.Value.upper
+                        },
+                        AllowImages = allowImages.Value,
+                        AnalyticsEnabled = analyticsEnabled.Value,
+                        CameraReversed = cameraReversed.Value
+                    });
                 }
             }
         }
