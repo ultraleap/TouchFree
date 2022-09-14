@@ -100,7 +100,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 RequestSetImageMask(config.Mask.Left, config.Mask.Right, config.Mask.Upper, config.Mask.Lower);
             }
             void ControllerOnDevice(object sender, DeviceEventArgs e) => RequestGetDevices(); // Get devices response will update the connected device and refresh tracking config
-            void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => connectedDeviceID = null;
+            void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => RequestGetDevices(); // Works even when no device is connected
 
             _configManager.OnTrackingConfigUpdated += SetTrackingConfigurationOnDevice;
             _trackingConnectionManager.Controller.Device += ControllerOnDevice;
