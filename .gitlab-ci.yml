@@ -236,6 +236,28 @@ TF_Service::dotNet::test:
   tags:
     - docker-windows
 
+TF_Tooling::Web::test:
+  stage: test
+  dependencies:
+    - TF_Tooling::Web::build
+  when: always
+  script:
+    # Run unit tests
+    - cd ${env:TF_TFW_PATH}
+    - npm i
+    - npm run test
+
+  artifacts:
+    when: always
+    name: "TestResults"
+    paths:
+    - ${env:TF_TFW_PATH}/junit.xml
+    reports:
+      junit: ${env:TF_TFW_PATH}/junit.xml
+  tags:
+    - unity
+    - win10
+
 TF_Service::Tray::build:
   stage: build
   when: always
