@@ -159,12 +159,14 @@ export class WebInputController extends BaseInputController {
         }
     }
 
+    // Clears information about the current scroll
     private ResetScrollData(): void {
         this.elementsOnDown = null;
         this.scrollDirection = undefined;
         this.elementToScroll = undefined;
     }
 
+    // Applies scrolling to any elements that should be scrolled
     private HandleScroll(_position: Array<number>): void {
         if (this.elementsOnDown && this.lastPosition) {
             const changeInPositionX = this.lastPosition[0] - _position[0];
@@ -226,6 +228,7 @@ export class WebInputController extends BaseInputController {
         }
     }
 
+    // Gets the element that should have scrolling applied to it
     private GetElementToScroll = (
         scrollValidation: (element: HTMLElement) => boolean,
         parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean): HTMLElement | undefined => {
@@ -348,6 +351,8 @@ export class WebInputController extends BaseInputController {
     }
 }
 
+// Enum: ScrollDirection
+// The directions that a scroll can be in
 enum ScrollDirection {
     Up = 0,
     Down = 1,

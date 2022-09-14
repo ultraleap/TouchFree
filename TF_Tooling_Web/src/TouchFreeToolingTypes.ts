@@ -192,12 +192,15 @@ export class WebsocketInputAction {
     }
 }
 
-
+// Class: HandFrame
+// A frame of hand data
 export class HandFrame
 {
     Hands: RawHand[] = [];
 }
 
+// Class: RawHand
+// The raw position data for a hand
 export class RawHand
 {
     CurrentPrimary: boolean = false;
@@ -206,12 +209,16 @@ export class RawHand
     WristPosition: Vector = {X:0,Y:0,Z:0};
 }
 
+// Class: RawFinger
+// The raw position data for a finger of a hand
 export class RawFinger
 {
     Bones: RawBone[] = []
     Type: FingerType = FingerType.TYPE_UNKNOWN;
 }
 
+// Enum: FingerType
+// What finger on a hand a finger is.
 export enum FingerType
 {
     TYPE_THUMB = 0,
@@ -222,6 +229,8 @@ export enum FingerType
     TYPE_UNKNOWN = -1
 }
 
+// Class: RawFinger
+// The raw position data for a bone in a finger
 export class RawBone
 {
     NextJoint: Vector = {X:0,Y:0,Z:0};

@@ -305,7 +305,11 @@ export class ServiceConnection {
         this.webSocket.send(message);
     }
 
-
+    // Function: RequestTrackingChange
+    // Used internally to update the configuration of the Tracking via the <webSocket>.
+    // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
+    //
+    // If your _callback requires context it should be bound to that context via .bind()
     RequestTrackingChange(_state: Partial<TrackingState>, _callback:((detail: TrackingStateResponse) => void) | null) {
         const requestID = uuidgen();
         const requestContent: Partial<TrackingStateRequest> = {
