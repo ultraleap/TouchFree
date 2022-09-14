@@ -9,6 +9,7 @@ import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import { ConfigState, HandPresenceState } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
 
+import { CursorManager } from 'Components/CursorManager';
 import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
 import { TFClickEvent } from 'Components/SettingsTypes';
 
@@ -24,6 +25,7 @@ const calibInteractionConfig: Partial<InteractionConfig> = {
         HoverStartTimeS: 1,
         HoverCompleteTimeS: 5,
     },
+    InteractionZoneEnabled: false,
 };
 
 interface CalibrationManagerProps {
@@ -96,7 +98,6 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
 
     const resetCalibInteractionConfig = (): void =>
         ConfigurationManager.RequestConfigChange(interactionConfig ?? null, {}, () => {});
-    /* eslint-enable @typescript-eslint/no-empty-function */
 
     const onCancel = (event?: TFClickEvent) => {
         event?.stopPropagation();
@@ -137,11 +138,11 @@ const CalibrationManager: React.FC<CalibrationManagerProps> = ({ activePosition 
 export default CalibrationManager;
 
 const setCursorDisplay = (show: boolean) => {
-    const svgCanvas = document.querySelector('#svg-cursor') as HTMLElement;
-    if (!svgCanvas) return;
-
-    // Add an opacity of 0 to hide the cursor and remove this opacity to show the cursor
-    svgCanvas.style.opacity = show ? '' : '0';
+    if (show) {
+        CursorManager.cursor.EnableCursor();
+    } else {
+        CursorManager.cursor.DisableCursor();
+    }
 };
 
 const getRotationFromPosition = (position: PositionType): Vector => {
