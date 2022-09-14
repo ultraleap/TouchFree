@@ -119,13 +119,7 @@ export class WebInputController extends BaseInputController {
         switch (_inputData.InputType) {
             case InputType.CANCEL:
                 this.ResetScrollData();
-                let cancelEvent: PointerEvent = new PointerEvent("pointercancel", this.activeEventProps);
-                let outEvent: PointerEvent = new PointerEvent("pointerout", this.activeEventProps);
-
-                if (this.lastHoveredElement !== null && this.lastHoveredElement !== elementAtPos) {
-                    this.lastHoveredElement.dispatchEvent(cancelEvent);
-                    this.lastHoveredElement.dispatchEvent(outEvent);
-                }
+                let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
 
                 if (elementAtPos !== null) {
                     let parentTree = this.GetOrderedParents(elementAtPos);
@@ -133,7 +127,6 @@ export class WebInputController extends BaseInputController {
                     parentTree.forEach((parent: Node | null) => {
                         if (parent !== null) {
                             parent.dispatchEvent(cancelEvent);
-                            parent.dispatchEvent(outEvent);
                         }
                     });
                 }
@@ -166,12 +159,14 @@ export class WebInputController extends BaseInputController {
         }
     }
 
+    // Clears information about the current scroll
     private ResetScrollData(): void {
         this.elementsOnDown = null;
         this.scrollDirection = undefined;
         this.elementToScroll = undefined;
     }
 
+    // Applies scrolling to any elements that should be scrolled
     private HandleScroll(_position: Array<number>): void {
         if (this.elementsOnDown && this.lastPosition) {
             const changeInPositionX = this.lastPosition[0] - _position[0];
@@ -191,7 +186,7 @@ export class WebInputController extends BaseInputController {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight);
-
+                    
                 if (element) {
                     this.elementToScroll = element;
                     element.scrollTop = Math.min(element.scrollHeight - element.clientHeight, element.scrollTop + changeInPositionY);
@@ -208,12 +203,12 @@ export class WebInputController extends BaseInputController {
                     element.scrollTop = Math.max(0, element.scrollTop + changeInPositionY);
                 }
             }
-
+            
             if (changeInPositionX > 0 && (this.scrollDirection === undefined || this.scrollDirection === ScrollDirection.Right)) {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft + e.clientWidth < e.scrollWidth,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
-
+                    
                 if (element) {
                     this.elementToScroll = element;
                     element.scrollLeft = Math.min(element.scrollWidth - element.clientWidth, element.scrollLeft + changeInPositionX);
@@ -224,7 +219,7 @@ export class WebInputController extends BaseInputController {
                 const element = this.GetElementToScroll(
                     (e:HTMLElement)=> e.scrollWidth > e.clientWidth && e.scrollLeft > 0,
                     (e:HTMLElement, p:HTMLElement)=> e.offsetWidth === p.offsetWidth && e.scrollWidth === p.scrollWidth);
-
+                    
                 if (element) {
                     this.elementToScroll = element;
                     element.scrollLeft = Math.max(0, element.scrollLeft + changeInPositionX);
@@ -233,13 +228,14 @@ export class WebInputController extends BaseInputController {
         }
     }
 
+    // Gets the element that should have scrolling applied to it
     private GetElementToScroll = (
         scrollValidation: (element: HTMLElement) => boolean,
         parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean): HTMLElement | undefined => {
 
         if (this.elementToScroll) return this.elementToScroll;
         if (!this.elementsOnDown) return;
-
+        
         for (let i = 0; i < this.elementsOnDown.length; i++) {
             let elementToCheckScroll = this.elementsOnDown[i];
             if (!scrollValidation(elementToCheckScroll)) continue;
@@ -355,6 +351,8 @@ export class WebInputController extends BaseInputController {
     }
 }
 
+// Enum: ScrollDirection
+// The directions that a scroll can be in
 enum ScrollDirection {
     Up = 0,
     Down = 1,

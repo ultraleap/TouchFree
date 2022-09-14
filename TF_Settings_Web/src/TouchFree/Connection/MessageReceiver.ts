@@ -78,6 +78,8 @@ export class MessageReceiver {
     // A dictionary of unique request IDs and <ServiceStatusCallback> that represent requests that are awaiting response from the Service.
     serviceStatusCallbacks: { [id: string]: ServiceStatusCallback; } = {};
 
+    // Variable: lastStateUpdate
+    // The last hand presence state update received from the Service.
     lastStateUpdate: HandPresenceState;
 
     // Variable: trackingStateQueue
