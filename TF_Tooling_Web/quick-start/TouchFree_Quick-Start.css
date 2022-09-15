@@ -1,0 +1,136 @@
+:root {
+    --background: #ffffff;
+    --background-dark: #e2e2e2;
+    --text: #444444;
+}
+
+body {
+    background-color: var(--background);
+    margin: 0;
+}
+
+.container {
+    background-color: var(--background);
+    display: flex;
+    flex-direction: row;
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+.container-right {
+    overflow: hidden;
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.quick-start-text-wrapper {
+    margin: 10%;
+    flex-grow: 1;
+    width: auto;
+    background-color: var(--background-dark);
+    border: 10px var(--text) solid;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quick-start-text {
+    text-align: center;
+}
+
+.button-horizontal {
+    text-align: center;
+    display: inline-block;
+    min-width: 20vw;
+    height: 80%;
+    border-radius: 20px;
+    border: 0 black solid;
+    margin: 20px;
+    transition: all 0.1s;
+}
+
+.button-horizontal-hovered {
+    border: 5px black solid;
+}
+
+.button-vertical {
+    text-align: center;
+    display: block;
+    width: auto;
+    min-height: 10vw;
+    margin: 30px 20px;
+    border: 0 var(--text) solid;
+    border-radius: 20px;
+    white-space: normal;
+    padding: 10px;
+    background-color: var(--background-dark);
+    transition: all 0.1s;
+}
+
+.button-vertical-hovered {
+    border: 5px var(--text) solid;
+}
+
+.horizontal-scroll {
+    white-space: nowrap;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    background-color: var(--background-dark);
+    height: 16vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-top: 1px solid black;
+}
+
+.vertical-scroll {
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    display: inline-block;
+    width: 12vw;
+    background-color: var(--background);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.button-top {
+    width: 30vw;
+    height: 20vh;
+    margin: 30px 20px;
+    border: 0 var(--text) solid;
+    border-radius: 20px;
+    background-color: var(--background-dark);
+    transition: all 0.1s;
+}
+
+.button-top-hovered {
+    border: 5px var(--text) solid;
+}
+
+
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background: #cccccc;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333333;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #000000;
+}

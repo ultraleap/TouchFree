@@ -6,114 +6,54 @@
     <title>Quick Start Example</title>
     <script name="TouchFree_Tooling" type="text/javascript" src="../dist/TouchFree_Tooling.js"></script>
     <script type="text/javascript" src="./TouchFree_Tooling_Quick-Start.js"></script>
-    <style>
-        body{
-            background-color: white;
-        }
-        
-        .buttonHorizontal {
-            text-align: center;
-            display: inline-block;
-            width: 25vw;
-            height: 10vw;
-        }
-
-        .buttonVertical {
-            text-align: center;
-            display: block;
-            width: 10vw;
-            height: 10vw;
-        }
-
-        .horizontalScroll {
-            white-space: nowrap;
-            overflow-x: scroll;
-            overflow-y: hidden;
-            width: 75vw;
-            height: 11vw;
-        }
-
-        .verticalScroll {
-            white-space: nowrap;
-            overflow-x: hidden;
-            overflow-y: scroll;
-            display: inline-block;
-            width: 12vw;
-            height: 95vh;
-        }
-
-        .topButton {
-            width: 30vw;
-            height: 20vh;
-        }
-    </style>
+    <link rel="stylesheet" href="./TouchFree_Quick-Start.css">
 </head>
 
 <body style="overflow:hidden">
-    <div>
-        <div class="verticalScroll">
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+    <div class="container">
+        <div class="vertical-scroll">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Button 1
             </button>
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Button Button
             </button>
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Button ▲
             </button>
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Button²
             </button>
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Button the Fifth
             </button>
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Button Button Button Button Button Button
             </button>
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Button VII
             </button>
-            <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
+            <button class="button-vertical snappable" onpointerdown="changeText(this.textContent)" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">
                 Ω Button
             </button>
         </div>
-        <div style="display: inline-block; width: 70vw; height: 80vh; position: relative;">
-            <div>
-                <button class="topButton snappable" onpointerdown="resetText()">Clear Text</button>
-                <button class="topButton snappable" style="float:right" onpointerdown="resetTextColor()">Reset Text Color</button>
+        <div class="container-right">
+            <div class="container-buttons">
+                <button class="button-top snappable" onpointerdown="resetText()" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">Clear Text</button>
+                <button class="button-top snappable" style="float:right" onpointerdown="resetTextColor()" onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)">Reset Text Color</button>
             </div>
-            <h1 id="Text to change" style="text-align: center; height: 10vh; width: auto; margin: 15%"></h1>
-            <div class="horizontalScroll">
-                <button class="buttonHorizontal snappable" style="background-color:blue; color:blue" onpointerdown="textColor(this.textContent)">blue</button>
-                <button class="buttonHorizontal snappable" style="background-color:red; color:red" onpointerdown="textColor(this.textContent)">red</button>
-                <button class="buttonHorizontal snappable" style="background-color:green; color:green" onpointerdown="textColor(this.textContent)">green</button>
-                <button class="buttonHorizontal snappable" style="background-color:orange; color:orange" onpointerdown="textColor(this.textContent)">orange</button>
-                <button class="buttonHorizontal snappable" style="background-color:yellow; color:yellow" onpointerdown="textColor(this.textContent)">yellow</button>
+            <div class="quick-start-text-wrapper">
+                <h1 class="quick-start-text" id="Text to change"></h1>
+            </div>
+            <div class="horizontal-scroll">
+                <button class="button-horizontal snappable" onpointerdown="textColor(this.textContent)"onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)" style="background-color:#9C2B27; color:#9C2B27">#9C2B27</button>
+                <button class="button-horizontal snappable" onpointerdown="textColor(this.textContent)"onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)" style="background-color:#D77E21; color:#D77E21">#D77E21</button>
+                <button class="button-horizontal snappable" onpointerdown="textColor(this.textContent)"onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)" style="background-color:#CAAC02; color:#CAAC02">#CAAC02</button>
+                <button class="button-horizontal snappable" onpointerdown="textColor(this.textContent)"onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)" style="background-color:#6F9B47; color:#6F9B47">#6F9B47</button>
+                <button class="button-horizontal snappable" onpointerdown="textColor(this.textContent)"onpointerenter="buttonPointerEntered(this)" onpointerleave="buttonPointerLeave(this)" style="background-color:#1D434B; color:#1D434B">#1D434B</button>
             </div>
         </div>
     </div>
-
-    <script>
-        var changeText = function (content) {
-            var textToChange = document.getElementById("Text to change");
-            textToChange.textContent = content;
-        };
-
-        var resetText = function () {
-            changeText("");
-        }
-
-        var resetTextColor = function () {
-            var textToChange = document.getElementById("Text to change");
-            textToChange.style.color = "black";
-        }
-
-        var textColor = function (content) {
-            var textToChange = document.getElementById("Text to change");
-            textToChange.style.color = content;
-        }
-    </script>
-
 </body>
 
 </html>
