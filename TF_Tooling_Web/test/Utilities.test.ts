@@ -22,10 +22,18 @@ describe('MapRangeToRange', () => {
         expect(MapRangeToRange(value, originalRange[0], originalRange[1], newRange[0], newRange[1])).toBe(newRange[0]);
     });
     
-    test('Old range is has largest value first translates with range limits as given', () => {
+    test('Old range has largest value first translates with range limits as given', () => {
         const originalRange = [100, 0];
         const value = 1;
         const newRange = [0, 100];
+        const newValue = 99;
+        expect(MapRangeToRange(value, originalRange[0], originalRange[1], newRange[0], newRange[1])).toBe(newValue);
+    });
+
+    test('New range has largest value first translates with range limits as given', () => {
+        const originalRange = [0, 100];
+        const value = 1;
+        const newRange = [100, 0];
         const newValue = 99;
         expect(MapRangeToRange(value, originalRange[0], originalRange[1], newRange[0], newRange[1])).toBe(newValue);
     });
