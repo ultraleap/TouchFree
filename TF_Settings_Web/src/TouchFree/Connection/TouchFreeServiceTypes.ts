@@ -20,10 +20,17 @@ import { Mask } from '../Tracking/TrackingTypes';
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
+// QUICK_SETUP - Represents a request for performing a quick setup of the Service
+// QUICK_SETUP_CONFIG - Represents a response from the Service after a QUICK_SETUP request where the configuration was updated as the
+//                      quick setup was successfully completed.
+// QUICK_SETUP_RESPONSE - Represents a response from the Service after a QUICK_SETUP request where the configuration was not updated.
 // GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
 // SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
 // TRACKING_STATE - Represents a response from the Service with the current state of the tracking settings,
 //                  recieved following either a GET_TRACKING_STATE or a SET_TRACKING_STATE
+// HAND_DATA - Represents more complete hand data sent from the service.
+// SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable the HAND_DATA stream or change the lens to
+//                              have the hand position relative to.
 export enum ActionCode {
     INPUT_ACTION = "INPUT_ACTION",
 
@@ -79,6 +86,8 @@ export enum Compatibility {
     TOOLING_OUTDATED
 }
 
+// Class: HandPresenceEvent
+// This data structure is used to receive hand presence requests
 export class HandPresenceEvent {
     state: HandPresenceState;
 
@@ -87,6 +96,8 @@ export class HandPresenceEvent {
     }
 }
 
+// Class: TouchFreeRequestCallback
+// This data structure is used to hold request callbacks
 export abstract class TouchFreeRequestCallback<T> {
     // Variable: timestamp
     timestamp: number;
@@ -99,6 +110,8 @@ export abstract class TouchFreeRequestCallback<T> {
     }
 }
 
+// Class: TouchFreeRequest
+// This data structure is used as a base for requests to the TouchFree service.
 export abstract class TouchFreeRequest {
     requestID: string;
     constructor(_requestID: string) {
@@ -151,7 +164,9 @@ export class ConfigChangeRequest extends TouchFreeRequest {
 // class: HandRenderDataStateRequest
 // Used to set the state of the Hand Render Data stream.
 export class HandRenderDataStateRequest extends TouchFreeRequest {
+    // Variable: enabled
     enabled: boolean;
+    // Variable: lens
     lens: string;
 
     constructor(_id: string, enabled: boolean, lens: string) {
@@ -299,7 +314,7 @@ export class TrackingStateRequest {
     }
 }
 
-// class: SimpleRequest
+// Class: SimpleRequest
 // Used to make a basic request to the service. To be used with <CommunicationWrapper> to create a more complex request.
 export class SimpleRequest {
     // Variable: requestID
