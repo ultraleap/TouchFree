@@ -16,7 +16,9 @@ const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
     useEffect(() => {
-        ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+        ConnectionManager.init();
+
+        const requestServiceStatus = () => ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
             const status = detail.trackingServiceState;
             if (status) {
                 setTfStatus(status);
@@ -27,8 +29,7 @@ const App: React.FC = () => {
             setTfStatus(serviceStatus);
         };
 
-        ConnectionManager.init();
-
+        ConnectionManager.AddConnectionListener(requestServiceStatus);
         ConnectionManager.AddServiceStatusListener(updateTfStatus);
         const controller: WebInputController = new WebInputController();
 

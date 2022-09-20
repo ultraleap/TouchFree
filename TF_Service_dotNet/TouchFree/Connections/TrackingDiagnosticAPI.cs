@@ -30,10 +30,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TData"></typeparam>
+        // Represents a variable that will be "initialized" once set at least once after construction
         private class ConfigurationVariable<TData>
         {
             private readonly Action<ConfigurationVariable<TData>> _onSet;
@@ -58,9 +55,9 @@ namespace Ultraleap.TouchFree.Library.Connections
 
             // Variable is not considered initialized until it has been set externally from the constructor.
             // Scenarios this is expected to happen:
-            // a. Loaded from an existing config
-            // b. Loaded from connected device if there is no existing config
-            // c. Set by an incoming request
+            // a. Set by an incoming request
+            // b. Loaded from an existing config
+            // c. Loaded from connected device if not initialized before connecting
             public bool Initialized { get; private set; }
 
             public void Match(Action<TData> initialized, Action uninitialized)
