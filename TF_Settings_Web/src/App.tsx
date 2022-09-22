@@ -25,12 +25,8 @@ const App: React.FC = () => {
             }
         });
 
-        const updateTfStatus = (serviceStatus:TrackingServiceState) => {
-            setTfStatus(serviceStatus);
-        };
-
         ConnectionManager.AddConnectionListener(requestServiceStatus);
-        ConnectionManager.AddServiceStatusListener(updateTfStatus);
+        ConnectionManager.AddServiceStatusListener(setTfStatus);
         const controller: WebInputController = new WebInputController();
 
         new CursorManager();
