@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace Ultraleap.TouchFree.Service
@@ -16,6 +17,8 @@ namespace Ultraleap.TouchFree.Service
 
         private Timer updateLoop;
         private const float TargetFPS = 60f;
+
+        private readonly object invokeLock = new object();
         
         public UpdateBehaviour(float framerate = TargetFPS)
         {
@@ -32,7 +35,17 @@ namespace Ultraleap.TouchFree.Service
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            onUpdate?.Invoke();
+            if (System.Threading.Monitor.TryEnter(invokeLock))
+            {
+                try
+                {
+                    onUpdate?.Invoke();
+                }
+                finally
+                {
+                    System.Threading.Monitor.Exit(invokeLock);
+                }
+            }
         }
 
         public Timer UpdateTimer()
