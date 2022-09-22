@@ -18,13 +18,14 @@ namespace Ultraleap.TouchFree.Library
         private void SetTimer(float framerate)
         {
             updateLoop = new(1000f / framerate);
-            updateLoop.AutoReset = true;
+            updateLoop.AutoReset = false;
             updateLoop.Enabled = true;
             updateLoop.Elapsed += OnTimerElapsed;
         }
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
+            updateLoop.Start();
             OnUpdate?.Invoke();
         }
 
