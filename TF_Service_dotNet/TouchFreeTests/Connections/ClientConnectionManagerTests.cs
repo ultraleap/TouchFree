@@ -17,8 +17,9 @@ namespace TouchFreeTests.Connections
         public void SendMessageMethods_Called_CallsSimilarlyNamedMethodOnClientConnection(string clientConnectionMethod)
         {
             // Arrange
+            var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(new Mock<IHandManager>().Object, new Mock<IConfigManager>().Object);
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
             var methodInfo = typeof(ClientConnectionManager).GetMethod(clientConnectionMethod);
             var parameterInfo = methodInfo.GetParameters();
@@ -47,13 +48,22 @@ namespace TouchFreeTests.Connections
             mockClientConnection.SetupGet(x => x.Socket).Returns(mockWebSocket.Object);
             return mockClientConnection;
         }
+        
+        private Mock<IHandManager> CreateHandManagerMockWithMockTrackingConnection()
+        {
+            var mockHandManager = new Mock<IHandManager>();
+            var mockTrackingConnection = new Mock<ITrackingConnectionManager>();
+            mockHandManager.SetupGet(x => x.ConnectionManager).Returns(mockTrackingConnection.Object);
+            return mockHandManager;
+        }
 
         [Test]
         public void AddConnection_SingleConnection_AddsConnectionToConnections()
         {
             // Arrange
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(new Mock<IHandManager>().Object, new Mock<IConfigManager>().Object);
+            var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
 
             // Act
             clientConnectionManager.AddConnection(mockClientConnection.Object);
@@ -66,7 +76,7 @@ namespace TouchFreeTests.Connections
         public void RemoveConnection_SingleConnection_ConnectionsAreEmptyAndDisconnectFromTrackingCalled()
         {
             // Arrange
-            var mockHandManager = new Mock<IHandManager>();
+            var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
             var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
@@ -83,7 +93,7 @@ namespace TouchFreeTests.Connections
         public void RemoveConnection_TwoConnections_ConnectionsHaveNonRemovedConnectionAndDisconnectFromTrackingNotCalled()
         {
             // Arrange
-            var mockHandManager = new Mock<IHandManager>();
+            var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
             var mockSecondClientConnection = CreateClientConnectionMockWithOpenSocket();
             var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
