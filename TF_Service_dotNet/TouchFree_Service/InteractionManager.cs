@@ -1,5 +1,3 @@
-using Leap;
-using System.ComponentModel.DataAnnotations;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
