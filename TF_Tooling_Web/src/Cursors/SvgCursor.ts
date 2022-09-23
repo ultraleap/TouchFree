@@ -79,7 +79,7 @@ export class SVGCursor extends TouchlessCursor {
     }
 
     // Function: UpdateCursor
-    // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
+    // Used to update the cursor when receiving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
     UpdateCursor(_inputAction: TouchFreeInputAction) {
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
@@ -89,7 +89,7 @@ export class SVGCursor extends TouchlessCursor {
 
         const position = _inputAction.CursorPosition;
 
-        if (position) {
+        if (position && this.shouldShow) {
             this.ShowCursor();
             this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
             this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
@@ -107,7 +107,7 @@ export class SVGCursor extends TouchlessCursor {
     // This override replaces the basic functionality of the <TouchlessCursor>, making the
     // cursor's ring scale dynamically with the current ProgressToClick and creating a
     // "shrink" animation when a "DOWN" event is received, and a "grow" animation when an "UP"
-    // is recieved.
+    // is received.
     //
     // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
     // When any other event is received and the cursor is hidden, the cursor is shown again.
