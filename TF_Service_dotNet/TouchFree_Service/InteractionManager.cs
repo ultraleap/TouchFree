@@ -15,9 +15,6 @@ namespace Ultraleap.TouchFree.Service
 
         private InteractionType lastInteraction;
 
-        private readonly UpdateBehaviour updateBehaviour;
-        private readonly ClientConnectionManager connectionManager;
-
         public InteractionManager(
             UpdateBehaviour _updateBehaviour,
             ClientConnectionManager _connectionManager,
@@ -27,74 +24,60 @@ namespace Ultraleap.TouchFree.Service
             TouchPlanePushInteraction _touchPlane,
             IConfigManager _configManager)
         {
-            updateBehaviour = _updateBehaviour;
-            connectionManager = _connectionManager;
-
             airPush = _airPush;
             grab = _grab;
             hoverAndHold = _hoverAndHold;
             touchPlane = _touchPlane;
 
+            airPush.HandleInputAction += _connectionManager.SendInputActionToWebsocket;
+            grab.HandleInputAction += _connectionManager.SendInputActionToWebsocket;
+            hoverAndHold.HandleInputAction += _connectionManager.SendInputActionToWebsocket;
+            touchPlane.HandleInputAction += _connectionManager.SendInputActionToWebsocket;
+
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
             OnInteractionSettingsUpdated(_configManager.InteractionConfig);
+
+            _updateBehaviour.OnUpdate += UpdateInteraction;
         }
 
         protected void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
-            switch(lastInteraction)
+            var currentLastInteraction = lastInteraction;
+            var currentInteraction = _config.InteractionType;
+
+            if (currentLastInteraction != currentInteraction)
             {
-                case InteractionType.TOUCHPLANE:
-                    DisableInteraction(touchPlane);
-                    break;
-
-                case InteractionType.PUSH:
-                    DisableInteraction(airPush);
-                    break;
-
-                case InteractionType.HOVER:
-                    DisableInteraction(hoverAndHold);
-                    break;
-
-                case InteractionType.GRAB:
-                    DisableInteraction(grab);
-                    break;
+                GetInteractionModule(currentLastInteraction)?.Disable();
+                GetInteractionModule(currentInteraction)?.Enable();
             }
 
-            switch(_config.InteractionType)
+            lastInteraction = currentInteraction;
+        }
+
+        private void UpdateInteraction()
+        {
+            GetInteractionModule(lastInteraction)?.Update();
+        }
+
+        private InteractionModule GetInteractionModule(InteractionType type)
+        {
+            switch (type)
             {
                 case InteractionType.TOUCHPLANE:
-                    EnableInteraction(touchPlane);
-                    break;
+                    return touchPlane;
 
                 case InteractionType.PUSH:
-                    EnableInteraction(airPush);
-                    break;
+                    return airPush;
 
                 case InteractionType.HOVER:
-                    EnableInteraction(hoverAndHold);
-                    break;
+                    return hoverAndHold;
 
                 case InteractionType.GRAB:
-                    EnableInteraction(grab);
-                    break;
+                    return grab;
             }
 
-            lastInteraction = _config.InteractionType;
-        }
-
-        protected void EnableInteraction(InteractionModule target)
-        {
-            updateBehaviour.OnUpdate += target.Update;
-            target.HandleInputAction += connectionManager.SendInputActionToWebsocket;
-            target.Enable();
-        }
-
-        protected void DisableInteraction(InteractionModule target)
-        {
-            updateBehaviour.OnUpdate -= target.Update;
-            target.HandleInputAction -= connectionManager.SendInputActionToWebsocket;
-            target.Disable();
+            return null;
         }
     }
 }

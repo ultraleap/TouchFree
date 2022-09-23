@@ -38,8 +38,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             positioningModule = _positioningModule;
             positioningModule.TrackedPosition = trackedPosition;
-
         }
+
         public virtual void Enable()
         {
             configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
@@ -49,7 +49,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public virtual void Disable()
         {
             configManager.OnInteractionConfigUpdated -= OnInteractionSettingsUpdated;
-
         }
 
         public void Update()
