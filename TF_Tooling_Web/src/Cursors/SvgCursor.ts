@@ -82,6 +82,10 @@ export class SVGCursor extends TouchlessCursor {
     // Used to update the cursor when receiving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
     UpdateCursor(_inputAction: TouchFreeInputAction) {
+        if (!this.shouldShow) {
+            this.HideCursor();
+            return;
+        }
         let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
         this.cursorRing.setAttribute('opacity', _inputAction.ProgressToClick.toString());
@@ -89,7 +93,7 @@ export class SVGCursor extends TouchlessCursor {
 
         const position = _inputAction.CursorPosition;
 
-        if (position && this.shouldShow) {
+        if (position) {
             this.ShowCursor();
             this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
             this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
