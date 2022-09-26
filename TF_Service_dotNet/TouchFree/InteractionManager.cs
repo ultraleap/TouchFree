@@ -42,12 +42,12 @@ namespace Ultraleap.TouchFree.Library
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
             OnInteractionSettingsUpdated(_configManager.InteractionConfig);
+
+            updateBehaviour.OnUpdate += Update;
         }
 
         public void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
-            var initialisationNotStarted = activeInteractions == null;
-
             List<InteractionType> interactionsToUse = new List<InteractionType>();
 
             if (_config.InteractionType == InteractionType.PUSH)
@@ -71,11 +71,6 @@ namespace Ultraleap.TouchFree.Library
 
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
             locationInteraction = interactions.SingleOrDefault(x => x.InteractionType == _config.InteractionType);
-
-            if (initialisationNotStarted)
-            {
-                updateBehaviour.OnUpdate += Update;
-            }
 
             // Reset the down position between interactions
             lastDownPosition = null;

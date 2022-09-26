@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Timers;
+using static Ultraleap.TouchFree.Library.IUpdateBehaviour;
 
 namespace Ultraleap.TouchFree.Library
 {
     public class UpdateBehaviour : IDisposable, IUpdateBehaviour
     {
-        public event IUpdateBehaviour.UpdateEvent OnUpdate;
+        public event UpdateEvent OnUpdate
+        {
+            add { onUpdate -= value; onUpdate += value; }
+            remove => onUpdate -= value;
+        }
+
+        private event UpdateEvent onUpdate;
 
         private Timer updateLoop;
         private const float TargetFPS = 60f;
+
+        private readonly object invokeLock = new object();
 
         public UpdateBehaviour(float framerate = TargetFPS)
         {
@@ -25,7 +34,17 @@ namespace Ultraleap.TouchFree.Library
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            OnUpdate?.Invoke();
+            if (System.Threading.Monitor.TryEnter(invokeLock))
+            {
+                try
+                {
+                    onUpdate?.Invoke();
+                }
+                finally
+                {
+                    System.Threading.Monitor.Exit(invokeLock);
+                }
+            }
         }
 
         public Timer UpdateTimer()
