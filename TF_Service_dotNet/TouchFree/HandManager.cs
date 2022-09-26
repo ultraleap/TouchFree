@@ -82,7 +82,7 @@ namespace Ultraleap.TouchFree.Library
             // Therefore, we must convert to the real values before using them.
             // If bottom mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
             var isTopMounted = _config.LeapRotationD.Z is > 179.9f and < 180.1f;
-            var xAngleDegree = isTopMounted ? _config.LeapRotationD.X : -_config.LeapRotationD.X;
+            float xAngleDegree = isTopMounted ? _config.LeapRotationD.X : -_config.LeapRotationD.X;
 
             var quaternion = Quaternion.CreateFromYawPitchRoll(Utilities.DegreesToRadians(_config.LeapRotationD.Y),
                 Utilities.DegreesToRadians(xAngleDegree + _config.ScreenRotationD),

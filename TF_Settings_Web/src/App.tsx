@@ -41,7 +41,7 @@ const App: React.FC = () => {
             <ControlBar tfStatus={tfStatus} />
             <div className="page-content">
                 <Routes>
-                    <Route path="/settings/camera/*" element={<CameraManager tfStatus={tfStatus} />} />
+                    <Route path="/settings/camera/*" element={<CameraManager />} />
                     <Route path="/settings/interactions" element={<InteractionsPage />} />
                     <Route path="*" element={<Navigate to="/settings/camera" replace />} />
                 </Routes>

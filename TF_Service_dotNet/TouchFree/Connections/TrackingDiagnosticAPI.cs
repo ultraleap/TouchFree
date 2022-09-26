@@ -11,15 +11,13 @@ namespace Ultraleap.TouchFree.Library.Connections
     public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     {
         private static string uri = "ws://127.0.0.1:1024/";
-        private const string minimumMaskingAPIVerison = "2.1.0";
-        private IConfigManager configManager;
+        private readonly IConfigManager configManager;
         private string trackingServiceVersion;
         private Version version;
 
         public uint? connectedDeviceID;
         public string connectedDeviceFirmware;
         public string connectedDeviceSerial;
-        public bool maskingAllowed; // TODO: Is this relevant anymore? Unused.
         
         public event Action<Result<ImageMaskData>> OnMaskingResponse;
         public event Action<Result<bool>> OnAnalyticsResponse;
@@ -155,7 +153,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         private void TrySaveTrackingConfiguration()
         {
             // We don't save the tracking config until all values are initialized to prevent situations such as defaults
-            // always being written to config when a device hasn't been connected yet and there's no existing config
+            // always being written to config when a device hasn't been connected yet when there's no existing config
             if (maskingData.Initialized &&
                 allowImages.Initialized &&
                 cameraReversed.Initialized &&
@@ -220,18 +218,18 @@ namespace Ultraleap.TouchFree.Library.Connections
                 webSocket.OnMessage += OnMessage;
                 webSocket.OnOpen += (sender, e) =>
                 {
-                    Console.WriteLine("DiagnosticAPI open... ");
+                    TouchFreeLog.WriteLine("DiagnosticAPI open... ");
                     RequestGetServerInfo();
                     RequestGetDevices();
                     RequestGetVersion();
                 };
                 webSocket.OnError += (sender, e) =>
                 {
-                    Console.WriteLine("DiagnosticAPI error! " + e.Message + "\n");
+                    TouchFreeLog.ErrorWriteLine($"DiagnosticAPI error! {e.Message}\n");
                 };
                 webSocket.OnClose += (sender, e) =>
                 {
-                    Console.WriteLine("DiagnosticAPI closed. " + e.Reason);
+                    TouchFreeLog.WriteLine($"DiagnosticAPI closed. {e.Reason}");
                 };
             }
 
@@ -241,7 +239,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DiagnosticAPI connection exception... " + "\n" + ex.ToString());
+                TouchFreeLog.ErrorWriteLine($"DiagnosticAPI connection exception... \n{ex}");
             }
         }
 
@@ -252,6 +250,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 // + " " is used to avoid stack overflowing by creating a new string to
                 // avoiding keeping around the event args object
                 // TODO: Different method of avoiding stack overflow exceptions?
+                // NOTE: Suspected that overflows are related to this issue https://github.com/sta/websocket-sharp/issues/702
                 newMessages.Enqueue(e.Data + " ");
             }
         }
@@ -269,7 +268,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                     var payload = JsonConvert.DeserializeObject<DApiPayloadMessage<TPayload>>(_message);
                     if (payload == null)
                     {
-                        Console.WriteLine($"DiagnosticAPI - Payload for {status.ToString()} failed to deserialize: {_message}");   
+                        TouchFreeLog.WriteLine($"DiagnosticAPI - Payload for {status.ToString()} failed to deserialize: {_message}");   
                     }
                     else
                     {
@@ -278,14 +277,15 @@ namespace Ultraleap.TouchFree.Library.Connections
                 }
                 catch
                 {
-                    Console.WriteLine($"DiagnosticAPI - Could not parse {status.ToString()} data: {_message}");
+                    TouchFreeLog.WriteLine($"DiagnosticAPI - Could not parse {status.ToString()} data: {_message}");
                     onFailure?.Invoke();
                 }
             }
 
             if (!parsed)
             {
-                Console.WriteLine("DiagnosticAPI - Could not parse response of type: " + response.type + " with message: " + _message);
+                TouchFreeLog.WriteLine(
+                    $"DiagnosticAPI - Could not parse response of type: {response.type} with message: {_message}");
             }
             else
             {
@@ -338,11 +338,11 @@ namespace Ultraleap.TouchFree.Library.Connections
                                         maskingData.Match(data => RequestSetImageMask(data.left, data.right, data.upper, data.lower), RequestGetImageMask);
                                     }
                                 }
-                            });
+                            }); // TODO: Handle failure?
                         break;
 
                     case DApiMsgTypes.GetVersion:
-                        Handle<string>(HandleDiagnosticAPIVersion);
+                        Handle<string>(HandleDiagnosticAPIVersion); // TODO: Handle failure?
                         break;
                     
                     case DApiMsgTypes.GetServerInfo:
@@ -350,7 +350,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                         {
                             trackingServiceVersion = payload.server_version;
                             OnTrackingServerInfoResponse?.Invoke();
-                        });
+                        }); // TODO: Handle failure?
                         break;
 
                     case DApiMsgTypes.GetDeviceInfo:
@@ -359,11 +359,12 @@ namespace Ultraleap.TouchFree.Library.Connections
                             connectedDeviceFirmware = information.device_firmware;
                             connectedDeviceSerial = information.device_serial;
                             OnTrackingDeviceInfoResponse?.Invoke();
-                        });
+                        }); // TODO: Handle failure?
                         break;
                     
                     default:
-                        Console.WriteLine("DiagnosticAPI - Could not parse response of type: " + response.type + " with message: " + _message);
+                        TouchFreeLog.WriteLine(
+                            $"DiagnosticAPI - Could not parse response of type: {response.type} with message: {_message}");
                         break;
                 }
             }
@@ -371,12 +372,8 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void HandleDiagnosticAPIVersion(string _version)
         {
-            Version curVersion = new Version(_version);
-            Version minVersion = new Version(minimumMaskingAPIVerison);
-            version = curVersion;
+            version = new Version(_version);
 
-            // Versions above min version allow masking
-            maskingAllowed = curVersion >= minVersion;
             OnTrackingApiVersionResponse?.Invoke();
         }
 
