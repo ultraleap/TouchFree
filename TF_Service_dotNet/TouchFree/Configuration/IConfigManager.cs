@@ -12,6 +12,7 @@
         delegate void TrackingConfigEvent(TrackingConfig config = null);
         event InteractionConfigEvent OnInteractionConfigUpdated;
         event PhysicalConfigEvent OnPhysicalConfigUpdated;
+        event TrackingConfigEvent OnTrackingConfigSaved;
         event TrackingConfigEvent OnTrackingConfigUpdated;
         void PhysicalConfigWasUpdated();
         void InteractionConfigWasUpdated();

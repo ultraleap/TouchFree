@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Leap;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -31,29 +32,67 @@ namespace Ultraleap.TouchFree.Library.Connections
         // Represents a variable that will be "initialized" once set at least once after construction
         private class ConfigurationVariable<TData>
         {
-            private readonly Action<ConfigurationVariable<TData>> _onSet;
+            private readonly TrackingDiagnosticApi _diagnosticApi;
+            private readonly bool _connectedDeviceRequired;
+            private readonly Func<uint?, object> _getPayloadFunc;
+            private readonly Func<TData, uint?, object> _setPayloadFunc;
+            private readonly List<TData> _responsesToIgnore; // Not a queue as responses could come back out of order
             private TData _value;
-            public ConfigurationVariable(Action<ConfigurationVariable<TData>> onSet, TData initial = default)
+            
+            public ConfigurationVariable(
+                TrackingDiagnosticApi diagnosticApi,
+                bool connectedDeviceRequired,
+                Func<uint?, object> getPayloadFunc,
+                Func<TData, uint?, object> setPayloadFunc,
+                TData initial = default)
             {
-                _onSet = onSet;
+                _diagnosticApi = diagnosticApi;
+                _connectedDeviceRequired = connectedDeviceRequired;
+                _getPayloadFunc = getPayloadFunc;
+                _setPayloadFunc = setPayloadFunc;
+                _responsesToIgnore = new List<TData>();
                 _value = initial;
             }
 
             public TData Value
             {
                 get => _value;
-                set
+                private set
                 {
                     Initialized = true;
                     if (Equals(value, _value)) return;
                     _value = value;
-                    _onSet?.Invoke(this);
+                }
+            }
+
+            public void RequestGet() => _diagnosticApi.Request(_getPayloadFunc(_diagnosticApi.connectedDeviceID));
+            public void RequestSet(TData value)
+            {
+                Value = value;
+                if (_connectedDeviceRequired && !_diagnosticApi.connectedDeviceID.HasValue) return; // Only send the request if we have a device, when one is required
+
+                lock (_responsesToIgnore)
+                {
+                    _responsesToIgnore.Add(value);
+                    _diagnosticApi.Request(_setPayloadFunc(_value, _diagnosticApi.connectedDeviceID));
+                }
+            }
+
+            public void HandleResponse(Result<TData> result)
+            {
+                // TODO: Do something with any errors?
+                if (!result.TryGetValue(out var val)) return;
+                lock (_responsesToIgnore)
+                {
+                    var found = _responsesToIgnore.Remove(val);
+                    if (found) return;
+                    Value = val;
                 }
             }
 
             // Variable is not considered initialized until it has been set externally from the constructor.
             // Scenarios this is expected to happen:
-            // a. Set by an incoming request
+            // a. Set by a request
             // b. Loaded from an existing config
             // c. Loaded from connected device if not initialized before connecting
             public bool Initialized { get; private set; }
@@ -76,11 +115,44 @@ namespace Ultraleap.TouchFree.Library.Connections
         public TrackingDiagnosticApi(IConfigManager _configManager, ITrackingConnectionManager _trackingConnectionManager)
         {
             configManager = _configManager;
-            maskingData = new ConfigurationVariable<ImageMaskData>(_ => TrySaveTrackingConfiguration());
-            allowImages = new ConfigurationVariable<bool>(_ => TrySaveTrackingConfiguration());
-            cameraReversed = new ConfigurationVariable<bool>(_ => TrySaveTrackingConfiguration());
-            analyticsEnabled = new ConfigurationVariable<bool>(_ => TrySaveTrackingConfiguration());
 
+            // Payload functions commonly used between multiple configuration variables
+            Func<uint?, object> DefaultGetPayloadFunc(DApiMsgTypes requestType) =>
+                _ => new DApiMessage(requestType);
+            Func<uint?, object> DeviceIdPayloadFunc(DApiMsgTypes requestType) =>
+                deviceId => new DApiPayloadMessage<DeviceIdPayload>(requestType, new DeviceIdPayload { device_id = deviceId.GetValueOrDefault() });
+            Func<T, uint?, object> DefaultSetPayloadFunc<T>(DApiMsgTypes requestType) =>
+                (val, _) => new DApiPayloadMessage<T>(requestType, val);
+
+            // Configuration variable setup
+            maskingData = new ConfigurationVariable<ImageMaskData>(this,true,
+                DeviceIdPayloadFunc(DApiMsgTypes.GetImageMask),
+                (maskData, deviceId) =>
+                {
+                    var payload = maskData with { device_id = deviceId.GetValueOrDefault() };
+                    return new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload);
+                });
+            
+            allowImages = new ConfigurationVariable<bool>(this, false,
+                DefaultGetPayloadFunc(DApiMsgTypes.GetAllowImages),
+                DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAllowImages));
+            
+            cameraReversed = new ConfigurationVariable<bool>(this, true,
+                DeviceIdPayloadFunc(DApiMsgTypes.GetCameraOrientation),
+                (reversed, deviceId) =>
+                {
+                    var payload = new CameraOrientationPayload
+                    {
+                        device_id = deviceId.GetValueOrDefault(),
+                        camera_orientation = reversed ? "fixed-inverted" : "fixed-normal"
+                    };
+                    return new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload);
+                });
+            
+            analyticsEnabled = new ConfigurationVariable<bool>(this, false,
+                DefaultGetPayloadFunc(DApiMsgTypes.GetAnalyticsEnabled),
+                DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAnalyticsEnabled));
+            
             Connect();
 #pragma warning disable CS4014
             MessageQueueReader();
@@ -88,11 +160,10 @@ namespace Ultraleap.TouchFree.Library.Connections
             
             void SetTrackingConfigurationOnDevice(TrackingConfig config)
             {
-                // Methods that require a connected device will be no-ops
-                RequestSetAllowImages(config.AllowImages);
-                RequestSetAnalyticsMode(config.AnalyticsEnabled);
-                RequestSetCameraOrientation(config.CameraReversed);
-                RequestSetImageMask(config.Mask.Left, config.Mask.Right, config.Mask.Upper, config.Mask.Lower);
+                allowImages.RequestSet(config.AllowImages);
+                analyticsEnabled.RequestSet(config.AnalyticsEnabled);
+                cameraReversed.RequestSet(config.CameraReversed);
+                maskingData.RequestSet((ImageMaskData)config.Mask);
             }
             void ControllerOnDevice(object sender, DeviceEventArgs e) => RequestGetDevices(); // Get devices response will update the connected device and refresh tracking config
             void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => RequestGetDevices(); // Works even when no device is connected
@@ -101,90 +172,10 @@ namespace Ultraleap.TouchFree.Library.Connections
             _trackingConnectionManager.Controller.Device += ControllerOnDevice;
             _trackingConnectionManager.Controller.DeviceLost += ControllerOnDeviceLost;
 
-            void OnCameraOrientationResponse(Result<bool> cameraReversedResult)
-            {
-                // TODO: Do something with any errors?
-                if (!cameraReversedResult.TryGetValue(out var value)) return;
-                cameraReversed.Value = value;
-            }
-
-            void OnAllowImagesResponse(Result<bool> allowImagesResult)
-            {
-                // TODO: Do something with any errors?
-                if (!allowImagesResult.TryGetValue(out var value)) return;
-                allowImages.Value = value;
-            }
-
-            void OnAnalyticsResponse(Result<bool> analyticsEnabledResult)
-            {
-                // TODO: Do something with any errors?
-                if (!analyticsEnabledResult.TryGetValue(out var value)) return;
-                analyticsEnabled.Value = value;
-            }
-
-            void OnMaskingResponse(Result<ImageMaskData> maskDataResult)
-            {
-                // TODO: Do something with any errors?
-                if (!maskDataResult.TryGetValue(out var maskData)) return;
-                maskingData.Value = maskData;
-            }
-
-            this.OnMaskingResponse += OnMaskingResponse;
-            this.OnAnalyticsResponse += OnAnalyticsResponse;
-            this.OnAllowImagesResponse += OnAllowImagesResponse;
-            this.OnCameraOrientationResponse += OnCameraOrientationResponse;
-        }
-        
-        // Used for equality comparison
-        private readonly record struct ConfigRecord(ImageMaskData Mask, bool AllowImages, bool CameraReversed,
-            bool AnalyticsEnabled)
-        {
-            public ConfigRecord(TrackingConfig config, uint deviceId) : this(new ImageMaskData
-            {
-                device_id = deviceId, // Device id must be set as it takes part in equality comparison
-                left = config.Mask.Left,
-                lower = config.Mask.Lower,
-                right = config.Mask.Right,
-                upper = config.Mask.Upper
-            }, config.AllowImages, config.CameraReversed, config.AnalyticsEnabled)
-            {}
-        }
-
-        private void TrySaveTrackingConfiguration()
-        {
-            // We don't save the tracking config until all values are initialized to prevent situations such as defaults
-            // always being written to config when a device hasn't been connected yet when there's no existing config
-            if (maskingData.Initialized &&
-                allowImages.Initialized &&
-                cameraReversed.Initialized &&
-                analyticsEnabled.Initialized)
-            {
-                var newConfig = new ConfigRecord(maskingData.Value, allowImages.Value, cameraReversed.Value, analyticsEnabled.Value);
-
-                // Get old config from the manager to check if config has changed
-                // Definitely changed if null - also avoid creating record if null as it will error
-                var configChanged = configManager.TrackingConfig == null
-                                    // We use new config device id so it doesn't impact overall equality 
-                                    || new ConfigRecord(configManager.TrackingConfig, newConfig.Mask.device_id) != newConfig;
-                
-                // If nothing changed, we don't need to save - this is to avoid infinite looping caused by events
-                if (configChanged)
-                {
-                    TrackingConfigFile.SaveConfig(new TrackingConfig
-                    {
-                        Mask =
-                        {
-                            Left = (float)maskingData.Value.left,
-                            Right = (float)maskingData.Value.right,
-                            Lower = (float)maskingData.Value.lower,
-                            Upper = (float)maskingData.Value.upper
-                        },
-                        AllowImages = allowImages.Value,
-                        AnalyticsEnabled = analyticsEnabled.Value,
-                        CameraReversed = cameraReversed.Value
-                    });
-                }
-            }
+            OnMaskingResponse += maskingData.HandleResponse;
+            OnAnalyticsResponse += analyticsEnabled.HandleResponse;
+            OnAllowImagesResponse += allowImages.HandleResponse;
+            OnCameraOrientationResponse += cameraReversed.HandleResponse;
         }
 
         private async Task MessageQueueReader()
@@ -192,7 +183,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             while (true)
             {
                 await Task.Delay(10);
-                if (newMessages.TryDequeue(out var message))
+                while (newMessages.TryDequeue(out var message))
                 {
                     HandleMessage(message);
                 }
@@ -342,7 +333,11 @@ namespace Ultraleap.TouchFree.Library.Connections
                         break;
 
                     case DApiMsgTypes.GetVersion:
-                        Handle<string>(HandleDiagnosticAPIVersion); // TODO: Handle failure?
+                        Handle<string>(s =>
+                        {
+                            version = new Version(s);
+                            OnTrackingApiVersionResponse?.Invoke();
+                        }); // TODO: Handle failure?
                         break;
                     
                     case DApiMsgTypes.GetServerInfo:
@@ -370,13 +365,6 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-        private void HandleDiagnosticAPIVersion(string _version)
-        {
-            version = new Version(_version);
-
-            OnTrackingApiVersionResponse?.Invoke();
-        }
-
         private async void Request(object payload)
         {
             bool TrySend()
@@ -402,67 +390,25 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-        public void RequestGetAnalyticsMode() => Request(new DApiMessage(DApiMsgTypes.GetAnalyticsEnabled));
+        public void RequestGetAnalyticsMode() => analyticsEnabled.RequestGet();
+        public void RequestSetAnalyticsMode(bool enabled) => analyticsEnabled.RequestSet(enabled);
 
-        public void RequestSetAnalyticsMode(bool enabled)
-        {
-            analyticsEnabled.Value = enabled;
-            Request(new DApiPayloadMessage<bool>(DApiMsgTypes.SetAnalyticsEnabled, enabled));
-        }
-
-        public void RequestGetImageMask()
-        {
-            // Only send the request if we have a device
-            if (!connectedDeviceID.HasValue) return;
-            
-            var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
-            Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetImageMask, payload));
-        }
-
-        public void RequestSetImageMask(double _left, double _right, double _top, double _bottom)
-        {
-            var data = new ImageMaskData
+        public void RequestGetImageMask() => maskingData.RequestGet();
+        public void RequestSetImageMask(double _left, double _right, double _top, double _bottom) =>
+            maskingData.RequestSet(new ImageMaskData
             {
+                device_id = connectedDeviceID.GetValueOrDefault(),
                 left = _left,
                 right = _right,
                 upper = _top,
                 lower = _bottom
-            };
-            
-            // Only send the request if we have a device
-            if (!connectedDeviceID.HasValue) return;
+            });
 
-            data.device_id = connectedDeviceID.Value;
-            Request(new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, data));
-        }
-        
-        public void RequestGetAllowImages() => Request(new DApiMessage(DApiMsgTypes.GetAllowImages));
+        public void RequestGetAllowImages() => allowImages.RequestGet();
+        public void RequestSetAllowImages(bool enabled) => allowImages.RequestSet(enabled);
 
-        public void RequestSetAllowImages(bool enabled)
-        {
-            allowImages.Value = enabled;
-            Request(new DApiPayloadMessage<bool>(DApiMsgTypes.SetAllowImages, enabled));
-        }
-
-        public void RequestGetCameraOrientation()
-        {
-            // Only send the request if we have a device
-            if (!connectedDeviceID.HasValue) return;
-            
-            var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
-            Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetCameraOrientation, payload));
-        }
-
-        public void RequestSetCameraOrientation(bool reverseOrientation)
-        {
-            cameraReversed.Value = reverseOrientation;
-            
-            // Only send the request if we have a device
-            if (!connectedDeviceID.HasValue) return;
-            
-            var payload = new CameraOrientationPayload { device_id = connectedDeviceID.Value, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" };
-            Request(new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload));
-        }
+        public void RequestGetCameraOrientation() => cameraReversed.RequestGet();
+        public void RequestSetCameraOrientation(bool reverseOrientation) => cameraReversed.RequestSet(reverseOrientation);
 
         public void RequestGetDeviceInfo()
         {
