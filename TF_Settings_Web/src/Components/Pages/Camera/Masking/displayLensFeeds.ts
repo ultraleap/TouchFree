@@ -40,14 +40,14 @@ export const updateCanvas = (
 
     const conversionArrayToUse = showOverexposedAreas ? byteConversionArrayOverExposed : byteConversionArray;
 
-    const offset = 9;
-    const startOfBuffer = new DataView(data, 1, offset);
+    // const offset = 9;
+    // const startOfBuffer = new DataView(data, 1, offset);
 
-    const dim1 = startOfBuffer.getUint32(0);
-    const dim2 = startOfBuffer.getUint32(4);
+    // const dim1 = startOfBuffer.getUint32(0);
+    // const dim2 = startOfBuffer.getUint32(4);
 
-    const width = Math.min(dim1, dim2);
-    const lensHeight = Math.max(dim1, dim2) / 2;
+    const width = 384;
+    const lensHeight = 384;
 
     if (!cameraBuffer) {
         cameraBuffer = new ArrayBuffer(width * lensHeight);
@@ -55,13 +55,13 @@ export const updateCanvas = (
     const buf8 = new Uint8Array(cameraBuffer);
     const buf32 = new Uint32Array(cameraBuffer);
 
-    const rotated90 = dim2 < dim1;
+    // const rotated90 = dim2 < dim1;
 
-    if (rotated90) {
-        processRotatedScreen(data, lens, buf32, conversionArrayToUse, offset, width, lensHeight);
-    } else {
-        processScreen(data, lens, buf32, conversionArrayToUse, offset, width, lensHeight);
-    }
+    // if (rotated90) {
+    //     processRotatedScreen(data, lens, buf32, conversionArrayToUse, offset, width, lensHeight);
+    // } else {
+        processScreen(data, lens, buf32, conversionArrayToUse, 0, width, lensHeight);
+    // }
 
     // Set black pixels to remove flashing camera bytes
     const startOffset = isCameraReversed ? 0 : ((lensHeight / 2 - 1) * width) / 2;
@@ -138,7 +138,7 @@ const processScreen = (
     width: number,
     lensHeight: number
 ) => {
-    const offsetView = new Uint8Array(data, offset + (lens === 'Left' ? width * lensHeight : 0), width * lensHeight);
+    const offsetView = new Uint8Array(data);
 
     for (let i = 0; i < width / 2; i++) {
         for (let j = 0; j < lensHeight / 2; j++) {

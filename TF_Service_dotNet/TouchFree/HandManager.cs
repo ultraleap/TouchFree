@@ -45,6 +45,8 @@ namespace Ultraleap.TouchFree.Library
         private Vector3? lastPrimaryLocation;
         private Vector3? lastSecondaryLocation;
 
+        public byte[] LastImageData { get; private set; }
+
         public Leap.Image.CameraType HandRenderLens { private get; set; } = Image.CameraType.LEFT;
 
         bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
@@ -187,7 +189,7 @@ namespace Ultraleap.TouchFree.Library
 
         private Vector3 LeapToCameraFrame(Leap.Vector leapVector, Leap.Image image)
         {
-            var lensAdjustment = HandRenderLens == Image.CameraType.RIGHT ? -32.5f : 32.5f;
+            var lensAdjustment = HandRenderLens == Image.CameraType.LEFT ? -32.5f : 32.5f;
             var updatedVector = new Leap.Vector(leapVector.x + lensAdjustment, leapVector.y, leapVector.z);
             var ray = new Leap.Vector((float)Math.Atan2(updatedVector.x, updatedVector.y), (float)Math.Atan2(updatedVector.z, updatedVector.y), (float)Math.Sqrt(updatedVector.x * updatedVector.x + updatedVector.z * updatedVector.z + updatedVector.y * updatedVector.y));
 
@@ -198,6 +200,8 @@ namespace Ultraleap.TouchFree.Library
 
         public void UpdateRawHands(object sender, ImageEventArgs e)
         {
+            LastImageData = new ArraySegment<byte>(e.image.Data(Image.CameraType.LEFT), (int)e.image.ByteOffset(HandRenderLens), e.image.Height * e.image.Width * e.image.BytesPerPixel).ToArray();
+
             if (PreConversionRawHands != null && e.image != null && RawHandsUpdated)
             {
                 RawHandsUpdated = false;

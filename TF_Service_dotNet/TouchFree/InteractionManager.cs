@@ -85,7 +85,7 @@ namespace Ultraleap.TouchFree.Library
         {
             if (trackingConnectionManager.ShouldSendHandData)
             {
-                connectionManager.SendHandData(handManager.RawHands);
+                connectionManager.SendHandData(handManager.RawHands, handManager.LastImageData);
             }
 
             if (activeInteractions != null)

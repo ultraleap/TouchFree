@@ -18,5 +18,6 @@ namespace Ultraleap.TouchFree.Library
         event Action HandFound;
         event Action HandsLost;
         Leap.Image.CameraType HandRenderLens { set; }
+        byte[] LastImageData { get; }
     }
 }

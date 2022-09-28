@@ -26,10 +26,10 @@ export class HandDataManager extends EventTarget {
     // Function: HandleHandFrame
     // Called by the <messageReceiver> to relay a <HandFrame> that has been received to any
     // listeners of <TransmitHandData>.
-    public static HandleHandFrame(_data: HandFrame): void {
+    public static HandleHandFrame(_data: any): void {
         const currentTimeStamp = Date.now();
         if (!HandDataManager.lastFrame || HandDataManager.lastFrame + 100 < currentTimeStamp ) {
-            let rawHandsEvent: CustomEvent<HandFrame> = new CustomEvent<HandFrame>(
+            let rawHandsEvent: CustomEvent<any> = new CustomEvent<any>(
                 'TransmitHandData',
                 { detail: _data }
             );

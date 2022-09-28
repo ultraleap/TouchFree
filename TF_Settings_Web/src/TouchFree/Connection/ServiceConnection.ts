@@ -108,6 +108,11 @@ export class ServiceConnection {
     // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
     // <MessageReceiver>.
     OnMessage(_message: MessageEvent): void {
+        if ((typeof _message.data) !== 'string') {
+            ConnectionManager.messageReceiver.latestHandDataItem = _message.data;
+            return;
+        }
+
         let looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
 
         switch (looseData.action as ActionCode) {
@@ -124,11 +129,6 @@ export class ServiceConnection {
             case ActionCode.SERVICE_STATUS:
                 let serviceStatus: ServiceStatus = looseData.content;
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
-                break;
-                
-            case ActionCode.HAND_DATA:
-                let wsHandData: any = looseData.content;
-                ConnectionManager.messageReceiver.latestHandDataItem = wsHandData;
                 break;
 
             case ActionCode.CONFIGURATION_STATE:
@@ -149,6 +149,7 @@ export class ServiceConnection {
             case ActionCode.TRACKING_STATE:
                 const trackingResponse: TrackingStateResponse = looseData.content;
                 ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
+                break;
         }
     }
 

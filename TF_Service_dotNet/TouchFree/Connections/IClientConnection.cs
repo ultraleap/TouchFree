@@ -8,7 +8,7 @@ namespace Ultraleap.TouchFree.Library
         WebSocket Socket { get; }
 
         void SendInputAction(InputAction data);
-        void SendHandData(HandFrame data);
+        void SendHandData(HandFrame data, byte[] lastHandData);
         void SendHandPresenceEvent(HandPresenceEvent handsLostEvent);
         void SendResponse<T>(T _response, ActionCode actionCode);
     }
