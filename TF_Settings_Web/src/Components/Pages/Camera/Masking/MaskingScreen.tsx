@@ -1,13 +1,12 @@
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
+//import { useNavigate } from 'react-router-dom';
 import { useStatefulRef } from 'customHooks';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
-import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
 
@@ -35,7 +34,7 @@ const MaskingScreen = () => {
 
     const showOverexposed = useStatefulRef<boolean>(false);
 
-    const isFrameProcessing = useStatefulRef<boolean>(false);
+    //const isFrameProcessing = useStatefulRef<boolean>(false);
     const isHandProcessing = useStatefulRef<boolean>(false);
 
     // ===== State Setters =====
@@ -65,12 +64,12 @@ const MaskingScreen = () => {
     // ===== Refs =====
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasContextRef = useRef<WebGLRenderingContext | null>(null);
-    const successfullySubscribed = useRef<boolean>(false);
+    //const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
     const handTimeoutRef = useRef<number>();
 
     // ===== Hooks =====
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     useEffect(() => {
         if (canvasRef.current) {
@@ -135,80 +134,82 @@ const MaskingScreen = () => {
         }
     };
 
-    const handleWSOpen = () => {
-        console.log('Connected to Tracking Service');
-    };
-    const handleWSClose = () => {
-        console.log('Disconnected from Tracking Service');
-        navigate('../');
-    };
+    // const handleWSOpen = () => {
+    //     console.log('Connected to Tracking Service');
+    // };
+    // const handleWSClose = () => {
+    //     console.log('Disconnected from Tracking Service');
+    //     navigate('../');
+    // };
 
-    const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (!canvasContextRef.current) return;
-        if (isFrameProcessing.current || !allowImages.current) return;
+    // const handleMessage = (socket: WebSocket, event: MessageEvent) => {
+    //     if (!canvasContextRef.current) return;
+    //     if (isFrameProcessing.current || !allowImages.current) return;
 
-        const data = event.data as ArrayBuffer;
-        if (!data) return;
+    //     const data = event.data as ArrayBuffer;
+    //     if (!data) return;
 
-        const dataIdentifier = new Uint8Array(data, 0, 1)[0];
-        if (dataIdentifier === 1) {
-            isFrameProcessing.current = true;
-            successfullySubscribed.current = true;
+    //     const dataIdentifier = new Uint8Array(data, 0, 1)[0];
+    //     if (dataIdentifier === 1) {
+    //         isFrameProcessing.current = true;
+    //         successfullySubscribed.current = true;
 
-            updateCanvas(
-                data,
-                canvasContextRef.current,
-                mainLens.current,
-                isCamReversed.current,
-                showOverexposed.current
-            );
-            frameTimeoutRef.current = window.setTimeout(() => {
-                isFrameProcessing.current = false;
-            }, FRAME_PROCESSING_TIMEOUT);
-        } else if (!successfullySubscribed.current) {
-            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
-        }
-    };
+    //         updateCanvas(
+    //             data,
+    //             canvasContextRef.current,
+    //             mainLens.current,
+    //             isCamReversed.current,
+    //             showOverexposed.current
+    //         );
+    //         frameTimeoutRef.current = window.setTimeout(() => {
+    //             isFrameProcessing.current = false;
+    //         }, FRAME_PROCESSING_TIMEOUT);
+    //     } else if (!successfullySubscribed.current) {
+    //         socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
+    //     }
+    // };
 
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const handleTFInput = (evt: CustomEvent<any>): void => {
         if (isHandProcessing.current) return;
 
         isHandProcessing.current = true;
 
         const bufferBlob = evt.detail as Blob;
-        bufferBlob.arrayBuffer().then((buffer) => {
-            const imageArraySize = new Int32Array(buffer, 0, 4)[0];
-    
-            if (imageArraySize > 0 && canvasContextRef.current) {
-                updateCanvas(
-                    buffer.slice(4, imageArraySize),
-                    canvasContextRef.current,
-                    mainLens.current,
-                    isCamReversed.current,
-                    showOverexposed.current
-                );
-            }
+        bufferBlob
+            .arrayBuffer()
+            .then((buffer) => {
+                const imageArraySize = new Int32Array(buffer, 0, 4)[0];
 
+                if (imageArraySize > 0 && canvasContextRef.current) {
+                    updateCanvas(
+                        buffer.slice(4, imageArraySize),
+                        canvasContextRef.current,
+                        mainLens.current,
+                        isCamReversed.current,
+                        showOverexposed.current
+                    );
+                }
 
-            const handsJson = String.fromCharCode.apply(null, [...new Uint8Array(buffer, 4 + imageArraySize)]);
-    
-            const hands = JSON.parse(handsJson)
-                ?.content?.Hands;
-    
-            if (hands && (hands.length > 0 || handData.current.one || handData.current.two)) {
-                const handOne = hands[0];
-                const handTwo = hands[1];
-                const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
-                const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
-    
-                handData.current = { one: convertedHandOne, two: convertedHandTwo };
-            }
-        }).finally(()=>{
-            // Ignore any messages for a short period to allow clearing of message handling
-            handTimeoutRef.current = window.setTimeout(() => {
-                isHandProcessing.current = false;
-            }, FRAME_PROCESSING_TIMEOUT);
-        });
+                const handsJson = String.fromCharCode.apply(null, [...new Uint8Array(buffer, 4 + imageArraySize)]);
+
+                const hands = JSON.parse(handsJson)?.content?.Hands;
+
+                if (hands && (hands.length > 0 || handData.current.one || handData.current.two)) {
+                    const handOne = hands[0];
+                    const handTwo = hands[1];
+                    const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
+                    const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
+
+                    handData.current = { one: convertedHandOne, two: convertedHandTwo };
+                }
+            })
+            .finally(() => {
+                // Ignore any messages for a short period to allow clearing of message handling
+                handTimeoutRef.current = window.setTimeout(() => {
+                    isHandProcessing.current = false;
+                }, FRAME_PROCESSING_TIMEOUT);
+            });
     };
 
     // ===== Components =====

@@ -60,7 +60,7 @@ export const updateCanvas = (
     // if (rotated90) {
     //     processRotatedScreen(data, lens, buf32, conversionArrayToUse, offset, width, lensHeight);
     // } else {
-        processScreen(data, lens, buf32, conversionArrayToUse, 0, width, lensHeight);
+    processScreen(data, lens, buf32, conversionArrayToUse, 0, width, lensHeight);
     // }
 
     // Set black pixels to remove flashing camera bytes
@@ -92,42 +92,42 @@ export const setupWebGL = (gl: WebGLRenderingContext) => {
     setBuffersAndAttributes(gl, programInfo, bufferInfo);
 };
 
-const processRotatedScreen = (
-    data: ArrayBuffer,
-    lens: Lens,
-    buf32: Uint32Array,
-    byteConversionArray: Uint32Array,
-    offset: number,
-    width: number,
-    lensHeight: number
-) => {
-    let rowBase = 0;
-    const offsetView = new Uint8Array(data, offset, width * lensHeight * 2);
-    const resultWidth = width / 2;
-    const resultHeight = lensHeight / 2;
+// const processRotatedScreen = (
+//     data: ArrayBuffer,
+//     lens: Lens,
+//     buf32: Uint32Array,
+//     byteConversionArray: Uint32Array,
+//     offset: number,
+//     width: number,
+//     lensHeight: number
+// ) => {
+//     let rowBase = 0;
+//     const offsetView = new Uint8Array(data, offset, width * lensHeight * 2);
+//     const resultWidth = width / 2;
+//     const resultHeight = lensHeight / 2;
 
-    for (let rowIndex = 0; rowIndex < resultWidth; rowIndex++) {
-        const resultStartIndex = rowBase / 8;
+//     for (let rowIndex = 0; rowIndex < resultWidth; rowIndex++) {
+//         const resultStartIndex = rowBase / 8;
 
-        if (lens === 'Right') {
-            for (let i = 0; i < resultHeight; i++) {
-                buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
-            }
-        }
+//         if (lens === 'Right') {
+//             for (let i = 0; i < resultHeight; i++) {
+//                 buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
+//             }
+//         }
 
-        rowBase += width;
-        if (lens === 'Left') {
-            for (let i = 0; i < resultHeight; i++) {
-                buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
-            }
-        }
+//         rowBase += width;
+//         if (lens === 'Left') {
+//             for (let i = 0; i < resultHeight; i++) {
+//                 buf32[i + resultStartIndex] = byteConversionArray[offsetView[i * 2 + rowBase]];
+//             }
+//         }
 
-        rowBase += width;
+//         rowBase += width;
 
-        // Skip entire row
-        rowBase += width * 2;
-    }
-};
+//         // Skip entire row
+//         rowBase += width * 2;
+//     }
+// };
 
 const processScreen = (
     data: ArrayBuffer,
