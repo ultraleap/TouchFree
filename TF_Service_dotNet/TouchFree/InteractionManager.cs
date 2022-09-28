@@ -25,6 +25,8 @@ namespace Ultraleap.TouchFree.Library
         private InputAction lastLocationInputAction;
         private InputAction nonLocationRelativeInputAction;
 
+        private bool sentDataLastFrame = false;
+
         private Vector2? lastDownPosition;
 
         public InteractionManager(
@@ -85,7 +87,11 @@ namespace Ultraleap.TouchFree.Library
         {
             if (trackingConnectionManager.ShouldSendHandData)
             {
-                connectionManager.SendHandData(handManager.RawHands, handManager.LastImageData);
+                if (!sentDataLastFrame)
+                {
+                    connectionManager.SendHandData(handManager.RawHands, handManager.LastImageData);
+                }
+                sentDataLastFrame = !sentDataLastFrame;
             }
 
             if (activeInteractions != null)
