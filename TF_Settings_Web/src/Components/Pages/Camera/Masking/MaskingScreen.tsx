@@ -175,41 +175,45 @@ const MaskingScreen = () => {
 
         isHandProcessing.current = true;
 
-        const bufferBlob = evt.detail as Blob;
-        bufferBlob
-            .arrayBuffer()
-            .then((buffer) => {
-                const imageArraySize = new Int32Array(buffer, 0, 4)[0];
+        try {
+            const bufferBlob = evt.detail as Blob;
+            bufferBlob
+                .arrayBuffer()
+                .then((buffer) => {
+                    const imageArraySize = new Int32Array(buffer, 0, 4)[0];
 
-                if (imageArraySize > 0 && canvasContextRef.current) {
-                    updateCanvas(
-                        buffer.slice(4, imageArraySize),
-                        canvasContextRef.current,
-                        mainLens.current,
-                        isCamReversed.current,
-                        showOverexposed.current
-                    );
-                }
+                    if (imageArraySize > 0 && canvasContextRef.current) {
+                        updateCanvas(
+                            buffer.slice(4, imageArraySize),
+                            canvasContextRef.current,
+                            mainLens.current,
+                            isCamReversed.current,
+                            showOverexposed.current
+                        );
+                    }
 
-                const handsJson = String.fromCharCode.apply(null, [...new Uint8Array(buffer, 4 + imageArraySize)]);
+                    const handsJson = String.fromCharCode.apply(null, [...new Uint8Array(buffer, 4 + imageArraySize)]);
 
-                const hands = JSON.parse(handsJson)?.content?.Hands;
+                    const hands = JSON.parse(handsJson)?.content?.Hands;
 
-                if (hands && (hands.length > 0 || handData.current.one || handData.current.two)) {
-                    const handOne = hands[0];
-                    const handTwo = hands[1];
-                    const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
-                    const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
+                    if (hands && (hands.length > 0 || handData.current.one || handData.current.two)) {
+                        const handOne = hands[0];
+                        const handTwo = hands[1];
+                        const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
+                        const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
 
-                    handData.current = { one: convertedHandOne, two: convertedHandTwo };
-                }
-            })
-            .finally(() => {
-                // Ignore any messages for a short period to allow clearing of message handling
-                handTimeoutRef.current = window.setTimeout(() => {
-                    isHandProcessing.current = false;
-                }, FRAME_PROCESSING_TIMEOUT);
-            });
+                        handData.current = { one: convertedHandOne, two: convertedHandTwo };
+                    }
+                })
+                .finally(() => {
+                    // Ignore any messages for a short period to allow clearing of message handling
+                    handTimeoutRef.current = window.setTimeout(() => {
+                        isHandProcessing.current = false;
+                    }, FRAME_PROCESSING_TIMEOUT);
+                });
+        } catch {
+            isHandProcessing.current = false;
+        }
     };
 
     // ===== Components =====
