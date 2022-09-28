@@ -177,7 +177,7 @@ const MaskingScreen = () => {
 
         try {
             const bufferBlob = evt.detail as Blob;
-            bufferBlob
+            new Response(bufferBlob)
                 .arrayBuffer()
                 .then((buffer) => {
                     const imageArraySize = new Int32Array(buffer, 0, 4)[0];
