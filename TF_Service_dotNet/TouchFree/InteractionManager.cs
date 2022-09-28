@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Interactions;
 
 namespace Ultraleap.TouchFree.Library
@@ -13,6 +14,7 @@ namespace Ultraleap.TouchFree.Library
         private readonly IEnumerable<IInteraction> interactions;
         private readonly InteractionTuning interactionTuning;
         private readonly IHandManager handManager;
+        private readonly ITrackingConnectionManager trackingConnectionManager;
         private readonly IUpdateBehaviour updateBehaviour;
         private readonly IClientConnectionManager connectionManager;
 
@@ -31,13 +33,15 @@ namespace Ultraleap.TouchFree.Library
             IEnumerable<IInteraction> _interactions,
             IOptions<InteractionTuning> _interactionTuning,
             IConfigManager _configManager,
-            IHandManager _handManager)
+            IHandManager _handManager,
+            ITrackingConnectionManager _trackingConnectionManager)
         {
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
             interactions = _interactions;
             interactionTuning = _interactionTuning?.Value;
             handManager = _handManager;
+            trackingConnectionManager = _trackingConnectionManager;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
@@ -79,7 +83,10 @@ namespace Ultraleap.TouchFree.Library
 
         public void Update()
         {
-            connectionManager.SendHandData(handManager.RawHands);
+            if (trackingConnectionManager.ShouldSendHandData)
+            {
+                connectionManager.SendHandData(handManager.RawHands);
+            }
 
             if (activeInteractions != null)
             {
