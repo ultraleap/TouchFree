@@ -14,8 +14,20 @@ namespace Ultraleap.TouchFree.Library
 
         private event UpdateEvent onUpdate;
 
+
+        public event UpdateEvent OnSlowUpdate
+        {
+            add { onSlowUpdate -= value; onSlowUpdate += value; }
+            remove => onSlowUpdate -= value;
+        }
+
+        private event UpdateEvent onSlowUpdate;
+
         private Timer updateLoop;
         private const float TargetFPS = 60f;
+
+        private const int slowUpdateCount = 4;
+        private int slowUpdateIteration = 0;
 
         private readonly object invokeLock = new object();
 
@@ -39,6 +51,12 @@ namespace Ultraleap.TouchFree.Library
                 try
                 {
                     onUpdate?.Invoke();
+                    slowUpdateIteration++;
+                    if (slowUpdateIteration == slowUpdateCount)
+                    {
+                        slowUpdateIteration = 0;
+                        onSlowUpdate?.Invoke();
+                    }
                 }
                 finally
                 {

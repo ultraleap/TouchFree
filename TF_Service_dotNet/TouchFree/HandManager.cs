@@ -100,6 +100,8 @@ namespace Ultraleap.TouchFree.Library
 
         private int handsLastFrame;
 
+        private Leap.Image lastImage;
+
         public HandFrame RawHands { get; private set; }
         public List<Hand> PreConversionRawHands { get; private set; }
         public bool RawHandsUpdated { get; private set; }
@@ -114,7 +116,7 @@ namespace Ultraleap.TouchFree.Library
             trackingProvider.Disconnect();
         }
 
-        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager, IVirtualScreen _virtualScreen)
+        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager, IVirtualScreen _virtualScreen, IUpdateBehaviour _updateBehaviour)
         {
             handsLastFrame = 0;
 
@@ -124,7 +126,7 @@ namespace Ultraleap.TouchFree.Library
             if (trackingProvider != null)
             {
                 trackingProvider.controller.FrameReady += Update;
-                trackingProvider.controller.ImageReady += UpdateRawHands;
+                trackingProvider.controller.ImageReady += StoreImage;
             }
 
             if (_configManager != null)
@@ -132,6 +134,8 @@ namespace Ultraleap.TouchFree.Library
                 _configManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
                 UpdateTrackingTransform(_configManager.PhysicalConfig);
             }
+
+            _updateBehaviour.OnSlowUpdate += UpdateRawHands;
         }
 
         public bool TrackingServiceConnected()
@@ -198,31 +202,41 @@ namespace Ultraleap.TouchFree.Library
             return new Vector3(renderPosition.x / image.Width, renderPosition.y / image.Width, ray.z);
         }
 
-        public void UpdateRawHands(object sender, ImageEventArgs e)
+        public void StoreImage(object sender, ImageEventArgs e)
         {
-            LastImageData = new ArraySegment<byte>(e.image.Data(Image.CameraType.LEFT), (int)e.image.ByteOffset(HandRenderLens), e.image.Height * e.image.Width * e.image.BytesPerPixel).ToArray();
+            lastImage = e.image;
+        }
 
-            if (PreConversionRawHands != null && e.image != null && RawHandsUpdated)
+        public void UpdateRawHands()
+        {
+            var imageToUse = lastImage;
+
+            if (lastImage != null)
             {
-                RawHandsUpdated = false;
-                RawHands = new HandFrame()
+                LastImageData = new ArraySegment<byte>(imageToUse.Data(Image.CameraType.LEFT), (int)imageToUse.ByteOffset(HandRenderLens), imageToUse.Height * imageToUse.Width * imageToUse.BytesPerPixel).ToArray();
+
+                if (PreConversionRawHands != null && imageToUse != null && RawHandsUpdated)
                 {
-                    Hands = PreConversionRawHands.Select(x => new RawHand()
+                    RawHandsUpdated = false;
+                    RawHands = new HandFrame()
                     {
-                        CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
-                        Fingers = x.Fingers.Select(f => new RawFinger()
+                        Hands = PreConversionRawHands.Select(x => new RawHand()
                         {
-                            Type = (FingerType)f.Type,
-                            Bones = f.bones.Select(b => new RawBone()
+                            CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
+                            Fingers = x.Fingers.Select(f => new RawFinger()
                             {
-                                NextJoint = LeapToCameraFrame(b.NextJoint, e.image),
-                                PrevJoint = LeapToCameraFrame(b.PrevJoint, e.image)
-                            }).ToArray()
-                        }).ToArray(),
-                        WristPosition = LeapToCameraFrame(x.WristPosition, e.image),
-                        WristWidth = x.PalmWidth
-                    }).ToArray()
-                };
+                                Type = (FingerType)f.Type,
+                                Bones = f.bones.Select(b => new RawBone()
+                                {
+                                    NextJoint = LeapToCameraFrame(b.NextJoint, imageToUse),
+                                    PrevJoint = LeapToCameraFrame(b.PrevJoint, imageToUse)
+                                }).ToArray()
+                            }).ToArray(),
+                            WristPosition = LeapToCameraFrame(x.WristPosition, imageToUse),
+                            WristWidth = x.PalmWidth
+                        }).ToArray()
+                    };
+                }
             }
         }
 
