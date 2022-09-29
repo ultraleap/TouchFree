@@ -228,8 +228,8 @@ namespace Ultraleap.TouchFree.Library
                                 Type = (FingerType)f.Type,
                                 Bones = f.bones.Select(b => new RawBone()
                                 {
-                                    NextJoint = LeapToCameraFrame(b.NextJoint, imageToUse),
-                                    PrevJoint = LeapToCameraFrame(b.PrevJoint, imageToUse)
+                                    NextJoint = b.Type == Bone.BoneType.TYPE_DISTAL ? LeapToCameraFrame(b.NextJoint, imageToUse) : default,
+                                    PrevJoint = b.Type== Bone.BoneType.TYPE_PROXIMAL ? LeapToCameraFrame(b.PrevJoint, imageToUse) : default
                                 }).ToArray()
                             }).ToArray(),
                             WristPosition = LeapToCameraFrame(x.WristPosition, imageToUse),
