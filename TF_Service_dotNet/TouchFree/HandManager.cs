@@ -45,7 +45,7 @@ namespace Ultraleap.TouchFree.Library
         private Vector3? lastPrimaryLocation;
         private Vector3? lastSecondaryLocation;
 
-        public byte[] LastImageData { get; private set; }
+        public ArraySegment<byte> LastImageData { get; private set; }
 
         public Leap.Image.CameraType HandRenderLens { private get; set; } = Image.CameraType.LEFT;
 
@@ -213,7 +213,7 @@ namespace Ultraleap.TouchFree.Library
 
             if (lastImage != null)
             {
-                LastImageData = new ArraySegment<byte>(imageToUse.Data(Image.CameraType.LEFT), (int)imageToUse.ByteOffset(HandRenderLens), imageToUse.Height * imageToUse.Width * imageToUse.BytesPerPixel).ToArray();
+                LastImageData = new ArraySegment<byte>(imageToUse.Data(Image.CameraType.LEFT), (int)imageToUse.ByteOffset(HandRenderLens), imageToUse.Height * imageToUse.Width * imageToUse.BytesPerPixel);
 
                 if (PreConversionRawHands != null && imageToUse != null && RawHandsUpdated)
                 {

@@ -129,7 +129,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             });
         }
 
-        public void SendHandData(HandFrame _data, byte[] lastHandData)
+        public void SendHandData(HandFrame _data, ArraySegment<byte> lastHandData)
         {
             SendMessageToWebSockets((connection) =>
             {
