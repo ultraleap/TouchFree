@@ -26,7 +26,11 @@ export const setHandRenderState = (handRenderState: boolean, lens: 'left' | 'rig
 
 const translateToCoordinate = (coordinate?: Vector) => {
     if (coordinate === undefined) return new HandSvgCoordinate(-1, -1, 600);
-    return new HandSvgCoordinate(1000 * (1 - coordinate.X * 1) - 100, 1000 * coordinate.Y - 100, coordinate.Z);
+    return new HandSvgCoordinate(
+        Math.round(1000 * (1 - coordinate.X * 1) - 100),
+        Math.round(1000 * coordinate.Y - 100),
+        coordinate.Z
+    );
 };
 
 const tipJointIndex = 3;

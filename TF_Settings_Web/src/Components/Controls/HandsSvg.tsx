@@ -74,7 +74,7 @@ export class HandState {
 
 export const HandsSvg: React.FC<HandState> = ({ one, two }) => {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" height="800" width="800">
+        <svg xmlns="http://www.w3.org/2000/svg" height="800" width="800" shapeRendering="optimizeSpeed">
             <defs>
                 <radialGradient id="dotGradient">
                     <stop offset="0%" stopColor="#00EB85" />
