@@ -7,5 +7,6 @@
         void Connect();
         void Disconnect();
         void SetImagesState(bool enabled);
+        bool ShouldSendHandData { get; }
     }
 }
