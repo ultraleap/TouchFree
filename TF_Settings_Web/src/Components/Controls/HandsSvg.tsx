@@ -264,7 +264,7 @@ const CircleSvg: React.FC<CircleData> = (data) => {
             cx={data.point.x}
             cy={data.point.y}
             r={data.radius}
-            fill={'url(#dotGradient)'}
+            fill={'#00EB85'}
             opacity={data.opacity}
         />
     );
