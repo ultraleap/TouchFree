@@ -34,6 +34,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.style.pointerEvents = 'none';
         svgElement.setAttribute('width', '100%');
         svgElement.setAttribute('height', '100%');
+        svgElement.setAttribute('shape-rendering', 'optimizeSpeed');
         svgElement.id = 'svg-cursor';
         documentBody?.appendChild(svgElement);
         
@@ -56,7 +57,7 @@ export class SVGCursor extends TouchlessCursor {
         svgDotElement.setAttribute(this.xPositionAttribute, '100');
         svgDotElement.setAttribute(this.yPositionAttribute, '100');
         svgDotElement.setAttribute('opacity', '1');
-        svgDotElement.style.transition = 'transform 200ms, opacity 666ms';
+        //svgDotElement.style.transition = 'transform 200ms, opacity 666ms';
         svgDotElement.style.transformBox = 'fill-box';
         svgDotElement.style.transformOrigin = 'center';
         svgDotElement.style.transform = 'scale(1)';

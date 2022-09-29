@@ -210,6 +210,7 @@ namespace Ultraleap.TouchFree.Library
         public void UpdateRawHands()
         {
             var imageToUse = lastImage;
+            lastImage = null;
 
             if (lastImage != null)
             {
