@@ -204,13 +204,14 @@ namespace Ultraleap.TouchFree.Library
 
         public void StoreImage(object sender, ImageEventArgs e)
         {
-            lastImage = e.image;
+            if (lastImage == null) {
+                lastImage = e.image;
+            }
         }
 
         public void UpdateRawHands()
         {
             var imageToUse = lastImage;
-            lastImage = null;
 
             if (lastImage != null)
             {
@@ -237,6 +238,11 @@ namespace Ultraleap.TouchFree.Library
                             WristWidth = x.PalmWidth
                         }).ToArray()
                     };
+                }
+
+                if (lastImage == imageToUse)
+                {
+                    lastImage = null;
                 }
             }
         }
