@@ -168,49 +168,43 @@ const MaskingScreen = () => {
     //         socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
     //     }
     // };
-
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    const handleTFInput = (evt: CustomEvent<any>): void => {
+    
+    const handleTFInput = (evt: CustomEvent<ArrayBuffer>): void => {
         if (isHandProcessing.current) return;
 
         isHandProcessing.current = true;
 
         try {
-            const bufferBlob = evt.detail as Blob;
-            new Response(bufferBlob)
-                .arrayBuffer()
-                .then((buffer) => {
-                    const imageArraySize = new Int32Array(buffer, 0, 4)[0];
+            const buffer = evt.detail;
+            const imageArraySize = new Int32Array(buffer, 4, 8)[0];
 
-                    if (imageArraySize > 0 && canvasContextRef.current) {
-                        updateCanvas(
-                            buffer.slice(4, imageArraySize),
-                            canvasContextRef.current,
-                            mainLens.current,
-                            isCamReversed.current,
-                            showOverexposed.current
-                        );
-                    }
+            if (imageArraySize > 0 && canvasContextRef.current) {
+                updateCanvas(
+                    buffer.slice(8, imageArraySize),
+                    canvasContextRef.current,
+                    mainLens.current,
+                    isCamReversed.current,
+                    showOverexposed.current
+                );
+            }
 
-                    const handsJson = String.fromCharCode.apply(null, [...new Uint8Array(buffer, 4 + imageArraySize)]);
+            const handsJson = String.fromCharCode.apply(null, [...new Uint8Array(buffer, 8 + imageArraySize)]);
 
-                    const hands = JSON.parse(handsJson)?.content?.Hands;
+            const hands = JSON.parse(handsJson)?.Hands;
 
-                    if (hands && (hands.length > 0 || handData.current.one || handData.current.two)) {
-                        const handOne = hands[0];
-                        const handTwo = hands[1];
-                        const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
-                        const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
+            if (hands && (hands.length > 0 || handData.current.one || handData.current.two)) {
+                const handOne = hands[0];
+                const handTwo = hands[1];
+                const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
+                const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
 
-                        handData.current = { one: convertedHandOne, two: convertedHandTwo };
-                    }
-                })
-                .finally(() => {
-                    // Ignore any messages for a short period to allow clearing of message handling
-                    handTimeoutRef.current = window.setTimeout(() => {
-                        isHandProcessing.current = false;
-                    }, FRAME_PROCESSING_TIMEOUT);
-                });
+                handData.current = { one: convertedHandOne, two: convertedHandTwo };
+            }
+
+            // Ignore any messages for a short period to allow clearing of message handling
+            handTimeoutRef.current = window.setTimeout(() => {
+                isHandProcessing.current = false;
+            }, FRAME_PROCESSING_TIMEOUT);
         } catch {
             isHandProcessing.current = false;
         }

@@ -10,6 +10,11 @@ namespace Ultraleap.TouchFree.Library.Connections
         CONNECTED
     }
 
+    public enum BinaryMessageType
+    {
+        Hand_Data = 1
+    }
+
     public enum ConfigurationState
     {
         NOT_LOADED,

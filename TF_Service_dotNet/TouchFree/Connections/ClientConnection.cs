@@ -62,21 +62,19 @@ namespace Ultraleap.TouchFree.Library.Connections
                 return;
             }
 
-            CommunicationWrapper<HandFrame> message =
-                new CommunicationWrapper<HandFrame>(ActionCode.HAND_DATA.ToString(), _data);
-
-            string jsonMessage = JsonConvert.SerializeObject(message);
+            string jsonMessage = JsonConvert.SerializeObject(_data);
 
             byte[] jsonAsBytes = Encoding.UTF8.GetBytes(jsonMessage);
 
             Int32 dataLength = lastHandData.Count;
 
-            IEnumerable<byte> dataToSend = BitConverter.GetBytes(dataLength);
+            IEnumerable<byte> binaryMessageType = BitConverter.GetBytes((int)BinaryMessageType.Hand_Data);
+            var dataToSend = binaryMessageType.Concat(BitConverter.GetBytes(dataLength));
             dataToSend = dataLength > 0 ? dataToSend.Concat(lastHandData) : dataToSend;
             dataToSend = dataToSend.Concat(jsonAsBytes);
 
             Socket.SendAsync(
-                new ArraySegment<byte>(dataToSend.ToArray()),
+                dataToSend.ToArray(),
                 WebSocketMessageType.Binary,
                 true,
                 CancellationToken.None);

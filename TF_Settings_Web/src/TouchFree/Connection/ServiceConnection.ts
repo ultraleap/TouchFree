@@ -109,7 +109,16 @@ export class ServiceConnection {
     // <MessageReceiver>.
     OnMessage(_message: MessageEvent): void {
         if ((typeof _message.data) !== 'string') {
-            ConnectionManager.messageReceiver.latestHandDataItem = _message.data;
+            
+            const bufferBlob = _message.data as Blob;
+            new Response(bufferBlob)
+                .arrayBuffer()
+                .then((buffer) => {
+                    const binaryDataType = new Int32Array(buffer, 0, 4)[0];
+                    if (binaryDataType === 1) {
+                        ConnectionManager.messageReceiver.latestHandDataItem = buffer;
+                    }
+                });
             return;
         }
 
