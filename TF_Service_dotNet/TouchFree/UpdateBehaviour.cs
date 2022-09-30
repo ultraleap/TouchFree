@@ -52,7 +52,7 @@ namespace Ultraleap.TouchFree.Library
                 {
                     onUpdate?.Invoke();
                     slowUpdateIteration++;
-                    if (slowUpdateIteration == slowUpdateCount)
+                    if (slowUpdateIteration >= slowUpdateCount)
                     {
                         slowUpdateIteration = 0;
                         onSlowUpdate?.Invoke();
