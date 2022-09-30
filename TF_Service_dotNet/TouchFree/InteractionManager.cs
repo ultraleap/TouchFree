@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Interactions;
 
 namespace Ultraleap.TouchFree.Library
@@ -13,6 +14,7 @@ namespace Ultraleap.TouchFree.Library
         private readonly IEnumerable<IInteraction> interactions;
         private readonly InteractionTuning interactionTuning;
         private readonly IHandManager handManager;
+        private readonly ITrackingConnectionManager trackingConnectionManager;
         private readonly IUpdateBehaviour updateBehaviour;
         private readonly IClientConnectionManager connectionManager;
 
@@ -31,23 +33,25 @@ namespace Ultraleap.TouchFree.Library
             IEnumerable<IInteraction> _interactions,
             IOptions<InteractionTuning> _interactionTuning,
             IConfigManager _configManager,
-            IHandManager _handManager)
+            IHandManager _handManager,
+            ITrackingConnectionManager _trackingConnectionManager)
         {
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
             interactions = _interactions;
             interactionTuning = _interactionTuning?.Value;
             handManager = _handManager;
+            trackingConnectionManager = _trackingConnectionManager;
 
             _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
             OnInteractionSettingsUpdated(_configManager.InteractionConfig);
+
+            updateBehaviour.OnUpdate += Update;
         }
 
         public void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
         {
-            var initialisationNotStarted = activeInteractions == null;
-
             List<InteractionType> interactionsToUse = new List<InteractionType>();
 
             if (_config.InteractionType == InteractionType.PUSH)
@@ -72,11 +76,6 @@ namespace Ultraleap.TouchFree.Library
             activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
             locationInteraction = interactions.SingleOrDefault(x => x.InteractionType == _config.InteractionType);
 
-            if (initialisationNotStarted)
-            {
-                updateBehaviour.OnUpdate += Update;
-            }
-
             // Reset the down position between interactions
             lastDownPosition = null;
             interactionCurrentlyDown = null;
@@ -84,7 +83,10 @@ namespace Ultraleap.TouchFree.Library
 
         public void Update()
         {
-            connectionManager.SendHandData(handManager.RawHands);
+            if (trackingConnectionManager.ShouldSendHandData)
+            {
+                connectionManager.SendHandData(handManager.RawHands);
+            }
 
             if (activeInteractions != null)
             {

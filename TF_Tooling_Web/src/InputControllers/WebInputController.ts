@@ -119,7 +119,13 @@ export class WebInputController extends BaseInputController {
         switch (_inputData.InputType) {
             case InputType.CANCEL:
                 this.ResetScrollData();
-                let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
+                let cancelEvent: PointerEvent = new PointerEvent("pointercancel", this.activeEventProps);
+                let outEvent: PointerEvent = new PointerEvent("pointerout", this.activeEventProps);
+
+                if (this.lastHoveredElement !== null && this.lastHoveredElement !== elementAtPos) {
+                    this.lastHoveredElement.dispatchEvent(cancelEvent);
+                    this.lastHoveredElement.dispatchEvent(outEvent);
+                }
 
                 if (elementAtPos !== null) {
                     let parentTree = this.GetOrderedParents(elementAtPos);
@@ -127,6 +133,7 @@ export class WebInputController extends BaseInputController {
                     parentTree.forEach((parent: Node | null) => {
                         if (parent !== null) {
                             parent.dispatchEvent(cancelEvent);
+                            parent.dispatchEvent(outEvent);
                         }
                     });
                 }
