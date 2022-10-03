@@ -511,6 +511,12 @@ TF_Service::Windows::package:
     - mkdir ./Service_Package/Wrapper/wwwroot/
     - mkdir ./Service_Package/Tray/
     - mkdir ./Service_Package/Licenses/
+
+    # Update Version.txt with latest information before packaging
+    - cp $CI_PROJECT_DIR/TF_Service_dotNet/Version.txt ./Service_dotNet_Build
+    - python ./Scripts/UpdateVersionFile.py --path ${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content "${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt"
+
     - cp -R ./Service_dotNet_Build/* ./Service_Package/Service/
     - cp -R ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -R ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
@@ -518,10 +524,6 @@ TF_Service::Windows::package:
     - cp -R ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -R ./Third_Party_Licenses/* ./Service_Package/Licenses/
 
-    # Update Version.txt with latest information before packaging
-    - cp $CI_PROJECT_DIR/TF_Service_dotNet/Version.txt ./Service_dotNet_Build
-    - python ./Scripts/UpdateVersionFile.py --path ${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
-    - Get-Content "${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt"
 
   artifacts:
     name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
@@ -577,11 +579,6 @@ TF_Service::ARMLinux::package:
     - ln ./Service_dotNet_Build_ARMLinux/libLeapC.so.5 ./Service_dotNet_Build_ARMLinux/libLeapC.so
     - ln ./Service_dotNet_Build_ARMLinux/libstdc++.so.6.0.28 ./Service_dotNet_Build_ARMLinux/libstdc++.so.6
     - chmod +x ./Service_dotNet_Build_ARMLinux/TouchFree_Service
-
-    # Update Version.txt with latest information before packaging
-    - cp $CI_PROJECT_DIR/TF_Service_dotNet/Version.txt ./Service_dotNet_Build_ARMLinux
-    - python ./Scripts/UpdateVersionFile.py --path ${env:CI_PROJECT_DIR}/Service_dotNet_Build_ARMLinux/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
-    - Get-Content "${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt"
 
     # Uncompress & chmod tracking service
     - cd $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/
