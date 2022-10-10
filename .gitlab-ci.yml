@@ -260,15 +260,17 @@ TF_Tooling::Web::test:
 
 TF_Tooling::Web::Consistency::test:
   stage: test
-  dependencies:
-    - TF_Tooling::Web::build
-    - TF_Settings::Web::build
+  # Does it need dependencies? Just looking at source code so no?
+  # dependencies:
+  #   - TF_Tooling::Web::build
+  #   - TF_Settings::Web::build
   when: always
   script:
     # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
     - echo "Checking that Web Settings Tooling and Web Tooling are in sync"
-    - diff -r ./TF_Settings_Web/src/TouchFree/ ${env:TF_TFW_PATH}/src/
+    - diff -r ${env:TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
 
+  # Put outcome of diff into a file and have that as an artifact?
   # artifacts:
   #   when: always
   #   name: "TestResults"
@@ -277,7 +279,7 @@ TF_Tooling::Web::Consistency::test:
   #   reports:
   #     junit: ${env:TF_TFW_PATH}/junit.xml
   tags:
-    - unity
+    #- unity # What tags are needed
     - win10
 
 TF_Service::Tray::build:
