@@ -269,7 +269,7 @@ TF_Tooling::Web::Consistency::test:
   script:
     # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
     - echo "Checking that Web Settings Tooling and Web Tooling are in sync"
-    - diff -r ${env:TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
+    - diff -r ${env:TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/ && exit 0 || exit 1
 
   # Put outcome of diff into a file and have that as an artifact?
   # artifacts:
