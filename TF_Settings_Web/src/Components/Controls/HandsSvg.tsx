@@ -94,8 +94,8 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
     }
 
     const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600 / data.middleKnuckle.z;
-    const pointRadius = 5 * scalingFactor;
-    const strokeWidth = 5 * scalingFactor;
+    const pointRadius = Math.round(5 * scalingFactor);
+    const strokeWidth = Math.round(5 * scalingFactor);
 
     const strokeData: LineStrokeData = {
         stroke: 'white',
