@@ -10,11 +10,11 @@ variables:
 
   BS_EXTENSION_NAME: ultouchfree
 
-  TF_TFU_VERSION: "1.1.0"
-  TF_TFW_VERSION: "1.1.1"
-  TOUCHFREE_VERSION: "2.3.1"
+  TF_TFU_VERSION: '1.1.0'
+  TF_TFW_VERSION: '1.1.1'
+  TOUCHFREE_VERSION: '2.3.1'
 
-  TF_TOOLING_API_VERSION: "1.3.0"
+  TF_TOOLING_API_VERSION: '1.3.0'
 
   TARGET_TRACKING_JOBID_WIN: 710187
 
@@ -49,8 +49,8 @@ TF_Tooling::Unity::build:
 
     # Copy Version.txt to Tooling_Release folder
     - if (Test-Path -Path "./Tooling_Release") {
-      Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
-      Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
     - mkdir ./Tooling_Release
     - cp ${env:CI_PROJECT_DIR}/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling/Version.txt ./Tooling_Release
@@ -84,8 +84,8 @@ TF_Tooling::Web::build:
     # Clean last build
     - cd ${env:CI_PROJECT_DIR}
     - if (Test-Path -Path "./Tooling_Release") {
-      Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
-      Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
+        Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
     # Package Tooling
     - mkdir ./Tooling_Release
@@ -113,7 +113,7 @@ TF_Tooling::Docs::build:
   artifacts:
     name: "TouchFree_Tooling_Documentation"
     paths:
-      - ./Documentation/*
+    - ./Documentation/*
     expire_in: 2 weeks
     when: always
   tags:
@@ -134,7 +134,7 @@ TF_Service::Wrapper::build:
   artifacts:
     name: "TouchFree_Service_Wrapper"
     paths:
-      - ./Service_Wrapper_Build/**
+    - ./Service_Wrapper_Build/**
     expire_in: 2 weeks
     when: always
   tags:
@@ -150,8 +150,8 @@ TF_Service::dotNet::Windows::build:
 
     # Move the built executable to the root directory
     - if (Test-Path -Path "./Service_dotNet_Build") {
-      Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
-      Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
+        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
+        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/win-x64/publish/*" ./Service_dotNet_Build
@@ -162,7 +162,7 @@ TF_Service::dotNet::Windows::build:
   artifacts:
     name: "TouchFree_Service_dotNet"
     paths:
-      - ./Service_dotNet_Build/**
+    - ./Service_dotNet_Build/**
     expire_in: 2 weeks
     when: always
   tags:
@@ -178,8 +178,8 @@ TF_Service::dotNet::ARMLinux::build:
 
     # Move the built executable to the root directory
     - if (Test-Path -Path "./Service_dotNet_Build_ARMLinux") {
-      Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
-      Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
+        Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
+        Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
       }
     - mkdir ./Service_dotNet_Build_ARMLinux
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/linux-arm64/publish/*" ./Service_dotNet_Build_ARMLinux
@@ -196,7 +196,7 @@ TF_Service::dotNet::ARMLinux::build:
   artifacts:
     name: "TouchFree_Service_dotNet_ARMLinux"
     paths:
-      - ./Service_dotNet_Build_ARMLinux/**
+    - ./Service_dotNet_Build_ARMLinux/**
     expire_in: 2 weeks
     when: always
   tags:
@@ -212,7 +212,7 @@ Tracking::ARMLinux::download_package:
     - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
   artifacts:
     paths:
-      - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/*.tar.gz
+    - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/*.tar.gz
     expire_in: 1 hour
   tags:
     - unity
@@ -230,7 +230,7 @@ TF_Service::dotNet::test:
     when: always
     name: "TestResults"
     paths:
-      - $CI_PROJECT_DIR/TestResults/Test_Results.xml
+    - $CI_PROJECT_DIR/TestResults/Test_Results.xml
     reports:
       junit: $CI_PROJECT_DIR/TestResults/Test_Results.xml
   tags:
@@ -251,7 +251,7 @@ TF_Tooling::Web::test:
     when: always
     name: "TestResults"
     paths:
-      - ${env:TF_TFW_PATH}/junit.xml
+    - ${env:TF_TFW_PATH}/junit.xml
     reports:
       junit: ${env:TF_TFW_PATH}/junit.xml
   tags:
@@ -260,7 +260,8 @@ TF_Tooling::Web::test:
 
 TF_Tooling::Web::Consistency::test:
   stage: test
-  dependencies: []
+  dependencies:
+      []
   when: always
   script:
     # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
@@ -285,7 +286,7 @@ TF_Service::Tray::build:
   artifacts:
     name: "TouchFree_Service_Tray"
     paths:
-      - ./Service_Tray_Build/**
+    - ./Service_Tray_Build/**
     expire_in: 2 weeks
     when: always
   tags:
@@ -329,8 +330,8 @@ TF_Settings::Windows::build:
   artifacts:
     name: "TouchFree_Settings_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
-      - UIBuild/**
-      - ./SettingsUI_build.log
+    - UIBuild/**
+    - ./SettingsUI_build.log
     expire_in: 2 weeks
     when: always
   tags:
@@ -348,7 +349,7 @@ TF_Settings::Web::build:
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./TF_Settings_Web/build/*
+    - ./TF_Settings_Web/build/*
     expire_in: 2 weeks
     when: always
   tags:
@@ -381,8 +382,8 @@ TouchFree::build:
 
     # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
-      Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
-      Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
+        Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
+        Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
       }
     - mkdir ./TouchFree_Build
     - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree_Application/Version.txt ./TouchFree_Build
@@ -422,7 +423,7 @@ Tracking::download:
     - if (Test-Path "C:/build_machine_info.txt") { Get-Content "C:/build_machine_info.txt" }
   artifacts:
     paths:
-      - ./Scripts/Tracking_Build/Tracking_for_TouchFree_*.exe
+    - ./Scripts/Tracking_Build/Tracking_for_TouchFree_*.exe
     expire_in: 1 hour
   tags:
     - unity
@@ -457,7 +458,10 @@ TF_Tooling::Web::package:
   dependencies:
     - TF_Tooling::Web::build
     - TF_Tooling::Docs::build
-  needs: ["TF_Tooling::Web::build", "TF_Tooling::Docs::build"]
+  needs: [
+    "TF_Tooling::Web::build",
+    "TF_Tooling::Docs::build"
+  ]
   script:
     - mkdir ./Tooling_Package/
     - cp -R ./Tooling_Release/* ./Tooling_Package/
@@ -477,7 +481,10 @@ TF_Tooling::Unity::package:
   dependencies:
     - TF_Tooling::Unity::build
     - TF_Tooling::Docs::build
-  needs: ["TF_Tooling::Unity::build", "TF_Tooling::Docs::build"]
+  needs: [
+    "TF_Tooling::Unity::build",
+    "TF_Tooling::Docs::build"
+  ]
   script:
     - mkdir ./Tooling_Package/
     - cp -R ./Tooling_Release/* ./Tooling_Package/
@@ -499,14 +506,13 @@ TF_Service::Windows::package:
     - TF_Service::dotNet::Windows::build
     - TF_Service::Wrapper::build
     - TF_Service::Tray::build
-  needs:
-    [
-      "TF_Service::dotNet::Windows::build",
-      "TF_Settings::Web::build",
-      "TF_Settings::Windows::build",
-      "TF_Service::Wrapper::build",
-      "TF_Service::Tray::build",
-    ]
+  needs: [
+    "TF_Service::dotNet::Windows::build",
+    "TF_Settings::Web::build",
+    "TF_Settings::Windows::build",
+    "TF_Service::Wrapper::build",
+    "TF_Service::Tray::build"
+  ]
   script:
     # Package Service up neatly
     - mkdir ./Service_Package/
@@ -537,7 +543,9 @@ TF_Service::dotNet::Brightsign::example:
   stage: package
   dependencies:
     - TF_Tooling::Web::package
-  needs: ["TF_Tooling::Web::package"]
+  needs: [
+    "TF_Tooling::Web::package"
+  ]
   script:
     # Run innosetup
     - mkdir ./BS_Example_Package
@@ -548,7 +556,7 @@ TF_Service::dotNet::Brightsign::example:
   artifacts:
     name: "BrightSign_Example_Package_${CI_COMMIT_SHORT_SHA}"
     paths:
-      - ./BS_Example_Package
+    - ./BS_Example_Package
     expire_in: 2 weeks
     when: always
   tags:
@@ -561,12 +569,11 @@ TF_Service::ARMLinux::package:
     - Tracking::ARMLinux::download_package
     - TF_Settings::Web::build
     - TF_Service::dotNet::ARMLinux::build
-  needs:
-    [
-      "Tracking::ARMLinux::download_package",
-      "TF_Settings::Web::build",
-      "TF_Service::dotNet::ARMLinux::build",
-    ]
+  needs: [
+    "Tracking::ARMLinux::download_package",
+    "TF_Settings::Web::build",
+    "TF_Service::dotNet::ARMLinux::build"
+  ]
   script:
     - apt-get update
     - apt-get --assume-yes install squashfs-tools
@@ -616,8 +623,11 @@ TouchFree::installer:
     - TF_Service::Windows::package
     - Tracking::download
     - TouchFree::build
-  needs:
-    ["TF_Service::Windows::package", "Tracking::download", "TouchFree::build"]
+  needs: [
+    "TF_Service::Windows::package",
+    "Tracking::download",
+    "TouchFree::build"
+  ]
   script:
     # Run innosetup
     - cd ./Scripts/
