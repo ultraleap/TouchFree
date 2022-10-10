@@ -260,11 +260,8 @@ TF_Tooling::Web::test:
 
 TF_Tooling::Web::Consistency::test:
   stage: test
-  # Does it need dependencies? Just looking at source code so no?
   dependencies:
       []
-  #   - TF_Tooling::Web::build
-  #   - TF_Settings::Web::build
   when: always
   script:
     # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
@@ -280,7 +277,7 @@ TF_Tooling::Web::Consistency::test:
   #   reports:
   #     junit: ${env:TF_TFW_PATH}/junit.xml
   tags:
-    #- unity # What tags are needed
+    - unity
     - win10
 
 TF_Service::Tray::build:
