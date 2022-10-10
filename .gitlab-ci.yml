@@ -258,6 +258,28 @@ TF_Tooling::Web::test:
     - unity
     - win10
 
+TF_Tooling::Web::Consistency::test:
+  stage: test
+  dependencies:
+    - TF_Tooling::Web::build
+    - TF_Settings::Web::build
+  when: always
+  script:
+    # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
+    - echo "Checking that Web Settings Tooling and Web Tooling are in sync"
+    - diff -r ./TF_Settings_Web/src/TouchFree/ ${env:TF_TFW_PATH}/src/
+
+  # artifacts:
+  #   when: always
+  #   name: "TestResults"
+  #   paths:
+  #   - ${env:TF_TFW_PATH}/junit.xml
+  #   reports:
+  #     junit: ${env:TF_TFW_PATH}/junit.xml
+  tags:
+    - unity
+    - win10
+
 TF_Service::Tray::build:
   stage: build
   when: always
