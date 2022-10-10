@@ -261,7 +261,8 @@ TF_Tooling::Web::test:
 TF_Tooling::Web::Consistency::test:
   stage: test
   # Does it need dependencies? Just looking at source code so no?
-  # dependencies:
+  dependencies:
+      []
   #   - TF_Tooling::Web::build
   #   - TF_Settings::Web::build
   when: always
