@@ -168,7 +168,7 @@ const MaskingScreen = () => {
     //         socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
     //     }
     // };
-    
+
     const handleTFInput = (evt: CustomEvent<ArrayBuffer>): void => {
         if (isHandProcessing.current) return;
 
@@ -182,7 +182,6 @@ const MaskingScreen = () => {
                 updateCanvas(
                     buffer.slice(8, imageArraySize),
                     canvasContextRef.current,
-                    mainLens.current,
                     isCamReversed.current,
                     showOverexposed.current
                 );
