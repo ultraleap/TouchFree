@@ -51,6 +51,10 @@
 
 <body style="overflow:hidden">
     <div>
+        <div style="position: fixed; top: 10px; right: 20px;">
+            <button onpointerdown="setCursor('hand')">Grab Cursor</button>
+            <button onpointerdown="setCursor('svg')">SVG Cursor</button>
+        </div>
         <div class="verticalScroll">
             <button class="buttonVertical snappable" onpointerdown="changeText(this.textContent)">
                 Button 1

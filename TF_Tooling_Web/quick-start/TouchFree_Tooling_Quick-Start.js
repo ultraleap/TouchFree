@@ -1,6 +1,14 @@
 TouchFree.Connection.ConnectionManager.init();
 
 window.onload = function () {
-    var svgCursor = new TouchFree.Cursors.SVGCursor();
-    var inputSystem = new TouchFree.InputControllers.WebInputController();
+    window.cursorManager = new TouchFree.Cursors.CursorManager({
+      spriteSheetUrl: "./images/cursor_sprites.png",
+      blankUrl: "./images/blank.png",
+    });
+    cursorManager.SetActiveCursor('hand');
+    new TouchFree.InputControllers.WebInputController();
+}
+
+const setCursor = (cursor) => {
+    cursorManager.SetActiveCursor(cursor);
 }
