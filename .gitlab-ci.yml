@@ -266,18 +266,8 @@ TF_Tooling::Web::Consistency::test:
   script:
     # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
     - echo "Checking that Web Settings Tooling and Web Tooling are in sync"
-    # - output=$(diff -r ${env:TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/)
-    # - echo "${output}"
-    - diff -r ${TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
+    - diff -r -u2 ${TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
 
-  # Put outcome of diff into a file and have that as an artifact?
-  # artifacts:
-  #   when: always
-  #   name: "TestResults"
-  #   paths:
-  #   - ${env:TF_TFW_PATH}/junit.xml
-  #   reports:
-  #     junit: ${env:TF_TFW_PATH}/junit.xml
   tags:
     - docker
 
