@@ -22,8 +22,6 @@ import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
 import { HandDataManager } from '../Plugins/HandDataManager';
 
-//test
-
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
 // Distributes the results of the messages to the respective managers.
