@@ -266,7 +266,7 @@ TF_Tooling::Web::Consistency::test:
   script:
     # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
     - echo "Checking that Web Settings Tooling and Web Tooling are in sync"
-    - diff -r -u2 ${TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
+    - diff -r -u 2 ${TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
 
   tags:
     - docker
