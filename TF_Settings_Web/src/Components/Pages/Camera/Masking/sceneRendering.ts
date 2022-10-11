@@ -131,7 +131,7 @@ const addBasicWristMesh = (scene: Scene): WristMesh => ({
 
 const addBasicCircleMesh = (scene: Scene): BasicMesh => {
     const mesh = new Mesh(
-        new CircleBufferGeometry(0.02, 16),
+        new CircleBufferGeometry(0.02, 10),
         new MeshBasicMaterial({ color: cssVariables.ultraleapGreen, transparent: true })
     );
     mesh.visible = false;
@@ -215,6 +215,7 @@ const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean)
     const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 3);
     line.material.linewidth = BASE_LINE_THICKNESS * scale;
     line.material.opacity = isPrimary ? 1 : 0.5;
+    line.material.needsUpdate = true;
 };
 
 const moveMesh = (mesh: BasicMesh, position: Vector3, isPrimary: boolean) => {
@@ -223,4 +224,5 @@ const moveMesh = (mesh: BasicMesh, position: Vector3, isPrimary: boolean) => {
 
     const scale = MapRangeToRange(position.z, 0, 0.1, 1, 3);
     mesh.scale.set(scale, scale, 1);
+    mesh.material.needsUpdate = true;
 };
