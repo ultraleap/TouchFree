@@ -1,6 +1,6 @@
 import {
     BufferGeometry,
-    CircleGeometry,
+    CircleBufferGeometry,
     DataTexture,
     Mesh,
     MeshBasicMaterial,
@@ -24,6 +24,8 @@ import { FingerData, HandData, HandState } from './createHandData';
 export type BasicMesh = Mesh<BufferGeometry, MeshBasicMaterial>;
 
 interface FingerMesh {
+    visible: boolean,
+    primary: boolean,
     tip: BasicMesh;
     knuckle: BasicMesh;
     lineToTip: Line2;
@@ -31,6 +33,8 @@ interface FingerMesh {
 }
 
 interface WristMesh {
+    visible: boolean,
+    primary: boolean,
     point: BasicMesh;
     lineToThumb: Line2;
 }
@@ -103,13 +107,15 @@ export const updateCameraRender = (data: Uint8Array, width: number, height: numb
     _cameraFeedTexture.needsUpdate = true;
 
     _cameraFeedMesh.material.map = _cameraFeedTexture;
-    _cameraFeedMesh.material.needsUpdate = true;
+    _cameraFeedMesh.material.color.convertSRGBToLinear();
 
     updateHandMesh(_handOneMesh, handData?.one);
     updateHandMesh(_handTwoMesh, handData?.two);
 };
 
 const addBasicFingerMesh = (scene: Scene): FingerMesh => ({
+    visible: false,
+    primary: false,
     tip: addBasicCircleMesh(scene),
     knuckle: addBasicCircleMesh(scene),
     lineToTip: addBasicLine(scene),
@@ -117,13 +123,15 @@ const addBasicFingerMesh = (scene: Scene): FingerMesh => ({
 });
 
 const addBasicWristMesh = (scene: Scene): WristMesh => ({
+    visible: false,
+    primary: false,
     point: addBasicCircleMesh(scene),
     lineToThumb: addBasicLine(scene),
 });
 
 const addBasicCircleMesh = (scene: Scene): BasicMesh => {
     const mesh = new Mesh(
-        new CircleGeometry(0.02, 16),
+        new CircleBufferGeometry(0.02, 16),
         new MeshBasicMaterial({ color: cssVariables.ultraleapGreen, transparent: true })
     );
     mesh.visible = false;
@@ -170,11 +178,19 @@ const updateFingerMesh = (
         moveMesh(fingerMesh.knuckle, finger.knuckle, isPrimary);
         moveLine(fingerMesh.lineToTip, finger.knuckle, finger.tip, isPrimary);
         moveLine(fingerMesh.lineToNextKnuckle, finger.knuckle, nextKnucklePos, isPrimary);
-    } else {
+        if (!fingerMesh.visible) {   
+            fingerMesh.tip.visible = true;
+            fingerMesh.knuckle.visible = true;
+            fingerMesh.lineToTip.visible = true;
+            fingerMesh.lineToNextKnuckle.visible = true;
+            fingerMesh.visible = true;
+        }
+    } else if (fingerMesh.visible) {
         fingerMesh.tip.visible = false;
         fingerMesh.knuckle.visible = false;
         fingerMesh.lineToTip.visible = false;
         fingerMesh.lineToNextKnuckle.visible = false;
+        fingerMesh.visible = false;
     }
 };
 
@@ -182,9 +198,15 @@ const updateWristMesh = (wristMesh: WristMesh, isPrimary: boolean, wrist?: Vecto
     if (wrist && thumbKnucklePos) {
         moveMesh(wristMesh.point, wrist, isPrimary);
         moveLine(wristMesh.lineToThumb, wrist, thumbKnucklePos, isPrimary);
-    } else {
+        if (!wristMesh.visible) {
+            wristMesh.point.visible = true;
+            wristMesh.lineToThumb.visible = true;
+            wristMesh.visible = true;
+        }
+    } else if (wristMesh.visible) {
         wristMesh.point.visible = false;
         wristMesh.lineToThumb.visible = false;
+        wristMesh.visible = false;
     }
 };
 
@@ -193,15 +215,11 @@ const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean)
     const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 3);
     line.material.linewidth = BASE_LINE_THICKNESS * scale;
     line.material.opacity = isPrimary ? 1 : 0.5;
-    line.material.needsUpdate = true;
-    line.visible = true;
 };
 
 const moveMesh = (mesh: BasicMesh, position: Vector3, isPrimary: boolean) => {
     mesh.position.set(position.x, position.y, position.z + 0.0001);
     mesh.material.opacity = isPrimary ? 1 : 0.5;
-    mesh.material.needsUpdate = true;
-    mesh.visible = true;
 
     const scale = MapRangeToRange(position.z, 0, 0.1, 1, 3);
     mesh.scale.set(scale, scale, 1);
