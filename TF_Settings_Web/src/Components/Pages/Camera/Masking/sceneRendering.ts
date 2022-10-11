@@ -24,8 +24,8 @@ import { FingerData, HandData, HandState } from './createHandData';
 export type BasicMesh = Mesh<BufferGeometry, MeshBasicMaterial>;
 
 interface FingerMesh {
-    visible: boolean,
-    primary: boolean,
+    visible: boolean;
+    primary: boolean;
     tip: BasicMesh;
     knuckle: BasicMesh;
     lineToTip: Line2;
@@ -33,8 +33,8 @@ interface FingerMesh {
 }
 
 interface WristMesh {
-    visible: boolean,
-    primary: boolean,
+    visible: boolean;
+    primary: boolean;
     point: BasicMesh;
     lineToThumb: Line2;
 }
@@ -178,7 +178,7 @@ const updateFingerMesh = (
         moveMesh(fingerMesh.knuckle, finger.knuckle, isPrimary);
         moveLine(fingerMesh.lineToTip, finger.knuckle, finger.tip, isPrimary);
         moveLine(fingerMesh.lineToNextKnuckle, finger.knuckle, nextKnucklePos, isPrimary);
-        if (!fingerMesh.visible) {   
+        if (!fingerMesh.visible) {
             fingerMesh.tip.visible = true;
             fingerMesh.knuckle.visible = true;
             fingerMesh.lineToTip.visible = true;
