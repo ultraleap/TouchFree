@@ -203,7 +203,6 @@ export class MessageReceiver {
             // If callback didn't happen for known reasons, we cna be sure it's an independent status event rather than a request response
             if (callbackResult === 'NoCallbacksFound' || callbackResult === 'CallbacksUndefined')
             {
-                console.log(serviceStatus)
                 ConnectionManager.instance.dispatchEvent(
                     new CustomEvent<TrackingServiceState>(TouchFreeEvent.ON_TRACKING_SERVICE_STATE_CHANGE,
                         {detail: serviceStatus.trackingServiceState ?? undefined}));
