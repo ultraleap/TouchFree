@@ -72,7 +72,7 @@ export class HandState {
     two?: HandSvgProps;
 }
 
-export const HandsSvg: React.FC<HandState> = ({ one, two }) => {
+export const HandsSvg: React.FC<HandState> = React.memo(({ one, two }) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" height="800" width="800" shapeRendering="optimizeSpeed">
             <defs>
@@ -86,11 +86,11 @@ export const HandsSvg: React.FC<HandState> = ({ one, two }) => {
             <HandSvg data={two} />
         </svg>
     );
-};
+});
 
-export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
+export const HandSvg: React.FC<{ data?: HandSvgProps }> = React.memo(({ data }) => {
     if (!data) {
-        return <g></g>;
+        return <></>;
     }
 
     const scalingFactor = data.middleKnuckle.z > 600 ? 1 : data.middleKnuckle.z < 100 ? 6 : 600 / data.middleKnuckle.z;
@@ -166,7 +166,7 @@ export const HandSvg: React.FC<{ data?: HandSvgProps }> = ({ data }) => {
             {elements}
         </g>
     );
-};
+});
 
 interface FingerData {
     id: string;
