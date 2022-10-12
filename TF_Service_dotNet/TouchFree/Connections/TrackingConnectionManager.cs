@@ -15,7 +15,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         private const int initialWaitTimeSeconds = 1;
         private bool ShouldConnect = false;
 
-        public bool ShouldSendHandData { get; private set; }
+        public bool ShouldSendHandData { get; set; }
 
         private TrackingMode currentTrackingMode;
 
@@ -177,7 +177,6 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public void SetImagesState(bool enabled)
         {
-            ShouldSendHandData = enabled;
             if (enabled)
             {
                 controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);

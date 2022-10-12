@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
@@ -22,9 +23,28 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
-            trackingConnectionManager.SetImagesState(_contentObject.GetValue("enabled").ToString() == true.ToString());
-            var lens = _contentObject.GetValue("lens")?.ToString()?.ToLower() == Leap.Image.CameraType.LEFT.ToString().ToLower() ? Leap.Image.CameraType.LEFT : Leap.Image.CameraType.RIGHT;
-            handManager.HandRenderLens = lens;
+            var enabled = _contentObject.GetValue("enabled").ToString() == true.ToString();
+
+            HandDataReferenceFrame referenceFrame;
+            if (!Enum.TryParse(_contentObject?.GetValue("referenceFrame")?.ToString(), out referenceFrame))
+            {
+                referenceFrame = HandDataReferenceFrame.LENS_FRAME;
+            }
+
+            handManager.HandDataReferenceFrame = referenceFrame;
+            handManager.HandDataEnabled = enabled;
+            trackingConnectionManager.ShouldSendHandData = enabled;
+
+            switch (referenceFrame) {
+                case HandDataReferenceFrame.SCREEN_FRAME:
+                    trackingConnectionManager.SetImagesState(false);
+                    break;
+                default:
+                    trackingConnectionManager.SetImagesState(enabled);
+                    var lens = _contentObject.GetValue("lens")?.ToString()?.ToLower() == Leap.Image.CameraType.LEFT.ToString().ToLower() ? Leap.Image.CameraType.LEFT : Leap.Image.CameraType.RIGHT;
+                    handManager.HandRenderLens = lens;
+                    break;
+            }
 
             ResponseToClient response = new ResponseToClient(requestId, "Success", string.Empty, _request.content);
             clientMgr.SendResponse(response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);

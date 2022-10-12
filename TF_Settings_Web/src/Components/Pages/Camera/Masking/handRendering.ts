@@ -5,7 +5,7 @@ import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
-    HandRenderDataStateRequest,
+    HandDataStateRequest,
 } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
 
@@ -14,7 +14,7 @@ import { HandState, HandSvgCoordinate, HandSvgProps } from 'Components/Controls/
 export const setHandRenderState = (handRenderState: boolean, lens: 'left' | 'right'): void => {
     const requestID = uuidgen();
 
-    const content = new HandRenderDataStateRequest(requestID, handRenderState, lens);
+    const content = new HandDataStateRequest(requestID, handRenderState, 'LENS_FRAME', lens);
     const request = new CommunicationWrapper(ActionCode.SET_HAND_DATA_STREAM_STATE, content);
 
     const jsonContent = JSON.stringify(request);

@@ -46,6 +46,8 @@ namespace Ultraleap.TouchFree.Library
         private Vector3? lastSecondaryLocation;
 
         public Leap.Image.CameraType HandRenderLens { private get; set; } = Image.CameraType.LEFT;
+        public HandDataReferenceFrame HandDataReferenceFrame { private get; set; } = HandDataReferenceFrame.LENS_FRAME;
+        public bool HandDataEnabled { private get; set; } = false;
 
         bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
         bool PrimaryIsRight => PrimaryHand != null && !PrimaryHand.IsLeft;
@@ -97,6 +99,7 @@ namespace Ultraleap.TouchFree.Library
         private readonly IConfigManager configManager;
 
         private int handsLastFrame;
+        private Image LastImage;
 
         public HandFrame RawHands { get; private set; }
         public List<Hand> PreConversionRawHands { get; private set; }
@@ -122,7 +125,7 @@ namespace Ultraleap.TouchFree.Library
             if (trackingProvider != null)
             {
                 trackingProvider.controller.FrameReady += Update;
-                trackingProvider.controller.ImageReady += UpdateRawHands;
+                trackingProvider.controller.ImageReady += UpdateImage;
             }
 
             if (_configManager != null)
@@ -196,30 +199,65 @@ namespace Ultraleap.TouchFree.Library
             return new Vector3(renderPosition.x / image.Width, renderPosition.y / image.Width, ray.z);
         }
 
-        public void UpdateRawHands(object sender, ImageEventArgs e)
+        public void UpdateImage(object sender, ImageEventArgs e)
         {
-            if (PreConversionRawHands != null && e.image != null && RawHandsUpdated)
+            LastImage = e.image;
+        }
+
+        public void UpdateRawHands()
+        {
+            if (PreConversionRawHands != null && RawHandsUpdated)
             {
-                RawHandsUpdated = false;
-                RawHands = new HandFrame()
+                switch (HandDataReferenceFrame)
                 {
-                    Hands = PreConversionRawHands.Select(x => new RawHand()
-                    {
-                        CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
-                        Fingers = x.Fingers.Select(f => new RawFinger()
+                    case HandDataReferenceFrame.SCREEN_FRAME:
+                        RawHandsUpdated = false;
+                        RawHands = ConvertRawHands((positionIn) =>
                         {
-                            Type = (FingerType)f.Type,
-                            Bones = f.bones.Select(b => new RawBone()
+                            return virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(positionIn));
+                        });
+                        break;
+
+                    default:
+                        if (LastImage != null)
+                        {
+                            RawHandsUpdated = false;
+                            RawHands = ConvertRawHands((positionIn) =>
                             {
-                                NextJoint = LeapToCameraFrame(b.NextJoint, e.image),
-                                PrevJoint = LeapToCameraFrame(b.PrevJoint, e.image)
-                            }).ToArray()
-                        }).ToArray(),
-                        WristPosition = LeapToCameraFrame(x.WristPosition, e.image),
-                        WristWidth = x.PalmWidth
-                    }).ToArray()
-                };
+                                return LeapToCameraFrame(positionIn, LastImage);
+                            });
+                        }
+                        break;
+                }
+
             }
+        }
+
+        private HandFrame ConvertRawHands(Func<Leap.Vector, Vector3> conversion)
+        {
+            if (conversion == null)
+            {
+                return new HandFrame();
+            }
+
+            return new HandFrame()
+            {
+                Hands = PreConversionRawHands.Select(x => new RawHand()
+                {
+                    CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
+                    Fingers = x.Fingers.Select(f => new RawFinger()
+                    {
+                        Type = (FingerType)f.Type,
+                        Bones = f.bones.Select(b => new RawBone()
+                        {
+                            NextJoint = conversion.Invoke(b.NextJoint),
+                            PrevJoint = conversion.Invoke(b.PrevJoint)
+                        }).ToArray()
+                    }).ToArray(),
+                    WristPosition = conversion.Invoke(x.WristPosition),
+                    WristWidth = x.PalmWidth
+                }).ToArray()
+            };
         }
 
         public void Update(object sender, FrameEventArgs e)
@@ -244,8 +282,11 @@ namespace Ultraleap.TouchFree.Library
 
             handsLastFrame = handCount;
 
-            PreConversionRawHands = currentFrame.Hands;
-            RawHandsUpdated = true;
+            if (HandDataEnabled)
+            {
+                PreConversionRawHands = currentFrame.Hands;
+                RawHandsUpdated = true;
+            }
 
             currentFrame = currentFrame.TransformedCopy(trackingTransform);
 
@@ -317,6 +358,8 @@ namespace Ultraleap.TouchFree.Library
 
             UpdateHandStatus(PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
             UpdateHandStatus(SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
+
+            UpdateRawHands();
 
             HandsUpdated?.Invoke(PrimaryHand, SecondaryHand);
         }

@@ -161,17 +161,20 @@ export class ConfigState extends TouchFreeRequest {
 export class ConfigChangeRequest extends TouchFreeRequest {
 }
 
-// class: HandRenderDataStateRequest
-// Used to set the state of the Hand Render Data stream.
-export class HandRenderDataStateRequest extends TouchFreeRequest {
+// class: HandDataStateRequest
+// Used to set the state of the Hand Data stream.
+export class HandDataStateRequest extends TouchFreeRequest {
     // Variable: enabled
     enabled: boolean;
+    // Variable: referenceFrame
+    referenceFrame: 'LENS_FRAME' | 'SCREEN_FRAME';
     // Variable: lens
-    lens: string;
+    lens: 'left' | 'right';
 
-    constructor(_id: string, enabled: boolean, lens: string) {
+    constructor(_id: string, enabled: boolean, referenceFrame: 'LENS_FRAME' | 'SCREEN_FRAME' = 'LENS_FRAME', lens: 'left' | 'right' = 'left') {
         super(_id);
         this.enabled = enabled;
+        this.referenceFrame = referenceFrame;
         this.lens = lens;
     }
 }
