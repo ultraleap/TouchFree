@@ -8,8 +8,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private readonly FileSystemWatcher interactionWatcher;
         private readonly FileSystemWatcher physicalWatcher;
         private readonly FileSystemWatcher trackingWatcher;
+        private int trackingWatcherIgnoreEventCount;
 
         private bool configFileChanged = false;
+        private readonly object loadSyncRoot = new();
 
         public ConfigFileWatcher(IUpdateBehaviour updateBehaviour, IConfigManager _configManager)
         {
@@ -21,11 +23,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
             TrackingConfig TrackingCfg = _configManager.TrackingConfig;
 
             configManager = _configManager;
+            configManager.OnTrackingConfigSaved += _ => trackingWatcherIgnoreEventCount++;
 
             interactionWatcher = CreateWatcherForFile(InteractionConfigFile.ConfigFileName);
             physicalWatcher = CreateWatcherForFile(PhysicalConfigFile.ConfigFileName);
             trackingWatcher = CreateWatcherForFile(TrackingConfigFile.ConfigFileName);
-
+            
             updateBehaviour.OnUpdate += Update;
         }
 
@@ -35,18 +38,18 @@ namespace Ultraleap.TouchFree.Library.Configuration
             fileWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
             fileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
             fileWatcher.Filter = fileName;
-            fileWatcher.Changed += new FileSystemEventHandler(FileUpdated);
+            fileWatcher.Changed += FileUpdated;
             fileWatcher.IncludeSubdirectories = true;
             fileWatcher.EnableRaisingEvents = true;
 
             return fileWatcher;
         }
 
-        public void Update()
+        private void Update()
         {
-            if (configFileChanged)
+            lock (loadSyncRoot)
             {
-                try
+                if (configFileChanged)
                 {
                     ConfigFileUtils.CheckForConfigDirectoryChange();
                     interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
@@ -56,15 +59,24 @@ namespace Ultraleap.TouchFree.Library.Configuration
                     TouchFreeLog.WriteLine("A config file was changed. Re-loading configs from files.");
                     configFileChanged = false;
                 }
-                catch
-                {
-                }
             }
         }
 
         private void FileUpdated(object source, FileSystemEventArgs e)
         {
-            configFileChanged = true;
+            lock (TrackingConfigFile.SaveConfigSyncRoot)
+            {
+                if (e.Name == TrackingConfigFile.ConfigFileName && trackingWatcherIgnoreEventCount > 0)
+                {
+                    trackingWatcherIgnoreEventCount--;
+                    return;
+                }
+
+                lock (loadSyncRoot)
+                {
+                    configFileChanged = true;
+                }
+            }
         }
     }
 }

@@ -16,27 +16,23 @@ const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
     useEffect(() => {
-        const updateTfStatus = () => {
-            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-                const status = detail.trackingServiceState;
-                if (status) {
-                    setTfStatus(status);
-                }
-            });
-        };
-
         ConnectionManager.init();
 
-        ConnectionManager.AddConnectionListener(updateTfStatus);
-        const controller: WebInputController = new WebInputController();
+        const requestServiceStatus = () => ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+            const status = detail.trackingServiceState;
+            if (status) {
+                setTfStatus(status);
+            }
+        });
 
-        const timerID = window.setInterval(updateTfStatus, 5000);
+        ConnectionManager.AddConnectionListener(requestServiceStatus);
+        ConnectionManager.AddServiceStatusListener(setTfStatus);
+        const controller: WebInputController = new WebInputController();
 
         new CursorManager();
 
         return () => {
             controller.disconnect();
-            clearInterval(timerID);
         };
     }, []);
 

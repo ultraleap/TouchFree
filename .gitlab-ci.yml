@@ -260,6 +260,19 @@ TF_Tooling::Web::test:
     - unity
     - win10
 
+TF_Tooling::Web::Consistency::test:
+  stage: test
+  dependencies:
+      []
+  when: always
+  script:
+    # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
+    - echo "Checking that Web Settings Tooling and Web Tooling are in sync"
+    - diff -r -U 2 ${TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
+
+  tags:
+    - docker
+
 TF_Service::Tray::build:
   stage: build
   when: always

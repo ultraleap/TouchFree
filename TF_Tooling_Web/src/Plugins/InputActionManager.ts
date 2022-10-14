@@ -1,4 +1,4 @@
-import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
+import { TouchFreeEvent, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { InputActionPlugin } from "./InputActionPlugin";
 
 // Class: InputActionManager
@@ -42,7 +42,7 @@ export class InputActionManager extends EventTarget {
     public static HandleInputAction(_action: TouchFreeInputAction): void {
 
         let rawInputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
-            'TransmitInputActionRaw',
+            TouchFreeEvent.TRAMSIT_INPUT_ACTION_RAW,
             { detail: _action }
         );
         InputActionManager.instance.dispatchEvent(rawInputActionEvent);
@@ -63,7 +63,7 @@ export class InputActionManager extends EventTarget {
         }
 
         let inputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
-            'TransmitInputAction',
+            TouchFreeEvent.TRAMSIT_INPUT_ACTION,
             { detail: action }
         );
 
