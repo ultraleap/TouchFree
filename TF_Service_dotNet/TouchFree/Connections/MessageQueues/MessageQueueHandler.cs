@@ -39,7 +39,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             CheckQueue();
         }
 
-        protected void CheckQueue()
+        private void CheckQueue()
         {
             IncomingRequest content;
             if (queue.TryPeek(out content))

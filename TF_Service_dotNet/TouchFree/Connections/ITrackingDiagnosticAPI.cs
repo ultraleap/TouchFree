@@ -1,39 +1,33 @@
 ﻿using System;
-using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections
 {
     public interface ITrackingDiagnosticApi
     {
-        public event Action<ImageMaskData?, string> OnMaskingResponse;
-        public event Action<bool?, string> OnAnalyticsResponse;
-        public event Action<bool?, string> OnAllowImagesResponse;
-        public event Action<bool?, string> OnCameraOrientationResponse;
+        public event Action<Result<ImageMaskData>> OnMaskingResponse;
+        public event Action<Result<bool>> OnAnalyticsResponse;
+        public event Action<Result<bool>> OnAllowImagesResponse;
+        public event Action<Result<bool>> OnCameraOrientationResponse;
 
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;
 
-        void GetAnalyticsMode();
-        void SetAnalyticsMode(bool enabled);
+        void RequestGetAnalyticsMode();
+        void RequestSetAnalyticsMode(bool enabled);
 
-        void GetAllowImages();
-        void SetAllowImages(bool enabled);
+        void RequestGetAllowImages();
+        void RequestSetAllowImages(bool enabled);
 
-        void GetImageMask();
-        void SetMasking(float _left, float _right, float _top, float _bottom);
+        void RequestGetImageMask();
+        void RequestSetImageMask(double _left, double _right, double _top, double _bottom);
 
-        void GetCameraOrientation();
-        void SetCameraOrientation(bool reverseOrientation);
+        void RequestGetCameraOrientation();
+        void RequestSetCameraOrientation(bool reverseOrientation);
 
-        void GetDeviceInfo();
-        void GetDevices();
-        void GetServerInfo();
-        void GetVersion();
-
-        void HandleDiagnosticAPIVersion(string _version);
-        void Request(object payload);
-
-        void TriggerUpdatingTrackingConfiguration();
+        void RequestGetDeviceInfo();
+        void RequestGetDevices();
+        void RequestGetServerInfo();
+        void RequestGetVersion();
     }
 }

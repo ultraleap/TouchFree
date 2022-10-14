@@ -1,7 +1,8 @@
 import { TouchlessCursor } from './TouchlessCursor';
 import {
     TouchFreeInputAction,
-    InputType
+    InputType,
+    TouchFreeEvent
 } from '../TouchFreeToolingTypes';
 import { ConnectionManager } from '../Connection/ConnectionManager';
 import { MapRangeToRange } from '../Utilities';
@@ -59,8 +60,8 @@ export class DotCursor extends TouchlessCursor {
         this.animationSpeed[0] = (this.cursorStartSize[0] / 2) / (_animationDuration * 30);
         this.animationSpeed[1] = (this.cursorStartSize[1] / 2) / (_animationDuration * 30);
 
-        ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
-        ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
+        ConnectionManager.instance.addEventListener(TouchFreeEvent.HAND_FOUND, this.ShowCursor.bind(this));
+        ConnectionManager.instance.addEventListener(TouchFreeEvent.HANDS_LOST, this.HideCursor.bind(this));
     }
 
     // Function: UpdateCursor

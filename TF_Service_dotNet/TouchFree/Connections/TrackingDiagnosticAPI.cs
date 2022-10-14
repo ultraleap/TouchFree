@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Leap;
 using Ultraleap.TouchFree.Library.Configuration;
 using WebSocketSharp;
 
@@ -10,106 +12,215 @@ namespace Ultraleap.TouchFree.Library.Connections
     public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     {
         private static string uri = "ws://127.0.0.1:1024/";
-        private const string minimumMaskingAPIVerison = "2.1.0";
         private readonly IConfigManager configManager;
-        public string trackingServiceVersion;
-        public Version version;
+        private string trackingServiceVersion;
+        private Version version;
 
         public uint? connectedDeviceID;
         public string connectedDeviceFirmware;
         public string connectedDeviceSerial;
-        public bool maskingAllowed = false;
-        public bool cameraReversed = false;
-        public bool? allowImages;
-
-        public event Action<ImageMaskData?, String> OnMaskingResponse;
-        public event Action<bool?, string> OnAnalyticsResponse;
-        public event Action<bool?, string> OnAllowImagesResponse;
-        public event Action<bool?, string> OnCameraOrientationResponse;
+        
+        public event Action<Result<ImageMaskData>> OnMaskingResponse;
+        public event Action<Result<bool>> OnAnalyticsResponse;
+        public event Action<Result<bool>> OnAllowImagesResponse;
+        public event Action<Result<bool>> OnCameraOrientationResponse;
 
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;
 
-        public enum Status { Closed, Connecting, Connected, Expired }
-        private Status status = Status.Expired;
-        private WebSocket webSocket = null;
-
-        ConcurrentQueue<string> newMessages = new ConcurrentQueue<string>();
-        private bool loadingAllowImagesConfiguration;
-        private bool loadingAnalyticsModeConfiguration;
-        private bool loadingCameraOrientationConfiguration;
-        private bool loadingImageMaskConfiguration;
-
-        private TrackingConfig trackingConfig = new TrackingConfig();
-
-        public TrackingDiagnosticApi(IConfigManager _configManager)
+        // Represents a variable that will be "initialized" once set at least once after construction
+        private class ConfigurationVariable<TData>
         {
-            configManager = _configManager;
-            Connect();
-            MessageQueueReader();
+            private readonly TrackingDiagnosticApi _diagnosticApi;
+            private readonly bool _connectedDeviceRequired;
+            private readonly Func<uint?, object> _getPayloadFunc;
+            private readonly Func<TData, uint?, object> _setPayloadFunc;
+            private readonly List<TData> _responsesToIgnore; // Not a queue as responses could come back out of order
+            private TData _value;
+            
+            public ConfigurationVariable(
+                TrackingDiagnosticApi diagnosticApi,
+                bool connectedDeviceRequired,
+                Func<uint?, object> getPayloadFunc,
+                Func<TData, uint?, object> setPayloadFunc,
+                TData initial = default)
+            {
+                _diagnosticApi = diagnosticApi;
+                _connectedDeviceRequired = connectedDeviceRequired;
+                _getPayloadFunc = getPayloadFunc;
+                _setPayloadFunc = setPayloadFunc;
+                _responsesToIgnore = new List<TData>();
+                _value = initial;
+            }
 
-            configManager.OnTrackingConfigUpdated += EnforceTrackingConfiguration;
+            public TData Value
+            {
+                get => _value;
+                private set
+                {
+                    Initialized = true;
+                    if (Equals(value, _value)) return;
+                    _value = value;
+                }
+            }
 
-            OnMaskingResponse += TrackingDiagnosticApi_OnMaskingResponse;
-            OnAnalyticsResponse += TrackingDiagnosticApi_OnAnalyticsResponse;
-            OnAllowImagesResponse += TrackingDiagnosticApi_OnAllowImagesResponse;
-            OnCameraOrientationResponse += TrackingDiagnosticApi_OnCameraOrientationResponse;
+            public void RequestGet() => _diagnosticApi.Request(_getPayloadFunc(_diagnosticApi.connectedDeviceID));
+            public void RequestSet(TData value)
+            {
+                Value = value;
+                if (_connectedDeviceRequired && !_diagnosticApi.connectedDeviceID.HasValue) return; // Only send the request if we have a device, when one is required
+
+                lock (_responsesToIgnore)
+                {
+                    _responsesToIgnore.Add(value);
+                    _diagnosticApi.Request(_setPayloadFunc(_value, _diagnosticApi.connectedDeviceID));
+                }
+            }
+
+            public void HandleResponse(Result<TData> result)
+            {
+                // TODO: Do something with any errors?
+                if (!result.TryGetValue(out var val)) return;
+                lock (_responsesToIgnore)
+                {
+                    var found = _responsesToIgnore.Remove(val);
+                    if (found) return;
+                    Value = val;
+                }
+            }
+
+            // Variable is not considered initialized until it has been set externally from the constructor.
+            // Scenarios this is expected to happen:
+            // a. Set by a request
+            // b. Loaded from an existing config
+            // c. Loaded from connected device if not initialized before connecting
+            public bool Initialized { get; private set; }
+
+            public void Match(Action<TData> initialized, Action uninitialized)
+            {
+                if (Initialized) initialized?.Invoke(Value);
+                else uninitialized?.Invoke();
+            }
         }
 
-        async Task MessageQueueReader()
+        private readonly ConfigurationVariable<ImageMaskData> maskingData;
+        private readonly ConfigurationVariable<bool> allowImages;
+        private readonly ConfigurationVariable<bool> cameraReversed;
+        private readonly ConfigurationVariable<bool> analyticsEnabled;
+
+        private WebSocket webSocket = null;
+        private readonly ConcurrentQueue<string> newMessages = new();
+
+        public TrackingDiagnosticApi(IConfigManager _configManager, ITrackingConnectionManager _trackingConnectionManager)
+        {
+            configManager = _configManager;
+
+            // Payload functions commonly used between multiple configuration variables
+            Func<uint?, object> DefaultGetPayloadFunc(DApiMsgTypes requestType) =>
+                _ => new DApiMessage(requestType);
+            Func<uint?, object> DeviceIdPayloadFunc(DApiMsgTypes requestType) =>
+                deviceId => new DApiPayloadMessage<DeviceIdPayload>(requestType, new DeviceIdPayload { device_id = deviceId.GetValueOrDefault() });
+            Func<T, uint?, object> DefaultSetPayloadFunc<T>(DApiMsgTypes requestType) =>
+                (val, _) => new DApiPayloadMessage<T>(requestType, val);
+
+            // Configuration variable setup
+            maskingData = new ConfigurationVariable<ImageMaskData>(this,true,
+                DeviceIdPayloadFunc(DApiMsgTypes.GetImageMask),
+                (maskData, deviceId) =>
+                {
+                    var payload = maskData with { device_id = deviceId.GetValueOrDefault() };
+                    return new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload);
+                });
+            
+            allowImages = new ConfigurationVariable<bool>(this, false,
+                DefaultGetPayloadFunc(DApiMsgTypes.GetAllowImages),
+                DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAllowImages));
+            
+            cameraReversed = new ConfigurationVariable<bool>(this, true,
+                DeviceIdPayloadFunc(DApiMsgTypes.GetCameraOrientation),
+                (reversed, deviceId) =>
+                {
+                    var payload = new CameraOrientationPayload
+                    {
+                        device_id = deviceId.GetValueOrDefault(),
+                        camera_orientation = reversed ? "fixed-inverted" : "fixed-normal"
+                    };
+                    return new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload);
+                });
+            
+            analyticsEnabled = new ConfigurationVariable<bool>(this, false,
+                DefaultGetPayloadFunc(DApiMsgTypes.GetAnalyticsEnabled),
+                DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAnalyticsEnabled));
+            
+            Connect();
+#pragma warning disable CS4014
+            MessageQueueReader();
+#pragma warning restore CS4014
+            
+            void SetTrackingConfigurationOnDevice(TrackingConfig config)
+            {
+                allowImages.RequestSet(config.AllowImages);
+                analyticsEnabled.RequestSet(config.AnalyticsEnabled);
+                cameraReversed.RequestSet(config.CameraReversed);
+                maskingData.RequestSet((ImageMaskData)config.Mask);
+            }
+            void ControllerOnDevice(object sender, DeviceEventArgs e) => RequestGetDevices(); // Get devices response will update the connected device and refresh tracking config
+            void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => RequestGetDevices(); // Works even when no device is connected
+
+            _configManager.OnTrackingConfigUpdated += SetTrackingConfigurationOnDevice;
+            _trackingConnectionManager.Controller.Device += ControllerOnDevice;
+            _trackingConnectionManager.Controller.DeviceLost += ControllerOnDeviceLost;
+
+            OnMaskingResponse += maskingData.HandleResponse;
+            OnAnalyticsResponse += analyticsEnabled.HandleResponse;
+            OnAllowImagesResponse += allowImages.HandleResponse;
+            OnCameraOrientationResponse += cameraReversed.HandleResponse;
+        }
+
+        private async Task MessageQueueReader()
         {
             while (true)
             {
                 await Task.Delay(10);
-                if (newMessages.TryDequeue(out var message))
+                while (newMessages.TryDequeue(out var message))
                 {
                     HandleMessage(message);
                 }
-            }
-        }
 
-        public void TriggerUpdatingTrackingConfiguration()
-        {
-            GetDevices();
+                // Only happens after dispose clears the web socket back to null
+                if (webSocket == null)
+                {
+                    break;
+                }
+            }
         }
 
         private void Connect()
         {
-            if (status == Status.Connecting || status == Status.Connected)
+            if (webSocket?.ReadyState is WebSocketState.Connecting or WebSocketState.Open)
             {
                 return;
             }
 
-            bool requireSetup = status == Status.Expired;
-            status = Status.Connecting;
-
-            if (requireSetup)
+            if (webSocket == null)
             {
-                if (webSocket != null)
-                {
-                    webSocket.Close();
-                }
-
                 webSocket = new WebSocket(uri);
-                webSocket.OnMessage += onMessage;
+                webSocket.OnMessage += OnMessage;
                 webSocket.OnOpen += (sender, e) =>
                 {
-                    Console.WriteLine("DiagnosticAPI open... ");
-                    status = Status.Connected;
-                    GetServerInfo();
-                    GetDevices();
-                    GetVersion();
+                    TouchFreeLog.WriteLine("DiagnosticAPI open... ");
+                    RequestGetServerInfo();
+                    RequestGetDevices();
+                    RequestGetVersion();
                 };
                 webSocket.OnError += (sender, e) =>
                 {
-                    Console.WriteLine("DiagnosticAPI error! " + e.Message + "\n");
-                    status = Status.Expired;
+                    TouchFreeLog.ErrorWriteLine($"DiagnosticAPI error! {e.Message}\n");
                 };
                 webSocket.OnClose += (sender, e) =>
                 {
-                    Console.WriteLine("DiagnosticAPI closed. " + e.Reason);
-                    status = Status.Closed;
+                    TouchFreeLog.WriteLine($"DiagnosticAPI closed. {e.Reason}");
                 };
             }
 
@@ -119,28 +230,53 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DiagnosticAPI connection exception... " + "\n" + ex.ToString());
-                status = Status.Expired;
+                TouchFreeLog.ErrorWriteLine($"DiagnosticAPI connection exception... \n{ex}");
             }
         }
 
-        private void onMessage(object sender, MessageEventArgs e)
+        private void OnMessage(object sender, MessageEventArgs e)
         {
             if (e.IsText)
             {
+                // + " " is used to avoid stack overflowing by creating a new string to
+                // avoiding keeping around the event args object
+                // TODO: Different method of avoiding stack overflow exceptions?
+                // NOTE: Suspected that overflows are related to this issue https://github.com/sta/websocket-sharp/issues/702
                 newMessages.Enqueue(e.Data + " ");
             }
         }
 
-        void HandleMessage(string _message)
+        private void HandleMessage(string _message)
         {
             var response = JsonConvert.DeserializeObject<DApiMessage>(_message);
 
             var parsed = Enum.TryParse(response.type, out DApiMsgTypes status);
 
+            void Handle<TPayload>(Action<TPayload> onSuccess, Action? onFailure = null)
+            {
+                try
+                {
+                    var payload = JsonConvert.DeserializeObject<DApiPayloadMessage<TPayload>>(_message);
+                    if (payload == null)
+                    {
+                        TouchFreeLog.WriteLine($"DiagnosticAPI - Payload for {status.ToString()} failed to deserialize: {_message}");   
+                    }
+                    else
+                    {
+                        onSuccess(payload.payload);
+                    }
+                }
+                catch
+                {
+                    TouchFreeLog.WriteLine($"DiagnosticAPI - Could not parse {status.ToString()} data: {_message}");
+                    onFailure?.Invoke();
+                }
+            }
+
             if (!parsed)
             {
-                Console.WriteLine("DiagnosticAPI - Could not parse response of type: " + response.type + " with message: " + _message);
+                TouchFreeLog.WriteLine(
+                    $"DiagnosticAPI - Could not parse response of type: {response.type} with message: {_message}");
             }
             else
             {
@@ -148,259 +284,105 @@ namespace Ultraleap.TouchFree.Library.Connections
                 {
                     case DApiMsgTypes.GetImageMask:
                     case DApiMsgTypes.SetImageMask:
-                        try
-                        {
-                            var maskingResponse = JsonConvert.DeserializeObject<DApiPayloadMessage<ImageMaskData>>(_message);
-
-                            this.OnMaskingResponse?.Invoke(maskingResponse.payload, "Image Mask State");
-                        }
-                        catch
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse GetImageMask data: " + _message);
-
-                            this.OnMaskingResponse?.Invoke(null, $"Could not access Masking data. Tracking Response: \"{_message}\"");
-                        }
-                        break;
-
-                    case DApiMsgTypes.GetDevices:
-                        try
-                        {
-                            var devicesResponse = JsonConvert.DeserializeObject<DApiPayloadMessage<DiagnosticDevice[]>>(_message);
-                            if (devicesResponse.payload.Length > 0)
-                            {
-                                connectedDeviceID = devicesResponse.payload[0].device_id;
-                            }
-
-                            HandleDeviceConnectedRequests();
-                        }
-                        catch
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse GetDevices data: " + _message);
-                        }
-                        break;
-
-                    case DApiMsgTypes.GetVersion:
-                        try
-                        {
-                            var getVersionResponse = JsonConvert.DeserializeObject<DApiPayloadMessage<string>>(_message);
-                            HandleDiagnosticAPIVersion(getVersionResponse.payload);
-                        }
-                        catch
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse Version data: " + _message);
-
-                        }
+                        Handle<ImageMaskData>(payload => OnMaskingResponse?.Invoke(payload),
+                            () => OnMaskingResponse?.Invoke($"Could not access Masking data. Tracking Response: \"{_message}\""));
                         break;
 
                     case DApiMsgTypes.GetAnalyticsEnabled:
                     case DApiMsgTypes.SetAnalyticsEnabled:
-                        try
-                        {
-                            var data = JsonConvert.DeserializeObject<DApiPayloadMessage<bool>>(_message);
-
-                            this.OnAnalyticsResponse?.Invoke(data.payload, "Analytics State");
-                        }
-                        catch
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse analytics response: " + _message);
-
-                            this.OnAnalyticsResponse?.Invoke(null, $"Could not access Analytics state. Tracking Response: \"{_message}\"");
-                        }
-                        break;
-
-                    case DApiMsgTypes.GetServerInfo:
-                        try
-                        {
-                            var data = JsonConvert.DeserializeObject<DApiPayloadMessage<ServiceInfoPayload>>(_message);
-                            trackingServiceVersion = data.payload.server_version ?? trackingServiceVersion;
-                            OnTrackingServerInfoResponse?.Invoke();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse server info response: " + _message);
-                        }
-                        break;
-
-                    case DApiMsgTypes.GetDeviceInfo:
-                        try
-                        {
-                            var data = JsonConvert.DeserializeObject<DApiPayloadMessage<DiagnosticDeviceInformation>>(_message);
-                            connectedDeviceFirmware = data?.payload.device_firmware ?? connectedDeviceFirmware;
-                            connectedDeviceSerial = data?.payload.device_serial ?? connectedDeviceSerial;
-                            OnTrackingDeviceInfoResponse?.Invoke();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse device info response: " + _message);
-                        }
+                        Handle<bool>(payload => OnAnalyticsResponse?.Invoke(payload),
+                            () => OnAnalyticsResponse?.Invoke($"Could not access Analytics state. Tracking Response: \"{_message}\""));
                         break;
 
                     case DApiMsgTypes.SetAllowImages:
                     case DApiMsgTypes.GetAllowImages:
-                        try
-                        {
-
-                            var data = JsonConvert.DeserializeObject<DApiPayloadMessage<bool>>(_message);
-                            allowImages = data?.payload ?? false;
-
-                            this.OnAllowImagesResponse?.Invoke(allowImages, "AllowImages state");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse allow images response: " + _message);
-
-                            this.OnAllowImagesResponse?.Invoke(null, $"Could not access AllowImages state. Tracking Response: \"{_message}\"");
-                        }
+                        Handle<bool>(payload => OnAllowImagesResponse?.Invoke(payload),
+                            () => OnAllowImagesResponse?.Invoke($"Could not access AllowImages state. Tracking Response: \"{_message}\""));
                         break;
 
                     case DApiMsgTypes.GetCameraOrientation:
                     case DApiMsgTypes.SetCameraOrientation:
-                        try
-                        {
-                            var data = JsonConvert.DeserializeObject<DApiPayloadMessage<CameraOrientationPayload>>(_message);
-                            cameraReversed = data?.payload.camera_orientation == "fixed-inverted";
+                        Handle<CameraOrientationPayload>(payload => OnCameraOrientationResponse?.Invoke(payload.camera_orientation == "fixed-inverted"),
+                            () => OnCameraOrientationResponse?.Invoke($"Could not access CameraOrientation state. Tracking Response: \"{_message}\""));
+                        break;
+                    
+                    case DApiMsgTypes.GetDevices:
+                        Handle<DiagnosticDevice[]>(
+                            devices =>
+                            {
+                                uint? newConnectedDeviceId = null;
+                                if (devices.Length > 0)
+                                {
+                                    newConnectedDeviceId = devices[0].device_id;
+                                }
 
-                            this.OnCameraOrientationResponse?.Invoke(cameraReversed, "CameraOrientation state");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("DiagnosticAPI - Could not parse camera orientation response: " + _message);
+                                if (connectedDeviceID != newConnectedDeviceId)
+                                {
+                                    connectedDeviceID = newConnectedDeviceId;
 
-                            this.OnCameraOrientationResponse?.Invoke(null, $"Could not access CameraOrientation state. Tracking Response: \"{_message}\"");
-                        }
+                                    if (connectedDeviceID != null)
+                                    {
+                                        // Set initialized variables to the device, get uninitialized variables
+                                        allowImages.Match(RequestSetAllowImages, RequestGetAllowImages);
+                                        analyticsEnabled.Match(RequestSetAnalyticsMode, RequestGetAnalyticsMode);
+                                        cameraReversed.Match(RequestSetCameraOrientation, RequestGetCameraOrientation);
+                                        maskingData.Match(data => RequestSetImageMask(data.left, data.right, data.upper, data.lower), RequestGetImageMask);
+                                    }
+                                }
+                            }); // TODO: Handle failure?
                         break;
 
+                    case DApiMsgTypes.GetVersion:
+                        Handle<string>(s =>
+                        {
+                            version = new Version(s);
+                            OnTrackingApiVersionResponse?.Invoke();
+                        }); // TODO: Handle failure?
+                        break;
+                    
+                    case DApiMsgTypes.GetServerInfo:
+                        Handle<ServiceInfoPayload>(payload =>
+                        {
+                            trackingServiceVersion = payload.server_version;
+                            OnTrackingServerInfoResponse?.Invoke();
+                        }); // TODO: Handle failure?
+                        break;
+
+                    case DApiMsgTypes.GetDeviceInfo:
+                        Handle<DiagnosticDeviceInformation>(information =>
+                        {
+                            connectedDeviceFirmware = information.device_firmware;
+                            connectedDeviceSerial = information.device_serial;
+                            OnTrackingDeviceInfoResponse?.Invoke();
+                        }); // TODO: Handle failure?
+                        break;
+                    
                     default:
-                        Console.WriteLine("DiagnosticAPI - Could not parse response of type: " + response.type + " with message: " + _message);
+                        TouchFreeLog.WriteLine(
+                            $"DiagnosticAPI - Could not parse response of type: {response.type} with message: {_message}");
                         break;
                 }
             }
         }
 
-        private void EnforceTrackingConfiguration(TrackingConfig trackingConfig)
+        private async void Request(object payload)
         {
-            SetAllowImages(trackingConfig.AllowImages);
-            SetAnalyticsMode(trackingConfig.AnalyticsEnabled);
-            SetCameraOrientation(trackingConfig.CameraReversed);
-            SetMasking(trackingConfig.Mask.Left, trackingConfig.Mask.Right, trackingConfig.Mask.Upper, trackingConfig.Mask.Lower);
-        }
-
-        private void LoadTrackingConfiguration()
-        {
-            // No device connected so do nothing until a device is connected
-            if (connectedDeviceID.HasValue)
+            bool TrySend()
             {
-                loadingAllowImagesConfiguration = true;
-                loadingAnalyticsModeConfiguration = true;
-                loadingCameraOrientationConfiguration = true;
-                loadingImageMaskConfiguration = true;
-
-                GetAllowImages();
-                GetAnalyticsMode();
-                GetCameraOrientation();
-                GetImageMask();
+                if (webSocket.ReadyState != WebSocketState.Open) return false;
+                
+                var requestMessage = JsonConvert.SerializeObject(payload);
+                webSocket.Send(requestMessage);
+                return true;
             }
-        }
-
-        public void HandleDeviceConnectedRequests()
-        {
-            // Delay enforcing tracking configuration until we have a device connected
-            if (configManager.TrackingConfig != null)
-            {
-                EnforceTrackingConfiguration(configManager.TrackingConfig);
-            }
-            else
-            {
-                LoadTrackingConfiguration();
-            }
-        }
-
-        private void TrackingDiagnosticApi_OnCameraOrientationResponse(bool? cameraReversed, string _)
-        {
-            if (loadingCameraOrientationConfiguration && cameraReversed.HasValue)
-            {
-                loadingCameraOrientationConfiguration = false;
-                trackingConfig.CameraReversed = cameraReversed.Value;
-
-                SaveTrackingConfiguration();
-            }
-        }
-
-        private void TrackingDiagnosticApi_OnAllowImagesResponse(bool? allowImages, string _)
-        {
-            if (loadingAllowImagesConfiguration && allowImages.HasValue)
-            {
-                loadingAllowImagesConfiguration = false;
-                trackingConfig.AllowImages = allowImages.Value;
-
-                SaveTrackingConfiguration();
-            }
-        }
-
-        private void TrackingDiagnosticApi_OnAnalyticsResponse(bool? analyticsEnabled, string _)
-        {
-            if (loadingAnalyticsModeConfiguration && analyticsEnabled.HasValue)
-            {
-                loadingAnalyticsModeConfiguration = false;
-                trackingConfig.AnalyticsEnabled = analyticsEnabled.Value;
-
-                SaveTrackingConfiguration();
-            }
-        }
-
-        private void TrackingDiagnosticApi_OnMaskingResponse(ImageMaskData? maskData, string _)
-        {
-            if (loadingImageMaskConfiguration && maskData.HasValue)
-            {
-                loadingImageMaskConfiguration = false;
-                trackingConfig.Mask.Upper = (float)maskData.Value.upper;
-                trackingConfig.Mask.Right = (float)maskData.Value.right;
-                trackingConfig.Mask.Lower = (float)maskData.Value.lower;
-                trackingConfig.Mask.Left = (float)maskData.Value.left;
-
-                SaveTrackingConfiguration();
-            }
-        }
-
-        private void SaveTrackingConfiguration()
-        {
-            if (!loadingAllowImagesConfiguration &&
-                !loadingAnalyticsModeConfiguration &&
-                !loadingCameraOrientationConfiguration &&
-                !loadingImageMaskConfiguration)
-            {
-                TrackingConfigFile.SaveConfig(trackingConfig);
-            }
-        }
-
-        public void HandleDiagnosticAPIVersion(string _version)
-        {
-            Version curVersion = new Version(_version);
-            Version minVersion = new Version(minimumMaskingAPIVerison);
-            version = curVersion;
-
-            if (curVersion.CompareTo(minVersion) >= 0)
-            {
-                // Version allows masking
-                maskingAllowed = true;
-            }
-            else
-            {
-                // Version does not allow masking
-                maskingAllowed = false;
-            }
-            OnTrackingApiVersionResponse?.Invoke();
-        }
-
-        public async void Request(object payload)
-        {
-            if (!TrySendRequest(payload))
+            
+            if (!TrySend())
             {
                 Connect();
                 for (var attempt = 0; attempt < 10; attempt++)
                 {
                     await Task.Delay(1000);
-                    if (TrySendRequest(payload))
+                    if (TrySend())
                     {
                         break;
                     }
@@ -408,116 +390,49 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-        public bool TrySendRequest(object payload)
-        {
-            var canSendRequest = status == Status.Connected;
-            if (canSendRequest)
+        public void RequestGetAnalyticsMode() => analyticsEnabled.RequestGet();
+        public void RequestSetAnalyticsMode(bool enabled) => analyticsEnabled.RequestSet(enabled);
+
+        public void RequestGetImageMask() => maskingData.RequestGet();
+        public void RequestSetImageMask(double _left, double _right, double _top, double _bottom) =>
+            maskingData.RequestSet(new ImageMaskData
             {
-                var requestMessage = JsonConvert.SerializeObject(payload);
-                webSocket.Send(requestMessage);
-            }
+                device_id = connectedDeviceID.GetValueOrDefault(),
+                left = _left,
+                right = _right,
+                upper = _top,
+                lower = _bottom
+            });
 
-            return canSendRequest;
-        }
+        public void RequestGetAllowImages() => allowImages.RequestGet();
+        public void RequestSetAllowImages(bool enabled) => allowImages.RequestSet(enabled);
 
-        public void GetAnalyticsMode()
+        public void RequestGetCameraOrientation() => cameraReversed.RequestGet();
+        public void RequestSetCameraOrientation(bool reverseOrientation) => cameraReversed.RequestSet(reverseOrientation);
+
+        public void RequestGetDeviceInfo()
         {
-            Request(new DApiMessage(DApiMsgTypes.GetAnalyticsEnabled));
+            // Only send the request if we have a device
+            if (!connectedDeviceID.HasValue) return;
+            
+            var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
+            Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
         }
 
-        public void SetAnalyticsMode(bool enabled)
-        {
-            Request(new DApiPayloadMessage<bool>(DApiMsgTypes.SetAnalyticsEnabled, enabled));
-        }
+        public void RequestGetDevices() => Request(new DApiMessage(DApiMsgTypes.GetDevices));
 
-        public void GetImageMask()
-        {
-            // Only get the masking if we have a device
-            if (connectedDeviceID.HasValue)
-            {
-                var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
-                Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetImageMask, payload));
-            }
-        }
+        public void RequestGetVersion() => Request(new DApiMessage(DApiMsgTypes.GetVersion));
 
-        public void SetMasking(float _left, float _right, float _top, float _bottom)
-        {
-            // Only set the masking if we have a device
-            if (connectedDeviceID.HasValue)
-            {
-                var payload = new ImageMaskData()
-                {
-                    device_id = connectedDeviceID.Value,
-                    left = _left,
-                    right = _right,
-                    upper = _top,
-                    lower = _bottom
-                };
-                Request(new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload));
-            }
-        }
-
-
-        public void GetAllowImages()
-        {
-            Request(new DApiMessage(DApiMsgTypes.GetAllowImages));
-        }
-
-        public void SetAllowImages(bool enabled)
-        {
-            Request(new DApiPayloadMessage<bool>(DApiMsgTypes.SetAllowImages, enabled));
-        }
-
-
-        public void GetCameraOrientation()
-        {
-            // Only get the camera orientation if we have a device
-            if (connectedDeviceID.HasValue)
-            {
-                var payload = new DeviceIdPayload() { device_id = connectedDeviceID.Value };
-                Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetCameraOrientation, payload));
-            }
-        }
-
-        public void SetCameraOrientation(bool reverseOrientation)
-        {
-            // Only set the camera orientation if we have a device
-            if (connectedDeviceID.HasValue)
-            {
-                var payload = new CameraOrientationPayload() { device_id = connectedDeviceID.Value, camera_orientation = reverseOrientation ? "fixed-inverted" : "fixed-normal" };
-                Request(new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload));
-            }
-        }
-
-        public void GetDeviceInfo()
-        {
-            // Only get the device info if we have a device
-            if (connectedDeviceID.HasValue)
-            {
-                var payload = new DeviceIdPayload() { device_id = connectedDeviceID.Value };
-                Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
-            }
-        }
-
-        public void GetDevices()
-        {
-            Request(new DApiMessage(DApiMsgTypes.GetDevices));
-        }
-
-        public void GetVersion()
-        {
-            Request(new DApiMessage(DApiMsgTypes.GetVersion));
-        }
-
-        public void GetServerInfo()
-        {
-            Request(new DApiMessage(DApiMsgTypes.GetServerInfo));
-        }
+        public void RequestGetServerInfo() => Request(new DApiMessage(DApiMsgTypes.GetServerInfo));
 
         void IDisposable.Dispose()
         {
-            status = Status.Expired;
-            webSocket.Close();
+            if (webSocket != null)
+            {
+                webSocket.Close();
+                webSocket = null; // Used to signal end of lifecycle and break from infinite loop in message loop
+                GC.SuppressFinalize(this);
+            }
         }
     }
 }

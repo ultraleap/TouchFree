@@ -2,8 +2,7 @@ import { Vector } from "./Configuration/ConfigurationTypes";
 
 // Class: VersionInfo
 // This class is used when comparing the <ApiVersion> of the Tooling and the Service.
-export class VersionInfo
-{
+export class VersionInfo {
     // Group: Variables
 
     // Variable: ApiVersion
@@ -36,8 +35,8 @@ export class TouchFreeInputAction {
         _inputType: InputType,
         _cursorPosition: Array<number>,
         _distanceFromScreen: number,
-        _progressToClick: number)
-    {
+        _progressToClick: number,
+    ) {
         this.Timestamp = _timestamp;
         this.InteractionType = _interactionType;
         this.HandType = _handType;
@@ -52,8 +51,11 @@ export class TouchFreeInputAction {
 // Function: ConvertInputAction
 // Used to translate the raw actions that come across the websocket (<WebsocketInputActions>) and
 // convert them into the Tooling-friendly <TouchFreeInputAction> format.
-export function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInputAction {
-    const yPosition = window.innerHeight - (_wsInput.CursorPosition.y / window.devicePixelRatio);
+export function ConvertInputAction(
+    _wsInput: WebsocketInputAction,
+): TouchFreeInputAction {
+    const yPosition = window.innerHeight -
+        (_wsInput.CursorPosition.y / window.devicePixelRatio);
     const xPosition = _wsInput.CursorPosition.x / window.devicePixelRatio;
 
     return new TouchFreeInputAction(
@@ -73,7 +75,7 @@ export function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInp
 // RIGHT - The right hand
 export enum HandChirality {
     LEFT,
-    RIGHT
+    RIGHT,
 }
 
 // Enum: HandType
@@ -127,7 +129,7 @@ export enum TrackingServiceState {
 export enum ConfigurationState {
     NOT_LOADED,
     LOADED,
-    ERRORED
+    ERRORED,
 }
 
 // Enum: BitmaskFlags
@@ -157,9 +159,31 @@ export enum BitmaskFlags {
     PUSH = 2048,
     TOUCHPLANE = 4096,
     VELOCITYSWIPE = 8192,
-
     // Adding elements to this list is a breaking change, and should cause at
     // least a minor iteration of the API version UNLESS adding them at the end
+}
+
+// Enum: TouchFreeEvent
+// ON_CONNECTED - Event dispatched when connecting to the TouchFree service
+// ON_TRACKING_SERVICE_STATE_CHANGE - Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
+// HANDS_FOUND - Event dispatched when the first hand has started tracking
+// HANDS_LOST - Event dispatched when the last hand has stopped tracking
+// INPUT_ACTION - Event dispatched when any input action is received from the TouchFree service
+// INPUT_ACTION_OUTPUT - ??? (Never subscribed to?)
+// TRANSMIT_INPUT_ACTION_RAW - Event dispatched directly from the <InputActionManager> without any proxying
+// TRANSMIT_INPUT_ACTION - Event dispatched from the <InputActionManager> to each registered Plugin
+export enum TouchFreeEvent {
+    ON_CONNECTED = "OnConnected",
+    ON_TRACKING_SERVICE_STATE_CHANGE = "OnTrackingServiceStateChange",
+
+    HAND_FOUND = "HandFound",
+    HANDS_LOST = "HandsLost",
+
+    INPUT_ACTION = "InputAction",
+    INPUT_ACTION_OUTPUT = "InputActionOutput",
+
+    TRAMSIT_INPUT_ACTION_RAW = "TransmitInputActionRaw",
+    TRAMSIT_INPUT_ACTION = "TransmitInputAction",
 }
 
 // Class: WebsocketInputAction
@@ -194,33 +218,29 @@ export class WebsocketInputAction {
 
 // Class: HandFrame
 // A frame of hand data
-export class HandFrame
-{
+export class HandFrame {
     Hands: RawHand[] = [];
 }
 
 // Class: RawHand
 // The raw position data for a hand
-export class RawHand
-{
+export class RawHand {
     CurrentPrimary: boolean = false;
     Fingers: RawFinger[] = [];
     WristWidth: number = 0;
-    WristPosition: Vector = {X:0,Y:0,Z:0};
+    WristPosition: Vector = { X: 0, Y: 0, Z: 0 };
 }
 
 // Class: RawFinger
 // The raw position data for a finger of a hand
-export class RawFinger
-{
+export class RawFinger {
     Bones: RawBone[] = []
     Type: FingerType = FingerType.TYPE_UNKNOWN;
 }
 
 // Enum: FingerType
 // What finger on a hand a finger is.
-export enum FingerType
-{
+export enum FingerType {
     TYPE_THUMB = 0,
     TYPE_INDEX = 1,
     TYPE_MIDDLE = 2,
@@ -231,10 +251,9 @@ export enum FingerType
 
 // Class: RawFinger
 // The raw position data for a bone in a finger
-export class RawBone
-{
-    NextJoint: Vector = {X:0,Y:0,Z:0};
-    PrevJoint: Vector = {X:0,Y:0,Z:0};
+export class RawBone {
+    NextJoint: Vector = { X: 0, Y: 0, Z: 0 };
+    PrevJoint: Vector = { X: 0, Y: 0, Z: 0 };
 }
 
 // Class: FlagUtilities
@@ -249,7 +268,8 @@ export class FlagUtilities {
         _interactionType: InteractionType,
         _handType: HandType,
         _chirality: HandChirality,
-        _inputType: InputType): BitmaskFlags {
+        _inputType: InputType,
+    ): BitmaskFlags {
         let returnVal: BitmaskFlags = BitmaskFlags.NONE;
 
         switch (_handType) {
@@ -326,12 +346,12 @@ export class FlagUtilities {
 
         if (_flags & BitmaskFlags.RIGHT) {
             chirality = HandChirality.RIGHT;
-        }
-        else if (_flags & BitmaskFlags.LEFT) {
+        } else if (_flags & BitmaskFlags.LEFT) {
             chirality = HandChirality.LEFT;
-        }
-        else {
-            console.error("InputActionData missing: No Chirality found. Defaulting to 'RIGHT'");
+        } else {
+            console.error(
+                "InputActionData missing: No Chirality found. Defaulting to 'RIGHT'",
+            );
         }
 
         return chirality;
@@ -344,12 +364,12 @@ export class FlagUtilities {
 
         if (_flags & BitmaskFlags.PRIMARY) {
             handType = HandType.PRIMARY;
-        }
-        else if (_flags & BitmaskFlags.SECONDARY) {
+        } else if (_flags & BitmaskFlags.SECONDARY) {
             handType = HandType.SECONDARY;
-        }
-        else {
-            console.error("InputActionData missing: No HandData found. Defaulting to 'PRIMARY'");
+        } else {
+            console.error(
+                "InputActionData missing: No HandData found. Defaulting to 'PRIMARY'",
+            );
         }
 
         return handType;
@@ -362,21 +382,18 @@ export class FlagUtilities {
 
         if (_flags & BitmaskFlags.NONE_INPUT) {
             inputType = InputType.NONE;
-        }
-        else if (_flags & BitmaskFlags.CANCEL) {
+        } else if (_flags & BitmaskFlags.CANCEL) {
             inputType = InputType.CANCEL;
-        }
-        else if (_flags & BitmaskFlags.UP) {
+        } else if (_flags & BitmaskFlags.UP) {
             inputType = InputType.UP;
-        }
-        else if (_flags & BitmaskFlags.DOWN) {
+        } else if (_flags & BitmaskFlags.DOWN) {
             inputType = InputType.DOWN;
-        }
-        else if (_flags & BitmaskFlags.MOVE) {
+        } else if (_flags & BitmaskFlags.MOVE) {
             inputType = InputType.MOVE;
-        }
-        else {
-            console.error("InputActionData missing: No InputType found. Defaulting to 'NONE'");
+        } else {
+            console.error(
+                "InputActionData missing: No InputType found. Defaulting to 'NONE'",
+            );
         }
 
         return inputType;
@@ -389,21 +406,18 @@ export class FlagUtilities {
 
         if (_flags & BitmaskFlags.PUSH) {
             interactionType = InteractionType.PUSH;
-        }
-        else if (_flags & BitmaskFlags.HOVER) {
+        } else if (_flags & BitmaskFlags.HOVER) {
             interactionType = InteractionType.HOVER;
-        }
-        else if (_flags & BitmaskFlags.GRAB) {
+        } else if (_flags & BitmaskFlags.GRAB) {
             interactionType = InteractionType.GRAB;
-        }
-        else if (_flags & BitmaskFlags.TOUCHPLANE) {
+        } else if (_flags & BitmaskFlags.TOUCHPLANE) {
             interactionType = InteractionType.TOUCHPLANE;
-        }
-        else if (_flags & BitmaskFlags.VELOCITYSWIPE) {
+        } else if (_flags & BitmaskFlags.VELOCITYSWIPE) {
             interactionType = InteractionType.VELOCITYSWIPE;
-        }
-        else {
-            console.error("InputActionData missing: No InteractionType found. Defaulting to 'PUSH'");
+        } else {
+            console.error(
+                "InputActionData missing: No InteractionType found. Defaulting to 'PUSH'",
+            );
         }
 
         return interactionType;

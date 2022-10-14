@@ -1,4 +1,5 @@
 import {
+    TouchFreeEvent,
     VersionInfo,
     WebsocketInputAction
 } from '../TouchFreeToolingTypes';
@@ -96,7 +97,7 @@ export class ServiceConnection {
             console.log("Successful Connection");
 
             this.handshakeCompleted = true;
-            ConnectionManager.instance.dispatchEvent(new Event('OnConnected'));
+            ConnectionManager.instance.dispatchEvent(new Event(TouchFreeEvent.ON_CONNECTED));
         }
         else {
             console.log(`Connection to Service failed. Details:\n${response.message}`);

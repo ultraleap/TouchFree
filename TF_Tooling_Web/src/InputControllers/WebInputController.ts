@@ -1,6 +1,7 @@
 import {
     TouchFreeInputAction,
-    InputType
+    InputType,
+    TouchFreeEvent
 } from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController'
 
@@ -112,7 +113,7 @@ export class WebInputController extends BaseInputController {
         this.activeEventProps.clientY = _inputData.CursorPosition[1];
 
         if (elementAtPos !== null) {
-            let inputEvent: CustomEvent = new CustomEvent(`InputAction`, {detail: _inputData})
+            const inputEvent = new CustomEvent<TouchFreeInputAction>(TouchFreeEvent.INPUT_ACTION, {detail: _inputData})
             elementAtPos.dispatchEvent(inputEvent);
         }
 

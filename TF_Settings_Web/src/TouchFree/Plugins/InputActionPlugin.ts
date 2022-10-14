@@ -1,4 +1,4 @@
-import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
+import { TouchFreeEvent, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 
 export abstract class InputActionPlugin extends EventTarget{
     // Event: InputActionOutput
@@ -32,7 +32,7 @@ export abstract class InputActionPlugin extends EventTarget{
     // To be used to Invoke the InputActionOutput event from any child class of this base.
     TransmitInputAction(_inputAction: TouchFreeInputAction): void{
         let InputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
-            'InputActionOutput',
+            TouchFreeEvent.INPUT_ACTION_OUTPUT,
             { detail: _inputAction }
         );
         this.dispatchEvent(InputActionEvent);

@@ -5,7 +5,7 @@ import { ManualSetupScreen } from './ManualSetupScreen';
 import MaskingScreen from './Masking/MaskingScreen';
 import QuickSetupManager from './QuickSetup/QuickSetupManager';
 
-const CameraManager = () => {
+const CameraManager: React.FC = () => {
     return (
         <Routes>
             <Route path="" element={<CameraSetupScreen />} />
