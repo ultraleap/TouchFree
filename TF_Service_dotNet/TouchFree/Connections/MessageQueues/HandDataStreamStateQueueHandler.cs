@@ -37,6 +37,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
             switch (referenceFrame) {
                 case HandDataReferenceFrame.SCREEN_FRAME:
+                case HandDataReferenceFrame.LEAP_FRAME:
                     trackingConnectionManager.SetImagesState(false);
                     break;
                 default:

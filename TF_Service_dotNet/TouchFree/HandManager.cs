@@ -218,6 +218,13 @@ namespace Ultraleap.TouchFree.Library
                         });
                         break;
 
+                    case HandDataReferenceFrame.LEAP_FRAME:
+                        RawHandsUpdated = false;
+                        RawHands = ConvertRawHands((positionIn) =>
+                        {
+                            return Utilities.LeapVectorToNumerics(positionIn);
+                        });
+                        break;
                     default:
                         if (LastImage != null)
                         {
