@@ -37,6 +37,7 @@ export class ServiceConnection {
 
     private handshakeRequested: boolean;
     private handshakeCompleted: boolean;
+    private reader: FileReader;
 
     // Group: Functions
 
@@ -55,6 +56,7 @@ export class ServiceConnection {
         this.handshakeCompleted = false;
 
         this.webSocket.addEventListener('open', this.RequestHandshake.bind(this), {once: true});
+        this.reader = new FileReader();
     }
 
     // Function: Disconnect
@@ -111,14 +113,16 @@ export class ServiceConnection {
         if ((typeof _message.data) !== 'string') {
             
             const bufferBlob = _message.data as Blob;
-            new Response(bufferBlob)
-                .arrayBuffer()
-                .then((buffer) => {
-                    const binaryDataType = new Int32Array(buffer, 0, 4)[0];
+            if (this.reader.readyState == FileReader.DONE || this.reader.readyState == FileReader.EMPTY) {
+                this.reader.readAsArrayBuffer(bufferBlob);
+                this.reader.onloadend = (event) => {
+                    const readBuffer = this.reader.result as ArrayBuffer;
+                    const binaryDataType = new Int32Array(readBuffer, 0, 4)[0];
                     if (binaryDataType === 1) {
-                        ConnectionManager.messageReceiver.latestHandDataItem = buffer;
+                        ConnectionManager.messageReceiver.latestHandDataItem = readBuffer;
                     }
-                });
+                }
+            }
             return;
         }
 
