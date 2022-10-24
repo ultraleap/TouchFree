@@ -9,15 +9,12 @@
         "react-circular-progressbar": "^2.1.0",
         "react-dom": "^17.0.2",
         "twgl.js": "^4.24.0",
-        "typescript": "^4.5.5",
         "web-vitals": "^2.1.4"
     },
     "homepage": "/settings/",
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject",
+        "start": "vite",
+        "build": "vite build",
         "pretty": "prettier --write .",
         "lint": "eslint --fix .",
         "prettyLint": "prettier --write . && eslint --fix ."
@@ -42,25 +39,26 @@
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^3.2.0",
-        "@types/react-router-dom": "^5.3.3",
-        "@types/react-transition-group": "^4.4.5",
-        "@types/uuid": "^8.3.4",
         "@types/node": "^16.11.25",
         "@types/react": "^17.0.39",
         "@types/react-dom": "^17.0.11",
+        "@types/react-router-dom": "^5.3.3",
+        "@types/react-transition-group": "^4.4.5",
+        "@types/uuid": "^8.3.4",
         "@typescript-eslint/eslint-plugin": "^5.29.0",
         "@typescript-eslint/parser": "^5.29.0",
+        "@vitejs/plugin-react": "^2.1.0",
         "eslint": "^8.18.0",
         "eslint-plugin-no-relative-import-paths": "^1.3.4",
         "eslint-plugin-react": "^7.30.0",
         "prettier": "^2.7.1",
         "prettier-eslint": "^15.0.1",
         "react-router-dom": "^6.3.0",
-        "react-scripts": "5.0.0",
         "sass": "^1.53.0",
         "sass-loader": "^13.0.2",
+        "typescript": "^4.8.4",
         "typings-for-css-modules-loader": "^1.7.0",
         "uuid": "^8.3.2",
-        "webpack": "^5.73.0"
+        "vite": "^3.1.8"
     }
 }
