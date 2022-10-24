@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Library
         private Timer updateLoop;
         private const float TargetFPS = 60f;
 
-        private const int slowUpdateCount = 4;
+        private const int slowUpdateCount = 5;
         private int slowUpdateIteration = 0;
 
         private readonly object invokeLock = new object();

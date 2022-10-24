@@ -28,7 +28,6 @@ export type BasicMesh = Mesh<BufferGeometry, MeshBasicMaterial>;
 
 interface FingerMesh {
     visible: boolean;
-    primary: boolean;
     tip: number;
     knuckle: number;
     lineToTip: Line2;
@@ -37,7 +36,6 @@ interface FingerMesh {
 
 interface WristMesh {
     visible: boolean;
-    primary: boolean;
     point: number;
     lineToThumb: Line2;
 }
@@ -85,29 +83,8 @@ export const setupRenderScene = (div: HTMLDivElement) => {
     _cameraFeedMesh = new Mesh(new PlaneGeometry(4, 4), new MeshBasicMaterial());
     _scene.add(_cameraFeedMesh);
 
-    _primaryHandMesh = {
-        fingers: {
-            [FingerType.TYPE_THUMB]: addBasicFingerMesh(_scene, 0, true),
-            [FingerType.TYPE_INDEX]: addBasicFingerMesh(_scene, 1, true),
-            [FingerType.TYPE_MIDDLE]: addBasicFingerMesh(_scene, 2, true),
-            [FingerType.TYPE_RING]: addBasicFingerMesh(_scene, 3, true),
-            [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene, 4, true),
-        },
-        wrist: addBasicWristMesh(_scene, 10, true),
-        circleMeshes: addBasicCircleMeshes(_scene, true),
-    };
-
-    _secondaryHandMesh = {
-        fingers: {
-            [FingerType.TYPE_THUMB]: addBasicFingerMesh(_scene, 0, false),
-            [FingerType.TYPE_INDEX]: addBasicFingerMesh(_scene, 1, false),
-            [FingerType.TYPE_MIDDLE]: addBasicFingerMesh(_scene, 2, false),
-            [FingerType.TYPE_RING]: addBasicFingerMesh(_scene, 3, false),
-            [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene, 4, false),
-        },
-        wrist: addBasicWristMesh(_scene, 10, false),
-        circleMeshes: addBasicCircleMeshes(_scene, false),
-    };
+    _primaryHandMesh = createHandMesh(_scene, true);
+    _secondaryHandMesh = createHandMesh(_scene, false);
 };
 
 export const renderScene = () => _renderer.render(_scene, _camera);
@@ -131,9 +108,22 @@ export const updateCameraRender = (data: Uint8Array, width: number, height: numb
     }
 };
 
+const createHandMesh = (scene: Scene, primary: boolean): HandMesh => {
+    return {
+        fingers: {
+            [FingerType.TYPE_THUMB]: addBasicFingerMesh(scene, 0, primary),
+            [FingerType.TYPE_INDEX]: addBasicFingerMesh(scene, 1, primary),
+            [FingerType.TYPE_MIDDLE]: addBasicFingerMesh(scene, 2, primary),
+            [FingerType.TYPE_RING]: addBasicFingerMesh(scene, 3, primary),
+            [FingerType.TYPE_PINKY]: addBasicFingerMesh(scene, 4, primary),
+        },
+        wrist: addBasicWristMesh(scene, 10, primary),
+        circleMeshes: addBasicCircleMeshes(scene, primary),
+    };
+};
+
 const addBasicFingerMesh = (scene: Scene, fingerIndex: number, isPrimary: boolean): FingerMesh => ({
     visible: false,
-    primary: isPrimary,
     tip: fingerIndex * 2,
     knuckle: fingerIndex * 2 + 1,
     lineToTip: addBasicLine(scene, isPrimary),
@@ -142,7 +132,6 @@ const addBasicFingerMesh = (scene: Scene, fingerIndex: number, isPrimary: boolea
 
 const addBasicWristMesh = (scene: Scene, circleIndex: number, isPrimary: boolean): WristMesh => ({
     visible: false,
-    primary: isPrimary,
     point: circleIndex,
     lineToThumb: addBasicLine(scene, isPrimary),
 });
@@ -158,7 +147,7 @@ const addBasicCircleMeshes = (
             transparent: !isPrimary,
             opacity: isPrimary ? 1 : 0.5,
         }),
-        16
+        11
     );
 
     mesh.instanceMatrix.setUsage(DynamicDrawUsage);
@@ -183,7 +172,6 @@ const addBasicLine = (scene: Scene, isPrimary: boolean): Line2 => {
 };
 
 const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
-    const isPrimary = handData?.primaryHand ?? false;
     const meshUpdateData: MeshUpdateData = {
         meshIndices: [],
         positions: [],
@@ -204,7 +192,6 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
         }
         const newData = updateFingerMesh(
             handMesh.fingers[fingerType],
-            isPrimary,
             handData?.fingers[fingerType],
             nextKnucklePos,
             scale
@@ -216,7 +203,6 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
 
     const wristData = updateWristMesh(
         handMesh.wrist,
-        isPrimary,
         handData?.wrist,
         handData?.fingers[FingerType.TYPE_THUMB].knuckle,
         scale
@@ -230,7 +216,6 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
 
 const updateFingerMesh = (
     fingerMesh: FingerMesh,
-    isPrimary: boolean,
     finger?: FingerData,
     nextKnucklePos?: Vector3,
     scale?: number
@@ -244,8 +229,8 @@ const updateFingerMesh = (
         const scaleToUse = scale ?? 1;
         data.meshIndices = [fingerMesh.tip, fingerMesh.knuckle];
         data.positions = [finger.tip, finger.knuckle];
-        moveLine(fingerMesh.lineToTip, finger.knuckle, finger.tip, isPrimary, scaleToUse);
-        moveLine(fingerMesh.lineToNextKnuckle, finger.knuckle, nextKnucklePos, isPrimary, scaleToUse);
+        moveLine(fingerMesh.lineToTip, finger.knuckle, finger.tip, scaleToUse);
+        moveLine(fingerMesh.lineToNextKnuckle, finger.knuckle, nextKnucklePos, scaleToUse);
         if (!fingerMesh.visible) {
             fingerMesh.lineToTip.visible = true;
             fingerMesh.lineToNextKnuckle.visible = true;
@@ -262,7 +247,6 @@ const updateFingerMesh = (
 
 const updateWristMesh = (
     wristMesh: WristMesh,
-    isPrimary: boolean,
     wrist?: Vector3,
     thumbKnucklePos?: Vector3,
     scale?: number
@@ -276,7 +260,7 @@ const updateWristMesh = (
         data.meshIndices = [wristMesh.point];
         data.positions = [wrist];
 
-        moveLine(wristMesh.lineToThumb, wrist, thumbKnucklePos, isPrimary, scale ?? 1);
+        moveLine(wristMesh.lineToThumb, wrist, thumbKnucklePos, scale ?? 1);
         if (!wristMesh.visible) {
             wristMesh.lineToThumb.visible = true;
             wristMesh.visible = true;
@@ -289,9 +273,8 @@ const updateWristMesh = (
     return data;
 };
 
-const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean, scale: number) => {
+const moveLine = (line: Line2, start: Vector3, end: Vector3, scale: number) => {
     line.geometry.setPositions([start.x, start.y, start.z, end.x, end.y, end.z]);
-    //const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 3);
     line.material.linewidth = BASE_LINE_THICKNESS * scale;
     line.material.needsUpdate = true;
 };

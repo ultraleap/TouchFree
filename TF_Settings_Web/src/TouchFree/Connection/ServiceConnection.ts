@@ -37,7 +37,6 @@ export class ServiceConnection {
 
     private handshakeRequested: boolean;
     private handshakeCompleted: boolean;
-    private reader: FileReader;
 
     // Group: Functions
 
@@ -57,7 +56,6 @@ export class ServiceConnection {
         this.handshakeCompleted = false;
 
         this.webSocket.addEventListener('open', this.RequestHandshake.bind(this), {once: true});
-        this.reader = new FileReader();
     }
 
     // Function: Disconnect
