@@ -258,11 +258,13 @@ namespace Ultraleap.TouchFree.Library
                         Bones = f.bones.Select(b => new RawBone()
                         {
                             NextJoint = conversion.Invoke(b.NextJoint),
-                            PrevJoint = conversion.Invoke(b.PrevJoint)
+                            PrevJoint = conversion.Invoke(b.PrevJoint),
+                            Orientation = Utilities.LeapQuaternionToNumerics(b.Rotation)
                         }).ToArray()
                     }).ToArray(),
                     WristPosition = conversion.Invoke(x.WristPosition),
-                    WristWidth = x.PalmWidth
+                    WristWidth = x.PalmWidth,
+                    WristOrientation = Utilities.LeapQuaternionToNumerics(x.Rotation)
                 }).ToArray()
             };
         }

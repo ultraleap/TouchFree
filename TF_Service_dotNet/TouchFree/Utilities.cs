@@ -1,4 +1,6 @@
+using LeapInternal;
 using System;
+using System.Numerics;
 
 namespace Ultraleap.TouchFree.Library
 {
@@ -85,6 +87,16 @@ namespace Ultraleap.TouchFree.Library
         {
             Leap.Vector scaledDown = _leap / 1000;
             return new System.Numerics.Vector3(scaledDown.x, scaledDown.y, scaledDown.z);
+        }
+
+        public static System.Numerics.Matrix4x4 LeapQuaternionToNumericsMatrix(Leap.LeapQuaternion _leap)
+        {
+            return Matrix4x4.CreateFromQuaternion(new Quaternion(_leap.x, _leap.y, _leap.z, _leap.w));
+        }
+
+        public static System.Numerics.Quaternion LeapQuaternionToNumerics(Leap.LeapQuaternion _leap)
+        {
+            return Quaternion.Normalize(new Quaternion(_leap.x, _leap.y, _leap.z, _leap.w));
         }
 
         public static float Lerp(float first, float second, float amount)

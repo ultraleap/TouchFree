@@ -16,6 +16,7 @@ namespace Ultraleap.TouchFree.Library
         public RawFinger[] Fingers { get; set; }
         public float WristWidth { get; set; }
         public Vector3 WristPosition { get; set; }
+        public Quaternion WristOrientation { get; set; }
     }
 
     [Serializable]
@@ -40,5 +41,6 @@ namespace Ultraleap.TouchFree.Library
     {
         public Vector3 NextJoint { get; set; }
         public Vector3 PrevJoint { get; set; }
+        public Quaternion Orientation {  get; set; }
     }
 }
