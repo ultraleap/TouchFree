@@ -49,6 +49,7 @@ export class ServiceConnection {
     // an open connection until this handshake is completed succesfully.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
+        this.webSocket.binaryType = 'arraybuffer';
 
         this.webSocket.addEventListener('message', this.OnMessage.bind(this));
 
@@ -112,16 +113,10 @@ export class ServiceConnection {
     OnMessage(_message: MessageEvent): void {
         if ((typeof _message.data) !== 'string') {
             
-            const bufferBlob = _message.data as Blob;
-            if (this.reader.readyState == FileReader.DONE || this.reader.readyState == FileReader.EMPTY) {
-                this.reader.readAsArrayBuffer(bufferBlob);
-                this.reader.onloadend = (event) => {
-                    const readBuffer = this.reader.result as ArrayBuffer;
-                    const binaryDataType = new Int32Array(readBuffer, 0, 4)[0];
-                    if (binaryDataType === 1) {
-                        ConnectionManager.messageReceiver.latestHandDataItem = readBuffer;
-                    }
-                }
+            const buffer = _message.data as ArrayBuffer;
+            const binaryDataType = new Int32Array(buffer, 0, 4)[0];
+            if (binaryDataType === 1) {
+                ConnectionManager.messageReceiver.latestHandDataItem = buffer;
             }
             return;
         }
