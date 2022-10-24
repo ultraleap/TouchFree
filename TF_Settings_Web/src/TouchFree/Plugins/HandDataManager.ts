@@ -26,7 +26,7 @@ export class HandDataManager extends EventTarget {
     // listeners of <TransmitHandData>.
     public static HandleHandFrame(_data: ArrayBuffer): void {
         const currentTimeStamp = Date.now();
-        if (!HandDataManager.lastFrame || HandDataManager.lastFrame + 100 < currentTimeStamp ) {
+        if (!HandDataManager.lastFrame || HandDataManager.lastFrame + 10 < currentTimeStamp ) {
             let rawHandsEvent: CustomEvent<ArrayBuffer> = new CustomEvent<ArrayBuffer>(
                 'TransmitHandData',
                 { detail: _data }

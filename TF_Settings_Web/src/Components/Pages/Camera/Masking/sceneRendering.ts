@@ -2,8 +2,11 @@ import {
     BufferGeometry,
     CircleBufferGeometry,
     DataTexture,
+    DynamicDrawUsage,
+    InstancedMesh,
     Mesh,
     MeshBasicMaterial,
+    Object3D,
     PerspectiveCamera,
     PlaneGeometry,
     Scene,
@@ -26,8 +29,8 @@ export type BasicMesh = Mesh<BufferGeometry, MeshBasicMaterial>;
 interface FingerMesh {
     visible: boolean;
     primary: boolean;
-    tip: BasicMesh;
-    knuckle: BasicMesh;
+    tip: number;
+    knuckle: number;
     lineToTip: Line2;
     lineToNextKnuckle: Line2;
 }
@@ -35,7 +38,7 @@ interface FingerMesh {
 interface WristMesh {
     visible: boolean;
     primary: boolean;
-    point: BasicMesh;
+    point: number;
     lineToThumb: Line2;
 }
 
@@ -48,6 +51,7 @@ interface HandMesh {
         [FingerType.TYPE_PINKY]: FingerMesh;
     };
     wrist: WristMesh;
+    circleMeshes: InstancedMesh<CircleBufferGeometry, MeshBasicMaterial>;
 }
 
 let _scene: Scene;
@@ -56,8 +60,10 @@ let _camera: PerspectiveCamera;
 let _cameraFeedMesh: BasicMesh;
 let _cameraFeedTexture: DataTexture;
 
-let _handOneMesh: HandMesh;
-let _handTwoMesh: HandMesh;
+let _primaryHandMesh: HandMesh;
+let _secondaryHandMesh: HandMesh;
+
+const dummy = new Object3D();
 
 const BASE_LINE_THICKNESS = 0.005;
 
@@ -74,26 +80,28 @@ export const setupRenderScene = (div: HTMLDivElement) => {
     _cameraFeedMesh = new Mesh(new PlaneGeometry(4, 4), new MeshBasicMaterial());
     _scene.add(_cameraFeedMesh);
 
-    _handOneMesh = {
+    _primaryHandMesh = {
         fingers: {
-            [FingerType.TYPE_THUMB]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_INDEX]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_MIDDLE]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_RING]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene),
+            [FingerType.TYPE_THUMB]: addBasicFingerMesh(_scene, 0, true),
+            [FingerType.TYPE_INDEX]: addBasicFingerMesh(_scene, 1, true),
+            [FingerType.TYPE_MIDDLE]: addBasicFingerMesh(_scene, 2, true),
+            [FingerType.TYPE_RING]: addBasicFingerMesh(_scene, 3, true),
+            [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene, 4, true),
         },
-        wrist: addBasicWristMesh(_scene),
+        wrist: addBasicWristMesh(_scene, 10, true),
+        circleMeshes: addBasicCircleMeshes(_scene, true),
     };
 
-    _handTwoMesh = {
+    _secondaryHandMesh = {
         fingers: {
-            [FingerType.TYPE_THUMB]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_INDEX]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_MIDDLE]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_RING]: addBasicFingerMesh(_scene),
-            [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene),
+            [FingerType.TYPE_THUMB]: addBasicFingerMesh(_scene, 0, false),
+            [FingerType.TYPE_INDEX]: addBasicFingerMesh(_scene, 1, false),
+            [FingerType.TYPE_MIDDLE]: addBasicFingerMesh(_scene, 2, false),
+            [FingerType.TYPE_RING]: addBasicFingerMesh(_scene, 3, false),
+            [FingerType.TYPE_PINKY]: addBasicFingerMesh(_scene, 4, false),
         },
-        wrist: addBasicWristMesh(_scene),
+        wrist: addBasicWristMesh(_scene, 10, false),
+        circleMeshes: addBasicCircleMeshes(_scene, false),
     };
 };
 
@@ -109,32 +117,44 @@ export const updateCameraRender = (data: Uint8Array, width: number, height: numb
     _cameraFeedMesh.material.map = _cameraFeedTexture;
     _cameraFeedMesh.material.color.convertSRGBToLinear();
 
-    updateHandMesh(_handOneMesh, handData?.one);
-    updateHandMesh(_handTwoMesh, handData?.two);
+    if (handData?.one?.primaryHand) {
+        updateHandMesh(_primaryHandMesh, handData?.one);
+        updateHandMesh(_secondaryHandMesh, handData?.two);
+    } else {
+        updateHandMesh(_primaryHandMesh, handData?.two);
+        updateHandMesh(_secondaryHandMesh, handData?.one);
+    }
 };
 
-const addBasicFingerMesh = (scene: Scene): FingerMesh => ({
+const addBasicFingerMesh = (scene: Scene, fingerIndex: number, isPrimary: boolean): FingerMesh => ({
     visible: false,
-    primary: false,
-    tip: addBasicCircleMesh(scene),
-    knuckle: addBasicCircleMesh(scene),
+    primary: isPrimary,
+    tip: fingerIndex * 2,
+    knuckle: fingerIndex * 2 + 1,
     lineToTip: addBasicLine(scene),
     lineToNextKnuckle: addBasicLine(scene),
 });
 
-const addBasicWristMesh = (scene: Scene): WristMesh => ({
+const addBasicWristMesh = (scene: Scene, circleIndex: number, isPrimary: boolean): WristMesh => ({
     visible: false,
-    primary: false,
-    point: addBasicCircleMesh(scene),
+    primary: isPrimary,
+    point: circleIndex,
     lineToThumb: addBasicLine(scene),
 });
 
-const addBasicCircleMesh = (scene: Scene): BasicMesh => {
-    const mesh = new Mesh(
+const addBasicCircleMeshes = (
+    scene: Scene,
+    isPrimary: boolean
+): InstancedMesh<CircleBufferGeometry, MeshBasicMaterial> => {
+    const color = isPrimary ? cssVariables.ultraleapGreen : cssVariables.ultraleapGreenHalfOpacity;
+
+    const mesh = new InstancedMesh(
         new CircleBufferGeometry(0.02, 10),
-        new MeshBasicMaterial({ color: cssVariables.ultraleapGreen, transparent: true })
+        new MeshBasicMaterial({ color, transparent: true }),
+        22
     );
-    mesh.visible = false;
+    mesh.instanceMatrix.setUsage(DynamicDrawUsage);
+    mesh.visible = true;
     scene.add(mesh);
     return mesh;
 };
@@ -152,6 +172,11 @@ const addBasicLine = (scene: Scene): Line2 => {
 
 const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
     const isPrimary = handData?.primaryHand ?? false;
+
+    let scale = 1;
+    if (handData !== undefined) {
+        scale = MapRangeToRange(handData.fingers[FingerType.TYPE_PINKY].tip.z, 0, 0.1, 1, 3);
+    }
     Object.keys(handMesh.fingers).forEach((finger) => {
         const fingerType = Number(finger) as Exclude<FingerType, FingerType.TYPE_UNKNOWN>;
         let nextKnucklePos: Vector3 | undefined;
@@ -161,68 +186,89 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
             nextKnucklePos =
                 handData?.fingers[(fingerType + 1) as Exclude<FingerType, FingerType.TYPE_UNKNOWN>].knuckle;
         }
-        updateFingerMesh(handMesh.fingers[fingerType], isPrimary, handData?.fingers[fingerType], nextKnucklePos);
+        updateFingerMesh(
+            handMesh.circleMeshes,
+            handMesh.fingers[fingerType],
+            isPrimary,
+            handData?.fingers[fingerType],
+            nextKnucklePos,
+            scale
+        );
     });
 
-    updateWristMesh(handMesh.wrist, isPrimary, handData?.wrist, handData?.fingers[FingerType.TYPE_THUMB].knuckle);
+    updateWristMesh(
+        handMesh.circleMeshes,
+        handMesh.wrist,
+        isPrimary,
+        handData?.wrist,
+        handData?.fingers[FingerType.TYPE_THUMB].knuckle,
+        scale
+    );
 };
 
 const updateFingerMesh = (
+    circleMeshes: InstancedMesh,
     fingerMesh: FingerMesh,
     isPrimary: boolean,
     finger?: FingerData,
-    nextKnucklePos?: Vector3
+    nextKnucklePos?: Vector3,
+    scale?: number
 ) => {
     if (finger && nextKnucklePos) {
-        moveMesh(fingerMesh.tip, finger.tip, isPrimary);
-        moveMesh(fingerMesh.knuckle, finger.knuckle, isPrimary);
-        moveLine(fingerMesh.lineToTip, finger.knuckle, finger.tip, isPrimary);
-        moveLine(fingerMesh.lineToNextKnuckle, finger.knuckle, nextKnucklePos, isPrimary);
+        const scaleToUse = scale ?? 1;
+        moveMesh(circleMeshes, fingerMesh.tip, finger.tip, scaleToUse);
+        moveMesh(circleMeshes, fingerMesh.knuckle, finger.knuckle, scaleToUse);
+        moveLine(fingerMesh.lineToTip, finger.knuckle, finger.tip, isPrimary, scaleToUse);
+        moveLine(fingerMesh.lineToNextKnuckle, finger.knuckle, nextKnucklePos, isPrimary, scaleToUse);
         if (!fingerMesh.visible) {
-            fingerMesh.tip.visible = true;
-            fingerMesh.knuckle.visible = true;
+            circleMeshes.visible = true;
             fingerMesh.lineToTip.visible = true;
             fingerMesh.lineToNextKnuckle.visible = true;
             fingerMesh.visible = true;
         }
     } else if (fingerMesh.visible) {
-        fingerMesh.tip.visible = false;
-        fingerMesh.knuckle.visible = false;
+        circleMeshes.visible = false;
         fingerMesh.lineToTip.visible = false;
         fingerMesh.lineToNextKnuckle.visible = false;
         fingerMesh.visible = false;
     }
 };
 
-const updateWristMesh = (wristMesh: WristMesh, isPrimary: boolean, wrist?: Vector3, thumbKnucklePos?: Vector3) => {
+const updateWristMesh = (
+    circleMeshes: InstancedMesh,
+    wristMesh: WristMesh,
+    isPrimary: boolean,
+    wrist?: Vector3,
+    thumbKnucklePos?: Vector3,
+    scale?: number
+) => {
+    const scaleToUse = scale ?? 1;
     if (wrist && thumbKnucklePos) {
-        moveMesh(wristMesh.point, wrist, isPrimary);
-        moveLine(wristMesh.lineToThumb, wrist, thumbKnucklePos, isPrimary);
+        moveMesh(circleMeshes, wristMesh.point, wrist, scaleToUse);
+        moveLine(wristMesh.lineToThumb, wrist, thumbKnucklePos, isPrimary, scaleToUse);
         if (!wristMesh.visible) {
-            wristMesh.point.visible = true;
             wristMesh.lineToThumb.visible = true;
             wristMesh.visible = true;
         }
     } else if (wristMesh.visible) {
-        wristMesh.point.visible = false;
         wristMesh.lineToThumb.visible = false;
         wristMesh.visible = false;
     }
 };
 
-const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean) => {
+const moveLine = (line: Line2, start: Vector3, end: Vector3, isPrimary: boolean, scale: number) => {
     line.geometry.setPositions([start.x, start.y, start.z, end.x, end.y, end.z]);
-    const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 3);
+    //const scale = MapRangeToRange((start.z + end.z) / 2, 0, 0.1, 1, 3);
     line.material.linewidth = BASE_LINE_THICKNESS * scale;
     line.material.opacity = isPrimary ? 1 : 0.5;
     line.material.needsUpdate = true;
 };
 
-const moveMesh = (mesh: BasicMesh, position: Vector3, isPrimary: boolean) => {
-    mesh.position.set(position.x, position.y, position.z + 0.0001);
-    mesh.material.opacity = isPrimary ? 1 : 0.5;
+const moveMesh = (circleMeshes: InstancedMesh, meshIndex: number, position: Vector3, scale: number) => {
+    dummy.position.set(position.x / scale, position.y / scale, position.z + 0.001);
+    dummy.updateMatrix();
 
-    const scale = MapRangeToRange(position.z, 0, 0.1, 1, 3);
-    mesh.scale.set(scale, scale, 1);
-    mesh.material.needsUpdate = true;
+    circleMeshes.scale.set(scale, scale, 1);
+    circleMeshes.setMatrixAt(meshIndex, dummy.matrix);
+    circleMeshes.instanceMatrix.needsUpdate = true;
 };
