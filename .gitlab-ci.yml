@@ -124,7 +124,13 @@ TF_Service::Wrapper::build:
   when: always
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
-    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/ServiceWrapper.csproj"
+    - if($CI_COMMIT_BRANCH -Match 'release/.*') {
+        $TOUCHFREE_SUFFIX = '';
+      } else {
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=${env:CI_COMMIT_SHORT_SHA}';
+      }
+
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/ServiceWrapper.csproj"
     # Move the built wrapper to the root directory
     - mkdir ./Service_Wrapper_Build
     - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/net6.0/win-x64/publish/* ./Service_Wrapper_Build
@@ -145,8 +151,14 @@ TF_Service::dotNet::Windows::build:
   when: always
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
-    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
-    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
+    - if($CI_COMMIT_BRANCH -Match 'release/.*') {
+        $TOUCHFREE_SUFFIX = '';
+      } else {
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=${env:CI_COMMIT_SHORT_SHA}';
+      }
+
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
     - if (Test-Path -Path "./Service_dotNet_Build") {
@@ -173,8 +185,14 @@ TF_Service::dotNet::ARMLinux::build:
   when: always
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
-    - dotnet publish -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
-    - dotnet publish -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
+    - if($CI_COMMIT_BRANCH -Match 'release/.*') {
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=beta';
+      } else {
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=beta-${env:CI_COMMIT_SHORT_SHA}';
+      }
+
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
     - if (Test-Path -Path "./Service_dotNet_Build_ARMLinux") {
