@@ -1,5 +1,5 @@
 import 'Styles/Camera/Calibrate.scss';
-import cssVariables from 'Styles/_variables.scss';
+import cssVariables from 'Styles/variables.module.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
@@ -68,27 +68,30 @@ interface CalibrationProgressCircleProps {
     style: CSSProperties;
 }
 
-export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
-    <div style={style} className="touch-circle-progress">
-        <CircularProgressbar
-            value={Math.ceil(progress * 50) / 50}
-            maxValue={1}
-            strokeWidth={25}
-            styles={buildStyles({
-                strokeLinecap: 'butt',
-                pathColor: cssVariables.ultraleapGreen,
-                trailColor: 'transparent',
-                pathTransition: progress === 0 ? 'none' : 'stroke-dashoffset 0.1s ease 0s',
-            })}
-        />
-        <img
-            className="touch-circle"
-            style={{ position: 'absolute', top: '22%', left: '22%' }}
-            src={FingerprintIcon}
-            alt="Fingerprint Icon showing where to place finger for Quick Setup"
-        />
-    </div>
-);
+export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => {
+    console.log(cssVariables);
+    return (
+        <div style={style} className="touch-circle-progress">
+            <CircularProgressbar
+                value={Math.ceil(progress * 50) / 50}
+                maxValue={1}
+                strokeWidth={25}
+                styles={buildStyles({
+                    strokeLinecap: 'butt',
+                    pathColor: cssVariables.ultraleapGreen,
+                    trailColor: 'transparent',
+                    pathTransition: progress === 0 ? 'none' : 'stroke-dashoffset 0.1s ease 0s',
+                })}
+            />
+            <img
+                className="touch-circle"
+                style={{ position: 'absolute', top: '22%', left: '22%' }}
+                src={FingerprintIcon}
+                alt="Fingerprint Icon showing where to place finger for Quick Setup"
+            />
+        </div>
+    );
+};
 
 interface HandsLostProps {
     display: boolean;
