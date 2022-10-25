@@ -16,7 +16,6 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "baseUrl": "src",
-        "typeRoots": ["node_modules/@types", "src/Videos/vidoes"],
         "paths": {
             "@/*": ["*"],
             "Styles/*": ["Styles/*"],
