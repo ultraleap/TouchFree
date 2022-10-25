@@ -125,9 +125,9 @@ TF_Service::Wrapper::build:
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
     - if($CI_COMMIT_BRANCH -Match 'release/.*') {
-        $TOUCHFREE_SUFFIX = '';
+        $TOUCHFREE_SUFFIX = ''
       } else {
-        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=${env:CI_COMMIT_SHORT_SHA}';
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=${env:CI_COMMIT_SHORT_SHA}'
       }
 
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/ServiceWrapper.csproj"
@@ -152,9 +152,9 @@ TF_Service::dotNet::Windows::build:
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
     - if($CI_COMMIT_BRANCH -Match 'release/.*') {
-        $TOUCHFREE_SUFFIX = '';
+        $TOUCHFREE_SUFFIX = ''
       } else {
-        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=${env:CI_COMMIT_SHORT_SHA}';
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=${env:CI_COMMIT_SHORT_SHA}'
       }
 
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
@@ -186,9 +186,9 @@ TF_Service::dotNet::ARMLinux::build:
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
     - if($CI_COMMIT_BRANCH -Match 'release/.*') {
-        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=beta';
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=beta'
       } else {
-        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=beta-${env:CI_COMMIT_SHORT_SHA}';
+        $TOUCHFREE_SUFFIX = ' -p:VersionSuffix=beta-${env:CI_COMMIT_SHORT_SHA}'
       }
 
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION $TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
