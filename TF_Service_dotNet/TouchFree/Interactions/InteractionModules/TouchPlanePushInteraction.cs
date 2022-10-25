@@ -25,7 +25,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         // Particularly for those that are cancelled by InteractionZones
         bool handReady = false;
 
-        public float dragStartDistanceThresholdMm = 10f;
+        public float dragStartDistanceThresholdMm = 30f;
         bool isDragging = false;
 
         public TouchPlanePushInteraction(
@@ -78,6 +78,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         downPos = currentCursorPosition;
                         pressing = true;
 
+                        if (!ignoreDragging)
+                        {
+                            positionStabiliser.currentDeadzoneRadius = positionStabiliser.defaultDeadzoneRadius + dragStartDistanceThresholdMm;
+                        }
+
                         return CreateInputActionResult(InputType.DOWN, positions, progressToClick);
                     }
                     else if (!ignoreDragging)
@@ -85,6 +90,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         if (!isDragging && CheckForStartDrag(downPos, positions.CursorPosition))
                         {
                             isDragging = true;
+                            positionStabiliser.StartShrinkingDeadzone(0.9f);
                         }
 
                         if (isDragging)
@@ -102,6 +108,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                         pressComplete = true;
 
                         Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
+                        positionStabiliser.ResetValues();
                         return CreateInputActionResult(InputType.UP, downPositions, progressToClick);
                     }
                 }
@@ -111,6 +118,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 InputActionResult result;
                 if (pressing && !pressComplete)
                 {
+                    positionStabiliser.ResetValues();
                     Positions downPositions = new Positions(downPos, positions.DistanceFromScreen);
                     result = CreateInputActionResult(InputType.UP, downPositions, progressToClick);
                 }
@@ -132,16 +140,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
         {
-            Vector2 startPosMm = virtualScreen.PixelsToMillimeters(_startPos);
-            Vector2 currentPosMm = virtualScreen.PixelsToMillimeters(_currentPos);
-            float distFromStartPos = (startPosMm - currentPosMm).Length();
-
-            if (distFromStartPos > dragStartDistanceThresholdMm)
-            {
-                return true;
-            }
-
-            return false;
+            return _startPos != _currentPos;
         }
 
         protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
