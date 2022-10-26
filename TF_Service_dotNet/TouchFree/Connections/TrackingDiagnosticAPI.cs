@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Leap;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Leap;
 using Ultraleap.TouchFree.Library.Configuration;
 using WebSocketSharp;
 
@@ -19,7 +19,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         public uint? connectedDeviceID;
         public string connectedDeviceFirmware;
         public string connectedDeviceSerial;
-        
+
         public event Action<Result<ImageMaskData>> OnMaskingResponse;
         public event Action<Result<bool>> OnAnalyticsResponse;
         public event Action<Result<bool>> OnAllowImagesResponse;
@@ -38,7 +38,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             private readonly Func<TData, uint?, object> _setPayloadFunc;
             private readonly List<TData> _responsesToIgnore; // Not a queue as responses could come back out of order
             private TData _value;
-            
+
             public ConfigurationVariable(
                 TrackingDiagnosticApi diagnosticApi,
                 bool connectedDeviceRequired,
@@ -125,18 +125,18 @@ namespace Ultraleap.TouchFree.Library.Connections
                 (val, _) => new DApiPayloadMessage<T>(requestType, val);
 
             // Configuration variable setup
-            maskingData = new ConfigurationVariable<ImageMaskData>(this,true,
+            maskingData = new ConfigurationVariable<ImageMaskData>(this, true,
                 DeviceIdPayloadFunc(DApiMsgTypes.GetImageMask),
                 (maskData, deviceId) =>
                 {
                     var payload = maskData with { device_id = deviceId.GetValueOrDefault() };
                     return new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload);
                 });
-            
+
             allowImages = new ConfigurationVariable<bool>(this, false,
                 DefaultGetPayloadFunc(DApiMsgTypes.GetAllowImages),
                 DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAllowImages));
-            
+
             cameraReversed = new ConfigurationVariable<bool>(this, true,
                 DeviceIdPayloadFunc(DApiMsgTypes.GetCameraOrientation),
                 (reversed, deviceId) =>
@@ -148,16 +148,16 @@ namespace Ultraleap.TouchFree.Library.Connections
                     };
                     return new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload);
                 });
-            
+
             analyticsEnabled = new ConfigurationVariable<bool>(this, false,
                 DefaultGetPayloadFunc(DApiMsgTypes.GetAnalyticsEnabled),
                 DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAnalyticsEnabled));
-            
+
             Connect();
 #pragma warning disable CS4014
             MessageQueueReader();
 #pragma warning restore CS4014
-            
+
             void SetTrackingConfigurationOnDevice(TrackingConfig config)
             {
                 allowImages.RequestSet(config.AllowImages);
@@ -259,7 +259,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                     var payload = JsonConvert.DeserializeObject<DApiPayloadMessage<TPayload>>(_message);
                     if (payload == null)
                     {
-                        TouchFreeLog.WriteLine($"DiagnosticAPI - Payload for {status.ToString()} failed to deserialize: {_message}");   
+                        TouchFreeLog.WriteLine($"DiagnosticAPI - Payload for {status.ToString()} failed to deserialize: {_message}");
                     }
                     else
                     {
@@ -305,7 +305,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                         Handle<CameraOrientationPayload>(payload => OnCameraOrientationResponse?.Invoke(payload.camera_orientation == "fixed-inverted"),
                             () => OnCameraOrientationResponse?.Invoke($"Could not access CameraOrientation state. Tracking Response: \"{_message}\""));
                         break;
-                    
+
                     case DApiMsgTypes.GetDevices:
                         Handle<DiagnosticDevice[]>(
                             devices =>
@@ -339,7 +339,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                             OnTrackingApiVersionResponse?.Invoke();
                         }); // TODO: Handle failure?
                         break;
-                    
+
                     case DApiMsgTypes.GetServerInfo:
                         Handle<ServiceInfoPayload>(payload =>
                         {
@@ -356,7 +356,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                             OnTrackingDeviceInfoResponse?.Invoke();
                         }); // TODO: Handle failure?
                         break;
-                    
+
                     default:
                         TouchFreeLog.WriteLine(
                             $"DiagnosticAPI - Could not parse response of type: {response.type} with message: {_message}");
@@ -370,12 +370,12 @@ namespace Ultraleap.TouchFree.Library.Connections
             bool TrySend()
             {
                 if (webSocket.ReadyState != WebSocketState.Open) return false;
-                
+
                 var requestMessage = JsonConvert.SerializeObject(payload);
                 webSocket.Send(requestMessage);
                 return true;
             }
-            
+
             if (!TrySend())
             {
                 Connect();
@@ -414,7 +414,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             // Only send the request if we have a device
             if (!connectedDeviceID.HasValue) return;
-            
+
             var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
             Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
         }

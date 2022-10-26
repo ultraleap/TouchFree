@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Numerics;
-using Microsoft.Extensions.Options;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
@@ -70,7 +70,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 initialised = false;
             }
-    
+
             public float FilterValue(float value, float alpha)
             {
                 if (initialised)

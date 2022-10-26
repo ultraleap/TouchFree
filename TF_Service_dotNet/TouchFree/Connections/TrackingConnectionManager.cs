@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Leap;
+using System;
 using System.Threading.Tasks;
-using Leap;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections
@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 // (false, true) => ???, Weird state that's currently impossible if you inspect the implementation of IsConnected
                 _ => TrackingServiceState.UNAVAILABLE
             };
-        
+
         public event Action<TrackingServiceState> ServiceStatusChange;
 
         public TrackingConnectionManager(IConfigManager _configManager)
@@ -73,7 +73,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void ControllerOnConnect(object sender, ConnectionEventArgs e)
         {
-            
+
             UpdateTrackingMode(configManager.PhysicalConfig);
             ServiceStatusChange?.Invoke(TrackingServiceState.NO_CAMERA);
 

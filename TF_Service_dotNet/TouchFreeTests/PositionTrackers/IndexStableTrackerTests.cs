@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System.Numerics;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
 namespace TouchFreeTests.PositionTrackers
@@ -21,10 +21,10 @@ namespace TouchFreeTests.PositionTrackers
             Leap.Vector secondJointPosition = new Leap.Vector(1000, 2000, 3010);
             Leap.Vector thirdJointPosition = new Leap.Vector(1000, 2000, 3030);
             Leap.Vector fourthJointPosition = new Leap.Vector(1000, 2000, 3050);
-            Leap.Finger finger = new Leap.Finger(0, 0, 0, 1, new Leap.Vector(), new Leap.Vector(), 1, 1, true, Leap.Finger.FingerType.TYPE_INDEX, 
-                new Leap.Bone() { NextJoint = firstJointPosition }, 
-                new Leap.Bone() { NextJoint = secondJointPosition }, 
-                new Leap.Bone() { NextJoint = thirdJointPosition }, 
+            Leap.Finger finger = new Leap.Finger(0, 0, 0, 1, new Leap.Vector(), new Leap.Vector(), 1, 1, true, Leap.Finger.FingerType.TYPE_INDEX,
+                new Leap.Bone() { NextJoint = firstJointPosition },
+                new Leap.Bone() { NextJoint = secondJointPosition },
+                new Leap.Bone() { NextJoint = thirdJointPosition },
                 new Leap.Bone() { NextJoint = fourthJointPosition });
             Leap.Hand hand = new Leap.Hand();
             hand.Fingers.Add(finger);

@@ -1,6 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace TouchFreeTests.Configuration

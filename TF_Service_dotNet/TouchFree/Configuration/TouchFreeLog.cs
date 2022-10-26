@@ -29,7 +29,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 }
             }
 
-            try 
+            try
             {
                 FileStream filestream = new FileStream(filename, FileMode.Append);
 

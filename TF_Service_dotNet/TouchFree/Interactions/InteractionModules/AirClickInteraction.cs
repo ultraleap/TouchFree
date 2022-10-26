@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 using System.Numerics;
-using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
@@ -65,7 +65,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 isTouching = false;
                 return 0;
             }
-            
+
             Vector3 palmForward = Utilities.LeapVectorToNumerics(_hand.Fingers.Single(x => x.Type == Leap.Finger.FingerType.TYPE_MIDDLE).bones[0].NextJoint - _hand.PalmPosition);
             palmForward = palmForward / palmForward.Length();
             Vector3 indexForward = Utilities.LeapVectorToNumerics(_hand.Fingers.Single(x => x.Type == Leap.Finger.FingerType.TYPE_INDEX).Direction);
