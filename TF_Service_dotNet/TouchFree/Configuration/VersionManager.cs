@@ -12,7 +12,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             {
                 if (string.IsNullOrEmpty(_version))
                 {
-                    Assembly assembly = Assembly.GetExecutingAssembly();
+                    Assembly assembly = Assembly.GetEntryAssembly();
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
                     _version = fileVersionInfo.ProductVersion;
                 }
