@@ -12,9 +12,11 @@ import logo from 'Images/Logo.png';
 import { VerticalIconTextButton } from './Controls/TFButton';
 import TabSelector from './Controls/TabSelector';
 import { StatusIndicator } from './StatusIndicator';
+import { VersionIndicator } from './VersionIndicator';
 
 interface ControlBarProps {
     tfStatus: TrackingServiceState;
+    touchFreeVersion: string;
 }
 
 const backButtonStyle: CSSProperties = {
@@ -48,7 +50,7 @@ const getBackLocation = (path: string): string => {
 
 type TabName = 'Camera' | 'Interactions';
 
-const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
+const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) => {
     const [activeTab, setActiveTab] = React.useState<TabName>('Camera');
 
     const { pathname } = useLocation();
@@ -61,7 +63,7 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus }) => {
             <div className="control-bar-top">
                 <StatusIndicator tfStatus={tfStatus} />
                 <img src={logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
-                <div style={{ width: '125px' }} />
+                <VersionIndicator touchFreeVersion={touchFreeVersion} />
             </div>
             <div className="control-bar-bottom">
                 {pathname === '/settings/camera' || pathname === '/settings/interactions' ? (

@@ -5,12 +5,6 @@ using Leap;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public static class VersionInfo
-    {
-        public static readonly Version ApiVersion = new Version("1.3.0");
-        public const string API_HEADER_NAME = "TfApiVersion";
-    }
-
     public readonly struct InputAction
     {
         public readonly long Timestamp;

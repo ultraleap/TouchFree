@@ -14,18 +14,25 @@ import { TrackingServiceState } from './TouchFree/TouchFreeToolingTypes';
 
 const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
+    const [touchFreeVersion, setTouchFreeVersion] = React.useState<string>('');
 
     useEffect(() => {
         ConnectionManager.init();
 
-        const requestServiceStatus = () => ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-            const status = detail.trackingServiceState;
-            if (status) {
-                setTfStatus(status);
-            }
-        });
+        const onConnected = () => {
+            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+                const status = detail.trackingServiceState;
+                if (status) {
+                    setTfStatus(status);
+                }
+            });
 
-        ConnectionManager.AddConnectionListener(requestServiceStatus);
+            const serviceConnection = ConnectionManager.serviceConnection();
+            const tfVersion = serviceConnection?.touchFreeVersion ?? '';
+            setTouchFreeVersion(tfVersion);
+        };
+
+        ConnectionManager.AddConnectionListener(onConnected);
         ConnectionManager.AddServiceStatusListener(setTfStatus);
         const controller: WebInputController = new WebInputController();
 
@@ -38,7 +45,7 @@ const App: React.FC = () => {
 
     return (
         <div className="app">
-            <ControlBar tfStatus={tfStatus} />
+            <ControlBar tfStatus={tfStatus} touchFreeVersion={touchFreeVersion} />
             <div className="page-content">
                 <Routes>
                     <Route path="/settings/camera/*" element={<CameraManager />} />

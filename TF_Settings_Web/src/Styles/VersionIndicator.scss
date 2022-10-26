@@ -1,0 +1,16 @@
+.version-container {
+    height: 100%;
+    min-width: 6rem;
+    display: flex;
+    justify-content: center;
+    padding-left: 2rem;
+}
+
+.version-information {
+    position: relative;
+    display: flex;
+    vertical-align: middle;
+    padding-top: 10px;
+    padding-right: 10px;
+    color: white;
+}
