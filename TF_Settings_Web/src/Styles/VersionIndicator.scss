@@ -7,10 +7,8 @@
 }
 
 .version-information {
-    position: relative;
-    display: flex;
-    vertical-align: middle;
-    padding-top: 10px;
-    padding-right: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
     color: white;
 }
