@@ -159,7 +159,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         private void ProcessHandshake(ActionCode action, string requestContent)
         {
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(requestContent);
-            var response = new HandShakeResponse("", "Success", "", requestContent, VersionManager.Version.ToString(), VersionManager.ApiVersion.ToString());
+            var response = new HandShakeResponse("", "Success", "", requestContent, VersionManager.Version.ToString(3), VersionManager.ApiVersion.ToString());
 
             if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
             {
