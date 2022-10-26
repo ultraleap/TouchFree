@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Numerics;
 
-using Leap;
-
 namespace Ultraleap.TouchFree.Library
 {
     public readonly struct InputAction
