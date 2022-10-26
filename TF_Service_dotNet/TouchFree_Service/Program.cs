@@ -13,7 +13,7 @@ namespace Ultraleap.TouchFree.Service
 #endif
 
             TouchFreeLog.WriteLine($"TouchFree Version: v{VersionManager.Version}");
-            TouchFreeLog.WriteLine("");
+            TouchFreeLog.WriteLine();
 
             CreateHostBuilder(args).Build().Run();
         }

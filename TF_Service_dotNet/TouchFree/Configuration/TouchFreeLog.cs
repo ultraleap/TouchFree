@@ -45,13 +45,13 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 Console.WriteLine("Cannot open log file, run as administrator to enable logging.");
             }
 
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine($"{DateTime.Now} - Starting Service");
-            Console.WriteLine();
+            WriteLine();
+            WriteLine();
+            WriteLine("Starting Service");
+            WriteLine();
         }
 
-        public static void WriteLine(string text)
+        public static void WriteLine(string text = null)
         {
             if (!string.IsNullOrWhiteSpace(text))
             {

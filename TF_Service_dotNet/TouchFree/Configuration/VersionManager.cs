@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace Ultraleap.TouchFree.Library.Configuration
@@ -12,9 +11,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             {
                 if (string.IsNullOrEmpty(_version))
                 {
-                    Assembly assembly = Assembly.GetEntryAssembly();
-                    FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-                    _version = fileVersionInfo.ProductVersion;
+                    _version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
                 }
 
                 return _version;
