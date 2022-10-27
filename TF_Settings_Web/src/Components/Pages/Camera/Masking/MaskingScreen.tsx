@@ -1,5 +1,3 @@
-import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
-
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
