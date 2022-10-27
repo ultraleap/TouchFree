@@ -75,7 +75,6 @@ const MaskingScreen: React.FC = () => {
         setHandRenderState(true, mainLens.current === 'Left' ? 'left' : 'right');
 
         return () => {
-
             HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
             window.clearTimeout(frameTimeoutRef.current);

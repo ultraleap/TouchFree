@@ -56,7 +56,7 @@ export class MessageReceiver {
 
     // Variable: latestHandDataItem
     // The latest <HandFrame> that has been received from the Service.
-    latestHandDataItem: any = undefined;
+    latestHandDataItem: ArrayBuffer | undefined = undefined;
 
     // Variable: responseQueue
     // A queue of <WebSocketResponses> that have been received from the Service.
@@ -290,9 +290,12 @@ export class MessageReceiver {
         let handFrame = this.latestHandDataItem;
 
         if (handFrame !== undefined) {
+            this.latestHandDataItem = undefined;
             // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
             setTimeout(() => {
-                HandDataManager.HandleHandFrame(handFrame);
+                if (handFrame !== undefined) {
+                    HandDataManager.HandleHandFrame(handFrame);
+                }
             });
         }
     }
