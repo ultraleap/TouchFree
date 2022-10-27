@@ -32,7 +32,6 @@ const MaskingScreen: React.FC = () => {
 
     const showOverexposed = useStatefulRef<boolean>(false);
 
-    //const isFrameProcessing = useStatefulRef<boolean>(false);
     const isHandProcessing = useStatefulRef<boolean>(false);
 
     // ===== State Setters =====
@@ -61,12 +60,10 @@ const MaskingScreen: React.FC = () => {
 
     // ===== Refs =====
     const camFeedRef = useRef<HTMLDivElement>(null);
-    //const successfullySubscribed = useRef<boolean>(false);
     const frameTimeoutRef = useRef<number>();
     const handTimeoutRef = useRef<number>();
 
     // ===== Hooks =====
-    //const navigate = useNavigate();
 
     useEffect(() => {
         if (camFeedRef.current) {
@@ -74,22 +71,10 @@ const MaskingScreen: React.FC = () => {
         }
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
-        // const socket = new WebSocket('ws://127.0.0.1:1024');
-        // socket.binaryType = 'arraybuffer';
-
-        // socket.addEventListener('open', handleWSOpen);
-        // socket.addEventListener('message', (event) => handleMessage(socket, event));
-        // socket.addEventListener('close', handleWSClose);
-
         HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
         setHandRenderState(true, mainLens.current === 'Left' ? 'left' : 'right');
 
         return () => {
-            // socket.removeEventListener('open', handleWSOpen);
-            // socket.removeEventListener('message', (event) => handleMessage(socket, event));
-            // socket.removeEventListener('close', handleWSClose);
-
-            // socket.close();
 
             HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
