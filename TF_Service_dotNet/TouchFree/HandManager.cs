@@ -71,14 +71,9 @@ namespace Ultraleap.TouchFree.Library
         {
             handsLastFrame = 0;
 
-            ConnectionManager = _trackingConnectionManager;
+            ConnectionManager = _trackingManager;
             virtualScreen = _virtualScreen;
             configManager = _configManager;
-            if (trackingProvider != null)
-            {
-                trackingProvider.controller.FrameReady += Update;
-                trackingProvider.controller.ImageReady += StoreImage;
-            }
 
             if (_configManager != null)
             {
@@ -86,21 +81,22 @@ namespace Ultraleap.TouchFree.Library
                 UpdateTrackingTransform(_configManager.PhysicalConfig);
             }
 
+            if (ConnectionManager != null)
+            {
+                ConnectionManager.Controller.FrameReady += Update;
+                ConnectionManager.Controller.ImageReady += StoreImage;
+            }
             _updateBehaviour.OnSlowUpdate += UpdateRawHands;
-            ConnectionManager.Controller.FrameReady += Update;
-            ConnectionManager.Controller.ImageReady += UpdateRawHands;
-            _configManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
-            UpdateTrackingTransform(_configManager.PhysicalConfig);
         }
 
         public bool TrackingServiceConnected()
         {
-            return trackingProvider?.controller?.IsServiceConnected ?? false;
+            return ConnectionManager?.Controller?.IsServiceConnected ?? false;
         }
 
         public bool CameraConnected()
         {
-            return trackingProvider?.controller?.Devices?.ActiveDevice != null;
+            return ConnectionManager?.Controller?.Devices?.ActiveDevice != null;
         }
 
         public void UpdateTrackingTransform(PhysicalConfigInternal _config)
