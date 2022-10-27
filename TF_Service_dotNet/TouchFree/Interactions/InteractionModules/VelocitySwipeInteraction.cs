@@ -1,10 +1,8 @@
-﻿using System;
-using System.Numerics;
+﻿using Microsoft.Extensions.Options;
 using System.Diagnostics;
-
+using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
-using Microsoft.Extensions.Options;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
@@ -185,7 +183,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         bool CheckIfScrollStart(Vector2 _dPerp, Vector2 _absPerp)
         {
-            if(!CheckIfScrollAllowed(_dPerp))
+            if (!CheckIfScrollAllowed(_dPerp))
             {
                 return false;
             }

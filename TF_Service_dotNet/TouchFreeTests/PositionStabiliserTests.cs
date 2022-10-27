@@ -1,6 +1,6 @@
-﻿using System.Numerics;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
+using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
 
@@ -123,10 +123,10 @@ namespace TouchFreeTests
             Assert.AreEqual(previousPosition.Y, result.Y);
         }
 
-        [TestCase(1, 1600f,  2400f)]
-        [TestCase(2, 1400f,  4600f)]
-        [TestCase(3, 1200f,  6800f)]
-        [TestCase(4, 1000f,  9000f)]
+        [TestCase(1, 1600f, 2400f)]
+        [TestCase(2, 1400f, 4600f)]
+        [TestCase(3, 1200f, 6800f)]
+        [TestCase(4, 1000f, 9000f)]
         [TestCase(5, 800f, 11200f)]
         public void ApplyDeadzone_StartShrinkingDeadzone_CurrentDeadzoneRadiusDecreases(int cursorMovementCount, float expectedDeadzoneSize, float expectedCursorY)
         {

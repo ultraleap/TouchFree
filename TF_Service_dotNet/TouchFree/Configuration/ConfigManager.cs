@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Ultraleap.TouchFree.Library.Configuration
+﻿namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
@@ -111,7 +109,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
         public void InteractionConfigWasUpdated() => OnInteractionConfigUpdated?.Invoke(_interactions);
         public void TrackingConfigWasUpdated() => OnTrackingConfigUpdated?.Invoke(_tracking);
-        
+
 
         public bool AreConfigsInGoodState()
         {

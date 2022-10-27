@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using System.Numerics;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {

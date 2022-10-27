@@ -48,7 +48,7 @@ namespace TouchFreeTests.Connections
             mockClientConnection.SetupGet(x => x.Socket).Returns(mockWebSocket.Object);
             return mockClientConnection;
         }
-        
+
         private Mock<IHandManager> CreateHandManagerMockWithMockTrackingConnection()
         {
             var mockHandManager = new Mock<IHandManager>();

@@ -71,7 +71,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             this.HoverAndHold = new HoverAndHoldInteractionSettingsInternal();
             this.TouchPlane = new TouchPlaneInteractionSettingsInternal();
-    }
+        }
 
         public InteractionConfigInternal(InteractionConfig fromFile)
         {

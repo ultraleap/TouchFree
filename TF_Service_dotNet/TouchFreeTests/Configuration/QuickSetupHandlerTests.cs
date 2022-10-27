@@ -3,9 +3,9 @@ using NUnit.Framework;
 using System;
 using System.Numerics;
 using Ultraleap.TouchFree.Library;
-using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace TouchFreeTests.Configuration
 {

@@ -20,7 +20,8 @@
         SetImageMask,
     }
 
-    struct DApiResponseCache {
+    struct DApiResponseCache
+    {
         DApiMsgTypes type;
         string requestID;
     }
