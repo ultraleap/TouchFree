@@ -3,14 +3,15 @@ import './App.scss';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import ControlBar from './Components/ControlBar';
-import { CursorManager } from './Components/CursorManager';
-import CameraManager from './Components/Pages/Camera/CameraManager';
-import { InteractionsPage } from './Components/Pages/InteractionsPage';
-import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
-import { ServiceStatus } from './TouchFree/Connection/TouchFreeServiceTypes';
-import { WebInputController } from './TouchFree/InputControllers/WebInputController';
-import { TrackingServiceState } from './TouchFree/TouchFreeToolingTypes';
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import { ServiceStatus } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { WebInputController } from 'TouchFree/InputControllers/WebInputController';
+import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
+
+import ControlBar from 'Components/ControlBar';
+import { CursorManager } from 'Components/CursorManager';
+import CameraManager from 'Components/Pages/Camera/CameraManager';
+import { InteractionsPage } from 'Components/Pages/InteractionsPage';
 
 const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);

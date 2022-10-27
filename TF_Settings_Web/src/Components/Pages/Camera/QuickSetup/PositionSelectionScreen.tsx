@@ -1,5 +1,5 @@
 import 'Styles/Camera/Camera.scss';
-import cssVariables from 'Styles/_variables.scss';
+import cssVariables from 'Styles/variables.module.scss';
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
