@@ -12,7 +12,7 @@ variables:
 
   TF_TFU_VERSION: '1.1.0'
   TF_TFW_VERSION: '1.1.1'
-  TOUCHFREE_VERSION: '2.3.1'
+  TOUCHFREE_VERSION: '2.4.0'
 
   TF_TOOLING_API_VERSION: '1.3.0'
 
@@ -157,6 +157,7 @@ TF_Service::dotNet::Windows::build:
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/win-x64/publish/*" ./Service_dotNet_Build
     - rm ./Service_dotNet_Build/interaction-tuning.json
 
+
     # Sign the executable with the UltraLeap certificate
     - azuresigntool sign -du "https://www.ultraleap.com" -kvu "https://$env:SIGN_VAULT_ID.vault.azure.net/"  -kvi "$env:SIGN_VAULT_APPLICATION_ID" -kvs "$env:SIGN_VAULT_APPLICATION_CLIENT_CODE" -kvc "ultraleap-ltd" -kvt "$env:SIGN_VAULT_TENANT_ID" -tr http://timestamp.digicert.com -v "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree_Service.exe"
   artifacts:
@@ -189,6 +190,7 @@ TF_Service::dotNet::ARMLinux::build:
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
     - mv ./Service_dotNet_Build_ARMLinux/ThirdParty/.NetRuntime.License.txt ./Service_dotNet_Build_ARMLinux/ThirdParty/dotNetRuntime.License.txt
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Newtonsoft.JSON.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
+
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -522,12 +524,19 @@ TF_Service::Windows::package:
     - mkdir ./Service_Package/Wrapper/wwwroot/
     - mkdir ./Service_Package/Tray/
     - mkdir ./Service_Package/Licenses/
+
+    # Update Version.txt with latest information before packaging
+    - cp $CI_PROJECT_DIR/TF_Service_dotNet/Version.txt ./Service_dotNet_Build
+    - python ./Scripts/UpdateVersionFile.py --path ${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content "${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt"
+
     - cp -R ./Service_dotNet_Build/* ./Service_Package/Service/
     - cp -R ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -R ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -R ./TF_Settings_Web/dist/* ./Service_Package/Wrapper/wwwroot
     - cp -R ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -R ./Third_Party_Licenses/* ./Service_Package/Licenses/
+
 
   artifacts:
     name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
