@@ -40,5 +40,10 @@ namespace Leap {
     event EventHandler<ImageEventArgs> ImageReady;
     event EventHandler<PointMappingChangeEventArgs> PointMappingChange;
     event EventHandler<HeadPoseEventArgs> HeadPoseChange;
+    
+    // Note: Added by Craig 23/8 as they were missing from interface
+    void StartConnection();
+    void StopConnection();
+    bool IsServiceConnected { get; }
   }
 }

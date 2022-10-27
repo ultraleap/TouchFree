@@ -1,6 +1,7 @@
 import {
     TouchFreeInputAction,
-    InputType
+    InputType,
+    TouchFreeEvent
 } from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController'
 
@@ -112,14 +113,20 @@ export class WebInputController extends BaseInputController {
         this.activeEventProps.clientY = _inputData.CursorPosition[1];
 
         if (elementAtPos !== null) {
-            let inputEvent: CustomEvent = new CustomEvent(`InputAction`, {detail: _inputData})
+            const inputEvent = new CustomEvent<TouchFreeInputAction>(TouchFreeEvent.INPUT_ACTION, {detail: _inputData})
             elementAtPos.dispatchEvent(inputEvent);
         }
 
         switch (_inputData.InputType) {
             case InputType.CANCEL:
                 this.ResetScrollData();
-                let cancelEvent: PointerEvent = new PointerEvent("cancel", this.activeEventProps);
+                let cancelEvent: PointerEvent = new PointerEvent("pointercancel", this.activeEventProps);
+                let outEvent: PointerEvent = new PointerEvent("pointerout", this.activeEventProps);
+
+                if (this.lastHoveredElement !== null && this.lastHoveredElement !== elementAtPos) {
+                    this.lastHoveredElement.dispatchEvent(cancelEvent);
+                    this.lastHoveredElement.dispatchEvent(outEvent);
+                }
 
                 if (elementAtPos !== null) {
                     let parentTree = this.GetOrderedParents(elementAtPos);
@@ -127,6 +134,7 @@ export class WebInputController extends BaseInputController {
                     parentTree.forEach((parent: Node | null) => {
                         if (parent !== null) {
                             parent.dispatchEvent(cancelEvent);
+                            parent.dispatchEvent(outEvent);
                         }
                     });
                 }

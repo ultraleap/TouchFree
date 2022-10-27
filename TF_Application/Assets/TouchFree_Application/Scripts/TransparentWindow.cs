@@ -130,7 +130,7 @@ namespace Ultraleap.TouchFree
         {
             if (setResolution)
             {
-                Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.Windowed);
+                Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
             }
 
             // get the current -20 window and remove the layerd and transparent parts

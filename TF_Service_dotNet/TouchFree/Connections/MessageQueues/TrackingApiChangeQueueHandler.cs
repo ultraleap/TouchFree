@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using Ultraleap.TouchFree.Library.Configuration;
 
@@ -82,10 +81,10 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true);
             responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            diagnosticApi.GetAllowImages();
-            diagnosticApi.GetImageMask();
-            diagnosticApi.GetCameraOrientation();
-            diagnosticApi.GetAnalyticsMode();
+            diagnosticApi.RequestGetAllowImages();
+            diagnosticApi.RequestGetImageMask();
+            diagnosticApi.RequestGetCameraOrientation();
+            diagnosticApi.RequestGetAnalyticsMode();
         }
 
         void HandleSetTrackingStateRequest(JObject contentObj, IncomingRequest _request)
@@ -108,7 +107,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             if (needsMask)
             {
                 var mask = maskToken!.ToObject<MaskingData>();
-                diagnosticApi.SetMasking(mask.left, mask.right, mask.upper, mask.lower);
+                diagnosticApi.RequestSetImageMask(mask.left, mask.right, mask.upper, mask.lower);
                 trackingFromFile.Mask.Left = mask.left;
                 trackingFromFile.Mask.Right = mask.right;
                 trackingFromFile.Mask.Upper = mask.upper;
@@ -118,25 +117,28 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             if (needsImages)
             {
                 var allowImages = allowImagesToken!.ToObject<bool>();
-                diagnosticApi.SetAllowImages(allowImages);
+                diagnosticApi.RequestSetAllowImages(allowImages);
                 trackingFromFile.AllowImages = allowImages;
             }
 
             if (needsOrientation)
             {
                 var reversed = cameraReversedToken!.ToObject<bool>();
-                diagnosticApi.SetCameraOrientation(reversed);
+                diagnosticApi.RequestSetCameraOrientation(reversed);
                 trackingFromFile.CameraReversed = reversed;
             }
 
             if (needsAnalytics)
             {
                 var analyticsEnable = analyticsEnabledToken!.ToObject<bool>();
-                diagnosticApi.SetAnalyticsMode(analyticsEnable);
+                diagnosticApi.RequestSetAnalyticsMode(analyticsEnable);
                 trackingFromFile.AnalyticsEnabled = analyticsEnable;
             }
 
-            TrackingConfigFile.SaveConfig(trackingFromFile);
+            if (needsAnalytics || needsImages || needsMask || needsOrientation)
+            {
+                TrackingConfigFile.SaveConfig(trackingFromFile);
+            }
         }
 
         void CheckDApiResponse()
@@ -192,83 +194,63 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             return (!_response.needsMask && !_response.needsImages && !_response.needsOrientation && !_response.needsAnalytics);
         }
 
-        public void OnMasking(ImageMaskData? _mask, string _message)
+        private void OnMasking(Result<ImageMaskData> _imageMask)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
-                if (_mask.HasValue)
+                response.state.mask = _imageMask.Match(mask =>
                 {
-                    var mask = _mask.Value;
-                    var convertedMask = new MaskingData((float)mask.lower, (float)mask.upper, (float)mask.right, (float)mask.left);
-                    response.state.mask = new SuccessWrapper<MaskingData?>(true, _message, convertedMask);
-                }
-                else
-                {
-                    response.state.mask = new SuccessWrapper<MaskingData?>(false, _message, null);
-                }
+                    var convertedMask = new MaskingData((float)mask.lower, (float)mask.upper, (float)mask.right,
+                        (float)mask.left);
+                    return new SuccessWrapper<MaskingData?>(true, "Image Mask State", convertedMask);
+                }, error => new SuccessWrapper<MaskingData?>(false, error, null));
 
                 response.needsMask = false;
                 trackingApiResponse = response;
             }
         }
 
-        public void OnAllowImages(bool? _allowImages, string _message)
+        private void OnAllowImages(Result<bool> _allowImages)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
-                if (_allowImages.HasValue)
-                {
-                    response.state.allowImages = new SuccessWrapper<bool?>(true, _message, _allowImages.Value);
-                }
-                else
-                {
-                    response.state.allowImages = new SuccessWrapper<bool?>(false, _message, null);
-                }
+                response.state.allowImages =
+                    _allowImages.Match(value => new SuccessWrapper<bool?>(true, "AllowImages State", value),
+                        error => new SuccessWrapper<bool?>(false, error, null));
 
                 response.needsImages = false;
                 trackingApiResponse = response;
             }
         }
 
-        public void OnCameraOrientation(bool? _cameraReversed, string _message)
+        private void OnCameraOrientation(Result<bool> _cameraReversed)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
-                if (_cameraReversed.HasValue)
-                {
-                    response.state.cameraReversed = new SuccessWrapper<bool?>(true, _message, _cameraReversed.Value);
-                }
-                else
-                {
-                    response.state.cameraReversed = new SuccessWrapper<bool?>(false, _message, null);
-                }
+                response.state.cameraReversed = _cameraReversed.Match(
+                    value => new SuccessWrapper<bool?>(true, "CameraOrientation State", value),
+                    error => new SuccessWrapper<bool?>(false, error, null));
 
                 response.needsOrientation = false;
                 trackingApiResponse = response;
             }
         }
 
-        public void OnAnalytics(bool? _analytics, string _message)
+        private void OnAnalytics(Result<bool> _analytics)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
-
-                if (_analytics.HasValue)
-                {
-                    response.state.analyticsEnabled = new SuccessWrapper<bool?>(true, _message, _analytics.Value);
-                }
-                else
-                {
-                    response.state.analyticsEnabled = new SuccessWrapper<bool?>(false, _message, null);
-                }
+                response.state.analyticsEnabled = _analytics.Match(
+                    value => new SuccessWrapper<bool?>(true, "Analytics State", value),
+                    error => new SuccessWrapper<bool?>(false, error, null));
 
                 response.needsAnalytics = false;
                 trackingApiResponse = response;

@@ -1,5 +1,5 @@
 import 'Styles/ControlBar.scss';
-import cssVariables from 'Styles/_variables.scss';
+import cssVariables from 'Styles/variables.module.scss';
 
 import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';

@@ -1,5 +1,5 @@
 import 'Styles/Camera/Calibrate.scss';
-import cssVariables from 'Styles/_variables.scss';
+import cssVariables from 'Styles/variables.module.scss';
 
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

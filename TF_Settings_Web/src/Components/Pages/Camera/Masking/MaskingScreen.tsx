@@ -1,9 +1,10 @@
+import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
+
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-//import { useNavigate } from 'react-router-dom';
-import { useStatefulRef } from 'customHooks';
+import { useStatefulRef } from '@/customHooks';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
@@ -21,7 +22,7 @@ export type Lens = 'Left' | 'Right';
 
 const FRAME_PROCESSING_TIMEOUT = 60;
 
-const MaskingScreen = () => {
+const MaskingScreen: React.FC = () => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
     const handState = useStatefulRef<HandState>({});
