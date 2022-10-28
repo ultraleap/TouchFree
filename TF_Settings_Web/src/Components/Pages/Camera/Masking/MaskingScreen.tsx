@@ -121,7 +121,7 @@ const MaskingScreen: React.FC = () => {
             const buffer = evt.detail;
             const imageArraySize = new Int32Array(buffer, 4, 8)[0];
 
-            const handsJson = String.fromCharCode.apply(null, [...new Uint8Array(buffer, 8 + imageArraySize)]);
+            const handsJson = String.fromCharCode(...new Uint8Array(buffer, 8 + imageArraySize));
 
             const hands = JSON.parse(handsJson)?.Hands;
 
