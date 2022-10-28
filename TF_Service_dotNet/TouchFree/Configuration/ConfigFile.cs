@@ -148,7 +148,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     SecurityIdentifier securityIdentifier = new SecurityIdentifier
-                        (WellKnownSidType.BuiltinUsersSid, null);
+                        (WellKnownSidType.AuthenticatedUserSid, null);
 
                     AccessRule rule = new FileSystemAccessRule(
                         securityIdentifier,
