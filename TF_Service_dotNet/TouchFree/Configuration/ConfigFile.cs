@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Runtime.InteropServices;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
@@ -23,7 +23,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         // ReSharper disable once StaticMemberInGenericType - by design, each derived type will have its own sync root
         // NOTE: If multiple derived classes use the same types they will share a sync root!
         public static readonly object SaveConfigSyncRoot = new();
-        
+
         public static event Action OnConfigFileSaved
         {
             add => Instance._OnConfigFileSaved += value;

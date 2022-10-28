@@ -236,6 +236,21 @@ export class WebSocketResponse extends TouchFreeRequest {
     }
 }
 
+// Class: VersionHandshakeResponse
+// The structure seen when the Service responds to a Version Handshake request.
+export class VersionHandshakeResponse extends WebSocketResponse {
+    // Variable: touchFreeVersion
+    touchFreeVersion: string;
+    // Variable: message
+    apiVersion: string;
+
+    constructor(_id: string, _status: string, _msg: string, _request: string, _touchFreeVersion: string, _apiVersion: string) {
+        super(_id, _status, _msg, _request);
+        this.touchFreeVersion = _touchFreeVersion;
+        this.apiVersion = _apiVersion;
+    }
+}
+
 // Class: ResponseCallback
 // Used by <MessageReceiver> to wait for a <WebSocketResponse> from the Service. Owns a callback
 // with a <WebSocketResponse> as a parameter to allow users to deal with failed

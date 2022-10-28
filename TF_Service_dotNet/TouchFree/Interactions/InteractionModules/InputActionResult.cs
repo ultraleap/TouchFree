@@ -6,9 +6,9 @@
         public readonly InputAction? inputAction;
         public readonly float confidence;
 
-        public InputActionResult () { }
+        public InputActionResult() { }
 
-        public InputActionResult (InputAction _inputAction, float _confidence)
+        public InputActionResult(InputAction _inputAction, float _confidence)
         {
             inputAction = _inputAction;
             confidence = _confidence;

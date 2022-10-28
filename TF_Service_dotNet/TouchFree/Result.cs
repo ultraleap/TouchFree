@@ -23,14 +23,14 @@ public abstract record Result<T>
     {
         public static implicit operator Error(string error) => new(error);
     }
-    
+
     public static implicit operator Result<T>(T value) => new Some(value);
     public static implicit operator Result<T>(string error) => new Error(error);
 
     public bool IsSuccess => !IsError;
     public bool HasValue => this is Some;
     public bool IsError => this is Error;
-        
+
     public bool TryGetValue(out T value)
     {
         if (this is not Some)
@@ -61,7 +61,7 @@ public abstract record Result<T>
         error = IsError ? ((Error)this).ErrorValue : default;
         return HasValue;
     }
-        
+
     public Result<T> Match(Action<T> matchFunc, Action<string> matchError)
     {
         if (HasValue) matchFunc(((Some)this).Value);

@@ -1,9 +1,6 @@
-#if !DEBUG
-using Ultraleap.TouchFree.Library.Configuration;
-#endif
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -14,6 +11,10 @@ namespace Ultraleap.TouchFree.Service
 #if !DEBUG
             TouchFreeLog.SetUpLogging();
 #endif
+
+            TouchFreeLog.WriteLine($"TouchFree Version: v{VersionManager.Version}");
+            TouchFreeLog.WriteLine();
+
             CreateHostBuilder(args).Build().Run();
         }
 

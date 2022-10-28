@@ -28,7 +28,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             interactionWatcher = CreateWatcherForFile(InteractionConfigFile.ConfigFileName);
             physicalWatcher = CreateWatcherForFile(PhysicalConfigFile.ConfigFileName);
             trackingWatcher = CreateWatcherForFile(TrackingConfigFile.ConfigFileName);
-            
+
             updateBehaviour.OnUpdate += Update;
         }
 

@@ -45,7 +45,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 string.Empty, // No request id as this event is not a response to a request
                 state,
                 configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
-            
+
             SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
         }
 
@@ -120,7 +120,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 {
                     connectionMethod(connection);
                 }
-                else if (connection.Socket.State != WebSocketState.Connecting)  
+                else if (connection.Socket.State != WebSocketState.Connecting)
                 {
                     // Clear down connections that have closed
                     RemoveConnection(connection.Socket);

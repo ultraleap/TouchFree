@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
@@ -77,7 +76,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
         protected InputActionResult CreateInputActionResult(InputType _inputType, Positions _positions, float _progressToClick)
         {
             return new InputActionResult(new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick), _progressToClick);
-        } 
+        }
 
         Leap.Hand GetHand()
         {
