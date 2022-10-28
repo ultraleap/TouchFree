@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Moq;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Moq;
-using NUnit.Framework;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;

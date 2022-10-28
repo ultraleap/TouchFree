@@ -28,7 +28,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             int totalWeights = configuration.Sum(x => x.weighting);
             Vector3 worldPosM = new Vector3();
-            
+
             foreach (var positionItem in configuration)
             {
                 worldPosM += GetPositionFromTracker(positionItem.trackedPosition, hand) * positionItem.weighting / totalWeights;

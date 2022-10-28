@@ -18,6 +18,7 @@ import {
     TrackingStateCallback,
     TrackingStateRequest,
     TrackingStateResponse,
+    VersionHandshakeResponse,
     WebSocketResponse
 } from './TouchFreeServiceTypes';
 import { TrackingState } from '../Tracking/TrackingTypes';
@@ -38,6 +39,19 @@ export class ServiceConnection {
 
     private handshakeRequested: boolean;
     private handshakeCompleted: boolean;
+    private _touchFreeVersion: string = '';
+
+    // Variable: touchFreeVersion
+    // The version of the connected TouchFree Service
+    public get touchFreeVersion(): string
+    { 
+        return this._touchFreeVersion;
+    }
+
+    public get handshakeComplete(): boolean
+    {
+        return this.handshakeCompleted;
+    }
 
     // Group: Functions
 
@@ -51,23 +65,23 @@ export class ServiceConnection {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
         this.webSocket.binaryType = 'arraybuffer';
 
-        this.webSocket.addEventListener('message', this.OnMessage.bind(this));
+        this.webSocket.addEventListener('message', this.OnMessage);
 
         this.handshakeRequested = false;
         this.handshakeCompleted = false;
 
-        this.webSocket.addEventListener('open', this.RequestHandshake.bind(this), {once: true});
+        this.webSocket.addEventListener('open', this.RequestHandshake, {once: true});
     }
 
     // Function: Disconnect
     // Can be used to force the connection to the <webSocket> to be closed.
-    Disconnect(): void {
+    Disconnect = (): void => {
         if (this.webSocket !== null) {
             this.webSocket.close();
         }
     }
 
-    private RequestHandshake() {
+    private RequestHandshake = () => {
         if (!this.handshakeCompleted) {
             let guid: string = uuidgen();
 
@@ -93,9 +107,13 @@ export class ServiceConnection {
     // Function: ConnectionResultCallback
     // Passed into <SendMessage> as part of connecting to TouchFree Service, handles the
     // result of the Version Checking handshake.
-    private ConnectionResultCallback(response: WebSocketResponse): void {
+    private ConnectionResultCallback = (response: VersionHandshakeResponse | WebSocketResponse): void => {
         if (response.status === "Success") {
             console.log("Successful Connection");
+            const handshakeResponse = response as VersionHandshakeResponse;
+            if (handshakeResponse) {
+                this._touchFreeVersion = handshakeResponse.touchFreeVersion;
+            }
 
             this.handshakeCompleted = true;
             ConnectionManager.instance.dispatchEvent(new Event(TouchFreeEvent.ON_CONNECTED));
@@ -109,9 +127,9 @@ export class ServiceConnection {
     // The first point of contact for new messages received, these are sorted into appropriate
     // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
     // <MessageReceiver>.
-    OnMessage(_message: MessageEvent): void {
+    OnMessage = (_message: MessageEvent): void => {
         if ((typeof _message.data) !== 'string') {
-            
+
             const buffer = _message.data as ArrayBuffer;
             const binaryDataType = new Int32Array(buffer, 0, 4)[0];
             if (binaryDataType === 1) {
@@ -166,9 +184,9 @@ export class ServiceConnection {
     // via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    SendMessage(
+    SendMessage = <T extends WebSocketResponse>(
         _message: string, _requestID: string,
-        _callback: ((detail: WebSocketResponse) => void) | null): void {
+        _callback: ((detail: WebSocketResponse | T) => void) | null): void => {
         if (_requestID === "") {
             if (_callback !== null) {
                 let response: WebSocketResponse = new WebSocketResponse(
@@ -195,7 +213,7 @@ export class ServiceConnection {
     // Provides an asynchronous <ConfigState> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    RequestConfigState(_callback: (detail: ConfigState) => void): void {
+    RequestConfigState = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
             console.error("Request for config state failed. This is due to a missing callback");
             return;
@@ -217,7 +235,7 @@ export class ServiceConnection {
     // Provides an asynchronous <ServiceStatus> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
+    RequestServiceStatus = (_callback: (detail: ServiceStatus) => void): void => {
         if (_callback === null) {
             console.error("Request for service status failed. This is due to a missing callback");
             return;
@@ -239,7 +257,7 @@ export class ServiceConnection {
     // Provides an asynchronous <ConfigState> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    RequestConfigFile(_callback: (detail: ConfigState) => void): void {
+    RequestConfigFile = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
             console.error("Request for config file failed. This is due to a missing callback");
             return;
@@ -264,9 +282,9 @@ export class ServiceConnection {
     //
     // If your _callback requires context it should be bound to that context via .bind()
     // If your _configurationCallback requires context it should be bound to that context via .bind()
-    QuickSetupRequest(atTopTarget: boolean,
+    QuickSetupRequest = (atTopTarget: boolean,
         _callback: (detail: WebSocketResponse) => void,
-        _configurationCallback: (detail: ConfigState) => void): void {
+        _configurationCallback: (detail: ConfigState) => void): void => {
         const position = atTopTarget ? 'Top' : 'Bottom';
         let guid: string = uuidgen();
 
@@ -295,7 +313,7 @@ export class ServiceConnection {
     // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    RequestTrackingState(_callback: (detail: TrackingStateResponse) => void) {
+    RequestTrackingState = (_callback: (detail: TrackingStateResponse) => void) => {
         if (!_callback) {
             console.error('Request for tracking state failed. This is due to a missing callback');
             return;
@@ -318,7 +336,7 @@ export class ServiceConnection {
     // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    RequestTrackingChange(_state: Partial<TrackingState>, _callback:((detail: TrackingStateResponse) => void) | null) {
+    RequestTrackingChange = (_state: Partial<TrackingState>, _callback:((detail: TrackingStateResponse) => void) | null) => {
         const requestID = uuidgen();
         const requestContent: Partial<TrackingStateRequest> = {
             requestID

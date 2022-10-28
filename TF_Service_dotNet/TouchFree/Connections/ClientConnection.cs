@@ -78,7 +78,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             SendResponse(_response, ActionCode.HAND_PRESENCE_EVENT);
         }
 
-        private void SendHandshakeResponse(ResponseToClient _response)
+        private void SendHandshakeResponse(HandShakeResponse _response)
         {
             SendResponse(_response, ActionCode.VERSION_HANDSHAKE_RESPONSE);
         }
@@ -174,7 +174,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         private void ProcessHandshake(ActionCode action, string requestContent)
         {
             JObject contentObj = JsonConvert.DeserializeObject<JObject>(requestContent);
-            ResponseToClient response = new ResponseToClient("", "Success", "", requestContent);
+            var response = new HandShakeResponse("", "Success", "", requestContent, VersionManager.Version, VersionManager.ApiVersion.ToString());
 
             if (!contentObj.ContainsKey("requestID") || contentObj.GetValue("requestID").ToString() == "")
             {
@@ -193,15 +193,15 @@ namespace Ultraleap.TouchFree.Library.Connections
                 return;
             }
 
-            if (!contentObj.ContainsKey(VersionInfo.API_HEADER_NAME))
+            if (!contentObj.ContainsKey(VersionManager.API_HEADER_NAME))
             {
                 // Send back immediate error: Cannot compare version number w/o a version number
                 SendAndHandleHandshakeFailure("Handshaking Failed: No API Version supplied.", response);
                 return;
             }
 
-            string clientApiVersion = (string)contentObj[VersionInfo.API_HEADER_NAME];
-            Compatibility compatibility = GetVersionCompability(clientApiVersion, VersionInfo.ApiVersion);
+            string clientApiVersion = (string)contentObj[VersionManager.API_HEADER_NAME];
+            Compatibility compatibility = GetVersionCompability(clientApiVersion, VersionManager.ApiVersion);
 
             string configurationWarning = string.Empty;
 
@@ -233,7 +233,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             SendHandshakeResponse(response);
         }
 
-        private void SendAndHandleHandshakeFailure(string message, ResponseToClient response)
+        private void SendAndHandleHandshakeFailure(string message, HandShakeResponse response)
         {
             response.message = message;
             response.status = "Failure";
@@ -241,7 +241,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             SendHandshakeResponse(response);
         }
 
-        private void SendAndHandleHandshakeSuccess(string message, ResponseToClient response)
+        private void SendAndHandleHandshakeSuccess(string message, HandShakeResponse response)
         {
             HandshakeCompleted = true;
             response.message = message;

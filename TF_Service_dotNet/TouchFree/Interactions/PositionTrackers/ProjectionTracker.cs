@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using Leap;
+using System.Linq;
 using System.Numerics;
-using Leap;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Interactions.PositionTrackers

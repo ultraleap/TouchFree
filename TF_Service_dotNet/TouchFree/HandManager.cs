@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-
-using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace Ultraleap.TouchFree.Library
 {
@@ -239,7 +238,7 @@ namespace Ultraleap.TouchFree.Library
                     rightHand = hand;
             }
 
-            if (PrimaryHand?.Fingers?.Count(x => x.Type == Finger.FingerType.TYPE_INDEX) > 0 && 
+            if (PrimaryHand?.Fingers?.Count(x => x.Type == Finger.FingerType.TYPE_INDEX) > 0 &&
                 SecondaryHand?.Fingers?.Count(x => x.Type == Finger.FingerType.TYPE_INDEX) > 0)
             {
                 var primaryHandIndexTip = PrimaryHand.Fingers.Single(x => x.Type == Finger.FingerType.TYPE_INDEX).TipPosition;

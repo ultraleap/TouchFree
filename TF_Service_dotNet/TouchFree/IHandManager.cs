@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Leap;
+using System;
 using System.Collections.Generic;
-using Leap;
 using Ultraleap.TouchFree.Library.Connections;
 
 namespace Ultraleap.TouchFree.Library

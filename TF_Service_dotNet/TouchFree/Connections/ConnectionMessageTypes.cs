@@ -53,6 +53,27 @@ namespace Ultraleap.TouchFree.Library.Connections
     }
 
     [Serializable]
+    public struct HandShakeResponse
+    {
+        public string requestID;
+        public string status;
+        public string message;
+        public string originalRequest;
+        public string touchFreeVersion;
+        public string apiVersion;
+
+        public HandShakeResponse(string _id, string _status, string _msg, string _request, string _touchFreeVersion, string _apiVersion)
+        {
+            requestID = _id;
+            status = _status;
+            message = _msg;
+            originalRequest = _request;
+            touchFreeVersion = _touchFreeVersion;
+            apiVersion = _apiVersion;
+        }
+    }
+
+    [Serializable]
     public struct ResponseToClient
     {
         public string requestID;

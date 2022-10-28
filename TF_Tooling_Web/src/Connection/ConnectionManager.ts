@@ -70,7 +70,8 @@ export class ConnectionManager extends EventTarget {
         if (
             ConnectionManager.currentServiceConnection !== null &&
             ConnectionManager.currentServiceConnection.webSocket.readyState ===
-            WebSocket.OPEN
+            WebSocket.OPEN &&
+            ConnectionManager.currentServiceConnection.handshakeComplete
         ) {
             _onConnectFunc();
         }
