@@ -159,6 +159,20 @@ export class WebInputController extends BaseInputController {
                 break;
 
             case InputType.UP:
+                const elementsOnUp = document.elementsFromPoint(_inputData.CursorPosition[0], _inputData.CursorPosition[1])
+                    .map(e => e as HTMLElement)
+                    .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor") && !e.classList.contains("touchfree-no-scroll"));
+
+                if (elementsOnUp?.length && this.elementsOnDown?.length) {
+                    for (const element of elementsOnUp) {
+                        const matchingElement = this.elementsOnDown.find(eod => eod == element);
+                        if (matchingElement) {
+                            matchingElement.click();
+                            break;
+                        }
+                    };
+                }
+
                 this.ResetScrollData();
 
                 let upEvent: PointerEvent = new PointerEvent("pointerup", this.activeEventProps);
