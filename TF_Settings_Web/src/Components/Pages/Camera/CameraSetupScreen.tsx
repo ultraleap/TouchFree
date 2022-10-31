@@ -1,5 +1,9 @@
+import Alert from '@/Components/Controls/Alert';
+import { ConnectionManager } from '@/TouchFree/Connection/ConnectionManager';
+
 import 'Styles/Camera/Camera.scss';
 
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CameraMaskingIcon from 'Images/Camera/Camera_Masking_Icon.png';
@@ -10,6 +14,16 @@ import { HorizontalIconTextButton, VerticalIconTextButton } from 'Components/Con
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
+
+    const [touchFreeConnected, setTouchFreeConnected] = useState<boolean>(false);
+
+    const onConnected = () => {
+        setTouchFreeConnected(true);
+    };
+
+    useEffect(() => {
+        ConnectionManager.AddConnectionListener(onConnected);
+    }, []);
 
     return (
         <div>
@@ -44,8 +58,8 @@ const CameraSetupScreen = () => {
                 <HorizontalIconTextButton
                     buttonStyle={{
                         position: 'relative',
-                        opacity: 1,
-                        pointerEvents: 'auto',
+                        opacity: touchFreeConnected ? 1 : 0.5,
+                        pointerEvents: touchFreeConnected ? 'auto' : 'none',
                     }}
                     icon={CameraMaskingIcon}
                     alt="Icon for Camera Masking"
@@ -53,6 +67,13 @@ const CameraSetupScreen = () => {
                     title="Camera Masking"
                     text="Mask areas of your cameras vision from reflections and harsh areas of light"
                     onClick={() => navigate('masking')}
+                />
+                <Alert
+                    show={!touchFreeConnected}
+                    cssWidth={'60%'}
+                    text="Failed to connect to service: masking unavailable"
+                    animationType="fadeIn"
+                    animationTime={1}
                 />
             </div>
         </div>
