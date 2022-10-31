@@ -26,7 +26,7 @@ import { FingerData, HandData, HandState } from './createHandData';
 
 export type BasicMesh = Mesh<BufferGeometry, MeshBasicMaterial>;
 
-interface FingerMesh {
+interface FingerMeshData {
     visible: boolean;
     tip: number;
     knuckle: number;
@@ -34,7 +34,7 @@ interface FingerMesh {
     lineToNextKnuckle: Line2;
 }
 
-interface WristMesh {
+interface WristMeshData {
     visible: boolean;
     point: number;
     lineToThumb: Line2;
@@ -45,15 +45,15 @@ interface MeshUpdateData {
     positions: Vector3[];
 }
 
-interface HandMesh {
+interface HandMeshData {
     fingers: {
-        [FingerType.TYPE_THUMB]: FingerMesh;
-        [FingerType.TYPE_INDEX]: FingerMesh;
-        [FingerType.TYPE_MIDDLE]: FingerMesh;
-        [FingerType.TYPE_RING]: FingerMesh;
-        [FingerType.TYPE_PINKY]: FingerMesh;
+        [FingerType.TYPE_THUMB]: FingerMeshData;
+        [FingerType.TYPE_INDEX]: FingerMeshData;
+        [FingerType.TYPE_MIDDLE]: FingerMeshData;
+        [FingerType.TYPE_RING]: FingerMeshData;
+        [FingerType.TYPE_PINKY]: FingerMeshData;
     };
-    wrist: WristMesh;
+    wrist: WristMeshData;
     circleMeshes: InstancedMesh<CircleBufferGeometry, MeshBasicMaterial>;
 }
 
@@ -63,8 +63,8 @@ let _camera: PerspectiveCamera;
 let _cameraFeedMesh: BasicMesh;
 let _cameraFeedTexture: DataTexture;
 
-let _primaryHandMesh: HandMesh;
-let _secondaryHandMesh: HandMesh;
+let _primaryHandMesh: HandMeshData;
+let _secondaryHandMesh: HandMeshData;
 
 const dummy = new Object3D();
 
@@ -108,7 +108,7 @@ export const updateCameraRender = (data: Uint8Array, width: number, height: numb
     }
 };
 
-const createHandMesh = (scene: Scene, primary: boolean): HandMesh => {
+const createHandMesh = (scene: Scene, primary: boolean): HandMeshData => {
     return {
         fingers: {
             [FingerType.TYPE_THUMB]: addBasicFingerMesh(scene, 0, primary),
@@ -122,7 +122,7 @@ const createHandMesh = (scene: Scene, primary: boolean): HandMesh => {
     };
 };
 
-const addBasicFingerMesh = (scene: Scene, fingerIndex: number, isPrimary: boolean): FingerMesh => ({
+const addBasicFingerMesh = (scene: Scene, fingerIndex: number, isPrimary: boolean): FingerMeshData => ({
     visible: false,
     tip: fingerIndex * 2,
     knuckle: fingerIndex * 2 + 1,
@@ -130,7 +130,7 @@ const addBasicFingerMesh = (scene: Scene, fingerIndex: number, isPrimary: boolea
     lineToNextKnuckle: addBasicLine(scene, isPrimary),
 });
 
-const addBasicWristMesh = (scene: Scene, circleIndex: number, isPrimary: boolean): WristMesh => ({
+const addBasicWristMesh = (scene: Scene, circleIndex: number, isPrimary: boolean): WristMeshData => ({
     visible: false,
     point: circleIndex,
     lineToThumb: addBasicLine(scene, isPrimary),
@@ -171,7 +171,7 @@ const addBasicLine = (scene: Scene, isPrimary: boolean): Line2 => {
     return line;
 };
 
-const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
+const updateHandMesh = (handMesh: HandMeshData, handData?: HandData) => {
     const meshUpdateData: MeshUpdateData = {
         meshIndices: [],
         positions: [],
@@ -192,9 +192,9 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
         }
         const newData = updateFingerMesh(
             handMesh.fingers[fingerType],
+            scale,
             handData?.fingers[fingerType],
-            nextKnucklePos,
-            scale
+            nextKnucklePos
         );
 
         meshUpdateData.meshIndices = meshUpdateData.meshIndices.concat(...newData.meshIndices);
@@ -203,9 +203,9 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
 
     const wristData = updateWristMesh(
         handMesh.wrist,
+        scale,
         handData?.wrist,
-        handData?.fingers[FingerType.TYPE_THUMB].knuckle,
-        scale
+        handData?.fingers[FingerType.TYPE_THUMB].knuckle
     );
 
     meshUpdateData.meshIndices = meshUpdateData.meshIndices.concat(...wristData.meshIndices);
@@ -215,10 +215,10 @@ const updateHandMesh = (handMesh: HandMesh, handData?: HandData) => {
 };
 
 const updateFingerMesh = (
-    fingerMesh: FingerMesh,
+    fingerMesh: FingerMeshData,
+    scale: number,
     finger?: FingerData,
-    nextKnucklePos?: Vector3,
-    scale?: number
+    nextKnucklePos?: Vector3
 ): MeshUpdateData => {
     const data: MeshUpdateData = {
         meshIndices: [],
@@ -246,10 +246,10 @@ const updateFingerMesh = (
 };
 
 const updateWristMesh = (
-    wristMesh: WristMesh,
+    wristMesh: WristMeshData,
+    scale: number,
     wrist?: Vector3,
-    thumbKnucklePos?: Vector3,
-    scale?: number
+    thumbKnucklePos?: Vector3
 ): MeshUpdateData => {
     const data: MeshUpdateData = {
         meshIndices: [],

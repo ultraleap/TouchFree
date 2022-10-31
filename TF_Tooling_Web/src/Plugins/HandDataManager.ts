@@ -11,6 +11,8 @@ export class HandDataManager extends EventTarget {
     // The instance of the singleton for referencing the events transmitted
     private static _instance: HandDataManager;
 
+    private static readonly maximumFrameFrequencyMs = 16;
+
     public static get instance() {
         if (HandDataManager._instance === undefined) {
             HandDataManager._instance = new HandDataManager();
@@ -26,7 +28,7 @@ export class HandDataManager extends EventTarget {
     // listeners of <TransmitHandData>.
     public static HandleHandFrame(_data: ArrayBuffer): void {
         const currentTimeStamp = Date.now();
-        if (!HandDataManager.lastFrame || HandDataManager.lastFrame + 16 < currentTimeStamp ) {
+        if (!HandDataManager.lastFrame || HandDataManager.lastFrame + HandDataManager.maximumFrameFrequencyMs < currentTimeStamp ) {
             let rawHandsEvent: CustomEvent<ArrayBuffer> = new CustomEvent<ArrayBuffer>(
                 'TransmitHandData',
                 { detail: _data }

@@ -75,8 +75,8 @@ const createFingerData = (fingers: RawFinger[], fingerType: number): FingerData 
 
 const zMax = 0.1;
 
-const translateToCoordinate = (coordinate?: Vector) => {
-    if (coordinate === undefined) return new Vector3(-2, -2, -2);
+const translateToCoordinate = (coordinate?: Vector): Vector3 => {
+    if (!coordinate) return new Vector3(-2, -2, -2);
     const { X, Y, Z } = coordinate;
     // Map Z between 0 and zMax
     const mappedZ = Z > 600 ? 0 : Z < 175 ? zMax : zMax - MapRangeToRange(Z, 175, 600, 0, zMax);

@@ -60,7 +60,6 @@ const MaskingScreen: React.FC = () => {
 
     // ===== Refs =====
     const camFeedRef = useRef<HTMLDivElement>(null);
-    const frameTimeoutRef = useRef<number>();
     const handTimeoutRef = useRef<number>();
 
     // ===== Hooks =====
@@ -77,7 +76,6 @@ const MaskingScreen: React.FC = () => {
         return () => {
             HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
-            window.clearTimeout(frameTimeoutRef.current);
             window.clearTimeout(handTimeoutRef.current);
         };
     }, []);
@@ -117,22 +115,21 @@ const MaskingScreen: React.FC = () => {
 
         isHandProcessing.current = true;
 
+        const buffer = evt.detail;
+        if (!buffer || buffer.byteLength < 8) {
+            isHandProcessing.current = false;
+            return;
+        }
+
+        const imageArraySize = new Int32Array(buffer, 4, 8)[0];
+
+        if (buffer.byteLength < 8 + imageArraySize) {
+            isHandProcessing.current = false;
+            return;
+        }
+
         try {
-            const buffer = evt.detail;
-            const imageArraySize = new Int32Array(buffer, 4, 8)[0];
-
-            const handsJson = String.fromCharCode(...new Uint8Array(buffer, 8 + imageArraySize));
-
-            const hands = JSON.parse(handsJson)?.Hands;
-
-            if (hands && (hands.length > 0 || handState.current.one || handState.current.two)) {
-                const handOne = hands[0];
-                const handTwo = hands[1];
-                const convertedHandOne = handOne ? rawHandToHandData(handOne) : undefined;
-                const convertedHandTwo = handTwo ? rawHandToHandData(handTwo) : undefined;
-
-                handState.current = { one: convertedHandOne, two: convertedHandTwo };
-            }
+            parseAndUpdateHandState(buffer, 8 + imageArraySize);
 
             if (imageArraySize > 0) {
                 updateCameraCanvas(
@@ -149,6 +146,20 @@ const MaskingScreen: React.FC = () => {
             }, FRAME_PROCESSING_TIMEOUT);
         } catch {
             isHandProcessing.current = false;
+        }
+    };
+
+    const parseAndUpdateHandState = (buffer: ArrayBuffer, offset: number): void => {
+        const handsJson = String.fromCharCode(...new Uint8Array(buffer, offset));
+        const hands = JSON.parse(handsJson)?.Hands;
+
+        if (hands && (hands.length > 0 || handState.current.one || handState.current.two)) {
+            const handOne = hands[0];
+            const handTwo = hands[1];
+            const convertedHandOne = handOne ? rawHandToHandData(handOne) : undefined;
+            const convertedHandTwo = handTwo ? rawHandToHandData(handTwo) : undefined;
+
+            handState.current = { one: convertedHandOne, two: convertedHandTwo };
         }
     };
 

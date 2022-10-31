@@ -35,7 +35,7 @@ export const updateCameraCanvas = (
         buf32 = new Uint32Array(cameraBuffer);
     }
 
-    processScreen(data, buf32, conversionArrayToUse, width, lensHeight);
+    processCameraFrame(data, buf32, conversionArrayToUse, width, lensHeight);
 
     // Set black pixels to remove flashing camera bytes
     const startOffset = isCameraReversed ? 0 : (lensHeight - 1) * width;
@@ -45,7 +45,7 @@ export const updateCameraCanvas = (
     renderScene();
 };
 
-const processScreen = (
+const processCameraFrame = (
     data: ArrayBuffer,
     buf32: Uint32Array,
     byteConversionArray: Uint32Array,
