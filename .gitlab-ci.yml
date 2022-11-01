@@ -12,7 +12,7 @@ variables:
 
   TF_TFU_VERSION: '1.1.0'
   TF_TFW_VERSION: '1.2.0'
-  TOUCHFREE_VERSION: '2.3.1'
+  TOUCHFREE_VERSION: '2.4.0'
 
   TF_TOOLING_API_VERSION: '1.3.0'
 
@@ -124,7 +124,13 @@ TF_Service::Wrapper::build:
   when: always
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
-    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/ServiceWrapper.csproj"
+    - if ($CI_COMMIT_BRANCH -Match 'release/.*') {
+        $TOUCHFREE_SUFFIX = ''
+      } else {
+        $TOUCHFREE_SUFFIX = 'dev+' + ${env:CI_COMMIT_SHORT_SHA}
+      }
+
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/ServiceWrapper.csproj"
     # Move the built wrapper to the root directory
     - mkdir ./Service_Wrapper_Build
     - cp -R $CI_PROJECT_DIR/TF_Service_Utilities/ServiceWrapper/ServiceWrapper/bin/Release/net6.0/win-x64/publish/* ./Service_Wrapper_Build
@@ -145,8 +151,14 @@ TF_Service::dotNet::Windows::build:
   when: always
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
-    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
-    - dotnet publish -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
+    - if ($CI_COMMIT_BRANCH -Match 'release/.*') {
+        $TOUCHFREE_SUFFIX = ''
+      } else {
+        $TOUCHFREE_SUFFIX = 'dev+' + ${env:CI_COMMIT_SHORT_SHA}
+      }
+
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
     - if (Test-Path -Path "./Service_dotNet_Build") {
@@ -156,6 +168,7 @@ TF_Service::dotNet::Windows::build:
     - mkdir ./Service_dotNet_Build
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/win-x64/publish/*" ./Service_dotNet_Build
     - rm ./Service_dotNet_Build/interaction-tuning.json
+
 
     # Sign the executable with the UltraLeap certificate
     - azuresigntool sign -du "https://www.ultraleap.com" -kvu "https://$env:SIGN_VAULT_ID.vault.azure.net/"  -kvi "$env:SIGN_VAULT_APPLICATION_ID" -kvs "$env:SIGN_VAULT_APPLICATION_CLIENT_CODE" -kvc "ultraleap-ltd" -kvt "$env:SIGN_VAULT_TENANT_ID" -tr http://timestamp.digicert.com -v "$CI_PROJECT_DIR/Service_dotNet_Build/TouchFree_Service.exe"
@@ -173,8 +186,14 @@ TF_Service::dotNet::ARMLinux::build:
   when: always
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
-    - dotnet publish -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
-    - dotnet publish -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
+    - if ($CI_COMMIT_BRANCH -Match 'release/.*') {
+        $TOUCHFREE_SUFFIX = 'beta'
+      } else {
+        $TOUCHFREE_SUFFIX = 'dev+' + ${env:CI_COMMIT_SHORT_SHA}
+      }
+
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
+    - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
     - if (Test-Path -Path "./Service_dotNet_Build_ARMLinux") {
@@ -189,6 +208,7 @@ TF_Service::dotNet::ARMLinux::build:
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
     - mv ./Service_dotNet_Build_ARMLinux/ThirdParty/.NetRuntime.License.txt ./Service_dotNet_Build_ARMLinux/ThirdParty/dotNetRuntime.License.txt
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Newtonsoft.JSON.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
+
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
     # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
@@ -257,6 +277,19 @@ TF_Tooling::Web::test:
   tags:
     - unity
     - win10
+
+TF_Tooling::Web::Consistency::test:
+  stage: test
+  dependencies:
+      []
+  when: always
+  script:
+    # Check TF_Settings::Web tooling and TF_Tooling::Web are the same
+    - echo "Checking that Web Settings Tooling and Web Tooling are in sync"
+    - diff -r -U 2 ${TF_TFW_PATH}/src/ ./TF_Settings_Web/src/TouchFree/
+
+  tags:
+    - docker
 
 TF_Service::Tray::build:
   stage: build
@@ -332,11 +365,11 @@ TF_Settings::Web::build:
     - cd ./TF_Settings_Web
     - npm install
     - npm run build
-    - npx generate-license-file --input ./package.json --output ./build/ThirdPartyLicenses.txt --eol posix
+    - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol posix
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
-    - ./TF_Settings_Web/build/*
+    - ./TF_Settings_Web/dist/*
     expire_in: 2 weeks
     when: always
   tags:
@@ -509,12 +542,19 @@ TF_Service::Windows::package:
     - mkdir ./Service_Package/Wrapper/wwwroot/
     - mkdir ./Service_Package/Tray/
     - mkdir ./Service_Package/Licenses/
+
+    # Update Version.txt with latest information before packaging
+    - cp $CI_PROJECT_DIR/TF_Service_dotNet/Version.txt ./Service_dotNet_Build
+    - python ./Scripts/UpdateVersionFile.py --path ${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_BRANCH"
+    - Get-Content "${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt"
+
     - cp -R ./Service_dotNet_Build/* ./Service_Package/Service/
     - cp -R ./UIBuild/* ./Service_Package/SettingsUI/
     - cp -R ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
-    - cp -R ./TF_Settings_Web/build/* ./Service_Package/Wrapper/wwwroot
+    - cp -R ./TF_Settings_Web/dist/* ./Service_Package/Wrapper/wwwroot
     - cp -R ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -R ./Third_Party_Licenses/* ./Service_Package/Licenses/
+
 
   artifacts:
     name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
@@ -585,7 +625,7 @@ TF_Service::ARMLinux::package:
     - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
     - cp ./LeapSDK/ThirdPartyNotices.md ./TouchFree_Extension/Tracking
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
-    - cp -R $CI_PROJECT_DIR/TF_Settings_Web/build/* ./TouchFree_Extension/wwwroot
+    - cp -R $CI_PROJECT_DIR/TF_Settings_Web/dist/* ./TouchFree_Extension/wwwroot
 
     - cp $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Version.txt ./TouchFree_Extension
 

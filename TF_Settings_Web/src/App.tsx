@@ -3,46 +3,50 @@ import './App.scss';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import ControlBar from './Components/ControlBar';
-import { CursorManager } from './Components/CursorManager';
-import CameraManager from './Components/Pages/Camera/CameraManager';
-import { InteractionsPage } from './Components/Pages/InteractionsPage';
-import { ConnectionManager } from './TouchFree/Connection/ConnectionManager';
-import { ServiceStatus } from './TouchFree/Connection/TouchFreeServiceTypes';
-import { WebInputController } from './TouchFree/InputControllers/WebInputController';
-import { TrackingServiceState } from './TouchFree/TouchFreeToolingTypes';
+import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import { ServiceStatus } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { WebInputController } from 'TouchFree/InputControllers/WebInputController';
+import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
+
+import ControlBar from 'Components/ControlBar';
+import { CursorManager } from 'Components/CursorManager';
+import CameraManager from 'Components/Pages/Camera/CameraManager';
+import { InteractionsPage } from 'Components/Pages/InteractionsPage';
 
 const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
+    const [touchFreeVersion, setTouchFreeVersion] = React.useState<string>('');
 
     useEffect(() => {
-        const updateTfStatus = () => {
+        ConnectionManager.init();
+
+        const onConnected = () => {
             ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
                 const status = detail.trackingServiceState;
                 if (status) {
                     setTfStatus(status);
                 }
             });
+
+            const serviceConnection = ConnectionManager.serviceConnection();
+            const tfVersion = serviceConnection?.touchFreeVersion ?? '';
+            setTouchFreeVersion(tfVersion);
         };
 
-        ConnectionManager.init();
-
-        ConnectionManager.AddConnectionListener(updateTfStatus);
+        ConnectionManager.AddConnectionListener(onConnected);
+        ConnectionManager.AddServiceStatusListener(setTfStatus);
         const controller: WebInputController = new WebInputController();
-
-        const timerID = window.setInterval(updateTfStatus, 5000);
 
         new CursorManager();
 
         return () => {
             controller.disconnect();
-            clearInterval(timerID);
         };
     }, []);
 
     return (
         <div className="app">
-            <ControlBar tfStatus={tfStatus} />
+            <ControlBar tfStatus={tfStatus} touchFreeVersion={touchFreeVersion} />
             <div className="page-content">
                 <Routes>
                     <Route path="/settings/camera/*" element={<CameraManager />} />

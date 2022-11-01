@@ -1,8 +1,8 @@
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Interactions;
@@ -124,7 +124,7 @@ namespace Ultraleap.TouchFree.Library
                         {
                             lastLocationActionToUpdate = interactionInputAction.inputAction;
                             if (interactionCurrentlyDown == null)
-                            { 
+                            {
                                 inputAction = interactionInputAction.inputAction;
                             }
                         }

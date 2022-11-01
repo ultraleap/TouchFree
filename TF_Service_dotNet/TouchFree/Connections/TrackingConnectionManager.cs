@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Leap;
+using System;
 using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library.Configuration;
 
@@ -6,9 +7,8 @@ namespace Ultraleap.TouchFree.Library.Connections
 {
     public class TrackingConnectionManager : ITrackingConnectionManager
     {
-        public Leap.Controller controller { get; private set; }
+        public IController Controller { get; }
 
-        private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly IConfigManager configManager;
 
         private const int maximumWaitTimeSeconds = 30;
@@ -16,26 +16,44 @@ namespace Ultraleap.TouchFree.Library.Connections
         private bool ShouldConnect = false;
 
         public bool ShouldSendHandData { get; private set; }
+        public TrackingMode CurrentTrackingMode { get; private set; }
 
-        private TrackingMode currentTrackingMode;
+        public TrackingServiceState TrackingServiceState =>
+            (Controller.IsServiceConnected, Controller.IsConnected) switch
+            {
+                (true, true) => TrackingServiceState.CONNECTED,
+                (true, false) => TrackingServiceState.NO_CAMERA,
+                // (false, true) => ???, Weird state that's currently impossible if you inspect the implementation of IsConnected
+                _ => TrackingServiceState.UNAVAILABLE
+            };
 
-        public TrackingMode CurrentTrackingMode
+        public event Action<TrackingServiceState> ServiceStatusChange;
+
+        public TrackingConnectionManager(IConfigManager _configManager)
         {
-            get { return currentTrackingMode; }
-        }
-
-        public TrackingConnectionManager(IConfigManager _configManager, ITrackingDiagnosticApi _diagnosticApi)
-        {
-            diagnosticApi = _diagnosticApi;
             configManager = _configManager;
-            controller = new Leap.Controller();
-            controller.Connect += Controller_Connect;
-            controller.Disconnect += Controller_Disconnect;
+            Controller = new Controller();
+            Controller.Connect += ControllerOnConnect;
+            Controller.Disconnect += ControllerOnDisconnect;
+            Controller.Device += ControllerOnDevice;
+            Controller.DeviceLost += ControllerOnDeviceLost;
             UpdateTrackingMode(_configManager.PhysicalConfig);
             _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
-            controller.StopConnection();
+            Controller.StopConnection();
+        }
 
-            controller.Device += Controller_CameraConnected;
+        private void ControllerOnDevice(object sender, DeviceEventArgs e)
+        {
+            // More than 1 device connected now, ignore this event as we only care about at least one device connection
+            if (Controller.Devices.Count > 1) return;
+            ServiceStatusChange?.Invoke(TrackingServiceState.CONNECTED);
+        }
+
+        private void ControllerOnDeviceLost(object sender, DeviceEventArgs e)
+        {
+            // We still have at least one device, ignore this event as we only care about at least one device connection
+            if (Controller.Devices.Count >= 1) return;
+            ServiceStatusChange?.Invoke(TrackingServiceState.NO_CAMERA);
         }
 
         public void Connect()
@@ -47,20 +65,17 @@ namespace Ultraleap.TouchFree.Library.Connections
         public void Disconnect()
         {
             ShouldConnect = false;
-            if (controller.IsServiceConnected)
+            if (Controller.IsServiceConnected)
             {
-                controller.StopConnection();
+                Controller.StopConnection();
             }
         }
 
-        public void Controller_CameraConnected(object sender, Leap.DeviceEventArgs e)
+        private void ControllerOnConnect(object sender, ConnectionEventArgs e)
         {
-            diagnosticApi.TriggerUpdatingTrackingConfiguration();
-        }
 
-        private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
-        {
             UpdateTrackingMode(configManager.PhysicalConfig);
+            ServiceStatusChange?.Invoke(TrackingServiceState.NO_CAMERA);
 
             CheckTrackingModeIsCorrectAfterDelay();
         }
@@ -68,12 +83,12 @@ namespace Ultraleap.TouchFree.Library.Connections
         private async void CheckTrackingModeIsCorrectAfterDelay()
         {
             await Task.Delay(5000);
-            if (controller.IsServiceConnected)
+            if (Controller.IsServiceConnected)
             {
                 var trackingMode = GetTrackingModeFromConfig(configManager.PhysicalConfig);
 
-                var inScreenTop = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                var inHmd = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                var inScreenTop = Controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                var inHmd = Controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
 
                 if (TrackingModeIsIncorrect(trackingMode, inScreenTop, inHmd))
                 {
@@ -89,8 +104,9 @@ namespace Ultraleap.TouchFree.Library.Connections
                 (trackingMode == TrackingMode.DESKTOP && (inScreenTop || inHmd));
         }
 
-        private void Controller_Disconnect(object sender, Leap.ConnectionLostEventArgs e)
+        private void ControllerOnDisconnect(object sender, Leap.ConnectionLostEventArgs e)
         {
+            ServiceStatusChange?.Invoke(TrackingServiceState.UNAVAILABLE);
             if (ShouldConnect)
             {
                 CheckConnectionAndRetryOnFailure(true);
@@ -103,13 +119,13 @@ namespace Ultraleap.TouchFree.Library.Connections
 
             if (includeInitialDelay)
             {
-                await Task.Delay(1000 * waitTimeSeconds);
+                await Task.Delay(1000);
                 waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
             }
 
-            while (!controller.IsServiceConnected && ShouldConnect)
+            while (!Controller.IsServiceConnected && ShouldConnect)
             {
-                controller.StartConnection();
+                Controller.StartConnection();
 
                 await Task.Delay(1000 * waitTimeSeconds);
                 waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
@@ -127,12 +143,12 @@ namespace Ultraleap.TouchFree.Library.Connections
             return updatedWaitTime > maximumWaitTimeSeconds ? maximumWaitTimeSeconds : updatedWaitTime;
         }
 
-        public void UpdateTrackingMode(PhysicalConfigInternal _config)
+        private void UpdateTrackingMode(PhysicalConfigInternal _config)
         {
             SetTrackingMode(GetTrackingModeFromConfig(_config));
         }
 
-        TrackingMode GetTrackingModeFromConfig(PhysicalConfigInternal _config)
+        private static TrackingMode GetTrackingModeFromConfig(PhysicalConfigInternal _config)
         {
             // leap is looking down
             if (Math.Abs(_config.LeapRotationD.Z) > 90f)
@@ -152,25 +168,25 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
-        void SetTrackingMode(TrackingMode _mode)
+        private void SetTrackingMode(TrackingMode _mode)
         {
             TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
 
-            currentTrackingMode = _mode;
+            CurrentTrackingMode = _mode;
 
             switch (_mode)
             {
                 case TrackingMode.DESKTOP:
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
                 case TrackingMode.HMD:
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    Controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
                 case TrackingMode.SCREENTOP:
-                    controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                    Controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                    Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
                     break;
             }
         }
@@ -180,11 +196,11 @@ namespace Ultraleap.TouchFree.Library.Connections
             ShouldSendHandData = enabled;
             if (enabled)
             {
-                controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
+                Controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
             }
             else
             {
-                controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
+                Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
             }
         }
     }

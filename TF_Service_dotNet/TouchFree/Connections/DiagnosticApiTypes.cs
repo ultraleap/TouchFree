@@ -20,7 +20,8 @@
         SetImageMask,
     }
 
-    struct DApiResponseCache {
+    struct DApiResponseCache
+    {
         DApiMsgTypes type;
         string requestID;
     }
@@ -57,6 +58,14 @@
         public double right;
         public double left;
         public uint device_id;
+
+        public static explicit operator ImageMaskData(Configuration.MaskingData other) => new()
+        {
+            left = other.Left,
+            right = other.Right,
+            upper = other.Upper,
+            lower = other.Lower
+        };
     }
 
     struct DiagnosticDevice

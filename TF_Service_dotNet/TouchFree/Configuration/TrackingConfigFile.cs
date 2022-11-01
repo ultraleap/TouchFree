@@ -1,4 +1,5 @@
 ﻿using System;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
@@ -14,22 +15,22 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public bool AllowImages = true;
         public bool CameraReversed = false;
         public bool AnalyticsEnabled = true;
-
-        public TrackingConfig()
-        {
-            Mask = new MaskingData();
-            AllowImages = true;
-            CameraReversed = false;
-            AnalyticsEnabled = true;
-        }
     }
 
     [Serializable]
     public class MaskingData
     {
-        public float Lower = 0;
-        public float Upper = 0;
-        public float Right = 0;
-        public float Left = 0;
+        public double Lower = 0;
+        public double Upper = 0;
+        public double Right = 0;
+        public double Left = 0;
+
+        public static explicit operator MaskingData(ImageMaskData other) => new()
+        {
+            Left = other.left,
+            Lower = other.lower,
+            Right = other.right,
+            Upper = other.upper
+        };
     }
 }

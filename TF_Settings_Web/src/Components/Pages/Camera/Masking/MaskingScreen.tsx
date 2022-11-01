@@ -1,17 +1,17 @@
+import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
+
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useStatefulRef } from 'customHooks';
+import { useStatefulRef } from '@/customHooks';
 
 import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
 import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/Tracking/TrackingTypes';
-
-import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
@@ -23,7 +23,7 @@ export type Lens = 'Left' | 'Right';
 
 const FRAME_PROCESSING_TIMEOUT = 60;
 
-const MaskingScreen = () => {
+const MaskingScreen: React.FC = () => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
     const handData = useStatefulRef<HandState>(defaultHandState);
@@ -238,7 +238,6 @@ const MaskingScreen = () => {
                 {sliders}
                 <div className="cam-feed-box-feed">
                     <canvas ref={canvasRef} width={'192px'} height={'192px'} />
-
                     <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>

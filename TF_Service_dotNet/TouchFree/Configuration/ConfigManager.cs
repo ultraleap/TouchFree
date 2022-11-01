@@ -1,15 +1,19 @@
-﻿using System;
-
-namespace Ultraleap.TouchFree.Library.Configuration
+﻿namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
         public event IConfigManager.InteractionConfigEvent OnInteractionConfigUpdated;
         public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
+        public event IConfigManager.TrackingConfigEvent OnTrackingConfigSaved;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
         private TrackingConfig _tracking;
+
+        public ConfigManager()
+        {
+            TrackingConfigFile.OnConfigFileSaved += () => OnTrackingConfigSaved?.Invoke();
+        }
 
         public bool ErrorLoadingConfigFiles { get; private set; }
 
@@ -102,20 +106,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
 
-        public void PhysicalConfigWasUpdated()
-        {
-            OnPhysicalConfigUpdated?.Invoke(_physical);
-        }
+        public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
+        public void InteractionConfigWasUpdated() => OnInteractionConfigUpdated?.Invoke(_interactions);
+        public void TrackingConfigWasUpdated() => OnTrackingConfigUpdated?.Invoke(_tracking);
 
-        public void InteractionConfigWasUpdated()
-        {
-            OnInteractionConfigUpdated?.Invoke(_interactions);
-        }
-
-        public void TrackingConfigWasUpdated()
-        {
-            OnTrackingConfigUpdated?.Invoke(_tracking);
-        }
 
         public bool AreConfigsInGoodState()
         {

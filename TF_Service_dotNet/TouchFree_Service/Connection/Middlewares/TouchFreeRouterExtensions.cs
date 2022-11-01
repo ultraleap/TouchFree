@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using Ultraleap.TouchFree.Library;
-using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
+using Ultraleap.TouchFree.Library.Connections;
+using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
-using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 
 namespace Ultraleap.TouchFree.Service.Connection
 {

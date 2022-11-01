@@ -1,4 +1,4 @@
-
+import { TouchFreeEvent, TrackingServiceState } from "../TouchFreeToolingTypes";
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
 import { HandPresenceState, ServiceStatus } from "./TouchFreeServiceTypes";
@@ -7,7 +7,6 @@ import { HandPresenceState, ServiceStatus } from "./TouchFreeServiceTypes";
 // This Class manages the connection to the Service. It provides static variables
 // for ease of use and is a Singleton to allow for easy referencing.
 export class ConnectionManager extends EventTarget {
-
     // Group: Events
 
     // Event: OnConnected
@@ -26,7 +25,7 @@ export class ConnectionManager extends EventTarget {
     // The public get-only reference to the currently managed <ServiceConnection>.
     public static serviceConnection(): ServiceConnection | null {
         return ConnectionManager.currentServiceConnection;
-    };
+    }
 
     // Variable: messageReceiver
     // A reference to the receiver that handles destribution of data received via the <currentServiceConnection> if connected.
@@ -48,7 +47,8 @@ export class ConnectionManager extends EventTarget {
 
     // Variable: currentHandPresence
     // Private reference to the current hand presense state
-    private static currentHandPresence: HandPresenceState = HandPresenceState.HANDS_LOST;
+    private static currentHandPresence: HandPresenceState =
+        HandPresenceState.HANDS_LOST;
 
     // Group: Functions
 
@@ -65,12 +65,21 @@ export class ConnectionManager extends EventTarget {
     // Used to both add the _onConnectFunc action to the listeners of <OnConnected>
     // as well as auto-call the _onConnectFunc if a connection is already made.
     public static AddConnectionListener(_onConnectFunc: () => void): void {
-        ConnectionManager.instance.addEventListener('OnConnected', _onConnectFunc);
+        ConnectionManager.instance.addEventListener(TouchFreeEvent.ON_CONNECTED, _onConnectFunc);
 
-        if (ConnectionManager.currentServiceConnection !== null &&
-            ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN) {
+        if (
+            ConnectionManager.currentServiceConnection !== null &&
+            ConnectionManager.currentServiceConnection.webSocket.readyState ===
+            WebSocket.OPEN &&
+            ConnectionManager.currentServiceConnection.handshakeComplete
+        ) {
             _onConnectFunc();
         }
+    }
+
+    public static AddServiceStatusListener(_serviceStatusFunc: (serviceStatus: TrackingServiceState) => void): void {
+        ConnectionManager.instance.addEventListener(TouchFreeEvent.ON_TRACKING_SERVICE_STATE_CHANGE,
+            ((evt: CustomEvent<TrackingServiceState>) => { _serviceStatusFunc(evt.detail) }) as EventListener);
     }
 
     // Function: Connect
@@ -79,7 +88,8 @@ export class ConnectionManager extends EventTarget {
     public static Connect(): void {
         ConnectionManager.currentServiceConnection = new ServiceConnection(
             ConnectionManager.iPAddress,
-            ConnectionManager.port);
+            ConnectionManager.port,
+        );
     }
 
     // Function: HandleHandPresenceEvent
@@ -87,13 +97,13 @@ export class ConnectionManager extends EventTarget {
     // <HandsLost> events on this class
     public static HandleHandPresenceEvent(_state: HandPresenceState): void {
         ConnectionManager.currentHandPresence = _state;
-        
-        let handPresenceEvent: CustomEvent;
+
+        let handPresenceEvent: Event;
 
         if (_state === HandPresenceState.HAND_FOUND) {
-            handPresenceEvent = new CustomEvent('HandFound');
+            handPresenceEvent = new Event(TouchFreeEvent.HAND_FOUND);
         } else {
-            handPresenceEvent = new CustomEvent('HandsLost');
+            handPresenceEvent = new Event(TouchFreeEvent.HANDS_LOST);
         }
 
         ConnectionManager.instance.dispatchEvent(handPresenceEvent);
@@ -114,7 +124,9 @@ export class ConnectionManager extends EventTarget {
     // <ServiceStatus> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    public static RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
+    public static RequestServiceStatus(
+        _callback: (detail: ServiceStatus) => void,
+    ): void {
         if (_callback === null) {
             console.error("Request failed. This is due to a missing callback");
             return;

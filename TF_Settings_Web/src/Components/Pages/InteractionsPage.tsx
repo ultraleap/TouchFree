@@ -221,7 +221,7 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
 
     onResetLeave = () => {
         this.setState((state) => {
-            return { ...state, resetButtonHovered: false};
+            return { ...state, resetButtonHovered: false };
         });
     };
 

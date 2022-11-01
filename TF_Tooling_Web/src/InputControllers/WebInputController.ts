@@ -1,6 +1,7 @@
 import {
     TouchFreeInputAction,
-    InputType
+    InputType,
+    TouchFreeEvent
 } from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController'
 
@@ -26,6 +27,7 @@ export class WebInputController extends BaseInputController {
     private readonly baseEventProps: PointerEventInit;
     private readonly activeEventProps: PointerEventInit;
     private elementsOnDown: HTMLElement[] | null = null;
+    private scrollElementsOnDown: HTMLElement[] | null = null;
     private lastPosition: Array<number> | null = null;
     private scrollDirection: ScrollDirection | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
@@ -106,13 +108,14 @@ export class WebInputController extends BaseInputController {
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         super.HandleInputAction(_inputData);
 
-        let elementAtPos: Element | null = this.GetTopNonCursorElement(_inputData.CursorPosition);
+        const elementsAtPoint = document.elementsFromPoint(_inputData.CursorPosition[0], _inputData.CursorPosition[1]);
+        let elementAtPos: Element | null = this.GetTopNonCursorElement(elementsAtPoint);
 
         this.activeEventProps.clientX = _inputData.CursorPosition[0];
         this.activeEventProps.clientY = _inputData.CursorPosition[1];
 
         if (elementAtPos !== null) {
-            let inputEvent: CustomEvent = new CustomEvent(`InputAction`, {detail: _inputData})
+            const inputEvent = new CustomEvent<TouchFreeInputAction>(TouchFreeEvent.INPUT_ACTION, {detail: _inputData})
             elementAtPos.dispatchEvent(inputEvent);
         }
 
@@ -147,9 +150,8 @@ export class WebInputController extends BaseInputController {
 
             case InputType.DOWN:
                 this.ResetScrollData();
-                this.elementsOnDown = document.elementsFromPoint(_inputData.CursorPosition[0], _inputData.CursorPosition[1])
-                    .map(e => e as HTMLElement)
-                    .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor") && !e.classList.contains("touchfree-no-scroll"));
+                this.elementsOnDown = this.clickableElementsAtPosition(elementsAtPoint);
+                this.scrollElementsOnDown = this.elementsOnDown.filter(e => !e.classList.contains("touchfree-no-scroll"));
 
                 this.lastPosition = _inputData.CursorPosition;
 
@@ -158,6 +160,18 @@ export class WebInputController extends BaseInputController {
                 break;
 
             case InputType.UP:
+                const elementsOnUp = this.clickableElementsAtPosition(elementsAtPoint);
+
+                if (elementsOnUp?.length && this.elementsOnDown?.length) {
+                    for (const element of elementsOnUp) {
+                        const matchingElement = this.elementsOnDown.find(eod => eod == element);
+                        if (matchingElement) {
+                            matchingElement.click();
+                            break;
+                        }
+                    };
+                }
+
                 this.ResetScrollData();
 
                 let upEvent: PointerEvent = new PointerEvent("pointerup", this.activeEventProps);
@@ -166,16 +180,22 @@ export class WebInputController extends BaseInputController {
         }
     }
 
+    private clickableElementsAtPosition(elements: Element[] | null): HTMLElement[] {
+        return (elements ?? [])
+            .map(e => e as HTMLElement)
+            .filter(e => e && !e.classList.contains("touchfreecursor") && !e.classList.contains("touchfree-cursor"))
+    }
+
     // Clears information about the current scroll
     private ResetScrollData(): void {
-        this.elementsOnDown = null;
+        this.scrollElementsOnDown = null;
         this.scrollDirection = undefined;
         this.elementToScroll = undefined;
     }
 
     // Applies scrolling to any elements that should be scrolled
     private HandleScroll(_position: Array<number>): void {
-        if (this.elementsOnDown && this.lastPosition) {
+        if (this.scrollElementsOnDown && this.lastPosition) {
             const changeInPositionX = this.lastPosition[0] - _position[0];
             const changeInPositionY = this.lastPosition[1] - _position[1];
 
@@ -241,10 +261,10 @@ export class WebInputController extends BaseInputController {
         parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean): HTMLElement | undefined => {
 
         if (this.elementToScroll) return this.elementToScroll;
-        if (!this.elementsOnDown) return;
+        if (!this.scrollElementsOnDown) return;
         
-        for (let i = 0; i < this.elementsOnDown.length; i++) {
-            let elementToCheckScroll = this.elementsOnDown[i];
+        for (let i = 0; i < this.scrollElementsOnDown.length; i++) {
+            let elementToCheckScroll = this.scrollElementsOnDown[i];
             if (!scrollValidation(elementToCheckScroll)) continue;
 
             let parentSelected = false;
@@ -267,13 +287,8 @@ export class WebInputController extends BaseInputController {
 
     // Gets the stack of elements (topmost->bottommost) at this position and return the first non-
     // cursor element. Depends on all cursor elements being branded with the "cursor" class.
-    private GetTopNonCursorElement(_position: Array<number>): Element | null {
-        let elementsAtPos: Element[] | null = document.elementsFromPoint(
-            _position[0],
-            _position[1]);
-
+    private GetTopNonCursorElement(elementsAtPos: Element[] | null): Element | null {
         let elementAtPos: Element | null = null;
-
 
         if (elementsAtPos !== null) {
             for (let i = 0; i < elementsAtPos.length; i++) {
