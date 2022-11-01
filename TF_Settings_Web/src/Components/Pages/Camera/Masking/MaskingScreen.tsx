@@ -7,11 +7,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { useStatefulRef } from '@/customHooks';
 
-import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
-import { HandFrame } from 'TouchFree/TouchFreeToolingTypes';
-import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
-import { Mask } from 'TouchFree/Tracking/TrackingTypes';
+import { TrackingStateResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { HandDataManager } from 'TouchFree/src/Plugins/HandDataManager';
+import { HandFrame } from 'TouchFree/src/TouchFreeToolingTypes';
+import { TrackingManager } from 'TouchFree/src/Tracking/TrackingManager';
+import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';

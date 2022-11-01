@@ -1,13 +1,13 @@
 import { v4 as uuidgen } from 'uuid';
 
-import { Vector } from 'TouchFree/Configuration/ConfigurationTypes';
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
+import { Vector } from 'TouchFree/src/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
     HandRenderDataStateRequest,
-} from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
+} from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { RawFinger, RawHand } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { HandState, HandSvgCoordinate, HandSvgProps } from 'Components/Controls/HandsSvg';
 

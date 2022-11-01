@@ -2,8 +2,8 @@ import 'Styles/Camera/CameraMasking.scss';
 
 import React, { CSSProperties, PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
-import { Mask } from 'TouchFree/Tracking/TrackingTypes';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
 export type SliderDirection = keyof Mask;
 export interface CanvasInfo {

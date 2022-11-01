@@ -9,7 +9,8 @@
         "react-circular-progressbar": "^2.1.0",
         "react-dom": "^17.0.2",
         "twgl.js": "^4.24.0",
-        "web-vitals": "^2.1.4"
+        "web-vitals": "^2.1.4",
+        "TouchFree": "file:../TF_Tooling_Web"
     },
     "homepage": "/settings/",
     "scripts": {

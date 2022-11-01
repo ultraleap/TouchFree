@@ -2,7 +2,7 @@ import 'Styles/StatusIndicator.scss';
 
 import React from 'react';
 
-import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
+import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import CameraStatusIcon from 'Images/Camera_Status_Icon.png';
 import TrackingStatusIcon from 'Images/Tracking_Status_Icon.svg';

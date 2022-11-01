@@ -4,9 +4,9 @@ import 'Styles/Camera/Calibrate.scss';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
-import { InputActionManager } from 'TouchFree/Plugins/InputActionManager';
-import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/TouchFreeToolingTypes';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { InputActionManager } from 'TouchFree/src/Plugins/InputActionManager';
+import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { TFClickEvent } from 'Components/SettingsTypes';
 

@@ -4,8 +4,8 @@ import cssVariables from 'Styles/variables.module.scss';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
-import { ConfigState } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
+import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 
 import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
 import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
