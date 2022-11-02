@@ -350,6 +350,8 @@ TF_Settings::Web::build:
   when: always
   script:
     - cd ./TF_Settings_Web
+    - npm -v
+    - npm ls
     - npm install
     - npm run build
     - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol posix
