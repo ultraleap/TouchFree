@@ -37,6 +37,8 @@ namespace Ultraleap.TouchFree.Library
         private Vector3? lastPrimaryLocation;
         private Vector3? lastSecondaryLocation;
 
+        public ArraySegment<byte> LastImageData { get; private set; }
+
         public Image.CameraType HandRenderLens { private get; set; } = Image.CameraType.LEFT;
 
         public Hand LeftHand =>
@@ -58,21 +60,32 @@ namespace Ultraleap.TouchFree.Library
 
         private int handsLastFrame;
 
+        private Leap.Image lastImage;
+
         public HandFrame RawHands { get; private set; }
         public List<Hand> PreConversionRawHands { get; private set; }
         public bool RawHandsUpdated { get; private set; }
 
-        public HandManager(ITrackingConnectionManager _trackingConnectionManager, IConfigManager _configManager, IVirtualScreen _virtualScreen)
+        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager, IVirtualScreen _virtualScreen, IUpdateBehaviour _updateBehaviour)
         {
             handsLastFrame = 0;
 
-            ConnectionManager = _trackingConnectionManager;
+            ConnectionManager = _trackingManager;
             virtualScreen = _virtualScreen;
             configManager = _configManager;
-            ConnectionManager.Controller.FrameReady += Update;
-            ConnectionManager.Controller.ImageReady += UpdateRawHands;
-            _configManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
-            UpdateTrackingTransform(_configManager.PhysicalConfig);
+
+            if (_configManager != null)
+            {
+                _configManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
+                UpdateTrackingTransform(_configManager.PhysicalConfig);
+            }
+
+            if (ConnectionManager != null)
+            {
+                ConnectionManager.Controller.FrameReady += Update;
+                ConnectionManager.Controller.ImageReady += StoreImage;
+            }
+            _updateBehaviour.OnSlowUpdate += UpdateRawHands;
         }
 
         public void UpdateTrackingTransform(PhysicalConfigInternal _config)
@@ -120,7 +133,7 @@ namespace Ultraleap.TouchFree.Library
 
         private Vector3 LeapToCameraFrame(Leap.Vector leapVector, Image image)
         {
-            var lensAdjustment = HandRenderLens == Image.CameraType.RIGHT ? -32.5f : 32.5f;
+            var lensAdjustment = HandRenderLens == Image.CameraType.LEFT ? -32.5f : 32.5f;
             var updatedVector = new Leap.Vector(leapVector.x + lensAdjustment, leapVector.y, leapVector.z);
             var ray = new Leap.Vector((float)Math.Atan2(updatedVector.x, updatedVector.y), (float)Math.Atan2(updatedVector.z, updatedVector.y), (float)Math.Sqrt(updatedVector.x * updatedVector.x + updatedVector.z * updatedVector.z + updatedVector.y * updatedVector.y));
 
@@ -129,28 +142,49 @@ namespace Ultraleap.TouchFree.Library
             return new Vector3(renderPosition.x / image.Width, renderPosition.y / image.Width, ray.z);
         }
 
-        private void UpdateRawHands(object sender, ImageEventArgs e)
+        public void StoreImage(object sender, ImageEventArgs e)
         {
-            if (PreConversionRawHands == null || e.image == null || !RawHandsUpdated) return;
-            RawHandsUpdated = false;
-            RawHands = new HandFrame
+            if (lastImage == null) {
+                lastImage = e.image;
+            }
+        }
+
+        public void UpdateRawHands()
+        {
+            var imageToUse = lastImage;
+
+            if (lastImage != null)
             {
-                Hands = PreConversionRawHands.Select(x => new RawHand()
+                LastImageData = new ArraySegment<byte>(imageToUse.Data(Image.CameraType.LEFT), (int)imageToUse.ByteOffset(HandRenderLens), imageToUse.Height * imageToUse.Width * imageToUse.BytesPerPixel);
+
+                if (PreConversionRawHands != null && imageToUse != null && RawHandsUpdated)
                 {
-                    CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
-                    Fingers = x.Fingers.Select(f => new RawFinger()
+                    RawHandsUpdated = false;
+                    RawHands = new HandFrame()
                     {
-                        Type = (FingerType)f.Type,
-                        Bones = f.bones.Select(b => new RawBone()
+                        Hands = PreConversionRawHands.Select(x => new RawHand()
                         {
-                            NextJoint = LeapToCameraFrame(b.NextJoint, e.image),
-                            PrevJoint = LeapToCameraFrame(b.PrevJoint, e.image)
+                            CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
+                            Fingers = x.Fingers.Select(f => new RawFinger()
+                            {
+                                Type = (FingerType)f.Type,
+                                Bones = f.bones.Select(b => new RawBone()
+                                {
+                                    NextJoint = b.Type == Bone.BoneType.TYPE_DISTAL ? LeapToCameraFrame(b.NextJoint, imageToUse) : default,
+                                    PrevJoint = b.Type== Bone.BoneType.TYPE_PROXIMAL ? LeapToCameraFrame(b.PrevJoint, imageToUse) : default
+                                }).ToArray()
+                            }).ToArray(),
+                            WristPosition = LeapToCameraFrame(x.WristPosition, imageToUse),
+                            WristWidth = x.PalmWidth
                         }).ToArray()
-                    }).ToArray(),
-                    WristPosition = LeapToCameraFrame(x.WristPosition, e.image),
-                    WristWidth = x.PalmWidth
-                }).ToArray()
-            };
+                    };
+                }
+
+                if (lastImage == imageToUse)
+                {
+                    lastImage = null;
+                }
+            }
         }
 
         public void Update(object sender, FrameEventArgs e)

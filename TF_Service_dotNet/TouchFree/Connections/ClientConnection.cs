@@ -46,7 +46,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             SendResponse(converted, ActionCode.INPUT_ACTION);
         }
 
-        public void SendHandData(HandFrame _data)
+        public void SendHandData(HandFrame _data, ArraySegment<byte> lastHandData)
         {
             if (!HandshakeCompleted)
             {
@@ -55,7 +55,22 @@ namespace Ultraleap.TouchFree.Library.Connections
                 return;
             }
 
-            SendResponse(_data, ActionCode.HAND_DATA);
+            string jsonMessage = JsonConvert.SerializeObject(_data);
+
+            byte[] jsonAsBytes = Encoding.UTF8.GetBytes(jsonMessage);
+
+            Int32 dataLength = lastHandData.Count;
+
+            IEnumerable<byte> binaryMessageType = BitConverter.GetBytes((int)BinaryMessageType.Hand_Data);
+            var dataToSend = binaryMessageType.Concat(BitConverter.GetBytes(dataLength));
+            dataToSend = dataLength > 0 ? dataToSend.Concat(lastHandData) : dataToSend;
+            dataToSend = dataToSend.Concat(jsonAsBytes);
+
+            Socket.SendAsync(
+                dataToSend.ToArray(),
+                WebSocketMessageType.Binary,
+                true,
+                CancellationToken.None);
         }
 
         public void SendHandPresenceEvent(HandPresenceEvent _response)

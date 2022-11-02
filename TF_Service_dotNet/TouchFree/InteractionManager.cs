@@ -48,6 +48,7 @@ namespace Ultraleap.TouchFree.Library
             OnInteractionSettingsUpdated(_configManager.InteractionConfig);
 
             updateBehaviour.OnUpdate += Update;
+            updateBehaviour.OnSlowUpdate += UpdateHands;
         }
 
         public void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
@@ -81,13 +82,16 @@ namespace Ultraleap.TouchFree.Library
             interactionCurrentlyDown = null;
         }
 
-        public void Update()
+        public void UpdateHands()
         {
             if (trackingConnectionManager.ShouldSendHandData)
             {
-                connectionManager.SendHandData(handManager.RawHands);
+                connectionManager.SendHandData(handManager.RawHands, handManager.LastImageData);
             }
+        }
 
+        public void Update()
+        {
             if (activeInteractions != null)
             {
                 InputAction? inputAction = null;
