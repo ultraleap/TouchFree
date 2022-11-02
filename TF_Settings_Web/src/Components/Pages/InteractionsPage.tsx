@@ -50,6 +50,17 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
         }
     }
 
+    private getStateCopy = (state: InteractionsState): InteractionsState => {
+        const stateCopy = { ...state };
+        if (!state) return stateCopy;
+
+        stateCopy.interactionConfig = { ...state.interactionConfig };
+        stateCopy.interactionConfig.TouchPlane = { ...state.interactionConfig.TouchPlane };
+        stateCopy.interactionConfig.HoverAndHold = { ...state.interactionConfig.HoverAndHold };
+
+        return stateCopy;
+    };
+
     configChangeCbHandler(result: WebSocketResponse): void {
         if (result.status !== 'Success') {
             console.error(`Failed to set config state! Info: ${result.message}`);
@@ -57,8 +68,10 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
     }
 
     setStateFromFile(config: ConfigState): void {
-        this.setState({
-            interactionConfig: config.interaction,
+        this.setState((state) => {
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig = config.interaction;
+            return newState;
         });
     }
 
@@ -71,14 +84,35 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
         const interactionType: InteractionType = InteractionTranslator[newValue];
 
         this.setState((state) => {
-            const newConf: InteractionConfigFull = {
-                ...state.interactionConfig,
-                InteractionType: interactionType,
-            };
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.InteractionType = interactionType;
+            return newState;
+        });
+    }
 
-            return {
-                interactionConfig: newConf,
-            };
+    // Slider Control Logic
+    onCursorMovementChange(newValue: number): void {
+        this.setState((state) => {
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.DeadzoneRadius = newValue;
+            return newState;
+        });
+    }
+
+    // Toggle Control Logic
+    onScrollDragChange(useScroll: boolean): void {
+        this.setState((state) => {
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.UseScrollingOrDragging = useScroll;
+            return newState;
+        });
+    }
+
+    onTouchPlaneDistanceChange(newValue: number): void {
+        this.setState((state) => {
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.TouchPlane.TouchPlaneActivationDistanceCm = newValue;
+            return newState;
         });
     }
 
@@ -90,126 +124,57 @@ export class InteractionsPage extends Component<{}, InteractionsState> {
         const trackedPos: TrackedPosition = TouchPlaneTrackingOptions[newValue];
 
         this.setState((state) => {
-            const newConf: InteractionConfigFull = state.interactionConfig;
-
-            newConf.TouchPlane.TouchPlaneTrackedPosition = trackedPos;
-
-            return {
-                interactionConfig: newConf,
-            };
-        });
-    }
-
-    // Toggle Control Logic
-    onScrollDragChange(e: boolean): void {
-        const useScroll: boolean = e; //.currentTarget.checked;
-
-        this.setState((state) => {
-            const newConf: InteractionConfigFull = {
-                ...state.interactionConfig,
-                UseScrollingOrDragging: useScroll,
-            };
-
-            return {
-                interactionConfig: newConf,
-            };
-        });
-    }
-
-    interactionZoneToggled(e: boolean): void {
-        const zoneEnabled: boolean = e; //.currentTarget.checked;
-
-        this.setState((state) => {
-            const newConf: InteractionConfigFull = {
-                ...state.interactionConfig,
-                InteractionZoneEnabled: zoneEnabled,
-            };
-
-            return {
-                interactionConfig: newConf,
-            };
-        });
-    }
-
-    // Slider Control Logic
-    onCursorMovementChange(newValue: number): void {
-        this.setState((state) => {
-            const newConf: InteractionConfigFull = {
-                ...state.interactionConfig,
-                DeadzoneRadius: newValue,
-            };
-
-            return {
-                interactionConfig: newConf,
-            };
-        });
-    }
-
-    onTouchPlaneDistanceChange(newValue: number): void {
-        this.setState((state) => {
-            const newConf = state.interactionConfig;
-
-            newConf.TouchPlane.TouchPlaneActivationDistanceCm = newValue;
-
-            return {
-                interactionConfig: newConf,
-            };
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.TouchPlane.TouchPlaneTrackedPosition = trackedPos;
+            return newState;
         });
     }
 
     onHoverStartTimeChange(newValue: number): void {
         this.setState((state) => {
-            const newConf = state.interactionConfig;
-
-            newConf.HoverAndHold.HoverStartTimeS = newValue;
-
-            return {
-                interactionConfig: newConf,
-            };
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.HoverAndHold.HoverStartTimeS = newValue;
+            return newState;
         });
     }
 
     onHoverCompleteTimeChange(newValue: number): void {
         this.setState((state) => {
-            const newConf = state.interactionConfig;
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.HoverAndHold.HoverCompleteTimeS = newValue;
+            return newState;
+        });
+    }
 
-            newConf.HoverAndHold.HoverCompleteTimeS = newValue;
-
-            return {
-                interactionConfig: newConf,
-            };
+    interactionZoneToggled(zoneEnabled: boolean): void {
+        this.setState((state) => {
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.InteractionZoneEnabled = zoneEnabled;
+            return newState;
         });
     }
 
     onInteractionMinDistChange(newValue: number): void {
         this.setState((state) => {
-            const newConf: InteractionConfigFull = {
-                ...state.interactionConfig,
-                InteractionMinDistanceCm: newValue,
-            };
-
-            return {
-                interactionConfig: newConf,
-            };
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.InteractionMinDistanceCm = newValue;
+            return newState;
         });
     }
 
     onInteractionMaxDistChange(newValue: number): void {
         this.setState((state) => {
-            const newConf: InteractionConfigFull = {
-                ...state.interactionConfig,
-                InteractionMaxDistanceCm: newValue,
-            };
-
-            return {
-                interactionConfig: newConf,
-            };
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig.InteractionMaxDistanceCm = newValue;
+            return newState;
         });
     }
 
     resetToDefaults(): void {
-        this.setState({
-            interactionConfig: DefaultInteractionConfig,
+        this.setState((state) => {
+            const newState = this.getStateCopy(state);
+            newState.interactionConfig = DefaultInteractionConfig;
+            return newState;
         });
     }
 
