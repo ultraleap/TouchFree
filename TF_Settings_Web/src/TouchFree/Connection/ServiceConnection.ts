@@ -63,6 +63,7 @@ export class ServiceConnection {
     // an open connection until this handshake is completed succesfully.
     constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
+        this.webSocket.binaryType = 'arraybuffer';
 
         this.webSocket.addEventListener('message', this.OnMessage);
 
@@ -82,10 +83,10 @@ export class ServiceConnection {
 
     private RequestHandshake = () => {
         if (!this.handshakeCompleted) {
-            let guid: string = uuidgen();
+            const guid: string = uuidgen();
 
             // construct message
-            let handshakeRequest: CommunicationWrapper<any> = {
+            const handshakeRequest: CommunicationWrapper<any> = {
                 "action": ActionCode.VERSION_HANDSHAKE,
                 "content": {
                     "requestID": guid
@@ -127,33 +128,38 @@ export class ServiceConnection {
     // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
     // <MessageReceiver>.
     OnMessage = (_message: MessageEvent): void => {
-        let looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
+        if ((typeof _message.data) !== 'string') {
+
+            const buffer = _message.data as ArrayBuffer;
+            const binaryDataType = new Int32Array(buffer, 0, 4)[0];
+            if (binaryDataType === ServiceBinaryDataTypes.HandRenderData) {
+                ConnectionManager.messageReceiver.latestHandDataItem = buffer;
+            }
+            return;
+        }
+
+        const looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
 
         switch (looseData.action as ActionCode) {
             case ActionCode.INPUT_ACTION:
-                let wsInput: WebsocketInputAction = looseData.content;
+                const wsInput: WebsocketInputAction = looseData.content;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
                 break;
 
             case ActionCode.HAND_PRESENCE_EVENT:
-                let handEvent: HandPresenceEvent = looseData.content;
+                const handEvent: HandPresenceEvent = looseData.content;
                 ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
                 break;
 
             case ActionCode.SERVICE_STATUS:
-                let serviceStatus: ServiceStatus = looseData.content;
+                const serviceStatus: ServiceStatus = looseData.content;
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
-                break;
-                
-            case ActionCode.HAND_DATA:
-                let wsHandData: any = looseData.content;
-                ConnectionManager.messageReceiver.latestHandDataItem = wsHandData;
                 break;
 
             case ActionCode.CONFIGURATION_STATE:
             case ActionCode.CONFIGURATION_FILE_STATE:
             case ActionCode.QUICK_SETUP_CONFIG:
-                let configFileState: ConfigState = looseData.content;
+                const configFileState: ConfigState = looseData.content;
                 ConnectionManager.messageReceiver.configStateQueue.push(configFileState);
                 break;
 
@@ -162,12 +168,13 @@ export class ServiceConnection {
             case ActionCode.SERVICE_STATUS_RESPONSE:
             case ActionCode.CONFIGURATION_FILE_RESPONSE:
             case ActionCode.QUICK_SETUP_RESPONSE:
-                let response: WebSocketResponse = looseData.content;
+                const response: WebSocketResponse = looseData.content;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
             case ActionCode.TRACKING_STATE:
                 const trackingResponse: TrackingStateResponse = looseData.content;
                 ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
+                break;
         }
     }
 
@@ -182,7 +189,7 @@ export class ServiceConnection {
         _callback: ((detail: WebSocketResponse | T) => void) | null): void => {
         if (_requestID === "") {
             if (_callback !== null) {
-                let response: WebSocketResponse = new WebSocketResponse(
+                const response: WebSocketResponse = new WebSocketResponse(
                     "",
                     "Failure",
                     "Request failed. This is due to a missing or invalid requestID", _message);
@@ -212,10 +219,10 @@ export class ServiceConnection {
             return;
         }
 
-        let guid: string = uuidgen();
-        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
-        let message: string = JSON.stringify(wrapper);
+        const guid: string = uuidgen();
+        const request: ConfigChangeRequest = new ConfigChangeRequest(guid);
+        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        const message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =
             new ConfigStateCallback(Date.now(), _callback);
@@ -234,10 +241,10 @@ export class ServiceConnection {
             return;
         }
 
-        let guid: string = uuidgen();
-        let request: ServiceStatusRequest = new ServiceStatusRequest(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
-        let message: string = JSON.stringify(wrapper);
+        const guid: string = uuidgen();
+        const request: ServiceStatusRequest = new ServiceStatusRequest(guid);
+        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
+        const message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] =
             new ServiceStatusCallback(Date.now(), _callback);
@@ -256,10 +263,10 @@ export class ServiceConnection {
             return;
         }
 
-        let guid: string = uuidgen();
-        let request: ConfigChangeRequest = new ConfigChangeRequest(guid);
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
-        let message: string = JSON.stringify(wrapper);
+        const guid: string = uuidgen();
+        const request: ConfigChangeRequest = new ConfigChangeRequest(guid);
+        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
+        const message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.configStateCallbacks[guid] =
             new ConfigStateCallback(Date.now(), _callback);
@@ -279,14 +286,14 @@ export class ServiceConnection {
         _callback: (detail: WebSocketResponse) => void,
         _configurationCallback: (detail: ConfigState) => void): void => {
         const position = atTopTarget ? 'Top' : 'Bottom';
-        let guid: string = uuidgen();
+        const guid: string = uuidgen();
 
-        let request: any = {
+        const request: any = {
             requestID: guid,
             position
         };
-        let wrapper: CommunicationWrapper<any> = new CommunicationWrapper<any>(ActionCode.QUICK_SETUP, request);
-        let message: string = JSON.stringify(wrapper);
+        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<any>(ActionCode.QUICK_SETUP, request);
+        const message: string = JSON.stringify(wrapper);
 
         if (_callback !== null) {
             ConnectionManager.messageReceiver.responseCallbacks[guid] =
@@ -363,4 +370,9 @@ export class ServiceConnection {
 
         this.webSocket.send(message);
     }
+
+}
+
+enum ServiceBinaryDataTypes {
+    HandRenderData = 1    
 }

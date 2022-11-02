@@ -4,5 +4,6 @@
     {
         public delegate void UpdateEvent();
         public event UpdateEvent OnUpdate;
+        public event UpdateEvent OnSlowUpdate;
     }
 }

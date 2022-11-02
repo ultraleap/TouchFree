@@ -44,7 +44,7 @@ namespace TouchFreeTests
             configManager.SetupGet(manager => manager.PhysicalConfig).Returns(physicalConfig.Object);
             var virtualScreen = new Mock<IVirtualScreen>();
             virtualScreen.SetupAllProperties();
-            return new(connectionManager.Object, configManager.Object, virtualScreen.Object);
+            return new(connectionManager.Object, configManager.Object, virtualScreen.Object, new Mock<IUpdateBehaviour>().Object);
         }
 
         #region UpdateTrackingTransform

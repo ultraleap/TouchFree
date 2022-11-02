@@ -16,5 +16,6 @@ namespace Ultraleap.TouchFree.Library
         event Action HandsLost;
         Image.CameraType HandRenderLens { set; }
         ITrackingConnectionManager ConnectionManager { get; }
+        ArraySegment<byte> LastImageData { get; }
     }
 }

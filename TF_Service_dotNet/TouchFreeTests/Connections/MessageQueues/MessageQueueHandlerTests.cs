@@ -110,6 +110,8 @@ namespace TouchFreeTests.Connections.MessageQueues
         private class TestUpdateBehaviour : IUpdateBehaviour
         {
             public event IUpdateBehaviour.UpdateEvent OnUpdate;
+            public event IUpdateBehaviour.UpdateEvent OnSlowUpdate;
+
             public void FireUpdate()
             {
                 OnUpdate?.Invoke();
