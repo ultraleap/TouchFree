@@ -88,16 +88,6 @@ namespace Ultraleap.TouchFree.Library
             _updateBehaviour.OnSlowUpdate += UpdateRawHands;
         }
 
-        public bool TrackingServiceConnected()
-        {
-            return ConnectionManager?.Controller?.IsServiceConnected ?? false;
-        }
-
-        public bool CameraConnected()
-        {
-            return ConnectionManager?.Controller?.Devices?.ActiveDevice != null;
-        }
-
         public void UpdateTrackingTransform(PhysicalConfigInternal _config)
         {
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
