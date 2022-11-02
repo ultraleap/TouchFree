@@ -10,7 +10,7 @@
         body{
             background-color: white;
         }
-        
+
         .buttonHorizontal {
             text-align: center;
             display: inline-block;
@@ -94,6 +94,9 @@
     </div>
 
     <script>
+        // This is the only call required to initialise TouchFree tooling, getting a default cursor
+        TouchFree.Init();
+
         var changeText = function (content) {
             var textToChange = document.getElementById("Text to change");
             textToChange.textContent = content;
