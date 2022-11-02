@@ -6,7 +6,12 @@ import * as Plugins from './Plugins';
 import * as TouchFreeToolingTypes from './TouchFreeToolingTypes';
 import * as Tracking from './Tracking';
 
+import { CurrentCursor, Init } from './TouchFree';
+
 module.exports = {
+    Init: Init,
+    CurrentCursor: CurrentCursor,
+
     Configuration: Configuration,
     Connection: Connection,
     Cursors: Cursors,

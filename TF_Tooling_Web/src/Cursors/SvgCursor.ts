@@ -3,6 +3,11 @@ import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
+export interface SVGCursorParams {
+    ringSizeMultiplier: number;
+    darkCursor: boolean;
+}
+
 export class SVGCursor extends TouchlessCursor {
     private xPositionAttribute: string = 'cx';
     private yPositionAttribute: string = 'cy';
@@ -21,7 +26,7 @@ export class SVGCursor extends TouchlessCursor {
         super(undefined);
 
         const documentBody = document.querySelector('body');
-        
+
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg','svg');
         svgElement.classList.add('touchfree-cursor');
         svgElement.style.opacity = '0';
@@ -34,7 +39,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.setAttribute('height', '100%');
         svgElement.id = 'svg-cursor';
         documentBody?.appendChild(svgElement);
-        
+
         const svgRingElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgRingElement.classList.add('touchfree-cursor');
         svgRingElement.setAttribute('r', '15');
@@ -46,7 +51,7 @@ export class SVGCursor extends TouchlessCursor {
         svgRingElement.style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.7))';
         svgElement.appendChild(svgRingElement);
         this.cursorRing = svgRingElement;
-        
+
         const svgDotElement = document.createElementNS('http://www.w3.org/2000/svg','circle');
         svgDotElement.classList.add('touchfree-cursor');
         svgDotElement.setAttribute('r', '15');
@@ -78,6 +83,10 @@ export class SVGCursor extends TouchlessCursor {
         ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
     }
 
+    static FromParamObj(params: SVGCursorParams) : SVGCursor {
+        return new SVGCursor(params.ringSizeMultiplier, params.darkCursor);
+    }
+
     // Function: UpdateCursor
     // Used to update the cursor when receiving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
@@ -97,7 +106,7 @@ export class SVGCursor extends TouchlessCursor {
             this.ShowCursor();
             this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
             this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
-    
+
             if (this.cursor) {
                 this.cursor.setAttribute(this.xPositionAttribute, position[0].toString());
                 this.cursor.setAttribute(this.yPositionAttribute, position[1].toString());
