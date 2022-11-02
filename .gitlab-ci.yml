@@ -349,10 +349,10 @@ TF_Settings::Web::build:
   stage: build
   when: always
   script:
-    - cd ./TF_Settings_Web
     - npm -v
+    - npm install -w TF_Settings_Web
     - npm ls
-    - npm install
+    - cd ./TF_Settings_Web
     - npm run build
     - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol posix
   artifacts:
