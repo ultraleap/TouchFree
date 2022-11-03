@@ -24,7 +24,7 @@ export class SVGCursor extends TouchlessCursor {
     // Optionally provide a _ringSizeMultiplier to change the size that the <cursorRing> is relative to the _cursor.
     // Optionally provide a _darkCursor to change the cursor to be dark to provide better contrast on light coloured
     // UIs.
-    constructor(_ringSizeMultiplier = 2, _darkCursor = false) {
+    constructor(_ringSizeMultiplier: number = 2, _darkCursor: boolean = false) {
         super(undefined);
 
         const documentBody = document.querySelector('body');
