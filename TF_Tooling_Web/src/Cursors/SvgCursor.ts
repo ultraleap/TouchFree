@@ -4,8 +4,8 @@ import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
 export interface SVGCursorParams {
-    ringSizeMultiplier: number;
-    darkCursor: boolean;
+    ringSizeMultiplier?: number;
+    darkCursor?: boolean;
 }
 
 export class SVGCursor extends TouchlessCursor {
