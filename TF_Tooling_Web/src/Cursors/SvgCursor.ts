@@ -3,11 +3,6 @@ import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { MapRangeToRange } from "../Utilities";
 import { TouchlessCursor } from "./TouchlessCursor";
 
-export interface SVGCursorParams {
-    ringSizeMultiplier?: number;
-    darkCursor?: boolean;
-}
-
 export class SVGCursor extends TouchlessCursor {
     private xPositionAttribute: string = 'cx';
     private yPositionAttribute: string = 'cy';
@@ -83,10 +78,6 @@ export class SVGCursor extends TouchlessCursor {
 
         ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
         ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
-    }
-
-    static FromParamObj(params: SVGCursorParams) : SVGCursor {
-        return new SVGCursor(params.ringSizeMultiplier, params.darkCursor);
     }
 
     // Function: UpdateCursor

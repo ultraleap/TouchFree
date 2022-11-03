@@ -1,5 +1,5 @@
 import { ConnectionManager } from "./Connection/ConnectionManager";
-import { SVGCursor, SVGCursorParams } from "./Cursors/SvgCursor";
+import { SVGCursor } from "./Cursors/SvgCursor";
 import { TouchlessCursor } from "./Cursors/TouchlessCursor";
 import { WebInputController } from "./InputControllers/WebInputController";
 
@@ -19,9 +19,7 @@ export function Init(_tfInitParams?: TfInitParams ): void {
         if (_tfInitParams === undefined) {
             CurrentCursor = new SVGCursor();
         } else {
-            if (_tfInitParams.initialiseCursor === undefined) {
-                CurrentCursor = new SVGCursor();
-            } else if (_tfInitParams.initialiseCursor) {
+            if (_tfInitParams.initialiseCursor === undefined || _tfInitParams.initialiseCursor === true) {
                 CurrentCursor = new SVGCursor();
             }
         }
