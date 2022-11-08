@@ -19,11 +19,11 @@ export class SVGCursor extends TouchlessCursor {
     // Optionally provide a _ringSizeMultiplier to change the size that the <cursorRing> is relative to the _cursor.
     // Optionally provide a _darkCursor to change the cursor to be dark to provide better contrast on light coloured
     // UIs.
-    constructor(_ringSizeMultiplier = 2, _darkCursor = false) {
+    constructor(_ringSizeMultiplier: number = 2, _darkCursor: boolean = false) {
         super(undefined);
 
         const documentBody = document.querySelector('body');
-        
+
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg','svg');
         svgElement.classList.add('touchfree-cursor');
         svgElement.style.opacity = '0';
@@ -37,7 +37,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.setAttribute('shape-rendering', 'optimizeSpeed');
         svgElement.id = 'svg-cursor';
         documentBody?.appendChild(svgElement);
-        
+
         const svgRingElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgRingElement.classList.add('touchfree-cursor');
         svgRingElement.setAttribute('r', '15');
@@ -49,7 +49,7 @@ export class SVGCursor extends TouchlessCursor {
         svgRingElement.style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.7))';
         svgElement.appendChild(svgRingElement);
         this.cursorRing = svgRingElement;
-        
+
         const svgDotElement = document.createElementNS('http://www.w3.org/2000/svg','circle');
         svgDotElement.classList.add('touchfree-cursor');
         svgDotElement.setAttribute('r', '15');
@@ -102,7 +102,7 @@ export class SVGCursor extends TouchlessCursor {
             }
             this.cursorRing.setAttribute(this.xPositionAttribute, position[0].toString());
             this.cursorRing.setAttribute(this.yPositionAttribute, position[1].toString());
-    
+
             if (this.cursor) {
                 this.cursor.setAttribute(this.xPositionAttribute, position[0].toString());
                 this.cursor.setAttribute(this.yPositionAttribute, position[1].toString());

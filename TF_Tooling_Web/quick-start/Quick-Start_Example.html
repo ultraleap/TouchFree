@@ -5,12 +5,11 @@
     <meta charset="UTF-8">
     <title>Quick Start Example</title>
     <script name="TouchFree_Tooling" type="text/javascript" src="../dist/TouchFree_Tooling.js"></script>
-    <script type="text/javascript" src="./TouchFree_Tooling_Quick-Start.js"></script>
     <style>
         body{
             background-color: white;
         }
-        
+
         .buttonHorizontal {
             text-align: center;
             display: inline-block;
@@ -94,6 +93,9 @@
     </div>
 
     <script>
+        // This is the only call required to initialise TouchFree tooling, getting a default cursor
+        TouchFree.Init();
+
         var changeText = function (content) {
             var textToChange = document.getElementById("Text to change");
             textToChange.textContent = content;
