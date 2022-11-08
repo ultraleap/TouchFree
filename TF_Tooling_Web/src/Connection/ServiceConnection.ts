@@ -24,6 +24,7 @@ import {
 import { TrackingState } from '../Tracking/TrackingTypes';
 import { ConnectionManager } from './ConnectionManager';
 import { v4 as uuidgen } from 'uuid';
+import TouchFree from '../TouchFree';
 
 // Class: ServiceConnection
 // This represents a connection to a TouchFree Service. It should be created by a
@@ -115,7 +116,7 @@ export class ServiceConnection {
             }
 
             this.handshakeCompleted = true;
-            ConnectionManager.instance.dispatchEvent(new Event(TouchFreeEvent.ON_CONNECTED));
+            TouchFree.DispatchEvent("OnConnected");
         }
         else {
             console.log(`Connection to Service failed. Details:\n${response.message}`);

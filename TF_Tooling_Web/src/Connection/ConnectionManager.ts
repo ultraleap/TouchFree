@@ -1,3 +1,4 @@
+import TouchFree from "../TouchFree";
 import { TouchFreeEvent, TrackingServiceState } from "../TouchFreeToolingTypes";
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
@@ -65,8 +66,8 @@ export class ConnectionManager extends EventTarget {
     // Used to both add the _onConnectFunc action to the listeners of <OnConnected>
     // as well as auto-call the _onConnectFunc if a connection is already made.
     public static AddConnectionListener(_onConnectFunc: () => void): void {
-        ConnectionManager.instance.addEventListener(TouchFreeEvent.ON_CONNECTED, _onConnectFunc);
-
+        TouchFree.RegisterEventCallback("OnConnected", _onConnectFunc);
+        
         if (
             ConnectionManager.currentServiceConnection !== null &&
             ConnectionManager.currentServiceConnection.webSocket.readyState ===
@@ -78,8 +79,7 @@ export class ConnectionManager extends EventTarget {
     }
 
     public static AddServiceStatusListener(_serviceStatusFunc: (serviceStatus: TrackingServiceState) => void): void {
-        ConnectionManager.instance.addEventListener(TouchFreeEvent.ON_TRACKING_SERVICE_STATE_CHANGE,
-            ((evt: CustomEvent<TrackingServiceState>) => { _serviceStatusFunc(evt.detail) }) as EventListener);
+        TouchFree.RegisterEventCallback("OnTrackingServiceStateChange", _serviceStatusFunc);
     }
 
     // Function: Connect
@@ -98,15 +98,11 @@ export class ConnectionManager extends EventTarget {
     public static HandleHandPresenceEvent(_state: HandPresenceState): void {
         ConnectionManager.currentHandPresence = _state;
 
-        let handPresenceEvent: Event;
-
         if (_state === HandPresenceState.HAND_FOUND) {
-            handPresenceEvent = new Event(TouchFreeEvent.HAND_FOUND);
+            TouchFree.DispatchEvent("HandFound");
         } else {
-            handPresenceEvent = new Event(TouchFreeEvent.HANDS_LOST);
+            TouchFree.DispatchEvent("HandsLost");
         }
-
-        ConnectionManager.instance.dispatchEvent(handPresenceEvent);
     }
 
     // Function: Disconnect

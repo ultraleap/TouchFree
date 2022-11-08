@@ -23,6 +23,7 @@ import {
 import { InputActionManager } from '../Plugins/InputActionManager';
 import { ConnectionManager } from './ConnectionManager';
 import { HandDataManager } from '../Plugins/HandDataManager';
+import TouchFree from '../TouchFree';
 
 type CallbackResult = 'Success' | 'CallbacksUndefined' | 'NoCallbacksFound' | Error;
 
@@ -203,9 +204,11 @@ export class MessageReceiver {
             // If callback didn't happen for known reasons, we cna be sure it's an independent status event rather than a request response
             if (callbackResult === 'NoCallbacksFound' || callbackResult === 'CallbacksUndefined')
             {
-                ConnectionManager.instance.dispatchEvent(
-                    new CustomEvent<TrackingServiceState>(TouchFreeEvent.ON_TRACKING_SERVICE_STATE_CHANGE,
-                        {detail: serviceStatus.trackingServiceState ?? undefined}));
+                // If service state is null we didn't get info about it from this message
+                if (serviceStatus.trackingServiceState !== null)
+                {
+                    TouchFree.DispatchEvent("OnTrackingServiceStateChange", serviceStatus.trackingServiceState);
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 import { TouchFreeEvent, TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';
+import TouchFree from '../TouchFree';
 
 
 // Class: TouchlessCursor
@@ -31,9 +32,7 @@ export abstract class TouchlessCursor {
     // If you intend to make use of the <WebInputController>, make sure that _cursor has the
     // "touchfree-cursor" class. This prevents it blocking other elements from recieving events.
     constructor(_cursor: HTMLElement | SVGElement | undefined) {
-        InputActionManager.instance.addEventListener(TouchFreeEvent.TRAMSIT_INPUT_ACTION, ((e: CustomEvent<TouchFreeInputAction>) => {
-            this.HandleInputAction(e.detail);
-        }) as EventListener);
+        TouchFree.RegisterEventCallback("TransmitInputAction", this.HandleInputAction.bind(this));
 
         this.cursor = _cursor;
         this.enabled = true;

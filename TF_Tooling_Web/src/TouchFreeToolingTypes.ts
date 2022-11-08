@@ -163,28 +163,27 @@ export enum BitmaskFlags {
     // least a minor iteration of the API version UNLESS adding them at the end
 }
 
-// Enum: TouchFreeEvent
-// ON_CONNECTED - Event dispatched when connecting to the TouchFree service
-// ON_TRACKING_SERVICE_STATE_CHANGE - Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
-// HANDS_FOUND - Event dispatched when the first hand has started tracking
-// HANDS_LOST - Event dispatched when the last hand has stopped tracking
-// INPUT_ACTION - Event dispatched when any input action is received from the TouchFree service
-// INPUT_ACTION_OUTPUT - ??? (Never subscribed to?)
-// TRANSMIT_INPUT_ACTION_RAW - Event dispatched directly from the <InputActionManager> without any proxying
-// TRANSMIT_INPUT_ACTION - Event dispatched from the <InputActionManager> to each registered Plugin
-export enum TouchFreeEvent {
-    ON_CONNECTED = "OnConnected",
-    ON_TRACKING_SERVICE_STATE_CHANGE = "OnTrackingServiceStateChange",
-
-    HAND_FOUND = "HandFound",
-    HANDS_LOST = "HandsLost",
-
-    INPUT_ACTION = "InputAction",
-    INPUT_ACTION_OUTPUT = "InputActionOutput",
-
-    TRAMSIT_INPUT_ACTION_RAW = "TransmitInputActionRaw",
-    TRAMSIT_INPUT_ACTION = "TransmitInputAction",
+// Class: TouchFreeEventSignatures
+// OnConnected - Event dispatched when connecting to the TouchFree service
+// OnTrackingServiceStateChange - Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
+// HandFound - Event dispatched when the first hand has started tracking
+// HandsLost - Event dispatched when the last hand has stopped tracking
+// TransmitHandData - Event dispatched when new hand data is available
+// InputAction - Event dispatched when any input action is received from the TouchFree service
+// TransmitInputActionRaw - Event dispatched directly from the <InputActionManager> without any proxying
+// TransmitInputAction - Event dispatched from the <InputActionManager> to each registered Plugin
+export interface TouchFreeEventSignatures {
+    OnConnected: () => void,
+    OnTrackingServiceStateChange: (state:TrackingServiceState) => void,
+    HandFound: () => void,
+    HandsLost: () => void,
+    TransmitHandData: (data:HandFrame) => void,
+    InputAction: (inputAction: TouchFreeInputAction) => void,
+    TransmitInputActionRaw: (inputAction:TouchFreeInputAction) => void,
+    TransmitInputAction: (inputAction:TouchFreeInputAction) => void
 }
+
+export type TouchFreeEvent = Extract<keyof TouchFreeEventSignatures, string>;
 
 // Class: WebsocketInputAction
 // The version of an InputAction received via the WebSocket. This must be converted into a
