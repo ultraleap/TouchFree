@@ -85,6 +85,7 @@ export const setupRenderScene = (div: HTMLDivElement) => {
 
     _primaryHandMesh = createHandMesh(_scene, true);
     _secondaryHandMesh = createHandMesh(_scene, false);
+    _renderer.compile(_scene, _camera);
 };
 
 export const renderScene = () => _renderer.render(_scene, _camera);
