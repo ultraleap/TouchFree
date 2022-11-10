@@ -2,10 +2,10 @@ import 'Styles/Camera/ManualSetupPage.scss';
 
 import { Component } from 'react';
 
-import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
-import { PhysicalConfig } from 'TouchFree/Configuration/ConfigurationTypes';
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
-import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
+import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
+import { PhysicalConfig } from 'TouchFree/src/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { ConfigState, WebSocketResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 
 import { TextEntry } from 'Components/Controls/TextEntry';
 

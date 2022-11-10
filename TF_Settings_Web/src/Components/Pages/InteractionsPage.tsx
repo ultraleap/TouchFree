@@ -2,10 +2,10 @@ import 'Styles/Interactions.scss';
 
 import { Component } from 'react';
 
-import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
-import { InteractionConfigFull, TrackedPosition } from 'TouchFree/Configuration/ConfigurationTypes';
-import { ConfigState, WebSocketResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
+import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
+import { InteractionConfigFull, TrackedPosition } from 'TouchFree/src/Configuration/ConfigurationTypes';
+import { ConfigState, WebSocketResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import InteractionPreviews from 'Videos/Interaction_Explainer_Combined.mp4';
 

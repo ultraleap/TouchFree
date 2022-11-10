@@ -19,7 +19,6 @@
         "paths": {
             "@/*": ["*"],
             "Styles/*": ["Styles/*"],
-            "TouchFree/*": ["TouchFree/*"],
             "Components/*": ["Components/*"],
             "Videos/*": ["Videos/*"],
             "Images/*": ["Images/*"],

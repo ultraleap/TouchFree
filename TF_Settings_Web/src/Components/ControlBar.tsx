@@ -4,7 +4,7 @@ import cssVariables from 'Styles/variables.module.scss';
 import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
+import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import backArrow from 'Images/Back_Arrow.svg';
 import logo from 'Images/Logo.png';
