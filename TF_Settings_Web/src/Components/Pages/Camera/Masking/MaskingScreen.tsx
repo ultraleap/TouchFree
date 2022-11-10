@@ -150,8 +150,7 @@ const MaskingScreen: React.FC = () => {
     };
 
     const parseAndUpdateHandState = (buffer: ArrayBuffer, offset: number): void => {
-        const handsJson = String.fromCharCode(...new Uint8Array(buffer, offset));
-        const hands = JSON.parse(handsJson)?.Hands;
+        const hands = JSON.parse(String.fromCharCode(...new Uint8Array(buffer, offset)))?.Hands;
 
         if (hands && (hands.length > 0 || handState.current.one || handState.current.two)) {
             const handOne = hands[0];

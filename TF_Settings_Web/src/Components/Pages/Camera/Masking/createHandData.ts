@@ -73,23 +73,18 @@ const createFingerData = (fingers: RawFinger[], fingerType: number): FingerData 
     };
 };
 
-const zMax = 0.1;
-
 const translateToCoordinate = (coordinate?: Vector): Vector3 => {
     if (!coordinate) return new Vector3(-2, -2, -2);
     const { X, Y, Z } = coordinate;
-    // Map Z between 0 and zMax
-    const mappedZ = Z > 600 ? 0 : Z < 175 ? zMax : zMax - MapRangeToRange(Z, 175, 600, 0, zMax);
 
-    let additionX = 0;
-    if (X <= 0.5) {
-        additionX = MapRangeToRange(X, 0, 0.5, -0.3, -0.03);
-    } else {
-        additionX = MapRangeToRange(X, 0.5, 1, -0.05, 0.3);
-    }
+    // Convert to coordinates for render
     return new Vector3(
-        1.05 * MapRangeToRange(1 - X, 0, 1, -2, 2) - additionX,
-        1.1 * MapRangeToRange(1 - Y, 0, 1, -2, 2),
-        mappedZ
+        (0.5 - X) * (4.6 + Math.abs(0.5 - X)),
+        (0.5 - Y) * (4.6 + Math.abs(0.5 - Y)),
+        (600 - clamp(Z, 176, 599)) / 4250
     );
 };
+
+const clamp = (value: number, minValue: number, maxValue: number): number => {
+    return minValue >= value ? minValue : (maxValue <= value ? maxValue : value);
+}
