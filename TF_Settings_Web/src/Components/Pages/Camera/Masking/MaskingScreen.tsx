@@ -1,23 +1,20 @@
-import { HandsSvg, HandState } from 'Components/Controls/HandsSvg';
-
 import 'Styles/Camera/CameraMasking.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { useStatefulRef } from '@/customHooks';
 
 import { TrackingStateResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/src/Plugins/HandDataManager';
-import { HandFrame } from 'TouchFree/src/TouchFreeToolingTypes';
 import { TrackingManager } from 'TouchFree/src/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
-import { setupWebGL, updateCanvas } from './displayLensFeeds';
-import { defaultHandState, handToSvgData, setHandRenderState } from './handRendering';
+import { updateCameraCanvas } from './createCameraData';
+import { HandState, rawHandToHandData, setHandRenderState } from './createHandData';
+import { setupRenderScene } from './sceneRendering';
 
 export type Lens = 'Left' | 'Right';
 
@@ -26,7 +23,7 @@ const FRAME_PROCESSING_TIMEOUT = 60;
 const MaskingScreen: React.FC = () => {
     // ===== State =====
     const mainLens = useStatefulRef<Lens>('Left');
-    const handData = useStatefulRef<HandState>(defaultHandState);
+    const handState = useStatefulRef<HandState>({});
     // Config options
     const masking = useStatefulRef<Mask>({ left: 0, right: 0, upper: 0, lower: 0 });
     const isCamReversed = useStatefulRef<boolean>(false);
@@ -35,7 +32,6 @@ const MaskingScreen: React.FC = () => {
 
     const showOverexposed = useStatefulRef<boolean>(false);
 
-    const isFrameProcessing = useStatefulRef<boolean>(false);
     const isHandProcessing = useStatefulRef<boolean>(false);
 
     // ===== State Setters =====
@@ -63,44 +59,23 @@ const MaskingScreen: React.FC = () => {
     };
 
     // ===== Refs =====
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const canvasContextRef = useRef<WebGLRenderingContext | null>(null);
-    const successfullySubscribed = useRef<boolean>(false);
-    const frameTimeoutRef = useRef<number>();
+    const camFeedRef = useRef<HTMLDivElement>(null);
     const handTimeoutRef = useRef<number>();
 
     // ===== Hooks =====
-    const navigate = useNavigate();
 
     useEffect(() => {
-        if (canvasRef.current) {
-            canvasContextRef.current = canvasRef.current.getContext('webgl');
-            if (canvasContextRef.current) {
-                setupWebGL(canvasContextRef.current);
-            }
+        if (camFeedRef.current) {
+            setupRenderScene(camFeedRef.current);
         }
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
-
-        const socket = new WebSocket('ws://127.0.0.1:1024');
-        socket.binaryType = 'arraybuffer';
-
-        socket.addEventListener('open', handleWSOpen);
-        socket.addEventListener('message', (event) => handleMessage(socket, event));
-        socket.addEventListener('close', handleWSClose);
 
         HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
         setHandRenderState(true, mainLens.current === 'Left' ? 'left' : 'right');
 
         return () => {
-            socket.removeEventListener('open', handleWSOpen);
-            socket.removeEventListener('message', (event) => handleMessage(socket, event));
-            socket.removeEventListener('close', handleWSClose);
-
-            socket.close();
-
             HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
-            window.clearTimeout(frameTimeoutRef.current);
             window.clearTimeout(handTimeoutRef.current);
         };
     }, []);
@@ -135,60 +110,57 @@ const MaskingScreen: React.FC = () => {
         }
     };
 
-    const handleWSOpen = () => {
-        console.log('Connected to Tracking Service');
-    };
-    const handleWSClose = () => {
-        console.log('Disconnected from Tracking Service');
-        navigate('../');
-    };
-
-    const handleMessage = (socket: WebSocket, event: MessageEvent) => {
-        if (!canvasContextRef.current) return;
-        if (isFrameProcessing.current || !allowImages.current) return;
-
-        const data = event.data as ArrayBuffer;
-        if (!data) return;
-
-        const dataIdentifier = new Uint8Array(data, 0, 1)[0];
-        if (dataIdentifier === 1) {
-            isFrameProcessing.current = true;
-            successfullySubscribed.current = true;
-
-            updateCanvas(
-                data,
-                canvasContextRef.current,
-                mainLens.current,
-                isCamReversed.current,
-                showOverexposed.current
-            );
-            frameTimeoutRef.current = window.setTimeout(() => {
-                isFrameProcessing.current = false;
-            }, FRAME_PROCESSING_TIMEOUT);
-        } else if (!successfullySubscribed.current) {
-            socket.send(JSON.stringify({ type: 'SubscribeImageStreaming' }));
-        }
-    };
-
-    const handleTFInput = (evt: CustomEvent<HandFrame>): void => {
-        if (isHandProcessing.current || !successfullySubscribed.current) return;
+    const handleTFInput = (evt: CustomEvent<ArrayBuffer>): void => {
+        if (isHandProcessing.current) return;
 
         isHandProcessing.current = true;
 
-        const hands = evt.detail?.Hands;
-        if (hands.length > 0 || handData.current.one || handData.current.two) {
-            const handOne = hands[0];
-            const handTwo = hands[1];
-            const convertedHandOne = handOne ? handToSvgData(handOne, 0) : undefined;
-            const convertedHandTwo = handTwo ? handToSvgData(handTwo, 1) : undefined;
-
-            handData.current = { one: convertedHandOne, two: convertedHandTwo };
+        const buffer = evt.detail;
+        if (!buffer || buffer.byteLength < 8) {
+            isHandProcessing.current = false;
+            return;
         }
 
-        // Ignore any messages for a short period to allow clearing of message handling
-        handTimeoutRef.current = window.setTimeout(() => {
+        const imageArraySize = new Int32Array(buffer, 4, 8)[0];
+
+        if (buffer.byteLength < 8 + imageArraySize) {
             isHandProcessing.current = false;
-        }, FRAME_PROCESSING_TIMEOUT);
+            return;
+        }
+
+        try {
+            parseAndUpdateHandState(buffer, 8 + imageArraySize);
+
+            if (imageArraySize > 0) {
+                updateCameraCanvas(
+                    buffer.slice(8, imageArraySize),
+                    isCamReversed.current,
+                    showOverexposed.current,
+                    handState.current
+                );
+            }
+
+            // Ignore any messages for a short period to allow clearing of message handling
+            handTimeoutRef.current = window.setTimeout(() => {
+                isHandProcessing.current = false;
+            }, FRAME_PROCESSING_TIMEOUT);
+        } catch {
+            isHandProcessing.current = false;
+        }
+    };
+
+    const parseAndUpdateHandState = (buffer: ArrayBuffer, offset: number): void => {
+        const handsJson = String.fromCharCode(...new Uint8Array(buffer, offset));
+        const hands = JSON.parse(handsJson)?.Hands;
+
+        if (hands && (hands.length > 0 || handState.current.one || handState.current.two)) {
+            const handOne = hands[0];
+            const handTwo = hands[1];
+            const convertedHandOne = handOne ? rawHandToHandData(handOne) : undefined;
+            const convertedHandTwo = handTwo ? rawHandToHandData(handTwo) : undefined;
+
+            handState.current = { one: convertedHandOne, two: convertedHandTwo };
+        }
     };
 
     // ===== Components =====
@@ -237,8 +209,7 @@ const MaskingScreen: React.FC = () => {
             <div className="cam-feed-box--main">
                 {sliders}
                 <div className="cam-feed-box-feed">
-                    <canvas ref={canvasRef} width={'192px'} height={'192px'} />
-                    <HandsSvg key="hand-data" one={handData.current.one} two={handData.current.two} />
+                    <div className="cam-feed-box-feed--render" ref={camFeedRef} />
                 </div>
                 <div className="lens-toggle-container">{lensToggles}</div>
             </div>
