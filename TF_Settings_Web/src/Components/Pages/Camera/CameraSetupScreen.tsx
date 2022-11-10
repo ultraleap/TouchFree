@@ -1,5 +1,5 @@
 import Alert from '@/Components/Controls/Alert';
-import { ConnectionManager } from '@/TouchFree/Connection/ConnectionManager';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 
 import 'Styles/Camera/Camera.scss';
 
