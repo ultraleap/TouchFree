@@ -121,7 +121,7 @@ const MaskingScreen: React.FC = () => {
             return;
         }
 
-        const imageArraySize = new Int32Array(buffer, 4, 8)[0];
+        const imageArraySize = new Int32Array(buffer, 4, 1)[0];
 
         if (buffer.byteLength < 8 + imageArraySize) {
             isHandProcessing.current = false;
