@@ -3,11 +3,11 @@ import 'Styles/Camera/Calibrate.scss';
 import React, { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
-import { ConfigurationManager } from 'TouchFree/Configuration/ConfigurationManager';
-import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/Configuration/ConfigurationTypes';
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
-import { ConfigState, HandPresenceState } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { InteractionType } from 'TouchFree/TouchFreeToolingTypes';
+import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
+import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/src/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { ConfigState, HandPresenceState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { CursorManager } from 'Components/CursorManager';
 import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';

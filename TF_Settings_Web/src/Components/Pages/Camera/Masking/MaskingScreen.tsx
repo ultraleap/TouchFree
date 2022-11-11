@@ -4,10 +4,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useStatefulRef } from '@/customHooks';
 
-import { TrackingStateResponse } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { HandDataManager } from 'TouchFree/Plugins/HandDataManager';
-import { TrackingManager } from 'TouchFree/Tracking/TrackingManager';
-import { Mask } from 'TouchFree/Tracking/TrackingTypes';
+import { TrackingStateResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { HandDataManager } from 'TouchFree/src/Plugins/HandDataManager';
+import { TrackingManager } from 'TouchFree/src/Tracking/TrackingManager';
+import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';

@@ -10,7 +10,6 @@ export default defineConfig({
         alias: {
             '@': path.join(__dirname, 'src'),
             Styles: path.join(__dirname, 'src/Styles'),
-            TouchFree: path.join(__dirname, 'src/TouchFree'),
             Components: path.join(__dirname, 'src/Components'),
             Videos: path.join(__dirname, 'src/Videos'),
             Images: path.join(__dirname, 'src/Images'),
@@ -19,6 +18,13 @@ export default defineConfig({
     },
     server: {
         port: 3000,
+        fs: {
+            allow: [
+                './', // Include this folder (default)
+                '../node_modules/', // Allow any module dependencies
+                '../TF_Tooling_Web/' // Allow serving locally linked tooling
+            ]
+        }
     },
     base: '/settings/',
 });

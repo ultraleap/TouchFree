@@ -3,10 +3,10 @@ import './App.scss';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { ConnectionManager } from 'TouchFree/Connection/ConnectionManager';
-import { ServiceStatus } from 'TouchFree/Connection/TouchFreeServiceTypes';
-import { WebInputController } from 'TouchFree/InputControllers/WebInputController';
-import { TrackingServiceState } from 'TouchFree/TouchFreeToolingTypes';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { WebInputController } from 'TouchFree/src/InputControllers/WebInputController';
+import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import ControlBar from 'Components/ControlBar';
 import { CursorManager } from 'Components/CursorManager';
