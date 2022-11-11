@@ -2,7 +2,6 @@ import {
     BufferGeometry,
     CircleBufferGeometry,
     DataTexture,
-    DynamicDrawUsage,
     InstancedMesh,
     Mesh,
     MeshBasicMaterial,
@@ -96,7 +95,7 @@ export const renderScene = () => {
         _renderer.compile(_scene, _camera);
     }
 
-    _renderer.render(_scene, _camera)
+    _renderer.render(_scene, _camera);
 };
 
 export const updateCameraRender = (data: Uint8Array, width: number, height: number, handData: HandState) => {
@@ -166,10 +165,7 @@ const addBasicCircleMeshes = (
 };
 
 const addBasicLine = (scene: Scene, isPrimary: boolean): Line2 => {
-    const line = new Line2(
-        new LineGeometry(),
-        isPrimary ? lineMaterialPrimary : lineMaterialSecondary
-    );
+    const line = new Line2(new LineGeometry(), isPrimary ? lineMaterialPrimary : lineMaterialSecondary);
     line.visible = false;
     scene.add(line);
     return line;

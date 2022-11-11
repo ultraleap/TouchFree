@@ -10,7 +10,6 @@ import {
     HandRenderDataStateRequest,
 } from 'TouchFree/Connection/TouchFreeServiceTypes';
 import { FingerType, RawFinger, RawHand } from 'TouchFree/TouchFreeToolingTypes';
-import { MapRangeToRange } from 'TouchFree/Utilities';
 
 export interface FingerData {
     tip: Vector3;
@@ -78,6 +77,8 @@ const translateToCoordinate = (coordinate?: Vector): Vector3 => {
     const { X, Y, Z } = coordinate;
 
     // Convert to coordinates for render
+    // X and Y - Centered and scaled for scene
+    // Z - Clamped and scaled for render size
     return new Vector3(
         (0.5 - X) * (4.6 + Math.abs(0.5 - X)),
         (0.5 - Y) * (4.6 + Math.abs(0.5 - Y)),
@@ -86,5 +87,5 @@ const translateToCoordinate = (coordinate?: Vector): Vector3 => {
 };
 
 const clamp = (value: number, minValue: number, maxValue: number): number => {
-    return minValue >= value ? minValue : (maxValue <= value ? maxValue : value);
-}
+    return minValue >= value ? minValue : maxValue <= value ? maxValue : value;
+};

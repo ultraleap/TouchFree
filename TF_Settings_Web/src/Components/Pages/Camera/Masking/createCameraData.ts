@@ -5,6 +5,11 @@ let conversionArraysInitialised = false;
 const byteConversionArray = new Uint32Array(256);
 const byteConversionArrayOverExposed = new Uint32Array(256);
 
+// Declared for performance
+const width = 384;
+const halfWidth = width / 2;
+const doubleWidth = width * 2;
+
 let cameraBuffer: ArrayBuffer;
 let buf8: Uint8Array;
 let buf32: Uint32Array;
@@ -44,15 +49,7 @@ export const updateCameraCanvas = (
     renderScene();
 };
 
-const width = 384;
-const halfWidth = width / 2;
-const doubleWidth = width * 2;
-
-const processCameraFrame = (
-    data: ArrayBuffer,
-    buf32: Uint32Array,
-    byteConversionArray: Uint32Array
-) => {
+const processCameraFrame = (data: ArrayBuffer, buf32: Uint32Array, byteConversionArray: Uint32Array) => {
     const offsetView = new Uint8Array(data);
 
     for (let i = 0; i < halfWidth; i++) {
