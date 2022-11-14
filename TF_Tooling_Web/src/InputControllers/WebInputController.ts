@@ -1,8 +1,7 @@
 import TouchFree from '../TouchFree';
 import {
     TouchFreeInputAction,
-    InputType,
-    TouchFreeEvent
+    InputType
 } from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController'
 

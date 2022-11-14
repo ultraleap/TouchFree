@@ -1,5 +1,4 @@
 import {
-    TouchFreeEvent,
     VersionInfo,
     WebsocketInputAction
 } from '../TouchFreeToolingTypes';

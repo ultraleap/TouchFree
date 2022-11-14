@@ -15,9 +15,7 @@ import {
     BitmaskFlags,
     ConvertInputAction,
     InputType,
-    TouchFreeEvent,
     TouchFreeInputAction,
-    TrackingServiceState,
     WebsocketInputAction,
 } from '../TouchFreeToolingTypes';
 import { InputActionManager } from '../Plugins/InputActionManager';

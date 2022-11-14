@@ -1,5 +1,5 @@
 import TouchFree from "../TouchFree";
-import { TouchFreeEvent, TrackingServiceState } from "../TouchFreeToolingTypes";
+import { TrackingServiceState } from "../TouchFreeToolingTypes";
 import { MessageReceiver } from "./MessageReceiver";
 import { ServiceConnection } from "./ServiceConnection";
 import { HandPresenceState, ServiceStatus } from "./TouchFreeServiceTypes";

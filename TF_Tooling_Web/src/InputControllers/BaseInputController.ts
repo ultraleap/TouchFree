@@ -1,6 +1,5 @@
-import { InputActionManager } from '../Plugins/InputActionManager';
 import TouchFree, { EventHandle } from '../TouchFree';
-import { TouchFreeInputAction, InputType, TouchFreeEvent } from "../TouchFreeToolingTypes";
+import { TouchFreeInputAction, InputType } from "../TouchFreeToolingTypes";
 
 // Class: InputController
 // InputControllers convert <TouchFreeInputActions> as recieved from the service into appropriate

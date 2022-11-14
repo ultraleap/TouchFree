@@ -2,9 +2,7 @@ import { TouchlessCursor } from './TouchlessCursor';
 import {
     TouchFreeInputAction,
     InputType,
-    TouchFreeEvent
 } from '../TouchFreeToolingTypes';
-import { ConnectionManager } from '../Connection/ConnectionManager';
 import { MapRangeToRange } from '../Utilities';
 import TouchFree from '../TouchFree';
 
