@@ -1,7 +1,37 @@
 import { ConnectionManager } from "./Connection/ConnectionManager";
+import { SVGCursor } from "./Cursors/SvgCursor";
+import { TouchlessCursor } from "./Cursors/TouchlessCursor";
+import { WebInputController } from "./InputControllers/WebInputController";
 import { HandDataManager } from "./Plugins/HandDataManager";
 import { InputActionManager } from "./Plugins/InputActionManager";
 import { TouchFreeEvent, TouchFreeEventSignatures } from "./TouchFreeToolingTypes";
+
+let InputController: WebInputController;
+let CurrentCursor: TouchlessCursor | undefined;
+
+// Interface: TfInitParams
+// Extra options for use when initializing TouchFree
+export interface TfInitParams {
+    initialiseCursor?: boolean;
+}
+
+// Function: Init
+// Initializes TouchFree - must be called before any functionality requiring a TouchFree service connection.
+const Init = (_tfInitParams?: TfInitParams ): void => {
+    ConnectionManager.init();
+
+    ConnectionManager.AddConnectionListener(() => {
+        InputController = new WebInputController();
+
+        if (_tfInitParams === undefined) {
+            CurrentCursor = new SVGCursor();
+        } else {
+            if (_tfInitParams.initialiseCursor === undefined || _tfInitParams.initialiseCursor === true) {
+                CurrentCursor = new SVGCursor();
+            }
+        }
+    });
+}
 
 // Interface: EventHandle
 // Object that can unregister a callback from an event
@@ -41,6 +71,10 @@ const EventListeners: { [T in TouchFreeEvent]: (callback: TouchFreeEventSignatur
     TransmitInputAction: (callback) => MakeCustomEventWrapper(callback),
 }
 
+// Function: RegisterEventCallback
+// Registers a callback function to be called when a specific event occurs
+// See `TouchFreeEventSignatures` for listing of all events and expected callback signatures
+// Returns an `EventHandle` that can be used to unregister the callback
 const RegisterEventCallback = <TEvent extends TouchFreeEvent>(event:TEvent, callback: TouchFreeEventSignatures[TEvent]):EventHandle => {
     const eventType = event as TouchFreeEvent;
     const target = EventTargets[event]();
@@ -49,6 +83,9 @@ const RegisterEventCallback = <TEvent extends TouchFreeEvent>(event:TEvent, call
     return { UnregisterEventCallback: () => target.removeEventListener(eventType, listener) };
 }
 
+// Function: Dispatch Event
+// Dispatches an event of the specific type with arguments if the event requires any
+// See `TouchFreeEventSignatures` for listing of all events and expected arguments
 const DispatchEvent = <TEvent extends TouchFreeEvent>(eventType:TEvent, ...args: Parameters<TouchFreeEventSignatures[TEvent]>) => {
     let event:Event;
     if (args.length === 0)
@@ -68,5 +105,7 @@ const DispatchEvent = <TEvent extends TouchFreeEvent>(eventType:TEvent, ...args:
 // Benefit to this is IDE autocomplete for "TouchFree" will find this object
 export default {
     RegisterEventCallback,
-    DispatchEvent
+    DispatchEvent,
+    Init,
+    CurrentCursor
 };

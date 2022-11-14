@@ -26,5 +26,5 @@ export default defineConfig({
             ]
         }
     },
-    base: '/settings/'
+    base: '/settings/',
 });

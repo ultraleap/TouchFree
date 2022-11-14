@@ -1,47 +1,29 @@
+import Alert from '@/Components/Controls/Alert';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+
 import 'Styles/Camera/Camera.scss';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CameraMaskingIcon from 'Images/Camera/Camera_Masking_Icon.png';
 import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';
 import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
 
-import Alert from 'Components/Controls/Alert';
 import { HorizontalIconTextButton, VerticalIconTextButton } from 'Components/Controls/TFButton';
 
-type TrackingServiceStatus = 'connecting' | 'connected' | 'closed';
-
 const CameraSetupScreen = () => {
-    const [trackingServiceStatus, setTrackingServiceStatus] = useState<TrackingServiceStatus>('connecting');
-    const socket = useRef<WebSocket>();
-    const timeoutRef = useRef<number>();
-
     const navigate = useNavigate();
 
-    const connectToTrackingService = () => {
-        socket.current = new WebSocket('ws://127.0.0.1:1024');
-        socket.current.addEventListener('open', handleWSOpen);
-        socket.current.addEventListener('close', handleWSClose);
+    const [touchFreeConnected, setTouchFreeConnected] = useState<boolean>(false);
+
+    const onConnected = () => {
+        setTouchFreeConnected(true);
     };
 
     useEffect(() => {
-        connectToTrackingService();
-
-        return () => {
-            if (socket.current) {
-                socket.current.removeEventListener('open', handleWSOpen);
-                socket.current.removeEventListener('close', handleWSClose);
-            }
-            window.clearTimeout(timeoutRef.current);
-        };
+        ConnectionManager.AddConnectionListener(onConnected);
     }, []);
-
-    const handleWSOpen = () => setTrackingServiceStatus('connected');
-    const handleWSClose = () => {
-        setTrackingServiceStatus('closed');
-        timeoutRef.current = window.setTimeout(connectToTrackingService, 4000);
-    };
 
     return (
         <div>
@@ -76,8 +58,8 @@ const CameraSetupScreen = () => {
                 <HorizontalIconTextButton
                     buttonStyle={{
                         position: 'relative',
-                        opacity: trackingServiceStatus === 'connected' ? 1 : 0.5,
-                        pointerEvents: trackingServiceStatus === 'connected' ? 'auto' : 'none',
+                        opacity: touchFreeConnected ? 1 : 0.5,
+                        pointerEvents: touchFreeConnected ? 'auto' : 'none',
                     }}
                     icon={CameraMaskingIcon}
                     alt="Icon for Camera Masking"
@@ -87,9 +69,9 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('masking')}
                 />
                 <Alert
-                    show={trackingServiceStatus === 'closed'}
+                    show={!touchFreeConnected}
                     cssWidth={'60%'}
-                    text="Failed to connect to tracking service: masking unavailable"
+                    text="Failed to connect to service: masking unavailable"
                     animationType="fadeIn"
                     animationTime={1}
                 />
