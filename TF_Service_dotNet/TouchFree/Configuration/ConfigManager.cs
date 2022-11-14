@@ -1,4 +1,6 @@
-﻿namespace Ultraleap.TouchFree.Library.Configuration
+﻿using Newtonsoft.Json;
+
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
@@ -88,22 +90,56 @@
 
         public void LoadConfigsFromFiles()
         {
+            var interactionsUpdated = false;
             InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
-            _interactions = new InteractionConfigInternal(intFromFile);
-
-            PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
-            _physical = new PhysicalConfigInternal(physFromFile);
-
-            if (TrackingConfigFile.DoesConfigFileExist())
-            {
-                _tracking = TrackingConfigFile.LoadConfig();
+            var loadedInteractions = new InteractionConfigInternal(intFromFile);
+            if (_interactions == null || !InefficientEqualsComparison(_interactions, loadedInteractions)) {
+                _interactions = loadedInteractions;
+                interactionsUpdated = true;
             }
 
-            InteractionConfigWasUpdated();
-            PhysicalConfigWasUpdated();
-            TrackingConfigWasUpdated();
+            var physicalUpdated = false;
+            PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
+            var loadedPhysical = new PhysicalConfigInternal(physFromFile);
+            if (_physical == null || !InefficientEqualsComparison(_physical, loadedPhysical))
+            {
+                _physical = loadedPhysical;
+                physicalUpdated = true;
+            }
+
+            var trackingUpdated = false;
+            if (TrackingConfigFile.DoesConfigFileExist())
+            {
+                var loadedTracking = TrackingConfigFile.LoadConfig();
+                if (_tracking == null || !InefficientEqualsComparison(_tracking, loadedTracking))
+                {
+                    _tracking = loadedTracking;
+                    trackingUpdated = true;
+                }
+            }
+
+            if (interactionsUpdated)
+            {
+                InteractionConfigWasUpdated();
+            }
+
+            if (physicalUpdated)
+            {
+                PhysicalConfigWasUpdated();
+            }
+
+            if (trackingUpdated)
+            {
+                TrackingConfigWasUpdated();
+            }
+
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
+        }
+
+        private bool InefficientEqualsComparison<T>(T lhs, T rhs)
+        {
+            return JsonConvert.SerializeObject(lhs) == JsonConvert.SerializeObject(rhs);
         }
 
         public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
