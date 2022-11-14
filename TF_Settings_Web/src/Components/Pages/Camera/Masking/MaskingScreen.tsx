@@ -18,7 +18,7 @@ import { setupRenderScene } from './sceneRendering';
 
 export type Lens = 'Left' | 'Right';
 
-const FRAME_PROCESSING_TIMEOUT = 33;
+const FRAME_PROCESSING_TIMEOUT = 0;
 
 const MaskingScreen: React.FC = () => {
     // ===== State =====

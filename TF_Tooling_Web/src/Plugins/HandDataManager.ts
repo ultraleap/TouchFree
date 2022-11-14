@@ -11,7 +11,7 @@ export class HandDataManager extends EventTarget {
     // The instance of the singleton for referencing the events transmitted
     private static _instance: HandDataManager;
 
-    private static readonly maximumFrameFrequencyMs = 16;
+    private static readonly maximumFrameFrequencyMs = 50;
 
     public static get instance() {
         if (HandDataManager._instance === undefined) {
