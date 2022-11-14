@@ -1,5 +1,5 @@
-import { InputActionManager } from '../Plugins/InputActionManager';
-import { TouchFreeInputAction, InputType, TouchFreeEvent } from "../TouchFreeToolingTypes";
+import TouchFree, { EventHandle } from '../TouchFree';
+import { TouchFreeInputAction, InputType } from "../TouchFreeToolingTypes";
 
 // Class: InputController
 // InputControllers convert <TouchFreeInputActions> as recieved from the service into appropriate
@@ -13,6 +13,7 @@ export abstract class BaseInputController {
     // Group: MonoBehaviour Overrides
 
     private static Instantiated: boolean = false;
+    private HandleInputActionCallback:EventHandle|undefined;
 
     // Function: constructor
     // Adds a listener to <InputActionManager> to invoke <HandleInputAction> with <TouchFreeInputActions> as they
@@ -20,10 +21,7 @@ export abstract class BaseInputController {
     constructor() {
         if (!BaseInputController.Instantiated) {
             BaseInputController.Instantiated = true;
-            InputActionManager.instance.addEventListener(TouchFreeEvent.TRAMSIT_INPUT_ACTION,
-                ((e: CustomEvent<TouchFreeInputAction>) => {
-                    this.HandleInputAction(e.detail);
-                }) as EventListener);
+            this.HandleInputActionCallback = TouchFree.RegisterEventCallback("TransmitInputAction", this.HandleInputAction.bind(this));
         }
     }
 
@@ -55,10 +53,7 @@ export abstract class BaseInputController {
     }
 
     disconnect() {
-        InputActionManager.instance.removeEventListener(TouchFreeEvent.TRAMSIT_INPUT_ACTION,
-            ((e: CustomEvent<TouchFreeInputAction>) => {
-                this.HandleInputAction(e.detail);
-            }) as EventListener);
+        this.HandleInputActionCallback?.UnregisterEventCallback();
         BaseInputController.Instantiated = false;
     }
 }

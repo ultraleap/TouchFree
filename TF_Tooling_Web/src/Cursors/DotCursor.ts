@@ -2,10 +2,9 @@ import { TouchlessCursor } from './TouchlessCursor';
 import {
     TouchFreeInputAction,
     InputType,
-    TouchFreeEvent
 } from '../TouchFreeToolingTypes';
-import { ConnectionManager } from '../Connection/ConnectionManager';
 import { MapRangeToRange } from '../Utilities';
+import TouchFree from '../TouchFree';
 
 // Class: DotCursor
 // This is an example Touchless Cursor which positions a dot on the screen at the hand location,
@@ -60,8 +59,8 @@ export class DotCursor extends TouchlessCursor {
         this.animationSpeed[0] = (this.cursorStartSize[0] / 2) / (_animationDuration * 30);
         this.animationSpeed[1] = (this.cursorStartSize[1] / 2) / (_animationDuration * 30);
 
-        ConnectionManager.instance.addEventListener(TouchFreeEvent.HAND_FOUND, this.ShowCursor.bind(this));
-        ConnectionManager.instance.addEventListener(TouchFreeEvent.HANDS_LOST, this.HideCursor.bind(this));
+        TouchFree.RegisterEventCallback("HandFound", this.ShowCursor.bind(this));
+        TouchFree.RegisterEventCallback("HandsLost", this.HideCursor.bind(this));
     }
 
     // Function: UpdateCursor
