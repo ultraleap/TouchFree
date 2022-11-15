@@ -9,7 +9,7 @@ import { TouchFreeEvent, TouchFreeEventSignatures } from "./TouchFreeToolingType
 let InputController: WebInputController;
 let CurrentCursor: TouchlessCursor | undefined;
 
-// Interface: TfInitParams
+// Class: TfInitParams
 // Extra options for use when initializing TouchFree
 export interface TfInitParams {
     initialiseCursor?: boolean;
@@ -33,7 +33,7 @@ const Init = (_tfInitParams?: TfInitParams ): void => {
     });
 }
 
-// Interface: EventHandle
+// Class: EventHandle
 // Object that can unregister a callback from an event
 // Returned when registering a callback to an event
 export interface EventHandle {

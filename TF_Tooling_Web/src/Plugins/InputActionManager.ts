@@ -1,5 +1,5 @@
 import TouchFree from "../TouchFree";
-import { TouchFreeEvent, TouchFreeInputAction } from "../TouchFreeToolingTypes";
+import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
 import { InputActionPlugin } from "./InputActionPlugin";
 
 // Class: InputActionManager
