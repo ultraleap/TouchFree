@@ -1,7 +1,6 @@
-import { BaseInputController } from './BaseInputController';
-
 import TouchFree from '../TouchFree';
 import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
+import { BaseInputController } from './BaseInputController';
 
 // Class: WebInputController
 // Provides web PointerEvents based on the incoming data from TouchFree Service via a

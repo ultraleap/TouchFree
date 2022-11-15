@@ -1,9 +1,7 @@
-import { TouchlessCursor } from './TouchlessCursor';
-
 import TouchFree from '../TouchFree';
 import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
-
 import { MapRangeToRange } from '../Utilities';
+import { TouchlessCursor } from './TouchlessCursor';
 
 // Class: DotCursor
 // This is an example Touchless Cursor which positions a dot on the screen at the hand location,

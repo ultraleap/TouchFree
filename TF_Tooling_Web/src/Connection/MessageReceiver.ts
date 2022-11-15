@@ -1,3 +1,13 @@
+import { HandDataManager } from '../Plugins/HandDataManager';
+import { InputActionManager } from '../Plugins/InputActionManager';
+import TouchFree from '../TouchFree';
+import {
+    BitmaskFlags,
+    ConvertInputAction,
+    InputType,
+    TouchFreeInputAction,
+    WebsocketInputAction,
+} from '../TouchFreeToolingTypes';
 import { ConnectionManager } from './ConnectionManager';
 import {
     ConfigState,
@@ -12,18 +22,6 @@ import {
     TrackingStateResponse,
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
-
-import TouchFree from '../TouchFree';
-import {
-    BitmaskFlags,
-    ConvertInputAction,
-    InputType,
-    TouchFreeInputAction,
-    WebsocketInputAction,
-} from '../TouchFreeToolingTypes';
-
-import { HandDataManager } from '../Plugins/HandDataManager';
-import { InputActionManager } from '../Plugins/InputActionManager';
 
 type CallbackResult = 'Success' | 'CallbacksUndefined' | 'NoCallbacksFound' | Error;
 

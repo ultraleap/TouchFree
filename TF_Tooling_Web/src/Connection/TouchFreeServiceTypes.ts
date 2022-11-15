@@ -1,6 +1,5 @@
-import { ConfigurationState, TrackingServiceState } from '../TouchFreeToolingTypes';
-
 import { InteractionConfigFull, InteractionConfig, PhysicalConfig } from '../Configuration/ConfigurationTypes';
+import { ConfigurationState, TrackingServiceState } from '../TouchFreeToolingTypes';
 import { Mask } from '../Tracking/TrackingTypes';
 
 // Enum: ActionCode

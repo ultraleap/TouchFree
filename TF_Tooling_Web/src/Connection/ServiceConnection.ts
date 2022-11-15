@@ -1,3 +1,6 @@
+import TouchFree from '../TouchFree';
+import { VersionInfo, WebsocketInputAction } from '../TouchFreeToolingTypes';
+import { TrackingState } from '../Tracking/TrackingTypes';
 import { ConnectionManager } from './ConnectionManager';
 import {
     ActionCode,
@@ -17,11 +20,6 @@ import {
     VersionHandshakeResponse,
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
-
-import TouchFree from '../TouchFree';
-import { VersionInfo, WebsocketInputAction } from '../TouchFreeToolingTypes';
-
-import { TrackingState } from '../Tracking/TrackingTypes';
 import { v4 as uuidgen } from 'uuid';
 
 // Class: ServiceConnection

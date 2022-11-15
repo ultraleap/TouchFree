@@ -1,7 +1,6 @@
-import { InputActionPlugin } from './InputActionPlugin';
-
 import TouchFree from '../TouchFree';
 import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
+import { InputActionPlugin } from './InputActionPlugin';
 
 // Class: InputActionManager
 // The manager for all <TouchFreeInputActions> to be handled and distributed. This runs the
