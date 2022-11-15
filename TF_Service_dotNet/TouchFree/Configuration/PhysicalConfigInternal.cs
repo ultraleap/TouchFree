@@ -4,7 +4,7 @@ using System.Numerics;
 namespace Ultraleap.TouchFree.Library.Configuration
 {
     [Serializable]
-    public class PhysicalConfigInternal
+    public record class PhysicalConfigInternal
     {
         public float ScreenHeightMm = 330f;
         public Vector3 LeapPositionRelativeToScreenBottomMm = new Vector3(0f, -120f, -250f);

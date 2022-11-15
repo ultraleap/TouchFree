@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Ultraleap.TouchFree.Library.Configuration
+﻿namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
@@ -93,7 +91,8 @@ namespace Ultraleap.TouchFree.Library.Configuration
             var interactionsUpdated = false;
             InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
             var loadedInteractions = new InteractionConfigInternal(intFromFile);
-            if (_interactions == null || !InefficientEqualsComparison(_interactions, loadedInteractions)) {
+            if (_interactions == null || _interactions != loadedInteractions)
+            {
                 _interactions = loadedInteractions;
                 interactionsUpdated = true;
             }
@@ -101,7 +100,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             var physicalUpdated = false;
             PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
             var loadedPhysical = new PhysicalConfigInternal(physFromFile);
-            if (_physical == null || !InefficientEqualsComparison(_physical, loadedPhysical))
+            if (_physical == null || _physical != loadedPhysical)
             {
                 _physical = loadedPhysical;
                 physicalUpdated = true;
@@ -111,7 +110,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             if (TrackingConfigFile.DoesConfigFileExist())
             {
                 var loadedTracking = TrackingConfigFile.LoadConfig();
-                if (_tracking == null || !InefficientEqualsComparison(_tracking, loadedTracking))
+                if (_tracking == null || _tracking != loadedTracking)
                 {
                     _tracking = loadedTracking;
                     trackingUpdated = true;
@@ -135,11 +134,6 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
-        }
-
-        private bool InefficientEqualsComparison<T>(T lhs, T rhs)
-        {
-            return JsonConvert.SerializeObject(lhs) == JsonConvert.SerializeObject(rhs);
         }
 
         public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
