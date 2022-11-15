@@ -4,9 +4,9 @@ import { TouchlessCursor } from "./Cursors/TouchlessCursor";
 import { WebInputController } from "./InputControllers/WebInputController";
 import { HandDataManager } from "./Plugins/HandDataManager";
 import { InputActionManager } from "./Plugins/InputActionManager";
-import { TouchFreeEvent, TouchFreeEventSignatures } from "./TouchFreeToolingTypes";
+import { TouchFreeEvent, TouchFreeEventSignatures, TrackingServiceState } from "./TouchFreeToolingTypes";
 
-let InputController: WebInputController;
+let InputController: WebInputController | undefined;
 let CurrentCursor: TouchlessCursor | undefined;
 
 // Class: TfInitParams
@@ -107,5 +107,6 @@ export default {
     RegisterEventCallback,
     DispatchEvent,
     Init,
-    CurrentCursor
+    CurrentCursor,
+    InputController
 };

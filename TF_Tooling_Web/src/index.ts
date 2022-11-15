@@ -9,8 +9,7 @@ import * as Tracking from './Tracking';
 import TouchFree from './TouchFree';
 
 module.exports = {
-    Init: TouchFree.Init,
-    CurrentCursor: TouchFree.CurrentCursor,
+    ...TouchFree, // Export all props of the TouchFree object
     Configuration: Configuration,
     Connection: Connection,
     Cursors: Cursors,
