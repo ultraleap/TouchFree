@@ -111,5 +111,5 @@ export default {
     DispatchEvent,
     Init,
     CurrentCursor,
-    InputController
+    InputController,
 };
