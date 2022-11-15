@@ -176,6 +176,39 @@ namespace Ultraleap.TouchFree.Library.Connections
             OnAnalyticsResponse += analyticsEnabled.HandleResponse;
             OnAllowImagesResponse += allowImages.HandleResponse;
             OnCameraOrientationResponse += cameraReversed.HandleResponse;
+
+            OnMaskingResponse += SetTrackingConfigIfUnset;
+            OnAnalyticsResponse += SetTrackingConfigIfUnset;
+            OnAllowImagesResponse += SetTrackingConfigIfUnset;
+            OnCameraOrientationResponse += SetTrackingConfigIfUnset;
+        }
+
+        private void SetTrackingConfigIfUnset<T>(Result<T> _)
+        {
+            if (configManager.TrackingConfig == null && 
+                maskingData.Initialized &&
+                analyticsEnabled.Initialized &&
+                allowImages.Initialized &&
+                cameraReversed.Initialized &&
+                !TrackingConfigFile.DoesConfigFileExist())
+            {
+                var trackingConfigurationToStore = new TrackingConfig()
+                {
+                    AllowImages = allowImages.Value,
+                    AnalyticsEnabled = analyticsEnabled.Value,
+                    CameraReversed = cameraReversed.Value,
+                    Mask = new Configuration.MaskingData()
+                    {
+                        Left = maskingData.Value.left,
+                        Right = maskingData.Value.right,
+                        Lower = maskingData.Value.lower,
+                        Upper = maskingData.Value.upper
+                    }
+                };
+
+                configManager.TrackingConfig = trackingConfigurationToStore;
+                TrackingConfigFile.SaveConfig(trackingConfigurationToStore);
+            }
         }
 
         private async Task MessageQueueReader()

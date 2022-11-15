@@ -3,21 +3,21 @@
 namespace Ultraleap.TouchFree.Library.Configuration
 {
     [Serializable]
-    public class HoverAndHoldInteractionSettingsInternal
+    public record class HoverAndHoldInteractionSettingsInternal
     {
         public float HoverStartTimeS = 0.5f;
         public float HoverCompleteTimeS = 0.6f;
     }
 
     [Serializable]
-    public class TouchPlaneInteractionSettingsInternal
+    public record class TouchPlaneInteractionSettingsInternal
     {
         public float TouchPlaneActivationDistanceMm = 50f;
         public TrackedPosition TouchPlaneTrackedPosition = TrackedPosition.NEAREST;
     }
 
     [Serializable]
-    public class InteractionConfigInternal
+    public record class InteractionConfigInternal
     {
         public bool UseScrollingOrDragging = true;
         public bool UseSwipeInteraction = false;

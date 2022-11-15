@@ -2,7 +2,6 @@ import {
     BufferGeometry,
     CircleBufferGeometry,
     DataTexture,
-    DynamicDrawUsage,
     InstancedMesh,
     Mesh,
     MeshBasicMaterial,
@@ -66,6 +65,8 @@ let _cameraFeedTexture: DataTexture;
 let _primaryHandMesh: HandMeshData;
 let _secondaryHandMesh: HandMeshData;
 
+let _compiled = false;
+
 const dummy = new Object3D();
 
 const BASE_LINE_THICKNESS = 0.005;
@@ -85,9 +86,17 @@ export const setupRenderScene = (div: HTMLDivElement) => {
 
     _primaryHandMesh = createHandMesh(_scene, true);
     _secondaryHandMesh = createHandMesh(_scene, false);
+    _compiled = false;
 };
 
-export const renderScene = () => _renderer.render(_scene, _camera);
+export const renderScene = () => {
+    if (!_compiled) {
+        _compiled = true;
+        _renderer.compile(_scene, _camera);
+    }
+
+    _renderer.render(_scene, _camera);
+};
 
 export const updateCameraRender = (data: Uint8Array, width: number, height: number, handData: HandState) => {
     if (_cameraFeedTexture) _cameraFeedTexture.dispose();
@@ -150,26 +159,31 @@ const addBasicCircleMeshes = (
         11
     );
 
-    mesh.instanceMatrix.setUsage(DynamicDrawUsage);
     mesh.visible = false;
     scene.add(mesh);
     return mesh;
 };
 
 const addBasicLine = (scene: Scene, isPrimary: boolean): Line2 => {
-    const line = new Line2(
-        new LineGeometry(),
-        new LineMaterial({
-            color: 0xffffff,
-            linewidth: BASE_LINE_THICKNESS,
-            transparent: !isPrimary,
-            opacity: isPrimary ? 1 : 0.5,
-        })
-    );
+    const line = new Line2(new LineGeometry(), isPrimary ? lineMaterialPrimary : lineMaterialSecondary);
     line.visible = false;
     scene.add(line);
     return line;
 };
+
+const lineMaterialPrimary = new LineMaterial({
+    color: 0xffffff,
+    linewidth: BASE_LINE_THICKNESS,
+    transparent: false,
+    opacity: 1,
+});
+
+const lineMaterialSecondary = new LineMaterial({
+    color: 0xffffff,
+    linewidth: BASE_LINE_THICKNESS,
+    transparent: true,
+    opacity: 0.5,
+});
 
 const updateHandMesh = (handMesh: HandMeshData, handData?: HandData) => {
     const meshUpdateData: MeshUpdateData = {
@@ -179,7 +193,8 @@ const updateHandMesh = (handMesh: HandMeshData, handData?: HandData) => {
 
     let scale = 1;
     if (handData !== undefined) {
-        scale = MapRangeToRange(handData.fingers[FingerType.TYPE_PINKY].tip.z, 0, 0.1, 1, 3);
+        // Map to range and round to 1dp
+        scale = Math.round(MapRangeToRange(handData.fingers[FingerType.TYPE_PINKY].tip.z, 0, 0.1, 1, 3) * 10) / 10;
     }
     Object.keys(handMesh.fingers).forEach((finger) => {
         const fingerType = Number(finger) as Exclude<FingerType, FingerType.TYPE_UNKNOWN>;

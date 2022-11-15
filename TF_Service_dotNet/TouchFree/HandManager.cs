@@ -144,9 +144,7 @@ namespace Ultraleap.TouchFree.Library
 
         public void StoreImage(object sender, ImageEventArgs e)
         {
-            if (lastImage == null) {
-                lastImage = e.image;
-            }
+            lastImage = e.image;
         }
 
         public void UpdateRawHands()
