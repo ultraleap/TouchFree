@@ -6,7 +6,7 @@ import { HandDataManager } from './Plugins/HandDataManager';
 import { InputActionManager } from './Plugins/InputActionManager';
 import { TouchFreeEvent, TouchFreeEventSignatures } from './TouchFreeToolingTypes';
 
-let InputController: WebInputController;
+let InputController: WebInputController | undefined;
 let CurrentCursor: TouchlessCursor | undefined;
 
 // Class: TfInitParams
@@ -111,4 +111,5 @@ export default {
     DispatchEvent,
     Init,
     CurrentCursor,
+    InputController
 };
