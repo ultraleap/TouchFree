@@ -1,7 +1,7 @@
 import { TrackingState } from './TrackingTypes';
 
-import { ConnectionManager } from 'Connection/ConnectionManager';
-import { TrackingStateResponse } from 'Connection/TouchFreeServiceTypes';
+import { ConnectionManager } from '../Connection/ConnectionManager';
+import { TrackingStateResponse } from '../Connection/TouchFreeServiceTypes';
 
 // class: TrackingManager
 // This class provides methods for getting and setting the settings of the tracking software.

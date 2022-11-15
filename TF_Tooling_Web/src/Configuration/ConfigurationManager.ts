@@ -1,13 +1,13 @@
 import { InteractionConfig, PhysicalConfig } from './ConfigurationTypes';
 
-import { ConnectionManager } from 'Connection/ConnectionManager';
+import { ConnectionManager } from '../Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
     ConfigState,
     PartialConfigState,
     WebSocketResponse,
-} from 'Connection/TouchFreeServiceTypes';
+} from '../Connection/TouchFreeServiceTypes';
 import { v4 as uuidgen } from 'uuid';
 
 // Class: ConfigurationManager

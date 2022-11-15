@@ -18,10 +18,10 @@ import {
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 
-import TouchFree from 'TouchFree';
-import { VersionInfo, WebsocketInputAction } from 'TouchFreeToolingTypes';
+import TouchFree from '../TouchFree';
+import { VersionInfo, WebsocketInputAction } from '../TouchFreeToolingTypes';
 
-import { TrackingState } from 'Tracking/TrackingTypes';
+import { TrackingState } from '../Tracking/TrackingTypes';
 import { v4 as uuidgen } from 'uuid';
 
 // Class: ServiceConnection
@@ -57,7 +57,7 @@ export class ServiceConnection {
     // to connect to on construction. This constructor also sets up the redirects of incoming
     // messages to <OnMessage>. Puts a listener on the websocket so that once it opens, a handshake
     // request is sent with this Tooling's API version number. The service will not send data over
-    // an open connection until this handshake is completed succesfully.
+    // an open connection until this handshake is completed successfully.
     constructor(_ip = '127.0.0.1', _port = '9739') {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
         this.webSocket.binaryType = 'arraybuffer';

@@ -15,7 +15,7 @@ export class VersionInfo {
 }
 
 // Class: TouchFreeInputAction
-// A structure representing the Tooling verison of an InputAction. This is used to pass
+// A structure representing the Tooling version of an InputAction. This is used to pass
 // key information relating to an action that has happened on the Service.
 export class TouchFreeInputAction {
     Timestamp: number;

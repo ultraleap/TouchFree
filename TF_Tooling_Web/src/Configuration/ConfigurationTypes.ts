@@ -1,4 +1,4 @@
-import { InteractionType } from 'TouchFreeToolingTypes';
+import { InteractionType } from '../TouchFreeToolingTypes';
 
 // Class: InteractionConfig
 // This class is a container for all of the settings related to the interactions being processed
@@ -14,7 +14,7 @@ import { InteractionType } from 'TouchFreeToolingTypes';
 // TouchFree Service.
 export interface InteractionConfig {
     // Property: UseScrollingOrDragging
-    // If true, allows interactions to send up/down events seperately, enabling dragging or
+    // If true, allows interactions to send up/down events separately, enabling dragging or
     // touchscreen-like scrolling behaviours. If false, up/down events will be sent together,
     // and every down will function like a click of its own.
     UseScrollingOrDragging: boolean;

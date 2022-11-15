@@ -1,5 +1,5 @@
-import TouchFree from 'TouchFree';
-import { TouchFreeInputAction } from 'TouchFreeToolingTypes';
+import TouchFree from '../TouchFree';
+import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
 
 // Class: TouchlessCursor
 // This class is a base class for creating custom Touchless cursors for use with TouchFree Tooling.
@@ -48,10 +48,10 @@ export abstract class TouchlessCursor {
 
     // Function: HandleInputAction
     // The core of the logic for Cursors, this is invoked with each <TouchFreeInputAction> as
-    // they are recieved. Override this function to implement cursor behaviour in response.
+    // they are received. Override this function to implement cursor behaviour in response.
     //
     // Parameters:
-    //    _inputAction - The latest input action recieved from TouchFree Service.
+    //    _inputAction - The latest input action received from TouchFree Service.
     HandleInputAction(_inputAction: TouchFreeInputAction): void {
         this.UpdateCursor(_inputAction);
     }

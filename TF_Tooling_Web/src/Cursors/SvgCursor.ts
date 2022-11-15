@@ -1,10 +1,10 @@
 import { TouchlessCursor } from './TouchlessCursor';
 
-import { InputType, TouchFreeInputAction } from 'TouchFreeToolingTypes';
+import { InputType, TouchFreeInputAction } from '../TouchFreeToolingTypes';
 
-import { MapRangeToRange } from 'Utilities';
+import { MapRangeToRange } from '../Utilities';
 
-import { ConnectionManager } from 'Connection/ConnectionManager';
+import { ConnectionManager } from '../Connection/ConnectionManager';
 
 export class SVGCursor extends TouchlessCursor {
     private xPositionAttribute = 'cx';

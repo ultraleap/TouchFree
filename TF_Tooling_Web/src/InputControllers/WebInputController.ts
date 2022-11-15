@@ -1,14 +1,14 @@
 import { BaseInputController } from './BaseInputController';
 
-import TouchFree from 'TouchFree';
-import { TouchFreeInputAction, InputType } from 'TouchFreeToolingTypes';
+import TouchFree from '../TouchFree';
+import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
 
 // Class: WebInputController
 // Provides web PointerEvents based on the incoming data from TouchFree Service via a
 // <ServiceConnection>.
 //
 // If you are using cursors with this InputController, ensure they have the "touchfree-cursor"
-// class. This allows this class to ignore them when determining which elements should recieve
+// class. This allows this class to ignore them when determining which elements should receive
 // new pointer events. If you don't do this, none of the events transmitted here are guaranteed
 // to make it to their intended targets, as they will be captured by the cursor.
 export class WebInputController extends BaseInputController {

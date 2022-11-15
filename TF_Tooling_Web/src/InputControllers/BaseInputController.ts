@@ -1,5 +1,5 @@
-import TouchFree, { EventHandle } from 'TouchFree';
-import { TouchFreeInputAction, InputType } from 'TouchFreeToolingTypes';
+import TouchFree, { EventHandle } from '../TouchFree';
+import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
 
 // Class: InputController
 // InputControllers convert <TouchFreeInputActions> as recieved from the service into appropriate
@@ -37,7 +37,7 @@ export abstract class BaseInputController {
     // Override this function to implement any custom input handling functionality you wish to see.
     //
     // Parameters:
-    //     _inputData - The latest input action recieved from TouchFree Service.
+    //     _inputData - The latest input action received from TouchFree Service.
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:

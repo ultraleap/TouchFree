@@ -1,7 +1,7 @@
-import { ConfigurationState, TrackingServiceState } from 'TouchFreeToolingTypes';
+import { ConfigurationState, TrackingServiceState } from '../TouchFreeToolingTypes';
 
-import { InteractionConfigFull, InteractionConfig, PhysicalConfig } from 'Configuration/ConfigurationTypes';
-import { Mask } from 'Tracking/TrackingTypes';
+import { InteractionConfigFull, InteractionConfig, PhysicalConfig } from '../Configuration/ConfigurationTypes';
+import { Mask } from '../Tracking/TrackingTypes';
 
 // Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data

@@ -2,8 +2,8 @@ import { MessageReceiver } from './MessageReceiver';
 import { ServiceConnection } from './ServiceConnection';
 import { HandPresenceState, ServiceStatus } from './TouchFreeServiceTypes';
 
-import TouchFree from 'TouchFree';
-import { TrackingServiceState } from 'TouchFreeToolingTypes';
+import TouchFree from '../TouchFree';
+import { TrackingServiceState } from '../TouchFreeToolingTypes';
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
