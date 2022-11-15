@@ -1,0 +1,25 @@
+{
+    "singleQuote": true,
+    "tabWidth": 4,
+    "endOfLine": "crlf",
+    "printWidth": 120,
+    "importOrder": [
+        "^(\\./)|(.*\\.s?css$)",
+        ".*(react|classnames|three).*",
+        "^(@/)?TouchFree",
+        "^(@/)?Assets.*",
+        "^(@/)?Pages.*",
+        "^(@/)?Components.*",
+        "^(@/)?Util.*",
+        ".*"
+    ],
+    "importOrderSeparation": true,
+    "overrides": [
+        {
+            "files": "*.md",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}
