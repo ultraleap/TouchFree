@@ -4,13 +4,7 @@
     "endOfLine": "crlf",
     "printWidth": 120,
     "importOrder": [
-        "^(\\./)|(.*\\.s?css$)",
-        ".*(react|classnames|three).*",
         "^(@/)?TouchFree",
-        "^(@/)?Assets.*",
-        "^(@/)?Pages.*",
-        "^(@/)?Components.*",
-        "^(@/)?Util.*",
         ".*"
     ],
     "importOrderSeparation": true,

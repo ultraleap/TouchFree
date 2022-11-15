@@ -4,12 +4,9 @@
         "es2021": true,
         "node": true
     },
-    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended"],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended",],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
@@ -19,21 +16,19 @@
         },
         "import/resolver": {
             "node": {
-                "extensions": [".ts", ".tsx"],
+                "extensions": [".ts"],
                 "moduleDirectory": ["node_modules", "src/"]
             }
         }
     },
-    "plugins": ["react", "@typescript-eslint", "spellcheck"],
-    "ignorePatterns": ["/dist*", "/release", "src/TouchFree"],
+    "plugins": ["@typescript-eslint", "spellcheck"],
+    "ignorePatterns": ["/dist*", "/release"],
     "rules": {
         "indent": "off",
         "linebreak-style": "off",
         "quotes": ["error", "single", "avoid-escape"],
         "semi": ["error", "always"],
         "max-len": ["error", { "code": 120 }],
-        "react/react-in-jsx-scope": "off",
-        "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],
         "spellcheck/spell-checker": [
             1,
             {
