@@ -18,7 +18,7 @@ import { setupRenderScene } from './sceneRendering';
 
 export type Lens = 'Left' | 'Right';
 
-const FRAME_PROCESSING_TIMEOUT = 60;
+const FRAME_PROCESSING_TIMEOUT = 0;
 
 const MaskingScreen: React.FC = () => {
     // ===== State =====
@@ -121,7 +121,7 @@ const MaskingScreen: React.FC = () => {
             return;
         }
 
-        const imageArraySize = new Int32Array(buffer, 4, 8)[0];
+        const imageArraySize = new Int32Array(buffer, 4, 1)[0];
 
         if (buffer.byteLength < 8 + imageArraySize) {
             isHandProcessing.current = false;
@@ -150,8 +150,7 @@ const MaskingScreen: React.FC = () => {
     };
 
     const parseAndUpdateHandState = (buffer: ArrayBuffer, offset: number): void => {
-        const handsJson = String.fromCharCode(...new Uint8Array(buffer, offset));
-        const hands = JSON.parse(handsJson)?.Hands;
+        const hands = JSON.parse(String.fromCharCode(...new Uint8Array(buffer, offset)))?.Hands;
 
         if (hands && (hands.length > 0 || handState.current.one || handState.current.two)) {
             const handOne = hands[0];
