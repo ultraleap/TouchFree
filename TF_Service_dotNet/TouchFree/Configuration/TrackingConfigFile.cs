@@ -9,7 +9,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
     }
 
     [Serializable]
-    public class TrackingConfig
+    public record class TrackingConfig
     {
         public MaskingData Mask = new MaskingData();
         public bool AllowImages = true;
@@ -18,7 +18,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
     }
 
     [Serializable]
-    public class MaskingData
+    public record class MaskingData
     {
         public double Lower = 0;
         public double Upper = 0;
