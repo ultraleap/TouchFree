@@ -1,5 +1,4 @@
-import TouchFree from "../TouchFree";
-import { TouchFreeEvent, TouchFreeInputAction } from "../TouchFreeToolingTypes";
+import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
 
 export abstract class InputActionPlugin extends EventTarget{
     // Event: InputActionOutput
