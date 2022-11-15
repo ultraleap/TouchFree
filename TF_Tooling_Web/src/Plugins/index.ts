@@ -3,5 +3,5 @@ import { InputActionPlugin } from './InputActionPlugin';
 
 module.exports = {
     InputActionManager: InputActionManager,
-    InputActionPlugin: InputActionPlugin
-}
+    InputActionPlugin: InputActionPlugin,
+};

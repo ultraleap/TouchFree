@@ -1,12 +1,11 @@
-import * as Configuration from './Configuration'
-import * as Connection from './Connection'
-import * as Cursors from './Cursors'
+import * as Configuration from './Configuration';
+import * as Connection from './Connection';
+import * as Cursors from './Cursors';
 import * as InputControllers from './InputControllers';
 import * as Plugins from './Plugins';
+import TouchFree from './TouchFree';
 import * as TouchFreeToolingTypes from './TouchFreeToolingTypes';
 import * as Tracking from './Tracking';
-
-import TouchFree from './TouchFree';
 
 module.exports = {
     Init: TouchFree.Init,
@@ -18,4 +17,4 @@ module.exports = {
     Plugins: Plugins,
     TouchFreeToolingTypes: TouchFreeToolingTypes,
     Tracking: Tracking,
-}
+};

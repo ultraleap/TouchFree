@@ -1,11 +1,14 @@
-import { ConnectionManager } from "../Connection/ConnectionManager";
-import { InputType, TouchFreeInputAction } from "../TouchFreeToolingTypes";
-import { MapRangeToRange } from "../Utilities";
-import { TouchlessCursor } from "./TouchlessCursor";
+import { TouchlessCursor } from './TouchlessCursor';
+
+import { InputType, TouchFreeInputAction } from 'TouchFreeToolingTypes';
+
+import { MapRangeToRange } from 'Utilities';
+
+import { ConnectionManager } from 'Connection/ConnectionManager';
 
 export class SVGCursor extends TouchlessCursor {
-    private xPositionAttribute: string = 'cx';
-    private yPositionAttribute: string = 'cy';
+    private xPositionAttribute = 'cx';
+    private yPositionAttribute = 'cy';
     private cursorCanvas: SVGSVGElement;
     private cursorRing: SVGCircleElement;
     private ringSizeMultiplier: number;
@@ -19,12 +22,12 @@ export class SVGCursor extends TouchlessCursor {
     // Optionally provide a _ringSizeMultiplier to change the size that the <cursorRing> is relative to the _cursor.
     // Optionally provide a _darkCursor to change the cursor to be dark to provide better contrast on light coloured
     // UIs.
-    constructor(_ringSizeMultiplier: number = 2, _darkCursor: boolean = false) {
+    constructor(_ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
 
         const documentBody = document.querySelector('body');
 
-        const svgElement = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svgElement.classList.add('touchfree-cursor');
         svgElement.style.opacity = '0';
         svgElement.style.position = 'fixed';
@@ -50,7 +53,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.appendChild(svgRingElement);
         this.cursorRing = svgRingElement;
 
-        const svgDotElement = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        const svgDotElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgDotElement.classList.add('touchfree-cursor');
         svgDotElement.setAttribute('r', '15');
         svgDotElement.setAttribute('fill', _darkCursor ? 'black' : 'white');
@@ -88,7 +91,7 @@ export class SVGCursor extends TouchlessCursor {
             this.HideCursor();
             return;
         }
-        let ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
+        const ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
         this.cursorRing.setAttribute('opacity', _inputAction.ProgressToClick.toString());
         this.cursorRing.setAttribute('r', Math.round(this.GetCurrentCursorRadius() * ringScaler).toString());
@@ -172,7 +175,7 @@ export class SVGCursor extends TouchlessCursor {
                 return 0;
             }
 
-            let radiusAsNumber = parseFloat(radius);
+            const radiusAsNumber = parseFloat(radius);
 
             return radiusAsNumber;
         }

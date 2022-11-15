@@ -1,13 +1,7 @@
-import {
-    InteractionConfigFull,
-    InteractionConfig,
-    PhysicalConfig
-} from '../Configuration/ConfigurationTypes';
-import {
-    ConfigurationState,
-    TrackingServiceState
-} from '../TouchFreeToolingTypes';
-import { Mask } from '../Tracking/TrackingTypes';
+import { ConfigurationState, TrackingServiceState } from 'TouchFreeToolingTypes';
+
+import { InteractionConfigFull, InteractionConfig, PhysicalConfig } from 'Configuration/ConfigurationTypes';
+import { Mask } from 'Tracking/TrackingTypes';
 
 // Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data
@@ -15,54 +9,56 @@ import { Mask } from '../Tracking/TrackingTypes';
 // CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
 // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
 // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
-// VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service, attempting to compare API versions for compatibility
+// VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service,
+//                     attempting to compare API versions for compatibility
 // HAND_PRESENCE_EVENT - Represents the result coming in from the Service
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
 // QUICK_SETUP - Represents a request for performing a quick setup of the Service
-// QUICK_SETUP_CONFIG - Represents a response from the Service after a QUICK_SETUP request where the configuration was updated as the
-//                      quick setup was successfully completed.
-// QUICK_SETUP_RESPONSE - Represents a response from the Service after a QUICK_SETUP request where the configuration was not updated.
+// QUICK_SETUP_CONFIG - Represents a response from the Service after a QUICK_SETUP request
+//                      where the configuration was updated as the quick setup was successfully completed.
+// QUICK_SETUP_RESPONSE - Represents a response from the Service after a QUICK_SETUP request
+//                        where the configuration was not updated.
 // GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
 // SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
 // TRACKING_STATE - Represents a response from the Service with the current state of the tracking settings,
-//                  recieved following either a GET_TRACKING_STATE or a SET_TRACKING_STATE
+//                  received following either a GET_TRACKING_STATE or a SET_TRACKING_STATE
 // HAND_DATA - Represents more complete hand data sent from the service.
-// SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable the HAND_DATA stream or change the lens to
-//                              have the hand position relative to.
+// SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable
+//                              the HAND_DATA stream or change the lens to have the hand position relative to.
 export enum ActionCode {
-    INPUT_ACTION = "INPUT_ACTION",
+    INPUT_ACTION = 'INPUT_ACTION',
 
-    CONFIGURATION_STATE = "CONFIGURATION_STATE",
-    CONFIGURATION_RESPONSE = "CONFIGURATION_RESPONSE",
-    SET_CONFIGURATION_STATE = "SET_CONFIGURATION_STATE",
-    REQUEST_CONFIGURATION_STATE = "REQUEST_CONFIGURATION_STATE",
+    CONFIGURATION_STATE = 'CONFIGURATION_STATE',
+    CONFIGURATION_RESPONSE = 'CONFIGURATION_RESPONSE',
+    SET_CONFIGURATION_STATE = 'SET_CONFIGURATION_STATE',
+    REQUEST_CONFIGURATION_STATE = 'REQUEST_CONFIGURATION_STATE',
 
-    VERSION_HANDSHAKE = "VERSION_HANDSHAKE",
-    VERSION_HANDSHAKE_RESPONSE = "VERSION_HANDSHAKE_RESPONSE",
+    VERSION_HANDSHAKE = 'VERSION_HANDSHAKE',
+    VERSION_HANDSHAKE_RESPONSE = 'VERSION_HANDSHAKE_RESPONSE',
 
-    HAND_PRESENCE_EVENT = "HAND_PRESENCE_EVENT",
+    HAND_PRESENCE_EVENT = 'HAND_PRESENCE_EVENT',
 
-    REQUEST_SERVICE_STATUS = "REQUEST_SERVICE_STATUS",
-    SERVICE_STATUS_RESPONSE = "SERVICE_STATUS_RESPONSE",
-    SERVICE_STATUS = "SERVICE_STATUS",
+    REQUEST_SERVICE_STATUS = 'REQUEST_SERVICE_STATUS',
+    SERVICE_STATUS_RESPONSE = 'SERVICE_STATUS_RESPONSE',
+    SERVICE_STATUS = 'SERVICE_STATUS',
 
-    REQUEST_CONFIGURATION_FILE = "REQUEST_CONFIGURATION_FILE",
-    CONFIGURATION_FILE_STATE = "CONFIGURATION_FILE_STATE",
-    SET_CONFIGURATION_FILE = "SET_CONFIGURATION_FILE",
-    CONFIGURATION_FILE_RESPONSE = "CONFIGURATION_FILE_RESPONSE",
+    REQUEST_CONFIGURATION_FILE = 'REQUEST_CONFIGURATION_FILE',
+    CONFIGURATION_FILE_STATE = 'CONFIGURATION_FILE_STATE',
+    SET_CONFIGURATION_FILE = 'SET_CONFIGURATION_FILE',
+    CONFIGURATION_FILE_RESPONSE = 'CONFIGURATION_FILE_RESPONSE',
 
-    QUICK_SETUP = "QUICK_SETUP",
-    QUICK_SETUP_CONFIG = "QUICK_SETUP_CONFIG",
-    QUICK_SETUP_RESPONSE = "QUICK_SETUP_RESPONSE",
+    QUICK_SETUP = 'QUICK_SETUP',
+    QUICK_SETUP_CONFIG = 'QUICK_SETUP_CONFIG',
+    QUICK_SETUP_RESPONSE = 'QUICK_SETUP_RESPONSE',
 
-    GET_TRACKING_STATE = "GET_TRACKING_STATE",
-    SET_TRACKING_STATE = "SET_TRACKING_STATE",
-    TRACKING_STATE = "TRACKING_STATE",
+    GET_TRACKING_STATE = 'GET_TRACKING_STATE',
+    SET_TRACKING_STATE = 'SET_TRACKING_STATE',
+    TRACKING_STATE = 'TRACKING_STATE',
 
-    HAND_DATA = "HAND_DATA",
-    SET_HAND_DATA_STREAM_STATE = "SET_HAND_DATA_STREAM_STATE",
+    HAND_DATA = 'HAND_DATA',
+    SET_HAND_DATA_STREAM_STATE = 'SET_HAND_DATA_STREAM_STATE',
 }
 
 // Enum: HandPresenceState
@@ -83,7 +79,7 @@ export enum HandPresenceState {
 export enum Compatibility {
     COMPATIBLE,
     SERVICE_OUTDATED,
-    TOOLING_OUTDATED
+    TOOLING_OUTDATED,
 }
 
 // Class: HandPresenceEvent
@@ -129,7 +125,11 @@ export class PartialConfigState extends TouchFreeRequest {
     // Variable: physical
     physical: Partial<PhysicalConfig> | null;
 
-    constructor(_id: string, _interaction: Partial<InteractionConfig> | null, _physical: Partial<PhysicalConfig> | null) {
+    constructor(
+        _id: string,
+        _interaction: Partial<InteractionConfig> | null,
+        _physical: Partial<PhysicalConfig> | null
+    ) {
         super(_id);
         this.interaction = _interaction;
         this.physical = _physical;
@@ -158,8 +158,7 @@ export class ConfigState extends TouchFreeRequest {
 // Used to request the current state of the configuration on the Service. This is received as
 // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
 // use of the data received.
-export class ConfigChangeRequest extends TouchFreeRequest {
-}
+export class ConfigChangeRequest extends TouchFreeRequest {}
 
 // class: HandRenderDataStateRequest
 // Used to set the state of the Hand Render Data stream.
@@ -181,8 +180,7 @@ export class HandRenderDataStateRequest extends TouchFreeRequest {
 // with a <ConfigState> as a parameter to allow users to make use of the new
 // <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {
-}
+export class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {}
 
 // Class: ServiceStatus
 // This data structure is used to receive service status.
@@ -194,7 +192,11 @@ export class ServiceStatus extends TouchFreeRequest {
     // Variable: configurationState
     configurationState: ConfigurationState | null;
 
-    constructor(_id: string, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null) {
+    constructor(
+        _id: string,
+        _trackingServiceState: TrackingServiceState | null,
+        _configurationState: ConfigurationState | null
+    ) {
         super(_id);
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
@@ -205,16 +207,14 @@ export class ServiceStatus extends TouchFreeRequest {
 // Used to request the current state of the status of the Service. This is received as
 // a <ServiceStatus> which should be linked to a <ServiceStatusCallback> via requestID to make
 // use of the data received.
-export class ServiceStatusRequest extends TouchFreeRequest {
-}
+export class ServiceStatusRequest extends TouchFreeRequest {}
 
 // Class: ServiceStatusCallback
 // Used by <MessageReceiver> to wait for a <ServiceStatus> from the Service. Owns a callback
 // with a <ServiceStatus> as a parameter to allow users to make use of the new
 // <ServiceStatusResponse>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ServiceStatusCallback extends TouchFreeRequestCallback<ServiceStatus> {
-}
+export class ServiceStatusCallback extends TouchFreeRequestCallback<ServiceStatus> {}
 
 // Class: WebSocketResponse
 // The structure seen when the Service responds to a request. This is to verify whether it was
@@ -244,7 +244,14 @@ export class VersionHandshakeResponse extends WebSocketResponse {
     // Variable: message
     apiVersion: string;
 
-    constructor(_id: string, _status: string, _msg: string, _request: string, _touchFreeVersion: string, _apiVersion: string) {
+    constructor(
+        _id: string,
+        _status: string,
+        _msg: string,
+        _request: string,
+        _touchFreeVersion: string,
+        _apiVersion: string
+    ) {
         super(_id, _status, _msg, _request);
         this.touchFreeVersion = _touchFreeVersion;
         this.apiVersion = _apiVersion;
@@ -256,8 +263,7 @@ export class VersionHandshakeResponse extends WebSocketResponse {
 // with a <WebSocketResponse> as a parameter to allow users to deal with failed
 // <WebSocketResponses>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ResponseCallback extends TouchFreeRequestCallback<WebSocketResponse> {
-}
+export class ResponseCallback extends TouchFreeRequestCallback<WebSocketResponse> {}
 
 // Class: CommunicationWrapper
 // A container structure used by <ServiceConnection> to interpret incoming data to its appropriate
@@ -314,13 +320,7 @@ export class TrackingStateRequest {
     // Variable: analyticsEnabled
     analyticsEnabled: boolean;
 
-    constructor(
-        _id: string,
-        _mask: Mask,
-        _cameraReversed: boolean,
-        _allowImages: boolean,
-        _analyticsEnabled: boolean
-    ) {
+    constructor(_id: string, _mask: Mask, _cameraReversed: boolean, _allowImages: boolean, _analyticsEnabled: boolean) {
         this.requestID = _id;
         this.mask = _mask;
         this.cameraReversed = _cameraReversed;

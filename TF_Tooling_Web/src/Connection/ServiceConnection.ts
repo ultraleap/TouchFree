@@ -1,7 +1,4 @@
-import {
-    VersionInfo,
-    WebsocketInputAction
-} from '../TouchFreeToolingTypes';
+import { ConnectionManager } from './ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
@@ -18,12 +15,14 @@ import {
     TrackingStateRequest,
     TrackingStateResponse,
     VersionHandshakeResponse,
-    WebSocketResponse
+    WebSocketResponse,
 } from './TouchFreeServiceTypes';
-import { TrackingState } from '../Tracking/TrackingTypes';
-import { ConnectionManager } from './ConnectionManager';
+
+import TouchFree from 'TouchFree';
+import { VersionInfo, WebsocketInputAction } from 'TouchFreeToolingTypes';
+
+import { TrackingState } from 'Tracking/TrackingTypes';
 import { v4 as uuidgen } from 'uuid';
-import TouchFree from '../TouchFree';
 
 // Class: ServiceConnection
 // This represents a connection to a TouchFree Service. It should be created by a
@@ -39,17 +38,15 @@ export class ServiceConnection {
 
     private handshakeRequested: boolean;
     private handshakeCompleted: boolean;
-    private _touchFreeVersion: string = '';
+    private _touchFreeVersion = '';
 
     // Variable: touchFreeVersion
     // The version of the connected TouchFree Service
-    public get touchFreeVersion(): string
-    { 
+    public get touchFreeVersion(): string {
         return this._touchFreeVersion;
     }
 
-    public get handshakeComplete(): boolean
-    {
+    public get handshakeComplete(): boolean {
         return this.handshakeCompleted;
     }
 
@@ -61,7 +58,7 @@ export class ServiceConnection {
     // messages to <OnMessage>. Puts a listener on the websocket so that once it opens, a handshake
     // request is sent with this Tooling's API version number. The service will not send data over
     // an open connection until this handshake is completed succesfully.
-    constructor(_ip: string = "127.0.0.1", _port: string = "9739") {
+    constructor(_ip = '127.0.0.1', _port = '9739') {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
         this.webSocket.binaryType = 'arraybuffer';
 
@@ -70,7 +67,7 @@ export class ServiceConnection {
         this.handshakeRequested = false;
         this.handshakeCompleted = false;
 
-        this.webSocket.addEventListener('open', this.RequestHandshake, {once: true});
+        this.webSocket.addEventListener('open', this.RequestHandshake, { once: true });
     }
 
     // Function: Disconnect
@@ -79,18 +76,18 @@ export class ServiceConnection {
         if (this.webSocket !== null) {
             this.webSocket.close();
         }
-    }
+    };
 
     private RequestHandshake = () => {
         if (!this.handshakeCompleted) {
             const guid: string = uuidgen();
 
             // construct message
-            const handshakeRequest: CommunicationWrapper<any> = {
-                "action": ActionCode.VERSION_HANDSHAKE,
-                "content": {
-                    "requestID": guid
-                }
+            const handshakeRequest: CommunicationWrapper<{ [key: string]: string }> = {
+                action: ActionCode.VERSION_HANDSHAKE,
+                content: {
+                    requestID: guid,
+                },
             };
 
             handshakeRequest.content[VersionInfo.API_HEADER_NAME] = VersionInfo.ApiVersion;
@@ -98,38 +95,35 @@ export class ServiceConnection {
             if (!this.handshakeRequested) {
                 this.handshakeRequested = true;
                 // send message
-                this.SendMessage(JSON.stringify(handshakeRequest), guid,
-                    this.ConnectionResultCallback);
+                this.SendMessage(JSON.stringify(handshakeRequest), guid, this.ConnectionResultCallback);
             }
         }
-    }
+    };
 
     // Function: ConnectionResultCallback
     // Passed into <SendMessage> as part of connecting to TouchFree Service, handles the
     // result of the Version Checking handshake.
     private ConnectionResultCallback = (response: VersionHandshakeResponse | WebSocketResponse): void => {
-        if (response.status === "Success") {
-            console.log("Successful Connection");
+        if (response.status === 'Success') {
+            console.log('Successful Connection');
             const handshakeResponse = response as VersionHandshakeResponse;
             if (handshakeResponse) {
                 this._touchFreeVersion = handshakeResponse.touchFreeVersion;
             }
 
             this.handshakeCompleted = true;
-            TouchFree.DispatchEvent("OnConnected");
-        }
-        else {
+            TouchFree.DispatchEvent('OnConnected');
+        } else {
             console.log(`Connection to Service failed. Details:\n${response.message}`);
         }
-    }
+    };
 
     // Function: OnMessage
     // The first point of contact for new messages received, these are sorted into appropriate
     // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
     // <MessageReceiver>.
     OnMessage = (_message: MessageEvent): void => {
-        if ((typeof _message.data) !== 'string') {
-
+        if (typeof _message.data !== 'string') {
             const buffer = _message.data as ArrayBuffer;
             const binaryDataType = new Int32Array(buffer, 0, 4)[0];
             if (binaryDataType === ServiceBinaryDataTypes.HandRenderData) {
@@ -138,45 +132,51 @@ export class ServiceConnection {
             return;
         }
 
-        const looseData: CommunicationWrapper<any> = JSON.parse(_message.data);
+        const looseData: CommunicationWrapper<unknown> = JSON.parse(_message.data);
 
         switch (looseData.action as ActionCode) {
-            case ActionCode.INPUT_ACTION:
-                const wsInput: WebsocketInputAction = looseData.content;
+            case ActionCode.INPUT_ACTION: {
+                const wsInput = looseData.content as WebsocketInputAction;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
                 break;
+            }
 
-            case ActionCode.HAND_PRESENCE_EVENT:
-                const handEvent: HandPresenceEvent = looseData.content;
+            case ActionCode.HAND_PRESENCE_EVENT: {
+                const handEvent = looseData.content as HandPresenceEvent;
                 ConnectionManager.messageReceiver.lastStateUpdate = handEvent.state;
                 break;
+            }
 
-            case ActionCode.SERVICE_STATUS:
-                const serviceStatus: ServiceStatus = looseData.content;
+            case ActionCode.SERVICE_STATUS: {
+                const serviceStatus = looseData.content as ServiceStatus;
                 ConnectionManager.messageReceiver.serviceStatusQueue.push(serviceStatus);
                 break;
+            }
 
             case ActionCode.CONFIGURATION_STATE:
             case ActionCode.CONFIGURATION_FILE_STATE:
-            case ActionCode.QUICK_SETUP_CONFIG:
-                const configFileState: ConfigState = looseData.content;
+            case ActionCode.QUICK_SETUP_CONFIG: {
+                const configFileState = looseData.content as ConfigState;
                 ConnectionManager.messageReceiver.configStateQueue.push(configFileState);
                 break;
+            }
 
             case ActionCode.CONFIGURATION_RESPONSE:
             case ActionCode.VERSION_HANDSHAKE_RESPONSE:
             case ActionCode.SERVICE_STATUS_RESPONSE:
             case ActionCode.CONFIGURATION_FILE_RESPONSE:
-            case ActionCode.QUICK_SETUP_RESPONSE:
-                const response: WebSocketResponse = looseData.content;
+            case ActionCode.QUICK_SETUP_RESPONSE: {
+                const response = looseData.content as WebSocketResponse;
                 ConnectionManager.messageReceiver.responseQueue.push(response);
                 break;
-            case ActionCode.TRACKING_STATE:
-                const trackingResponse: TrackingStateResponse = looseData.content;
+            }
+            case ActionCode.TRACKING_STATE: {
+                const trackingResponse = looseData.content as TrackingStateResponse;
                 ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
                 break;
+            }
         }
-    }
+    };
 
     // Function: SendMessage
     // Used internally to send or request information from the Service via the <webSocket>. To
@@ -185,28 +185,34 @@ export class ServiceConnection {
     //
     // If your _callback requires context it should be bound to that context via .bind()
     SendMessage = <T extends WebSocketResponse>(
-        _message: string, _requestID: string,
-        _callback: ((detail: WebSocketResponse | T) => void) | null): void => {
-        if (_requestID === "") {
+        _message: string,
+        _requestID: string,
+        _callback: ((detail: WebSocketResponse | T) => void) | null
+    ): void => {
+        if (_requestID === '') {
             if (_callback !== null) {
                 const response: WebSocketResponse = new WebSocketResponse(
-                    "",
-                    "Failure",
-                    "Request failed. This is due to a missing or invalid requestID", _message);
+                    '',
+                    'Failure',
+                    'Request failed. This is due to a missing or invalid requestID',
+                    _message
+                );
                 _callback(response);
             }
 
-            console.error("Request failed. This is due to a missing or invalid requestID");
+            console.error('Request failed. This is due to a missing or invalid requestID');
             return;
         }
 
         if (_callback != null) {
-            ConnectionManager.messageReceiver.responseCallbacks[_requestID] =
-                new ResponseCallback(Date.now(), _callback);
+            ConnectionManager.messageReceiver.responseCallbacks[_requestID] = new ResponseCallback(
+                Date.now(),
+                _callback
+            );
         }
 
         this.webSocket.send(_message);
-    }
+    };
 
     // Function: RequestConfigState
     // Used internally to request information from the Service via the <webSocket>.
@@ -215,20 +221,19 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigState = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
-            console.error("Request for config state failed. This is due to a missing callback");
+            console.error('Request for config state failed. This is due to a missing callback');
             return;
         }
 
         const guid: string = uuidgen();
         const request: ConfigChangeRequest = new ConfigChangeRequest(guid);
-        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
+        const wrapper = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_STATE, request);
         const message: string = JSON.stringify(wrapper);
 
-        ConnectionManager.messageReceiver.configStateCallbacks[guid] =
-            new ConfigStateCallback(Date.now(), _callback);
+        ConnectionManager.messageReceiver.configStateCallbacks[guid] = new ConfigStateCallback(Date.now(), _callback);
 
         this.webSocket.send(message);
-    }
+    };
 
     // Function: RequestServiceStatus
     // Used internally to request information from the Service via the <webSocket>.
@@ -237,20 +242,22 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestServiceStatus = (_callback: (detail: ServiceStatus) => void): void => {
         if (_callback === null) {
-            console.error("Request for service status failed. This is due to a missing callback");
+            console.error('Request for service status failed. This is due to a missing callback');
             return;
         }
 
         const guid: string = uuidgen();
         const request: ServiceStatusRequest = new ServiceStatusRequest(guid);
-        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
+        const wrapper = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
         const message: string = JSON.stringify(wrapper);
 
-        ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] =
-            new ServiceStatusCallback(Date.now(), _callback);
+        ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] = new ServiceStatusCallback(
+            Date.now(),
+            _callback
+        );
 
         this.webSocket.send(message);
-    }
+    };
 
     // Function: RequestConfigFile
     // Used internally to request information from the Service via the <webSocket>.
@@ -259,20 +266,19 @@ export class ServiceConnection {
     // If your _callback requires context it should be bound to that context via .bind()
     RequestConfigFile = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
-            console.error("Request for config file failed. This is due to a missing callback");
+            console.error('Request for config file failed. This is due to a missing callback');
             return;
         }
 
         const guid: string = uuidgen();
         const request: ConfigChangeRequest = new ConfigChangeRequest(guid);
-        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
+        const wrapper = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_CONFIGURATION_FILE, request);
         const message: string = JSON.stringify(wrapper);
 
-        ConnectionManager.messageReceiver.configStateCallbacks[guid] =
-            new ConfigStateCallback(Date.now(), _callback);
+        ConnectionManager.messageReceiver.configStateCallbacks[guid] = new ConfigStateCallback(Date.now(), _callback);
 
         this.webSocket.send(message);
-    }
+    };
 
     // Function: QuickSetupRequest
     // Used internally to pass information to the Service about performing a QuickSetup
@@ -282,31 +288,34 @@ export class ServiceConnection {
     //
     // If your _callback requires context it should be bound to that context via .bind()
     // If your _configurationCallback requires context it should be bound to that context via .bind()
-    QuickSetupRequest = (atTopTarget: boolean,
+    QuickSetupRequest = (
+        atTopTarget: boolean,
         _callback: (detail: WebSocketResponse) => void,
-        _configurationCallback: (detail: ConfigState) => void): void => {
+        _configurationCallback: (detail: ConfigState) => void
+    ): void => {
         const position = atTopTarget ? 'Top' : 'Bottom';
         const guid: string = uuidgen();
 
-        const request: any = {
+        const request = {
             requestID: guid,
-            position
+            position,
         };
-        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<any>(ActionCode.QUICK_SETUP, request);
+        const wrapper = new CommunicationWrapper(ActionCode.QUICK_SETUP, request);
         const message: string = JSON.stringify(wrapper);
 
         if (_callback !== null) {
-            ConnectionManager.messageReceiver.responseCallbacks[guid] =
-                new ResponseCallback(Date.now(), _callback);
+            ConnectionManager.messageReceiver.responseCallbacks[guid] = new ResponseCallback(Date.now(), _callback);
         }
 
         if (_configurationCallback !== null) {
-            ConnectionManager.messageReceiver.configStateCallbacks[guid] =
-                new ConfigStateCallback(Date.now(), _configurationCallback);
+            ConnectionManager.messageReceiver.configStateCallbacks[guid] = new ConfigStateCallback(
+                Date.now(),
+                _configurationCallback
+            );
         }
 
         this.webSocket.send(message);
-    }
+    };
 
     // Function: RequestTrackingState
     // Used internally to request information from the Service via the <webSocket>.
@@ -320,26 +329,29 @@ export class ServiceConnection {
         }
         const guid: string = uuidgen();
         const request: SimpleRequest = new SimpleRequest(guid);
-        const wrapper: CommunicationWrapper<any> = new CommunicationWrapper<SimpleRequest>(
-            ActionCode.GET_TRACKING_STATE,
-            request
-        );
+        const wrapper = new CommunicationWrapper<SimpleRequest>(ActionCode.GET_TRACKING_STATE, request);
         const message: string = JSON.stringify(wrapper);
 
-        ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new TrackingStateCallback(Date.now(), _callback);
+        ConnectionManager.messageReceiver.trackingStateCallbacks[guid] = new TrackingStateCallback(
+            Date.now(),
+            _callback
+        );
 
         this.webSocket.send(message);
-    }
+    };
 
     // Function: RequestTrackingChange
     // Used internally to update the configuration of the Tracking via the <webSocket>.
     // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    RequestTrackingChange = (_state: Partial<TrackingState>, _callback:((detail: TrackingStateResponse) => void) | null) => {
+    RequestTrackingChange = (
+        _state: Partial<TrackingState>,
+        _callback: ((detail: TrackingStateResponse) => void) | null
+    ) => {
         const requestID = uuidgen();
         const requestContent: Partial<TrackingStateRequest> = {
-            requestID
+            requestID,
         };
 
         if (_state.mask !== undefined) {
@@ -351,28 +363,29 @@ export class ServiceConnection {
         }
 
         if (_state.cameraReversed !== undefined) {
-            requestContent.cameraReversed= _state.cameraReversed;
+            requestContent.cameraReversed = _state.cameraReversed;
         }
 
         if (_state.analyticsEnabled !== undefined) {
-            requestContent.analyticsEnabled= _state.analyticsEnabled;
+            requestContent.analyticsEnabled = _state.analyticsEnabled;
         }
 
-        const wrapper: CommunicationWrapper<Partial<TrackingStateRequest>> = new CommunicationWrapper<Partial<TrackingStateRequest>>(
-            ActionCode.SET_TRACKING_STATE,
-            requestContent
-        );
+        const wrapper: CommunicationWrapper<Partial<TrackingStateRequest>> = new CommunicationWrapper<
+            Partial<TrackingStateRequest>
+        >(ActionCode.SET_TRACKING_STATE, requestContent);
         const message: string = JSON.stringify(wrapper);
 
         if (_callback !== null) {
-            ConnectionManager.messageReceiver.trackingStateCallbacks[requestID] = new TrackingStateCallback(Date.now(), _callback);
+            ConnectionManager.messageReceiver.trackingStateCallbacks[requestID] = new TrackingStateCallback(
+                Date.now(),
+                _callback
+            );
         }
 
         this.webSocket.send(message);
-    }
-
+    };
 }
 
 enum ServiceBinaryDataTypes {
-    HandRenderData = 1    
+    HandRenderData = 1,
 }

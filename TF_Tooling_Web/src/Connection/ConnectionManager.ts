@@ -1,8 +1,9 @@
-import TouchFree from "../TouchFree";
-import { TrackingServiceState } from "../TouchFreeToolingTypes";
-import { MessageReceiver } from "./MessageReceiver";
-import { ServiceConnection } from "./ServiceConnection";
-import { HandPresenceState, ServiceStatus } from "./TouchFreeServiceTypes";
+import { MessageReceiver } from './MessageReceiver';
+import { ServiceConnection } from './ServiceConnection';
+import { HandPresenceState, ServiceStatus } from './TouchFreeServiceTypes';
+
+import TouchFree from 'TouchFree';
+import { TrackingServiceState } from 'TouchFreeToolingTypes';
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -29,7 +30,8 @@ export class ConnectionManager extends EventTarget {
     }
 
     // Variable: messageReceiver
-    // A reference to the receiver that handles destribution of data received via the <currentServiceConnection> if connected.
+    // A reference to the receiver that handles distribution of data received
+    // via the <currentServiceConnection> if connected.
     public static messageReceiver: MessageReceiver;
 
     // Variable: instance
@@ -39,17 +41,16 @@ export class ConnectionManager extends EventTarget {
     // Variable: iPAddress
     // The IP Address that will be used in the <ServiceConnection> to connect to the target
     // WebSocket. This value is settable in the Inspector.
-    static iPAddress: string = "127.0.0.1";
+    static iPAddress = '127.0.0.1';
 
     // Variable: port
     // The Port that will be used in the <ServiceConnection> to connect to the target WebSocket.
     // This value is settable in the Inspector.
-    static port: string = "9739";
+    static port = '9739';
 
     // Variable: currentHandPresence
-    // Private reference to the current hand presense state
-    private static currentHandPresence: HandPresenceState =
-        HandPresenceState.HANDS_LOST;
+    // Private reference to the current hand presence state
+    private static currentHandPresence: HandPresenceState = HandPresenceState.HANDS_LOST;
 
     // Group: Functions
 
@@ -66,12 +67,11 @@ export class ConnectionManager extends EventTarget {
     // Used to both add the _onConnectFunc action to the listeners of <OnConnected>
     // as well as auto-call the _onConnectFunc if a connection is already made.
     public static AddConnectionListener(_onConnectFunc: () => void): void {
-        TouchFree.RegisterEventCallback("OnConnected", _onConnectFunc);
-        
+        TouchFree.RegisterEventCallback('OnConnected', _onConnectFunc);
+
         if (
             ConnectionManager.currentServiceConnection !== null &&
-            ConnectionManager.currentServiceConnection.webSocket.readyState ===
-            WebSocket.OPEN &&
+            ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN &&
             ConnectionManager.currentServiceConnection.handshakeComplete
         ) {
             _onConnectFunc();
@@ -79,7 +79,7 @@ export class ConnectionManager extends EventTarget {
     }
 
     public static AddServiceStatusListener(_serviceStatusFunc: (serviceStatus: TrackingServiceState) => void): void {
-        TouchFree.RegisterEventCallback("OnTrackingServiceStateChange", _serviceStatusFunc);
+        TouchFree.RegisterEventCallback('OnTrackingServiceStateChange', _serviceStatusFunc);
     }
 
     // Function: Connect
@@ -88,7 +88,7 @@ export class ConnectionManager extends EventTarget {
     public static Connect(): void {
         ConnectionManager.currentServiceConnection = new ServiceConnection(
             ConnectionManager.iPAddress,
-            ConnectionManager.port,
+            ConnectionManager.port
         );
     }
 
@@ -99,9 +99,9 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.currentHandPresence = _state;
 
         if (_state === HandPresenceState.HAND_FOUND) {
-            TouchFree.DispatchEvent("HandFound");
+            TouchFree.DispatchEvent('HandFound');
         } else {
-            TouchFree.DispatchEvent("HandsLost");
+            TouchFree.DispatchEvent('HandsLost');
         }
     }
 
@@ -120,11 +120,9 @@ export class ConnectionManager extends EventTarget {
     // <ServiceStatus> via the _callback parameter.
     //
     // If your _callback requires context it should be bound to that context via .bind()
-    public static RequestServiceStatus(
-        _callback: (detail: ServiceStatus) => void,
-    ): void {
+    public static RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
         if (_callback === null) {
-            console.error("Request failed. This is due to a missing callback");
+            console.error('Request failed. This is due to a missing callback');
             return;
         }
 
