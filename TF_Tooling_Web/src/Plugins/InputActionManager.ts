@@ -1,6 +1,6 @@
-import TouchFree from "../TouchFree";
-import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
-import { InputActionPlugin } from "./InputActionPlugin";
+import TouchFree from '../TouchFree';
+import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
+import { InputActionPlugin } from './InputActionPlugin';
 
 // Class: InputActionManager
 // The manager for all <TouchFreeInputActions> to be handled and distributed. This runs the
@@ -41,14 +41,13 @@ export class InputActionManager extends EventTarget {
     // Called by the <messageReceiver> to relay a <TouchFreeInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
     public static HandleInputAction(_action: TouchFreeInputAction): void {
-
-        TouchFree.DispatchEvent("TransmitInputActionRaw", _action);
+        TouchFree.DispatchEvent('TransmitInputActionRaw', _action);
 
         let action = _action;
 
         if (this.plugins !== null) {
-            for (var i = 0; i < this.plugins.length; i++) {
-                let modifiedAction = this.plugins[i].RunPlugin(action);
+            for (let i = 0; i < this.plugins.length; i++) {
+                const modifiedAction = this.plugins[i].RunPlugin(action);
 
                 if (modifiedAction !== null) {
                     action = modifiedAction;
@@ -61,7 +60,7 @@ export class InputActionManager extends EventTarget {
 
         // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
         setTimeout(() => {
-            TouchFree.DispatchEvent("TransmitInputAction", action);
+            TouchFree.DispatchEvent('TransmitInputAction', action);
         }, 0);
     }
 }

@@ -1,4 +1,4 @@
-import { InteractionType } from "../TouchFreeToolingTypes";
+import { InteractionType } from '../TouchFreeToolingTypes';
 
 // Class: InteractionConfig
 // This class is a container for all of the settings related to the interactions being processed
@@ -14,7 +14,7 @@ import { InteractionType } from "../TouchFreeToolingTypes";
 // TouchFree Service.
 export interface InteractionConfig {
     // Property: UseScrollingOrDragging
-    // If true, allows interactions to send up/down events seperately, enabling dragging or
+    // If true, allows interactions to send up/down events separately, enabling dragging or
     // touchscreen-like scrolling behaviours. If false, up/down events will be sent together,
     // and every down will function like a click of its own.
     UseScrollingOrDragging: boolean;
@@ -57,7 +57,7 @@ export interface InteractionConfig {
 // the current state of the Service's config or its config files.
 export interface InteractionConfigFull {
     UseScrollingOrDragging: boolean;
-    
+
     UseSwipeInteraction: boolean;
 
     DeadzoneRadius: number;
@@ -178,6 +178,18 @@ export interface Vector {
     Z: number;
 }
 
+// Class: Vector2
+// This class is a container for a simple 2 dimensional vector
+export interface Vector2 {
+    // Property: x
+    // The X co-ordinate of the vector
+    x: number;
+
+    // Property: y
+    // The Y co-ordinate of the vector
+    y: number;
+}
+
 // Enum: TrackedPosition
 // INDEX_STABLE - Towards the screen from the proximal knuckle position of the index finger
 // INDEX_TIP - The index finger tip position
@@ -187,5 +199,5 @@ export enum TrackedPosition {
     INDEX_STABLE,
     INDEX_TIP,
     WRIST,
-    NEAREST
+    NEAREST,
 }

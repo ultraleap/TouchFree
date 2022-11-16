@@ -1,0 +1,4 @@
+/dist*
+/build/*
+/release
+*_Example.html

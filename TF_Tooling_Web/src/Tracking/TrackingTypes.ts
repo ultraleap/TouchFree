@@ -8,7 +8,6 @@ export interface Mask {
     lower: number;
 }
 
-
 // Class: TrackingState
 // Represents the settings available for modification in the Tracking API
 export class TrackingState {
@@ -21,12 +20,7 @@ export class TrackingState {
     // Variable: analyticsEnabled
     analyticsEnabled: boolean;
 
-    constructor(
-        _mask: Mask,
-        _cameraReversed: boolean,
-        _allowImages: boolean,
-        _analyticsEnabled: boolean
-    ) {
+    constructor(_mask: Mask, _cameraReversed: boolean, _allowImages: boolean, _analyticsEnabled: boolean) {
         this.mask = _mask;
         this.cameraReversed = _cameraReversed;
         this.allowImages = _allowImages;

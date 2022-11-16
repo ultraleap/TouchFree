@@ -1,6 +1,5 @@
-import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import TouchFree from '../TouchFree';
-
+import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
 
 // Class: TouchlessCursor
 // This class is a base class for creating custom Touchless cursors for use with TouchFree Tooling.
@@ -31,7 +30,7 @@ export abstract class TouchlessCursor {
     // If you intend to make use of the <WebInputController>, make sure that _cursor has the
     // "touchfree-cursor" class. This prevents it blocking other elements from recieving events.
     constructor(_cursor: HTMLElement | SVGElement | undefined) {
-        TouchFree.RegisterEventCallback("TransmitInputAction", this.HandleInputAction.bind(this));
+        TouchFree.RegisterEventCallback('TransmitInputAction', this.HandleInputAction.bind(this));
 
         this.cursor = _cursor;
         this.enabled = true;
@@ -42,17 +41,17 @@ export abstract class TouchlessCursor {
     // Sets the position of the cursor, should be run after <HandleInputAction>.
     UpdateCursor(_inputAction: TouchFreeInputAction): void {
         if (this.cursor) {
-            this.cursor.style.left = (_inputAction.CursorPosition[0] - (this.cursor.clientWidth / 2)) + "px";
-            this.cursor.style.top = (_inputAction.CursorPosition[1] - (this.cursor.clientHeight / 2)) + "px";
+            this.cursor.style.left = _inputAction.CursorPosition[0] - this.cursor.clientWidth / 2 + 'px';
+            this.cursor.style.top = _inputAction.CursorPosition[1] - this.cursor.clientHeight / 2 + 'px';
         }
     }
 
     // Function: HandleInputAction
     // The core of the logic for Cursors, this is invoked with each <TouchFreeInputAction> as
-    // they are recieved. Override this function to implement cursor behaviour in response.
+    // they are received. Override this function to implement cursor behaviour in response.
     //
     // Parameters:
-    //    _inputAction - The latest input action recieved from TouchFree Service.
+    //    _inputAction - The latest input action received from TouchFree Service.
     HandleInputAction(_inputAction: TouchFreeInputAction): void {
         this.UpdateCursor(_inputAction);
     }
@@ -62,7 +61,7 @@ export abstract class TouchlessCursor {
     ShowCursor(): void {
         this.shouldShow = true;
         if (this.cursor && this.enabled) {
-            this.cursor.style.opacity = "1";
+            this.cursor.style.opacity = '1';
         }
     }
 
@@ -71,7 +70,7 @@ export abstract class TouchlessCursor {
     HideCursor(): void {
         this.shouldShow = false;
         if (this.cursor) {
-            this.cursor.style.opacity = "0";
+            this.cursor.style.opacity = '0';
         }
     }
 
