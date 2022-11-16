@@ -595,9 +595,9 @@ TF_Service::ARMLinux::package:
     - apt-get --assume-yes install squashfs-tools
 
     # Uncompress & chmod TouchFree Service
-    - mv ./Service_dotNet_Build_ARMLinux/libatomic.so.1.2.0 ./Service_dotNet_Build_ARMLinux/libatomic.so.1
-    - mv ./Service_dotNet_Build_ARMLinux/libLeapC.so.5 ./Service_dotNet_Build_ARMLinux/libLeapC.so
-    - mv ./Service_dotNet_Build_ARMLinux/libstdc++.so.6.0.28 ./Service_dotNet_Build_ARMLinux/libstdc++.so.6
+    - ln ./Service_dotNet_Build_ARMLinux/libatomic.so.1.2.0 ./Service_dotNet_Build_ARMLinux/libatomic.so.1
+    - ln ./Service_dotNet_Build_ARMLinux/libLeapC.so.5 ./Service_dotNet_Build_ARMLinux/libLeapC.so
+    - ln ./Service_dotNet_Build_ARMLinux/libstdc++.so.6.0.28 ./Service_dotNet_Build_ARMLinux/libstdc++.so.6
     - chmod +x ./Service_dotNet_Build_ARMLinux/TouchFree_Service
 
     # Uncompress & chmod tracking service
@@ -614,7 +614,7 @@ TF_Service::ARMLinux::package:
     - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
     - cp ./LeapSDK/ThirdPartyNotices.md ./TouchFree_Extension/Tracking
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
-    - cp -R $CI_PROJECT_DIR/TF_Settings_Web/dist/* ./TouchFree_Extension/wwwroot
+    #- cp -R $CI_PROJECT_DIR/TF_Settings_Web/dist/* ./TouchFree_Extension/wwwroot
 
     - cp $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Version.txt ./TouchFree_Extension
 
