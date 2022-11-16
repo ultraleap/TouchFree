@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Numerics;
 
 namespace Ultraleap.TouchFree.Library.Interactions
@@ -20,12 +19,12 @@ namespace Ultraleap.TouchFree.Library.Interactions
         private readonly Filter xFilter = new Filter();
         private readonly Filter yFilter = new Filter();
 
-        public PositionFilter(IOptions<InteractionTuning> _interactionTuning)
+        public PositionFilter(InteractionTuning _interactionTuning)
         {
             beta = 0.1f;
             dcutoff = 0.5f;
             mincutoff = 0.5f;
-            enabled = _interactionTuning?.Value?.EnableOneEuroFilter ?? false;
+            enabled = _interactionTuning?.EnableOneEuroFilter ?? false;
         }
 
         public Vector2 ApplyModification(Vector2 position)

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +30,6 @@ namespace Ultraleap.TouchFree.Library
             IUpdateBehaviour _updateBehaviour,
             IClientConnectionManager _connectionManager,
             IEnumerable<IInteraction> _interactions,
-            IOptions<InteractionTuning> _interactionTuning,
             IConfigManager _configManager,
             IHandManager _handManager,
             ITrackingConnectionManager _trackingConnectionManager)
@@ -39,7 +37,6 @@ namespace Ultraleap.TouchFree.Library
             updateBehaviour = _updateBehaviour;
             connectionManager = _connectionManager;
             interactions = _interactions;
-            interactionTuning = _interactionTuning?.Value;
             handManager = _handManager;
             trackingConnectionManager = _trackingConnectionManager;
 

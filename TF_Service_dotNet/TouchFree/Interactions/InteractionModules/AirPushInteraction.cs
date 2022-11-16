@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+﻿
 using System;
 using System.Diagnostics;
 using System.Numerics;
@@ -66,11 +66,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
-            interactionTuning = _interactionTuning?.Value;
 
             if (interactionTuning?.AirPushSettings != null)
             {
@@ -84,8 +82,8 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 unclickThreshold = interactionTuning.AirPushSettings.UnclickThreshold;
                 unclickThresholdDrag = interactionTuning.AirPushSettings.UnclickThresholdDrag;
             }
-            extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
-            filter = new PositionFilter(_interactionTuning);
+            extrapolation = new ExtrapolationPositionModifier(interactionTuning);
+            filter = new PositionFilter(interactionTuning);
 
             positionConfiguration = new[]
             {

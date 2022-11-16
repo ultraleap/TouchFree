@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
@@ -47,38 +46,39 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
-            if (_interactionTuning?.Value?.VelocitySwipeSettings != null)
-            {
-                minScrollVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MinScrollVelocity_mmps;
-                upwardsMinVelocityDecrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.UpwardsMinVelocityDecrease_mmps;
-                downwardsMinVelocityIncrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.DownwardsMinVelocityIncrease_mmps;
-                maxReleaseVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxReleaseVelocity_mmps;
-                maxLateralVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxLateralVelocity_mmps;
-                maxOpposingVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxOpposingVelocity_mmps;
-                scrollDelayMs = _interactionTuning.Value.VelocitySwipeSettings.ScrollDelayMs;
-                minSwipeLength = _interactionTuning.Value.VelocitySwipeSettings.MinSwipeLength;
-                maxSwipeWidth = _interactionTuning.Value.VelocitySwipeSettings.MaxSwipeWidth;
-                swipeWidthScaling = _interactionTuning.Value.VelocitySwipeSettings.SwipeWidthScaling;
+            InteractionTuning interactionTuning = null;
 
-                if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll && _interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
+            if (interactionTuning?.VelocitySwipeSettings != null)
+            {
+                minScrollVelocity_mmps = interactionTuning.VelocitySwipeSettings.MinScrollVelocity_mmps;
+                upwardsMinVelocityDecrease_mmps = interactionTuning.VelocitySwipeSettings.UpwardsMinVelocityDecrease_mmps;
+                downwardsMinVelocityIncrease_mmps = interactionTuning.VelocitySwipeSettings.DownwardsMinVelocityIncrease_mmps;
+                maxReleaseVelocity_mmps = interactionTuning.VelocitySwipeSettings.MaxReleaseVelocity_mmps;
+                maxLateralVelocity_mmps = interactionTuning.VelocitySwipeSettings.MaxLateralVelocity_mmps;
+                maxOpposingVelocity_mmps = interactionTuning.VelocitySwipeSettings.MaxOpposingVelocity_mmps;
+                scrollDelayMs = interactionTuning.VelocitySwipeSettings.ScrollDelayMs;
+                minSwipeLength = interactionTuning.VelocitySwipeSettings.MinSwipeLength;
+                maxSwipeWidth = interactionTuning.VelocitySwipeSettings.MaxSwipeWidth;
+                swipeWidthScaling = interactionTuning.VelocitySwipeSettings.SwipeWidthScaling;
+
+                if (interactionTuning.VelocitySwipeSettings.AllowHorizontalScroll && interactionTuning.VelocitySwipeSettings.AllowVerticalScroll)
                 {
-                    allowBidirectional = _interactionTuning.Value.VelocitySwipeSettings.AllowBidirectionalScroll;
+                    allowBidirectional = interactionTuning.VelocitySwipeSettings.AllowBidirectionalScroll;
                 }
-                else if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll)
+                else if (interactionTuning.VelocitySwipeSettings.AllowHorizontalScroll)
                 {
                     lockAxisToOnly = Axis.X;
                 }
-                else if (_interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
+                else if (interactionTuning.VelocitySwipeSettings.AllowVerticalScroll)
                 {
                     lockAxisToOnly = Axis.Y;
                 }
             }
 
-            filter = new PositionFilter(_interactionTuning);
+            filter = new PositionFilter(interactionTuning);
 
             positionConfiguration = new[]
             {

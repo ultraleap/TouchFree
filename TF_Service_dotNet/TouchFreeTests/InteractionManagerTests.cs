@@ -49,7 +49,7 @@ namespace TouchFreeTests
                 CreateInteractionWithType(InteractionType.VELOCITYSWIPE)
             };
             var mockUpdateBehaviour = new Mock<IUpdateBehaviour>();
-            var sut = new InteractionManager(mockUpdateBehaviour.Object, null, interactions, null, configManager.Object, null, null);
+            var sut = new InteractionManager(mockUpdateBehaviour.Object, null, interactions, configManager.Object, null, null);
             return sut;
         }
 

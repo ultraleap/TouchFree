@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Options;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace Ultraleap.TouchFree.Library.Interactions
 {
     public class ExtrapolationPositionModifier : IPositionModifier
     {
-        public ExtrapolationPositionModifier(IOptions<InteractionTuning> _interactionTuning)
+        public ExtrapolationPositionModifier(InteractionTuning _interactionTuning)
         {
-            enabled = _interactionTuning?.Value?.EnableExtrapolation ?? false;
+            enabled = _interactionTuning?.EnableExtrapolation ?? false;
         }
 
         private readonly bool enabled;

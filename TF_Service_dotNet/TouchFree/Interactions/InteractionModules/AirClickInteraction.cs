@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Linq;
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -35,12 +34,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
-            IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
-            extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
-            filter = new PositionFilter(_interactionTuning);
+            extrapolation = new ExtrapolationPositionModifier(null);
+            filter = new PositionFilter(null);
 
             positionConfiguration = new[]
             {
