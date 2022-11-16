@@ -73,8 +73,33 @@ const EventListeners: { [T in TouchFreeEvent]: (callback: TouchFreeEventSignatur
 
 // Function: RegisterEventCallback
 // Registers a callback function to be called when a specific event occurs
-// See `TouchFreeEventSignatures` for listing of all events and expected callback signatures
 // Returns an `EventHandle` that can be used to unregister the callback
+//
+// Events and expected callback signatures:
+//
+// OnConnected: () => void;
+// Event dispatched when connecting to the TouchFree service
+//
+// OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
+// Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
+//
+// HandFound: () => void;
+// Event dispatched when the first hand has started tracking
+//
+// HandsLost: () => void;
+// Event dispatched when the last hand has stopped tracking
+//
+// TransmitHandData: (data: HandFrame) => void;
+// Event dispatched when new hand data is available
+//
+// InputAction: (inputAction: TouchFreeInputAction) => void;
+// Event dispatched when any input action is received from the TouchFree service
+//
+// TransmitInputActionRaw: (inputAction: TouchFreeInputAction) => void;
+// Event dispatched directly from the <InputActionManager> without any proxying
+//
+// TransmitInputAction: (inputAction: TouchFreeInputAction) => void;
+// Event dispatched from the <InputActionManager> to each registered Plugin
 const RegisterEventCallback = <TEvent extends TouchFreeEvent>(
     event: TEvent,
     callback: TouchFreeEventSignatures[TEvent]
@@ -87,8 +112,32 @@ const RegisterEventCallback = <TEvent extends TouchFreeEvent>(
 };
 
 // Function: Dispatch Event
-// Dispatches an event of the specific type with arguments if the event requires any
-// See `TouchFreeEventSignatures` for listing of all events and expected arguments
+// Dispatches an event of the specific type with arguments if the event requires any.
+// Events and expected arguments:
+//
+// OnConnected: () => void;
+// Event dispatched when connecting to the TouchFree service
+//
+// OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
+// Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
+//
+// HandFound: () => void;
+// Event dispatched when the first hand has started tracking
+//
+// HandsLost: () => void;
+// Event dispatched when the last hand has stopped tracking
+//
+// TransmitHandData: (data: HandFrame) => void;
+// Event dispatched when new hand data is available
+//
+// InputAction: (inputAction: TouchFreeInputAction) => void;
+// Event dispatched when any input action is received from the TouchFree service
+//
+// TransmitInputActionRaw: (inputAction: TouchFreeInputAction) => void;
+// Event dispatched directly from the <InputActionManager> without any proxying
+//
+// TransmitInputAction: (inputAction: TouchFreeInputAction) => void;
+// Event dispatched from the <InputActionManager> to each registered Plugin
 const DispatchEvent = <TEvent extends TouchFreeEvent>(
     eventType: TEvent,
     ...args: Parameters<TouchFreeEventSignatures[TEvent]>
