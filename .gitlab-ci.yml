@@ -595,9 +595,9 @@ TF_Service::ARMLinux::package:
     - apt-get --assume-yes install squashfs-tools
 
     # Uncompress & chmod TouchFree Service
-    - Ren ./Service_dotNet_Build_ARMLinux/libatomic.so.1.2.0 ./Service_dotNet_Build_ARMLinux/libatomic.so.1
-    - Ren ./Service_dotNet_Build_ARMLinux/libLeapC.so.5 ./Service_dotNet_Build_ARMLinux/libLeapC.so
-    - Ren ./Service_dotNet_Build_ARMLinux/libstdc++.so.6.0.28 ./Service_dotNet_Build_ARMLinux/libstdc++.so.6
+    - mv ./Service_dotNet_Build_ARMLinux/libatomic.so.1.2.0 ./Service_dotNet_Build_ARMLinux/libatomic.so.1
+    - mv ./Service_dotNet_Build_ARMLinux/libLeapC.so.5 ./Service_dotNet_Build_ARMLinux/libLeapC.so
+    - mv ./Service_dotNet_Build_ARMLinux/libstdc++.so.6.0.28 ./Service_dotNet_Build_ARMLinux/libstdc++.so.6
     - chmod +x ./Service_dotNet_Build_ARMLinux/TouchFree_Service
 
     # Uncompress & chmod tracking service
