@@ -610,6 +610,7 @@ TF_Service::ARMLinux::package:
     - mkdir ./TouchFree_Extension/Tracking
     - mkdir ./TouchFree_Extension/Tracking/bin
     - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
+    - rm ./TouchFree_Extension/Tracking/bin/*377*
     - cp ./LeapSDK/ThirdPartyNotices.md ./TouchFree_Extension/Tracking
     - cp -R $CI_PROJECT_DIR/Service_dotNet_Build_ARMLinux/* ./TouchFree_Extension/TouchFree
     #- cp -R $CI_PROJECT_DIR/TF_Settings_Web/dist/* ./TouchFree_Extension/wwwroot
