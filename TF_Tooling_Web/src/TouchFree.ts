@@ -111,33 +111,9 @@ const RegisterEventCallback = <TEvent extends TouchFreeEvent>(
     return { UnregisterEventCallback: () => target.removeEventListener(eventType, listener) };
 };
 
-// Function: Dispatch Event
+// Function: DispatchEvent
 // Dispatches an event of the specific type with arguments if the event requires any.
-// Events and expected arguments:
-//
-// OnConnected: () => void;
-// Event dispatched when connecting to the TouchFree service
-//
-// OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
-// Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
-//
-// HandFound: () => void;
-// Event dispatched when the first hand has started tracking
-//
-// HandsLost: () => void;
-// Event dispatched when the last hand has stopped tracking
-//
-// TransmitHandData: (data: HandFrame) => void;
-// Event dispatched when new hand data is available
-//
-// InputAction: (inputAction: TouchFreeInputAction) => void;
-// Event dispatched when any input action is received from the TouchFree service
-//
-// TransmitInputActionRaw: (inputAction: TouchFreeInputAction) => void;
-// Event dispatched directly from the <InputActionManager> without any proxying
-//
-// TransmitInputAction: (inputAction: TouchFreeInputAction) => void;
-// Event dispatched from the <InputActionManager> to each registered Plugin
+// For details of events and their expected arguments see comment above RegisterEventCallback.
 const DispatchEvent = <TEvent extends TouchFreeEvent>(
     eventType: TEvent,
     ...args: Parameters<TouchFreeEventSignatures[TEvent]>
