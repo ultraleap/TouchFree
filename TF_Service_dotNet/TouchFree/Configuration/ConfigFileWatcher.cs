@@ -36,7 +36,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             var fileWatcher = new FileSystemWatcher();
             fileWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            fileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
+            fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
             fileWatcher.Filter = fileName;
             fileWatcher.Changed += FileUpdated;
             fileWatcher.IncludeSubdirectories = true;
