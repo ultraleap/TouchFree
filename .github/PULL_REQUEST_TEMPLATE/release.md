@@ -2,8 +2,9 @@
 
 Switch template by going to preview and clicking the link - note it will not work if you've made any changes to the description.
 
-- [default.md](?expand=1) - for contributions pull requests.
-- [release.md](?expand=1&template=release.md) - for release pull requests.
+- [default.md](?expand=1) - main template to be used in most situations.
+- [lightweight.md](?expand=1&template=lightweight.md) - use for small/minor fixes or changes that don't require significant review.
+- [release.md](?expand=1&template=release.md) - use for releases.
 
 **You are currently using: release.md**
 
@@ -13,17 +14,10 @@ Note: these links work by overwriting query parameters of the current url. If th
 
 _These tasks must be completed to release._
 
-- [ ] Create and request approval of a [Verification Report on Cognidox](https://ultrahaptics.cdox.net/cgi-perl/browse-categories?id=973) for the relevant product being released
-- [ ] Ensure documentation requirements are met e.g., public API is commented
-- [ ] Consider any licensing/other legal implications e.g., notices required
-- [ ] Check that any additional release tasks from contributing PRs have been considered below
-- [ ] Close off the JIRA release
-
-## Additional Release Tasks
-
-_This task list should be populated from PRs contributing to this release. Can include functionality tests and regression tests such as tests for integration of multiple features as well as any other tasks that should be performed during the release._
-
-- [ ] 
+- [ ] Create and request approval of a [Request to Release on Cognidox](https://ultrahaptics.cdox.net/cgi-perl/browse-categories?id=973) for the relevant product being released. This will include several tasks within.
+- [ ] Ensure version numbers within software have been updated
+- [ ] Ensure any changelogs have been updated
+- [ ] Continue release process on [Confluence](https://ultrahaptics.atlassian.net/wiki/spaces/SC/pages/3107979726/TouchFree+Work+Practices#Release-Processes)
 
 ## JIRA Release
 
