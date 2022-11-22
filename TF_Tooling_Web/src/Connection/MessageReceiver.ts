@@ -23,8 +23,6 @@ import {
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 
-type CallbackResult = 'Success' | 'CallbacksUndefined' | 'NoCallbacksFound' | Error;
-
 // Class: MessageReceiver
 // Handles the receiving of messages from the Service in an ordered manner.
 // Distributes the results of the messages to the respective managers.
@@ -147,23 +145,29 @@ export class MessageReceiver {
         const response: WebSocketResponse | undefined = this.responseQueue.shift();
 
         if (response !== undefined) {
-            const handledResponse = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
-
-            if (!handledResponse) {
-                console.log(
-                    'Received a WebSocketResponse that did not match a callback.' +
-                        'This is the content of the response: \n Response ID: ' +
-                        response.requestID +
-                        '\n Status: ' +
-                        response.status +
-                        '\n Message: ' +
-                        response.message +
-                        '\n Original request - ' +
-                        response.originalRequest
-                );
-            } else {
-                // This is logged to aid users in debugging
-                console.log(response.message);
+            const responseResult = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
+            
+            switch(responseResult)
+            {
+                case 'NoCallbacksFound':
+                    console.warn(
+                        'Received a WebSocketResponse that did not match a callback.' +
+                            'This is the content of the response: \n Response ID: ' +
+                            response.requestID +
+                            '\n Status: ' +
+                            response.status +
+                            '\n Message: ' +
+                            response.message +
+                            '\n Original request - ' +
+                            response.originalRequest
+                    );
+                    break;
+                case 'Success':
+                    if(response.message) {
+                        // This is logged to aid users in debugging
+                        console.log('Successfully received WebSocketResponse from TouchFree:\n' + response.message);
+                    }
+                    break;
             }
         }
     }
@@ -175,7 +179,16 @@ export class MessageReceiver {
         const configState: ConfigState | undefined = this.configStateQueue.shift();
 
         if (configState !== undefined) {
-            MessageReceiver.HandleCallbackList(configState, this.configStateCallbacks);
+            const configResult = MessageReceiver.HandleCallbackList(configState, this.configStateCallbacks);
+            switch(configResult)
+            {
+                case 'NoCallbacksFound':
+                    console.warn('Received a ConfigState message that did not match a callback.');
+                    break;
+                case 'Success':
+                    // no-op
+                    break;
+            }
         }
     }
 
@@ -186,10 +199,7 @@ export class MessageReceiver {
     private static HandleCallbackList<T extends TouchFreeRequest>(
         callbackResult: T,
         callbacks: { [id: string]: TouchFreeRequestCallback<T> }
-    ): CallbackResult {
-        if (callbacks === undefined) {
-            return 'CallbacksUndefined';
-        }
+    ): 'Success' | 'NoCallbacksFound' {
 
         for (const key in callbacks) {
             if (key === callbackResult.requestID) {
@@ -211,13 +221,20 @@ export class MessageReceiver {
         if (serviceStatus !== undefined) {
             const callbackResult = MessageReceiver.HandleCallbackList(serviceStatus, this.serviceStatusCallbacks);
 
-            // If callback didn't happen for known reasons, we cna be sure it's an independent status event rather
-            // than a request response
-            if (callbackResult === 'NoCallbacksFound' || callbackResult === 'CallbacksUndefined') {
-                // If service state is null we didn't get info about it from this message
-                if (serviceStatus.trackingServiceState !== null) {
-                    TouchFree.DispatchEvent('OnTrackingServiceStateChange', serviceStatus.trackingServiceState);
-                }
+            switch(callbackResult)
+            {
+                // If callback didn't happen for known reasons, we can be sure it's an independent status event rather
+                // than a request response
+                // TODO: Send/handle this request from service differently from normal response so we can be sure it's an independent event
+                case 'NoCallbacksFound':
+                    // If service state is null we didn't get info about it from this message
+                    if (serviceStatus.trackingServiceState !== null) {
+                        TouchFree.DispatchEvent('OnTrackingServiceStateChange', serviceStatus.trackingServiceState);
+                    }
+                    break;
+                case 'Success':
+                    // no-op
+                    break;
             }
         }
     }
