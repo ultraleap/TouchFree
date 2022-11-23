@@ -1,3 +1,9 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
+
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TF_SETTINGS_PROJECT_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity
