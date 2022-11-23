@@ -1,0 +1,51 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+[docs-website]: https://docs.ultraleap.com/touchfree-user-manual/ "Ultraleap Docs"
+
+## [Unreleased]
+
+## [1.3.0] - 2022-11-23
+
+### Added
+- Top level `TouchFree` object as a place for functionality to accomplish common TouchFree tasks.
+- `Init` function in the `TouchFree` object which simplifies initialization of TouchFree to a single call.
+- Event handling functions in `TouchFree` object:
+    - `RegisterEvent` for registering callbacks to global TouchFree events safely. Returns a convenient object that can be used to `UnregisterEventCallback`.
+    - `DispatchEvent` for dispatching events safely - not typically needed by library consumers.
+
+### Changed
+- TouchFree will now send Click events.
+
+## [1.2.0] - 2022-09-30
+
+### Added
+- New cursor that uses SVGs rather than images - allowing for integration into a page using a single line of code.
+- The Ultraleap Tracking Service can now be configured through the Tooling for Web.
+
+### Changed
+- The TouchFree cursor will now scroll scrollable areas without the need for extra code in the InputController.
+
+## [1.1.1] - 2022-06-14
+
+### Added
+- `ServiceConnection.Disconnect` allowing a user to force close the web socket.
+
+### Fixed
+- Several internal fixes to ensure stability.
+
+## [1.1.0] - 2022-06-8
+
+### Added
+- Input Action Events can now be sent to HTML elements at the position of the cursor, making it easier to build reactive content.
+- TouchFree tooling clients can request updates to the config files via the service to make global changes to the TouchFree configuration for all clients.
+- TouchFree service state can be queried.
+
+### Fixed
+- NONE events are now properly culled from overfilled InputAction Queues, improving performance.
+- Web Tooling cursor position now aligns correctly with scaled displays.
+- Cursor position no longer needs to be inverted in the Y axis every time it's used.
+    - NOTE: If you have used TouchFree cursor data directly, you will need to update your code to remove the inversion of the Y Axis data
