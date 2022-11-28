@@ -172,6 +172,7 @@ export enum BitmaskFlags {
 // TransmitInputAction - Event dispatched from the <InputActionManager> to each registered Plugin
 export interface TouchFreeEventSignatures {
     OnConnected: () => void;
+    WhenConnected: () => void;
     OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
     HandFound: () => void;
     HandsLost: () => void;
