@@ -208,6 +208,7 @@ TF_Service::dotNet::ARMLinux::build:
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
     - mv ./Service_dotNet_Build_ARMLinux/ThirdParty/.NetRuntime.License.txt ./Service_dotNet_Build_ARMLinux/ThirdParty/dotNetRuntime.License.txt
     - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Newtonsoft.JSON.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
+    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/WebsocketSharp.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
 
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
@@ -354,7 +355,7 @@ TF_Settings::Web::build:
     - npm ls
     - cd ./TF_Settings_Web
     - npm run build
-    - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol posix
+    - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol crlf --ci
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
