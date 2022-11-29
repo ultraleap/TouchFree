@@ -187,7 +187,7 @@ TF_Service::dotNet::ARMLinux::build:
   image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
-        $TOUCHFREE_SUFFIX = 'beta1'
+        $TOUCHFREE_SUFFIX = 'beta'
       } else {
         $TOUCHFREE_SUFFIX = 'dev+' + ${env:CI_COMMIT_SHORT_SHA}
       }
