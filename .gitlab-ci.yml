@@ -350,6 +350,9 @@ TF_Settings::Web::build:
   stage: build
   when: always
   script:
+    - if (Test-Path ./package-lock.json) {
+        Remove-Item ./package-lock.json
+      }
     - npm -v
     - npm install -w TF_Settings_Web
     - npm ls
