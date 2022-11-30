@@ -357,6 +357,7 @@ TF_Settings::Web::build:
     - npm run build
     - cp ./package.json ../
     - cd ../
+    - Remove-Item -Force .\node_modules\touchfree\
     - npx generate-license-file@2.0.0 --input ./package.json --output ./TF_Settings_Web/dist/ThirdPartyLicenses.txt --eol lf --ci
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
