@@ -350,15 +350,14 @@ TF_Settings::Web::build:
   stage: build
   when: always
   script:
-    - if (Test-Path ./package-lock.json) {
-        Remove-Item ./package-lock.json
-      }
     - npm -v
     - npm install -w TF_Settings_Web
     - npm ls
     - cd ./TF_Settings_Web
     - npm run build
-    - npx generate-license-file@2.0.0 --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol lf --ci
+    - cp ./package.json ../
+    - cd ../
+    - npx generate-license-file@2.0.0 --input ./package.json --output ./TF_Settings_Web/dist/ThirdPartyLicenses.txt --eol lf --ci
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
