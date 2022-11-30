@@ -66,15 +66,13 @@ export class ConnectionManager extends EventTarget {
     // Used to both add the _onConnectFunc action to the listeners of <OnConnected>
     // as well as auto-call the _onConnectFunc if a connection is already made.
     public static AddConnectionListener(_onConnectFunc: () => void): void {
-        TouchFree.RegisterEventCallback('OnConnected', _onConnectFunc);
+        TouchFree.RegisterEventCallback('WhenConnected', _onConnectFunc);
+    }
 
-        if (
-            ConnectionManager.currentServiceConnection !== null &&
-            ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN &&
-            ConnectionManager.currentServiceConnection.handshakeComplete
-        ) {
-            _onConnectFunc();
-        }
+    public static get IsConnected():boolean {
+        return ConnectionManager.currentServiceConnection !== null &&
+        ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN &&
+        ConnectionManager.currentServiceConnection.handshakeComplete;
     }
 
     public static AddServiceStatusListener(_serviceStatusFunc: (serviceStatus: TrackingServiceState) => void): void {
