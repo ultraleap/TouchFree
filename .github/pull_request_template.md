@@ -23,11 +23,11 @@ _These tasks are for the pull request creator to tick off._
 - [ ] XDR review (optional depending on work type)
 - [ ] QA review (or another developer if no QA is available)
 - [ ] Ensure documentation requirements are met e.g., public API is commented
+- [ ] Make sure relevant changelog is updated if any changes affect users
 - [ ] Consider any licensing/other legal implications e.g., notices required
 
 If there is an associated JIRA issue:
 - [ ] Include a link to the JIRA issue in the summary above
-- [ ] Update the release notes on the issue
 - [ ] Make sure the fix version on the issue is set correctly
 
 ## Reviewer Tasks

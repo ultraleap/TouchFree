@@ -19,6 +19,7 @@ _Summary of the purpose of this pull request._
 _These tasks are for the pull request creator to tick off._
 
 - [ ] Developer testing
+- [ ] Make sure relevant changelog is updated if any changes affect users
 
 ## Reviewer Tasks
 
