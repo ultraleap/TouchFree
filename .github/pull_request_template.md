@@ -14,6 +14,12 @@ Note: these links work by overwriting query parameters of the current url. If th
 
 _Summary of the purpose of this pull request._
 
+
+### Tests Added
+
+_Summary of the tests added as part of this change, or reason why no tests are required._
+
+
 ## Contributor Tasks
 
 _These tasks are for the pull request creator to tick off._
