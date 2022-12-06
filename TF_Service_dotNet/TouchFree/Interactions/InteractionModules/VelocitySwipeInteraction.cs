@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -10,23 +11,23 @@ namespace Ultraleap.TouchFree.Library.Interactions
     {
         public override InteractionType InteractionType { get; } = InteractionType.VELOCITYSWIPE;
 
-        private readonly float minScrollVelocity_mmps = 625f;
-        private readonly float upwardsMinVelocityDecrease_mmps = 50f;
-        private readonly float downwardsMinVelocityIncrease_mmps = 50f;
-        private readonly float maxReleaseVelocity_mmps = 200f;
+        private  float minScrollVelocity_mmps = 625f;
+        private  float upwardsMinVelocityDecrease_mmps = 50f;
+        private  float downwardsMinVelocityIncrease_mmps = 50f;
+        private  float maxReleaseVelocity_mmps = 200f;
 
-        private readonly float maxLateralVelocity_mmps = 300f;
-        private readonly float maxOpposingVelocity_mmps = 65f;
+        private  float maxLateralVelocity_mmps = 300f;
+        private  float maxOpposingVelocity_mmps = 65f;
 
-        private readonly float minSwipeLength = 10f;
-        private readonly float maxSwipeWidth = 10f;
-        private readonly float swipeWidthScaling = 0.2f;
+        private  float minSwipeLength = 10f;
+        private  float maxSwipeWidth = 10f;
+        private  float swipeWidthScaling = 0.2f;
 
-        private readonly double scrollDelayMs = 450;
+        private  double scrollDelayMs = 450;
         private readonly Stopwatch scrollDelayStopwatch = new Stopwatch();
 
-        private readonly Axis lockAxisToOnly = Axis.NONE;
-        private readonly bool allowBidirectional = false;
+        private  Axis lockAxisToOnly = Axis.NONE;
+        private  bool allowBidirectional = false;
 
         private readonly PositionFilter filter;
 
@@ -51,31 +52,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IPositioningModule _positioningModule,
             IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
-            if (_interactionTuning?.Value?.VelocitySwipeSettings != null)
+            if (_configManager.InteractionConfig?.VelocitySwipe != null)
             {
-                minScrollVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MinScrollVelocity_mmps;
-                upwardsMinVelocityDecrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.UpwardsMinVelocityDecrease_mmps;
-                downwardsMinVelocityIncrease_mmps = _interactionTuning.Value.VelocitySwipeSettings.DownwardsMinVelocityIncrease_mmps;
-                maxReleaseVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxReleaseVelocity_mmps;
-                maxLateralVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxLateralVelocity_mmps;
-                maxOpposingVelocity_mmps = _interactionTuning.Value.VelocitySwipeSettings.MaxOpposingVelocity_mmps;
-                scrollDelayMs = _interactionTuning.Value.VelocitySwipeSettings.ScrollDelayMs;
-                minSwipeLength = _interactionTuning.Value.VelocitySwipeSettings.MinSwipeLength;
-                maxSwipeWidth = _interactionTuning.Value.VelocitySwipeSettings.MaxSwipeWidth;
-                swipeWidthScaling = _interactionTuning.Value.VelocitySwipeSettings.SwipeWidthScaling;
-
-                if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll && _interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
-                {
-                    allowBidirectional = _interactionTuning.Value.VelocitySwipeSettings.AllowBidirectionalScroll;
-                }
-                else if (_interactionTuning.Value.VelocitySwipeSettings.AllowHorizontalScroll)
-                {
-                    lockAxisToOnly = Axis.X;
-                }
-                else if (_interactionTuning.Value.VelocitySwipeSettings.AllowVerticalScroll)
-                {
-                    lockAxisToOnly = Axis.Y;
-                }
+                OnInteractionConfigUpdated(_configManager.InteractionConfig);
             }
 
             filter = new PositionFilter(_interactionTuning);
@@ -84,6 +63,35 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 new PositionTrackerConfiguration(TrackedPosition.INDEX_TIP, 1)
             };
+
+            _configManager.OnInteractionConfigUpdated += OnInteractionConfigUpdated;
+        }
+
+        private void OnInteractionConfigUpdated(InteractionConfigInternal config)
+        {
+            minScrollVelocity_mmps = config.VelocitySwipe.MinScrollVelocity_mmps;
+            upwardsMinVelocityDecrease_mmps = config.VelocitySwipe.UpwardsMinVelocityDecrease_mmps;
+            downwardsMinVelocityIncrease_mmps = config.VelocitySwipe.DownwardsMinVelocityIncrease_mmps;
+            maxReleaseVelocity_mmps = config.VelocitySwipe.MaxReleaseVelocity_mmps;
+            maxLateralVelocity_mmps = config.VelocitySwipe.MaxLateralVelocity_mmps;
+            maxOpposingVelocity_mmps = config.VelocitySwipe.MaxOpposingVelocity_mmps;
+            scrollDelayMs = config.VelocitySwipe.ScrollDelayMs;
+            minSwipeLength = config.VelocitySwipe.MinSwipeLength;
+            maxSwipeWidth = config.VelocitySwipe.MaxSwipeWidth;
+            swipeWidthScaling = config.VelocitySwipe.SwipeWidthScaling;
+
+            if (config.VelocitySwipe.AllowHorizontalScroll && config.VelocitySwipe.AllowVerticalScroll)
+            {
+                allowBidirectional = config.VelocitySwipe.AllowBidirectionalScroll;
+            }
+            else if (config.VelocitySwipe.AllowHorizontalScroll)
+            {
+                lockAxisToOnly = Axis.X;
+            }
+            else if (config.VelocitySwipe.AllowVerticalScroll)
+            {
+                lockAxisToOnly = Axis.Y;
+            }
         }
 
         protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
