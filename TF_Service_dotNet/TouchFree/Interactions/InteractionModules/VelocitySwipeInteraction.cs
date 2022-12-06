@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using System;
 using System.Diagnostics;
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
@@ -11,23 +10,23 @@ namespace Ultraleap.TouchFree.Library.Interactions
     {
         public override InteractionType InteractionType { get; } = InteractionType.VELOCITYSWIPE;
 
-        private  float minScrollVelocity_mmps = 625f;
-        private  float upwardsMinVelocityDecrease_mmps = 50f;
-        private  float downwardsMinVelocityIncrease_mmps = 50f;
-        private  float maxReleaseVelocity_mmps = 200f;
+        private float minScrollVelocity_mmps = 625f;
+        private float upwardsMinVelocityDecrease_mmps = 50f;
+        private float downwardsMinVelocityIncrease_mmps = 50f;
+        private float maxReleaseVelocity_mmps = 200f;
 
-        private  float maxLateralVelocity_mmps = 300f;
-        private  float maxOpposingVelocity_mmps = 65f;
+        private float maxLateralVelocity_mmps = 300f;
+        private float maxOpposingVelocity_mmps = 65f;
 
-        private  float minSwipeLength = 10f;
-        private  float maxSwipeWidth = 10f;
-        private  float swipeWidthScaling = 0.2f;
+        private float minSwipeLength = 10f;
+        private float maxSwipeWidth = 10f;
+        private float swipeWidthScaling = 0.2f;
 
-        private  double scrollDelayMs = 450;
+        private double scrollDelayMs = 450;
         private readonly Stopwatch scrollDelayStopwatch = new Stopwatch();
 
-        private  Axis lockAxisToOnly = Axis.NONE;
-        private  bool allowBidirectional = false;
+        private Axis lockAxisToOnly = Axis.NONE;
+        private bool allowBidirectional = false;
 
         private readonly PositionFilter filter;
 
