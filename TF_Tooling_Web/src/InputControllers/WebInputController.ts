@@ -2,21 +2,22 @@ import TouchFree from '../TouchFree';
 import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController';
 
-// Class: WebInputController
-// Provides web PointerEvents based on the incoming data from TouchFree Service via a
-// <ServiceConnection>.
-//
-// If you are using cursors with this InputController, ensure they have the "touchfree-cursor"
-// class. This allows this class to ignore them when determining which elements should receive
-// new pointer events. If you don't do this, none of the events transmitted here are guaranteed
-// to make it to their intended targets, as they will be captured by the cursor.
+/**
+ * Provides web PointerEvents from incoming {@link TouchFreeInputAction}s.
+ * 
+ * @remarks
+ * If you are using cursors with this InputController, ensure they have the "touchfree-cursor"
+ * class. This allows this class to ignore them when determining which elements should receive
+ * new pointer events. If you don't do this, none of the events transmitted here are guaranteed
+ * to make it to their intended targets, as they will be captured by the cursor.
+ * @public
+ */
 export class WebInputController extends BaseInputController {
-    // Group: Variables
-
-    // Variable: enterLeaveEnabled
-    // Can be used to enable/disable the transmission of "pointerenter"/"pointerleave" events
-    // Disable this for a minor performance boost, at the cost of no longer sending those events
-    // to the UI.
+    /**
+     * Can be used to enable/disable the transmission of "pointerenter"/"pointerleave" events
+     * Disable this for a minor performance boost, at the cost of no longer sending those events
+     * to the UI.
+     */
     enterLeaveEnabled = true;
 
     private lastHoveredElement: Element | null = null;
@@ -29,10 +30,9 @@ export class WebInputController extends BaseInputController {
     private scrollDirection: ScrollDirection | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
 
-    // Group: Methods
-
-    // Function: constructor
-    // Sets up the basic event properties for all events transmitted from this InputController.
+    /**
+     * Sets up the basic event properties for all events transmitted from this InputController.
+     */
     constructor() {
         super();
 
@@ -50,15 +50,15 @@ export class WebInputController extends BaseInputController {
         this.activeEventProps = this.baseEventProps;
     }
 
-    // Function: HandleMove
-    // Handles the transmission of "pointerout"/"pointerover"/"pointermove" events to appropriate
-    // elements, based on the element being hovered over this frame (_element), and the element
-    // hovered last frame.
-    // Will also optionally send "pointerenter"/"pointerleave" events if enabled via
-    // <enterLeaveEnabled>
-    //
-    // Parameters:
-    //     _element - The DOM element under the cursor this frame
+    /**
+     * Handles the transmission of "pointerout"/"pointerover"/"pointermove" events to appropriate
+     * elements, based on the {@link _element} being hovered over this frame, and the element
+     * hovered last frame.
+     * Will also optionally send "pointerenter"/"pointerleave" events if enabled via
+     * {@link enterLeaveEnabled}
+     * @param _element The DOM element under the cursor this frame
+     * @internal
+     */
     HandleMove(_element: Element | null): void {
         if (_element !== this.lastHoveredElement) {
             // Handle sending pointerover/pointerout to the individual elements
@@ -85,23 +85,24 @@ export class WebInputController extends BaseInputController {
         this.lastHoveredElement = _element;
     }
 
-    // Function: HandleInputAction
-    // Called with each <TouchFreeInputAction> as it comes into the <ServiceConnection>. Emits Pointer
-    // events (e.g. pointermove/pointerdown) to the objects at the location. Which events are
-    // emitted is affected by <enterLeaveEnabled>.
-    //
-    // Sends the following events by default:
-    //
-    //     - pointermove
-    //     - pointerdown
-    //     - pointerup
-    //     - pointerover
-    //     - pointerout
-    //     - pointerenter
-    //     - pointerleave
-    //
-    // Parameters:
-    //     _inputData - The latest Action to arrive via the <ServiceConnection>.
+    /**
+     * Emits Pointer events (e.g. pointermove/pointerdown) to the objects at a {@link TouchFreeInputAction}s location.
+     * 
+     * @remarks
+     * Which events are emitted is affected by {@link enterLeaveEnabled}.
+     *
+     * Sends the following events by default:
+     *
+     *     - pointermove
+     *     - pointerdown
+     *     - pointerup
+     *     - pointerover
+     *     - pointerout
+     *     - pointerenter
+     *     - pointerleave
+     * @param _inputData The latest {@link TouchFreeInputAction} from the Service
+     * @internal
+     */
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         super.HandleInputAction(_inputData);
 
@@ -187,14 +188,14 @@ export class WebInputController extends BaseInputController {
             .filter((e) => e && !e.classList.contains('touchfreecursor') && !e.classList.contains('touchfree-cursor'));
     }
 
-    // Clears information about the current scroll
+    /** Clears information about the current scroll */
     private ResetScrollData(): void {
         this.scrollElementsOnDown = null;
         this.scrollDirection = undefined;
         this.elementToScroll = undefined;
     }
 
-    // Applies scrolling to any elements that should be scrolled
+    /** Applies scrolling to any elements that should be scrolled */
     private HandleScroll(_position: Array<number>): void {
         if (this.scrollElementsOnDown && this.lastPosition) {
             const changeInPositionX = this.lastPosition[0] - _position[0];
@@ -283,7 +284,7 @@ export class WebInputController extends BaseInputController {
         }
     }
 
-    // Gets the element that should have scrolling applied to it
+    /** Gets the element that should have scrolling applied to it */
     private GetElementToScroll = (
         scrollValidation: (element: HTMLElement) => boolean,
         parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean
@@ -313,8 +314,12 @@ export class WebInputController extends BaseInputController {
         }
     };
 
-    // Gets the stack of elements (topmost->bottommost) at this position and return the first non-
-    // cursor element. Depends on all cursor elements being branded with the "cursor" class.
+    /**
+     * Gets the stack of elements (topmost->bottommost) at this position and return the first non-
+     * cursor element. Depends on all cursor elements being branded with the "cursor" class.
+     * @param elementsAtPos Elements at the position to check
+     * @returns First non-cursor element or null if none found
+     */
     private GetTopNonCursorElement(elementsAtPos: Element[] | null): Element | null {
         let elementAtPos: Element | null = null;
 
@@ -333,9 +338,12 @@ export class WebInputController extends BaseInputController {
         return elementAtPos;
     }
 
-    // Handle sending pointerleave/pointerenter events to the parent stacks
-    // These events do not bubble, in order to deliver expected behaviour we must consider
-    // the entire stack of elements above our current target in the document tree
+    /**
+     * Handle sending pointerleave/pointerenter events to the parent stacks.
+     * These events do not bubble, in order to deliver expected behaviour we must consider
+     * the entire stack of elements above our current target in the document tree
+     * @param _element Element to handle
+     */
     private HandleEnterLeaveBehaviour(_element: Element | null) {
         const oldParents: Array<Node | null> = this.GetOrderedParents(this.lastHoveredElement);
         const newParents: Array<Node | null> = this.GetOrderedParents(_element);
@@ -364,8 +372,12 @@ export class WebInputController extends BaseInputController {
         }
     }
 
-    // Collects the stack of parent nodes, ordered from highest (document body) to lowest
-    // (the node provided)
+    /**
+     * Collects the stack of parent nodes, ordered from highest (document body) to lowest
+     * (the node provided)
+     * @param _node Lowest node in the stack
+     * @returns Parent nodes until the provided node
+     */
     private GetOrderedParents(_node: Node | null): Array<Node | null> {
         const parentStack: Array<Node | null> = [_node];
 
@@ -376,8 +388,13 @@ export class WebInputController extends BaseInputController {
         return parentStack;
     }
 
-    // Takes two ordered arrays of Nodes (as produced by GetOrderedParents) and identifies the
-    // lowest common ancestor of the two sets. Used in HandleMove for identifying the events to send
+    /**
+     * Takes two ordered arrays of Nodes (as produced by {@link GetOrderedParents}) and identifies the
+     * lowest common ancestor of the two sets. Used in {@link HandleMove} for identifying the events to send
+     * @param oldParents First stack of parents
+     * @param newParents Second stack of parents
+     * @returns Index of lowest common ancestor between the two stacks
+     */
     private GetCommonAncestorIndex(oldParents: Array<Node | null>, newParents: Array<Node | null>): number | null {
         if (oldParents[0] !== newParents[0]) {
             return null;
@@ -388,12 +405,16 @@ export class WebInputController extends BaseInputController {
                 return i;
             }
         }
-
+        
         return null;
     }
 
-    // Checks if the target element is null and correctly dispatches the provided event to the
-    // element or document body appropriately
+    /**
+     * Checks if the target element is null and correctly dispatches the provided event to the
+     * element or document body appropriately
+     * @param event Event to dispatch
+     * @param target Element to dispatch event on if not null
+     */
     private DispatchToTarget(event: PointerEvent, target: Element | null) {
         if (target !== null) {
             target.dispatchEvent(event);
@@ -403,8 +424,10 @@ export class WebInputController extends BaseInputController {
     }
 }
 
-// Enum: ScrollDirection
-// The directions that a scroll can be in
+/**
+ * The directions that a scroll can be in
+ * @internal
+ */
 enum ScrollDirection {
     Up = 0,
     Down = 1,

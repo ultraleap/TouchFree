@@ -3,24 +3,33 @@ import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
 import { MapRangeToRange } from '../Utilities';
 import { TouchlessCursor } from './TouchlessCursor';
 
-// Class: DotCursor
-// This is an example Touchless Cursor which positions a dot on the screen at the hand location,
-// and reacts to the current ProgressToClick of the action (what determines this depends on the
-// currently active interaction).
+/**
+ * {@link TouchlessCursor} which positions a dot on the screen at the hand location,
+ * reacting to the current {@link TouchFreeInputAction.ProgressToClick}.
+ * 
+ * @remarks
+ * {@link TouchFreeInputAction.ProgressToClick} behaviour depends on the active interaction.
+ * 
+ * @public
+ */
 export class DotCursor extends TouchlessCursor {
-    // Set the update rate of the animation to 30fps.
+    /**
+     * Update duration (in milliseconds) of the animation
+     * @defaultValue 30fps (33.33ms)
+     */
     readonly animationUpdateDuration: number = (1 / 30) * 1000;
 
-    // Group: Variables
-
-    // Variable: cursorRing
-    // The HTMLElement that visually represents the cursors ring.
+    /**
+     * The HTMLElement that visually represents the cursors ring.
+     */
     cursorRing: HTMLElement;
 
-    // Variable: ringSizeMultiplier
-    // The maximum size for the ring to be relative to the size of the dot.
-    //
-    // e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
+    /**
+     * The maximum size for the ring to be relative to the size of the dot.
+     * 
+     * @remarks
+     * e.g. a value of 2 means the ring can be (at largest) twice the scale of the dot.
+     */
     ringSizeMultiplier: number;
 
     private cursorStartSize: Array<number>;
@@ -34,17 +43,19 @@ export class DotCursor extends TouchlessCursor {
 
     private dotCursorElement: HTMLElement;
 
-    // Group: Functions
-
-    // Function: constructor
-    // Constructs a new cursor consisting of a central cursor and a ring.
-    // Optionally provide an _animationDuration to change the time it takes for the 'squeeze'
-    // confirmation animation to be performed. Optionally provide a _ringSizeMultiplier to change
-    // the size that the <cursorRing> is relative to the _cursor.
-    //
-    // If you intend to make use of the <WebInputController>, make sure that both _cursor and
-    // _cursorRing have the "touchfree-cursor" class. This prevents them blocking other elements
-    // from receiving events.
+    /**
+     * Constructs a new cursor consisting of a central cursor and a ring.
+     * @remarks
+     * If you intend to make use of `WebInputController`, make sure both {@link _cursor} and {@link _cursorRing}
+     * elements have the `touchfree-cursor` class. This prevents them from blocking other elements from
+     * receiving events.
+     * @param _cursor Cursor HTML element
+     * @param _cursorRing Cursor ring HTML element
+     * @param _animationDuration
+     * Optional duration changing the time it takes for 'squeeze'
+     * confirmation animation to be performed.
+     * @param _ringSizeMultiplier Optional multiplier to the size the ring can be relative to the main cursor element.
+     */
     constructor(_cursor: HTMLElement, _cursorRing: HTMLElement, _animationDuration = 0.2, _ringSizeMultiplier = 2) {
         super(_cursor);
         this.dotCursorElement = _cursor;
@@ -59,9 +70,12 @@ export class DotCursor extends TouchlessCursor {
         TouchFree.RegisterEventCallback('HandsLost', this.HideCursor.bind(this));
     }
 
-    // Function: UpdateCursor
-    // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
-    // cursor's position, as well as the size of the ring based on the current ProgressToClick.
+    /**
+     * Updates the cursor position as well as the size of the ring based on {@link TouchFreeInputAction.ProgressToClick}
+     * @param _inputAction Input action to use when updating cursor
+     * @see {@link TouchlessCursor.UpdateCursor}
+     * @internal
+     */
     UpdateCursor(_inputAction: TouchFreeInputAction): void {
         if (!this.enabled) return;
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
@@ -78,14 +92,19 @@ export class DotCursor extends TouchlessCursor {
         super.UpdateCursor(_inputAction);
     }
 
-    // Function: HandleInputAction
-    // This override replaces the basic functionality of the <TouchlessCursor>, making the
-    // cursor's ring scale dynamically with the current ProgressToClick and creating a
-    // "shrink" animation when a "DOWN" event is received, and a "grow" animation when an "UP"
-    // is received.
-    //
-    // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
-    // When any other event is received and the cursor is hidden, the cursor is shown again.
+    /**
+     * Replaces the basic functionality of {@link TouchlessCursor}
+     * 
+     * @remarks
+     * Makes the cursor ring scale dynamically with {@link TouchFreeInputAction.ProgressToClick};
+     * creates a 'shrink' animation when a {@link InputType.DOWN} event is received;
+     * creates a 'grow' animation when a {@link InputType.UP} event is received.
+     * 
+     * When a {@link InputType.CANCEL} event is received the cursor is hidden as it suggests the hand
+     * has been lost. When hidden and any other event is received, the cursor is shown again.
+     * @param _inputData Input action to handle this update
+     * @internal
+     */
     HandleInputAction(_inputData: TouchFreeInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:
@@ -120,9 +139,10 @@ export class DotCursor extends TouchlessCursor {
         }
     }
 
-    // Function: ShrinkCursor
-    // Shrinks the cursor to half of its original size.
-    // This is performed over a duration set in the <constructor>.
+    /**
+     * Shrinks the cursor to half of its original size over the animation duration set in the `constructor`.
+     * @internal
+     */
     ShrinkCursor(): void {
         if (!this.enabled) return;
         let newWidth = this.dotCursorElement.clientWidth;
@@ -158,8 +178,10 @@ export class DotCursor extends TouchlessCursor {
         }
     }
 
-    // Function: GrowCursor
-    // Grows the cursor to its original size over time set via the <constructor>.
+    /**
+     * Grows the cursor to its original size the animation duration set in the `constructor`.
+     * @internal
+     */
     GrowCursor(): void {
         if (!this.enabled) return;
         let newWidth = this.dotCursorElement.clientWidth;
@@ -198,8 +220,9 @@ export class DotCursor extends TouchlessCursor {
         _cursorToChange.style.top = cursorPosY + 'px';
     }
 
-    // Function: ShowCursor
-    // Used to make the cursor visible, fades over time
+    /**
+     * Make the cursor visible. Fades over time.
+     */
     ShowCursor(): void {
         this.shouldShow = true;
         if (!this.enabled) return;
@@ -210,8 +233,9 @@ export class DotCursor extends TouchlessCursor {
         );
     }
 
-    // Function: HideCursor
-    // Used to make the cursor invisible, fades over time
+    /**
+     * Make the cursor invisible. Fades over time.
+     */
     HideCursor(): void {
         this.shouldShow = false;
         if (parseFloat(this.dotCursorElement.style.opacity) !== 0) {

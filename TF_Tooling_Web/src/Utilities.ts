@@ -1,7 +1,10 @@
-// Function: MapRangeToRange
-// Map _value from a range of _oldMin to _oldMax to a new range of _newMin to _newMax.
-//
-// e.g. the result of MapRangeToRange(0.5, 0, 1, 0, 8) is 4.
+/**
+ * Map value from one range to the equivalent value within a new range
+ * @example
+ * ```
+ * MapRangeToRange(0.5, 0, 1, 0, 8) // returns 4
+ * ```
+ */
 export function MapRangeToRange(
     _value: number,
     _oldMin: number,

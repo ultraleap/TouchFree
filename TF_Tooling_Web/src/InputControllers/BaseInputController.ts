@@ -1,23 +1,27 @@
 import TouchFree, { EventHandle } from '../TouchFree';
 import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
 
-// Class: InputController
-// InputControllers convert <TouchFreeInputActions> as recieved from the service into appropriate
-// inputs for the given environment. This abstract handles connection and should be inherited from
-// to develop any further InputControllers.
-//
-// Override <HandleInputAction> to react to TouchFreeInputActions as they are recieved.
-//
-// For an example InputController, see <WebInputController>.
+/**
+ * Converts {@link TouchFreeInputAction}s into inputs for specific environments.
+ * 
+ * @remarks
+ * This base class handles subscribing to the TouchFree `'TransmitInputAction'` event.
+ * Override {@link HandleInputAction} in subclasses to implement specific behaviour.
+ * @public
+ */
 export abstract class BaseInputController {
-    // Group: MonoBehaviour Overrides
 
     private static Instantiated = false;
     private HandleInputActionCallback: EventHandle | undefined;
 
-    // Function: constructor
-    // Adds a listener to <InputActionManager> to invoke <HandleInputAction> with <TouchFreeInputActions> as they
-    // are received.
+    /**
+     * Subscribes to the TouchFree `'TransmitInputAction'` event, invoke {@link HandleInputAction}
+     * with {@link TouchFreeInputAction}s as they are received.
+     * 
+     * @remarks
+     * Calling this constructor more than once without {@link disconnect}ing the previous
+     * is a no-op - only one `InputController` can be initialized at one time.
+     */
     constructor() {
         if (!BaseInputController.Instantiated) {
             BaseInputController.Instantiated = true;
@@ -28,16 +32,10 @@ export abstract class BaseInputController {
         }
     }
 
-    // Functions:
-
-    // Function: HandleInputAction
-    // This method is the core of the functionality of this class. It will be invoked with
-    // the <TouchFreeInputAction> as they are provided to the Tooling from the TouchFree Service.
-    //
-    // Override this function to implement any custom input handling functionality you wish to see.
-    //
-    // Parameters:
-    //     _inputData - The latest input action received from TouchFree Service.
+    /**
+     * Override to implement `InputController` specific behaviour for {@link TouchFreeInputAction}s
+     * @param _inputData The latest input action received from TouchFree Service.
+     */
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:
@@ -54,6 +52,13 @@ export abstract class BaseInputController {
         }
     }
 
+    /**
+     * Unregisters the event callback and resets initialization state.
+     * 
+     * @remarks
+     * Must be called before constructing another `InputController` when
+     * switching. Only one can be active at a time.
+     */
     disconnect() {
         this.HandleInputActionCallback?.UnregisterEventCallback();
         BaseInputController.Instantiated = false;

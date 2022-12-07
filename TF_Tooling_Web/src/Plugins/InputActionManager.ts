@@ -2,26 +2,28 @@ import TouchFree from '../TouchFree';
 import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { InputActionPlugin } from './InputActionPlugin';
 
-// Class: InputActionManager
-// The manager for all <TouchFreeInputActions> to be handled and distributed. This runs the
-// received data through any <InputActionPlugins> given to it and finaly distributes the data
-// via the  <TransmitInputAction> event which should be listened to by any class hoping to make
-// use of incoming <TouchFreeInputActions>.
+/**
+ * Manages all `TouchFreeInputAction` events, dispatching a `TransmitInputAction` event for each action received.
+ * @remarks
+ * Runs `InputAction` data through all `InputActionPlugins` before dispatching.
+ * Also dispatches a `TransmitInputActionRaw` event with the `InputAction` data unmodified by any plugins.
+ * @public
+ */
 export class InputActionManager extends EventTarget {
-    // Event: TransmitInputAction
-    // An event for transmitting <TouchFreeInputActions> that are received via the <messageReceiver> to
-    // be listened to.
 
-    // Event: TransmitInputActionRaw
-    // An event for immediately transmitting <TouchFreeInputActions> that are received via the
-    // <messageReceiver> to be listened to. This is transmitted before any Plugins are executed.
-
-    // Variable: instance
-    // The instance of the singleton for referencing the events transmitted
+    /**
+     * Static global instance of the manager
+     */
     static _instance: InputActionManager;
 
+    /**
+     * Static global array of `InputActionPlugin`
+     */
     static plugins: Array<InputActionPlugin> | null = null;
 
+    /**
+     * Getter for the global instance. Will initialize if not initialized already.
+     */
     public static get instance() {
         if (InputActionManager._instance === undefined) {
             InputActionManager._instance = new InputActionManager();
@@ -30,16 +32,19 @@ export class InputActionManager extends EventTarget {
         return InputActionManager._instance;
     }
 
-    // Function: SetPlugins
-    // Use this function to set the <InputActionPlugins> that the manager should use, as well as the order the
-    // <InputActionPlugins> should be used.
+    /**
+     * Overwrites all plugins with a new array. Plugins will be run in order of the array.
+     * @param _plugins Plugin array to assign
+     */
     public static SetPlugins(_plugins: Array<InputActionPlugin>): void {
         this.plugins = _plugins;
     }
 
-    // Function: HandleInputAction
-    // Called by the <messageReceiver> to relay a <TouchFreeInputAction> that has been received to any
-    // listeners of <TransmitInputAction>.
+    /**
+     * Handles an `InputAction`, running it through all plugins and dispatching a `"TransmitInputAction"` event
+     * @param _action InputAction to handle
+     * @internal
+     */
     public static HandleInputAction(_action: TouchFreeInputAction): void {
         TouchFree.DispatchEvent('TransmitInputActionRaw', _action);
 

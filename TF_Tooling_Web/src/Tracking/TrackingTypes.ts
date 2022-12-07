@@ -1,6 +1,7 @@
-// Enum: MaskingConfig
-// device_id - ID of the camera to apply masking to
-// left, right, upper, lower - masking values to apply to each edge of the camera's feed
+/**
+ * Masking values to apply to each edge of the camera's feed
+ * @public
+ */
 export interface Mask {
     left: number;
     right: number;
@@ -8,16 +9,18 @@ export interface Mask {
     lower: number;
 }
 
-// Class: TrackingState
-// Represents the settings available for modification in the Tracking API
+/**
+ * Represents the settings available for modification in the Tracking API
+ * @public
+ */
 export class TrackingState {
-    // Variable: mask
+    /** Camera masking state */
     mask: Mask;
-    // Variable: cameraOrientation
+    /** Is camera orientation reversed from normal? */
     cameraReversed: boolean;
-    // Variable: allowImages
+    /** Toggle images being sent from the camera */
     allowImages: boolean;
-    // Variable: analyticsEnabled
+    /** Toggle analytics */
     analyticsEnabled: boolean;
 
     constructor(_mask: Mask, _cameraReversed: boolean, _allowImages: boolean, _analyticsEnabled: boolean) {

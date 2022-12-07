@@ -1,18 +1,19 @@
-// Class: HandDataManager
-// The manager for all <HandFrame> to be handled and distributed. This distributes the data
-// via the <TransmitHandData> event which should be listened to by any class hoping to make
-// use of incoming <HandFrame>s.
+/**
+ * Handles dispatching `"TransmitHandData"` events from received hand frame messages
+ * 
+ * @internal
+ */
 export class HandDataManager extends EventTarget {
-    // Event: TransmitHandData
-    // An event for transmitting <HandFrame>s that are received via the <messageReceiver> to
-    // be listened to.
-
-    // Variable: instance
-    // The instance of the singleton for referencing the events transmitted
+    
+    /** Global static instance of the manager */
     private static _instance: HandDataManager;
 
+    /** Global static for limiting how many frames are handled */
     private static readonly maximumFrameFrequencyMs = 50;
 
+    /**
+     * Getter for the global instance. Will initialize if not initialized already.
+     */
     public static get instance() {
         if (HandDataManager._instance === undefined) {
             HandDataManager._instance = new HandDataManager();
@@ -21,11 +22,13 @@ export class HandDataManager extends EventTarget {
         return HandDataManager._instance;
     }
 
+    /** Global state for timestamp of last handled hand frame */
     static lastFrame: number | undefined = undefined;
 
-    // Function: HandleHandFrame
-    // Called by the <messageReceiver> to relay a <HandFrame> that has been received to any
-    // listeners of <TransmitHandData>.
+    /**
+     * Handles a buffer on hand frame data and dispatches a `"TransmitHandData"` event
+     * @param _data Buffer of hand frame data
+     */
     public static HandleHandFrame(_data: ArrayBuffer): void {
         const currentTimeStamp = Date.now();
         if (

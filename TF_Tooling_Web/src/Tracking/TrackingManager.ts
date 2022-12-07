@@ -2,15 +2,18 @@ import { ConnectionManager } from '../Connection/ConnectionManager';
 import { TrackingStateResponse } from '../Connection/TouchFreeServiceTypes';
 import { TrackingState } from './TrackingTypes';
 
-// class: TrackingManager
-// This class provides methods for getting and setting the settings of the tracking software.
+/**
+ * This class provides methods for getting and setting the settings of the tracking software.
+ * @public
+ */
 export class TrackingManager {
-    // Function: RequestTrackingState
-    // Used to request a <TrackingState> representing the current state of the tracking software's settings via the
-    // WebSocket.
-    // Provides a <TrackingState> asynchronously via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    
+    /**
+     * Request a {@link TrackingStateResponse} representing the current state of the tracking software
+     * @remarks
+     * Use {@link ConvertResponseToState} on the response to get TrackingState in a more helpful form
+     * @param _callback Callback to call with {@link TrackingStateResponse}
+     */
     public static RequestTrackingState(_callback: (detail: TrackingStateResponse) => void) {
         if (!_callback) {
             console.error('Config file state request failed. This call requires a callback.');
@@ -20,13 +23,11 @@ export class TrackingManager {
         ConnectionManager.serviceConnection()?.RequestTrackingState(_callback);
     }
 
-    // Function: RequestTrackingChange
-    // Requests a modification to the tracking software's settings. Takes any of the following arguments representing
-    // the desired changes and sends them through the <ConnectionManager>.
-    // <MaskingConfig>, <CameraConfig>, and bools for if images are allowed and if analytics are enabled.
-    //
-    // Provide a _callback if you require confirmation that your settings were used correctly.
-    // If your _callback requires context it should be bound to that context via .bind().
+    /**
+     * Requests a modification to the tracking software's settings.
+     * @param _state State to request. Options not provided within the object will not be modified.
+     * @param _callback Optional callback if you require confirmation that settings were changed correctly.
+     */
     public static RequestTrackingChange(
         _state: Partial<TrackingState>,
         _callback: ((detail: TrackingStateResponse) => void) | null = null
@@ -34,8 +35,11 @@ export class TrackingManager {
         ConnectionManager.serviceConnection()?.RequestTrackingChange(_state, _callback);
     }
 
-    // Function: ConvertResponseToState
-    // Converts a TrackingStateResponse to a Partial<TrackingState> to make the response easier to consume.
+    /**
+     * Converts a {@link TrackingStateResponse} to a `Partial<TrackingState>` to make the response easier to consume.
+     * @param _response Response to convert
+     * @returns Converted Partial {@link TrackingState}
+     */
     public static ConvertResponseToState(_response: TrackingStateResponse): Partial<TrackingState> {
         const response: Partial<TrackingState> = {};
 

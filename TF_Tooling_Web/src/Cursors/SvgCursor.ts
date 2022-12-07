@@ -3,6 +3,10 @@ import { InputType, TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { MapRangeToRange } from '../Utilities';
 import { TouchlessCursor } from './TouchlessCursor';
 
+/**
+ * {@link TouchlessCursor} created with SVG elements.
+ * @public
+ */
 export class SVGCursor extends TouchlessCursor {
     private xPositionAttribute = 'cx';
     private yPositionAttribute = 'cy';
@@ -12,13 +16,11 @@ export class SVGCursor extends TouchlessCursor {
 
     private cursorShowing = false;
 
-    // Group: Functions
-
-    // Function: constructor
-    // Constructs a new cursor consisting of a central cursor and a ring.
-    // Optionally provide a _ringSizeMultiplier to change the size that the <cursorRing> is relative to the _cursor.
-    // Optionally provide a _darkCursor to change the cursor to be dark to provide better contrast on light coloured
-    // UIs.
+    /**
+     * Constructs a new cursor consisting of a central cursor and a ring.
+     * @param _ringSizeMultiplier Optional multiplier to change the size of the cursor ring.
+     * @param _darkCursor Optionally darken the cursor to provide better contrast on light coloured UIs.
+     */
     constructor(_ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
 
@@ -80,9 +82,11 @@ export class SVGCursor extends TouchlessCursor {
         ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
     }
 
-    // Function: UpdateCursor
-    // Used to update the cursor when receiving a "MOVE" <ClientInputAction>. Updates the
-    // cursor's position, as well as the size of the ring based on the current ProgressToClick.
+    /**
+     * Update the cursor position as well as the size of the ring based on {@link TouchFreeInputAction.ProgressToClick}.
+     * @param _inputAction Input action to use when updating cursor
+     * @internal
+     */
     UpdateCursor(_inputAction: TouchFreeInputAction) {
         if (!this.shouldShow) {
             this.HideCursor();
@@ -112,14 +116,19 @@ export class SVGCursor extends TouchlessCursor {
         }
     }
 
-    // Function: HandleInputAction
-    // This override replaces the basic functionality of the <TouchlessCursor>, making the
-    // cursor's ring scale dynamically with the current ProgressToClick and creating a
-    // "shrink" animation when a "DOWN" event is received, and a "grow" animation when an "UP"
-    // is received.
-    //
-    // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
-    // When any other event is received and the cursor is hidden, the cursor is shown again.
+    /**
+     * Replaces the basic functionality of {@link TouchlessCursor}
+     * 
+     * @remarks
+     * Makes the cursor ring scale dynamically with {@link TouchFreeInputAction.ProgressToClick};
+     * creates a 'shrink' animation when a {@link InputType.DOWN} event is received;
+     * creates a 'grow' animation when a {@link InputType.UP} event is received.
+     * 
+     * When a {@link InputType.CANCEL} event is received the cursor is hidden as it suggests the hand
+     * has been lost. When hidden and any other event is received, the cursor is shown again.
+     * @param _inputData Input action to handle this update
+     * @internal
+     */
     HandleInputAction(_inputData: TouchFreeInputAction) {
         if (this.cursor) {
             switch (_inputData.InputType) {
@@ -144,8 +153,9 @@ export class SVGCursor extends TouchlessCursor {
         _cursorToChange?.setAttribute('r', Math.round(_newWidth).toString());
     }
 
-    // Function: ShowCursor
-    // Used to make the cursor visible, fades over time
+    /**
+     * Make the cursor visible. Fades over time.
+     */
     ShowCursor() {
         this.shouldShow = true;
         if (this.enabled && !this.cursorShowing) {
@@ -154,8 +164,9 @@ export class SVGCursor extends TouchlessCursor {
         }
     }
 
-    // Function: HideCursor
-    // Used to make the cursor invisible, fades over time
+    /**
+     * Make the cursor invisible. Fades over time.
+     */
     HideCursor() {
         this.shouldShow = false;
         this.cursorShowing = false;

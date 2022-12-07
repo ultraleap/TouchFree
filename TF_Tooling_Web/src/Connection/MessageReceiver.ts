@@ -23,97 +23,117 @@ import {
     WebSocketResponse,
 } from './TouchFreeServiceTypes';
 
-// Class: MessageReceiver
-// Handles the receiving of messages from the Service in an ordered manner.
-// Distributes the results of the messages to the respective managers.
+/**
+ * Receives messages from the service and distributes them
+ * to respective managers for handling.
+ * 
+ * @internal
+ */
 export class MessageReceiver {
-    // Group: Variables
 
-    // Variable: callbackClearTimer
-    // The amount of time between checks of <responseCallbacks> to eliminate expired
-    // <ResponseCallbacks>. Used in <ClearUnresponsiveCallbacks>.
+    /**
+     * The amount of time between response callback handling to eliminate unhandled callbacks.
+     * Prevents a performance death spiral scenario.
+     */
     callbackClearTimer = 300;
 
-    // Variable: update Rate
-    // How many times per second to process <WebSocketResponse> & <TouchFreeInputActions>
+    /**
+     * How many times per second to process {@link WebSocketResponse} and {@link TouchFreeInputAction} requests.
+     */
     updateRate = 60;
 
-    // Calculated on construction for use in setting the update interval
+    /**
+     * Duration (in seconds) of update interval - inverse of {@link updateRate}
+     */
     private updateDuration: number;
 
-    // Variable: actionCullToCount
-    // How many non-essential <TouchFreeInputActions> should the <actionQueue> be trimmed *to* per
-    // frame. This is used to ensure the Tooling can keep up with the Events sent over the
-    // WebSocket.
+    /**
+     * How many non-essential {@link TouchFreeInputAction}s should the {@link actionQueue}
+     * be trimmed *to* per frame. This is used to ensure the Tooling can keep up with the
+     * Events sent over the WebSocket.
+     */
     actionCullToCount = 2;
 
-    // Variable: actionQueue
-    // A queue of <TouchFreeInputActions> that have been received from the Service.
+    /**
+     * A queue of {@link TouchFreeInputAction}s that have been received from the Service.
+     */
     actionQueue: Array<WebsocketInputAction> = [];
 
-    // Variable: latestHandDataItem
-    // The latest <HandFrame> that has been received from the Service.
+    /**
+     * The latest `HandFrame` that has been received from the Service.
+     */
     latestHandDataItem?: ArrayBuffer = undefined;
 
-    // Variable: responseQueue
-    // A queue of <WebSocketResponses> that have been received from the Service.
+    /**
+     * A queue of {@link WebSocketResponse}s that have been received from the Service.
+     */
     responseQueue: Array<WebSocketResponse> = [];
 
-    // Variable: responseCallbacks
-    // A dictionary of unique request IDs and <ResponseCallbacks> that represent requests
-    // that are awaiting response from the Service.
+    /**
+     * A dictionary of unique request IDs and {@link ResponseCallback}s that represent requests
+     * awaiting a response from the Service.
+     */
     responseCallbacks: { [id: string]: ResponseCallback } = {};
 
-    // Variable: configStateQueue
-    // A queue of <ConfigState> that have been received from the Service.
+    /**
+     * A queue of {@link ConfigState} that have been received from the Service.
+     */
     configStateQueue: Array<ConfigState> = [];
 
-    // Variable: configStateCallbacks
-    // A dictionary of unique request IDs and <ConfigStateCallback> that represent requests
-    // that are awaiting response from the Service.
+    /**
+     * A dictionary of unique request IDs and {@link ConfigStateCallback} that represent requests
+     * awaiting a response from the Service.
+     */
     configStateCallbacks: { [id: string]: ConfigStateCallback } = {};
 
-    // Variable: serviceStatusQueue
-    // A queue of <ServiceStatus> that have been received from the Service.
+    /**
+     * A queue of {@link ServiceStatus} that have been received from the Service.
+     */
     serviceStatusQueue: Array<ServiceStatus> = [];
 
-    // Variable: serviceStatusCallbacks
-    // A dictionary of unique request IDs and <ServiceStatusCallback> that represent requests
-    // that are awaiting response from the Service.
+    /**
+     * A dictionary of unique request IDs and {@link ServiceStatusCallback} that represent requests
+     * awaiting a response from the Service.
+     */
     serviceStatusCallbacks: { [id: string]: ServiceStatusCallback } = {};
 
-    // Variable: lastStateUpdate
-    // The last hand presence state update received from the Service.
+    /**
+     * The last hand presence state update received from the Service.
+     */
     lastStateUpdate: HandPresenceState;
 
-    // Variable: trackingStateQueue
-    // A queue of <TrackingStates> that have been received from the Service.
+    /**
+     * A queue of `TrackingStates` that have been received from the Service.
+     */
     trackingStateQueue: Array<TrackingStateResponse> = [];
 
-    // Variable: trackingSettingsStateCallbacks
-    // A dictionary of unique request IDs and <TrackingStateCallback> that represent requests
-    // that are awaiting response from the Service.
+    /**
+     * A dictionary of unique request IDs and {@link TrackingStateCallback} that represent requests
+     * that are awaiting response from the Service.
+     */
     trackingStateCallbacks: { [id: string]: TrackingStateCallback } = {};
 
-    // Variable: callbackClearInterval
-    // Stores the reference number for the interval running <ClearUnresponsiveCallbacks>, allowing
-    // it to be cleared.
+    /**
+     * Stores the reference number for the interval running {@link ClearUnresponsivePromises}, allowing
+     * it to be cleared.
+     */
     private callbackClearInterval: number;
 
-    // Variable: updateInterval
-    // Stores the reference number for the interval running <Update>, allowing it to be cleared.
+    /**
+     * Stores the reference number for the interval running {@link Update}, allowing it to be cleared.
+     */
     private updateInterval: number;
 
-    // Used to ensure UP events are sent at the correct position relative to the previous
-    // MOVE event.
-    // This is required due to the culling of events from the actionQueue in CheckForAction.
+    /**
+     * Used to ensure UP events are sent at the correct position relative to the previous MOVE event.
+     * This is required due to the culling of events from the {@link actionQueue} in {@link CheckForAction}.
+     */
     lastKnownCursorPosition: Array<number> = [0, 0];
 
-    // Group: Functions
-
-    // Function: constructor
-    // Starts the two regular intervals managed for this (running <ClearUnresponsiveCallbacks> on an
-    // interval of <callbackClearTimer> and <Update> on an interval of updateDuration
+    /**
+     * Starts the two regular intervals - {@link ClearUnresponsivePromises} (at {@link callbackClearTimer})
+     * and {@link Update} (at {@link updateRate})
+     */
     constructor() {
         this.lastStateUpdate = HandPresenceState.PROCESSED;
         this.updateDuration = (1 / this.updateRate) * 1000;
@@ -126,9 +146,9 @@ export class MessageReceiver {
         this.updateInterval = setInterval(this.Update.bind(this) as TimerHandler, this.updateDuration);
     }
 
-    // Function: Update
-    // Update function. Checks all queues for messages to handle. Run on an interval
-    // started during the constructor
+    /**
+     * Checks all queues for messages to handle.
+     */
     Update(): void {
         this.CheckForResponse();
         this.CheckForConfigState();
@@ -138,9 +158,9 @@ export class MessageReceiver {
         this.CheckForHandData();
     }
 
-    // Function: CheckForResponse
-    // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to Sends it to <HandleCallbackList> with
-    // the <responseCallbacks> dictionary if there is one.
+    /**
+     * Checks {@link responseQueue} for a single {@link WebSocketResponse} and handles it.
+     */
     CheckForResponse(): void {
         const response: WebSocketResponse | undefined = this.responseQueue.shift();
 
@@ -172,9 +192,9 @@ export class MessageReceiver {
         }
     }
 
-    // Function: CheckForConfigState
-    // Used to check the <configStateQueue> for a <ConfigState>. Sends it to <HandleCallbackList> with
-    // the <configStateCallbacks> dictionary if there is one.
+    /**
+     * Checks {@link configStateQueue} for a single {@link configState} and handles it.
+     */
     CheckForConfigState(): void {
         const configState: ConfigState | undefined = this.configStateQueue.shift();
 
@@ -192,10 +212,13 @@ export class MessageReceiver {
         }
     }
 
-    // Function: HandleCallbackList
-    // Checks the dictionary of <callbacks> for a matching request ID. If there is a
-    // match, calls the callback action in the matching <TouchFreeRequestCallback>.
-    // Returns true if it was able to find a callback, returns false if not
+    /**
+     * Checks a callback dictionary for a request id and handles invoking the callback.
+     * 
+     * @param callbackResult Callback data
+     * @param callbacks Callback dictionary to check
+     * @returns String literal result representing success or what went wrong
+     */
     private static HandleCallbackList<T extends TouchFreeRequest>(
         callbackResult: T,
         callbacks: { [id: string]: TouchFreeRequestCallback<T> }
@@ -212,9 +235,9 @@ export class MessageReceiver {
         return 'NoCallbacksFound';
     }
 
-    // Function: CheckForServiceStatus
-    // Used to check the <serviceStatusQueue> for a <ServiceStatus>. Sends it to <HandleCallbackList> with
-    // the <serviceStatusCallbacks> dictionary if there is one.
+    /**
+     * Checks {@link serviceStatusQueue} for a single {@link ServiceStatus} and handles it.
+     */
     CheckForServiceStatus(): void {
         const serviceStatus: ServiceStatus | undefined = this.serviceStatusQueue.shift();
 
@@ -239,9 +262,9 @@ export class MessageReceiver {
         }
     }
 
-    // Function: CheckForTrackingStateResponse
-    // Used to check the <trackingStateQueue> for a <TrackingStateResponse>.
-    // Sends it to <HandleTrackingStateResponse> if there is one.
+    /**
+     * Checks {@link trackingStateQueue} for a single {@link TrackingStateResponse} and handles it.
+     */
     CheckForTrackingStateResponse(): void {
         const trackingStateResponse: TrackingStateResponse | undefined = this.trackingStateQueue.shift();
 
@@ -250,11 +273,12 @@ export class MessageReceiver {
         }
     }
 
-    // Function: HandleTrackingStateResponse
-    // Checks the dictionary of <trackingStateCallbacks> for a matching request ID. If there is a
-    // match, calls the callback action in the matching <TrackingStateCallback>.
+    /**
+     * Checks {@link trackingStateCallbacks} for a request id and handles invoking the callback.
+     */
     HandleTrackingStateResponse(trackingStateResponse: TrackingStateResponse): void {
         if (this.trackingStateCallbacks !== undefined) {
+            // TODO: use `HandleCallbackList`
             for (const key in this.trackingStateCallbacks) {
                 if (key === trackingStateResponse.requestID) {
                     this.trackingStateCallbacks[key].callback(trackingStateResponse);
@@ -265,13 +289,16 @@ export class MessageReceiver {
         }
     }
 
-    // Function: CheckForAction
-    // Checks <actionQueue> for valid <TouchFreeInputActions>. If there are too many in the queue,
-    // clears out non-essential <TouchFreeInputActions> down to the number specified by
-    // <actionCullToCount>. If any remain, sends the oldest <TouchFreeInputAction> to
-    // <InputActionManager> to handle the action.
-    // UP <InputType>s have their positions set to the last known position to ensure
-    // input events trigger correctly.
+    /**
+     * Checks {@link actionQueue} for a single {@link TouchFreeInputAction} and handles it.
+     * 
+     * @remarks
+     * If there are too many in the queue, clears out non-essential {@link TouchFreeInputAction}
+     * down to the number specified by {@link actionCullToCount}.
+     * If any remain, sends the oldest {@link TouchFreeInputAction} to {@link InputActionManager}
+     * to handle the action. Actions with UP {@link InputType} have their positions set to
+     * {@link lastKnownCursorPosition} to ensure input events trigger correctly.
+     */
     CheckForAction(): void {
         while (this.actionQueue.length > this.actionCullToCount) {
             if (this.actionQueue[0] !== undefined) {
@@ -294,7 +321,7 @@ export class MessageReceiver {
             // Parse newly received messages & distribute them
             const converted: TouchFreeInputAction = ConvertInputAction(action);
 
-            //Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
+            // Cache or use the lastKnownCursorPosition. Copy the array to ensure it is not a reference
             if (converted.InputType !== InputType.UP) {
                 this.lastKnownCursorPosition = Array.from(converted.CursorPosition);
             } else {
@@ -313,9 +340,10 @@ export class MessageReceiver {
         }
     }
 
-    // Function: CheckForHandData
-    // Checks <latestHandDataItem> and if the <HandFrame> is not undefined sends it to
-    // <HandDataManager> to handle the frame.
+    /**
+     * Checks {@link latestHandDataItem} and if the `HandFrame` is not undefined sends it to
+     * {@link HandDataManager} to handle the frame.
+     */
     CheckForHandData(): void {
         const handFrame = this.latestHandDataItem;
 
@@ -328,9 +356,9 @@ export class MessageReceiver {
         }
     }
 
-    // Function: ClearUnresponsiveCallbacks
-    // Waits for <callbackClearTimer> seconds and clears all <ResponseCallbacks> that are
-    // expired from <responseCallbacks>.
+    /**
+     * Clear {@link responseCallbacks} that have been around for more than {@link callbackClearTimer}.
+     */
     ClearUnresponsivePromises(): void {
         const lastClearTime: number = Date.now();
 

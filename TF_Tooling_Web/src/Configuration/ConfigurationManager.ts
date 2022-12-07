@@ -9,19 +9,21 @@ import {
 import { InteractionConfig, PhysicalConfig } from './ConfigurationTypes';
 import { v4 as uuidgen } from 'uuid';
 
-// Class: ConfigurationManager
-// This class provides a method for changing the configuration of the TouchFree
-// Service. Makes use of the static <ConnectionManager> for communication with the Service.
+/**
+ * Provides methods for changing the configuration of the TouchFree Service.
+ * @public
+ */
 export class ConfigurationManager {
-    // Function: RequestConfigChange
-    // Optionally takes in an <InteractionConfig> or a <PhysicalConfig> and sends them through the <ConnectionManager>
-    //
-    // Provide a _callback if you require confirmation that your settings were used correctly.
-    // If your _callback requires context it should be bound to that context via .bind().
-    //
-    // WARNING!
-    // If a user changes ANY values via the TouchFree Service Settings UI,
-    // values set from the Tooling via this function will be discarded.
+    /**
+     * Send updated configuration to the TouchFree Service
+     * 
+     * @remarks
+     * WARNING! If a user changes ANY values via the TouchFree Service Settings UI,
+     * all values set from the Tooling via this function will be discarded.
+     * @param _interaction Optional interaction config modifications to send
+     * @param _physical Optional physical config modifications to send
+     * @param _callback Optional callback confirming a response from the service
+     */
     public static RequestConfigChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
@@ -35,11 +37,10 @@ export class ConfigurationManager {
         );
     }
 
-    // Function: RequestConfigState
-    // Used to request information from the Service via the <ConnectionManager>. Provides an asynchronous
-    // <ConfigState> via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Request active configuration state of the TouchFree Service
+     * @param _callback Callback with the requested {@link ConfigState}
+     */
     public static RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
             console.error('Config state request failed. This call requires a callback.');
@@ -49,18 +50,18 @@ export class ConfigurationManager {
         ConnectionManager.serviceConnection()?.RequestConfigState(_callback);
     }
 
-    // Function: RequestConfigFileChange
-    // Requests a modification to the configuration **files** used by the Service. Takes in an
-    // <InteractionConfig> and/or a <PhysicalConfig> representing the desired changes & sends
-    // them through the <ConnectionManager>
-    //
-    // Provide a _callback if you require confirmation that your settings were used correctly.
-    // If your _callback requires context it should be bound to that context via .bind().
-    //
-    // WARNING!
-    // Any changes that have been made using <RequestConfigChange> by *any* connected client will be
-    // lost when changing these files. The change will be applied **to the current config files directly,**
-    // disregarding current active config state, and the config will be loaded from files.
+    /**
+     * Requests a modification to the configuration **files** used by the TouchFree Service.
+     * 
+     * @remarks
+     * WARNING! Any changes that have been made using {@link RequestConfigChange} by *any* connected
+     * client will be lost when changing these files.
+     * The change will be applied **to the current config files directly**,
+     * disregarding current active config state, and the config will be loaded from files.
+     * @param _interaction Optional interaction config modifications to send
+     * @param _physical Optional physical config modifications to send
+     * @param _callback Optional callback confirming a response from the service
+     */
     public static RequestConfigFileChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
@@ -90,12 +91,10 @@ export class ConfigurationManager {
         ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
     }
 
-    // Function: RequestConfigState
-    // Used to request a <ConfigState> representing the current state of the Service's config
-    // files via the WebSocket.
-    // Provides a <ConfigState> asynchronously via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Request configuration state of the services config files.
+     * @param _callback Callback with the requested {@link ConfigState}
+     */
     public static RequestConfigFileState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
             console.error('Config file state request failed. This call requires a callback.');

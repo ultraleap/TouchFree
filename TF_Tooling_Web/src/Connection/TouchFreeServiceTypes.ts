@@ -2,87 +2,127 @@ import { InteractionConfigFull, InteractionConfig, PhysicalConfig } from '../Con
 import { ConfigurationState, TrackingServiceState } from '../TouchFreeToolingTypes';
 import { Mask } from '../Tracking/TrackingTypes';
 
-// Enum: ActionCode
-// INPUT_ACTION - Represents standard interaction data
-// CONFIGURATION_STATE - Represents a collection of configurations from the Service
-// CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
-// SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
-// REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
-// VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service,
-//                     attempting to compare API versions for compatibility
-// HAND_PRESENCE_EVENT - Represents the result coming in from the Service
-// REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
-// SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
-// SERVICE_STATUS - Represents information about the current state of the Service
-// QUICK_SETUP - Represents a request for performing a quick setup of the Service
-// QUICK_SETUP_CONFIG - Represents a response from the Service after a QUICK_SETUP request
-//                      where the configuration was updated as the quick setup was successfully completed.
-// QUICK_SETUP_RESPONSE - Represents a response from the Service after a QUICK_SETUP request
-//                        where the configuration was not updated.
-// GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
-// SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
-// TRACKING_STATE - Represents a response from the Service with the current state of the tracking settings,
-//                  received following either a GET_TRACKING_STATE or a SET_TRACKING_STATE
-// HAND_DATA - Represents more complete hand data sent from the service.
-// SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable
-//                              the HAND_DATA stream or change the lens to have the hand position relative to.
+/**
+ * Action codes for requests between TouchFree Service and this client
+ * @internal
+ */
 export enum ActionCode {
+    /** Represents standard interaction data */
     INPUT_ACTION = 'INPUT_ACTION',
-
-    CONFIGURATION_STATE = 'CONFIGURATION_STATE',
+    
+    /**
+     * General configuration request response code.
+     * Can represent success or failure with an included error message
+     */
     CONFIGURATION_RESPONSE = 'CONFIGURATION_RESPONSE',
-    SET_CONFIGURATION_STATE = 'SET_CONFIGURATION_STATE',
+    /** Request current configuration state from the Service */
     REQUEST_CONFIGURATION_STATE = 'REQUEST_CONFIGURATION_STATE',
-
+    /** Response for a {@link REQUEST_CONFIGURATION_STATE} request */
+    CONFIGURATION_STATE = 'CONFIGURATION_STATE',
+    /** Request change to configuration the Service */
+    SET_CONFIGURATION_STATE = 'SET_CONFIGURATION_STATE',
+    
+    /**
+     * An outgoing message from Tooling to Service which
+     * compares client and service API versions for compatibility
+     */
     VERSION_HANDSHAKE = 'VERSION_HANDSHAKE',
+    /** Response code for a {@link VERSION_HANDSHAKE} */
     VERSION_HANDSHAKE_RESPONSE = 'VERSION_HANDSHAKE_RESPONSE',
-
+    
+    /** Message with hand presence event data sent by the Service */
     HAND_PRESENCE_EVENT = 'HAND_PRESENCE_EVENT',
 
+    /** Represents a request to receive a current SERVICE_STATUS from the Service */
     REQUEST_SERVICE_STATUS = 'REQUEST_SERVICE_STATUS',
+    /** Failure response from a {@link REQUEST_SERVICE_STATUS} request */
     SERVICE_STATUS_RESPONSE = 'SERVICE_STATUS_RESPONSE',
+    /**
+     * Message with information about the current state of the Service.
+     * 
+     * @remarks
+     * Can be a response to a {@link REQUEST_SERVICE_STATUS} request
+     * or sent by the service when status changes
+     */
     SERVICE_STATUS = 'SERVICE_STATUS',
-
+    
+    /** Request the state of configuration *files* */
     REQUEST_CONFIGURATION_FILE = 'REQUEST_CONFIGURATION_FILE',
+    /** Response code for a {@link REQUEST_CONFIGURATION_FILE} request */
     CONFIGURATION_FILE_STATE = 'CONFIGURATION_FILE_STATE',
+    /** Request changes to configuration *files* */
     SET_CONFIGURATION_FILE = 'SET_CONFIGURATION_FILE',
+    /** Response code for a {@link SET_CONFIGURATION_FILE} request */
     CONFIGURATION_FILE_RESPONSE = 'CONFIGURATION_FILE_RESPONSE',
-
+    
+    /** Represents a request for performing a quick setup of the Service */
     QUICK_SETUP = 'QUICK_SETUP',
+    /**
+     * Represents a response from the Service after a {@link QUICK_SETUP} request 
+     * where the configuration was updated as the quick setup was successfully completed.
+     */
     QUICK_SETUP_CONFIG = 'QUICK_SETUP_CONFIG',
+    /**
+     * Represents a response from the Service after a {@link QUICK_SETUP} request
+     * where the configuration was not updated.
+     */
     QUICK_SETUP_RESPONSE = 'QUICK_SETUP_RESPONSE',
-
+    
+    /** Represents a request to receive the current state of the tracking settings */
     GET_TRACKING_STATE = 'GET_TRACKING_STATE',
+    /** Represents a request to set the current state of the tracking settings */
     SET_TRACKING_STATE = 'SET_TRACKING_STATE',
+    /**
+     * Represents a response from the Service with the current state of the tracking settings,
+     * received following a {@link GET_TRACKING_STATE} or {@link SET_TRACKING_STATE} request
+     */
     TRACKING_STATE = 'TRACKING_STATE',
-
+    
+    /** Represents more complete hand data sent from the service. */
     HAND_DATA = 'HAND_DATA',
+
+    /**
+     * Represents a request to the Service to enable/disable
+     * the {@link HAND_DATA} stream or change the lens to have the hand position relative to.
+     */    
     SET_HAND_DATA_STREAM_STATE = 'SET_HAND_DATA_STREAM_STATE',
 }
 
-// Enum: HandPresenceState
-// HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
-// HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
-// PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
-//             use in <MessageReceiver> for more details.
+/**
+ * Hand presence enumeration
+ * @public
+ */
 export enum HandPresenceState {
+    /** Sent when the first hand is found when no hands were present previously */
     HAND_FOUND,
+    /** Sent when the last observed hand is lost, meaning no more hands are observed */
     HANDS_LOST,
+    /**
+     * Used to indicate that no change in state is awaiting processing.
+     * 
+     * See usage in `MessageReceiver` for more details.
+     * @internal
+     */
     PROCESSED,
 }
 
-// Enum: Compatibility
-// COMPATIBLE - The API versions are considered compatible
-// SERVICE_OUTDATED - The API versions are considered incompatible as Service is older than Tooling
-// TOOLING_OUTDATED - The API versions are considered incompatible as Tooling is older than Service
+/**
+ * Enumeration of client-service compatibility
+ * @deprecated Unused
+ */
 export enum Compatibility {
+    /** The API versions are considered compatible */
     COMPATIBLE,
+    /** The API versions are considered incompatible as Service is older than Tooling */
     SERVICE_OUTDATED,
+    /** The API versions are considered incompatible as Tooling is older than Service */
     TOOLING_OUTDATED,
 }
 
-// Class: HandPresenceEvent
-// This data structure is used to receive hand presence requests
+/**
+ * Data structure for {@link ActionCode.HAND_PRESENCE_EVENT} messages
+ * @internal
+ */
 export class HandPresenceEvent {
     state: HandPresenceState;
 
@@ -91,12 +131,17 @@ export class HandPresenceEvent {
     }
 }
 
-// Class: TouchFreeRequestCallback
-// This data structure is used to hold request callbacks
+/**
+ * Data structure for request callbacks
+ * @internal
+ */
 export abstract class TouchFreeRequestCallback<T> {
-    // Variable: timestamp
+    /** Timestamp the request was sent
+     * @remarks
+     * Typically used to clear request callbacks that exceed a timeout
+     */
     timestamp: number;
-    // Variable: callback
+    /** The callback the request should call */
     callback: (detail: T) => void;
 
     constructor(_timestamp: number, _callback: (detail: T) => void) {
@@ -105,8 +150,10 @@ export abstract class TouchFreeRequestCallback<T> {
     }
 }
 
-// Class: TouchFreeRequest
-// This data structure is used as a base for requests to the TouchFree service.
+/**
+ * Data structure used as a base for sending requests to the TouchFree Service
+ * @internal
+ */
 export abstract class TouchFreeRequest {
     requestID: string;
     constructor(_requestID: string) {
@@ -114,14 +161,17 @@ export abstract class TouchFreeRequest {
     }
 }
 
-// Class: PartialConfigState
-// This data structure is used to send requests for changes to configuration or to configuration files.
-//
-// When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
+/**
+ * Data structure used to send requests changing configuration or configuration files.
+ * 
+ * @remarks
+ * All properties are optional - configuration not included is not modified
+ * @internal
+ */
 export class PartialConfigState extends TouchFreeRequest {
-    // Variable: interaction
+    /** Optional {@link InteractionConfig} */
     interaction: Partial<InteractionConfig> | null;
-    // Variable: physical
+    /** Optional {@link PhysicalConfig} */
     physical: Partial<PhysicalConfig> | null;
 
     constructor(
@@ -135,15 +185,14 @@ export class PartialConfigState extends TouchFreeRequest {
     }
 }
 
-// Class: ConfigState
-// This data structure is used when receiving configuration data representing the state of the service
-// or its config files.
-//
-// When receiving a configuration from the Service this structure contains ALL configuration data
+/**
+ * Data structure for all TouchFree configuration
+ * @public
+ */
 export class ConfigState extends TouchFreeRequest {
-    // Variable: interaction
+    /** See {@link InteractionConfigFull} */
     interaction: InteractionConfigFull;
-    // Variable: physical
+    /** See {@link PhysicalConfig} */
     physical: PhysicalConfig;
 
     constructor(_id: string, _interaction: InteractionConfigFull, _physical: PhysicalConfig) {
@@ -153,18 +202,20 @@ export class ConfigState extends TouchFreeRequest {
     }
 }
 
-// class: ConfigChangeRequest
-// Used to request the current state of the configuration on the Service. This is received as
-// a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
-// use of the data received.
+/**
+ * Request type for {@link ActionCode.REQUEST_CONFIGURATION_STATE} and {@link ActionCode.REQUEST_CONFIGURATION_FILE}
+ * @internal
+ */
 export class ConfigChangeRequest extends TouchFreeRequest {}
 
-// class: HandRenderDataStateRequest
-// Used to set the state of the Hand Render Data stream.
+/**
+ * Used to set the state of the Hand Render Data stream.
+ * @internal
+ */
 export class HandRenderDataStateRequest extends TouchFreeRequest {
-    // Variable: enabled
+    /** Enabled */
     enabled: boolean;
-    // Variable: lens
+    /** Lens */
     lens: string;
 
     constructor(_id: string, enabled: boolean, lens: string) {
@@ -174,21 +225,20 @@ export class HandRenderDataStateRequest extends TouchFreeRequest {
     }
 }
 
-// Class: ConfigStateCallback
-// Used by <MessageReceiver> to wait for a <ConfigState> from the Service. Owns a callback
-// with a <ConfigState> as a parameter to allow users to make use of the new
-// <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
-// timeout if not seen within a reasonable timeframe.
+/**
+ * Request callback type for receiving configuration state from the Service
+ * @internal
+ */
 export class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {}
 
-// Class: ServiceStatus
-// This data structure is used to receive service status.
-//
-// When receiving a configuration from the Service this structure contains ALL status data
+/**
+ * Data structure for {@link ActionCode.REQUEST_SERVICE_STATUS} and {@link ActionCode.SERVICE_STATUS} requests
+ * @public
+ */
 export class ServiceStatus extends TouchFreeRequest {
-    // Variable: trackingServiceState
+    /** See {@link TrackingServiceState} */
     trackingServiceState: TrackingServiceState | null;
-    // Variable: configurationState
+    /** See {@link ConfigurationState} */
     configurationState: ConfigurationState | null;
 
     constructor(
@@ -202,29 +252,30 @@ export class ServiceStatus extends TouchFreeRequest {
     }
 }
 
-// class: ServiceStatusRequest
-// Used to request the current state of the status of the Service. This is received as
-// a <ServiceStatus> which should be linked to a <ServiceStatusCallback> via requestID to make
-// use of the data received.
+/**
+ * Request type for {@link ActionCode.SERVICE_STATUS}
+ * @internal
+ */
 export class ServiceStatusRequest extends TouchFreeRequest {}
 
-// Class: ServiceStatusCallback
-// Used by <MessageReceiver> to wait for a <ServiceStatus> from the Service. Owns a callback
-// with a <ServiceStatus> as a parameter to allow users to make use of the new
-// <ServiceStatusResponse>. Stores a timestamp of its creation so the response has the ability to
-// timeout if not seen within a reasonable timeframe.
+/**
+ * Request callback type for receiving {@link ServiceStatus} from the service via {@link ActionCode.SERVICE_STATUS_RESPONSE}
+ * @internal
+ */
 export class ServiceStatusCallback extends TouchFreeRequestCallback<ServiceStatus> {}
 
-// Class: WebSocketResponse
-// The structure seen when the Service responds to a request. This is to verify whether it was
-// successful or not and will include the original request if it fails, to allow for
-// troubleshooting.
+/**
+ * General purpose request response type
+ * @public
+ */
 export class WebSocketResponse extends TouchFreeRequest {
-    // Variable: status
+    /** Response status */
     status: string;
-    // Variable: message
+    /** Message included with this response */
     message: string;
-    // Variable: originalRequest
+    /**
+     * Original request this response is to, included for debugging purposes
+     */
     originalRequest: string;
 
     constructor(_id: string, _status: string, _msg: string, _request: string) {
@@ -235,12 +286,14 @@ export class WebSocketResponse extends TouchFreeRequest {
     }
 }
 
-// Class: VersionHandshakeResponse
-// The structure seen when the Service responds to a Version Handshake request.
+/**
+ * Response data structure for {@link ActionCode.VERSION_HANDSHAKE_RESPONSE}
+ * @public
+ */
 export class VersionHandshakeResponse extends WebSocketResponse {
-    // Variable: touchFreeVersion
+    /** TouchFree Service SemVer */
     touchFreeVersion: string;
-    // Variable: message
+    /** Client-Service communication API SemVer */
     apiVersion: string;
 
     constructor(
@@ -257,20 +310,23 @@ export class VersionHandshakeResponse extends WebSocketResponse {
     }
 }
 
-// Class: ResponseCallback
-// Used by <MessageReceiver> to wait for a <WebSocketResponse> from the Service. Owns a callback
-// with a <WebSocketResponse> as a parameter to allow users to deal with failed
-// <WebSocketResponses>. Stores a timestamp of its creation so the response has the ability to
-// timeout if not seen within a reasonable timeframe.
+/**
+ * General purpose request callback type
+ * @remarks
+ * Responses can represent success or failure. See {@link WebSocketResponse.status}.
+ * Detailed message is available in {@link WebSocketResponse.message}.
+ * @public
+ */
 export class ResponseCallback extends TouchFreeRequestCallback<WebSocketResponse> {}
 
-// Class: CommunicationWrapper
-// A container structure used by <ServiceConnection> to interpret incoming data to its appropriate
-// subtypes based on the <action> and pass the <content> on to the appropriate handler.
+/**
+ * Container used to wrap request data structures with an {@link ActionCode}
+ * @internal
+ */
 export class CommunicationWrapper<T> {
-    // Variable: action
+    /** {@link ActionCode} */
     action: ActionCode;
-    // Variable: content
+    /** Wrapped content */
     content: T;
 
     constructor(_actionCode: ActionCode, _content: T) {
@@ -279,44 +335,50 @@ export class CommunicationWrapper<T> {
     }
 }
 
-// Class: SuccessWrapper
-// Type extension for <TrackingStateResponse> to capture the success state, clarifying message and response content.
+/**
+ * Outer container for {@link TrackingStateResponse} properties, including success state and a message with property content
+ * @internal
+ */
 export interface SuccessWrapper<T> {
-    // Variable: succeeded
+    /** Success state */
     succeeded: boolean;
-    // Variable: msg
+    /** Message */
     msg: string;
-    // Variable: content
+    /** Content of response */
     content?: T;
 }
 
-// Class: TrackingStateResponse
-// Type of the response from a GET/SET tracking state request.
+/**
+ * Response data structure for {@link ActionCode.GET_TRACKING_STATE} and {@link ActionCode.SET_TRACKING_STATE} requests
+ * @public
+ */
 export interface TrackingStateResponse {
-    // Variable: requestID
+    /** RequestID */
     requestID: string;
-    // Variable: mask
+    /** Optional {@link Mask} config state */
     mask: SuccessWrapper<Mask> | null;
-    // Variable: cameraOrientation
+    /** Optional camera orientation config state*/
     cameraReversed: SuccessWrapper<boolean> | null;
-    // Variable: allowImages
+    /** Optional allow images config state */
     allowImages: SuccessWrapper<boolean> | null;
-    // Variable: analyticsEnabled
+    /** Optional analytics config state */
     analyticsEnabled: SuccessWrapper<boolean> | null;
 }
 
-// Class: TrackingStateRequest
-// Used to construct a SET_TRACKING_STATE request.
+/**
+ * Request data structure for {@link ActionCode.SET_TRACKING_STATE} request
+ * @internal
+ */
 export class TrackingStateRequest {
-    // Variable: requestID
+    /** Request ID */
     requestID: string;
-    // Variable: mask
+    /** See {@link Mask} */
     mask: Mask;
-    // Variable: cameraOrientation
+    /** Is camera orientation reversed from default? */
     cameraReversed: boolean;
-    // Variable: allowImages
+    /** Allow images */
     allowImages: boolean;
-    // Variable: analyticsEnabled
+    /** Analytics enabled */
     analyticsEnabled: boolean;
 
     constructor(_id: string, _mask: Mask, _cameraReversed: boolean, _allowImages: boolean, _analyticsEnabled: boolean) {
@@ -328,10 +390,14 @@ export class TrackingStateRequest {
     }
 }
 
-// Class: SimpleRequest
-// Used to make a basic request to the service. To be used with <CommunicationWrapper> to create a more complex request.
+/**
+ * Basic request data structure
+ * @remarks
+ * Typically used with {@link CommunicationWrapper} to create more complex requests
+ * @internal
+ */
 export class SimpleRequest {
-    // Variable: requestID
+    /** Request ID */
     requestID: string;
 
     constructor(_id: string) {
@@ -339,14 +405,14 @@ export class SimpleRequest {
     }
 }
 
-// Class: TrackingStateCallback
-// Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a
-// <TrackingStateResponse> as a parameter. Stores a timestamp of its creation so the response has the ability to
-// timeout if not seen within a reasonable timeframe.
+/**
+ * Request callback type for receiving {@link TrackingStateResponse} requests via {@link ActionCode.TRACKING_STATE}
+ * @internal
+ */
 export class TrackingStateCallback {
-    // Variable: timestamp
+    /** Timestamp */
     timestamp: number;
-    // Variable: callback
+    /** Callback */
     callback: (detail: TrackingStateResponse) => void;
 
     constructor(_timestamp: number, _callback: (detail: TrackingStateResponse) => void) {

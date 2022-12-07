@@ -22,40 +22,48 @@ import {
 } from './TouchFreeServiceTypes';
 import { v4 as uuidgen } from 'uuid';
 
-// Class: ServiceConnection
-// This represents a connection to a TouchFree Service. It should be created by a
-// <ConnectionManager> to ensure there is only one active connection at a time. The sending
-// and receiving of data to the Tooling is handled here as well as the creation of a
-// <MessageReceiver> to ensure the data is handled properly.
+/**
+ * Represents a connection to the TouchFree Service.
+ * 
+ * @remarks
+ * Typically only a single instance of this class exists, managed by
+ * the {@link ConnectionManager}.
+ * 
+ * @internal
+ */
 export class ServiceConnection {
-    // Group: Variables
-
-    // Variable: webSocket
-    // A reference to the websocket we are connected to.
+    
+    /** The websocket connection object */
     webSocket: WebSocket;
 
     private handshakeRequested: boolean;
     private handshakeCompleted: boolean;
     private _touchFreeVersion = '';
 
-    // Variable: touchFreeVersion
-    // The version of the connected TouchFree Service
+    /**
+     * The version of the connected TouchFree Service
+     */
     public get touchFreeVersion(): string {
         return this._touchFreeVersion;
     }
 
+    /**
+     * Has the websocket connection handshake completed?
+     */
     public get handshakeComplete(): boolean {
         return this.handshakeCompleted;
     }
 
-    // Group: Functions
-
-    // Function: constructor
-    // The constructor for <ServiceConnection> that can be given a different IP Address and Port
-    // to connect to on construction. This constructor also sets up the redirects of incoming
-    // messages to <OnMessage>. Puts a listener on the websocket so that once it opens, a handshake
-    // request is sent with this Tooling's API version number. The service will not send data over
-    // an open connection until this handshake is completed successfully.
+    /**
+     * Sets up {@link WebSocket} connection and adds appropriate listeners for incoming messages.
+     * 
+     * @remarks
+     * Sets up a listener to request a handshake once the websocket has successfully opened.
+     * No data will be sent over an open connection until a successful handshake has completed.
+     * 
+     * @param _ip Optional override to default websocket ip '127.0.0.1'
+     * @param _port Optional override to default websocket port '9739'
+     */
     constructor(_ip = '127.0.0.1', _port = '9739') {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
         this.webSocket.binaryType = 'arraybuffer';
@@ -68,8 +76,9 @@ export class ServiceConnection {
         this.webSocket.addEventListener('open', this.RequestHandshake, { once: true });
     }
 
-    // Function: Disconnect
-    // Can be used to force the connection to the <webSocket> to be closed.
+    /**
+     * Force close the websocket connection
+     */
     Disconnect = (): void => {
         if (this.webSocket !== null) {
             this.webSocket.close();
@@ -98,9 +107,15 @@ export class ServiceConnection {
         }
     };
 
-    // Function: ConnectionResultCallback
-    // Passed into <SendMessage> as part of connecting to TouchFree Service, handles the
-    // result of the Version Checking handshake.
+    /**
+     * Passed into {@link SendMessage} as part of connecting to TouchFree Service, handles the
+     * result of the Version Checking handshake.
+     * 
+     * @remarks
+     * Dispatches `"OnConnected"` event via {@link TouchFree.DispatchEvent} upon successful handshake response
+     * 
+     * @param response {@link VersionHandshakeResponse} if connection was successful or another websocket response otherwise
+     */
     private ConnectionResultCallback = (response: VersionHandshakeResponse | WebSocketResponse): void => {
         if (response.status === 'Success') {
             console.log('Successful Connection');
@@ -116,10 +131,13 @@ export class ServiceConnection {
         }
     };
 
-    // Function: OnMessage
-    // The first point of contact for new messages received, these are sorted into appropriate
-    // types based on their <ActionCode> and added to queues on the <ConnectionManager's>
-    // <MessageReceiver>.
+    /**
+     * The first point of contact for new messages received. Messages are handled differently
+     * based on their {@link ActionCode}, typically being sent to a queue or handler in
+     * {@link ConnectionManager.messageReceiver}.
+     * 
+     * @param _message Message to handle
+     */
     OnMessage = (_message: MessageEvent): void => {
         if (typeof _message.data !== 'string') {
             const buffer = _message.data as ArrayBuffer;
@@ -176,12 +194,13 @@ export class ServiceConnection {
         }
     };
 
-    // Function: SendMessage
-    // Used internally to send or request information from the Service via the <webSocket>. To
-    // be given a pre-made _message and _requestID. Provides an asynchronous <WebSocketResponse>
-    // via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Send or request information from the TouchFree Service via the WebSocket.
+     * 
+     * @param _message Content of message
+     * @param _requestID A request ID to identify the response from the Service
+     * @param _callback Callback to handle the response
+     */
     SendMessage = <T extends WebSocketResponse>(
         _message: string,
         _requestID: string,
@@ -212,11 +231,11 @@ export class ServiceConnection {
         this.webSocket.send(_message);
     };
 
-    // Function: RequestConfigState
-    // Used internally to request information from the Service via the <webSocket>.
-    // Provides an asynchronous <ConfigState> via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Request updated {@link ConfigState} from the Service
+     * 
+     * @param _callback Callback to handle the response from the service
+     */
     RequestConfigState = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
             console.error('Request for config state failed. This is due to a missing callback');
@@ -233,11 +252,11 @@ export class ServiceConnection {
         this.webSocket.send(message);
     };
 
-    // Function: RequestServiceStatus
-    // Used internally to request information from the Service via the <webSocket>.
-    // Provides an asynchronous <ServiceStatus> via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Request service status from the Service.
+     * 
+     * @param _callback Callback to handle the response from the service
+     */
     RequestServiceStatus = (_callback: (detail: ServiceStatus) => void): void => {
         if (_callback === null) {
             console.error('Request for service status failed. This is due to a missing callback');
@@ -246,6 +265,7 @@ export class ServiceConnection {
 
         const guid: string = uuidgen();
         const request: ServiceStatusRequest = new ServiceStatusRequest(guid);
+        // TODO: Change wrapper generic type - incorrectly using ConfigChangeRequest
         const wrapper = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
         const message: string = JSON.stringify(wrapper);
 
@@ -257,11 +277,11 @@ export class ServiceConnection {
         this.webSocket.send(message);
     };
 
-    // Function: RequestConfigFile
-    // Used internally to request information from the Service via the <webSocket>.
-    // Provides an asynchronous <ConfigState> via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Request config state of the config files from the Service
+     * 
+     * @param _callback Callback to handle the response from the service
+     */
     RequestConfigFile = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
             console.error('Request for config file failed. This is due to a missing callback');
@@ -278,14 +298,13 @@ export class ServiceConnection {
         this.webSocket.send(message);
     };
 
-    // Function: QuickSetupRequest
-    // Used internally to pass information to the Service about performing a QuickSetup
-    // via the <webSocket>.
-    // Provides an asynchronous <WebSocketResponse> via the _callback parameter.
-    // Provides an asynchronous <ConfigState> via the _configurationCallback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
-    // If your _configurationCallback requires context it should be bound to that context via .bind()
+     /**
+     * Request a quick setup on the Service
+     * 
+     * @param atTopTarget Which quick setup target is being used
+     * @param _callback Callback to handle the response from the service
+     * @param _configurationCallback Callback to handle a response from the service with updated configuration
+     */
     QuickSetupRequest = (
         atTopTarget: boolean,
         _callback: (detail: WebSocketResponse) => void,
@@ -315,11 +334,11 @@ export class ServiceConnection {
         this.webSocket.send(message);
     };
 
-    // Function: RequestTrackingState
-    // Used internally to request information from the Service via the <webSocket>.
-    // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Request tracking state update from the Service
+     * 
+     * @param _callback Callback to handle the response from the service
+     */
     RequestTrackingState = (_callback: (detail: TrackingStateResponse) => void) => {
         if (!_callback) {
             console.error('Request for tracking state failed. This is due to a missing callback');
@@ -338,11 +357,12 @@ export class ServiceConnection {
         this.webSocket.send(message);
     };
 
-    // Function: RequestTrackingChange
-    // Used internally to update the configuration of the Tracking via the <webSocket>.
-    // Provides an asynchronous <TrackingStateResponse> via the _callback parameter.
-    //
-    // If your _callback requires context it should be bound to that context via .bind()
+    /**
+     * Request a change to tracking state on the Service
+     * 
+     * @param _state State change to request. Undefined props are not sent
+     * @param _callback Callback to handle the response from the service
+     */
     RequestTrackingChange = (
         _state: Partial<TrackingState>,
         _callback: ((detail: TrackingStateResponse) => void) | null
