@@ -1,79 +1,45 @@
-// Shows
-    // one image if everything is fine
-    // a different one if camera isn't connected
-    // one if service isn't connected
-    // All have tooltips
+import 'Styles/StatusIndicator.scss';
 
-import React, { CSSProperties } from "react";
-import { TrackingServiceState } from "../TouchFree/TouchFreeToolingTypes";
+import React from 'react';
 
-import camStatusIcon from '../Images/Camera_Status_Icon.png';
-import svcStatusIcon from '../Images/Tracking_Status_Icon.png';
+import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
-export class StatusIndicator extends React.Component<{status: TrackingServiceState}> {
-    private indicatorStyle: CSSProperties = {
-        alignSelf: 'center',
-        height: "100%",
-        minWidth: '6rem',
-        maxWidth: '30rem',
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: 'space-between',
-        paddingLeft: "2rem",
-    };
+import CameraStatusIcon from 'Images/Camera_Status_Icon.png';
+import TrackingStatusIcon from 'Images/Tracking_Status_Icon.svg';
 
-    private statusContainerStyle: CSSProperties = {
-        alignSelf: "stretch",
-        minHeight: '0',
-        minWidth: '0',
-        maxHeight: '5rem',
-        maxWidth: '30rem',
-        position: "relative",
-        display: "flex",
-    };
-
-    private statusIconStyle: CSSProperties = {
-        alignSelf: 'center',
-        minHeight: '0',
-        minWidth: '0',
-        maxHeight: '5rem',
-        maxWidth: '30rem',
-        position: "relative",
-    };
-
-    private statusDotStyleOK: CSSProperties = {
-        position: "absolute",
-        right: "-15%",
-        top: "1.5rem",
-        height: "1rem",
-        width: "1rem",
-        borderRadius: ".5rem",
-        backgroundImage: "linear-gradient(180deg, #00EB86, #00CDCF)",
-    }
-
-    private statusDotStyleBad: CSSProperties = {
-        position: "absolute",
-        right: "-15%",
-        top: "1.5rem",
-        height: "1rem",
-        width: "1rem",
-        borderRadius: ".5rem",
-        // #E2164D (top) to #D11883 (bottom)
-        backgroundImage: "linear-gradient(180deg, #E2164D, #D11883)",
-    }
-
-    render () {
-        return (
-            <div style={this.indicatorStyle}>
-                <div style={this.statusContainerStyle}>
-                    <img src={camStatusIcon} alt="Camera Status Icon" style={this.statusIconStyle}/>
-                    <div style={(this.props.status === TrackingServiceState.CONNECTED) ? this.statusDotStyleOK : this.statusDotStyleBad}/>
-                </div>
-                <div style={this.statusContainerStyle}>
-                    <img src={svcStatusIcon} alt="Tracking Service Status Icon" style={this.statusIconStyle}/>
-                    <div style={(this.props.status === TrackingServiceState.UNAVAILABLE) ? this.statusDotStyleBad : this.statusDotStyleOK}/>
-                </div>
-            </div>
-        );
-    }
+interface StatusIndicatorProps {
+    tfStatus: TrackingServiceState;
 }
+interface StatusIndicator {
+    title: string;
+    icon: string;
+    className: string;
+}
+
+const getStatusIndicators = (tfStatus: TrackingServiceState): StatusIndicator[] => {
+    return [
+        {
+            title: 'Camera',
+            icon: CameraStatusIcon,
+            className: tfStatus === TrackingServiceState.CONNECTED ? 'status-dot-ok' : 'status-dot-bad',
+        },
+        {
+            title: 'Tracking Service',
+            icon: TrackingStatusIcon,
+            className: tfStatus === TrackingServiceState.UNAVAILABLE ? 'status-dot-bad' : 'status-dot-ok',
+        },
+    ];
+};
+
+export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tfStatus }) => {
+    return (
+        <div className="status-container">
+            {getStatusIndicators(tfStatus).map((indicator: StatusIndicator) => (
+                <div className="status-icon-container" key={indicator.title}>
+                    <img src={indicator.icon} alt={`${indicator.title} Status Icon`} />
+                    <div className={`status-dot ${indicator.className}`} />
+                </div>
+            ))}
+        </div>
+    );
+};

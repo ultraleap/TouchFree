@@ -1,22 +1,18 @@
-import {
-    InteractionConfig,
-    PhysicalConfig,
-} from "./ConfigurationTypes";
+import { ConnectionManager } from '../Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
     ConfigState,
     PartialConfigState,
-    WebSocketResponse
+    WebSocketResponse,
 } from '../Connection/TouchFreeServiceTypes';
-import { ConnectionManager } from '../Connection/ConnectionManager';
+import { InteractionConfig, PhysicalConfig } from './ConfigurationTypes';
 import { v4 as uuidgen } from 'uuid';
 
 // Class: ConfigurationManager
 // This class provides a method for changing the configuration of the TouchFree
 // Service. Makes use of the static <ConnectionManager> for communication with the Service.
 export class ConfigurationManager {
-
     // Function: RequestConfigChange
     // Optionally takes in an <InteractionConfig> or a <PhysicalConfig> and sends them through the <ConnectionManager>
     //
@@ -29,17 +25,14 @@ export class ConfigurationManager {
     public static RequestConfigChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
-        _callback: (detail: WebSocketResponse) => void): void {
-
-        let action = ActionCode.SET_CONFIGURATION_STATE;
-        let requestID = uuidgen();
-
-        let content = new PartialConfigState(requestID, _interaction, _physical);
-        let request = new CommunicationWrapper(action, content);
-
-        let jsonContent = JSON.stringify(request);
-
-        ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
+        _callback: (detail: WebSocketResponse) => void
+    ): void {
+        ConfigurationManager.BaseConfigChangeRequest(
+            _interaction,
+            _physical,
+            _callback,
+            ActionCode.SET_CONFIGURATION_STATE
+        );
     }
 
     // Function: RequestConfigState
@@ -49,7 +42,7 @@ export class ConfigurationManager {
     // If your _callback requires context it should be bound to that context via .bind()
     public static RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Config state request failed. This call requires a callback.");
+            console.error('Config state request failed. This call requires a callback.');
             return;
         }
 
@@ -71,15 +64,28 @@ export class ConfigurationManager {
     public static RequestConfigFileChange(
         _interaction: Partial<InteractionConfig> | null,
         _physical: Partial<PhysicalConfig> | null,
-        _callback: (detail: WebSocketResponse) => void): void {
+        _callback: (detail: WebSocketResponse) => void | null
+    ): void {
+        ConfigurationManager.BaseConfigChangeRequest(
+            _interaction,
+            _physical,
+            _callback,
+            ActionCode.SET_CONFIGURATION_FILE
+        );
+    }
 
-        let action = ActionCode.SET_CONFIGURATION_FILE;
-        let requestID = uuidgen();
+    private static BaseConfigChangeRequest(
+        _interaction: Partial<InteractionConfig> | null,
+        _physical: Partial<PhysicalConfig> | null,
+        _callback: (detail: WebSocketResponse) => void | null,
+        action: ActionCode
+    ): void {
+        const requestID = uuidgen();
 
-        let content = new PartialConfigState(requestID, _interaction, _physical);
-        let request = new CommunicationWrapper(action, content);
+        const content = new PartialConfigState(requestID, _interaction, _physical);
+        const request = new CommunicationWrapper(action, content);
 
-        let jsonContent = JSON.stringify(request);
+        const jsonContent = JSON.stringify(request);
 
         ConnectionManager.serviceConnection()?.SendMessage(jsonContent, requestID, _callback);
     }
@@ -92,7 +98,7 @@ export class ConfigurationManager {
     // If your _callback requires context it should be bound to that context via .bind()
     public static RequestConfigFileState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
-            console.error("Config file state request failed. This call requires a callback.");
+            console.error('Config file state request failed. This call requires a callback.');
             return;
         }
 

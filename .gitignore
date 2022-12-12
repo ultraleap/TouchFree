@@ -11,6 +11,7 @@ Logs/
 # Node.js #
 # ======= #
 
+/node_modules/*
 **/node_modules/*
 **/node_modules/**
 
@@ -98,3 +99,5 @@ Testing/ServiceSocketTests/results/**
 !/TF_Service_dotNet/**/*.csproj
 !/TF_Service_dotNet/**/*.sln
 !/TF_Service_dotNet/**/launchSettings.json
+/TF_Application/Assets/TouchFree/Tooling
+/TF_Service_dotNet/**/wwwroot

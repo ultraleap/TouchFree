@@ -1,21 +1,21 @@
-import React, { PointerEvent, RefObject } from "react";
+import 'Styles/Controls/Sliders.scss';
 
-import '../../Styles/Controls/Sliders.css';
+import React, { PointerEvent, RefObject } from 'react';
 
 interface SliderProps {
-    name: string,
-    rangeMin: number,
-    rangeMax: number,
-    leftLabel: string,
-    rightLabel: string,
-    value: number,
-    onChange: (newValue: number) => void,
-    increment?: number,
+    name: string;
+    rangeMin: number;
+    rangeMax: number;
+    leftLabel: string;
+    rightLabel: string;
+    value: number;
+    onChange: (newValue: number) => void;
+    increment?: number;
 }
 
 export class Slider extends React.Component<SliderProps, {}> {
     public static defaultProps = {
-        increment: 0.1
+        increment: 0.1,
     };
 
     private dragging = false;
@@ -36,7 +36,7 @@ export class Slider extends React.Component<SliderProps, {}> {
     }
 
     private onUpCancel() {
-        this.dragging = false
+        this.dragging = false;
     }
 
     private onDown(event: PointerEvent<HTMLInputElement>) {
@@ -53,29 +53,29 @@ export class Slider extends React.Component<SliderProps, {}> {
     private setValueByPos(xPos: number) {
         if (this.inputElement.current !== null) {
             // Slider height is currently 0.75rem
-            let remValue = this.inputElement.current.clientHeight;
+            const remValue = this.inputElement.current.clientHeight;
 
             // Slider control is 1.5rem wide, so half is 1x remValue, full is 2x remValue
-            let posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth - (2 * remValue));
-            let outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
+            const posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth - 2 * remValue);
+            const outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
 
-            if (this.props.rangeMin < outputValue &&
-                outputValue < this.props.rangeMax) {
+            if (this.props.rangeMin < outputValue && outputValue < this.props.rangeMax) {
                 this.props.onChange(outputValue);
             }
         }
     }
 
     private lerp(v0: number, v1: number, t: number): number {
-        return v0 * (1 - t) + v1 * t
+        return v0 * (1 - t) + v1 * t;
     }
 
     render() {
         return (
-            <label className="backgroundLabel">
+            <label className="input-label-container">
                 <p className="sliderLabel">{this.props.name}</p>
                 <div className="sliderContainer">
-                    <input type="range"
+                    <input
+                        type="range"
                         step={this.props.increment}
                         min={this.props.rangeMin}
                         max={this.props.rangeMax}
@@ -87,7 +87,8 @@ export class Slider extends React.Component<SliderProps, {}> {
                         onPointerCancel={this.onUpCancel.bind(this)}
                         value={this.props.value}
                         id="myRange"
-                        ref={this.inputElement} />
+                        ref={this.inputElement}
+                    />
                     <div className="sliderLabelContainer">
                         <label className="leftSliderLabel">{this.props.leftLabel}</label>
                         <label className="rightSliderLabel">{this.props.rightLabel}</label>

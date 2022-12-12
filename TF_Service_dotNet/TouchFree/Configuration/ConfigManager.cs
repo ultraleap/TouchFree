@@ -1,13 +1,19 @@
-﻿using System;
-
-namespace Ultraleap.TouchFree.Library.Configuration
+﻿namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
         public event IConfigManager.InteractionConfigEvent OnInteractionConfigUpdated;
         public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
+        public event IConfigManager.TrackingConfigEvent OnTrackingConfigSaved;
+        public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
+        private TrackingConfig _tracking;
+
+        public ConfigManager()
+        {
+            TrackingConfigFile.OnConfigFileSaved += () => OnTrackingConfigSaved?.Invoke();
+        }
 
         public bool ErrorLoadingConfigFiles { get; private set; }
 
@@ -63,29 +69,77 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
+        public TrackingConfig TrackingConfig
+        {
+            get
+            {
+                if (_tracking == null && TrackingConfigFile.DoesConfigFileExist())
+                {
+                    _tracking = TrackingConfigFile.LoadConfig();
+                }
+
+                return _tracking;
+            }
+            set
+            {
+                _tracking = value;
+            }
+        }
+
         public void LoadConfigsFromFiles()
         {
+            var interactionsUpdated = false;
             InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
-            _interactions = new InteractionConfigInternal(intFromFile);
+            var loadedInteractions = new InteractionConfigInternal(intFromFile);
+            if (_interactions == null || _interactions != loadedInteractions)
+            {
+                _interactions = loadedInteractions;
+                interactionsUpdated = true;
+            }
 
+            var physicalUpdated = false;
             PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
-            _physical = new PhysicalConfigInternal(physFromFile);
+            var loadedPhysical = new PhysicalConfigInternal(physFromFile);
+            if (_physical == null || _physical != loadedPhysical)
+            {
+                _physical = loadedPhysical;
+                physicalUpdated = true;
+            }
 
-            InteractionConfigWasUpdated();
-            PhysicalConfigWasUpdated();
+            var trackingUpdated = false;
+            if (TrackingConfigFile.DoesConfigFileExist())
+            {
+                var loadedTracking = TrackingConfigFile.LoadConfig();
+                if (_tracking == null || _tracking != loadedTracking)
+                {
+                    _tracking = loadedTracking;
+                    trackingUpdated = true;
+                }
+            }
+
+            if (interactionsUpdated)
+            {
+                InteractionConfigWasUpdated();
+            }
+
+            if (physicalUpdated)
+            {
+                PhysicalConfigWasUpdated();
+            }
+
+            if (trackingUpdated)
+            {
+                TrackingConfigWasUpdated();
+            }
+
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
 
-        public void PhysicalConfigWasUpdated()
-        {
-            OnPhysicalConfigUpdated?.Invoke(_physical);
-        }
+        public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
+        public void InteractionConfigWasUpdated() => OnInteractionConfigUpdated?.Invoke(_interactions);
+        public void TrackingConfigWasUpdated() => OnTrackingConfigUpdated?.Invoke(_tracking);
 
-        public void InteractionConfigWasUpdated()
-        {
-            OnInteractionConfigUpdated?.Invoke(_interactions);
-        }
 
         public bool AreConfigsInGoodState()
         {

@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
+using Ultraleap.TouchFree.Library.Connections;
+using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
@@ -18,43 +21,53 @@ namespace Ultraleap.TouchFree.Service.Connection
         public static IServiceCollection AddClientConnectionManager(this IServiceCollection services)
         {
             services.AddSingleton<ClientConnectionManager>();
+            services.AddSingleton<IClientConnectionManager>(x => x.GetService<ClientConnectionManager>());
             return services;
         }
 
-        public static IServiceCollection AddWebSocketReceiver(this IServiceCollection services)
+        public static IServiceCollection AddMessageQueueHandlers(this IServiceCollection services)
         {
-            services.AddSingleton<WebSocketReceiver>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationChangeQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationFileChangeQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationStateRequestQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ConfigurationFileRequestQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, QuickSetupQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, ServiceStatusQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, HandDataStreamStateQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, TrackingApiChangeQueueHandler>();
             return services;
         }
 
         public static IServiceCollection AddUpdateBehaviour(this IServiceCollection services)
         {
-            services.AddSingleton<UpdateBehaviour>();
+            services.AddSingleton<IUpdateBehaviour, UpdateBehaviour>();
             return services;
         }
 
         public static IServiceCollection AddTrackingConnectionManager(this IServiceCollection services)
         {
-            services.AddSingleton<TrackingConnectionManager>();
+            services.AddSingleton<ITrackingConnectionManager, TrackingConnectionManager>();
+            return services;
+        }
+
+        public static IServiceCollection AddTrackingDiagnosticApi(this IServiceCollection services)
+        {
+            services.AddSingleton<ITrackingDiagnosticApi, TrackingDiagnosticApi>();
             return services;
         }
 
         public static IServiceCollection AddConfig(this IServiceCollection services)
         {
-            var configManager = new ConfigManager();
-            services.AddSingleton<IConfigManager>(configManager);
-            var watcher = new ConfigFileWatcher(configManager);
-
-            services.BuildServiceProvider().GetService<UpdateBehaviour>().OnUpdate += watcher.Update;
-
-            services.AddSingleton(watcher);
+            services.AddSingleton<IConfigManager, ConfigManager>();
+            services.AddSingleton<IQuickSetupHandler, QuickSetupHandler>();
+            services.AddSingleton<ConfigFileWatcher>();
 
             return services;
         }
 
         public static IServiceCollection AddHandManager(this IServiceCollection services)
         {
-            services.AddSingleton<HandManager>();
+            services.AddSingleton<IHandManager, HandManager>();
             return services;
         }
 
@@ -62,10 +75,15 @@ namespace Ultraleap.TouchFree.Service.Connection
         {
             services.AddSingleton<InteractionManager>();
 
-            services.AddSingleton<AirPushInteraction>();
-            services.AddSingleton<GrabInteraction>();
-            services.AddSingleton<HoverAndHoldInteraction>();
-            services.AddSingleton<TouchPlanePushInteraction>();
+            services.AddSingleton<IInteraction, AirPushInteraction>();
+            services.AddSingleton<IInteraction, GrabInteraction>();
+            services.AddSingleton<IInteraction, HoverAndHoldInteraction>();
+            services.AddSingleton<IInteraction, TouchPlanePushInteraction>();
+            services.AddSingleton<IInteraction, VelocitySwipeInteraction>();
+            services.AddSingleton<IInteraction, AirClickInteraction>();
+
+            var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            services.Configure<InteractionTuning>(configuration.GetSection(nameof(InteractionTuning)));
 
             return services;
         }
@@ -86,6 +104,8 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IPositionTracker, IndexTipTracker>();
             services.AddSingleton<IPositionTracker, NearestTracker>();
             services.AddSingleton<IPositionTracker, WristTracker>();
+            services.AddSingleton<IPositionTracker, HandPointingTracker>();
+            services.AddSingleton<IPositionTracker, ProjectionTracker>();
 
             return services;
         }

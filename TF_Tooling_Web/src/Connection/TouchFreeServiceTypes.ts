@@ -1,12 +1,6 @@
-import {
-    InteractionConfigFull,
-    InteractionConfig,
-    PhysicalConfig
-} from '../Configuration/ConfigurationTypes';
-import {
-    ConfigurationState,
-    TrackingServiceState
-} from '../TouchFreeToolingTypes';
+import { InteractionConfigFull, InteractionConfig, PhysicalConfig } from '../Configuration/ConfigurationTypes';
+import { ConfigurationState, TrackingServiceState } from '../TouchFreeToolingTypes';
+import { Mask } from '../Tracking/TrackingTypes';
 
 // Enum: ActionCode
 // INPUT_ACTION - Represents standard interaction data
@@ -14,39 +8,63 @@ import {
 // CONFIGURATION_RESPONSE - Represents a Success/Failure response from a SET_CONFIGURATION_STATE
 // SET_CONFIGURATION_STATE - Represents a request to set new configuration files on the Service
 // REQUEST_CONFIGURATION_STATE - Represents a request to receive a current CONFIGURATION_STATE from the Service
-// VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service, attempting to compare API versions for compatibility
+// VERSION_HANDSHAKE - Represents an outgoing message from Tooling to Service,
+//                     attempting to compare API versions for compatibility
 // HAND_PRESENCE_EVENT - Represents the result coming in from the Service
 // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
 // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
 // SERVICE_STATUS - Represents information about the current state of the Service
+// QUICK_SETUP - Represents a request for performing a quick setup of the Service
+// QUICK_SETUP_CONFIG - Represents a response from the Service after a QUICK_SETUP request
+//                      where the configuration was updated as the quick setup was successfully completed.
+// QUICK_SETUP_RESPONSE - Represents a response from the Service after a QUICK_SETUP request
+//                        where the configuration was not updated.
+// GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
+// SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
+// TRACKING_STATE - Represents a response from the Service with the current state of the tracking settings,
+//                  received following either a GET_TRACKING_STATE or a SET_TRACKING_STATE
+// HAND_DATA - Represents more complete hand data sent from the service.
+// SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable
+//                              the HAND_DATA stream or change the lens to have the hand position relative to.
 export enum ActionCode {
-    INPUT_ACTION = "INPUT_ACTION",
+    INPUT_ACTION = 'INPUT_ACTION',
 
-    CONFIGURATION_STATE = "CONFIGURATION_STATE",
-    CONFIGURATION_RESPONSE = "CONFIGURATION_RESPONSE",
-    SET_CONFIGURATION_STATE = "SET_CONFIGURATION_STATE",
-    REQUEST_CONFIGURATION_STATE = "REQUEST_CONFIGURATION_STATE",
+    CONFIGURATION_STATE = 'CONFIGURATION_STATE',
+    CONFIGURATION_RESPONSE = 'CONFIGURATION_RESPONSE',
+    SET_CONFIGURATION_STATE = 'SET_CONFIGURATION_STATE',
+    REQUEST_CONFIGURATION_STATE = 'REQUEST_CONFIGURATION_STATE',
 
-    VERSION_HANDSHAKE = "VERSION_HANDSHAKE",
-    VERSION_HANDSHAKE_RESPONSE = "VERSION_HANDSHAKE_RESPONSE",
+    VERSION_HANDSHAKE = 'VERSION_HANDSHAKE',
+    VERSION_HANDSHAKE_RESPONSE = 'VERSION_HANDSHAKE_RESPONSE',
 
-    HAND_PRESENCE_EVENT = "HAND_PRESENCE_EVENT",
+    HAND_PRESENCE_EVENT = 'HAND_PRESENCE_EVENT',
 
-    REQUEST_SERVICE_STATUS = "REQUEST_SERVICE_STATUS",
-    SERVICE_STATUS_RESPONSE = "SERVICE_STATUS_RESPONSE",
-    SERVICE_STATUS = "SERVICE_STATUS",
+    REQUEST_SERVICE_STATUS = 'REQUEST_SERVICE_STATUS',
+    SERVICE_STATUS_RESPONSE = 'SERVICE_STATUS_RESPONSE',
+    SERVICE_STATUS = 'SERVICE_STATUS',
 
-    REQUEST_CONFIGURATION_FILE = "REQUEST_CONFIGURATION_FILE",
-    CONFIGURATION_FILE_STATE = "CONFIGURATION_FILE_STATE",
-    SET_CONFIGURATION_FILE = "SET_CONFIGURATION_FILE",
-    CONFIGURATION_FILE_RESPONSE = "CONFIGURATION_FILE_RESPONSE",
+    REQUEST_CONFIGURATION_FILE = 'REQUEST_CONFIGURATION_FILE',
+    CONFIGURATION_FILE_STATE = 'CONFIGURATION_FILE_STATE',
+    SET_CONFIGURATION_FILE = 'SET_CONFIGURATION_FILE',
+    CONFIGURATION_FILE_RESPONSE = 'CONFIGURATION_FILE_RESPONSE',
+
+    QUICK_SETUP = 'QUICK_SETUP',
+    QUICK_SETUP_CONFIG = 'QUICK_SETUP_CONFIG',
+    QUICK_SETUP_RESPONSE = 'QUICK_SETUP_RESPONSE',
+
+    GET_TRACKING_STATE = 'GET_TRACKING_STATE',
+    SET_TRACKING_STATE = 'SET_TRACKING_STATE',
+    TRACKING_STATE = 'TRACKING_STATE',
+
+    HAND_DATA = 'HAND_DATA',
+    SET_HAND_DATA_STREAM_STATE = 'SET_HAND_DATA_STREAM_STATE',
 }
 
 // Enum: HandPresenceState
 // HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
 // HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
 // PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
-//             use in <MessageReciever> for more details.
+//             use in <MessageReceiver> for more details.
 export enum HandPresenceState {
     HAND_FOUND,
     HANDS_LOST,
@@ -60,9 +78,11 @@ export enum HandPresenceState {
 export enum Compatibility {
     COMPATIBLE,
     SERVICE_OUTDATED,
-    TOOLING_OUTDATED
+    TOOLING_OUTDATED,
 }
 
+// Class: HandPresenceEvent
+// This data structure is used to receive hand presence requests
 export class HandPresenceEvent {
     state: HandPresenceState;
 
@@ -71,20 +91,45 @@ export class HandPresenceEvent {
     }
 }
 
+// Class: TouchFreeRequestCallback
+// This data structure is used to hold request callbacks
+export abstract class TouchFreeRequestCallback<T> {
+    // Variable: timestamp
+    timestamp: number;
+    // Variable: callback
+    callback: (detail: T) => void;
+
+    constructor(_timestamp: number, _callback: (detail: T) => void) {
+        this.timestamp = _timestamp;
+        this.callback = _callback;
+    }
+}
+
+// Class: TouchFreeRequest
+// This data structure is used as a base for requests to the TouchFree service.
+export abstract class TouchFreeRequest {
+    requestID: string;
+    constructor(_requestID: string) {
+        this.requestID = _requestID;
+    }
+}
+
 // Class: PartialConfigState
 // This data structure is used to send requests for changes to configuration or to configuration files.
 //
 // When sending a configuration to the Service the structure can be comprised of either partial or complete objects.
-export class PartialConfigState {
-    // Variable: requestID
-    requestID: string;
+export class PartialConfigState extends TouchFreeRequest {
     // Variable: interaction
     interaction: Partial<InteractionConfig> | null;
     // Variable: physical
     physical: Partial<PhysicalConfig> | null;
 
-    constructor(_id: string, _interaction: Partial<InteractionConfig> | null, _physical: Partial<PhysicalConfig> | null) {
-        this.requestID = _id;
+    constructor(
+        _id: string,
+        _interaction: Partial<InteractionConfig> | null,
+        _physical: Partial<PhysicalConfig> | null
+    ) {
+        super(_id);
         this.interaction = _interaction;
         this.physical = _physical;
     }
@@ -95,16 +140,14 @@ export class PartialConfigState {
 // or its config files.
 //
 // When receiving a configuration from the Service this structure contains ALL configuration data
-export class ConfigState {
-    // Variable: requestID
-    requestID: string;
+export class ConfigState extends TouchFreeRequest {
     // Variable: interaction
     interaction: InteractionConfigFull;
     // Variable: physical
     physical: PhysicalConfig;
 
     constructor(_id: string, _interaction: InteractionConfigFull, _physical: PhysicalConfig) {
-        this.requestID = _id;
+        super(_id);
         this.interaction = _interaction;
         this.physical = _physical;
     }
@@ -114,12 +157,20 @@ export class ConfigState {
 // Used to request the current state of the configuration on the Service. This is received as
 // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
 // use of the data received.
-export class ConfigChangeRequest {
-    // Variable: requestID
-    requestID: string;
+export class ConfigChangeRequest extends TouchFreeRequest {}
 
-    constructor(_id: string) {
-        this.requestID = _id;
+// class: HandRenderDataStateRequest
+// Used to set the state of the Hand Render Data stream.
+export class HandRenderDataStateRequest extends TouchFreeRequest {
+    // Variable: enabled
+    enabled: boolean;
+    // Variable: lens
+    lens: string;
+
+    constructor(_id: string, enabled: boolean, lens: string) {
+        super(_id);
+        this.enabled = enabled;
+        this.lens = lens;
     }
 }
 
@@ -128,32 +179,24 @@ export class ConfigChangeRequest {
 // with a <ConfigState> as a parameter to allow users to make use of the new
 // <ConfigStateResponse>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ConfigStateCallback {
-    // Variable: timestamp
-    timestamp: number;
-    // Variable: callback
-    callback: (detail: ConfigState) => void;
-
-    constructor(_timestamp: number, _callback: (detail: ConfigState) => void) {
-        this.timestamp = _timestamp;
-        this.callback = _callback;
-    }
-}
+export class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {}
 
 // Class: ServiceStatus
 // This data structure is used to receive service status.
 //
 // When receiving a configuration from the Service this structure contains ALL status data
-export class ServiceStatus {
-    // Variable: requestID
-    requestID: string;
+export class ServiceStatus extends TouchFreeRequest {
     // Variable: trackingServiceState
     trackingServiceState: TrackingServiceState | null;
     // Variable: configurationState
     configurationState: ConfigurationState | null;
 
-    constructor(_id: string, _trackingServiceState: TrackingServiceState | null, _configurationState: ConfigurationState | null) {
-        this.requestID = _id;
+    constructor(
+        _id: string,
+        _trackingServiceState: TrackingServiceState | null,
+        _configurationState: ConfigurationState | null
+    ) {
+        super(_id);
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
     }
@@ -163,39 +206,20 @@ export class ServiceStatus {
 // Used to request the current state of the status of the Service. This is received as
 // a <ServiceStatus> which should be linked to a <ServiceStatusCallback> via requestID to make
 // use of the data received.
-export class ServiceStatusRequest {
-    // Variable: requestID
-    requestID: string;
-
-    constructor(_id: string) {
-        this.requestID = _id;
-    }
-}
+export class ServiceStatusRequest extends TouchFreeRequest {}
 
 // Class: ServiceStatusCallback
 // Used by <MessageReceiver> to wait for a <ServiceStatus> from the Service. Owns a callback
 // with a <ServiceStatus> as a parameter to allow users to make use of the new
 // <ServiceStatusResponse>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ServiceStatusCallback {
-    // Variable: timestamp
-    timestamp: number;
-    // Variable: callback
-    callback: (detail: ServiceStatus) => void;
-
-    constructor(_timestamp: number, _callback: (detail: ServiceStatus) => void) {
-        this.timestamp = _timestamp;
-        this.callback = _callback;
-    }
-}
+export class ServiceStatusCallback extends TouchFreeRequestCallback<ServiceStatus> {}
 
 // Class: WebSocketResponse
 // The structure seen when the Service responds to a request. This is to verify whether it was
 // successful or not and will include the original request if it fails, to allow for
 // troubleshooting.
-export class WebSocketResponse {
-    // Variable: requestID
-    requestID: string;
+export class WebSocketResponse extends TouchFreeRequest {
     // Variable: status
     status: string;
     // Variable: message
@@ -204,10 +228,32 @@ export class WebSocketResponse {
     originalRequest: string;
 
     constructor(_id: string, _status: string, _msg: string, _request: string) {
-        this.requestID = _id;
+        super(_id);
         this.status = _status;
         this.message = _msg;
         this.originalRequest = _request;
+    }
+}
+
+// Class: VersionHandshakeResponse
+// The structure seen when the Service responds to a Version Handshake request.
+export class VersionHandshakeResponse extends WebSocketResponse {
+    // Variable: touchFreeVersion
+    touchFreeVersion: string;
+    // Variable: message
+    apiVersion: string;
+
+    constructor(
+        _id: string,
+        _status: string,
+        _msg: string,
+        _request: string,
+        _touchFreeVersion: string,
+        _apiVersion: string
+    ) {
+        super(_id, _status, _msg, _request);
+        this.touchFreeVersion = _touchFreeVersion;
+        this.apiVersion = _apiVersion;
     }
 }
 
@@ -216,17 +262,7 @@ export class WebSocketResponse {
 // with a <WebSocketResponse> as a parameter to allow users to deal with failed
 // <WebSocketResponses>. Stores a timestamp of its creation so the response has the ability to
 // timeout if not seen within a reasonable timeframe.
-export class ResponseCallback {
-    // Variable: timestamp
-    timestamp: number;
-    // Variable: callback
-    callback: (detail: WebSocketResponse) => void;
-
-    constructor(_timestamp: number, _callback: (detail: WebSocketResponse) => void) {
-        this.timestamp = _timestamp;
-        this.callback = _callback;
-    }
-}
+export class ResponseCallback extends TouchFreeRequestCallback<WebSocketResponse> {}
 
 // Class: CommunicationWrapper
 // A container structure used by <ServiceConnection> to interpret incoming data to its appropriate
@@ -240,5 +276,81 @@ export class CommunicationWrapper<T> {
     constructor(_actionCode: ActionCode, _content: T) {
         this.action = _actionCode;
         this.content = _content;
+    }
+}
+
+// Class: SuccessWrapper
+// Type extension for <TrackingStateResponse> to capture the success state, clarifying message and response content.
+export interface SuccessWrapper<T> {
+    // Variable: succeeded
+    succeeded: boolean;
+    // Variable: msg
+    msg: string;
+    // Variable: content
+    content?: T;
+}
+
+// Class: TrackingStateResponse
+// Type of the response from a GET/SET tracking state request.
+export interface TrackingStateResponse {
+    // Variable: requestID
+    requestID: string;
+    // Variable: mask
+    mask: SuccessWrapper<Mask> | null;
+    // Variable: cameraOrientation
+    cameraReversed: SuccessWrapper<boolean> | null;
+    // Variable: allowImages
+    allowImages: SuccessWrapper<boolean> | null;
+    // Variable: analyticsEnabled
+    analyticsEnabled: SuccessWrapper<boolean> | null;
+}
+
+// Class: TrackingStateRequest
+// Used to construct a SET_TRACKING_STATE request.
+export class TrackingStateRequest {
+    // Variable: requestID
+    requestID: string;
+    // Variable: mask
+    mask: Mask;
+    // Variable: cameraOrientation
+    cameraReversed: boolean;
+    // Variable: allowImages
+    allowImages: boolean;
+    // Variable: analyticsEnabled
+    analyticsEnabled: boolean;
+
+    constructor(_id: string, _mask: Mask, _cameraReversed: boolean, _allowImages: boolean, _analyticsEnabled: boolean) {
+        this.requestID = _id;
+        this.mask = _mask;
+        this.cameraReversed = _cameraReversed;
+        this.allowImages = _allowImages;
+        this.analyticsEnabled = _analyticsEnabled;
+    }
+}
+
+// Class: SimpleRequest
+// Used to make a basic request to the service. To be used with <CommunicationWrapper> to create a more complex request.
+export class SimpleRequest {
+    // Variable: requestID
+    requestID: string;
+
+    constructor(_id: string) {
+        this.requestID = _id;
+    }
+}
+
+// Class: TrackingStateCallback
+// Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a
+// <TrackingStateResponse> as a parameter. Stores a timestamp of its creation so the response has the ability to
+// timeout if not seen within a reasonable timeframe.
+export class TrackingStateCallback {
+    // Variable: timestamp
+    timestamp: number;
+    // Variable: callback
+    callback: (detail: TrackingStateResponse) => void;
+
+    constructor(_timestamp: number, _callback: (detail: TrackingStateResponse) => void) {
+        this.timestamp = _timestamp;
+        this.callback = _callback;
     }
 }

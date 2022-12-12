@@ -4,6 +4,8 @@ TF_PIDFILE=/var/run/TouchFree_Service.pid
 TF_DAEMON="./TouchFree/TouchFree_Service"
 TRK_PIDFILE=/var/run/Ultraleap_Tracking_Service.pid
 TRK_DAEMON="./Tracking/bin/libtrack_server"
+export LIBTRACK_LOGDIR="/storage/sd/ultraleap/tracking/logs"
+export LIBTRACK_CONFIG_DIR="/storage/sd/ultraleap/tracking"
 
 cd $(dirname $(readlink -f $0))
 
@@ -12,6 +14,7 @@ if [[ $1 == "start" ]]; then
     start-stop-daemon --start \
         --pidfile $TRK_PIDFILE --make-pidfile \
         --background --exec $TRK_DAEMON
+    sleep 2
     export LD_LIBRARY_PATH=./TouchFree
     start-stop-daemon --start \
         --pidfile $TF_PIDFILE --make-pidfile \

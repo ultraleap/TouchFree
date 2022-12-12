@@ -1,4 +1,4 @@
-import { Ray } from './Ray'
+import { Ray } from './Ray';
 import { Vector2 } from './Vector2';
 
 export class SnappableElement {
@@ -27,16 +27,14 @@ export class SnappableElement {
 
     public static Compute(element: Element, distant_point: Vector2): SnappableElement {
         const rect: DOMRect = element.getBoundingClientRect();
-        const center: Vector2 = new Vector2(rect.x + (rect.width / 2), rect.y + (rect.height / 2));
+        const center: Vector2 = new Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
         const center_distance: number = Math.sqrt(
-            Math.pow(distant_point.x - center.x, 2) +
-            Math.pow(distant_point.y - center.y, 2)
+            Math.pow(distant_point.x - center.x, 2) + Math.pow(distant_point.y - center.y, 2)
         );
 
         const closest_point: Vector2 = Ray.Cast(distant_point, center, element);
         let distance: number = Math.sqrt(
-            Math.pow(distant_point.x - closest_point.x, 2) +
-            Math.pow(distant_point.y - closest_point.y, 2)
+            Math.pow(distant_point.x - closest_point.x, 2) + Math.pow(distant_point.y - closest_point.y, 2)
         );
 
         const hovered: boolean = Ray.Hit(distant_point, element.getBoundingClientRect());

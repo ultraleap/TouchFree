@@ -3,23 +3,24 @@
 namespace Ultraleap.TouchFree.Library.Configuration
 {
     [Serializable]
-    public class HoverAndHoldInteractionSettingsInternal
+    public record class HoverAndHoldInteractionSettingsInternal
     {
         public float HoverStartTimeS = 0.5f;
         public float HoverCompleteTimeS = 0.6f;
     }
 
     [Serializable]
-    public class TouchPlaneInteractionSettingsInternal
+    public record class TouchPlaneInteractionSettingsInternal
     {
         public float TouchPlaneActivationDistanceMm = 50f;
         public TrackedPosition TouchPlaneTrackedPosition = TrackedPosition.NEAREST;
     }
 
     [Serializable]
-    public class InteractionConfigInternal
+    public record class InteractionConfigInternal
     {
         public bool UseScrollingOrDragging = true;
+        public bool UseSwipeInteraction = false;
         public float DeadzoneRadiusMm = 3f;
 
         public bool InteractionZoneEnabled = false;
@@ -47,6 +48,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 InteractionType = InteractionType,
                 InteractionZoneEnabled = InteractionZoneEnabled,
                 UseScrollingOrDragging = UseScrollingOrDragging,
+                UseSwipeInteraction = UseSwipeInteraction,
                 TouchPlane = new TouchPlaneInteractionSettings()
                 {
                     TouchPlaneActivationDistanceCm = TouchPlane.TouchPlaneActivationDistanceMm / 10f,
@@ -58,6 +60,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public InteractionConfigInternal()
         {
             this.UseScrollingOrDragging = true;
+            this.UseSwipeInteraction = false;
             this.DeadzoneRadiusMm = 3f;
 
             this.InteractionZoneEnabled = false;
@@ -78,6 +81,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             this.DeadzoneRadiusMm = fromFile.DeadzoneRadius * 1000;
 
             this.UseScrollingOrDragging = fromFile.UseScrollingOrDragging;
+            this.UseSwipeInteraction = fromFile.UseSwipeInteraction;
             this.InteractionZoneEnabled = fromFile.InteractionZoneEnabled;
 
             this.InteractionType = fromFile.InteractionType;

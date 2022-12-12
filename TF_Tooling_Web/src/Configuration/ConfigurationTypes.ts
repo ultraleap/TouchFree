@@ -1,4 +1,4 @@
-import { InteractionType } from "../TouchFreeToolingTypes";
+import { InteractionType } from '../TouchFreeToolingTypes';
 
 // Class: InteractionConfig
 // This class is a container for all of the settings related to the interactions being processed
@@ -14,10 +14,15 @@ import { InteractionType } from "../TouchFreeToolingTypes";
 // TouchFree Service.
 export interface InteractionConfig {
     // Property: UseScrollingOrDragging
-    // If true, allows interactions to send up/down events seperately, enabling dragging or
+    // If true, allows interactions to send up/down events separately, enabling dragging or
     // touchscreen-like scrolling behaviours. If false, up/down events will be sent together,
     // and every down will function like a click of its own.
     UseScrollingOrDragging: boolean;
+
+    // Property: UseSwipeInteraction
+    // If true, enables the swipe interaction alongside AirPush, Hover and Hold or TouchPlane if
+    // one of those interactions is configured
+    UseSwipeInteraction: boolean;
 
     // Property: DeadzoneRadius
     // All interactions use a small deadzone to stabilise the position of the cursor, to prevent
@@ -52,6 +57,8 @@ export interface InteractionConfig {
 // the current state of the Service's config or its config files.
 export interface InteractionConfigFull {
     UseScrollingOrDragging: boolean;
+
+    UseSwipeInteraction: boolean;
 
     DeadzoneRadius: number;
 
@@ -100,10 +107,10 @@ export interface HoverAndHoldInteractionSettings {
 // not modify a member of this class, its value will not change when the instance is sent to
 // TouchFree Service.
 export interface TouchPlaneInteractionSettings {
-    // Property: touchPlaneActivationDistanceCm
+    // Property: TouchPlaneActivationDistanceCm
     // This determines how far (in cm) the TouchPlane is from the screen surface. This
     // represents the plane that the user must pass to begin and end a click event.
-    touchPlaneActivationDistanceCm: number;
+    TouchPlaneActivationDistanceCm: number;
 
     // Property: TouchPlaneTrackedPosition
     // This determines which bone position will be tracked when performing the interaction.
@@ -134,17 +141,53 @@ export interface PhysicalConfig {
     // X = left/right (right = positive)
     // Y = up/down (up = positive)
     // Z = forward/backward (forward = positive)
-    LeapPositionRelativeToScreenBottomM: Array<number>;
+    LeapPositionRelativeToScreenBottomM: Vector;
 
     // Property: LeapRotationD
     // The rotation of the Leap Motion Camera relative to the unity world space, measured in
     // degrees
-    LeapRotationD: Array<number>;
+    LeapRotationD: Vector;
 
     // Property: ScreenRotationD
     // The rotation of the physical screen relative to the unity world space, measured in
     // degrees
     ScreenRotationD: number;
+
+    // Property: ScreenWidthPX
+    // The width in pixels of the screen
+    ScreenWidthPX: number;
+
+    // Property: ScreenHeightPX
+    // The height in pixels of the screen
+    ScreenHeightPX: number;
+}
+
+// Class: Vector
+// This class is a container for a simple 3 dimensional vector
+export interface Vector {
+    // Property: X
+    // The X co-ordinate of the vector
+    X: number;
+
+    // Property: Y
+    // The Y co-ordinate of the vector
+    Y: number;
+
+    // Property: Z
+    // The Z co-ordinate of the vector
+    Z: number;
+}
+
+// Class: Vector2
+// This class is a container for a simple 2 dimensional vector
+export interface Vector2 {
+    // Property: x
+    // The X co-ordinate of the vector
+    x: number;
+
+    // Property: y
+    // The Y co-ordinate of the vector
+    y: number;
 }
 
 // Enum: TrackedPosition
@@ -156,5 +199,5 @@ export enum TrackedPosition {
     INDEX_STABLE,
     INDEX_TIP,
     WRIST,
-    NEAREST
+    NEAREST,
 }

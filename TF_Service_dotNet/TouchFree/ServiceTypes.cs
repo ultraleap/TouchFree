@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Numerics;
 
-using Leap;
-
 namespace Ultraleap.TouchFree.Library
 {
-    public static class VersionInfo
-    {
-        public static readonly Version ApiVersion = new Version("1.2.0");
-        public const string API_HEADER_NAME = "TfApiVersion";
-    }
-
     public readonly struct InputAction
     {
         public readonly long Timestamp;
@@ -62,6 +54,8 @@ namespace Ultraleap.TouchFree.Library
         HOVER,
         PUSH,
         TOUCHPLANE,
+        VELOCITYSWIPE,
+        AIRCLICK,
     }
 
     [Flags]
@@ -89,6 +83,7 @@ namespace Ultraleap.TouchFree.Library
         HOVER = 1024,
         PUSH = 2048,
         TOUCHPLANE = 4096,
+        VELOCITYSWIPE = 8192,
 
         // Adding elements to this list is a breaking change, and should cause at
         // least a minor iteration of the API version UNLESS adding them at the end
@@ -143,7 +138,9 @@ namespace Ultraleap.TouchFree.Library
         INDEX_STABLE,
         INDEX_TIP,
         WRIST,
-        NEAREST
+        NEAREST,
+        HAND_POINTING,
+        HAND_PROJECTION
     }
 
     [Serializable]

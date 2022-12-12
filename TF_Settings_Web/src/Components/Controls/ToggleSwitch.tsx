@@ -1,32 +1,31 @@
-import React from "react";
+import 'Styles/Controls/ToggleSwitch.scss';
 
-import '../../Styles/Controls/ToggleSwitch.css';
+import React from 'react';
 
-interface ToggleProps {
-    name: string,
-    value: boolean,
-    onChange: (newState: boolean) => void
+interface ToggleSwitchProps {
+    value: boolean;
 }
 
-export class ToggleSwitch extends React.Component<ToggleProps, {}> {
-    private onChange() {
-        // this function is here purely to pass to the input, preventing it becoming ReadOnly
-    }
+// ToggleSwitch doesn't react to onChange, it only displays the current value.
+// Changing the value should be handle by the <label> parent of the ToggleSwitch.
+export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ value }) => (
+    <>
+        {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+        <input type="checkbox" style={{ display: 'none' }} checked={value} onChange={() => {}} />
+        <div className="switch" />
+    </>
+);
 
-    render() {
-        return (
-            <label className="backgroundLabel"
-                onPointerDown={() => {
-                    this.props.onChange(!this.props.value);
-                }}>
-                <p className="switchLabel">{this.props.name}</p>
-                <label className="switch">
-                    <input type="checkbox"
-                        checked={this.props.value}
-                        onChange={this.onChange}/>
-                    <span className="toggle round"/>
-                </label>
-            </label>
-        );
-    }
+interface LabelledToggleSwitchProps extends ToggleSwitchProps {
+    name: string;
+    onChange: (newState: boolean) => void;
 }
+
+export const LabelledToggleSwitch: React.FC<LabelledToggleSwitchProps> = ({ name, value, onChange }) => (
+    <label className="input-label-container" onPointerDown={() => onChange(!value)}>
+        <p className="switch-label">{name}</p>
+        <span className="switch-container">
+            <ToggleSwitch value={value} />
+        </span>
+    </label>
+);

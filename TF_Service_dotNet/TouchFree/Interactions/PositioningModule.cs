@@ -7,67 +7,57 @@ namespace Ultraleap.TouchFree.Library.Interactions
 {
     public class PositioningModule : IPositioningModule
     {
-        public TrackedPosition TrackedPosition { set { trackedPosition = value; UpdateTrackerToUse(); } }
-        private TrackedPosition trackedPosition = TrackedPosition.INDEX_STABLE;
-
         private Positions positions;
 
-        private IVirtualScreen virtualScreen;
-
-        public IPositionStabiliser Stabiliser { get { return stabiliser; } }
-        private readonly IPositionStabiliser stabiliser;
+        private readonly IVirtualScreen virtualScreen;
 
         private readonly IEnumerable<IPositionTracker> positionTrackers;
 
-        public IPositionTracker TrackerToUse { get; private set; }
-        private readonly IPositionTracker defaultTracker;
-
-        public PositioningModule(IPositionStabiliser _stabiliser, IVirtualScreen _virtualScreen, IEnumerable<IPositionTracker> _positionTrackers)
+        public PositioningModule(IVirtualScreen _virtualScreen, IEnumerable<IPositionTracker> _positionTrackers)
         {
-            stabiliser = _stabiliser;
             virtualScreen = _virtualScreen;
             positionTrackers = _positionTrackers;
-
-            defaultTracker = positionTrackers.Single(x => x.GetType() == typeof(IndexStableTracker));
-
-            UpdateTrackerToUse();
-
-            Enable();
         }
 
-        protected void Enable()
-        {
-            stabiliser.ResetValues();
-        }
-
-        public Positions CalculatePositions(Leap.Hand hand)
+        public Positions CalculatePositions(Leap.Hand hand, IEnumerable<PositionTrackerConfiguration> configuration)
         {
             if (hand == null)
             {
                 return positions;
             }
 
-            Vector3 worldPosM = TrackerToUse.GetTrackedPosition(hand);
+            int totalWeights = configuration.Sum(x => x.weighting);
+            Vector3 worldPosM = new Vector3();
+
+            foreach (var positionItem in configuration)
+            {
+                worldPosM += GetPositionFromTracker(positionItem.trackedPosition, hand) * positionItem.weighting / totalWeights;
+            }
+
             Vector3 screenPos = virtualScreen.WorldPositionToVirtualScreen(worldPosM);
-            Vector2 screenPosMm = virtualScreen.PixelsToMillimeters(new Vector2(screenPos.X, screenPos.Y));
-            float distanceFromScreen = screenPos.Z;
-
-            screenPosMm = stabiliser.ApplyDeadzone(screenPosMm);
-
-            Vector2 oneToOnePosition = virtualScreen.MillimetersToPixels(screenPosMm);
 
             // float distanceFromScreen (measured in meters)
-            positions.DistanceFromScreen = distanceFromScreen;
+            positions.DistanceFromScreen = screenPos.Z;
 
             // Vector2 position in screen-space (measured in pixels)
-            positions.CursorPosition = oneToOnePosition;
+            positions.CursorPosition = new Vector2(screenPos.X, screenPos.Y);
 
             return positions;
         }
 
-        private void UpdateTrackerToUse()
+        public Positions ApplyStabiliation(Positions positions, IPositionStabiliser stabiliser)
         {
-            TrackerToUse = positionTrackers.SingleOrDefault(x => x.TrackedPosition == trackedPosition) ?? defaultTracker;
+            Vector2 screenPosMm = virtualScreen.PixelsToMillimeters(positions.CursorPosition);
+            screenPosMm = stabiliser.ApplyDeadzone(screenPosMm);
+            positions.CursorPosition = virtualScreen.MillimetersToPixels(screenPosMm);
+
+            return positions;
+        }
+
+        public Vector3 GetPositionFromTracker(TrackedPosition trackedPosition, Leap.Hand hand)
+        {
+            var trackerToUse = positionTrackers.Single(x => x.TrackedPosition == trackedPosition);
+            return trackerToUse.GetTrackedPosition(hand);
         }
     }
 }

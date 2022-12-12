@@ -12,6 +12,10 @@ namespace Ultraleap.TouchFree.Service
 #if !DEBUG
             TouchFreeLog.SetUpLogging();
 #endif
+
+            TouchFreeLog.WriteLine($"TouchFree Version: v{VersionManager.Version}");
+            TouchFreeLog.WriteLine();
+
             CreateHostBuilder(args).Build().Run();
         }
 

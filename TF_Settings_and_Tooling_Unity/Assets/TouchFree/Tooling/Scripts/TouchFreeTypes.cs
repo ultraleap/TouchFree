@@ -11,7 +11,7 @@ namespace Ultraleap.TouchFree.Tooling
 
         // Variable: ApiVersion
         // The current API version of the Tooling.
-        public static readonly Version ApiVersion = new Version("1.2.0");
+        public static readonly Version ApiVersion = new Version("1.3.0");
 
         // Variable: API_HEADER_NAME
         // The name of the header we wish the Service to compare our version with.
@@ -108,6 +108,7 @@ namespace Ultraleap.TouchFree.Tooling
         HOVER,
         PUSH,
         TOUCHPLANE,
+        VELOCITYSWIPE,
     }
 
     // Enum: BitmaskFlags
@@ -138,6 +139,7 @@ namespace Ultraleap.TouchFree.Tooling
         HOVER = 1024,
         PUSH = 2048,
         TOUCHPLANE = 4096,
+        VELOCITYSWIPE = 8192,
 
         // Adding elements to this list is a breaking change, and should cause at
         // least a minor iteration of the API version UNLESS adding them at the end
@@ -234,6 +236,10 @@ namespace Ultraleap.TouchFree.Tooling
 
                 case InteractionType.TOUCHPLANE:
                     returnVal ^= BitmaskFlags.TOUCHPLANE;
+                    break;
+                    
+                case InteractionType.VELOCITYSWIPE:
+                    returnVal ^= BitmaskFlags.VELOCITYSWIPE;
                     break;
             }
 
@@ -339,6 +345,10 @@ namespace Ultraleap.TouchFree.Tooling
             else if (_flags.HasFlag(BitmaskFlags.TOUCHPLANE))
             {
                 interactionType = InteractionType.TOUCHPLANE;
+            }
+            else if (_flags.HasFlag(BitmaskFlags.VELOCITYSWIPE))
+            {
+                interactionType = InteractionType.VELOCITYSWIPE;
             }
             else
             {

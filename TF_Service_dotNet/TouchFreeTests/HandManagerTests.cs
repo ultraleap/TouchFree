@@ -1,8 +1,9 @@
-﻿using NUnit.Framework;
+﻿using Leap;
+using Moq;
+using NUnit.Framework;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
-using System;
-using Leap;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace TouchFreeTests
 {
@@ -18,10 +19,10 @@ namespace TouchFreeTests
         public void TranslationIsCorrectlyConstructedFromConfig()
         {
             // Given
-            HandManager handManger = new (null, null);
-            System.Numerics.Vector3 translationInMillimeters = new (100f, 200f, 300f);
+            HandManager handManger = CreateSut();
+            System.Numerics.Vector3 translationInMillimeters = new(100f, 200f, 300f);
             Leap.Vector translationInLeapSpace = new Leap.Vector(translationInMillimeters.X, translationInMillimeters.Y, -translationInMillimeters.Z);
-            PhysicalConfigInternal testConfig = new () { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
+            PhysicalConfigInternal testConfig = new() { LeapPositionRelativeToScreenBottomMm = translationInMillimeters };
 
             // When
             handManger.UpdateTrackingTransform(testConfig);
@@ -30,24 +31,42 @@ namespace TouchFreeTests
             Assert.AreEqual(translationInLeapSpace, handManger.TrackingTransform().translation);
         }
 
+        private HandManager CreateSut()
+        {
+            var controller = new Mock<IController>();
+            controller.SetupAllProperties();
+            var connectionManager = new Mock<ITrackingConnectionManager>();
+            connectionManager.SetupAllProperties();
+            connectionManager.SetupGet(manager => manager.Controller).Returns(controller.Object);
+            var physicalConfig = new Mock<PhysicalConfigInternal>();
+            var configManager = new Mock<IConfigManager>();
+            configManager.SetupAllProperties();
+            configManager.SetupGet(manager => manager.PhysicalConfig).Returns(physicalConfig.Object);
+            var virtualScreen = new Mock<IVirtualScreen>();
+            virtualScreen.SetupAllProperties();
+            return new(connectionManager.Object, configManager.Object, virtualScreen.Object, new Mock<IUpdateBehaviour>().Object);
+        }
+
+        #region UpdateTrackingTransform
+
         [Test]
         public void UpdateTrackingTransform_TopMountedOrientation_XRotationNotInverted()
         {
             // Given
-            HandManager handManger = new (null, null);
-            System.Numerics.Vector3 topDownRotation = new (45, 0, 180);
+            HandManager handManger = CreateSut();
+            System.Numerics.Vector3 topDownRotation = new(45, 0, 180);
             System.Numerics.Quaternion topDownQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(topDownRotation.Y),
                 Utilities.DegreesToRadians(topDownRotation.X),
                 Utilities.DegreesToRadians(topDownRotation.Z));
 
-            PhysicalConfigInternal testConfig = new () { LeapRotationD = topDownRotation };
+            PhysicalConfigInternal testConfig = new() { LeapRotationD = topDownRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
 
             //Then
-            System.Numerics.Quaternion handManagerRotation = new ()
+            System.Numerics.Quaternion handManagerRotation = new()
             {
                 X = handManger.TrackingTransform().rotation.x,
                 Y = handManger.TrackingTransform().rotation.y,
@@ -61,20 +80,20 @@ namespace TouchFreeTests
         public void UpdateTrackingTransform_BottomMountedOrientation_XRotationInverted()
         {
             // Given
-            HandManager handManger = new (null, null);
-            System.Numerics.Vector3 bottomRotation = new (45, 0, 0);
+            HandManager handManger = CreateSut();
+            System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
             System.Numerics.Quaternion bottomQuaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                 Utilities.DegreesToRadians(bottomRotation.Y),
                 Utilities.DegreesToRadians(-bottomRotation.X),
                 Utilities.DegreesToRadians(bottomRotation.Z));
 
-            PhysicalConfigInternal testConfig = new () { LeapRotationD = bottomRotation };
+            PhysicalConfigInternal testConfig = new() { LeapRotationD = bottomRotation };
 
             //When
             handManger.UpdateTrackingTransform(testConfig);
 
             //Then
-            System.Numerics.Quaternion handManagerRotation = new ()
+            System.Numerics.Quaternion handManagerRotation = new()
             {
                 X = handManger.TrackingTransform().rotation.x,
                 Y = handManger.TrackingTransform().rotation.y,
@@ -88,7 +107,7 @@ namespace TouchFreeTests
         public void UpdateTrackingTransform_BottomMountedOrientation_UseLeapPositionRelative()
         {
             // Given
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
             System.Numerics.Vector3 relativePosition = new(1000, 2000, 3000);
             System.Numerics.Vector3 positionTranslation = new(1000, 2000, -3000);
@@ -112,7 +131,7 @@ namespace TouchFreeTests
         public void UpdateTrackingTransform_BottomMountedOrientationScreenIsRotated_UseLeapPositionRelativeWithScreenRotation()
         {
             // Given
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             System.Numerics.Vector3 bottomRotation = new(45, 0, 0);
             System.Numerics.Vector3 relativePosition = new(1000, 1000, 1000);
             System.Numerics.Vector3 positionTranslation = new(1000, 1158.46f, -811.16f);
@@ -128,13 +147,17 @@ namespace TouchFreeTests
             Assert.AreEqual(positionTranslation.Z, handManger.TrackingTransform().translation.z, 0.01);
         }
 
+        #endregion
+
+        #region Update
+
         [Test]
         public void Update_NoHandsInFrame_HandsAreNull()
         {
             //Given
             Frame frame = new Frame();
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -152,7 +175,7 @@ namespace TouchFreeTests
             Frame frame = new Frame();
             frame.Hands.Add(hand);
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -171,7 +194,7 @@ namespace TouchFreeTests
             Frame frame = new Frame();
             frame.Hands.Add(hand);
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -192,7 +215,7 @@ namespace TouchFreeTests
             frame.Hands.Add(leftHand);
             frame.Hands.Add(rightHand);
             FrameEventArgs frameEventArgs = new FrameEventArgs(frame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
 
             //When
             handManger.Update(this, frameEventArgs);
@@ -213,7 +236,7 @@ namespace TouchFreeTests
             Frame firstFrame = new Frame();
             firstFrame.Hands.Add(leftHand);
             FrameEventArgs firstFrameEventArgs = new FrameEventArgs(firstFrame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             handManger.Update(this, firstFrameEventArgs);
 
             Frame secondFrame = new Frame();
@@ -241,7 +264,7 @@ namespace TouchFreeTests
             firstFrame.Hands.Add(leftHand);
             firstFrame.Hands.Add(rightHand);
             FrameEventArgs firstFrameEventArgs = new FrameEventArgs(firstFrame);
-            HandManager handManger = new(null, null);
+            HandManager handManger = CreateSut();
             handManger.Update(this, firstFrameEventArgs);
 
             Frame secondFrame = new Frame();
@@ -256,5 +279,7 @@ namespace TouchFreeTests
             Assert.AreEqual(true, handManger.PrimaryHand.IsLeft);
             Assert.IsNull(handManger.SecondaryHand);
         }
+
+        #endregion
     }
 }

@@ -1,0 +1,42 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": ["react", "@typescript-eslint", "no-relative-import-paths"],
+    "ignorePatterns": ["src/TouchFree", "build/"],
+    "rules": {
+        "indent": "off",
+        "linebreak-style": "off",
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "max-len": ["error", { "code": 120 }],
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],
+        "@typescript-eslint/ban-types": [
+            "error",
+            {
+                "types": {
+                    "{}": false
+                },
+                "extendDefaults": true
+            }
+        ],
+        "@typescript-eslint/no-empty-interface": "warn",
+        "no-relative-import-paths/no-relative-import-paths": ["error", { "allowSameFolder": true, "rootDir": "src" }]
+    }
+}

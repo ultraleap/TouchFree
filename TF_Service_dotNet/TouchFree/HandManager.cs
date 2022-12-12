@@ -1,112 +1,91 @@
-﻿using Ultraleap.TouchFree.Library.Configuration;
+﻿using Leap;
 using System;
-using Leap;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace Ultraleap.TouchFree.Library
 {
-    public class HandManager
+    public class HandManager : IHandManager
     {
         public long Timestamp { get; private set; }
 
         // The PrimaryHand is the hand that appeared first. It does not change until tracking on it is lost.
-        public Hand PrimaryHand;
-        public HandChirality primaryChirality;
+        public Hand PrimaryHand { get; private set; }
+        private HandChirality primaryChirality;
 
         // The SecondaryHand is the second hand that appears. It may be promoted to the PrimaryHand if the
         // PrimaryHand is lost.
-        public Hand SecondaryHand;
-        public HandChirality secondaryChirality;
+        public Hand SecondaryHand { get; private set; }
+        private HandChirality secondaryChirality;
+
+        public List<Leap.Vector> RawHandPositions { get; private set; }
 
         public event Action HandFound;
         public event Action HandsLost;
         public delegate void HandUpdate(Hand primary, Hand secondary);
         public event HandUpdate HandsUpdated;
 
-        bool PrimaryIsLeft => PrimaryHand != null && PrimaryHand.IsLeft;
-        bool PrimaryIsRight => PrimaryHand != null && !PrimaryHand.IsLeft;
-        bool SecondaryIsLeft => SecondaryHand != null && SecondaryHand.IsLeft;
-        bool SecondaryIsRight => SecondaryHand != null && !SecondaryHand.IsLeft;
+        private const float PrimaryHandActivityDefault = 0.02f;
+        private const float SecondaryHandActivityDefault = 0.01f;
 
-        public Hand LeftHand
-        {
-            get
-            {
-                if (PrimaryIsLeft)
-                {
-                    return PrimaryHand;
-                }
-                else if (SecondaryIsLeft)
-                {
-                    return SecondaryHand;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        private float PrimaryHandActivity = PrimaryHandActivityDefault;
+        private float SecondaryHandActivity = SecondaryHandActivityDefault;
 
-        public Hand RightHand
-        {
-            get
-            {
-                if (PrimaryIsRight)
-                {
-                    return PrimaryHand;
-                }
-                else if (SecondaryIsRight)
-                {
-                    return SecondaryHand;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        private Vector3? lastPrimaryLocation;
+        private Vector3? lastSecondaryLocation;
+
+        public ArraySegment<byte> LastImageData { get; private set; }
+
+        public Image.CameraType HandRenderLens { private get; set; } = Image.CameraType.LEFT;
+
+        public Hand LeftHand =>
+            PrimaryHand is { IsLeft: true } ? PrimaryHand :
+            SecondaryHand is { IsLeft: true } ? SecondaryHand :
+            null;
+
+        public Hand RightHand =>
+            PrimaryHand is { IsRight: true } ? PrimaryHand :
+            SecondaryHand is { IsRight: true } ? SecondaryHand :
+            null;
 
         private LeapTransform trackingTransform;
 
-        private TrackingConnectionManager trackingProvider;
+        public ITrackingConnectionManager ConnectionManager { get; }
+
+        private readonly IVirtualScreen virtualScreen;
+        private readonly IConfigManager configManager;
 
         private int handsLastFrame;
 
-        public void ConnectToTracking()
-        {
-            trackingProvider.Connect();
-        }
+        private Leap.Image lastImage;
 
-        public void DisconnectFromTracking()
-        {
-            trackingProvider.Disconnect();
-        }
+        public HandFrame RawHands { get; private set; }
+        public List<Hand> PreConversionRawHands { get; private set; }
+        public bool RawHandsUpdated { get; private set; }
 
-        public HandManager(TrackingConnectionManager _trackingManager, IConfigManager _configManager)
+        public HandManager(ITrackingConnectionManager _trackingManager, IConfigManager _configManager, IVirtualScreen _virtualScreen, IUpdateBehaviour _updateBehaviour)
         {
             handsLastFrame = 0;
 
-            trackingProvider = _trackingManager;
-            if (trackingProvider != null)
-            {
-                trackingProvider.controller.FrameReady += Update;
-            }
+            ConnectionManager = _trackingManager;
+            virtualScreen = _virtualScreen;
+            configManager = _configManager;
 
             if (_configManager != null)
             {
                 _configManager.OnPhysicalConfigUpdated += UpdateTrackingTransform;
                 UpdateTrackingTransform(_configManager.PhysicalConfig);
             }
-        }
 
-        public bool TrackingServiceConnected()
-        {
-            return trackingProvider?.controller?.IsServiceConnected ?? false;
-        }
-
-        public bool CameraConnected()
-        {
-            return trackingProvider?.controller?.Devices?.ActiveDevice != null;
+            if (ConnectionManager != null)
+            {
+                ConnectionManager.Controller.FrameReady += Update;
+                ConnectionManager.Controller.ImageReady += StoreImage;
+            }
+            _updateBehaviour.OnSlowUpdate += UpdateRawHands;
         }
 
         public void UpdateTrackingTransform(PhysicalConfigInternal _config)
@@ -114,25 +93,26 @@ namespace Ultraleap.TouchFree.Library
             // To simplify the configuration values, positive X angles tilt the Leap towards the screen no matter how its mounted.
             // Therefore, we must convert to the real values before using them.
             // If bottom mounted, the X rotation should be negative if tilted towards the screen so we must negate the X rotation in this instance.
-            var isTopMounted = ((_config.LeapRotationD.Z > 179.9f) && (_config.LeapRotationD.Z < 180.1f));
+            var isTopMounted = _config.LeapRotationD.Z is > 179.9f and < 180.1f;
             float xAngleDegree = isTopMounted ? _config.LeapRotationD.X : -_config.LeapRotationD.X;
 
-            System.Numerics.Quaternion quaternion = System.Numerics.Quaternion.CreateFromYawPitchRoll(Utilities.DegreesToRadians(_config.LeapRotationD.Y),
+            var quaternion = Quaternion.CreateFromYawPitchRoll(Utilities.DegreesToRadians(_config.LeapRotationD.Y),
                 Utilities.DegreesToRadians(xAngleDegree + _config.ScreenRotationD),
                 Utilities.DegreesToRadians(_config.LeapRotationD.Z));
 
             if (_config.ScreenRotationD != 0)
             {
-                var distanceFromScreenBottom = new Vector(0, _config.LeapPositionRelativeToScreenBottomMm.Y, _config.LeapPositionRelativeToScreenBottomMm.Z).Magnitude;
+                var distanceFromScreenBottom = new Leap.Vector(0, _config.LeapPositionRelativeToScreenBottomMm.Y, _config.LeapPositionRelativeToScreenBottomMm.Z).Magnitude;
                 var angle = Math.Atan(-_config.LeapPositionRelativeToScreenBottomMm.Z / _config.LeapPositionRelativeToScreenBottomMm.Y);
                 var angleWithScreenRotation = Utilities.DegreesToRadians(_config.ScreenRotationD) + angle;
 
                 var translatedYPosition = (float)(distanceFromScreenBottom * Math.Cos(angleWithScreenRotation));
-                if (_config.LeapPositionRelativeToScreenBottomMm.Z < 0 && _config.LeapPositionRelativeToScreenBottomMm.Y < 0) {
+                if (_config.LeapPositionRelativeToScreenBottomMm.Z < 0 && _config.LeapPositionRelativeToScreenBottomMm.Y < 0)
+                {
                     translatedYPosition = -translatedYPosition;
                 }
 
-                var translatedUsingScreenPosition = new Vector(
+                var translatedUsingScreenPosition = new Leap.Vector(
                     _config.LeapPositionRelativeToScreenBottomMm.X,
                     translatedYPosition,
                     (float)(distanceFromScreenBottom * Math.Sin(angleWithScreenRotation)));
@@ -143,11 +123,65 @@ namespace Ultraleap.TouchFree.Library
             else
             {
                 trackingTransform = new LeapTransform(
-                    new Vector(
+                    new Leap.Vector(
                         _config.LeapPositionRelativeToScreenBottomMm.X,
                         _config.LeapPositionRelativeToScreenBottomMm.Y,
                         -_config.LeapPositionRelativeToScreenBottomMm.Z),
                     new LeapQuaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
+            }
+        }
+
+        private Vector3 LeapToCameraFrame(Leap.Vector leapVector, Image image)
+        {
+            var lensAdjustment = HandRenderLens == Image.CameraType.LEFT ? -32.5f : 32.5f;
+            var updatedVector = new Leap.Vector(leapVector.x + lensAdjustment, leapVector.y, leapVector.z);
+            var ray = new Leap.Vector((float)Math.Atan2(updatedVector.x, updatedVector.y), (float)Math.Atan2(updatedVector.z, updatedVector.y), (float)Math.Sqrt(updatedVector.x * updatedVector.x + updatedVector.z * updatedVector.z + updatedVector.y * updatedVector.y));
+
+            var renderPosition = image.RectilinearToPixel(HandRenderLens, ray);
+
+            return new Vector3(renderPosition.x / image.Width, renderPosition.y / image.Width, ray.z);
+        }
+
+        public void StoreImage(object sender, ImageEventArgs e)
+        {
+            lastImage = e.image;
+        }
+
+        public void UpdateRawHands()
+        {
+            var imageToUse = lastImage;
+
+            if (lastImage != null)
+            {
+                LastImageData = new ArraySegment<byte>(imageToUse.Data(Image.CameraType.LEFT), (int)imageToUse.ByteOffset(HandRenderLens), imageToUse.Height * imageToUse.Width * imageToUse.BytesPerPixel);
+
+                if (PreConversionRawHands != null && imageToUse != null && RawHandsUpdated)
+                {
+                    RawHandsUpdated = false;
+                    RawHands = new HandFrame()
+                    {
+                        Hands = PreConversionRawHands.Select(x => new RawHand()
+                        {
+                            CurrentPrimary = x.IsLeft == (primaryChirality == HandChirality.LEFT),
+                            Fingers = x.Fingers.Select(f => new RawFinger()
+                            {
+                                Type = (FingerType)f.Type,
+                                Bones = f.bones.Select(b => new RawBone()
+                                {
+                                    NextJoint = b.Type == Bone.BoneType.TYPE_DISTAL ? LeapToCameraFrame(b.NextJoint, imageToUse) : default,
+                                    PrevJoint = b.Type== Bone.BoneType.TYPE_PROXIMAL ? LeapToCameraFrame(b.PrevJoint, imageToUse) : default
+                                }).ToArray()
+                            }).ToArray(),
+                            WristPosition = LeapToCameraFrame(x.WristPosition, imageToUse),
+                            WristWidth = x.PalmWidth
+                        }).ToArray()
+                    };
+                }
+
+                if (lastImage == imageToUse)
+                {
+                    lastImage = null;
+                }
             }
         }
 
@@ -156,18 +190,28 @@ namespace Ultraleap.TouchFree.Library
             var currentFrame = e.frame;
             var handCount = currentFrame.Hands.Count;
 
-            if (handCount == 0 && handsLastFrame > 0)
+            switch (handCount)
             {
-                HandsLost?.Invoke();
+                case 0 when handsLastFrame > 0:
+                    HandsLost?.Invoke();
+                    break;
+                case > 0 when handsLastFrame == 0:
+                    HandFound?.Invoke();
+                    break;
             }
-            else if (handCount > 0 && handsLastFrame == 0)
-            {
-                HandFound?.Invoke();
-            }
+
+            RawHandPositions = currentFrame.Hands
+                .Select(x => x.Fingers?.SingleOrDefault(y => y.Type == Finger.FingerType.TYPE_INDEX)?.TipPosition)
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToList();
 
             handsLastFrame = handCount;
 
-            currentFrame.Transform(trackingTransform);
+            PreConversionRawHands = currentFrame.Hands;
+            RawHandsUpdated = true;
+
+            currentFrame = currentFrame.TransformedCopy(trackingTransform);
 
             Timestamp = currentFrame.Timestamp;
 
@@ -182,13 +226,77 @@ namespace Ultraleap.TouchFree.Library
                     rightHand = hand;
             }
 
-            UpdateHandStatus(ref PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
-            UpdateHandStatus(ref SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
+            if (PrimaryHand?.Fingers?.Count(x => x.Type == Finger.FingerType.TYPE_INDEX) > 0 &&
+                SecondaryHand?.Fingers?.Count(x => x.Type == Finger.FingerType.TYPE_INDEX) > 0)
+            {
+                var primaryHandIndexTip = PrimaryHand.Fingers.Single(x => x.Type == Finger.FingerType.TYPE_INDEX).TipPosition;
+                var secondaryHandIndexTip = SecondaryHand.Fingers.Single(x => x.Type == Finger.FingerType.TYPE_INDEX).TipPosition;
+
+                var primaryHandIndexTipLocation = virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(primaryHandIndexTip));
+                var secondaryHandIndexTipLocation = virtualScreen.WorldPositionToVirtualScreen(Utilities.LeapVectorToNumerics(secondaryHandIndexTip));
+
+                var screenWidthPX = configManager.PhysicalConfig.ScreenWidthPX;
+                var screenHeightPX = configManager.PhysicalConfig.ScreenHeightPX;
+
+                var primaryRelativeXScreenPosition = primaryHandIndexTipLocation.X / screenWidthPX;
+                var primaryRelativeYScreenPosition = primaryHandIndexTipLocation.Y / screenHeightPX;
+                var secondaryRelativeXScreenPosition = secondaryHandIndexTipLocation.X / screenWidthPX;
+                var secondaryRelativeYScreenPosition = secondaryHandIndexTipLocation.Y / screenHeightPX;
+
+                if (lastPrimaryLocation.HasValue && lastSecondaryLocation.HasValue)
+                {
+                    var primaryLocationChange = lastPrimaryLocation.Value - primaryHandIndexTipLocation;
+                    var primaryLocationChangeX = primaryLocationChange.X / screenWidthPX;
+                    var primaryLocationChangeY = primaryLocationChange.Y / screenHeightPX;
+
+                    var secondaryLocationChange = lastSecondaryLocation.Value - secondaryHandIndexTipLocation;
+                    var secondaryLocationChangeX = secondaryLocationChange.X / screenWidthPX;
+                    var secondaryLocationChangeY = secondaryLocationChange.Y / screenHeightPX;
+
+                    PrimaryHandActivity = Math.Clamp(PrimaryHandActivity * 0.9f + Math.Abs(primaryLocationChangeX) + Math.Abs(primaryLocationChangeY), 0f, 1f);
+                    SecondaryHandActivity = Math.Clamp(SecondaryHandActivity * 0.9f + Math.Abs(secondaryLocationChangeX) + Math.Abs(secondaryLocationChangeY), 0f, 1f);
+                }
+
+                lastPrimaryLocation = primaryHandIndexTipLocation;
+                lastSecondaryLocation = secondaryHandIndexTipLocation;
+
+                if (SecondaryHandIsOnScreen(secondaryRelativeXScreenPosition, secondaryRelativeYScreenPosition) &&
+                    (HandActivityInSwapThreshold() ||
+                     PrimaryHandIsOffScreen(primaryRelativeXScreenPosition, primaryRelativeYScreenPosition)))
+                {
+                    (PrimaryHand, SecondaryHand) = (SecondaryHand, PrimaryHand);
+                    primaryChirality = PrimaryHand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
+                    secondaryChirality = SecondaryHand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
+                }
+            }
+            else
+            {
+                PrimaryHandActivity = PrimaryHandActivityDefault;
+                SecondaryHandActivity = SecondaryHandActivityDefault;
+                lastPrimaryLocation = null;
+                lastSecondaryLocation = null;
+            }
+
+            UpdateHandStatus(PrimaryHand, leftHand, rightHand, HandType.PRIMARY);
+            UpdateHandStatus(SecondaryHand, leftHand, rightHand, HandType.SECONDARY);
 
             HandsUpdated?.Invoke(PrimaryHand, SecondaryHand);
         }
 
-        void UpdateHandStatus(ref Hand _hand, Hand _left, Hand _right, HandType _handType)
+        private bool HandActivityInSwapThreshold()
+        {
+            return PrimaryHandActivity < SecondaryHandActivityDefault && SecondaryHandActivity > PrimaryHandActivityDefault;
+        }
+
+        private static bool PrimaryHandIsOffScreen(float _primaryRelativeXScreenPosition, float _primaryRelativeYScreenPosition) =>
+            _primaryRelativeXScreenPosition is > 1.4f or < -0.4f ||
+            _primaryRelativeYScreenPosition is > 1.4f or < -0.4f;
+
+        private static bool SecondaryHandIsOnScreen(float _secondaryRelativeXScreenPosition, float _secondaryRelativeYScreenPosition) =>
+            _secondaryRelativeXScreenPosition is < 1.4f and > -0.4f &&
+            _secondaryRelativeYScreenPosition is < 1.4f and > -0.4f;
+
+        private void UpdateHandStatus(Hand _hand, Hand _left, Hand _right, HandType _handType)
         {
             // We must use the cached HandChirality to ensure persistence
             HandChirality handChirality;
@@ -222,13 +330,13 @@ namespace Ultraleap.TouchFree.Library
                 if (handChirality == HandChirality.LEFT && _left != null)
                 {
                     // Hand is still left
-                    _hand = _left;
+                    AssignHandAccordingToType(_handType, _left);
                     return;
                 }
                 else if (handChirality == HandChirality.RIGHT && _right != null)
                 {
                     // Hand is still right
-                    _hand = _right;
+                    AssignHandAccordingToType(_handType, _right);
                     return;
                 }
 
@@ -244,7 +352,20 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        void AssignNewPrimary(Hand _left, Hand _right)
+        private void AssignHandAccordingToType(HandType _handType, Hand _hand)
+        {
+            // Hand is still right
+            if (_handType == HandType.PRIMARY)
+            {
+                PrimaryHand = _hand;
+            }
+            else
+            {
+                SecondaryHand = _hand;
+            }
+        }
+
+        private void AssignNewPrimary(Hand _left, Hand _right)
         {
             // When assigning a new primary, we should force Secondary to be re-assigned too
             PrimaryHand = null;
@@ -262,7 +383,7 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        void AssignNewSecondary(Hand _left, Hand _right)
+        private void AssignNewSecondary(Hand _left, Hand _right)
         {
             SecondaryHand = null;
 
@@ -278,9 +399,6 @@ namespace Ultraleap.TouchFree.Library
             }
         }
 
-        public LeapTransform TrackingTransform()
-        {
-            return trackingTransform;
-        }
+        public LeapTransform TrackingTransform() => trackingTransform;
     }
 }

@@ -1,21 +1,24 @@
-import { HoverAndHoldInteractionSettings, InteractionConfigFull, TouchPlaneInteractionSettings, TrackedPosition } from "../TouchFree/Configuration/ConfigurationTypes";
-import { InteractionType } from "../TouchFree/TouchFreeToolingTypes";
+import {
+    HoverAndHoldInteractionSettings,
+    InteractionConfigFull,
+    TouchPlaneInteractionSettings,
+    TrackedPosition,
+} from 'TouchFree/src/Configuration/ConfigurationTypes';
+import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
-const DefaultHoverAndHoldInteractionSettings: HoverAndHoldInteractionSettings =
-{
+const DefaultHoverAndHoldInteractionSettings: HoverAndHoldInteractionSettings = {
     HoverStartTimeS: 0.5,
     HoverCompleteTimeS: 0.6,
 };
 
-const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings =
-{
+const DefaultTouchPlaneInteractionSettings: TouchPlaneInteractionSettings = {
     TouchPlaneActivationDistanceCm: 5,
     TouchPlaneTrackedPosition: TrackedPosition.NEAREST,
 };
 
-export const DefaultInteractionConfig: InteractionConfigFull =
-{
+export const DefaultInteractionConfig: InteractionConfigFull = {
     UseScrollingOrDragging: false,
+    UseSwipeInteraction: false,
     DeadzoneRadius: 0.003,
 
     InteractionZoneEnabled: false,
@@ -28,3 +31,5 @@ export const DefaultInteractionConfig: InteractionConfigFull =
     HoverAndHold: DefaultHoverAndHoldInteractionSettings,
     TouchPlane: DefaultTouchPlaneInteractionSettings,
 };
+
+export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;

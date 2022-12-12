@@ -1,64 +1,61 @@
-import React, { CSSProperties, RefObject } from 'react';
+import './App.scss';
 
-import { ConnectionManager } from "./TouchFree/Connection/ConnectionManager";
-import { BaseInputController } from "./TouchFree/InputControllers/BaseInputController";
-import { WebInputController } from "./TouchFree/InputControllers/WebInputController";
+import React, { useEffect } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { CursorManager } from "./Components/CursorManager";
-import { ScreenManager } from './Components/ScreenManager';
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { WebInputController } from 'TouchFree/src/InputControllers/WebInputController';
+import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
-import './App.css';
-import './Styles/Styles.css';
+import ControlBar from 'Components/ControlBar';
+import { CursorManager } from 'Components/CursorManager';
+import CameraManager from 'Components/Pages/Camera/CameraManager';
+import { InteractionsPage } from 'Components/Pages/InteractionsPage';
 
-declare global {
-    interface Window { TouchFree: any; }
-}
+const App: React.FC = () => {
+    const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
+    const [touchFreeVersion, setTouchFreeVersion] = React.useState<string>('');
 
-class App extends React.Component {
-    private containerStyle : CSSProperties = {
-        top: '0px',
-        bottom: '0px',
-        position: 'absolute',
-        height: '100%',
-        width: '1080px',
-        backgroundColor: '#222222',
-    }
-
-    private cursorManager: CursorManager;
-    private cursorParent: RefObject<HTMLDivElement>;
-
-    // TouchFree objects
-    private inputSystem: BaseInputController;
-
-    constructor(props: {}) {
-        super(props);
+    useEffect(() => {
         ConnectionManager.init();
-        this.inputSystem = new WebInputController();
 
-        this.cursorManager = new CursorManager();
-        this.cursorParent = React.createRef();
-    }
+        const onConnected = () => {
+            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+                const status = detail.trackingServiceState;
+                if (status) {
+                    setTfStatus(status);
+                }
+            });
 
-    componentDidMount() {
-        if (this.cursorParent.current !== null)
-        {
-            this.cursorManager.setElement(this.cursorParent.current);
-        }
-    }
+            const serviceConnection = ConnectionManager.serviceConnection();
+            const tfVersion = serviceConnection?.touchFreeVersion ?? '';
+            setTouchFreeVersion(tfVersion);
+        };
 
-    componentWillUnmount() {
-        this.inputSystem.disconnect();
-    }
+        ConnectionManager.AddConnectionListener(onConnected);
+        ConnectionManager.AddServiceStatusListener(setTfStatus);
+        const controller: WebInputController = new WebInputController();
 
+        new CursorManager();
 
-    render() {
-        return (
-            <div className="App" style={this.containerStyle}
-                ref={this.cursorParent}>
-                <ScreenManager/>
+        return () => {
+            controller.disconnect();
+        };
+    }, []);
+
+    return (
+        <div className="app">
+            <ControlBar tfStatus={tfStatus} touchFreeVersion={touchFreeVersion} />
+            <div className="page-content">
+                <Routes>
+                    <Route path="/settings/camera/*" element={<CameraManager />} />
+                    <Route path="/settings/interactions" element={<InteractionsPage />} />
+                    <Route path="*" element={<Navigate to="/settings/camera" replace />} />
+                </Routes>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default App;

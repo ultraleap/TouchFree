@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using System;
+using System.Diagnostics;
+
+using UnityEngine;
 using UnityEngine.UI;
 using SFB;
 
 using Ultraleap.TouchFree.ServiceShared;
-using System.IO;
-using System;
-using System.Diagnostics;
+using Ultraleap.TouchFree.Tooling.Tracking;
+using Ultraleap.TouchFree.Tooling.Connection;
 
 namespace Ultraleap.TouchFree.ServiceUI
 {
@@ -41,20 +44,16 @@ namespace Ultraleap.TouchFree.ServiceUI
                 DiagnosticAPIManager.diagnosticAPI = new DiagnosticAPI(this);
             }
 
-            DiagnosticAPI.OnGetAnalyticsEnabledResponse += HandleAnalyticsEnabledResponse;
-
             EnableAnalyticsToggle.onValueChanged.AddListener(OnAnalyticsToggled);
             AllowImagesToggle.onValueChanged.AddListener(OnAllowImagesToggled);
 
-            DiagnosticAPIManager.diagnosticAPI.GetAnalyticsMode();
-            DiagnosticAPIManager.diagnosticAPI.GetAllowImages();
+            TrackingManager.RequestTrackingState(HandleTrackingResponse);
 
             versionPath = Path.Combine(Application.dataPath, "../Version.txt");
             PopulateVersion();
 
             DiagnosticAPI.OnTrackingServerInfoResponse += HandleVersionCheck;
             DiagnosticAPI.OnTrackingDeviceInfoResponse += HandleDeviceCheck;
-            DiagnosticAPI.OnAllowImagesResponse += HandleAllowImagesCheck;
 
             DiagnosticAPIManager.diagnosticAPI.GetDeviceInfo();
 
@@ -72,9 +71,9 @@ namespace Ultraleap.TouchFree.ServiceUI
         {
             EnableAnalyticsToggle.onValueChanged.RemoveListener(OnAnalyticsToggled);
             AllowImagesToggle.onValueChanged.RemoveListener(OnAllowImagesToggled);
+
             DiagnosticAPI.OnTrackingServerInfoResponse -= HandleVersionCheck;
             DiagnosticAPI.OnTrackingDeviceInfoResponse -= HandleDeviceCheck;
-            DiagnosticAPI.OnAllowImagesResponse -= HandleAllowImagesCheck;
         }
 
         public void SetFileLocation()
@@ -112,17 +111,16 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         void OnAnalyticsToggled(bool _)
         {
-            DiagnosticAPIManager.diagnosticAPI.SetAnalyticsMode(EnableAnalyticsToggle.isOn);
+            var newState = new TrackingState(null, null, null, EnableAnalyticsToggle.isOn);
+
+            TrackingManager.RequestTrackingChange(newState);
         }
 
         void OnAllowImagesToggled(bool _)
         {
-            DiagnosticAPIManager.diagnosticAPI.SetAllowImages(AllowImagesToggle.isOn);
-        }
+            var newState = new TrackingState(null, null, AllowImagesToggle.isOn, null);
 
-        void HandleAnalyticsEnabledResponse(bool analyticsEnabled)
-        {
-            EnableAnalyticsToggle.isOn = analyticsEnabled;
+            TrackingManager.RequestTrackingChange(newState);
         }
 
         public void PrivacyPolicyPressed()
@@ -169,9 +167,20 @@ namespace Ultraleap.TouchFree.ServiceUI
             cameraDeviceFirmwareText.text = firmwareVersion;
         }
 
-        private void HandleAllowImagesCheck()
+        private void HandleTrackingResponse(TrackingStateResponse _response)
         {
-            AllowImagesToggle.isOn = DiagnosticAPIManager.diagnosticAPI.allowImages ?? false;
+            var allowImages = _response.allowImages.Value.content;
+            var analyticsEnabled = _response.analyticsEnabled.Value.content;
+
+            if (analyticsEnabled.HasValue)
+            {
+                EnableAnalyticsToggle.isOn = analyticsEnabled.Value;
+            }
+
+            if (allowImages.HasValue)
+            {
+                AllowImagesToggle.isOn = allowImages.Value;
+            }
         }
     }
 }

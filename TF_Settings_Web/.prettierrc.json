@@ -1,0 +1,17 @@
+{
+    "singleQuote": true,
+    "tabWidth": 4,
+    "endOfLine": "crlf",
+    "printWidth": 120,
+    "importOrder": [
+        "(.*)(.css|.scss)$",
+        "(.*)react(.*)|canvas-confetti|twgl.js",
+        "uuid",
+        "(index|customHooks)",
+        "^TouchFree/(.*)",
+        "^(Videos|Images)/(.*)",
+        "^(Components/)(.*)",
+        "^[./]"
+    ],
+    "importOrderSeparation": true
+}

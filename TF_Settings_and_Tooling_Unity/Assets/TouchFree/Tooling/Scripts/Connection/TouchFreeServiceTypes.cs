@@ -15,6 +15,13 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // REQUEST_SERVICE_STATUS - Represents a request to receive a current SERVICE_STATUS from the Service
     // SERVICE_STATUS_RESPONSE - Represents a Failure response from a REQUEST_SERVICE_STATUS
     // SERVICE_STATUS - Represents information about the current state of the Service
+    // QUICK_SETUP - Represents a request to carry out a quick setup
+    // QUICK_SETUP_CONFIG - Represents a response from a quick setup with an updated configuration
+    // QUICK_SETUP_RESPONSE - Represents a Success/Failure response from quick setup that has not completed
+    // GET_TRACKING_STATE - Represents a request to receive the current state of the tracking settings
+    // SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
+    // TRACKING_STATE - Represents the state of the TouchFree-Controllable Tracking settings, received
+    //                  as a response to a GET_TRACKING_STATE or SET_TRACKING_STATE
     internal enum ActionCode
     {
         INPUT_ACTION,
@@ -37,6 +44,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         CONFIGURATION_FILE_STATE,
         SET_CONFIGURATION_FILE,
         CONFIGURATION_FILE_RESPONSE,
+
+        QUICK_SETUP,
+        QUICK_SETUP_CONFIG,
+        QUICK_SETUP_RESPONSE,
+
+        GET_TRACKING_STATE,
+        SET_TRACKING_STATE,
+        TRACKING_STATE,
     }
 
     // Enum: HandPresenceState
@@ -223,6 +238,23 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         }
     }
 
+    // Struct: QuickSetupRequest
+    // Used to request the current state of the configuration on the Service. This is received as
+    // a <ConfigState> which should be linked to a <ConfigStateCallback> via requestID to make
+    // use of the data received.
+    [Serializable]
+    public struct QuickSetupRequest
+    {
+        public string requestID;
+        public string position;
+
+        public QuickSetupRequest(string _id, QuickSetupPosition _position)
+        {
+            requestID = _id;
+            position = _position.ToString();
+        }
+    }
+
     // Struct: ServiceStatusCallback
     // Used by <MessageReceiver> to wait for a <ServiceStatus> from the Service. Owns an action
     // with a <ServiceStatus> as a parameter to allow users to make use of the new
@@ -249,6 +281,181 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         {
             action = _actionCode;
             content = _content;
+        }
+    }
+
+    // Enum: QuickSetupPosition
+    // The position used for quick setup
+    public enum QuickSetupPosition
+    {
+        Top,
+        Bottom
+    }
+
+    // struct: SuccessWrapper
+    // Type extension for <TrackingStateResponse> to capture the success state, clarifying message and response content.
+    public struct SuccessWrapper<T>
+    {
+        // Variable: succeeded
+        public bool succeeded;
+
+        // Variable: msg
+        public string msg;
+
+        // Variable: content
+        public T content;
+
+        public SuccessWrapper(bool _success, string _message, T _content)
+        {
+            succeeded = _success;
+            msg = _message;
+            content = _content;
+        }
+    }
+
+    // Class: TrackingStateResponse
+    // Type of the response from a GET/SET tracking state request.
+    public struct TrackingStateResponse
+    {
+        // Variable: requestID
+        public string requestID;
+
+        // Variable: mask
+        public SuccessWrapper<MaskData?>? mask;
+
+        // Variable: cameraOrientation
+        public SuccessWrapper<bool?>? cameraReversed;
+
+        // Variable: allowImages
+        public SuccessWrapper<bool?>? allowImages;
+
+        // Variable: analyticsEnabled
+        public SuccessWrapper<bool?>? analyticsEnabled;
+    }
+
+    // Class: TrackingState
+    // Represents the settings available for modification in the Tracking API
+    public struct TrackingState
+    {
+        // Variable: mask
+        public MaskData? mask;
+        // Variable: cameraOrientation
+        public bool? cameraReversed;
+        // Variable: allowImages
+        public bool? allowImages;
+        // Variable: analyticsEnabled
+        public bool? analyticsEnabled;
+
+        public TrackingState(MaskData? _mask,
+                       bool? _cameraReversed,
+                       bool? _allowImages,
+                       bool? _analyticsEnabled)
+        {
+            this.mask = _mask;
+            this.cameraReversed = _cameraReversed;
+            this.allowImages = _allowImages;
+            this.analyticsEnabled = _analyticsEnabled;
+        }
+
+        public TrackingState(TrackingStateResponse _response)
+        {
+            if (_response.mask.HasValue)
+            { this.mask = _response.mask.Value.content; }
+            else
+            { this.mask = null; }
+
+            if (_response.cameraReversed.HasValue)
+            { this.cameraReversed = _response.cameraReversed.Value.content; }
+            else
+            { this.cameraReversed = null; }
+
+            if (_response.allowImages.HasValue)
+            { this.allowImages = _response.allowImages.Value.content; }
+            else
+            { this.allowImages = null; }
+
+            if (_response.analyticsEnabled.HasValue)
+            { this.analyticsEnabled = _response.analyticsEnabled.Value.content; }
+            else
+            { this.analyticsEnabled = null; }
+        }
+    }
+
+    // Class: TrackingStateRequest
+    // Used to construct a SET_TRACKING_STATE request.
+    public class TrackingStateRequest
+    {
+        // Variable: requestID
+        public string requestID;
+        // Variable: mask
+        MaskData? mask;
+        // Variable: cameraOrientation
+        bool? cameraReversed;
+        // Variable: allowImages
+        bool? allowImages;
+        // Variable: analyticsEnabled
+        bool? analyticsEnabled;
+
+        public TrackingStateRequest(string _id,
+                       MaskData? _mask,
+                       bool? _cameraReversed,
+                       bool? _allowImages,
+                       bool? _analyticsEnabled)
+        {
+            this.requestID = _id;
+            this.mask = _mask;
+            this.cameraReversed = _cameraReversed;
+            this.allowImages = _allowImages;
+            this.analyticsEnabled = _analyticsEnabled;
+        }
+    }
+
+    public struct MaskData
+    {
+        public float lower;
+        public float upper;
+        public float right;
+        public float left;
+
+        public MaskData(float _lower, float _upper, float _right, float _left)
+        {
+            this.lower = _lower;
+            this.upper = _upper;
+            this.right = _right;
+            this.left = _left;
+        }
+    }
+
+
+    // class: SimpleRequest
+    // Used to make a basic request to the service. To be used with <CommunicationWrapper> to create a more complex request.
+    public struct SimpleRequest
+    {
+        // Variable: requestID
+        string requestID;
+
+        SimpleRequest(string _id)
+        {
+            this.requestID = _id;
+        }
+    }
+
+    // Class: TrackingStateCallback
+    // Used by <MessageReceiver> to wait for a <TrackingStateResponse> from the Service. Owns a callback with a
+    // <TrackingStateResponse> as a parameter. Stores a timestamp of its creation so the response has the ability to
+    // timeout if not seen within a reasonable timeframe.
+    public struct TrackingStateCallback
+    {
+        // Variable: timestamp
+        public float timestamp;
+
+        // Variable: callback
+        public Action<TrackingStateResponse> callback;
+
+        public TrackingStateCallback(float _timestamp, Action<TrackingStateResponse> _callback)
+        {
+            this.timestamp = _timestamp;
+            this.callback = _callback;
         }
     }
 }
