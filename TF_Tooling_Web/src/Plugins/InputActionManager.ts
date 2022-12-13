@@ -34,7 +34,7 @@ export class InputActionManager extends EventTarget {
 
     /**
      * Overwrites all plugins with a new array. Plugins will be run in order of the array.
-     * @param _plugins Plugin array to assign
+     * @param _plugins - Plugin array to assign
      */
     public static SetPlugins(_plugins: Array<InputActionPlugin>): void {
         this.plugins = _plugins;
@@ -42,7 +42,7 @@ export class InputActionManager extends EventTarget {
 
     /**
      * Handles an `InputAction`, running it through all plugins and dispatching a `"TransmitInputAction"` event
-     * @param _action InputAction to handle
+     * @param _action - InputAction to handle
      * @internal
      */
     public static HandleInputAction(_action: TouchFreeInputAction): void {

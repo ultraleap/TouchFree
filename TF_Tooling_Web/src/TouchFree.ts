@@ -29,7 +29,7 @@ export interface TfInitParams {
 /**
  * Initializes TouchFree - must be called before any functionality requiring a TouchFree service connection.
  * 
- * @param _tfInitParams Optional extra initialization parameters
+ * @param _tfInitParams - Optional extra initialization parameters
  * @public
  */
 const Init = (_tfInitParams?: TfInitParams): void => {
@@ -62,7 +62,7 @@ const IsConnected = ():boolean => ConnectionManager.IsConnected;
  */
 export interface EventHandle {
     /**
-     * Unregisters the callback represented by this object
+     * Unregister the callback represented by this object
      */
     UnregisterEventCallback(): void;
 }
@@ -70,7 +70,7 @@ export interface EventHandle {
 /**
  * Turns a callback with an argument into a {@link CustomEvent<T>} Event Listener
  * 
- * @param callback The callback to wrap
+ * @param callback - The callback to wrap
  * @returns EventListener with the wrapper callback
  */
 const MakeCustomEventWrapper = <T>(callback: (arg: T) => void): EventListener => {
@@ -232,8 +232,8 @@ const EventImplementations: () => EventImpls = () => EventImplementationsBacking
  * TransmitInputAction: (inputAction: TouchFreeInputAction) => void;
  * Event dispatched from the <InputActionManager> to each registered Plugin
  * 
- * @param event The event to register a callback to. See {@link TouchFreeEvent}
- * @param callback The callback to register. Callback signature depends on event being registered. See {@link TouchFreeEventSignatures}
+ * @param event - The event to register a callback to. See {@link TouchFreeEvent}
+ * @param callback - The callback to register. Callback signature depends on event being registered. See {@link TouchFreeEventSignatures}
  * @returns An {@link EventHandle} that can be used to unregister the callback
  * 
  * @public
@@ -255,8 +255,8 @@ const RegisterEventCallback = <TEvent extends TouchFreeEvent>(
  * @remarks
  * For details of events and their expected arguments see comment above {@link RegisterEventCallback}
  * 
- * @param eventType The event to register a callback to. See {@link TouchFreeEvent}
- * @param args Arguments for the event. Depends on the event being dispatched. See {@link TouchFreeEventSignatures}
+ * @param eventType - The event to register a callback to. See {@link TouchFreeEvent}
+ * @param args - Arguments for the event. Depends on the event being dispatched. See {@link TouchFreeEventSignatures}
  * 
  * @public
  */

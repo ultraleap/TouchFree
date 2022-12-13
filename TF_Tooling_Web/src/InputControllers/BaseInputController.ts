@@ -34,7 +34,7 @@ export abstract class BaseInputController {
 
     /**
      * Override to implement `InputController` specific behaviour for {@link TouchFreeInputAction}s
-     * @param _inputData The latest input action received from TouchFree Service.
+     * @param _inputData - The latest input action received from TouchFree Service.
      */
     protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         switch (_inputData.InputType) {

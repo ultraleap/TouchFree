@@ -9,7 +9,7 @@ module.exports = {
             filename: 'dist/TouchFree_Tooling.js',
         },
         Snapping_Plugin: {
-            import: './Plugins/SnappingPlugin/src/SnappingPlugin.ts',
+            import: './src/Plugins/SnappingPlugin/SnappingPlugin.ts',
             dependOn: 'TouchFree_Tooling',
             library: {
                 name: 'SnappingPlugin',

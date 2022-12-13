@@ -80,7 +80,7 @@ TF_Tooling::Web::build:
     # Build Tooling
     - cd ${env:TF_TFW_PATH}
     - npm i
-    - npm run build
+    - npm run build:bundle
     # Clean last build
     - cd ${env:CI_PROJECT_DIR}
     - if (Test-Path -Path "./Tooling_Release") {
@@ -103,13 +103,27 @@ TF_Tooling::Web::build:
     - unity
     - win10
 
-TF_Tooling::Docs::build:
+TF_Tooling::Unity::docs:
   stage: build
   when: always
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
   script:
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/NaturalDocs_Config
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Tooling_Web/NaturalDocs_Config
+  artifacts:
+    name: "TouchFree_Tooling_Documentation"
+    paths:
+    - ./Documentation/*
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - docker
+
+TF_Tooling::Web::docs:
+  stage: build
+  when: always
+  image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
+  script:
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/NaturalDocs_Config
   artifacts:
     name: "TouchFree_Tooling_Documentation"
     paths:

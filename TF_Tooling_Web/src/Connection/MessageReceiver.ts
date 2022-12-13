@@ -215,8 +215,8 @@ export class MessageReceiver {
     /**
      * Checks a callback dictionary for a request id and handles invoking the callback.
      * 
-     * @param callbackResult Callback data
-     * @param callbacks Callback dictionary to check
+     * @param callbackResult - Callback data
+     * @param callbacks - Callback dictionary to check
      * @returns String literal result representing success or what went wrong
      */
     private static HandleCallbackList<T extends TouchFreeRequest>(

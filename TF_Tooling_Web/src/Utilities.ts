@@ -4,6 +4,7 @@
  * ```
  * MapRangeToRange(0.5, 0, 1, 0, 8) // returns 4
  * ```
+ * @public
  */
 export function MapRangeToRange(
     _value: number,

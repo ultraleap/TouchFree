@@ -12,7 +12,7 @@ export class TrackingManager {
      * Request a {@link TrackingStateResponse} representing the current state of the tracking software
      * @remarks
      * Use {@link ConvertResponseToState} on the response to get TrackingState in a more helpful form
-     * @param _callback Callback to call with {@link TrackingStateResponse}
+     * @param _callback - Callback to call with {@link TrackingStateResponse}
      */
     public static RequestTrackingState(_callback: (detail: TrackingStateResponse) => void) {
         if (!_callback) {
@@ -25,8 +25,8 @@ export class TrackingManager {
 
     /**
      * Requests a modification to the tracking software's settings.
-     * @param _state State to request. Options not provided within the object will not be modified.
-     * @param _callback Optional callback if you require confirmation that settings were changed correctly.
+     * @param _state - State to request. Options not provided within the object will not be modified.
+     * @param _callback - Optional callback if you require confirmation that settings were changed correctly.
      */
     public static RequestTrackingChange(
         _state: Partial<TrackingState>,
@@ -37,7 +37,7 @@ export class TrackingManager {
 
     /**
      * Converts a {@link TrackingStateResponse} to a `Partial<TrackingState>` to make the response easier to consume.
-     * @param _response Response to convert
+     * @param _response - Response to convert
      * @returns Converted Partial {@link TrackingState}
      */
     public static ConvertResponseToState(_response: TrackingStateResponse): Partial<TrackingState> {

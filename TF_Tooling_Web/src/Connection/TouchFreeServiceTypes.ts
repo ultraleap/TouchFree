@@ -109,6 +109,7 @@ export enum HandPresenceState {
 /**
  * Enumeration of client-service compatibility
  * @deprecated Unused
+ * @internal
  */
 export enum Compatibility {
     /** The API versions are considered compatible */
@@ -315,7 +316,7 @@ export class VersionHandshakeResponse extends WebSocketResponse {
  * @remarks
  * Responses can represent success or failure. See {@link WebSocketResponse.status}.
  * Detailed message is available in {@link WebSocketResponse.message}.
- * @public
+ * @internal
  */
 export class ResponseCallback extends TouchFreeRequestCallback<WebSocketResponse> {}
 
@@ -352,6 +353,7 @@ export interface SuccessWrapper<T> {
  * Response data structure for {@link ActionCode.GET_TRACKING_STATE} and {@link ActionCode.SET_TRACKING_STATE} requests
  * @public
  */
+// TODO: Don't expose internal types via this - use another type in public API
 export interface TrackingStateResponse {
     /** RequestID */
     requestID: string;

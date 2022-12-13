@@ -60,7 +60,7 @@ export class TouchFreeInputAction {
 /**
  * Converts a {@link WebsocketInputAction} into the Tooling-friendly {@link TouchFreeInputAction}.
  * 
- * @param _wsInput Raw input action received by the WebSocket
+ * @param _wsInput - Raw input action received by the WebSocket
  * @returns User friendly conversion of the InputAction - {@link TouchFreeInputAction}
  * 
  * @internal
@@ -160,7 +160,8 @@ export enum ConfigurationState {
 }
 
 /**
- * This is used to request any combination of the {@link HandChirality}, {@link HandType}, {@link InputType}, and {@link InteractionType} flags from the Service at once.
+ * Used to request a combination of the {@link HandChirality}, {@link HandType},
+ * {@link InputType}, and {@link InteractionType} flags from the Service at once.
  * @internal
  */
 export enum BitmaskFlags {
@@ -417,7 +418,7 @@ export class FlagUtilities {
     /**
      * Extract HandChirality from a BitmaskFlags
      * @remarks Favours RIGHT if none or both are found
-     * @param _flags BitmaskFlags to extract from
+     * @param _flags - BitmaskFlags to extract from
      * @returns Extracted chirality
      */
     static GetChiralityFromFlags(_flags: BitmaskFlags): HandChirality {
@@ -437,7 +438,7 @@ export class FlagUtilities {
     /**
      * Extract HandType from a BitmaskFlags
      * @remarks Favours PRIMARY if none or both are found
-     * @param _flags BitmaskFlags to extract from
+     * @param _flags - BitmaskFlags to extract from
      * @returns Extracted hand type
      */
     static GetHandTypeFromFlags(_flags: BitmaskFlags): HandType {
@@ -457,7 +458,7 @@ export class FlagUtilities {
     /**
      * Extract InputType from a BitmaskFlags
      * @remarks Favours NONE if none are found
-     * @param _flags BitmaskFlags to extract from
+     * @param _flags - BitmaskFlags to extract from
      * @returns Extracted input type
      */
     static GetInputTypeFromFlags(_flags: BitmaskFlags): InputType {
@@ -483,7 +484,7 @@ export class FlagUtilities {
     /**
      * Extract InteractionType from a BitmaskFlags
      * @remarks Favours PUSH if none are found
-     * @param _flags BitmaskFlags to extract from
+     * @param _flags - BitmaskFlags to extract from
      * @returns Extracted interaction type
      */
     static GetInteractionTypeFromFlags(_flags: BitmaskFlags): InteractionType {

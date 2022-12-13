@@ -49,12 +49,12 @@ export class DotCursor extends TouchlessCursor {
      * If you intend to make use of `WebInputController`, make sure both {@link _cursor} and {@link _cursorRing}
      * elements have the `touchfree-cursor` class. This prevents them from blocking other elements from
      * receiving events.
-     * @param _cursor Cursor HTML element
-     * @param _cursorRing Cursor ring HTML element
-     * @param _animationDuration
+     * @param _cursor - Cursor HTML element
+     * @param _cursorRing - Cursor ring HTML element
+     * @param _animationDuration -
      * Optional duration changing the time it takes for 'squeeze'
      * confirmation animation to be performed.
-     * @param _ringSizeMultiplier Optional multiplier to the size the ring can be relative to the main cursor element.
+     * @param _ringSizeMultiplier - Optional multiplier to the size the ring can be relative to the main cursor element.
      */
     constructor(_cursor: HTMLElement, _cursorRing: HTMLElement, _animationDuration = 0.2, _ringSizeMultiplier = 2) {
         super(_cursor);
@@ -72,11 +72,11 @@ export class DotCursor extends TouchlessCursor {
 
     /**
      * Updates the cursor position as well as the size of the ring based on {@link TouchFreeInputAction.ProgressToClick}
-     * @param _inputAction Input action to use when updating cursor
+     * @param _inputAction - Input action to use when updating cursor
      * @see {@link TouchlessCursor.UpdateCursor}
      * @internal
      */
-    UpdateCursor(_inputAction: TouchFreeInputAction): void {
+    override UpdateCursor(_inputAction: TouchFreeInputAction): void {
         if (!this.enabled) return;
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
         const ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
@@ -102,10 +102,10 @@ export class DotCursor extends TouchlessCursor {
      * 
      * When a {@link InputType.CANCEL} event is received the cursor is hidden as it suggests the hand
      * has been lost. When hidden and any other event is received, the cursor is shown again.
-     * @param _inputData Input action to handle this update
+     * @param _inputData - Input action to handle this update
      * @internal
      */
-    HandleInputAction(_inputData: TouchFreeInputAction): void {
+    override HandleInputAction(_inputData: TouchFreeInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:
                 this.UpdateCursor(_inputData);
@@ -223,7 +223,7 @@ export class DotCursor extends TouchlessCursor {
     /**
      * Make the cursor visible. Fades over time.
      */
-    ShowCursor(): void {
+     override ShowCursor(): void {
         this.shouldShow = true;
         if (!this.enabled) return;
         clearInterval(this.currentFadingInterval);
@@ -236,7 +236,7 @@ export class DotCursor extends TouchlessCursor {
     /**
      * Make the cursor invisible. Fades over time.
      */
-    HideCursor(): void {
+     override HideCursor(): void {
         this.shouldShow = false;
         if (parseFloat(this.dotCursorElement.style.opacity) !== 0) {
             clearInterval(this.currentFadingInterval);

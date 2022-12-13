@@ -176,7 +176,7 @@ export interface PhysicalConfig {
     LeapPositionRelativeToScreenBottomM: Vector;
 
     /**
-     * The rotation (in degrees) of thecamera relative to world space
+     * The rotation (in degrees) of the camera relative to world space
      */
     LeapRotationD: Vector;
 

@@ -12,7 +12,7 @@ import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
 export abstract class InputActionPlugin extends EventTarget {
     /**
      * Run this plugin, modifying the `InputAction` and dispatching an `"InputActionOutput"` event from this plugin
-     * @param _inputAction Input action input
+     * @param _inputAction - Input action input
      * @returns Modified input action
      */
     RunPlugin(_inputAction: TouchFreeInputAction): TouchFreeInputAction | null {
@@ -36,7 +36,7 @@ export abstract class InputActionPlugin extends EventTarget {
 
     /**
      * For derived classes to invoke the `InputActionOutput` event.
-     * @param _inputAction InputAction state to dispatch event with
+     * @param _inputAction - InputAction state to dispatch event with
      * 
      * @internal
      */

@@ -1,5 +1,5 @@
-import { InputActionPlugin } from '../../../src/Plugins/InputActionPlugin';
-import { TouchFreeInputAction } from '../../../src/TouchFreeToolingTypes';
+import { InputActionPlugin } from '../InputActionPlugin';
+import { TouchFreeInputAction } from '../../TouchFreeToolingTypes';
 import { SnappableElement } from './SnappableElement';
 import { Vector2 } from './Vector2';
 
@@ -17,7 +17,7 @@ export class SnappingPlugin extends InputActionPlugin {
 
     private snapSoftness = 0.3;
 
-    ModifyInputAction(_inputAction: TouchFreeInputAction): TouchFreeInputAction | null {
+    override ModifyInputAction(_inputAction: TouchFreeInputAction): TouchFreeInputAction | null {
         const cursorPos: { x: number; y: number } = {
             x: _inputAction.CursorPosition[0],
             y: _inputAction.CursorPosition[1],

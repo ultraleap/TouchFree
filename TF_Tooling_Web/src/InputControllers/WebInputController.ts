@@ -56,7 +56,7 @@ export class WebInputController extends BaseInputController {
      * hovered last frame.
      * Will also optionally send "pointerenter"/"pointerleave" events if enabled via
      * {@link enterLeaveEnabled}
-     * @param _element The DOM element under the cursor this frame
+     * @param _element - The DOM element under the cursor this frame
      * @internal
      */
     HandleMove(_element: Element | null): void {
@@ -100,10 +100,10 @@ export class WebInputController extends BaseInputController {
      *     - pointerout
      *     - pointerenter
      *     - pointerleave
-     * @param _inputData The latest {@link TouchFreeInputAction} from the Service
+     * @param _inputData - The latest {@link TouchFreeInputAction} from the Service
      * @internal
      */
-    protected HandleInputAction(_inputData: TouchFreeInputAction): void {
+    protected override HandleInputAction(_inputData: TouchFreeInputAction): void {
         super.HandleInputAction(_inputData);
 
         const elementsAtPoint = document.elementsFromPoint(_inputData.CursorPosition[0], _inputData.CursorPosition[1]);
@@ -315,9 +315,9 @@ export class WebInputController extends BaseInputController {
     };
 
     /**
-     * Gets the stack of elements (topmost->bottommost) at this position and return the first non-
+     * Gets the stack of elements (topmost-bottommost) at this position and return the first non-
      * cursor element. Depends on all cursor elements being branded with the "cursor" class.
-     * @param elementsAtPos Elements at the position to check
+     * @param elementsAtPos - Elements at the position to check
      * @returns First non-cursor element or null if none found
      */
     private GetTopNonCursorElement(elementsAtPos: Element[] | null): Element | null {
@@ -342,7 +342,7 @@ export class WebInputController extends BaseInputController {
      * Handle sending pointerleave/pointerenter events to the parent stacks.
      * These events do not bubble, in order to deliver expected behaviour we must consider
      * the entire stack of elements above our current target in the document tree
-     * @param _element Element to handle
+     * @param _element - Element to handle
      */
     private HandleEnterLeaveBehaviour(_element: Element | null) {
         const oldParents: Array<Node | null> = this.GetOrderedParents(this.lastHoveredElement);
@@ -375,7 +375,7 @@ export class WebInputController extends BaseInputController {
     /**
      * Collects the stack of parent nodes, ordered from highest (document body) to lowest
      * (the node provided)
-     * @param _node Lowest node in the stack
+     * @param _node - Lowest node in the stack
      * @returns Parent nodes until the provided node
      */
     private GetOrderedParents(_node: Node | null): Array<Node | null> {
@@ -391,8 +391,8 @@ export class WebInputController extends BaseInputController {
     /**
      * Takes two ordered arrays of Nodes (as produced by {@link GetOrderedParents}) and identifies the
      * lowest common ancestor of the two sets. Used in {@link HandleMove} for identifying the events to send
-     * @param oldParents First stack of parents
-     * @param newParents Second stack of parents
+     * @param oldParents - First stack of parents
+     * @param newParents - Second stack of parents
      * @returns Index of lowest common ancestor between the two stacks
      */
     private GetCommonAncestorIndex(oldParents: Array<Node | null>, newParents: Array<Node | null>): number | null {
@@ -412,8 +412,8 @@ export class WebInputController extends BaseInputController {
     /**
      * Checks if the target element is null and correctly dispatches the provided event to the
      * element or document body appropriately
-     * @param event Event to dispatch
-     * @param target Element to dispatch event on if not null
+     * @param event - Event to dispatch
+     * @param target - Element to dispatch event on if not null
      */
     private DispatchToTarget(event: PointerEvent, target: Element | null) {
         if (target !== null) {

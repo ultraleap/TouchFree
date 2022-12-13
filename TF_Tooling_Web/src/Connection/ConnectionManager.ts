@@ -73,7 +73,7 @@ export class ConnectionManager extends EventTarget {
      * @remarks
      * Will call the passed function if already connected.
      * 
-     * @param _onConnectFunc Callback function to call when event is triggered
+     * @param _onConnectFunc - Callback function to call when event is triggered
      * 
      * @deprecated Use {@link TouchFree.RegisterEventCallback} 'WhenConnected'
      */
@@ -93,7 +93,7 @@ export class ConnectionManager extends EventTarget {
     /**
      * Adds a listener for the `"OnTrackingServiceStateChange"` event.
      * 
-     * @param _serviceStatusFunc Callback function to call when event is triggered
+     * @param _serviceStatusFunc - Callback function to call when event is triggered
      * 
      * @deprecated Use {@link TouchFree.RegisterEventCallback} 'OnTrackingServiceStateChange'
      */
@@ -115,7 +115,7 @@ export class ConnectionManager extends EventTarget {
     /**
      * Handles HandPresence events from the service and dispatches
      * the `HandFound` and `HandsLost` events on this class
-     * @param _state Hand state
+     * @param _state - Hand state
      */
     public static HandleHandPresenceEvent(_state: HandPresenceState): void {
         ConnectionManager.currentHandPresence = _state;
@@ -139,7 +139,7 @@ export class ConnectionManager extends EventTarget {
 
     /**
      * Request service status from the service
-     * @param _callback Callback to call with the response
+     * @param _callback - Callback to call with the response
      */
     public static RequestServiceStatus(_callback: (detail: ServiceStatus) => void): void {
         if (_callback === null) {

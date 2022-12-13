@@ -76,6 +76,7 @@ Documentation/Tooling for Unity/**
 #  Testing  #
 # ========= #
 
+tsconfig.tsbuildinfo
 **/package-lock.json
 **/packages-lock.json
 **/usage.txt

@@ -61,8 +61,8 @@ export class ServiceConnection {
      * Sets up a listener to request a handshake once the websocket has successfully opened.
      * No data will be sent over an open connection until a successful handshake has completed.
      * 
-     * @param _ip Optional override to default websocket ip '127.0.0.1'
-     * @param _port Optional override to default websocket port '9739'
+     * @param _ip - Optional override to default websocket ip '127.0.0.1'
+     * @param _port - Optional override to default websocket port '9739'
      */
     constructor(_ip = '127.0.0.1', _port = '9739') {
         this.webSocket = new WebSocket(`ws://${_ip}:${_port}/connect`);
@@ -114,7 +114,7 @@ export class ServiceConnection {
      * @remarks
      * Dispatches `"OnConnected"` event via {@link TouchFree.DispatchEvent} upon successful handshake response
      * 
-     * @param response {@link VersionHandshakeResponse} if connection was successful or another websocket response otherwise
+     * @param response - VersionHandshakeResponse if connection was successful or another websocket response otherwise
      */
     private ConnectionResultCallback = (response: VersionHandshakeResponse | WebSocketResponse): void => {
         if (response.status === 'Success') {
@@ -136,7 +136,7 @@ export class ServiceConnection {
      * based on their {@link ActionCode}, typically being sent to a queue or handler in
      * {@link ConnectionManager.messageReceiver}.
      * 
-     * @param _message Message to handle
+     * @param _message - Message to handle
      */
     OnMessage = (_message: MessageEvent): void => {
         if (typeof _message.data !== 'string') {
@@ -197,9 +197,9 @@ export class ServiceConnection {
     /**
      * Send or request information from the TouchFree Service via the WebSocket.
      * 
-     * @param _message Content of message
-     * @param _requestID A request ID to identify the response from the Service
-     * @param _callback Callback to handle the response
+     * @param _message - Content of message
+     * @param _requestID - A request ID to identify the response from the Service
+     * @param _callback - Callback to handle the response
      */
     SendMessage = <T extends WebSocketResponse>(
         _message: string,
@@ -234,7 +234,7 @@ export class ServiceConnection {
     /**
      * Request updated {@link ConfigState} from the Service
      * 
-     * @param _callback Callback to handle the response from the service
+     * @param _callback - Callback to handle the response from the service
      */
     RequestConfigState = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
@@ -255,7 +255,7 @@ export class ServiceConnection {
     /**
      * Request service status from the Service.
      * 
-     * @param _callback Callback to handle the response from the service
+     * @param _callback - Callback to handle the response from the service
      */
     RequestServiceStatus = (_callback: (detail: ServiceStatus) => void): void => {
         if (_callback === null) {
@@ -280,7 +280,7 @@ export class ServiceConnection {
     /**
      * Request config state of the config files from the Service
      * 
-     * @param _callback Callback to handle the response from the service
+     * @param _callback - Callback to handle the response from the service
      */
     RequestConfigFile = (_callback: (detail: ConfigState) => void): void => {
         if (_callback === null) {
@@ -301,9 +301,9 @@ export class ServiceConnection {
      /**
      * Request a quick setup on the Service
      * 
-     * @param atTopTarget Which quick setup target is being used
-     * @param _callback Callback to handle the response from the service
-     * @param _configurationCallback Callback to handle a response from the service with updated configuration
+     * @param atTopTarget - Which quick setup target is being used
+     * @param _callback - Callback to handle the response from the service
+     * @param _configurationCallback - Callback to handle a response from the service with updated configuration
      */
     QuickSetupRequest = (
         atTopTarget: boolean,
@@ -337,7 +337,7 @@ export class ServiceConnection {
     /**
      * Request tracking state update from the Service
      * 
-     * @param _callback Callback to handle the response from the service
+     * @param _callback - Callback to handle the response from the service
      */
     RequestTrackingState = (_callback: (detail: TrackingStateResponse) => void) => {
         if (!_callback) {
@@ -360,8 +360,8 @@ export class ServiceConnection {
     /**
      * Request a change to tracking state on the Service
      * 
-     * @param _state State change to request. Undefined props are not sent
-     * @param _callback Callback to handle the response from the service
+     * @param _state - State change to request. Undefined props are not sent
+     * @param _callback - Callback to handle the response from the service
      */
     RequestTrackingChange = (
         _state: Partial<TrackingState>,

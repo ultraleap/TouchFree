@@ -27,7 +27,7 @@ export class HandDataManager extends EventTarget {
 
     /**
      * Handles a buffer on hand frame data and dispatches a `"TransmitHandData"` event
-     * @param _data Buffer of hand frame data
+     * @param _data - Buffer of hand frame data
      */
     public static HandleHandFrame(_data: ArrayBuffer): void {
         const currentTimeStamp = Date.now();

@@ -18,8 +18,8 @@ export class SVGCursor extends TouchlessCursor {
 
     /**
      * Constructs a new cursor consisting of a central cursor and a ring.
-     * @param _ringSizeMultiplier Optional multiplier to change the size of the cursor ring.
-     * @param _darkCursor Optionally darken the cursor to provide better contrast on light coloured UIs.
+     * @param _ringSizeMultiplier - Optional multiplier to change the size of the cursor ring.
+     * @param _darkCursor - Optionally darken the cursor to provide better contrast on light coloured UIs.
      */
     constructor(_ringSizeMultiplier = 2, _darkCursor = false) {
         super(undefined);
@@ -84,10 +84,10 @@ export class SVGCursor extends TouchlessCursor {
 
     /**
      * Update the cursor position as well as the size of the ring based on {@link TouchFreeInputAction.ProgressToClick}.
-     * @param _inputAction Input action to use when updating cursor
+     * @param _inputAction - Input action to use when updating cursor
      * @internal
      */
-    UpdateCursor(_inputAction: TouchFreeInputAction) {
+     override UpdateCursor(_inputAction: TouchFreeInputAction) {
         if (!this.shouldShow) {
             this.HideCursor();
             return;
@@ -126,10 +126,10 @@ export class SVGCursor extends TouchlessCursor {
      * 
      * When a {@link InputType.CANCEL} event is received the cursor is hidden as it suggests the hand
      * has been lost. When hidden and any other event is received, the cursor is shown again.
-     * @param _inputData Input action to handle this update
+     * @param _inputData - Input action to handle this update
      * @internal
      */
-    HandleInputAction(_inputData: TouchFreeInputAction) {
+     override HandleInputAction(_inputData: TouchFreeInputAction) {
         if (this.cursor) {
             switch (_inputData.InputType) {
                 case InputType.MOVE:
@@ -156,7 +156,7 @@ export class SVGCursor extends TouchlessCursor {
     /**
      * Make the cursor visible. Fades over time.
      */
-    ShowCursor() {
+     override ShowCursor() {
         this.shouldShow = true;
         if (this.enabled && !this.cursorShowing) {
             this.cursorShowing = true;
@@ -167,7 +167,7 @@ export class SVGCursor extends TouchlessCursor {
     /**
      * Make the cursor invisible. Fades over time.
      */
-    HideCursor() {
+     override HideCursor() {
         this.shouldShow = false;
         this.cursorShowing = false;
         this.cursorCanvas.style.opacity = '0';

@@ -20,9 +20,9 @@ export class ConfigurationManager {
      * @remarks
      * WARNING! If a user changes ANY values via the TouchFree Service Settings UI,
      * all values set from the Tooling via this function will be discarded.
-     * @param _interaction Optional interaction config modifications to send
-     * @param _physical Optional physical config modifications to send
-     * @param _callback Optional callback confirming a response from the service
+     * @param _interaction - Optional interaction config modifications to send
+     * @param _physical - Optional physical config modifications to send
+     * @param _callback - Optional callback confirming a response from the service
      */
     public static RequestConfigChange(
         _interaction: Partial<InteractionConfig> | null,
@@ -39,7 +39,7 @@ export class ConfigurationManager {
 
     /**
      * Request active configuration state of the TouchFree Service
-     * @param _callback Callback with the requested {@link ConfigState}
+     * @param _callback - Callback with the requested {@link ConfigState}
      */
     public static RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
@@ -58,9 +58,9 @@ export class ConfigurationManager {
      * client will be lost when changing these files.
      * The change will be applied **to the current config files directly**,
      * disregarding current active config state, and the config will be loaded from files.
-     * @param _interaction Optional interaction config modifications to send
-     * @param _physical Optional physical config modifications to send
-     * @param _callback Optional callback confirming a response from the service
+     * @param _interaction - Optional interaction config modifications to send
+     * @param _physical - Optional physical config modifications to send
+     * @param _callback - Optional callback confirming a response from the service
      */
     public static RequestConfigFileChange(
         _interaction: Partial<InteractionConfig> | null,
@@ -93,7 +93,7 @@ export class ConfigurationManager {
 
     /**
      * Request configuration state of the services config files.
-     * @param _callback Callback with the requested {@link ConfigState}
+     * @param _callback - Callback with the requested {@link ConfigState}
      */
     public static RequestConfigFileState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
