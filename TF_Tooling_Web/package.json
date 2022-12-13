@@ -8,7 +8,7 @@
         "test": "jest --ci --reporters=default --reporters=jest-junit",
         "build:docs": "npm run build:tsc && api-extractor run --local --verbose",
         "build:tsc": "tsc",
-        "build:bundle": "webpack",
+        "build:bundle": "node esbuild.config.js",
         "prettyLint": "prettier --write . && eslint --fix ."
     },
     "author": "",
