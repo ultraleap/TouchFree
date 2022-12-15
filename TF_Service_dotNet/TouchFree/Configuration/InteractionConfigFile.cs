@@ -22,6 +22,28 @@ namespace Ultraleap.TouchFree.Library.Configuration
     }
 
     [Serializable]
+    public class VelocitySwipeSettings
+    {
+        public float MinScrollVelocity_mmps = 625f;
+        public float UpwardsMinVelocityDecrease_mmps = 50f;
+        public float DownwardsMinVelocityIncrease_mmps = 50f;
+        public float MaxReleaseVelocity_mmps = 200f;
+
+        public float MaxLateralVelocity_mmps = 300f;
+        public float MaxOpposingVelocity_mmps = 65f;
+
+        public double ScrollDelayMs = 450;
+
+        public float MinSwipeLength = 10f;
+        public float MaxSwipeWidth = 10f;
+        public float SwipeWidthScaling = 0.2f;
+
+        public bool AllowBidirectionalScroll = false;
+        public bool AllowHorizontalScroll = true;
+        public bool AllowVerticalScroll = true;
+    }
+
+    [Serializable]
     public class InteractionConfig
     {
         public bool UseScrollingOrDragging = true;
@@ -37,6 +59,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         // Interaction-specific settings
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
         public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
+        public VelocitySwipeSettings VelocitySwipe = new VelocitySwipeSettings();
 
         public InteractionConfig()
         {
@@ -53,6 +76,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             // Interaction-specific settings
             this.HoverAndHold = new HoverAndHoldInteractionSettings();
             this.TouchPlane = new TouchPlaneInteractionSettings();
+            this.VelocitySwipe = new VelocitySwipeSettings();
         }
 
         public InteractionConfig(InteractionConfigInternal _internal)
@@ -78,6 +102,23 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             this.HoverAndHold = intermedHH;
             this.TouchPlane = intermedTP;
+
+            this.VelocitySwipe = new VelocitySwipeSettings()
+            {
+                DownwardsMinVelocityIncrease_mmps = _internal.VelocitySwipe.DownwardsMinVelocityIncrease_mmps,
+                MaxLateralVelocity_mmps = _internal.VelocitySwipe.MaxLateralVelocity_mmps,
+                MaxOpposingVelocity_mmps= _internal.VelocitySwipe.MaxOpposingVelocity_mmps,
+                MaxReleaseVelocity_mmps= _internal.VelocitySwipe.MaxReleaseVelocity_mmps,
+                MaxSwipeWidth= _internal.VelocitySwipe.MaxSwipeWidth,
+                MinScrollVelocity_mmps= _internal.VelocitySwipe.MinScrollVelocity_mmps,
+                MinSwipeLength= _internal.VelocitySwipe.MinSwipeLength,
+                ScrollDelayMs= _internal.VelocitySwipe.ScrollDelayMs,
+                SwipeWidthScaling= _internal.VelocitySwipe.SwipeWidthScaling,
+                UpwardsMinVelocityDecrease_mmps= _internal.VelocitySwipe.UpwardsMinVelocityDecrease_mmps,
+                AllowBidirectionalScroll= _internal.VelocitySwipe.AllowBidirectionalScroll,
+                AllowHorizontalScroll= _internal.VelocitySwipe.AllowHorizontalScroll,
+                AllowVerticalScroll= _internal.VelocitySwipe.AllowVerticalScroll,
+            };
         }
     }
 }
