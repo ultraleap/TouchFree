@@ -17,6 +17,34 @@ namespace Ultraleap.TouchFree.Library.Configuration
     }
 
     [Serializable]
+    public record class AirPushSettingsInternal
+    {
+        public float SpeedMin = 150f;
+        public float SpeedMax = 500f;
+        public float DistAtSpeedMinMm = 42f;
+        public float DistAtSpeedMaxMm = 8f;
+        public float HorizontalDecayDistMm = 50f;
+
+        public float ThetaOne = 65f;
+        public float ThetaTwo = 135f;
+
+        public float UnclickThreshold = 0.97f;
+        public float UnclickThresholdDrag = 0.97f;
+        public bool DecayForceOnClick = true;
+        public float ForceDecayTime = 0.1f;
+
+        public bool UseTouchPlaneForce = true;
+        public float DistPastTouchPlaneMm = 20f;
+
+        public float DragStartDistanceThresholdMm = 30f;
+        public float DragDeadzoneShrinkRate = 0.9f;
+        public float DragDeadzoneShrinkDistanceThresholdMm = 10f;
+
+        public float DeadzoneMaxSizeIncreaseMm = 20f;
+        public float DeadzoneShrinkRate = 0.8f;
+    }
+
+    [Serializable]
     public record class VelocitySwipeSettingsInternal
     {
         public float MinScrollVelocity_mmps = 625f;
@@ -52,6 +80,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public InteractionType InteractionType = InteractionType.PUSH;
 
         // Interaction-specific settings
+        public AirPushSettingsInternal AirPush = new AirPushSettingsInternal();
         public HoverAndHoldInteractionSettingsInternal HoverAndHold = new HoverAndHoldInteractionSettingsInternal();
         public TouchPlaneInteractionSettingsInternal TouchPlane = new TouchPlaneInteractionSettingsInternal();
         public VelocitySwipeSettingsInternal VelocitySwipe = new VelocitySwipeSettingsInternal();
@@ -125,6 +154,33 @@ namespace Ultraleap.TouchFree.Library.Configuration
             this.InteractionZoneEnabled = fromFile.InteractionZoneEnabled;
 
             this.InteractionType = fromFile.InteractionType;
+
+            this.AirPush = new AirPushSettingsInternal()
+            {
+                SpeedMin = fromFile.AirPush.SpeedMin,
+                SpeedMax = fromFile.AirPush.SpeedMax,
+                DistAtSpeedMinMm = fromFile.AirPush.DistAtSpeedMinMm,
+                DistAtSpeedMaxMm = fromFile.AirPush.DistAtSpeedMaxMm,
+                HorizontalDecayDistMm = fromFile.AirPush.HorizontalDecayDistMm,
+
+                ThetaOne = fromFile.AirPush.ThetaOne,
+                ThetaTwo = fromFile.AirPush.ThetaTwo,
+                
+                UnclickThreshold = fromFile.AirPush.UnclickThreshold,
+                UnclickThresholdDrag = fromFile.AirPush.UnclickThresholdDrag,
+                DecayForceOnClick = fromFile.AirPush.DecayForceOnClick,
+                ForceDecayTime = fromFile.AirPush.ForceDecayTime,
+
+                UseTouchPlaneForce = fromFile.AirPush.UseTouchPlaneForce,
+                DistPastTouchPlaneMm = fromFile.AirPush.DistPastTouchPlaneMm,
+
+                DragStartDistanceThresholdMm = fromFile.AirPush.DragStartDistanceThresholdMm,
+                DragDeadzoneShrinkRate = fromFile.AirPush.DragDeadzoneShrinkRate,
+                DragDeadzoneShrinkDistanceThresholdMm = fromFile.AirPush.DragDeadzoneShrinkDistanceThresholdMm,
+
+                DeadzoneMaxSizeIncreaseMm = fromFile.AirPush.DeadzoneMaxSizeIncreaseMm,
+                DeadzoneShrinkRate = fromFile.AirPush.DeadzoneShrinkRate,
+            };
 
             HoverAndHoldInteractionSettingsInternal intermedHH = new HoverAndHoldInteractionSettingsInternal();
             intermedHH.HoverStartTimeS = fromFile.HoverAndHold.HoverStartTimeS;

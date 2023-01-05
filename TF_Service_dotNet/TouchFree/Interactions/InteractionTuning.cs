@@ -5,7 +5,6 @@ namespace Ultraleap.TouchFree.Library.Interactions
     [Serializable]
     public class InteractionTuning
     {
-        public AirPushSettings AirPushSettings { get; set; }
         public bool EnableInteractionConfidence { get; set; }
         public bool EnableAirClickWithAirPush { get; set; }
         public bool EnableOneEuroFilter { get; set; }
