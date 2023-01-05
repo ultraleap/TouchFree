@@ -1,4 +1,4 @@
-import TouchFree from '../TouchFree';
+import { DispatchEvent } from '../TouchFree';
 import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController';
 
@@ -113,7 +113,7 @@ export class WebInputController extends BaseInputController {
         this.activeEventProps.clientY = _inputData.CursorPosition[1];
 
         if (elementAtPos !== null) {
-            TouchFree.DispatchEvent('InputAction', _inputData);
+            DispatchEvent('InputAction', _inputData);
         }
 
         switch (_inputData.InputType) {

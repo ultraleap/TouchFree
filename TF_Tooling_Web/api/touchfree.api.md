@@ -38,8 +38,10 @@ abstract class BaseInputController {
     protected HandleInputAction(_inputData: TouchFreeInputAction): void;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "BitmaskFlags" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-enum BitmaskFlags {
+export enum BitmaskFlags {
     // (undocumented)
     CANCEL = 32,
     // (undocumented)
@@ -108,7 +110,14 @@ class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {
 declare namespace Configuration {
     export {
         ConfigurationManager,
-        ConfigurationTypes
+        InteractionConfig,
+        InteractionConfigFull,
+        HoverAndHoldInteractionSettings,
+        TouchPlaneInteractionSettings,
+        PhysicalConfig,
+        Vector,
+        Vector2,
+        TrackedPosition
     }
 }
 export { Configuration }
@@ -122,31 +131,40 @@ class ConfigurationManager {
 }
 
 // @public
-enum ConfigurationState {
+export enum ConfigurationState {
     ERRORED = 2,
     LOADED = 1,
     NOT_LOADED = 0
-}
-
-declare namespace ConfigurationTypes {
-    export {
-        InteractionConfig,
-        InteractionConfigFull,
-        HoverAndHoldInteractionSettings,
-        TouchPlaneInteractionSettings,
-        PhysicalConfig,
-        Vector,
-        Vector2,
-        TrackedPosition
-    }
 }
 
 declare namespace Connection {
     export {
         ConnectionManager,
         MessageReceiver,
-        TouchFreeServiceTypes,
-        ServiceConnection
+        ServiceConnection,
+        ActionCode,
+        HandPresenceState,
+        Compatibility,
+        HandPresenceEvent,
+        TouchFreeRequestCallback,
+        TouchFreeRequest,
+        PartialConfigState,
+        ConfigState,
+        ConfigChangeRequest,
+        HandRenderDataStateRequest,
+        ConfigStateCallback,
+        ServiceStatus,
+        ServiceStatusRequest,
+        ServiceStatusCallback,
+        WebSocketResponse,
+        VersionHandshakeResponse,
+        ResponseCallback,
+        CommunicationWrapper,
+        SuccessWrapper,
+        TrackingStateResponse,
+        TrackingStateRequest,
+        SimpleRequest,
+        TrackingStateCallback
     }
 }
 export { Connection }
@@ -173,28 +191,22 @@ class ConnectionManager extends EventTarget {
     static serviceConnection(): ServiceConnection | null;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "ConvertInputAction" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInputAction;
+export function ConvertInputAction(_wsInput: WebsocketInputAction): TouchFreeInputAction;
 
 declare namespace Cursors {
     export {
-        TouchlessCursor,
         DotCursor,
-        SVGCursor
+        SVGCursor,
+        TouchlessCursor
     }
 }
 export { Cursors }
 
-// @public (undocumented)
-const _default: {
-    CurrentCursor: TouchlessCursor | undefined;
-    DispatchEvent: <TEvent extends TouchFreeEvent>(eventType: TEvent, ...args: Parameters<TouchFreeEventSignatures[TEvent]>) => void;
-    Init: (_tfInitParams?: TfInitParams | undefined) => void;
-    InputController: WebInputController | undefined;
-    IsConnected: () => boolean;
-    RegisterEventCallback: <TEvent_1 extends TouchFreeEvent>(event: TEvent_1, callback: TouchFreeEventSignatures[TEvent_1]) => EventHandle;
-};
-export default _default;
+// @public
+export const DispatchEvent: <TEvent extends TouchFreeEvent>(eventType: TEvent, ...args: Parameters<TouchFreeEventSignatures[TEvent]>) => void;
 
 // @public
 class DotCursor extends TouchlessCursor {
@@ -215,12 +227,14 @@ class DotCursor extends TouchlessCursor {
 }
 
 // @public
-interface EventHandle {
+export interface EventHandle {
     UnregisterEventCallback(): void;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "FingerType" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-enum FingerType {
+export enum FingerType {
     // (undocumented)
     TYPE_INDEX = 1,
     // (undocumented)
@@ -235,8 +249,10 @@ enum FingerType {
     TYPE_UNKNOWN = -1
 }
 
+// Warning: (ae-internal-missing-underscore) The name "FlagUtilities" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-class FlagUtilities {
+export class FlagUtilities {
     static GetChiralityFromFlags(_flags: BitmaskFlags): HandChirality;
     static GetHandTypeFromFlags(_flags: BitmaskFlags): HandType;
     static GetInputTypeFromFlags(_flags: BitmaskFlags): InputType;
@@ -245,15 +261,17 @@ class FlagUtilities {
 }
 
 // @public
-enum HandChirality {
+export enum HandChirality {
     // (undocumented)
     LEFT = 0,
     // (undocumented)
     RIGHT = 1
 }
 
+// Warning: (ae-internal-missing-underscore) The name "HandFrame" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-class HandFrame {
+export class HandFrame {
     // (undocumented)
     Hands: RawHand[];
 }
@@ -281,7 +299,7 @@ class HandRenderDataStateRequest extends TouchFreeRequest {
 }
 
 // @public
-enum HandType {
+export enum HandType {
     PRIMARY = 0,
     SECONDARY = 1
 }
@@ -320,7 +338,7 @@ declare namespace InputControllers {
 export { InputControllers }
 
 // @public
-enum InputType {
+export enum InputType {
     CANCEL = 1,
     DOWN = 2,
     MOVE = 3,
@@ -366,7 +384,7 @@ interface InteractionConfigFull {
 }
 
 // @public
-enum InteractionType {
+export enum InteractionType {
     GRAB = 0,
     HOVER = 1,
     PUSH = 2,
@@ -453,24 +471,30 @@ declare namespace Plugins {
 }
 export { Plugins }
 
+// Warning: (ae-internal-missing-underscore) The name "RawBone" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-class RawBone {
+export class RawBone {
     // (undocumented)
     NextJoint: Vector;
     // (undocumented)
     PrevJoint: Vector;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "RawFinger" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-class RawFinger {
+export class RawFinger {
     // (undocumented)
     Bones: RawBone[];
     // (undocumented)
     Type: FingerType;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "RawHand" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-class RawHand {
+export class RawHand {
     // (undocumented)
     CurrentPrimary: boolean;
     // (undocumented)
@@ -545,25 +569,27 @@ class SVGCursor extends TouchlessCursor {
 }
 
 // @public
-interface TfInitParams {
+export interface TfInitParams {
     // (undocumented)
     initialiseCursor?: boolean;
 }
 
-declare namespace TouchFree {
-    export {
-        TfInitParams,
-        EventHandle,
-        _default as default
-    }
-}
+// @public
+const TouchFree: {
+    CurrentCursor: TouchlessCursor | undefined;
+    InputController: WebInputController | undefined;
+    Init: (_tfInitParams?: TfInitParams) => void;
+    IsConnected: () => boolean;
+    RegisterEventCallback: <TEvent extends TouchFreeEvent>(event: TEvent, callback: TouchFreeEventSignatures[TEvent]) => EventHandle;
+};
 export { TouchFree }
+export default TouchFree;
 
 // @public
-type TouchFreeEvent = Extract<keyof TouchFreeEventSignatures, string>;
+export type TouchFreeEvent = Extract<keyof TouchFreeEventSignatures, string>;
 
 // @public
-interface TouchFreeEventSignatures {
+export interface TouchFreeEventSignatures {
     HandFound: () => void;
     HandsLost: () => void;
     InputAction: (inputAction: TouchFreeInputAction) => void;
@@ -577,7 +603,7 @@ interface TouchFreeEventSignatures {
 }
 
 // @public
-class TouchFreeInputAction {
+export class TouchFreeInputAction {
     constructor(_timestamp: number, _interactionType: InteractionType, _handType: HandType, _handChirality: HandChirality, _inputType: InputType, _cursorPosition: Array<number>, _distanceFromScreen: number, _progressToClick: number);
     // (undocumented)
     Chirality: HandChirality;
@@ -611,59 +637,6 @@ abstract class TouchFreeRequestCallback<T> {
     timestamp: number;
 }
 
-declare namespace TouchFreeServiceTypes {
-    export {
-        ActionCode,
-        HandPresenceState,
-        Compatibility,
-        HandPresenceEvent,
-        TouchFreeRequestCallback,
-        TouchFreeRequest,
-        PartialConfigState,
-        ConfigState,
-        ConfigChangeRequest,
-        HandRenderDataStateRequest,
-        ConfigStateCallback,
-        ServiceStatus,
-        ServiceStatusRequest,
-        ServiceStatusCallback,
-        WebSocketResponse,
-        VersionHandshakeResponse,
-        ResponseCallback,
-        CommunicationWrapper,
-        SuccessWrapper,
-        TrackingStateResponse,
-        TrackingStateRequest,
-        SimpleRequest,
-        TrackingStateCallback
-    }
-}
-
-declare namespace TouchFreeToolingTypes {
-    export {
-        ConvertInputAction,
-        VersionInfo,
-        TouchFreeInputAction,
-        HandChirality,
-        HandType,
-        InputType,
-        InteractionType,
-        TrackingServiceState,
-        ConfigurationState,
-        BitmaskFlags,
-        TouchFreeEventSignatures,
-        TouchFreeEvent,
-        WebsocketInputAction,
-        HandFrame,
-        RawHand,
-        RawFinger,
-        FingerType,
-        RawBone,
-        FlagUtilities
-    }
-}
-export { TouchFreeToolingTypes }
-
 // @public
 abstract class TouchlessCursor {
     constructor(_cursor: HTMLElement | SVGElement | undefined);
@@ -695,7 +668,8 @@ enum TrackedPosition {
 declare namespace Tracking {
     export {
         TrackingManager,
-        TrackingTypes
+        Mask,
+        TrackingState
     }
 }
 export { Tracking }
@@ -708,7 +682,7 @@ class TrackingManager {
 }
 
 // @public
-enum TrackingServiceState {
+export enum TrackingServiceState {
     CONNECTED = 2,
     NO_CAMERA = 1,
     UNAVAILABLE = 0
@@ -757,13 +731,6 @@ interface TrackingStateResponse {
     requestID: string;
 }
 
-declare namespace TrackingTypes {
-    export {
-        Mask,
-        TrackingState
-    }
-}
-
 declare namespace Utilities {
     export {
         MapRangeToRange
@@ -791,8 +758,10 @@ class VersionHandshakeResponse extends WebSocketResponse {
     touchFreeVersion: string;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "VersionInfo" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-class VersionInfo {
+export class VersionInfo {
     static readonly API_HEADER_NAME: string;
     static readonly ApiVersion: string;
 }
@@ -807,8 +776,10 @@ class WebInputController extends BaseInputController {
     HandleMove(_element: Element | null): void;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "WebsocketInputAction" should be prefixed with an underscore because the declaration is marked as @internal
+//
 // @internal
-class WebsocketInputAction {
+export class WebsocketInputAction {
     constructor(_timestamp: number, _interactionFlags: BitmaskFlags, _cursorPosition: Vector2, _distanceFromScreen: number, _progressToClick: number);
     CursorPosition: Vector2;
     DistanceFromScreen: number;

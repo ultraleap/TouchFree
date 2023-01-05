@@ -21,7 +21,7 @@
             }
         }
     },
-    "plugins": ["@typescript-eslint", "spellcheck"],
+    "plugins": ["@typescript-eslint", "spellcheck", "eslint-plugin-tsdoc"],
     "ignorePatterns": ["/dist*", "/release", "build/*", "*_Example.html"],
     "rules": {
         "indent": "off",
@@ -78,7 +78,8 @@
         ],
         "@typescript-eslint/no-empty-interface": "warn",
         "@typescript-eslint/no-unused-vars": ["warn", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
-        "@typescript-eslint/no-empty-function": "off"
+        "@typescript-eslint/no-empty-function": "off",
+        "tsdoc/syntax": "warn"
     },
     "globals": { "TouchFree": "readonly", "SnappingPlugin": "readonly" }
 }

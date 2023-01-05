@@ -1,4 +1,4 @@
-import TouchFree from '../TouchFree';
+import TouchFree, { DispatchEvent } from '../TouchFree';
 import { TrackingServiceState } from '../TouchFreeToolingTypes';
 import { MessageReceiver } from './MessageReceiver';
 import { ServiceConnection } from './ServiceConnection';
@@ -121,9 +121,9 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.currentHandPresence = _state;
 
         if (_state === HandPresenceState.HAND_FOUND) {
-            TouchFree.DispatchEvent('HandFound');
+            DispatchEvent('HandFound');
         } else {
-            TouchFree.DispatchEvent('HandsLost');
+            DispatchEvent('HandsLost');
         }
     }
 

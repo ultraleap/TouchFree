@@ -1,4 +1,4 @@
-import TouchFree from '../TouchFree';
+import { DispatchEvent } from '../TouchFree';
 import { VersionInfo, WebsocketInputAction } from '../TouchFreeToolingTypes';
 import { TrackingState } from '../Tracking/TrackingTypes';
 import { ConnectionManager } from './ConnectionManager';
@@ -125,7 +125,7 @@ export class ServiceConnection {
             }
 
             this.handshakeCompleted = true;
-            TouchFree.DispatchEvent('OnConnected');
+            DispatchEvent('OnConnected');
         } else {
             console.log(`Connection to Service failed. Details:\n${response.message}`);
         }

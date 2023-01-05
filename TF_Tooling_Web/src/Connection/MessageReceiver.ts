@@ -1,6 +1,6 @@
 import { HandDataManager } from '../Plugins/HandDataManager';
 import { InputActionManager } from '../Plugins/InputActionManager';
-import TouchFree from '../TouchFree';
+import { DispatchEvent } from '../TouchFree';
 import {
     BitmaskFlags,
     ConvertInputAction,
@@ -252,7 +252,7 @@ export class MessageReceiver {
                 case 'NoCallbacksFound':
                     // If service state is null we didn't get info about it from this message
                     if (serviceStatus.trackingServiceState !== null) {
-                        TouchFree.DispatchEvent('OnTrackingServiceStateChange', serviceStatus.trackingServiceState);
+                        DispatchEvent('OnTrackingServiceStateChange', serviceStatus.trackingServiceState);
                     }
                     break;
                 case 'Success':

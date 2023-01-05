@@ -1,4 +1,4 @@
-import TouchFree from '../TouchFree';
+import { DispatchEvent } from '../TouchFree';
 import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { InputActionPlugin } from './InputActionPlugin';
 
@@ -46,7 +46,7 @@ export class InputActionManager extends EventTarget {
      * @internal
      */
     public static HandleInputAction(_action: TouchFreeInputAction): void {
-        TouchFree.DispatchEvent('TransmitInputActionRaw', _action);
+        DispatchEvent('TransmitInputActionRaw', _action);
 
         let action = _action;
 
@@ -65,7 +65,7 @@ export class InputActionManager extends EventTarget {
 
         // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
         setTimeout(() => {
-            TouchFree.DispatchEvent('TransmitInputAction', action);
+            DispatchEvent('TransmitInputAction', action);
         }, 0);
     }
 }

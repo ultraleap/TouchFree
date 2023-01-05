@@ -1,7 +1,2 @@
-import { BaseInputController } from './BaseInputController';
-import { WebInputController } from './WebInputController';
-
-export {
-    BaseInputController,
-    WebInputController,
-};
+export { BaseInputController } from './BaseInputController';
+export { WebInputController } from './WebInputController';

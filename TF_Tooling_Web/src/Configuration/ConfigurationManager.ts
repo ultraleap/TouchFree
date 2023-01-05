@@ -1,4 +1,4 @@
-import { ConnectionManager } from '../Connection/ConnectionManager';
+import { Connection, Configuration } from 'index';
 import {
     ActionCode,
     CommunicationWrapper,
@@ -39,7 +39,7 @@ export class ConfigurationManager {
 
     /**
      * Request active configuration state of the TouchFree Service
-     * @param _callback - Callback with the requested {@link ConfigState}
+     * @param _callback - Callback with the requested {@link Connection.ConfigState}
      */
     public static RequestConfigState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {
@@ -47,15 +47,15 @@ export class ConfigurationManager {
             return;
         }
 
-        ConnectionManager.serviceConnection()?.RequestConfigState(_callback);
+        Connection.ConnectionManager.serviceConnection()?.RequestConfigState(_callback);
     }
 
     /**
      * Requests a modification to the configuration **files** used by the TouchFree Service.
      * 
      * @remarks
-     * WARNING! Any changes that have been made using {@link RequestConfigChange} by *any* connected
-     * client will be lost when changing these files.
+     * WARNING! Any changes that have been made using {@link Configuration.ConfigurationManager.RequestConfigChange}
+     * by *any* connected client will be lost when changing these files.
      * The change will be applied **to the current config files directly**,
      * disregarding current active config state, and the config will be loaded from files.
      * @param _interaction - Optional interaction config modifications to send
@@ -93,7 +93,7 @@ export class ConfigurationManager {
 
     /**
      * Request configuration state of the services config files.
-     * @param _callback - Callback with the requested {@link ConfigState}
+     * @param _callback - Callback with the requested {@link Connection.ConfigState}
      */
     public static RequestConfigFileState(_callback: (detail: ConfigState) => void): void {
         if (_callback === null) {

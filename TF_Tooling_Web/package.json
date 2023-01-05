@@ -6,7 +6,8 @@
     "typings": "build/index.d.ts",
     "scripts": {
         "test": "jest --ci --reporters=default --reporters=jest-junit",
-        "build:docs": "npm run build:tsc && api-extractor run --local --verbose",
+        "build:api-report": "npm run build:tsc && api-extractor run --local --verbose -c api-extractor.jsonc",
+        "build:docs": "npm run build:api-report && api-documenter markdown -i docs -o docs/markdown",
         "build:tsc": "tsc",
         "build:bundle": "webpack",
         "prettyLint": "prettier --write . && eslint --fix ."
@@ -24,6 +25,7 @@
         "@typescript-eslint/parser": "^5.45.0",
         "eslint": "^7.17.0",
         "eslint-plugin-spellcheck": "^0.0.19",
+        "eslint-plugin-tsdoc": "^0.2.17",
         "jest": "^26.6.3",
         "jest-junit": "^14.0.1",
         "ts-jest": "^26.4.4",

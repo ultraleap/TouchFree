@@ -260,7 +260,7 @@ const RegisterEventCallback = <TEvent extends TouchFreeEvent>(
  * 
  * @public
  */
-const DispatchEvent = <TEvent extends TouchFreeEvent>(
+export const DispatchEvent = <TEvent extends TouchFreeEvent>(
     eventType: TEvent,
     ...args: Parameters<TouchFreeEventSignatures[TEvent]>
 ) => {
@@ -277,11 +277,16 @@ const DispatchEvent = <TEvent extends TouchFreeEvent>(
 
 // Bundle all our exports into a default object
 // Benefit to this is IDE autocomplete for "TouchFree" will find this object
-export default {
+/**
+ * Top level TouchFree object - an entry point for using TouchFree
+ * 
+ * @public
+ */
+export const TouchFree = {
     CurrentCursor,
-    DispatchEvent,
-    Init,
     InputController,
+    Init,
     IsConnected,
     RegisterEventCallback,
 };
+export default TouchFree;
