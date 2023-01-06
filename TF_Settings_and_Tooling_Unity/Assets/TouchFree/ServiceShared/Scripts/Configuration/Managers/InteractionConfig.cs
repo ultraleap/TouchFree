@@ -99,10 +99,24 @@ namespace Ultraleap.TouchFree.ServiceShared
 
             InteractionType = defaults.InteractionType;
 
-            foreach(var entry in AirPush)
-            {
-                entry.Value = defaults.AirPush[entry.Key];
-            }
+            AirPush.SpeedMin = defaults.AirPush.SpeedMin;
+            AirPush.SpeedMax = defaults.AirPush.SpeedMax;
+            AirPush.DistAtSpeedMinMm = defaults.AirPush.DistAtSpeedMinMm;
+            AirPush.DistAtSpeedMaxMm = defaults.AirPush.DistAtSpeedMaxMm;
+            AirPush.HorizontalDecayDistMm = defaults.AirPush.HorizontalDecayDistMm;
+            AirPush.ThetaOne = defaults.AirPush.ThetaOne;
+            AirPush.ThetaTwo = defaults.AirPush.ThetaTwo;
+            AirPush.UnclickThreshold = defaults.AirPush.UnclickThreshold;
+            AirPush.UnclickThresholdDrag = defaults.AirPush.UnclickThresholdDrag;
+            AirPush.DecayForceOnClick = defaults.AirPush.DecayForceOnClick;
+            AirPush.ForceDecayTime = defaults.AirPush.ForceDecayTime;
+            AirPush.UseTouchPlaneForce = defaults.AirPush.UseTouchPlaneForce;
+            AirPush.DistPastTouchPlaneMm = defaults.AirPush.DistPastTouchPlaneMm;
+            AirPush.DragStartDistanceThresholdMm = defaults.AirPush.DragStartDistanceThresholdMm;
+            AirPush.DragDeadzoneShrinkRate = defaults.AirPush.DragDeadzoneShrinkRate;
+            AirPush.DragDeadzoneShrinkDistanceThresholdMm = defaults.AirPush.DragDeadzoneShrinkDistanceThresholdMm;
+            AirPush.DeadzoneMaxSizeIncreaseMm = defaults.AirPush.DeadzoneMaxSizeIncreaseMm;
+            AirPush.DeadzoneShrinkRate = defaults.AirPush.DeadzoneShrinkRate;
 
             HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
