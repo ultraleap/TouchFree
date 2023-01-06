@@ -97,7 +97,15 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             base.OnInteractionSettingsUpdated(_config);
 
-            thetaOne = ignoreDragging || ignoreSwiping ? 15f : 65f;
+            speedMin = _config.AirPush.SpeedMin;
+            speedMax = _config.AirPush.SpeedMax;
+            distAtSpeedMinMm = _config.AirPush.DistAtSpeedMinMm;
+            distAtSpeedMaxMm = _config.AirPush.DistAtSpeedMaxMm;
+            horizontalDecayDistMm = _config.AirPush.HorizontalDecayDistMm;
+            thetaOne = ignoreDragging || ignoreSwiping ? 15f : _config.AirPush.ThetaOne;
+            thetaTwo = _config.AirPush.ThetaTwo;
+            unclickThreshold = _config.AirPush.UnclickThreshold;
+            unclickThresholdDrag = _config.AirPush.UnclickThresholdDrag;
         }
 
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
