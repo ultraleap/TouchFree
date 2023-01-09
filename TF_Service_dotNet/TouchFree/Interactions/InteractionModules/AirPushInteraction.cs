@@ -83,6 +83,18 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 thetaTwo = _configManager.InteractionConfig.AirPush.ThetaTwo;
                 unclickThreshold = _configManager.InteractionConfig.AirPush.UnclickThreshold;
                 unclickThresholdDrag = _configManager.InteractionConfig.AirPush.UnclickThresholdDrag;
+                decayForceOnClick = _configManager.InteractionConfig.AirPush.DecayForceOnClick;
+                forceDecayTime = _configManager.InteractionConfig.AirPush.ForceDecayTime;
+
+                useTouchPlaneForce = _configManager.InteractionConfig.AirPush.UseTouchPlaneForce;
+                distPastTouchPlaneMm = _configManager.InteractionConfig.AirPush.DistPastTouchPlaneMm;
+
+                dragStartDistanceThresholdMm = _configManager.InteractionConfig.AirPush.DragStartDistanceThresholdMm;
+                dragDeadzoneShrinkRate = _configManager.InteractionConfig.AirPush.DragDeadzoneShrinkRate;
+                dragDeadzoneShrinkDistanceThresholdMm = _configManager.InteractionConfig.AirPush.DragDeadzoneShrinkDistanceThresholdMm;
+
+                deadzoneMaxSizeIncreaseMm = _configManager.InteractionConfig.AirPush.DeadzoneMaxSizeIncreaseMm;
+                deadzoneShrinkRate = _configManager.InteractionConfig.AirPush.DeadzoneShrinkRate;
             }
             extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
             filter = new PositionFilter(_interactionTuning);
@@ -106,6 +118,18 @@ namespace Ultraleap.TouchFree.Library.Interactions
             thetaTwo = _config.AirPush.ThetaTwo;
             unclickThreshold = _config.AirPush.UnclickThreshold;
             unclickThresholdDrag = _config.AirPush.UnclickThresholdDrag;
+            decayForceOnClick = _config.AirPush.DecayForceOnClick;
+            forceDecayTime = _config.AirPush.ForceDecayTime;
+
+            useTouchPlaneForce = _config.AirPush.UseTouchPlaneForce;
+            distPastTouchPlaneMm = _config.AirPush.DistPastTouchPlaneMm;
+
+            dragStartDistanceThresholdMm = _config.AirPush.DragStartDistanceThresholdMm;
+            dragDeadzoneShrinkRate = _config.AirPush.DragDeadzoneShrinkRate;
+            dragDeadzoneShrinkDistanceThresholdMm = _config.AirPush.DragDeadzoneShrinkDistanceThresholdMm;
+
+            deadzoneMaxSizeIncreaseMm = _config.AirPush.DeadzoneMaxSizeIncreaseMm;
+            deadzoneShrinkRate = _config.AirPush.DeadzoneShrinkRate;
         }
 
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
