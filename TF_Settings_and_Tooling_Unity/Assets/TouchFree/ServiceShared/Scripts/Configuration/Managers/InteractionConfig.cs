@@ -17,6 +17,34 @@ namespace Ultraleap.TouchFree.ServiceShared
     }
 
     [Serializable]
+    public class AirPushSettings
+    {
+        public float SpeedMin = 150f;
+        public float SpeedMax = 500f;
+        public float DistAtSpeedMinMm = 42f;
+        public float DistAtSpeedMaxMm = 8f;
+        public float HorizontalDecayDistMm = 50f;
+
+        public float ThetaOne = 65f;
+        public float ThetaTwo = 135f;
+
+        public float UnclickThreshold = 0.97f;
+        public float UnclickThresholdDrag = 0.97f;
+        public bool DecayForceOnClick = true;
+        public float ForceDecayTime = 0.1f;
+
+        public bool UseTouchPlaneForce = true;
+        public float DistPastTouchPlaneMm = 20f;
+
+        public float DragStartDistanceThresholdMm = 30f;
+        public float DragDeadzoneShrinkRate = 0.9f;
+        public float DragDeadzoneShrinkDistanceThresholdMm = 10f;
+
+        public float DeadzoneMaxSizeIncreaseMm = 20f;
+        public float DeadzoneShrinkRate = 0.8f;
+    }
+
+    [Serializable]
     public class VelocitySwipeSettings
     {
         public float MinScrollVelocity_mmps = 625f;
@@ -52,6 +80,7 @@ namespace Ultraleap.TouchFree.ServiceShared
         public InteractionType InteractionType = InteractionType.PUSH;
 
         // Interaction-specific settings
+        public AirPushSettings AirPush = new AirPushSettings();
         public HoverAndHoldInteractionSettings HoverAndHold = new HoverAndHoldInteractionSettings();
         public TouchPlaneInteractionSettings TouchPlane = new TouchPlaneInteractionSettings();
         public VelocitySwipeSettings VelocitySwipe = new VelocitySwipeSettings();
@@ -69,6 +98,25 @@ namespace Ultraleap.TouchFree.ServiceShared
             InteractionMaxDistanceCm = defaults.InteractionMaxDistanceCm;
 
             InteractionType = defaults.InteractionType;
+
+            AirPush.SpeedMin = defaults.AirPush.SpeedMin;
+            AirPush.SpeedMax = defaults.AirPush.SpeedMax;
+            AirPush.DistAtSpeedMinMm = defaults.AirPush.DistAtSpeedMinMm;
+            AirPush.DistAtSpeedMaxMm = defaults.AirPush.DistAtSpeedMaxMm;
+            AirPush.HorizontalDecayDistMm = defaults.AirPush.HorizontalDecayDistMm;
+            AirPush.ThetaOne = defaults.AirPush.ThetaOne;
+            AirPush.ThetaTwo = defaults.AirPush.ThetaTwo;
+            AirPush.UnclickThreshold = defaults.AirPush.UnclickThreshold;
+            AirPush.UnclickThresholdDrag = defaults.AirPush.UnclickThresholdDrag;
+            AirPush.DecayForceOnClick = defaults.AirPush.DecayForceOnClick;
+            AirPush.ForceDecayTime = defaults.AirPush.ForceDecayTime;
+            AirPush.UseTouchPlaneForce = defaults.AirPush.UseTouchPlaneForce;
+            AirPush.DistPastTouchPlaneMm = defaults.AirPush.DistPastTouchPlaneMm;
+            AirPush.DragStartDistanceThresholdMm = defaults.AirPush.DragStartDistanceThresholdMm;
+            AirPush.DragDeadzoneShrinkRate = defaults.AirPush.DragDeadzoneShrinkRate;
+            AirPush.DragDeadzoneShrinkDistanceThresholdMm = defaults.AirPush.DragDeadzoneShrinkDistanceThresholdMm;
+            AirPush.DeadzoneMaxSizeIncreaseMm = defaults.AirPush.DeadzoneMaxSizeIncreaseMm;
+            AirPush.DeadzoneShrinkRate = defaults.AirPush.DeadzoneShrinkRate;
 
             HoverAndHold.HoverStartTimeS = defaults.HoverAndHold.HoverStartTimeS;
             HoverAndHold.HoverCompleteTimeS = defaults.HoverAndHold.HoverCompleteTimeS;
