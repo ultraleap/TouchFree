@@ -22,9 +22,9 @@ export default defineConfig({
             allow: [
                 './', // Include this folder (default)
                 '../node_modules/', // Allow any module dependencies
-                '../TF_Tooling_Web/' // Allow serving locally linked tooling
-            ]
-        }
+                '../TF_Tooling_Web/', // Allow serving locally linked tooling
+            ],
+        },
     },
     base: '/settings/',
 });

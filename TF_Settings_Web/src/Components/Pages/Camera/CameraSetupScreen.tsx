@@ -1,10 +1,11 @@
 import Alert from '@/Components/Controls/Alert';
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 
 import 'Styles/Camera/Camera.scss';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 
 import CameraMaskingIcon from 'Images/Camera/Camera_Masking_Icon.png';
 import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';

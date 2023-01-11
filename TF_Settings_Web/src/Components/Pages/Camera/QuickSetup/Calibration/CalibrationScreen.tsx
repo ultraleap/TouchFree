@@ -66,14 +66,18 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             }
 
             if (detail.InputType === InputType.DOWN && detail.ProgressToClick === 1) {
-                if (isTop) {
-                    handleClick('../bottom');
-                    return;
-                }
-
-                handleClick('../complete');
+                advance();
             }
         }
+    };
+
+    const advance = (): void => {
+        if (isTop) {
+            handleClick('../bottom');
+            return;
+        }
+
+        handleClick('../complete');
     };
 
     useEffect(() => {
@@ -118,6 +122,25 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
             window.clearInterval(interval.current);
         };
     }, [displayHandIndicator, progressToClick]);
+
+    const spacebarListener = (event: KeyboardEvent) => {
+        switch (event.code) {
+            case 'Space':
+                console.log('Advancing with spacebar');
+                advance();
+                break;
+            default:
+                break;
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', spacebarListener);
+
+        return () => {
+            document.removeEventListener('keydown', spacebarListener);
+        };
+    }, []);
 
     if (location.pathname.endsWith('top')) {
         return (
