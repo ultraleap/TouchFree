@@ -135,10 +135,10 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     };
 
     useEffect(() => {
-        document.addEventListener('keydown', spacebarListener);
+        document.addEventListener('keyup', spacebarListener);
 
         return () => {
-            document.removeEventListener('keydown', spacebarListener);
+            document.removeEventListener('keyup', spacebarListener);
         };
     }, []);
 
