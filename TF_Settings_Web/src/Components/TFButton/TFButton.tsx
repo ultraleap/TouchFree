@@ -1,8 +1,8 @@
+import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
+
 import './TFButton.scss';
 
 import React, { CSSProperties } from 'react';
-
-import { TFClickEvent } from 'Components/SettingsTypes';
 
 interface TextButtonProps {
     buttonStyle: React.CSSProperties;

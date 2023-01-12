@@ -1,4 +1,4 @@
-import { TextButton } from '@/Components/Controls/TFButton/TFButton';
+import { TextButton } from '@/Components';
 
 import './Calibration.scss';
 import cssVariables from 'Styles/variables.module.scss';

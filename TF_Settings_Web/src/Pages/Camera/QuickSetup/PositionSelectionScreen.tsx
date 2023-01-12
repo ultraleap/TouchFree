@@ -1,4 +1,4 @@
-import { VerticalIconTextButton } from '@/Components/Controls/TFButton/TFButton';
+import { VerticalIconTextButton } from '@/Components';
 
 import '@/Pages/Camera/Camera.scss';
 import cssVariables from 'Styles/variables.module.scss';

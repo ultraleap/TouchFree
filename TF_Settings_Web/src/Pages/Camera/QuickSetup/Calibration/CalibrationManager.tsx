@@ -1,4 +1,6 @@
+import { CursorManager } from '@/CursorManager';
 import { PositionType } from '@/Pages/Camera/QuickSetup/PositionSelectionScreen';
+import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
 
 import './Calibration.scss';
 
@@ -10,9 +12,6 @@ import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/src/Configu
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ConfigState, HandPresenceState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
-
-import { CursorManager } from 'Components/CursorManager';
-import { TFClickEvent } from 'Components/SettingsTypes';
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
 import CalibrationScreen from './CalibrationScreen';

@@ -1,4 +1,4 @@
-import { TextEntry } from '@/Components/Controls/TextEntry/TextEntry';
+import { TextEntry } from '@/Components';
 
 import './ManualSetup.scss';
 

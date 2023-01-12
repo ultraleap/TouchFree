@@ -1,6 +1,4 @@
-import { VerticalIconTextButton } from '@/Components/Controls/TFButton/TFButton';
-import TabSelector from '@/Components/Controls/TabSelector/TabSelector';
-import { VersionIndicator } from '@/Components/VersionIndicator/VersionIndicator';
+import { VerticalIconTextButton } from '@/Components';
 
 import './ControlBar.scss';
 import cssVariables from 'Styles/variables.module.scss';
@@ -13,7 +11,7 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 import backArrow from 'Images/Back_Arrow.svg';
 import logo from 'Images/Logo.png';
 
-import { StatusIndicator } from 'Components/StatusIndicator/StatusIndicator';
+import { StatusIndicator, TabSelector, VersionIndicator } from './';
 
 interface ControlBarProps {
     tfStatus: TrackingServiceState;

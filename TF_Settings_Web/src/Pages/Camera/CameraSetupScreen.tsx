@@ -1,5 +1,4 @@
-import Alert from '@/Components/Controls/Alert/Alert';
-import { HorizontalIconTextButton, VerticalIconTextButton } from '@/Components/Controls/TFButton/TFButton';
+import { Alert, HorizontalIconTextButton, VerticalIconTextButton } from '@/Components';
 
 import './Camera.scss';
 

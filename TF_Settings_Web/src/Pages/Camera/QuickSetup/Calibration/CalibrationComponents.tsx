@@ -1,4 +1,5 @@
-import { TextButton } from '@/Components/Controls/TFButton/TFButton';
+import { TextButton } from '@/Components';
+import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
 
 import './Calibration.scss';
 import cssVariables from 'Styles/variables.module.scss';
@@ -16,8 +17,6 @@ import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
 import DownArrow from 'Images/Down_Arrow.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
-
-import { TFClickEvent } from 'Components/SettingsTypes';
 
 import { TIMEOUT_S } from './CalibrationScreen';
 

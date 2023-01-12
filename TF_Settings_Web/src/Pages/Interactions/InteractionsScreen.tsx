@@ -1,8 +1,4 @@
-import { RadioGroup } from '@/Components/Controls/Radio/RadioGroup';
-import { RadioLine } from '@/Components/Controls/Radio/RadioLine';
-import { Slider } from '@/Components/Controls/Slider/Slider';
-import { TextSlider } from '@/Components/Controls/Slider/TextSlider';
-import { LabelledToggleSwitch } from '@/Components/Controls/ToggleSwitch/ToggleSwitch';
+import { LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
 
 import './Interactions.scss';
 
@@ -15,7 +11,7 @@ import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import InteractionPreviews from 'Videos/Interaction_Explainer_Combined.mp4';
 
-import { DefaultInteractionConfig } from 'Components/SettingsTypes';
+import { DefaultInteractionConfig } from './SettingsTypes';
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,

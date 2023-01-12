@@ -31,7 +31,7 @@ const getStatusIndicators = (tfStatus: TrackingServiceState): StatusIndicator[] 
     ];
 };
 
-export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tfStatus }) => {
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tfStatus }) => {
     return (
         <div className="status-container">
             {getStatusIndicators(tfStatus).map((indicator: StatusIndicator) => (
@@ -43,3 +43,5 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tfStatus }) =>
         </div>
     );
 };
+
+export default StatusIndicator;

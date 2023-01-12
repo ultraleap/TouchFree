@@ -1,4 +1,5 @@
-import ControlBar from '@/Components/ControlBar/ControlBar';
+import { ControlBar } from '@/Components';
+import { CursorManager } from '@/CursorManager';
 import CameraManager from '@/Pages/Camera/CameraManager';
 import { InteractionsScreen } from '@/Pages/Interactions/InteractionsScreen';
 
@@ -11,8 +12,6 @@ import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import { WebInputController } from 'TouchFree/src/InputControllers/WebInputController';
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
-
-import { CursorManager } from 'Components/CursorManager';
 
 const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);

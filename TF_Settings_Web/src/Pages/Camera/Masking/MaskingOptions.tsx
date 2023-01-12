@@ -1,5 +1,4 @@
-import Alert from '@/Components/Controls/Alert/Alert';
-import { ToggleSwitch } from '@/Components/Controls/ToggleSwitch/ToggleSwitch';
+import { Alert, ToggleSwitch } from '@/Components';
 
 import './CameraMasking.scss';
 
