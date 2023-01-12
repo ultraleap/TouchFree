@@ -17,6 +17,56 @@ namespace Ultraleap.TouchFree.Library.Configuration
     }
 
     [Serializable]
+    public record class AirPushSettingsInternal
+    {
+        public float SpeedMin = 150f;
+        public float SpeedMax = 500f;
+        public float DistAtSpeedMinMm = 42f;
+        public float DistAtSpeedMaxMm = 8f;
+        public float HorizontalDecayDistMm = 50f;
+
+        public float ThetaOne = 65f;
+        public float ThetaTwo = 135f;
+
+        public float UnclickThreshold = 0.97f;
+        public float UnclickThresholdDrag = 0.97f;
+        public bool DecayForceOnClick = true;
+        public float ForceDecayTime = 0.1f;
+
+        public bool UseTouchPlaneForce = true;
+        public float DistPastTouchPlaneMm = 20f;
+
+        public float DragStartDistanceThresholdMm = 30f;
+        public float DragDeadzoneShrinkRate = 0.9f;
+        public float DragDeadzoneShrinkDistanceThresholdMm = 10f;
+
+        public float DeadzoneMaxSizeIncreaseMm = 20f;
+        public float DeadzoneShrinkRate = 0.8f;
+    }
+
+    [Serializable]
+    public record class VelocitySwipeSettingsInternal
+    {
+        public float MinScrollVelocity_mmps = 625f;
+        public float UpwardsMinVelocityDecrease_mmps = 50f;
+        public float DownwardsMinVelocityIncrease_mmps = 50f;
+        public float MaxReleaseVelocity_mmps = 200f;
+
+        public float MaxLateralVelocity_mmps = 300f;
+        public float MaxOpposingVelocity_mmps = 65f;
+
+        public double ScrollDelayMs = 450;
+
+        public float MinSwipeLength = 10f;
+        public float MaxSwipeWidth = 10f;
+        public float SwipeWidthScaling = 0.2f;
+
+        public bool AllowBidirectionalScroll = false;
+        public bool AllowHorizontalScroll = true;
+        public bool AllowVerticalScroll = true;
+    }
+
+    [Serializable]
     public record class InteractionConfigInternal
     {
         public bool UseScrollingOrDragging = true;
@@ -30,8 +80,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public InteractionType InteractionType = InteractionType.PUSH;
 
         // Interaction-specific settings
+        public AirPushSettingsInternal AirPush = new AirPushSettingsInternal();
         public HoverAndHoldInteractionSettingsInternal HoverAndHold = new HoverAndHoldInteractionSettingsInternal();
         public TouchPlaneInteractionSettingsInternal TouchPlane = new TouchPlaneInteractionSettingsInternal();
+        public VelocitySwipeSettingsInternal VelocitySwipe = new VelocitySwipeSettingsInternal();
 
         public InteractionConfig ForApi()
         {
@@ -53,6 +105,22 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 {
                     TouchPlaneActivationDistanceCm = TouchPlane.TouchPlaneActivationDistanceMm / 10f,
                     TouchPlaneTrackedPosition = TouchPlane.TouchPlaneTrackedPosition
+                },
+                VelocitySwipe = new VelocitySwipeSettings()
+                {
+                    MaxOpposingVelocity_mmps = VelocitySwipe.MaxOpposingVelocity_mmps,
+                    MaxLateralVelocity_mmps = VelocitySwipe.MaxLateralVelocity_mmps,
+                    DownwardsMinVelocityIncrease_mmps = VelocitySwipe.DownwardsMinVelocityIncrease_mmps,
+                    MaxReleaseVelocity_mmps = VelocitySwipe.MaxReleaseVelocity_mmps,
+                    MaxSwipeWidth = VelocitySwipe.MaxSwipeWidth,
+                    MinScrollVelocity_mmps = VelocitySwipe.MinScrollVelocity_mmps,
+                    MinSwipeLength = VelocitySwipe.MinSwipeLength,
+                    ScrollDelayMs = VelocitySwipe.ScrollDelayMs,
+                    SwipeWidthScaling = VelocitySwipe.SwipeWidthScaling,
+                    UpwardsMinVelocityDecrease_mmps = VelocitySwipe.UpwardsMinVelocityDecrease_mmps,
+                    AllowBidirectionalScroll = VelocitySwipe.AllowBidirectionalScroll,
+                    AllowHorizontalScroll = VelocitySwipe.AllowHorizontalScroll,
+                    AllowVerticalScroll = VelocitySwipe.AllowVerticalScroll,
                 }
             };
         }
@@ -71,6 +139,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             this.HoverAndHold = new HoverAndHoldInteractionSettingsInternal();
             this.TouchPlane = new TouchPlaneInteractionSettingsInternal();
+            this.VelocitySwipe = new VelocitySwipeSettingsInternal();
         }
 
         public InteractionConfigInternal(InteractionConfig fromFile)
@@ -86,6 +155,33 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             this.InteractionType = fromFile.InteractionType;
 
+            this.AirPush = new AirPushSettingsInternal()
+            {
+                SpeedMin = fromFile.AirPush.SpeedMin,
+                SpeedMax = fromFile.AirPush.SpeedMax,
+                DistAtSpeedMinMm = fromFile.AirPush.DistAtSpeedMinMm,
+                DistAtSpeedMaxMm = fromFile.AirPush.DistAtSpeedMaxMm,
+                HorizontalDecayDistMm = fromFile.AirPush.HorizontalDecayDistMm,
+
+                ThetaOne = fromFile.AirPush.ThetaOne,
+                ThetaTwo = fromFile.AirPush.ThetaTwo,
+                
+                UnclickThreshold = fromFile.AirPush.UnclickThreshold,
+                UnclickThresholdDrag = fromFile.AirPush.UnclickThresholdDrag,
+                DecayForceOnClick = fromFile.AirPush.DecayForceOnClick,
+                ForceDecayTime = fromFile.AirPush.ForceDecayTime,
+
+                UseTouchPlaneForce = fromFile.AirPush.UseTouchPlaneForce,
+                DistPastTouchPlaneMm = fromFile.AirPush.DistPastTouchPlaneMm,
+
+                DragStartDistanceThresholdMm = fromFile.AirPush.DragStartDistanceThresholdMm,
+                DragDeadzoneShrinkRate = fromFile.AirPush.DragDeadzoneShrinkRate,
+                DragDeadzoneShrinkDistanceThresholdMm = fromFile.AirPush.DragDeadzoneShrinkDistanceThresholdMm,
+
+                DeadzoneMaxSizeIncreaseMm = fromFile.AirPush.DeadzoneMaxSizeIncreaseMm,
+                DeadzoneShrinkRate = fromFile.AirPush.DeadzoneShrinkRate,
+            };
+
             HoverAndHoldInteractionSettingsInternal intermedHH = new HoverAndHoldInteractionSettingsInternal();
             intermedHH.HoverStartTimeS = fromFile.HoverAndHold.HoverStartTimeS;
             intermedHH.HoverCompleteTimeS = fromFile.HoverAndHold.HoverCompleteTimeS;
@@ -96,6 +192,23 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
             this.HoverAndHold = intermedHH;
             this.TouchPlane = intermedTP;
+
+            this.VelocitySwipe = new VelocitySwipeSettingsInternal()
+            {
+                DownwardsMinVelocityIncrease_mmps = fromFile.VelocitySwipe.DownwardsMinVelocityIncrease_mmps,
+                MaxLateralVelocity_mmps = fromFile.VelocitySwipe.MaxLateralVelocity_mmps,
+                MaxOpposingVelocity_mmps = fromFile.VelocitySwipe.MaxOpposingVelocity_mmps,
+                MaxReleaseVelocity_mmps = fromFile.VelocitySwipe.MaxReleaseVelocity_mmps,
+                MaxSwipeWidth = fromFile.VelocitySwipe.MaxSwipeWidth,
+                MinScrollVelocity_mmps = fromFile.VelocitySwipe.MinScrollVelocity_mmps,
+                MinSwipeLength = fromFile.VelocitySwipe.MinSwipeLength,
+                ScrollDelayMs = fromFile.VelocitySwipe.ScrollDelayMs,
+                SwipeWidthScaling = fromFile.VelocitySwipe.SwipeWidthScaling,
+                UpwardsMinVelocityDecrease_mmps = fromFile.VelocitySwipe.UpwardsMinVelocityDecrease_mmps,
+                AllowBidirectionalScroll = fromFile.VelocitySwipe.AllowBidirectionalScroll,
+                AllowHorizontalScroll = fromFile.VelocitySwipe.AllowHorizontalScroll,
+                AllowVerticalScroll = fromFile.VelocitySwipe.AllowVerticalScroll,
+            };
         }
     }
 }

@@ -15,6 +15,9 @@ export interface TfInitParams {
     initialiseCursor?: boolean;
 }
 
+const GetCurrentCursor = () => CurrentCursor;
+const GetInputController = () => InputController;
+
 // Function: Init
 // Initializes TouchFree - must be called before any functionality requiring a TouchFree service connection.
 const Init = (_tfInitParams?: TfInitParams): void => {
@@ -33,6 +36,10 @@ const Init = (_tfInitParams?: TfInitParams): void => {
     });
 };
 
+// Function: IsConnected
+// Are we connected to the TouchFree service?
+const IsConnected = ():boolean => ConnectionManager.IsConnected;
+
 // Class: EventHandle
 // Object that can unregister a callback from an event
 // Returned when registering a callback to an event
@@ -40,36 +47,114 @@ export interface EventHandle {
     UnregisterEventCallback(): void;
 }
 
+// Turns a callback with an argument into a CustomEvent<T> Event Listener
 const MakeCustomEventWrapper = <T>(callback: (arg: T) => void): EventListener => {
     return ((evt: CustomEvent<T>) => {
         callback(evt.detail);
     }) as EventListener;
 };
 
-const EventTargets: { [T in TouchFreeEvent]: () => EventTarget } = {
-    HandFound: () => ConnectionManager.instance,
-    OnConnected: () => ConnectionManager.instance,
-    OnTrackingServiceStateChange: () => ConnectionManager.instance,
-    HandsLost: () => ConnectionManager.instance,
-    TransmitHandData: () => HandDataManager.instance,
-    InputAction: () => InputActionManager.instance,
-    TransmitInputActionRaw: () => InputActionManager.instance,
-    TransmitInputAction: () => InputActionManager.instance,
+// Signature required for RegisterEvent functions
+type RegisterEventFunc = (target:EventTarget, eventType:TouchFreeEvent, listener:EventListener) => EventHandle;
+
+// Default implementation of RegisterEvent
+const DefaultRegisterEventFunc:RegisterEventFunc = (target, eventType, listener) => {
+    target.addEventListener(eventType, listener);
+    return { UnregisterEventCallback: () => target.removeEventListener(eventType, listener) };
 };
 
-const EventListeners: { [T in TouchFreeEvent]: (callback: TouchFreeEventSignatures[T]) => EventListener } = {
-    // Map void functions, they can just be returned directly
-    OnConnected: (callback) => callback,
-    HandFound: (callback) => callback,
-    HandsLost: (callback) => callback,
+// Interface for each individual event's implementation details
+interface EventImpl<T extends TouchFreeEvent> {
+    Target: EventTarget;
+    WithCallback: (callback: TouchFreeEventSignatures[T]) => {
+        Listener: EventListener,
+        RegisterEventFunc: RegisterEventFunc
+    }
+}
 
-    // Callbacks with an argument need to be transformed to a function taking CustomEvent<T>
-    OnTrackingServiceStateChange: (callback) => MakeCustomEventWrapper(callback),
-    InputAction: (callback) => MakeCustomEventWrapper(callback),
-    TransmitHandData: (callback) => MakeCustomEventWrapper(callback),
-    TransmitInputActionRaw: (callback) => MakeCustomEventWrapper(callback),
-    TransmitInputAction: (callback) => MakeCustomEventWrapper(callback),
+type EventImpls = {
+    [T in TouchFreeEvent]: EventImpl<T>;
 };
+
+// Backing field to cache object creation
+let EventImplementationsBackingField: EventImpls | undefined;
+
+// Implementation details for all events
+// Any new events added to TouchFreeEvent require a new entry here to function
+const EventImplementations: () => EventImpls = () => EventImplementationsBackingField ??= ({
+    OnConnected: {
+        Target: ConnectionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: callback, // Void callback can be returned directly
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    },
+    WhenConnected: {
+        Target: ConnectionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: callback, // Void callback can be returned directly
+            RegisterEventFunc: (_target, _eventType, _listener) => {
+                // If we're already connected then run the callback
+                if (IsConnected())
+                {
+                    callback();
+                }
+
+                // Piggyback OnConnected
+                return RegisterEventCallback('OnConnected', callback);
+            }
+        })
+    },
+    OnTrackingServiceStateChange: {
+        Target: ConnectionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: MakeCustomEventWrapper(callback),
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    },
+    HandFound: {
+        Target: ConnectionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: callback, // Void callback can be returned directly
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    },
+    HandsLost: {
+        Target: ConnectionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: callback, // Void callback can be returned directly
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    },
+    InputAction: {
+        Target: InputActionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: MakeCustomEventWrapper(callback),
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    },
+    TransmitHandData: {
+        Target: HandDataManager.instance,
+        WithCallback: (callback) => ({
+            Listener: MakeCustomEventWrapper(callback),
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    },
+    TransmitInputAction: {
+        Target: InputActionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: MakeCustomEventWrapper(callback),
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    },
+    TransmitInputActionRaw: {
+        Target: InputActionManager.instance,
+        WithCallback: (callback) => ({
+            Listener: MakeCustomEventWrapper(callback),
+            RegisterEventFunc: DefaultRegisterEventFunc
+        })
+    }
+});
 
 // Function: RegisterEventCallback
 // Registers a callback function to be called when a specific event occurs
@@ -79,6 +164,10 @@ const EventListeners: { [T in TouchFreeEvent]: (callback: TouchFreeEventSignatur
 //
 // OnConnected: () => void;
 // Event dispatched when connecting to the TouchFree service
+//
+// WhenConnected: () => void;
+// Same as OnConnected but calls callback when already connected.
+// Note this event piggybacks as an "OnConnected" event on event targets.
 //
 // OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
 // Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
@@ -104,11 +193,11 @@ const RegisterEventCallback = <TEvent extends TouchFreeEvent>(
     event: TEvent,
     callback: TouchFreeEventSignatures[TEvent]
 ): EventHandle => {
-    const eventType = event as TouchFreeEvent;
-    const target = EventTargets[event]();
-    const listener = EventListeners[event](callback);
-    target.addEventListener(eventType, listener);
-    return { UnregisterEventCallback: () => target.removeEventListener(eventType, listener) };
+    const eventImpl = EventImplementations()[event];
+    const target = eventImpl.Target;
+    const callbackImpl = eventImpl.WithCallback(callback);
+    const listener = callbackImpl.Listener;
+    return callbackImpl.RegisterEventFunc(target, event, listener);
 };
 
 // Function: DispatchEvent
@@ -125,16 +214,17 @@ const DispatchEvent = <TEvent extends TouchFreeEvent>(
         event = new CustomEvent(eventType, { detail: args[0] });
     }
 
-    const target = EventTargets[eventType]();
+    const target = EventImplementations()[eventType].Target;
     target.dispatchEvent(event);
 };
 
 // Bundle all our exports into a default object
 // Benefit to this is IDE autocomplete for "TouchFree" will find this object
 export default {
-    RegisterEventCallback,
+    GetCurrentCursor,
     DispatchEvent,
     Init,
-    CurrentCursor,
-    InputController,
+    GetInputController,
+    IsConnected,
+    RegisterEventCallback,
 };

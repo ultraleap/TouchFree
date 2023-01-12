@@ -72,17 +72,29 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             interactionTuning = _interactionTuning?.Value;
 
-            if (interactionTuning?.AirPushSettings != null)
+            if (_configManager.InteractionConfig?.AirPush != null)
             {
-                speedMin = interactionTuning.AirPushSettings.SpeedMin;
-                speedMax = interactionTuning.AirPushSettings.SpeedMax;
-                distAtSpeedMinMm = interactionTuning.AirPushSettings.DistAtSpeedMinMm;
-                distAtSpeedMaxMm = interactionTuning.AirPushSettings.DistAtSpeedMaxMm;
-                horizontalDecayDistMm = interactionTuning.AirPushSettings.HorizontalDecayDistMm;
-                thetaOne = interactionTuning.AirPushSettings.ThetaOne;
-                thetaTwo = interactionTuning.AirPushSettings.ThetaTwo;
-                unclickThreshold = interactionTuning.AirPushSettings.UnclickThreshold;
-                unclickThresholdDrag = interactionTuning.AirPushSettings.UnclickThresholdDrag;
+                speedMin = _configManager.InteractionConfig.AirPush.SpeedMin;
+                speedMax = _configManager.InteractionConfig.AirPush.SpeedMax;
+                distAtSpeedMinMm = _configManager.InteractionConfig.AirPush.DistAtSpeedMinMm;
+                distAtSpeedMaxMm = _configManager.InteractionConfig.AirPush.DistAtSpeedMaxMm;
+                horizontalDecayDistMm = _configManager.InteractionConfig.AirPush.HorizontalDecayDistMm;
+                thetaOne = _configManager.InteractionConfig.AirPush.ThetaOne;
+                thetaTwo = _configManager.InteractionConfig.AirPush.ThetaTwo;
+                unclickThreshold = _configManager.InteractionConfig.AirPush.UnclickThreshold;
+                unclickThresholdDrag = _configManager.InteractionConfig.AirPush.UnclickThresholdDrag;
+                decayForceOnClick = _configManager.InteractionConfig.AirPush.DecayForceOnClick;
+                forceDecayTime = _configManager.InteractionConfig.AirPush.ForceDecayTime;
+
+                useTouchPlaneForce = _configManager.InteractionConfig.AirPush.UseTouchPlaneForce;
+                distPastTouchPlaneMm = _configManager.InteractionConfig.AirPush.DistPastTouchPlaneMm;
+
+                dragStartDistanceThresholdMm = _configManager.InteractionConfig.AirPush.DragStartDistanceThresholdMm;
+                dragDeadzoneShrinkRate = _configManager.InteractionConfig.AirPush.DragDeadzoneShrinkRate;
+                dragDeadzoneShrinkDistanceThresholdMm = _configManager.InteractionConfig.AirPush.DragDeadzoneShrinkDistanceThresholdMm;
+
+                deadzoneMaxSizeIncreaseMm = _configManager.InteractionConfig.AirPush.DeadzoneMaxSizeIncreaseMm;
+                deadzoneShrinkRate = _configManager.InteractionConfig.AirPush.DeadzoneShrinkRate;
             }
             extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
             filter = new PositionFilter(_interactionTuning);
@@ -97,7 +109,27 @@ namespace Ultraleap.TouchFree.Library.Interactions
         {
             base.OnInteractionSettingsUpdated(_config);
 
-            thetaOne = ignoreDragging || ignoreSwiping ? 15f : 65f;
+            speedMin = _config.AirPush.SpeedMin;
+            speedMax = _config.AirPush.SpeedMax;
+            distAtSpeedMinMm = _config.AirPush.DistAtSpeedMinMm;
+            distAtSpeedMaxMm = _config.AirPush.DistAtSpeedMaxMm;
+            horizontalDecayDistMm = _config.AirPush.HorizontalDecayDistMm;
+            thetaOne = ignoreDragging || ignoreSwiping ? 15f : _config.AirPush.ThetaOne;
+            thetaTwo = _config.AirPush.ThetaTwo;
+            unclickThreshold = _config.AirPush.UnclickThreshold;
+            unclickThresholdDrag = _config.AirPush.UnclickThresholdDrag;
+            decayForceOnClick = _config.AirPush.DecayForceOnClick;
+            forceDecayTime = _config.AirPush.ForceDecayTime;
+
+            useTouchPlaneForce = _config.AirPush.UseTouchPlaneForce;
+            distPastTouchPlaneMm = _config.AirPush.DistPastTouchPlaneMm;
+
+            dragStartDistanceThresholdMm = _config.AirPush.DragStartDistanceThresholdMm;
+            dragDeadzoneShrinkRate = _config.AirPush.DragDeadzoneShrinkRate;
+            dragDeadzoneShrinkDistanceThresholdMm = _config.AirPush.DragDeadzoneShrinkDistanceThresholdMm;
+
+            deadzoneMaxSizeIncreaseMm = _config.AirPush.DeadzoneMaxSizeIncreaseMm;
+            deadzoneShrinkRate = _config.AirPush.DeadzoneShrinkRate;
         }
 
         protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
