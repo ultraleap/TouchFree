@@ -1,15 +1,15 @@
-import BackArrow from 'Images/Back_Arrow.svg';
-import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
-import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
-import CameraFacingUserIcon from 'Images/Camera/Camera_Facing_User.svg';
-import CameraMaskingIcon from 'Images/Camera/Camera_Masking_Icon.png';
-import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
-import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';
-import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
-import CameraStatusIcon from 'Images/Camera_Status_Icon.png';
-import DownArrow from 'Images/Down_Arrow.svg';
-import HandIcon from 'Images/Hand_Icon.svg';
-import Logo from 'Images/Logo.png';
+import BackArrow from './Back_Arrow.svg';
+import CameraBelowIcon from './Camera/Camera_Below.svg';
+import CameraFacingScreenIcon from './Camera/Camera_Facing_Screen.svg';
+import CameraFacingUserIcon from './Camera/Camera_Facing_User.svg';
+import CameraMaskingIcon from './Camera/Camera_Masking_Icon.png';
+import FingerprintIcon from './Camera/Fingerprint_Icon.svg';
+import ManualSetupIcon from './Camera/Manual_Setup_Icon.svg';
+import QuickSetupIcon from './Camera/Quick_Setup_Icon.svg';
+import CameraStatusIcon from './Camera_Status_Icon.png';
+import DownArrow from './Down_Arrow.svg';
+import HandIcon from './Hand_Icon.svg';
+import Logo from './Logo.png';
 
 export {
     BackArrow,

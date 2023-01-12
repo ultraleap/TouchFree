@@ -2,7 +2,7 @@ import { VerticalIconTextButton } from '@/Components';
 import { CameraFacingUserIcon, CameraFacingScreenIcon, CameraBelowIcon } from '@/Images';
 
 import '@/Pages/Camera/Camera.scss';
-import cssVariables from 'Styles/variables.module.scss';
+import cssVariables from '@/variables.module.scss';
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

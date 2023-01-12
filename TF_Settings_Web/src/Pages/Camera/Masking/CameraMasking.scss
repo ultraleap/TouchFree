@@ -1,4 +1,4 @@
-@use 'Styles/variables.module.scss' as v;
+@use '@/variables.module.scss' as v;
 
 // ===== Camera Feeds =====
 @mixin cam-feed-box($size, $padding) {

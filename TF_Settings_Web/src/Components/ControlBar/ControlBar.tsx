@@ -2,7 +2,7 @@ import { VerticalIconTextButton } from '@/Components';
 import { BackArrow, Logo } from '@/Images';
 
 import './ControlBar.scss';
-import cssVariables from 'Styles/variables.module.scss';
+import cssVariables from '@/variables.module.scss';
 
 import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';

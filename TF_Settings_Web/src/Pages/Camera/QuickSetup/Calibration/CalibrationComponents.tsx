@@ -4,7 +4,7 @@ import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
 import { CalibrationTutorial } from '@/Videos';
 
 import './Calibration.scss';
-import cssVariables from 'Styles/variables.module.scss';
+import cssVariables from '@/variables.module.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';

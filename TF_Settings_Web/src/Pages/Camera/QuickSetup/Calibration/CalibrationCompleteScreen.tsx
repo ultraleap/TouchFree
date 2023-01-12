@@ -1,7 +1,7 @@
 import { TextButton } from '@/Components';
 
 import './Calibration.scss';
-import cssVariables from 'Styles/variables.module.scss';
+import cssVariables from '@/variables.module.scss';
 
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
