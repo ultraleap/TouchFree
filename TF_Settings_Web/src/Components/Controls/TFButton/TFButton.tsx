@@ -1,4 +1,4 @@
-import 'Styles/Controls/TFButton.scss';
+import './TFButton.scss';
 
 import React, { CSSProperties } from 'react';
 

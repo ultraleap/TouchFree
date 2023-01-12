@@ -1,3 +1,5 @@
+import { TextButton } from '@/Components/Controls/TFButton/TFButton';
+
 import './Calibration.scss';
 import cssVariables from 'Styles/variables.module.scss';
 import 'react-circular-progressbar/dist/styles.css';
@@ -15,7 +17,6 @@ import DownArrow from 'Images/Down_Arrow.svg';
 import HandIcon from 'Images/Tracking_Status_Icon.svg';
 import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
-import { TextButton } from 'Components/Controls/TFButton';
 import { TFClickEvent } from 'Components/SettingsTypes';
 
 import { TIMEOUT_S } from './CalibrationScreen';

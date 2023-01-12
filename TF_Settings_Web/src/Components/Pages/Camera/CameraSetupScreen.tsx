@@ -1,4 +1,5 @@
-import Alert from '@/Components/Controls/Alert';
+import Alert from '@/Components/Controls/Alert/Alert';
+import { HorizontalIconTextButton, VerticalIconTextButton } from '@/Components/Controls/TFButton/TFButton';
 
 import './Camera.scss';
 
@@ -10,8 +11,6 @@ import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import CameraMaskingIcon from 'Images/Camera/Camera_Masking_Icon.png';
 import ManualSetupIcon from 'Images/Camera/Manual_Setup_Icon.svg';
 import QuickSetupIcon from 'Images/Camera/Quick_Setup_Icon.svg';
-
-import { HorizontalIconTextButton, VerticalIconTextButton } from 'Components/Controls/TFButton';
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();

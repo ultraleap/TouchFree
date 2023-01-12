@@ -1,3 +1,9 @@
+import { RadioGroup } from '@/Components/Controls/Radio/RadioGroup';
+import { RadioLine } from '@/Components/Controls/Radio/RadioLine';
+import { Slider } from '@/Components/Controls/Slider/Slider';
+import { TextSlider } from '@/Components/Controls/Slider/TextSlider';
+import { LabelledToggleSwitch } from '@/Components/Controls/ToggleSwitch/ToggleSwitch';
+
 import './Interactions.scss';
 
 import { Component } from 'react';
@@ -9,11 +15,6 @@ import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import InteractionPreviews from 'Videos/Interaction_Explainer_Combined.mp4';
 
-import { RadioGroup } from 'Components/Controls/RadioGroup';
-import { RadioLine } from 'Components/Controls/RadioLine';
-import { Slider } from 'Components/Controls/Slider';
-import { TextSlider } from 'Components/Controls/TextSlider';
-import { LabelledToggleSwitch } from 'Components/Controls/ToggleSwitch';
 import { DefaultInteractionConfig } from 'Components/SettingsTypes';
 
 const InteractionTranslator: Record<string, InteractionType> = {

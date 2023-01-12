@@ -1,4 +1,4 @@
-import 'Styles/Controls/ToggleSwitch.scss';
+import './ToggleSwitch.scss';
 
 import React from 'react';
 

@@ -1,9 +1,9 @@
+import Alert from '@/Components/Controls/Alert/Alert';
+import { ToggleSwitch } from '@/Components/Controls/ToggleSwitch/ToggleSwitch';
+
 import './CameraMasking.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
-
-import Alert from 'Components/Controls/Alert';
-import { ToggleSwitch } from 'Components/Controls/ToggleSwitch';
 
 interface MaskingOptionProps {
     title: string;

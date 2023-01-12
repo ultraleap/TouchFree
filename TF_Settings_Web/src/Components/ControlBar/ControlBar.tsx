@@ -1,3 +1,5 @@
+import { VerticalIconTextButton } from '@/Components/Controls/TFButton/TFButton';
+import TabSelector from '@/Components/Controls/TabSelector/TabSelector';
 import { VersionIndicator } from '@/Components/VersionIndicator/VersionIndicator';
 
 import './ControlBar.scss';
@@ -11,8 +13,6 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 import backArrow from 'Images/Back_Arrow.svg';
 import logo from 'Images/Logo.png';
 
-import { VerticalIconTextButton } from 'Components/Controls/TFButton';
-import TabSelector from 'Components/Controls/TabSelector';
 import { StatusIndicator } from 'Components/StatusIndicator/StatusIndicator';
 
 interface ControlBarProps {

@@ -1,4 +1,4 @@
-import 'Styles/Controls/TabSelector.scss';
+import './TabSelector.scss';
 
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';

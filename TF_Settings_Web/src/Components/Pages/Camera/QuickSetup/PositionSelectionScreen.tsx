@@ -1,3 +1,5 @@
+import { VerticalIconTextButton } from '@/Components/Controls/TFButton/TFButton';
+
 import '@/Components/Pages/Camera/Camera.scss';
 import cssVariables from 'Styles/variables.module.scss';
 
@@ -10,8 +12,6 @@ import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
 import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
 import CameraFacingUserIcon from 'Images/Camera/Camera_Facing_User.svg';
-
-import { VerticalIconTextButton } from 'Components/Controls/TFButton';
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 

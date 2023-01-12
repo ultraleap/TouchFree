@@ -1,8 +1,8 @@
-import 'Styles/Controls/ToggleSwitch.scss';
+import './Sliders.scss';
 
 import React, { PointerEvent, RefObject } from 'react';
 
-interface TextSliderProps {
+interface SliderProps {
     name: string;
     rangeMin: number;
     rangeMax: number;
@@ -10,19 +10,19 @@ interface TextSliderProps {
     rightLabel: string;
     value: number;
     onChange: (newValue: number) => void;
+    increment?: number;
 }
 
-export class TextSlider extends React.Component<TextSliderProps, {}> {
+export class Slider extends React.Component<SliderProps, {}> {
     public static defaultProps = {
         increment: 0.1,
     };
 
     private dragging = false;
-    private stepSize = 0.05;
 
     private inputElement: RefObject<HTMLInputElement>;
 
-    constructor(props: TextSliderProps) {
+    constructor(props: SliderProps) {
         super(props);
 
         this.inputElement = React.createRef();
@@ -33,10 +33,6 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
 
     private onChange() {
         // this function is here purely to pass to the input, preventing it becoming ReadOnly
-    }
-    private onTextChange(e: React.FormEvent<HTMLInputElement>): void {
-        const hoverStartTime: number = Number.parseFloat(e.currentTarget.value);
-        this.props.onChange(hoverStartTime);
     }
 
     private onUpCancel() {
@@ -62,10 +58,9 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
             // Slider control is 1.5rem wide, so half is 1x remValue, full is 2x remValue
             const posInRange: number = (xPos - remValue) / (this.inputElement.current.clientWidth - 2 * remValue);
             const outputValue: number = this.lerp(this.props.rangeMin, this.props.rangeMax, posInRange);
-            const roundedValue = Math.round(outputValue * (1 / this.stepSize)) / (1 / this.stepSize);
 
-            if (this.props.rangeMin <= roundedValue && roundedValue <= this.props.rangeMax) {
-                this.props.onChange(roundedValue);
+            if (this.props.rangeMin < outputValue && outputValue < this.props.rangeMax) {
+                this.props.onChange(outputValue);
             }
         }
     }
@@ -81,16 +76,16 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                 <div className="sliderContainer">
                     <input
                         type="range"
-                        step={this.stepSize}
+                        step={this.props.increment}
                         min={this.props.rangeMin}
                         max={this.props.rangeMax}
-                        value={this.props.value}
                         className="slider"
                         onChange={this.onChange}
                         onPointerMove={this.onMove.bind(this)}
                         onPointerDown={this.onDown.bind(this)}
                         onPointerUp={this.onUpCancel.bind(this)}
                         onPointerCancel={this.onUpCancel.bind(this)}
+                        value={this.props.value}
                         id="myRange"
                         ref={this.inputElement}
                     />
@@ -99,15 +94,6 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                         <label className="rightSliderLabel">{this.props.rightLabel}</label>
                     </div>
                 </div>
-                <label className="sliderTextContainer">
-                    <input
-                        type="number"
-                        step={this.stepSize}
-                        className="sliderText"
-                        value={this.props.value}
-                        onChange={this.onTextChange.bind(this)}
-                    />
-                </label>
             </label>
         );
     }

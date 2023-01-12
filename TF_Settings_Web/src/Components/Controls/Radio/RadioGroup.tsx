@@ -1,4 +1,4 @@
-import 'Styles/Controls/RadioButtons.scss';
+import './RadioButtons.scss';
 
 import React from 'react';
 
