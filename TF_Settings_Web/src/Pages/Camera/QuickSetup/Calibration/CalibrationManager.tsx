@@ -1,3 +1,5 @@
+import { PositionType } from '@/Pages/Camera/QuickSetup/PositionSelectionScreen';
+
 import './Calibration.scss';
 
 import React, { useEffect } from 'react';
@@ -10,7 +12,6 @@ import { ConfigState, HandPresenceState } from 'TouchFree/src/Connection/TouchFr
 import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { CursorManager } from 'Components/CursorManager';
-import { PositionType } from 'Components/Pages/Camera/QuickSetup/PositionSelectionScreen';
 import { TFClickEvent } from 'Components/SettingsTypes';
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';

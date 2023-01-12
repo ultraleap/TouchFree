@@ -1,6 +1,6 @@
 import { VerticalIconTextButton } from '@/Components/Controls/TFButton/TFButton';
 
-import '@/Components/Pages/Camera/Camera.scss';
+import '@/Pages/Camera/Camera.scss';
 import cssVariables from 'Styles/variables.module.scss';
 
 import React, { useEffect } from 'react';

@@ -33,7 +33,7 @@ interface InteractionsState {
     resetButtonHovered: boolean;
 }
 
-export class InteractionsPage extends Component<{}, InteractionsState> {
+export class InteractionsScreen extends Component<{}, InteractionsState> {
     componentDidMount(): void {
         ConfigurationManager.RequestConfigFileState(this.setStateFromFile.bind(this));
     }

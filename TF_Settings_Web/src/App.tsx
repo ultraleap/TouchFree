@@ -1,5 +1,6 @@
 import ControlBar from '@/Components/ControlBar/ControlBar';
-import { InteractionsPage } from '@/Components/Pages/Interactions/InteractionsScreen';
+import CameraManager from '@/Pages/Camera/CameraManager';
+import { InteractionsScreen } from '@/Pages/Interactions/InteractionsScreen';
 
 import './App.scss';
 
@@ -12,7 +13,6 @@ import { WebInputController } from 'TouchFree/src/InputControllers/WebInputContr
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { CursorManager } from 'Components/CursorManager';
-import CameraManager from 'Components/Pages/Camera/CameraManager';
 
 const App: React.FC = () => {
     const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
@@ -51,7 +51,7 @@ const App: React.FC = () => {
             <div className="page-content">
                 <Routes>
                     <Route path="/settings/camera/*" element={<CameraManager />} />
-                    <Route path="/settings/interactions" element={<InteractionsPage />} />
+                    <Route path="/settings/interactions" element={<InteractionsScreen />} />
                     <Route path="*" element={<Navigate to="/settings/camera" replace />} />
                 </Routes>
             </div>
