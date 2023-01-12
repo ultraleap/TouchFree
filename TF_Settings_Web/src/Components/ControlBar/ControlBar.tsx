@@ -1,4 +1,5 @@
 import { VerticalIconTextButton } from '@/Components';
+import { BackArrow, Logo } from '@/Images';
 
 import './ControlBar.scss';
 import cssVariables from 'Styles/variables.module.scss';
@@ -7,9 +8,6 @@ import React, { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
-
-import backArrow from 'Images/Back_Arrow.svg';
-import logo from 'Images/Logo.png';
 
 import { StatusIndicator, TabSelector, VersionIndicator } from './';
 
@@ -61,7 +59,7 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
         <div className="control-bar-container">
             <div className="control-bar-top">
                 <StatusIndicator tfStatus={tfStatus} />
-                <img src={logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
+                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
                 <VersionIndicator touchFreeVersion={touchFreeVersion} />
             </div>
             <div className="control-bar-bottom">
@@ -81,7 +79,7 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
                 ) : (
                     <VerticalIconTextButton
                         buttonStyle={backButtonStyle}
-                        icon={backArrow}
+                        icon={BackArrow}
                         alt="Arrow pointing back"
                         iconStyle={backButtonIconStyle}
                         title="Back"

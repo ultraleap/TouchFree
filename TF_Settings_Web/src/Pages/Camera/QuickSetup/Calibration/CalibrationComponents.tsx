@@ -1,5 +1,7 @@
 import { TextButton } from '@/Components';
+import { DownArrow, FingerprintIcon, HandIcon } from '@/Images';
 import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
+import { CalibrationTutorial } from '@/Videos';
 
 import './Calibration.scss';
 import cssVariables from 'Styles/variables.module.scss';
@@ -12,11 +14,6 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
 import { useIsFullScreen } from '@/customHooks';
-
-import FingerprintIcon from 'Images/Camera/Fingerprint_Icon.svg';
-import DownArrow from 'Images/Down_Arrow.svg';
-import HandIcon from 'Images/Tracking_Status_Icon.svg';
-import TutorialVideo from 'Videos/Calibration_Tutorial.mp4';
 
 import { TIMEOUT_S } from './CalibrationScreen';
 
@@ -153,7 +150,7 @@ export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> =
             style={getVideoStyle()}
             autoPlay={true}
             loop={true}
-            src={TutorialVideo}
+            src={CalibrationTutorial}
             onLoadedData={() => setLoaded(true)}
         />
     );

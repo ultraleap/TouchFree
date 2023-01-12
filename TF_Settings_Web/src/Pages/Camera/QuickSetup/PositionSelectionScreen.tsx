@@ -1,4 +1,5 @@
 import { VerticalIconTextButton } from '@/Components';
+import { CameraFacingUserIcon, CameraFacingScreenIcon, CameraBelowIcon } from '@/Images';
 
 import '@/Pages/Camera/Camera.scss';
 import cssVariables from 'Styles/variables.module.scss';
@@ -8,10 +9,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
 import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-
-import CameraBelowIcon from 'Images/Camera/Camera_Below.svg';
-import CameraFacingScreenIcon from 'Images/Camera/Camera_Facing_Screen.svg';
-import CameraFacingUserIcon from 'Images/Camera/Camera_Facing_User.svg';
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 

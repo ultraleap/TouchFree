@@ -1,11 +1,10 @@
+import { CameraStatusIcon, HandIcon } from '@/Images';
+
 import './StatusIndicator.scss';
 
 import React from 'react';
 
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
-
-import CameraStatusIcon from 'Images/Camera_Status_Icon.png';
-import TrackingStatusIcon from 'Images/Tracking_Status_Icon.svg';
 
 interface StatusIndicatorProps {
     tfStatus: TrackingServiceState;
@@ -25,7 +24,7 @@ const getStatusIndicators = (tfStatus: TrackingServiceState): StatusIndicator[] 
         },
         {
             title: 'Tracking Service',
-            icon: TrackingStatusIcon,
+            icon: HandIcon,
             className: tfStatus === TrackingServiceState.UNAVAILABLE ? 'status-dot-bad' : 'status-dot-ok',
         },
     ];
