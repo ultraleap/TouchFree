@@ -1,0 +1,48 @@
+@use '@/variables.module.scss' as v;
+
+.switch-label {
+    margin-left: 0.75rem;
+}
+
+$knob-size: 26px;
+$knob-offset--horiz: 6%;
+
+.switch-container {
+    width: 80px;
+    height: 40px;
+    margin-right: 0.8rem;
+}
+
+.switch {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #5c5c5cc0;
+    border-radius: 34px;
+
+    background-image: linear-gradient(180deg, #5c5c5c, #454545);
+    transition: 0.4s;
+    box-shadow: inset 0px 0px 10px #000000d0;
+
+    // Switch knob
+    &:before {
+        position: absolute;
+        content: '';
+        height: $knob-size;
+        width: $knob-size;
+        left: $knob-offset--horiz;
+        bottom: calc((100% - $knob-size) / 2);
+        background-color: white;
+        background-image: linear-gradient(180deg, #ffffff, #d3d3d3);
+        transition: 0.4s;
+        border-radius: 50%;
+    }
+}
+
+input:checked + .switch {
+    background-image: v.$ultraleap-green-gradient;
+}
+
+input:checked + .switch:before {
+    left: calc(100% - $knob-size - $knob-offset--horiz);
+}
