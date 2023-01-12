@@ -1,4 +1,3 @@
-import { CursorManager } from '@/CursorManager';
 import { PositionType } from '@/Pages/Camera/QuickSetup/PositionSelectionScreen';
 import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
 
@@ -11,6 +10,7 @@ import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationM
 import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/src/Configuration/ConfigurationTypes';
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ConfigState, HandPresenceState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'TouchFree/src/TouchFree';
 import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import CalibrationCompleteScreen from './CalibrationCompleteScreen';
@@ -139,9 +139,9 @@ export default CalibrationManager;
 
 const setCursorDisplay = (show: boolean) => {
     if (show) {
-        CursorManager.cursor.EnableCursor();
+        TouchFree.GetCurrentCursor()?.EnableCursor();
     } else {
-        CursorManager.cursor.DisableCursor();
+        TouchFree.GetCurrentCursor()?.DisableCursor();
     }
 };
 

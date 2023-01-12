@@ -1,5 +1,4 @@
 import { ControlBar } from '@/Components';
-import { CursorManager } from '@/CursorManager';
 import CameraManager from '@/Pages/Camera/CameraManager';
 import { InteractionsScreen } from '@/Pages/Interactions/InteractionsScreen';
 
@@ -10,7 +9,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import { WebInputController } from 'TouchFree/src/InputControllers/WebInputController';
+import TouchFree from 'TouchFree/src/TouchFree';
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 const App: React.FC = () => {
@@ -18,9 +17,9 @@ const App: React.FC = () => {
     const [touchFreeVersion, setTouchFreeVersion] = React.useState<string>('');
 
     useEffect(() => {
-        ConnectionManager.init();
+        TouchFree.Init({ initialiseCursor: true });
 
-        const onConnected = () => {
+        ConnectionManager.AddConnectionListener(() => {
             ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
                 const status = detail.trackingServiceState;
                 if (status) {
@@ -31,16 +30,11 @@ const App: React.FC = () => {
             const serviceConnection = ConnectionManager.serviceConnection();
             const tfVersion = serviceConnection?.touchFreeVersion ?? '';
             setTouchFreeVersion(tfVersion);
-        };
-
-        ConnectionManager.AddConnectionListener(onConnected);
+        });
         ConnectionManager.AddServiceStatusListener(setTfStatus);
-        const controller: WebInputController = new WebInputController();
-
-        new CursorManager();
 
         return () => {
-            controller.disconnect();
+            TouchFree.GetInputController()?.disconnect();
         };
     }, []);
 
