@@ -8,8 +8,7 @@ import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import TouchFree from 'TouchFree/src/TouchFree';
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
-import CameraManager from '@/Pages/Camera/CameraManager';
-import { InteractionsScreen } from '@/Pages/Interactions/InteractionsScreen';
+import { CameraManager, InteractionsScreen } from '@/Pages';
 
 import { ControlBar } from '@/Components';
 

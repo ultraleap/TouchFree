@@ -3,8 +3,9 @@ import '@/Pages/Camera/Camera.scss';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import CalibrationManager from './Calibration/CalibrationManager';
-import PositionSelectionScreen, { PositionType } from './PositionSelectionScreen';
+import { PositionSelectionScreen, CalibrationManager } from '@/Pages';
+
+import { PositionType } from './PositionSelectionScreen';
 
 const QuickSetupManager = () => {
     const [activePosition, setActivePosition] = React.useState<PositionType>(null);

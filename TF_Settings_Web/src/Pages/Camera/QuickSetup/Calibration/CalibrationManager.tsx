@@ -10,12 +10,10 @@ import { ConfigState, HandPresenceState } from 'TouchFree/src/Connection/TouchFr
 import TouchFree from 'TouchFree/src/TouchFree';
 import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
+import { CalibrationCompleteScreen, CalibrationScreen } from '@/Pages';
 import { PositionType } from '@/Pages/Camera/QuickSetup/PositionSelectionScreen';
 
 import { TFClickEvent } from '@/Components';
-
-import CalibrationCompleteScreen from './CalibrationCompleteScreen';
-import CalibrationScreen from './CalibrationScreen';
 
 const handEventTypes = ['HandsLost', 'HandFound'];
 

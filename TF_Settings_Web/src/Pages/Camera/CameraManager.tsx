@@ -1,9 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 
-import CameraSetupScreen from './CameraSetupScreen';
-import { ManualSetupScreen } from './ManualSetup/ManualSetupScreen';
-import MaskingScreen from './Masking/MaskingScreen';
-import QuickSetupManager from './QuickSetup/QuickSetupManager';
+import { CameraSetupScreen, ManualSetupScreen, MaskingScreen, QuickSetupManager } from '@/Pages';
 
 const CameraManager: React.FC = () => {
     return (
