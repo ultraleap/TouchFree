@@ -124,13 +124,8 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     }, [displayHandIndicator, progressToClick]);
 
     const spacebarListener = (event: KeyboardEvent) => {
-        switch (event.code) {
-            case 'Space':
-                console.log('Advancing with spacebar');
-                advance();
-                break;
-            default:
-                break;
+        if (event.code === 'Space') {
+            advance();
         }
     };
 
