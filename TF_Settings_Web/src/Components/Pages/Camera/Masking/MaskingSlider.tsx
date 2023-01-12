@@ -1,4 +1,4 @@
-import 'Styles/Camera/CameraMasking.scss';
+import './CameraMasking.scss';
 
 import React, { CSSProperties, PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 

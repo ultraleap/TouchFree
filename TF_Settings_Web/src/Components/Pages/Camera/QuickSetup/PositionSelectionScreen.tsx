@@ -1,4 +1,4 @@
-import 'Styles/Camera/Camera.scss';
+import '@/Components/Pages/Camera/Camera.scss';
 import cssVariables from 'Styles/variables.module.scss';
 
 import React, { useEffect } from 'react';

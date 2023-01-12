@@ -1,4 +1,4 @@
-import 'Styles/Interactions.scss';
+import './Interactions.scss';
 
 import { Component } from 'react';
 

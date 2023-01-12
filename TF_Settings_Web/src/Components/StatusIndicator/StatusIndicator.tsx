@@ -1,4 +1,4 @@
-import 'Styles/StatusIndicator.scss';
+import './StatusIndicator.scss';
 
 import React from 'react';
 

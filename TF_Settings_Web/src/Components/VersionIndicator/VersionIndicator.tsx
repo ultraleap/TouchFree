@@ -1,4 +1,4 @@
-import 'Styles/VersionIndicator.scss';
+import './VersionIndicator.scss';
 
 import React from 'react';
 

@@ -1,4 +1,4 @@
-import 'Styles/Camera/ManualSetupPage.scss';
+import './ManualSetup.scss';
 
 import { Component } from 'react';
 

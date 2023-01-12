@@ -1,4 +1,4 @@
-import 'Styles/Camera/Calibrate.scss';
+import './Calibration.scss';
 import cssVariables from 'Styles/variables.module.scss';
 import 'react-circular-progressbar/dist/styles.css';
 

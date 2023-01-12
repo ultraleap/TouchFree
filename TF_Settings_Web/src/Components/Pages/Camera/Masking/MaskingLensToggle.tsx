@@ -1,4 +1,4 @@
-import 'Styles/Camera/CameraMasking.scss';
+import './CameraMasking.scss';
 
 import React, { useState } from 'react';
 

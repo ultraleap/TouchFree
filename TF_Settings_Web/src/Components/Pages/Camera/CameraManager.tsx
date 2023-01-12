@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import CameraSetupScreen from './CameraSetupScreen';
-import { ManualSetupScreen } from './ManualSetupScreen';
+import { ManualSetupScreen } from './ManualSetup/ManualSetupScreen';
 import MaskingScreen from './Masking/MaskingScreen';
 import QuickSetupManager from './QuickSetup/QuickSetupManager';
 
