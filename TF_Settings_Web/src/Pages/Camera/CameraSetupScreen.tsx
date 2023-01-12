@@ -7,7 +7,7 @@ import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 
 import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
 
-import { Alert, HorizontalIconTextButton, VerticalIconTextButton } from '@/Components';
+import { Alert, HorizontalIconTextButton, VerticalIconTextButton, SupportButton } from '@/Components';
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
@@ -73,6 +73,13 @@ const CameraSetupScreen = () => {
                     animationTime={1}
                 />
             </div>
+            <SupportButton
+                buttonStyle={{}}
+                title="Support"
+                onClick={() => {
+                    console.log('SUPPORT');
+                }}
+            />
         </div>
     );
 };

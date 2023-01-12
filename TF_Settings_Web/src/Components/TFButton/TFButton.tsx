@@ -4,13 +4,16 @@ import React, { CSSProperties } from 'react';
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
-interface TextButtonProps {
+interface BaseButtonProps {
     buttonStyle: React.CSSProperties;
     title: string;
     titleStyle?: React.CSSProperties;
+    onClick: (event: TFClickEvent) => void;
+}
+
+interface TextButtonProps extends BaseButtonProps {
     text: string;
     textStyle?: React.CSSProperties;
-    onClick: (event: React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) => void;
     canHover?: boolean;
 }
 
@@ -20,6 +23,9 @@ interface IconTextButtonProps extends TextButtonProps {
     alt: string;
     iconStyle?: React.CSSProperties;
 }
+
+export const SupportButton: React.FC<BaseButtonProps> = ({ buttonStyle, title, titleStyle, onClick }) =>
+    TFButton('support-tf-button', true, buttonStyle, onClick, <h1 style={titleStyle}>{title}</h1>);
 
 export const TextButton: React.FC<TextButtonProps> = ({
     buttonStyle,
@@ -100,9 +106,9 @@ const TFButton = (
 
     return (
         <button
-            className={`${buttonClass} tf-button ${canHover && hovered ? 'tf-button--hovered' : ''} ${
-                pressed ? 'tf-button--pressed' : ''
-            }`}
+            className={`${buttonClass} tf-button ${
+                canHover && hovered ? `tf-button--hovered ${buttonClass}--hovered` : ''
+            } ${pressed ? `tf-button--pressed ${buttonClass}--hovered` : ''}`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
