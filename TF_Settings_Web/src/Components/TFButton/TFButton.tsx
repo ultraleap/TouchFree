@@ -1,8 +1,8 @@
-import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
-
 import './TFButton.scss';
 
 import React, { CSSProperties } from 'react';
+
+export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
 interface TextButtonProps {
     buttonStyle: React.CSSProperties;

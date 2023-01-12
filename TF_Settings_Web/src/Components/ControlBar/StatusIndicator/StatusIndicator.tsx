@@ -1,10 +1,10 @@
-import { CameraStatusIcon, HandIcon } from '@/Images';
-
 import './StatusIndicator.scss';
 
 import React from 'react';
 
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
+
+import { CameraStatusIcon, HandIcon } from '@/Images';
 
 interface StatusIndicatorProps {
     tfStatus: TrackingServiceState;

@@ -1,5 +1,3 @@
-import { TextButton } from '@/Components';
-
 import './Calibration.scss';
 import cssVariables from '@/variables.module.scss';
 
@@ -8,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { InputActionManager } from 'TouchFree/src/Plugins/InputActionManager';
 import { InputType, TouchFreeInputAction } from 'TouchFree/src/TouchFreeToolingTypes';
+
+import { TextButton } from '@/Components';
 
 import { CalibrationHandLostMessage, CalibrationPracticeButton } from './CalibrationComponents';
 

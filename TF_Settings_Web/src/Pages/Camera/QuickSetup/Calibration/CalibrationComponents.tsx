@@ -1,8 +1,3 @@
-import { TextButton } from '@/Components';
-import { DownArrow, FingerprintIcon, HandIcon } from '@/Images';
-import { TFClickEvent } from '@/Pages/Interactions/SettingsTypes';
-import { CalibrationTutorial } from '@/Videos';
-
 import './Calibration.scss';
 import cssVariables from '@/variables.module.scss';
 import 'react-circular-progressbar/dist/styles.css';
@@ -14,6 +9,11 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
 import { useIsFullScreen } from '@/customHooks';
+
+import { DownArrow, FingerprintIcon, HandIcon } from '@/Images';
+import { CalibrationTutorial } from '@/Videos';
+
+import { TextButton, TFClickEvent } from '@/Components';
 
 import { TIMEOUT_S } from './CalibrationScreen';
 

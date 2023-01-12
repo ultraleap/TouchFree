@@ -31,5 +31,3 @@ export const DefaultInteractionConfig: InteractionConfigFull = {
     HoverAndHold: DefaultHoverAndHoldInteractionSettings,
     TouchPlane: DefaultTouchPlaneInteractionSettings,
 };
-
-export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;

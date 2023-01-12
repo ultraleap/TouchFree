@@ -1,6 +1,3 @@
-import { LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
-import { InteractionExplainer } from '@/Videos';
-
 import './Interactions.scss';
 
 import { Component } from 'react';
@@ -9,6 +6,10 @@ import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationM
 import { InteractionConfigFull, TrackedPosition } from 'TouchFree/src/Configuration/ConfigurationTypes';
 import { ConfigState, WebSocketResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
+
+import { InteractionExplainer } from '@/Videos';
+
+import { LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
 
 import { DefaultInteractionConfig } from './SettingsTypes';
 

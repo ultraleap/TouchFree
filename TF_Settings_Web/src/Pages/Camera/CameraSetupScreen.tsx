@@ -1,12 +1,13 @@
-import { Alert, HorizontalIconTextButton, VerticalIconTextButton } from '@/Components';
-import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
-
 import './Camera.scss';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+
+import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
+
+import { Alert, HorizontalIconTextButton, VerticalIconTextButton } from '@/Components';
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();

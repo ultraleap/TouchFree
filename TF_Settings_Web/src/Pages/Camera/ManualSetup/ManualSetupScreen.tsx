@@ -1,5 +1,3 @@
-import { TextEntry } from '@/Components';
-
 import './ManualSetup.scss';
 
 import { Component } from 'react';
@@ -8,6 +6,8 @@ import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationM
 import { PhysicalConfig } from 'TouchFree/src/Configuration/ConfigurationTypes';
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ConfigState, WebSocketResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+
+import { TextEntry } from '@/Components';
 
 interface PhysicalState {
     screenHeight: number;
