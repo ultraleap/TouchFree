@@ -7,7 +7,7 @@ import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 
 import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
 
-import { Alert, HorizontalIconTextButton, VerticalIconTextButton, SupportButton } from '@/Components';
+import { Alert, DocsLink, HorizontalIconTextButton, VerticalIconTextButton } from '@/Components';
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
@@ -73,13 +73,7 @@ const CameraSetupScreen = () => {
                     animationTime={1}
                 />
             </div>
-            <SupportButton
-                buttonStyle={{}}
-                title="Support"
-                onClick={() => {
-                    console.log('SUPPORT');
-                }}
-            />
+            <DocsLink title="Support" link="https://www.ultraleap.com/contact-us/" />
         </div>
     );
 };

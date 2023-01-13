@@ -1,0 +1,56 @@
+@use '@/variables.module.scss' as v;
+
+.docs-modal--cover {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.3);
+    pointer-events: all;
+}
+
+.docs-modal--container {
+    $height: 50vh;
+    position: absolute;
+    z-index: 3;
+    height: $height;
+    top: calc((100vh - $height) / 2);
+    width: 80vw;
+    left: 10vw;
+
+    border-radius: 50px;
+
+    background-color: #00cdcf;
+
+    display: flex;
+}
+
+#docs-button--container .docs-button {
+    position: absolute;
+    bottom: 2vh;
+    right: 2vh;
+    width: 25vw;
+    height: 4vh;
+
+    padding: 0.3rem;
+
+    background-image: linear-gradient(180deg, #353535, #2d2d2d), linear-gradient(180deg, #00eb86, #00cdcf);
+    background-clip: content-box, border-box;
+    border-radius: 50px;
+
+    &--hovered {
+        box-shadow: none;
+        background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce),
+            linear-gradient(180deg, v.$ultraleap-green, #00cdcf);
+    }
+
+    > h1 {
+        font-size: 1.8rem;
+        margin: 0;
+        padding: 0;
+        color: white;
+        text-align: center;
+    }
+}

@@ -1,5 +1,6 @@
 import Alert from './Alert/Alert';
 import ControlBar from './ControlBar/ControlBar';
+import DocsLink from './DocsLink/DocsLink';
 import { RadioGroup } from './Radio/RadioGroup';
 import { RadioLine } from './Radio/RadioLine';
 import { Slider } from './Slider/Slider';
@@ -9,8 +10,8 @@ import {
     VerticalIconTextButton,
     HorizontalIconTextButton,
     TFClickEvent,
-    SupportButton,
-} from './TFButton/TFButton';
+    BaseTFButton,
+} from './TFButton/TFButtons';
 import { TextEntry } from './TextEntry/TextEntry';
 import { ToggleSwitch, LabelledToggleSwitch } from './ToggleSwitch/ToggleSwitch';
 
@@ -27,7 +28,8 @@ export {
     ToggleSwitch,
     ControlBar,
     LabelledToggleSwitch,
-    SupportButton,
+    BaseTFButton,
+    DocsLink,
 };
 
 export type { TFClickEvent };

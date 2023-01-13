@@ -1,10 +1,10 @@
-import './TFButton.scss';
+import './TFButtons.scss';
 
 import React, { CSSProperties } from 'react';
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
-interface BaseButtonProps {
+export interface BaseButtonProps {
     buttonStyle: React.CSSProperties;
     title: string;
     titleStyle?: React.CSSProperties;
@@ -24,9 +24,6 @@ interface IconTextButtonProps extends TextButtonProps {
     iconStyle?: React.CSSProperties;
 }
 
-export const SupportButton: React.FC<BaseButtonProps> = ({ buttonStyle, title, titleStyle, onClick }) =>
-    TFButton('support-tf-button', true, buttonStyle, onClick, <h1 style={titleStyle}>{title}</h1>);
-
 export const TextButton: React.FC<TextButtonProps> = ({
     buttonStyle,
     title,
@@ -43,7 +40,7 @@ export const TextButton: React.FC<TextButtonProps> = ({
         </>
     );
 
-    return TFButton('text-tf-button', canHover, buttonStyle, onClick, content);
+    return BaseTFButton('text-tf-button', canHover, buttonStyle, onClick, content);
 };
 
 export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
@@ -66,7 +63,7 @@ export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
         </>
     );
 
-    return TFButton('vertical-tf-button', canHover, buttonStyle, onClick, content);
+    return BaseTFButton('vertical-tf-button', canHover, buttonStyle, onClick, content);
 };
 
 export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
@@ -91,10 +88,10 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
         </>
     );
 
-    return TFButton('horizontal-tf-button', canHover, buttonStyle, onClick, content);
+    return BaseTFButton('horizontal-tf-button', canHover, buttonStyle, onClick, content);
 };
 
-const TFButton = (
+export const BaseTFButton = (
     buttonClass: string,
     canHover: boolean,
     buttonStyle: CSSProperties,
@@ -108,7 +105,7 @@ const TFButton = (
         <button
             className={`${buttonClass} tf-button ${
                 canHover && hovered ? `tf-button--hovered ${buttonClass}--hovered` : ''
-            } ${pressed ? `tf-button--pressed ${buttonClass}--hovered` : ''}`}
+            } ${pressed ? `tf-button--pressed ${buttonClass}--pressed` : ''}`}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
@@ -117,6 +114,7 @@ const TFButton = (
             }}
             onPointerDown={() => {
                 setPressed(true);
+                console.log('PRE');
             }}
             onPointerUp={(event) => {
                 if (pressed) {
