@@ -15,6 +15,9 @@ export interface TfInitParams {
     initialiseCursor?: boolean;
 }
 
+const GetCurrentCursor = () => CurrentCursor;
+const GetInputController = () => InputController;
+
 // Function: Init
 // Initializes TouchFree - must be called before any functionality requiring a TouchFree service connection.
 const Init = (_tfInitParams?: TfInitParams): void => {
@@ -218,10 +221,10 @@ const DispatchEvent = <TEvent extends TouchFreeEvent>(
 // Bundle all our exports into a default object
 // Benefit to this is IDE autocomplete for "TouchFree" will find this object
 export default {
-    CurrentCursor,
+    GetCurrentCursor,
     DispatchEvent,
     Init,
-    InputController,
+    GetInputController,
     IsConnected,
     RegisterEventCallback,
 };
