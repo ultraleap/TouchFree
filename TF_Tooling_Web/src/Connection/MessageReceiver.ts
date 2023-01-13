@@ -146,9 +146,8 @@ export class MessageReceiver {
 
         if (response !== undefined) {
             const responseResult = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
-            
-            switch(responseResult)
-            {
+
+            switch (responseResult) {
                 case 'NoCallbacksFound':
                     console.warn(
                         'Received a WebSocketResponse that did not match a callback.' +
@@ -163,7 +162,7 @@ export class MessageReceiver {
                     );
                     break;
                 case 'Success':
-                    if(response.message) {
+                    if (response.message) {
                         // This is logged to aid users in debugging
                         console.log('Successfully received WebSocketResponse from TouchFree:\n' + response.message);
                     }
@@ -180,8 +179,7 @@ export class MessageReceiver {
 
         if (configState !== undefined) {
             const configResult = MessageReceiver.HandleCallbackList(configState, this.configStateCallbacks);
-            switch(configResult)
-            {
+            switch (configResult) {
                 case 'NoCallbacksFound':
                     console.warn('Received a ConfigState message that did not match a callback.');
                     break;
@@ -200,7 +198,6 @@ export class MessageReceiver {
         callbackResult: T,
         callbacks: { [id: string]: TouchFreeRequestCallback<T> }
     ): 'Success' | 'NoCallbacksFound' {
-
         for (const key in callbacks) {
             if (key === callbackResult.requestID) {
                 callbacks[key].callback(callbackResult);
@@ -221,11 +218,11 @@ export class MessageReceiver {
         if (serviceStatus !== undefined) {
             const callbackResult = MessageReceiver.HandleCallbackList(serviceStatus, this.serviceStatusCallbacks);
 
-            switch(callbackResult)
-            {
+            switch (callbackResult) {
                 // If callback didn't happen for known reasons, we can be sure it's an independent status event rather
                 // than a request response
-                // TODO: Send/handle this request from service differently from normal response so we can be sure it's an independent event
+                // TODO: Send/handle this request from service differently from normal response so we can be sure it's
+                // an independent event
                 case 'NoCallbacksFound':
                     // If service state is null we didn't get info about it from this message
                     if (serviceStatus.trackingServiceState !== null) {
