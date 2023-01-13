@@ -7,6 +7,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
     {
         private readonly IConfigManager configManager;
         private readonly IHandManager handManager;
+        private readonly ITrackingDiagnosticApi trackingApi;
 
         public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_SERVICE_STATUS };
 
@@ -14,10 +15,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override ActionCode noRequestIdFailureActionCode => ActionCode.SERVICE_STATUS_RESPONSE;
 
-        public ServiceStatusQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
+        public ServiceStatusQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager, IHandManager _handManager, ITrackingDiagnosticApi _trackingApi) : base(_updateBehaviour, _clientMgr)
         {
             configManager = _configManager;
             handManager = _handManager;
+            trackingApi = _trackingApi;
         }
 
         protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
@@ -25,8 +27,10 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             var currentConfig = new ServiceStatus(
                 requestId,
                 handManager.ConnectionManager.TrackingServiceState,
-                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
-
+                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
+                VersionManager.ApiVersion.ToString(),
+                trackingApi.trackingServiceVersion,
+                trackingApi.connectedDeviceFirmware);
 
             clientMgr.SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
         }

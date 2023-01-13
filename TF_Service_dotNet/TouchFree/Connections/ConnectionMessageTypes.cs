@@ -43,12 +43,23 @@ namespace Ultraleap.TouchFree.Library.Connections
         public string requestID;
         public TrackingServiceState trackingServiceState;
         public ConfigurationState configurationState;
+        public string serviceVersion;
+        public string trackingVersion;
+        public string cameraFirmwareVersion;
 
-        public ServiceStatus(string _id, TrackingServiceState _trackingServiceState, ConfigurationState _configurationState)
+        public ServiceStatus(string _id,
+            TrackingServiceState _trackingServiceState,
+            ConfigurationState _configurationState,
+            string _serviceVersion,
+            string _trackingVersion,
+            string _cameraFirmwareVersion)
         {
             requestID = _id;
             trackingServiceState = _trackingServiceState;
             configurationState = _configurationState;
+            serviceVersion = _serviceVersion;
+            trackingVersion = _trackingVersion;
+            cameraFirmwareVersion = _cameraFirmwareVersion;
         }
     }
 

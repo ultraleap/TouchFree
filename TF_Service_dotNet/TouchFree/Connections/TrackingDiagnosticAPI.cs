@@ -13,12 +13,13 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         private static string uri = "ws://127.0.0.1:1024/";
         private readonly IConfigManager configManager;
-        private string trackingServiceVersion;
         private Version version;
 
-        public uint? connectedDeviceID;
-        public string connectedDeviceFirmware;
-        public string connectedDeviceSerial;
+        public string trackingServiceVersion { get; private set; }
+
+        public uint? connectedDeviceID { get; private set; }
+        public string connectedDeviceFirmware { get; private set; }
+        public string connectedDeviceSerial { get; private set; }
 
         public event Action<Result<ImageMaskData>> OnMaskingResponse;
         public event Action<Result<bool>> OnAnalyticsResponse;
