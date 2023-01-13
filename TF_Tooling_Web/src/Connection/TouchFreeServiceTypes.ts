@@ -190,15 +190,27 @@ export class ServiceStatus extends TouchFreeRequest {
     trackingServiceState: TrackingServiceState | null;
     // Variable: configurationState
     configurationState: ConfigurationState | null;
+    // Variable: serviceVersion
+    serviceVersion: string | null;
+    // Variable: trackingVersion
+    trackingVersion: string | null;
+    // Variable: cameraFirmwareVersion
+    cameraFirmwareVersion: string | null;
 
     constructor(
         _id: string,
         _trackingServiceState: TrackingServiceState | null,
-        _configurationState: ConfigurationState | null
+        _configurationState: ConfigurationState | null,
+        _serviceVersion: string | null,
+        _trackingVersion: string | null,
+        _cameraFirmwareVersion: string | null
     ) {
         super(_id);
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
+        this.serviceVersion = _serviceVersion;
+        this.trackingVersion = _trackingVersion;
+        this.cameraFirmwareVersion = _cameraFirmwareVersion;
     }
 }
 

@@ -35,7 +35,7 @@ const Init = (_tfInitParams?: TfInitParams): void => {
 
 // Function: IsConnected
 // Are we connected to the TouchFree service?
-const IsConnected = ():boolean => ConnectionManager.IsConnected;
+const IsConnected = (): boolean => ConnectionManager.IsConnected;
 
 // Class: EventHandle
 // Object that can unregister a callback from an event
@@ -52,10 +52,10 @@ const MakeCustomEventWrapper = <T>(callback: (arg: T) => void): EventListener =>
 };
 
 // Signature required for RegisterEvent functions
-type RegisterEventFunc = (target:EventTarget, eventType:TouchFreeEvent, listener:EventListener) => EventHandle;
+type RegisterEventFunc = (target: EventTarget, eventType: TouchFreeEvent, listener: EventListener) => EventHandle;
 
 // Default implementation of RegisterEvent
-const DefaultRegisterEventFunc:RegisterEventFunc = (target, eventType, listener) => {
+const DefaultRegisterEventFunc: RegisterEventFunc = (target, eventType, listener) => {
     target.addEventListener(eventType, listener);
     return { UnregisterEventCallback: () => target.removeEventListener(eventType, listener) };
 };
@@ -64,9 +64,9 @@ const DefaultRegisterEventFunc:RegisterEventFunc = (target, eventType, listener)
 interface EventImpl<T extends TouchFreeEvent> {
     Target: EventTarget;
     WithCallback: (callback: TouchFreeEventSignatures[T]) => {
-        Listener: EventListener,
-        RegisterEventFunc: RegisterEventFunc
-    }
+        Listener: EventListener;
+        RegisterEventFunc: RegisterEventFunc;
+    };
 }
 
 type EventImpls = {
@@ -78,80 +78,80 @@ let EventImplementationsBackingField: EventImpls | undefined;
 
 // Implementation details for all events
 // Any new events added to TouchFreeEvent require a new entry here to function
-const EventImplementations: () => EventImpls = () => EventImplementationsBackingField ??= ({
-    OnConnected: {
-        Target: ConnectionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: callback, // Void callback can be returned directly
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    },
-    WhenConnected: {
-        Target: ConnectionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: callback, // Void callback can be returned directly
-            RegisterEventFunc: (_target, _eventType, _listener) => {
-                // If we're already connected then run the callback
-                if (IsConnected())
-                {
-                    callback();
-                }
+const EventImplementations: () => EventImpls = () =>
+    (EventImplementationsBackingField ??= {
+        OnConnected: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: callback, // Void callback can be returned directly
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        WhenConnected: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: callback, // Void callback can be returned directly
+                RegisterEventFunc: (_target, _eventType, _listener) => {
+                    // If we're already connected then run the callback
+                    if (IsConnected()) {
+                        callback();
+                    }
 
-                // Piggyback OnConnected
-                return RegisterEventCallback('OnConnected', callback);
-            }
-        })
-    },
-    OnTrackingServiceStateChange: {
-        Target: ConnectionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: MakeCustomEventWrapper(callback),
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    },
-    HandFound: {
-        Target: ConnectionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: callback, // Void callback can be returned directly
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    },
-    HandsLost: {
-        Target: ConnectionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: callback, // Void callback can be returned directly
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    },
-    InputAction: {
-        Target: InputActionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: MakeCustomEventWrapper(callback),
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    },
-    TransmitHandData: {
-        Target: HandDataManager.instance,
-        WithCallback: (callback) => ({
-            Listener: MakeCustomEventWrapper(callback),
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    },
-    TransmitInputAction: {
-        Target: InputActionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: MakeCustomEventWrapper(callback),
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    },
-    TransmitInputActionRaw: {
-        Target: InputActionManager.instance,
-        WithCallback: (callback) => ({
-            Listener: MakeCustomEventWrapper(callback),
-            RegisterEventFunc: DefaultRegisterEventFunc
-        })
-    }
-});
+                    // Piggyback OnConnected
+                    return RegisterEventCallback('OnConnected', callback);
+                },
+            }),
+        },
+        OnTrackingServiceStateChange: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: MakeCustomEventWrapper(callback),
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        HandFound: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: callback, // Void callback can be returned directly
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        HandsLost: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: callback, // Void callback can be returned directly
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        InputAction: {
+            Target: InputActionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: MakeCustomEventWrapper(callback),
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        TransmitHandData: {
+            Target: HandDataManager.instance,
+            WithCallback: (callback) => ({
+                Listener: MakeCustomEventWrapper(callback),
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        TransmitInputAction: {
+            Target: InputActionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: MakeCustomEventWrapper(callback),
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        TransmitInputActionRaw: {
+            Target: InputActionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: MakeCustomEventWrapper(callback),
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+    });
 
 // Function: RegisterEventCallback
 // Registers a callback function to be called when a specific event occurs
