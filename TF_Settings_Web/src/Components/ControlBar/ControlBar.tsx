@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
-import { BackArrow, Logo } from '@/Images';
+import { BackArrow, GearIcon, Logo } from '@/Images';
 
 import { VerticalIconTextButton } from '@/Components';
 
@@ -46,7 +46,8 @@ const getBackLocation = (path: string): string => {
     return path.slice(0, lastIndex);
 };
 
-type TabName = 'Camera' | 'Interactions';
+const tabNames = ['Camera', 'Interactions', 'Settings'] as const;
+type TabName = typeof tabNames[number];
 
 const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) => {
     const [activeTab, setActiveTab] = React.useState<TabName>('Camera');
@@ -54,45 +55,55 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    return pathname.includes('calibrate') ? (
-        <></>
-    ) : (
+    if (pathname.includes('calibrate')) return <></>;
+
+    const getBottomContent = () => {
+        if (tabNames.map((tabName) => `/settings/${tabName.toLowerCase()}`).includes(pathname)) {
+            return (
+                <>
+                    {tabNames.map((tabName) => {
+                        const icon = tabName === 'Settings' ? GearIcon : undefined;
+                        return (
+                            <TabSelector
+                                key={tabName}
+                                name={tabName}
+                                icon={icon}
+                                isActiveTab={activeTab === tabName}
+                                onClick={() => {
+                                    setActiveTab(tabName);
+                                    navigate(`/settings/${tabName.toLowerCase()}`);
+                                }}
+                            />
+                        );
+                    })}
+                </>
+            );
+        }
+        return (
+            <VerticalIconTextButton
+                buttonStyle={backButtonStyle}
+                icon={BackArrow}
+                alt="Arrow pointing back"
+                iconStyle={backButtonIconStyle}
+                title="Back"
+                titleStyle={backButtonTitleStyle}
+                text={''}
+                textStyle={{ display: 'none' }}
+                onClick={() => {
+                    navigate(getBackLocation(pathname));
+                }}
+            />
+        );
+    };
+
+    return (
         <div className="control-bar-container">
             <div className="control-bar-top">
                 <StatusIndicator tfStatus={tfStatus} />
                 <img src={Logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
                 <VersionIndicator touchFreeVersion={touchFreeVersion} />
             </div>
-            <div className="control-bar-bottom">
-                {pathname === '/settings/camera' || pathname === '/settings/interactions' ? (
-                    <>
-                        <TabSelector
-                            name="Camera"
-                            isActiveTab={activeTab === 'Camera'}
-                            onClick={() => setActiveTab('Camera')}
-                        />
-                        <TabSelector
-                            name="Interactions"
-                            isActiveTab={activeTab === 'Interactions'}
-                            onClick={() => setActiveTab('Interactions')}
-                        />
-                    </>
-                ) : (
-                    <VerticalIconTextButton
-                        buttonStyle={backButtonStyle}
-                        icon={BackArrow}
-                        alt="Arrow pointing back"
-                        iconStyle={backButtonIconStyle}
-                        title="Back"
-                        titleStyle={backButtonTitleStyle}
-                        text={''}
-                        textStyle={{ display: 'none' }}
-                        onClick={() => {
-                            navigate(getBackLocation(pathname));
-                        }}
-                    />
-                )}
-            </div>
+            <div className="control-bar-bottom">{getBottomContent()}</div>
         </div>
     );
 };

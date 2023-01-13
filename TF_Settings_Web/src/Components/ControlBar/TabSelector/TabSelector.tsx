@@ -1,23 +1,21 @@
 import './TabSelector.scss';
 
-import React, { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useState, useEffect } from 'react';
 
 interface TabSelectorProps {
     name: string;
+    icon?: string;
     isActiveTab: boolean;
     onClick: () => void;
 }
 
-const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick }) => {
-    const [hovered, setHovered] = React.useState<boolean>(false);
-    const [pressed, setPressed] = React.useState<boolean>(false);
+const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, isActiveTab, onClick }) => {
+    const [hovered, setHovered] = useState<boolean>(false);
+    const [pressed, setPressed] = useState<boolean>(false);
+    const [tabContent, setTabContent] = useState<JSX.Element>();
 
     const handleClick = () => {
-        if (!isActiveTab) {
-            navigate(`/settings/${lowerCaseName}`);
-            onClick();
-        }
+        if (!isActiveTab) onClick();
     };
 
     const getSpecialClassName = useCallback((): string => {
@@ -26,8 +24,18 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
         return pressed ? 'tab-button--pressed' : hovered ? 'tab-button--hovered' : '';
     }, [isActiveTab, hovered, pressed]);
 
-    const navigate = useNavigate();
-    const lowerCaseName = name.toLowerCase();
+    useEffect(() => {
+        let content: JSX.Element = <span>{name}</span>;
+        if (icon) {
+            content = (
+                <div className="icon--container">
+                    <img src={icon} />{' '}
+                </div>
+            );
+        }
+        setTabContent(content);
+    }, [icon, name]);
+
     return (
         <button
             className={`tab-button ${getSpecialClassName()}`}
@@ -49,7 +57,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
                 if (keyEvent.key === 'Enter') handleClick();
             }}
         >
-            {name}
+            {tabContent}
         </button>
     );
 };

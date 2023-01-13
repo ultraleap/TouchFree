@@ -8,6 +8,7 @@ import CalibrationScreen from './Camera/QuickSetup/Calibration/CalibrationScreen
 import PositionSelectionScreen from './Camera/QuickSetup/PositionSelectionScreen';
 import QuickSetupManager from './Camera/QuickSetup/QuickSetupManager';
 import { InteractionsScreen } from './Interactions/InteractionsScreen';
+import SettingsScreen from './Settings/SettingsScreen';
 
 export {
     ManualSetupScreen,
@@ -20,4 +21,5 @@ export {
     CalibrationManager,
     CameraManager,
     QuickSetupManager,
+    SettingsScreen,
 };
