@@ -85,7 +85,7 @@ export class SVGCursor extends TouchlessCursor {
     // Function: UpdateCursor
     // Used to update the cursor when receiving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
-    UpdateCursor(inputAction: TouchFreeInputAction) {
+    protected UpdateCursor(inputAction: TouchFreeInputAction) {
         if (!this.shouldShow) {
             this.HideCursor();
             return;
@@ -122,7 +122,7 @@ export class SVGCursor extends TouchlessCursor {
     //
     // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
     // When any other event is received and the cursor is hidden, the cursor is shown again.
-    HandleInputAction(inputData: TouchFreeInputAction) {
+    protected HandleInputAction(inputData: TouchFreeInputAction) {
         if (this.cursor) {
             switch (inputData.InputType) {
                 case InputType.MOVE:
