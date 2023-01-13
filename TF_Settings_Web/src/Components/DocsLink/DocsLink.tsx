@@ -1,5 +1,6 @@
 import './DocsLink.scss';
 
+import { QRCodeSVG } from 'qrcode.react';
 import React, { CSSProperties, useState } from 'react';
 
 import { BaseTFButton } from '@/Components';
@@ -13,7 +14,7 @@ interface DocsLinkProps {
 }
 
 const DocsLink: React.FC<DocsLinkProps> = ({ buttonStyle, title, titleStyle, link }) => {
-    const [showModal, setShowModal] = useState<boolean>(false);
+    const [showModal, setShowModal] = useState<boolean>(true);
 
     const onClick = () => {
         setShowModal(!showModal);
@@ -22,17 +23,22 @@ const DocsLink: React.FC<DocsLinkProps> = ({ buttonStyle, title, titleStyle, lin
 
     return (
         <>
-            {showModal && <DocsModal />}
+            {showModal && <DocsModal link={link} />}
             <DocsButton buttonStyle={buttonStyle ?? {}} title={title} titleStyle={titleStyle ?? {}} onClick={onClick} />
         </>
     );
 };
 
-const DocsModal: React.FC = () => {
+const DocsModal: React.FC<{ link: string }> = ({ link }) => {
     return (
         <>
             <div className="docs-modal--cover" />
-            <div className="docs-modal--container"></div>;
+            <div className="docs-modal--container">
+                <div className="qr-code--container">
+                    <QRCodeSVG value={link} style={{ width: '100%', height: '100%' }} />
+                </div>
+            </div>
+            ;
         </>
     );
 };
