@@ -3,14 +3,10 @@
 .app {
     text-align: center;
     height: 100vh;
-    width: v.$app-width;
-    margin-left: v.$app-margin-left;
     background-color: v.$app-background-color;
 }
 
 .page-content {
-    padding-top: v.$control-bar-size;
-    height: calc(100% - v.$control-bar-size);
     background-color: v.$app-background-color;
 }
 
