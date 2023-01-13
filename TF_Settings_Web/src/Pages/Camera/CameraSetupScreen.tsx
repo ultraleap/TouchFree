@@ -73,7 +73,7 @@ const CameraSetupScreen = () => {
                     animationTime={1}
                 />
             </div>
-            <DocsLink title="Support" link="https://www.ultraleap.com/contact-us/" />
+            <DocsLink title="Support" url="https://www.ultraleap.com/contact-us/" />
         </div>
     );
 };

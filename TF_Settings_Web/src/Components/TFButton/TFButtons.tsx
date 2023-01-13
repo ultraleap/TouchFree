@@ -5,7 +5,8 @@ import React, { CSSProperties } from 'react';
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
 export interface BaseButtonProps {
-    buttonStyle: React.CSSProperties;
+    className?: string;
+    buttonStyle?: React.CSSProperties;
     title: string;
     titleStyle?: React.CSSProperties;
     onClick: (event: TFClickEvent) => void;
@@ -18,13 +19,13 @@ interface TextButtonProps extends BaseButtonProps {
 }
 
 interface IconTextButtonProps extends TextButtonProps {
-    buttonStyle: React.CSSProperties;
     icon: string;
     alt: string;
     iconStyle?: React.CSSProperties;
 }
 
 export const TextButton: React.FC<TextButtonProps> = ({
+    className,
     buttonStyle,
     title,
     titleStyle,
@@ -40,10 +41,11 @@ export const TextButton: React.FC<TextButtonProps> = ({
         </>
     );
 
-    return BaseTFButton('text-tf-button', canHover, buttonStyle, onClick, content);
+    return BaseTFButton(`${className} text-tf-button`, canHover, onClick, content, buttonStyle);
 };
 
 export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
+    className,
     buttonStyle,
     icon,
     alt,
@@ -63,10 +65,11 @@ export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
         </>
     );
 
-    return BaseTFButton('vertical-tf-button', canHover, buttonStyle, onClick, content);
+    return BaseTFButton(`${className} vertical-tf-button`, canHover, onClick, content, buttonStyle);
 };
 
 export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
+    className,
     buttonStyle,
     icon,
     alt,
@@ -88,15 +91,15 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
         </>
     );
 
-    return BaseTFButton('horizontal-tf-button', canHover, buttonStyle, onClick, content);
+    return BaseTFButton(`${className} horizontal-tf-button`, canHover, onClick, content, buttonStyle);
 };
 
 export const BaseTFButton = (
     buttonClass: string,
     canHover: boolean,
-    buttonStyle: CSSProperties,
     onClick: (event: TFClickEvent) => void,
-    content: JSX.Element
+    content: JSX.Element,
+    buttonStyle?: CSSProperties
 ) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
     const [pressed, setPressed] = React.useState<boolean>(false);
@@ -114,7 +117,6 @@ export const BaseTFButton = (
             }}
             onPointerDown={() => {
                 setPressed(true);
-                console.log('PRE');
             }}
             onPointerUp={(event) => {
                 if (pressed) {
