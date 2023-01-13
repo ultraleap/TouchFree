@@ -1,4 +1,6 @@
-import './Interactions.scss';
+import classnames from 'classnames/bind';
+
+import styles from './Interactions.module.scss';
 
 import { Component } from 'react';
 
@@ -12,6 +14,8 @@ import { InteractionExplainer } from '@/Videos';
 import { LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
 
 import { DefaultInteractionConfig } from './SettingsTypes';
+
+const classes = classnames.bind(styles);
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,
@@ -303,71 +307,79 @@ export class InteractionsScreen extends Component<{}, InteractionsState> {
             }
 
             coreBody = (
-                <div>
-                    <div className="horizontalContainer sideSpacing">
-                        <RadioGroup
-                            name="InteractionType"
-                            selected={activeInteraction}
-                            options={Object.keys(InteractionTranslator)}
-                            onChange={this.onInteractionChange.bind(this)}
-                        />
-                        <video
-                            autoPlay={true}
-                            loop={true}
-                            key={InteractionExplainer}
-                            className={'InteractionPreview Interaction' + activeInteraction.toString()}
+                <>
+                    <div className={classes('title-line')}>
+                        <h1> Interaction Type </h1>
+                        <button
+                            onClick={this.resetToDefaults.bind(this)}
+                            onPointerUp={this.resetToDefaults.bind(this)}
+                            onPointerEnter={this.onResetEnter}
+                            onPointerLeave={this.onResetLeave}
+                            className={
+                                this.state?.resetButtonHovered
+                                    ? `${classes('reset-button')} hover`
+                                    : classes('reset-button')
+                            }
                         >
-                            <source src={InteractionExplainer} />
-                        </video>
+                            <p> Reset to Default </p>
+                        </button>
                     </div>
-
-                    <div className="verticalContainer sideSpacing">
-                        <Slider
-                            name="Cursor Movement"
-                            increment={0.0001}
-                            rangeMin={0}
-                            rangeMax={0.015}
-                            leftLabel="Responsive"
-                            rightLabel="Stable"
-                            value={this.state.interactionConfig.DeadzoneRadius}
-                            onChange={this.onCursorMovementChange.bind(this)}
-                        />
-                        {interactionControls}
+                    <div className={classes('section-container')}>
+                        <div className={classes('content')}>
+                            <div className={classes('horizontalContainer')}>
+                                <RadioGroup
+                                    name="InteractionType"
+                                    selected={activeInteraction}
+                                    options={Object.keys(InteractionTranslator)}
+                                    onChange={this.onInteractionChange.bind(this)}
+                                />
+                                <video
+                                    autoPlay={true}
+                                    loop={true}
+                                    key={InteractionExplainer}
+                                    className={classes(
+                                        'InteractionPreview',
+                                        'Interaction',
+                                        activeInteraction.toString()
+                                    )}
+                                >
+                                    <source src={InteractionExplainer} />
+                                </video>
+                            </div>
+                            <div className={classes('verticalContainer')}>
+                                <Slider
+                                    name="Cursor Movement"
+                                    increment={0.0001}
+                                    rangeMin={0}
+                                    rangeMax={0.015}
+                                    leftLabel="Responsive"
+                                    rightLabel="Stable"
+                                    value={this.state.interactionConfig.DeadzoneRadius}
+                                    onChange={this.onCursorMovementChange.bind(this)}
+                                />
+                            </div>
+                        </div>
+                        <div className={classes('content')}>
+                            <div className={classes('verticalContainer')}>{interactionControls}</div>
+                        </div>
                     </div>
-
-                    <div className="title-line">
-                        <h1> Interaction Zone </h1>
+                    <h1 className={classes('title-line')}> Interaction Zone </h1>
+                    <div className={classes('section-container')}>
+                        <div className={classes('content')}>
+                            <div className={classes('verticalContainer')}>
+                                <LabelledToggleSwitch
+                                    name="Enable/Disable"
+                                    value={this.state.interactionConfig.InteractionZoneEnabled}
+                                    onChange={this.interactionZoneToggled.bind(this)}
+                                />
+                                {zoneControls}
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="verticalContainer sideSpacing">
-                        <LabelledToggleSwitch
-                            name="Enable/Disable"
-                            value={this.state.interactionConfig.InteractionZoneEnabled}
-                            onChange={this.interactionZoneToggled.bind(this)}
-                        />
-                        {zoneControls}
-                    </div>
-                </div>
+                </>
             );
         }
 
-        return (
-            <div>
-                <div className="title-line">
-                    <h1> Interaction Type </h1>
-                    <button
-                        onClick={this.resetToDefaults.bind(this)}
-                        onPointerUp={this.resetToDefaults.bind(this)}
-                        onPointerEnter={this.onResetEnter}
-                        onPointerLeave={this.onResetLeave}
-                        className={this.state?.resetButtonHovered ? 'reset-button hover' : 'reset-button'}
-                    >
-                        <p> Reset to Default </p>
-                    </button>
-                </div>
-
-                {coreBody}
-            </div>
-        );
+        return <div className={classes('container')}>{coreBody}</div>;
     }
 }

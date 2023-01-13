@@ -1,4 +1,5 @@
 import './ManualSetup.scss';
+import interactionClasses from '@/Pages/Interactions/Interactions.module.scss';
 
 import { Component } from 'react';
 
@@ -213,7 +214,7 @@ export class ManualSetupScreen extends Component<{}, PhysicalState> {
                 </div>
 
                 <div className="horizontalContainer sideSpacing">
-                    <div className="verticalContainer">
+                    <div className={interactionClasses['verticalContainer']}>
                         <TextEntry
                             name="Screen Height (cm)"
                             value={this.currentScreenHeight}
@@ -265,7 +266,7 @@ export class ManualSetupScreen extends Component<{}, PhysicalState> {
                         />
                     </div>
 
-                    <div className="verticalContainer">
+                    <div className={interactionClasses['verticalContainer']}>
                         <div className="screenFrontWrapper">
                             <div className="screenFrontMock">
                                 <div className="screenFrontCamera">

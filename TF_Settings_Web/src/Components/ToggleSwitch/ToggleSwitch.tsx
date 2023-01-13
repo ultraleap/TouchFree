@@ -1,4 +1,5 @@
 import './ToggleSwitch.scss';
+import interactionClasses from '@/Pages/Interactions/Interactions.module.scss';
 
 import React from 'react';
 
@@ -22,7 +23,7 @@ interface LabelledToggleSwitchProps extends ToggleSwitchProps {
 }
 
 export const LabelledToggleSwitch: React.FC<LabelledToggleSwitchProps> = ({ name, value, onChange }) => (
-    <label className="input-label-container" onPointerDown={() => onChange(!value)}>
+    <label className={interactionClasses['input-label-container']} onPointerDown={() => onChange(!value)}>
         <p className="switch-label">{name}</p>
         <span className="switch-container">
             <ToggleSwitch value={value} />

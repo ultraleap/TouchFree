@@ -1,4 +1,5 @@
-import './Sliders.scss';
+import classes from './Sliders.module.scss';
+import interactionClasses from '@/Pages/Interactions/Interactions.module.scss';
 
 import React, { PointerEvent, RefObject } from 'react';
 
@@ -71,15 +72,15 @@ export class Slider extends React.Component<SliderProps, {}> {
 
     render() {
         return (
-            <label className="input-label-container">
-                <p className="sliderLabel">{this.props.name}</p>
-                <div className="sliderContainer">
+            <label className={interactionClasses['input-label-container']}>
+                <p className={classes['sliderLabel']}>{this.props.name}</p>
+                <div className={classes['sliderContainer']}>
                     <input
                         type="range"
                         step={this.props.increment}
                         min={this.props.rangeMin}
                         max={this.props.rangeMax}
-                        className="slider"
+                        className={classes['slider']}
                         onChange={this.onChange}
                         onPointerMove={this.onMove.bind(this)}
                         onPointerDown={this.onDown.bind(this)}
@@ -89,9 +90,9 @@ export class Slider extends React.Component<SliderProps, {}> {
                         id="myRange"
                         ref={this.inputElement}
                     />
-                    <div className="sliderLabelContainer">
-                        <label className="leftSliderLabel">{this.props.leftLabel}</label>
-                        <label className="rightSliderLabel">{this.props.rightLabel}</label>
+                    <div className={classes['sliderLabelContainer']}>
+                        <label className={classes['leftSliderLabel']}>{this.props.leftLabel}</label>
+                        <label className={classes['rightSliderLabel']}>{this.props.rightLabel}</label>
                     </div>
                 </div>
             </label>
