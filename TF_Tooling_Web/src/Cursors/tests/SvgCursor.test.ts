@@ -1,5 +1,6 @@
 import TouchFree from '../../TouchFree';
-import { HandChirality, HandType, InputType, InteractionType, TouchFreeInputAction } from '../../TouchFreeToolingTypes';
+import { InputType } from '../../TouchFreeToolingTypes';
+import { mockTfInputAction } from '../../tests/testUtils';
 import { SVGCursor } from '../SvgCursor';
 
 TouchFree.Init();
@@ -7,21 +8,6 @@ const svgCursor = new SVGCursor();
 const cursor = document.getElementById('svg-cursor');
 const cursorRing = document.getElementById('svg-cursor-ring');
 const cursorDot = document.getElementById('svg-cursor-dot');
-
-const mockTfInputAction = (input?: Partial<TouchFreeInputAction>) =>
-    TouchFree.DispatchEvent(
-        'TransmitInputAction',
-        new TouchFreeInputAction(
-            input?.Timestamp ?? Date.now(),
-            input?.InteractionType ?? InteractionType.PUSH,
-            input?.HandType ?? HandType.PRIMARY,
-            input?.Chirality ?? HandChirality.RIGHT,
-            input?.InputType ?? InputType.MOVE,
-            input?.CursorPosition ?? [0, 0],
-            input?.DistanceFromScreen ?? 5,
-            input?.ProgressToClick ?? 0
-        )
-    );
 
 describe('SVG Cursor', () => {
     beforeAll(() => {
@@ -45,9 +31,11 @@ describe('SVG Cursor', () => {
     });
 
     test('Cursor ring should grow with ProgressToClick', () => {
-        mockTfInputAction({ InputType: InputType.MOVE, ProgressToClick: 0.1 });
+        expect(cursorRing?.getAttribute('r')).toBe('30');
 
-        expect(cursorRing?.getAttribute('r')).toBe('29');
+        mockTfInputAction({ InputType: InputType.MOVE, ProgressToClick: 0.5 });
+
+        expect(cursorRing?.getAttribute('r')).toBe('23');
     });
 
     test('Cursor ring should fade in with ProgressToClick', () => {
