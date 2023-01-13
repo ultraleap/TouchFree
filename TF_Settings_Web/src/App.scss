@@ -10,18 +10,21 @@
     background-color: v.$app-background-color;
 }
 
+@mixin title-line {
+    color: white;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+}
+
 .title-line {
     color: white;
     text-align: left;
-    padding-left: 3rem;
     display: flex;
     flex-direction: row;
     align-items: left;
     font-family: v.$base-font;
-
-    h1 {
-        flex: 1 1 auto;
-    }
 }
 
 .fade-enter {

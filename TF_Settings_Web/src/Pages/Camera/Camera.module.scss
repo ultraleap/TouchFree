@@ -1,0 +1,43 @@
+@use '@/variables.module.scss' as v;
+@use '@/App.scss';
+
+.camera-setup-container {
+    display: flex;
+    justify-content: space-evenly;
+
+    @media (orientation: portrait) {
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+.tf-button-container {
+    min-height: 450px;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2vw;
+    @media (orientation: landscape) {
+        gap: 1vw;
+    }
+}
+
+.camera-page-divider {
+    height: 10px;
+    margin: 40px 0;
+    background-color: #363636;
+    @media (orientation: landscape) {
+        width: 10px;
+        height: unset;
+        margin: 20px 0 0 0;
+    }
+}
+
+.title-line {
+    @include App.title-line;
+}
+
+.sub-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 2vw;
+}

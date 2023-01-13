@@ -1,4 +1,4 @@
-import './Camera.scss';
+import classes from './Camera.module.scss';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,38 +23,33 @@ const CameraSetupScreen = () => {
     }, []);
 
     return (
-        <div>
-            <div className="title-line">
-                <h1> Camera Setup </h1>
+        <div className={classes['camera-setup-container']}>
+            <div className={classes['sub-container']}>
+                <h1 className={classes['title-line']}> Camera Setup </h1>
+                <div className={classes['tf-button-container']}>
+                    <VerticalIconTextButton
+                        icon={QuickSetupIcon}
+                        alt="Icon for Quick Setup option"
+                        iconStyle={{ margin: '30px 0px', height: '250px' }}
+                        title="Auto Calibration"
+                        text="Our automatic calibration enables you to set up quickly"
+                        onClick={() => navigate('quick')}
+                    />
+                    <VerticalIconTextButton
+                        icon={ManualSetupIcon}
+                        alt="Icon for Manual Setup option"
+                        iconStyle={{ margin: '65px 0px', height: '180px' }}
+                        title="Manual Calibration"
+                        text="Full control of your calibration"
+                        onClick={() => navigate('manual')}
+                    />
+                </div>
             </div>
-            <div className="tf-button-container">
-                <VerticalIconTextButton
-                    buttonStyle={{ width: '63.75%' }}
-                    icon={QuickSetupIcon}
-                    alt="Icon for Quick Setup option"
-                    iconStyle={{ margin: '30px 0px', height: '250px' }}
-                    title="Auto Calibration"
-                    text="Our automatic calibration enables you to set up quickly"
-                    onClick={() => navigate('quick')}
-                />
-                <VerticalIconTextButton
-                    buttonStyle={{ width: '33.75%' }}
-                    icon={ManualSetupIcon}
-                    alt="Icon for Manual Setup option"
-                    iconStyle={{ margin: '65px 0px', height: '180px' }}
-                    title="Manual Calibration"
-                    text="Full control of your calibration"
-                    onClick={() => navigate('manual')}
-                />
-            </div>
-            <div className="camera-page-divider" />
-            <div className="title-line">
-                <h1> Tools </h1>
-            </div>
-            <div style={{ position: 'relative' }}>
+            <div className={classes['camera-page-divider']} />
+            <div className={classes['sub-container']}>
+                <h1 className={classes['title-line']}> Tools </h1>
                 <HorizontalIconTextButton
                     buttonStyle={{
-                        position: 'relative',
                         opacity: touchFreeConnected ? 1 : 0.5,
                         pointerEvents: touchFreeConnected ? 'auto' : 'none',
                     }}
