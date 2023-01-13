@@ -69,10 +69,12 @@ export class ConnectionManager extends EventTarget {
         TouchFree.RegisterEventCallback('WhenConnected', _onConnectFunc);
     }
 
-    public static get IsConnected():boolean {
-        return ConnectionManager.currentServiceConnection !== null &&
-        ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN &&
-        ConnectionManager.currentServiceConnection.handshakeComplete;
+    public static get IsConnected(): boolean {
+        return (
+            ConnectionManager.currentServiceConnection !== null &&
+            ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN &&
+            ConnectionManager.currentServiceConnection.handshakeComplete
+        );
     }
 
     public static AddServiceStatusListener(_serviceStatusFunc: (serviceStatus: TrackingServiceState) => void): void {

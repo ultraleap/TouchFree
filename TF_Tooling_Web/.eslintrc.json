@@ -61,7 +61,11 @@
                     "rect",
                     "center",
                     "snapforce",
-                    "etc"
+                    "etc",
+                    "Impl",
+                    "Impls",
+                    "ts",
+                    "jsDom"
                 ],
                 "skipWordIfMatch": ["^pointer.*$", "(\\S+(32|64)+)"],
                 "minLength": 3
