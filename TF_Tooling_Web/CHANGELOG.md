@@ -1,5 +1,5 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+All notable changes to the TouchFree Web Tooling project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [docs-website]: https://docs.ultraleap.com/touchfree-user-manual/ "Ultraleap Docs"
 
 ## [Unreleased]
+
+### Added
+- `WhenConnected` event - functions identically to `OnConnected` but will dispatch an event immediately if already connected to the TouchFree Service.
+- `IsConnected` function exported as part of the top level `TouchFree` object for querying whether or not the client is connected to the TouchFree Service.
+
+### Deprecated
+- `ConnectionManager.AddConnectionListener()` - functions identically to the `WhenConnected` event added this release and has been deprecated in favor of it.
+- `ConnectionManager.AddServiceStatusListener()` - functions identically to the `OnTrackingServiceStateChange` event and has been deprecated in favor of it.
 
 ## [1.3.0] - 2022-11-23
 
@@ -49,3 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web Tooling cursor position now aligns correctly with scaled displays.
 - Cursor position no longer needs to be inverted in the Y axis every time it's used.
     - NOTE: If you have used TouchFree cursor data directly, you will need to update your code to remove the inversion of the Y Axis data
+
+## [1.0.0] - 2021-09-7
+
+Initial release
