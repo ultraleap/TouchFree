@@ -1,0 +1,19 @@
+@use '@/App.scss';
+
+.container {
+    margin: 0 2vw;
+}
+
+.button-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    @media (orientation: landscape) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    justify-content: center;
+    gap: 2vw;
+}
+
+.title-line {
+    @include App.title-line;
+}
