@@ -60,18 +60,14 @@ export abstract class TouchlessCursor {
     // Used to make the cursor visible
     ShowCursor(): void {
         this.shouldShow = true;
-        if (this.cursor && this.enabled) {
-            this.cursor.style.opacity = '1';
-        }
+        this.SetCursorOpacity(1);
     }
 
     // Function: HideCursor
     // Used to make the cursor invisible
     HideCursor(): void {
         this.shouldShow = false;
-        if (this.cursor) {
-            this.cursor.style.opacity = '0';
-        }
+        this.SetCursorOpacity(0);
     }
 
     // Function: EnableCursor
@@ -92,5 +88,13 @@ export abstract class TouchlessCursor {
             this.HideCursor();
         }
         this.shouldShow = shouldShowOnEnable;
+    }
+
+    // Function: SetCursorOpacity
+    // Used to set the opacity of the cursor
+    SetCursorOpacity(opacity: number): void {
+        if (this.cursor) {
+            this.cursor.style.opacity = opacity.toString();
+        }
     }
 }

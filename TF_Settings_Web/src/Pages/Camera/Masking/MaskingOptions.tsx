@@ -46,7 +46,7 @@ const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value
             </div>
             <Alert
                 show={showMousePrompt}
-                cssWidth={'100%'}
+                style={{ width: '100%', bottom: '-70px' }}
                 text="Cannot be selected using the TouchFree cursor"
                 animationType="fadeInOut"
                 animationTime={4}
