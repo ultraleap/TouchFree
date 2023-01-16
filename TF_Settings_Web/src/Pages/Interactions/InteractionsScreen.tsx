@@ -11,7 +11,7 @@ import { InteractionExplainer } from '@/Videos';
 
 import { DocsLink, LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
 
-import { DefaultInteractionConfig } from './SettingsTypes';
+import { DefaultInteractionConfig } from './InteractionDefaults';
 
 const InteractionTranslator: Record<string, InteractionType> = {
     AirPush: InteractionType.PUSH,
