@@ -152,7 +152,7 @@ export class SVGCursor extends TouchlessCursor {
         this.shouldShow = true;
         if (this.enabled && !this.cursorShowing) {
             this.cursorShowing = true;
-            this.cursorCanvas.style.opacity = '1';
+            this.SetCursorOpacity(1);
         }
     }
 
@@ -161,10 +161,16 @@ export class SVGCursor extends TouchlessCursor {
     HideCursor() {
         this.shouldShow = false;
         this.cursorShowing = false;
-        this.cursorCanvas.style.opacity = '0';
+        this.SetCursorOpacity(0);
         if (this.cursor) {
             this.cursor.style.transform = 'scale(1)';
         }
+    }
+
+    // Function: SetCursorOpacity
+    // Used to set the opacity of the cursor
+    SetCursorOpacity(opacity: number): void {
+        this.cursorCanvas.style.opacity = opacity.toString();
     }
 
     private GetCurrentCursorRadius(): number {

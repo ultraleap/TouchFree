@@ -103,4 +103,12 @@ describe('SVG Cursor', () => {
         svgCursor.EnableCursor();
         expect(cursor?.style.opacity).toBe('1');
     });
+
+    test('SetCursorOpacity sets the cursors opacity correctly', () => {
+        for (let i = 0; i < 5; i++) {
+            const randomNumber = Math.random();
+            svgCursor.SetCursorOpacity(randomNumber);
+            expect(cursor?.style.opacity).toBe(randomNumber.toString());
+        }
+    });
 });
