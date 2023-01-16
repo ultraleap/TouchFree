@@ -1,4 +1,4 @@
-import { MapRangeToRange } from '../src/Utilities';
+import { MapRangeToRange } from '../Utilities';
 
 describe('MapRangeToRange', () => {
     test('Map value in range to same range gives same value', () => {
