@@ -5,7 +5,7 @@ import { RadioLine } from './Radio/RadioLine';
 import { Slider } from './Slider/Slider';
 import { TextSlider } from './Slider/TextSlider';
 import { TextButton, VerticalIconTextButton, HorizontalIconTextButton, TFClickEvent } from './TFButton/TFButton';
-import { TextEntry } from './TextEntry/TextEntry';
+import TextEntry from './TextEntry/TextEntry';
 import { ToggleSwitch, LabelledToggleSwitch } from './ToggleSwitch/ToggleSwitch';
 
 export {

@@ -1,5 +1,6 @@
-import './ManualSetup.scss';
-import interactionClasses from '@/Pages/Interactions/Interactions.module.scss';
+import classNames from 'classnames/bind';
+
+import styles from './ManualSetup.module.scss';
 
 import { Component } from 'react';
 
@@ -9,6 +10,8 @@ import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ConfigState, WebSocketResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 
 import { TextEntry } from '@/Components';
+
+const classes = classNames.bind(styles);
 
 interface PhysicalState {
     screenHeight: number;
@@ -208,92 +211,93 @@ export class ManualSetupScreen extends Component<{}, PhysicalState> {
 
     render() {
         return (
-            <div className={'page ' + this.state.selectedView}>
-                <div className="title-line">
+            <div className={classes('container')}>
+                <div className={classes('title-line')}>
                     <h1> Manual Calibration </h1>
                 </div>
 
-                <div className="horizontalContainer sideSpacing">
-                    <div className={interactionClasses['verticalContainer']}>
-                        <TextEntry
-                            name="Screen Height (cm)"
-                            value={this.currentScreenHeight}
-                            onChange={this.onScreenHeightChanged.bind(this)}
-                            onClick={this.onScreenHeightClicked.bind(this)}
-                            onPointerDown={this.onScreenHeightClicked.bind(this)}
-                            selected={this.state.selectedView === 'screenHeight'}
-                        />
-                        <TextEntry
-                            name="Camera Height (cm)"
-                            value={this.currentCameraHeight}
-                            onChange={this.onCameraHeightChanged.bind(this)}
-                            onClick={this.onCameraHeightClicked.bind(this)}
-                            onPointerDown={this.onCameraHeightClicked.bind(this)}
-                            selected={this.state.selectedView === 'cameraHeight'}
-                        />
-                        <TextEntry
-                            name="Camera Left to Right (cm)"
-                            value={this.currentCameraLeftToRight}
-                            onChange={this.onCameraLeftToRightChanged.bind(this)}
-                            onClick={this.onCameraLeftToRightClicked.bind(this)}
-                            onPointerDown={this.onCameraLeftToRightClicked.bind(this)}
-                            selected={this.state.selectedView === 'cameraLeftToRight'}
-                        />
-                        <div className="pageDivider"></div>
-                        <TextEntry
-                            name="Screen Tilt (degrees)"
-                            value={this.currentScreenTilt}
-                            onChange={this.onScreenTiltChanged.bind(this)}
-                            onClick={this.onScreenTiltClicked.bind(this)}
-                            onPointerDown={this.onScreenTiltClicked.bind(this)}
-                            selected={this.state.selectedView === 'screenTilt'}
-                        />
-                        <TextEntry
-                            name="Camera Rotation (degrees)"
-                            value={this.currentCameraRotation}
-                            onChange={this.onCameraRotationChanged.bind(this)}
-                            onClick={this.onCameraRotationClicked.bind(this)}
-                            onPointerDown={this.onCameraRotationClicked.bind(this)}
-                            selected={this.state.selectedView === 'cameraRotation'}
-                        />
-                        <TextEntry
-                            name="Camera Distance from Screen (cm)"
-                            value={this.currentCameraDistanceFromScreen}
-                            onChange={this.onCameraDistanceFromScreenChanged.bind(this)}
-                            onClick={this.onCameraDistanceFromScreenClicked.bind(this)}
-                            onPointerDown={this.onCameraDistanceFromScreenClicked.bind(this)}
-                            selected={this.state.selectedView === 'cameraDistanceFromScreen'}
-                        />
+                <div className={classes('sub-container')}>
+                    <div className={classes('col')}>
+                        <div className={classes('sub-col')}>
+                            <TextEntry
+                                name="Screen Height (cm)"
+                                value={this.currentScreenHeight}
+                                onChange={this.onScreenHeightChanged.bind(this)}
+                                onClick={this.onScreenHeightClicked.bind(this)}
+                                onPointerDown={this.onScreenHeightClicked.bind(this)}
+                                selected={this.state.selectedView === 'screenHeight'}
+                            />
+                            <TextEntry
+                                name="Camera Height (cm)"
+                                value={this.currentCameraHeight}
+                                onChange={this.onCameraHeightChanged.bind(this)}
+                                onClick={this.onCameraHeightClicked.bind(this)}
+                                onPointerDown={this.onCameraHeightClicked.bind(this)}
+                                selected={this.state.selectedView === 'cameraHeight'}
+                            />
+                            <TextEntry
+                                name="Camera Left to Right (cm)"
+                                value={this.currentCameraLeftToRight}
+                                onChange={this.onCameraLeftToRightChanged.bind(this)}
+                                onClick={this.onCameraLeftToRightClicked.bind(this)}
+                                onPointerDown={this.onCameraLeftToRightClicked.bind(this)}
+                                selected={this.state.selectedView === 'cameraLeftToRight'}
+                            />
+                        </div>
+                        <div className={classes('sub-col')}>
+                            <TextEntry
+                                name="Screen Tilt (degrees)"
+                                value={this.currentScreenTilt}
+                                onChange={this.onScreenTiltChanged.bind(this)}
+                                onClick={this.onScreenTiltClicked.bind(this)}
+                                onPointerDown={this.onScreenTiltClicked.bind(this)}
+                                selected={this.state.selectedView === 'screenTilt'}
+                            />
+                            <TextEntry
+                                name="Camera Rotation (degrees)"
+                                value={this.currentCameraRotation}
+                                onChange={this.onCameraRotationChanged.bind(this)}
+                                onClick={this.onCameraRotationClicked.bind(this)}
+                                onPointerDown={this.onCameraRotationClicked.bind(this)}
+                                selected={this.state.selectedView === 'cameraRotation'}
+                            />
+                            <TextEntry
+                                name="Camera Distance from Screen (cm)"
+                                value={this.currentCameraDistanceFromScreen}
+                                onChange={this.onCameraDistanceFromScreenChanged.bind(this)}
+                                onClick={this.onCameraDistanceFromScreenClicked.bind(this)}
+                                onPointerDown={this.onCameraDistanceFromScreenClicked.bind(this)}
+                                selected={this.state.selectedView === 'cameraDistanceFromScreen'}
+                            />
+                        </div>
                     </div>
-
-                    <div className={interactionClasses['verticalContainer']}>
-                        <div className="screenFrontWrapper">
-                            <div className="screenFrontMock">
-                                <div className="screenFrontCamera">
-                                    <div className="screenFrontCameraBottom"></div>
+                    <div className={classes('screen-images', this.state.selectedView)}>
+                        <div className={classes('screen-container')}>
+                            <div className={classes('screenFrontMock')}>
+                                <div className={classes('screenFrontCamera')}>
+                                    <div className={classes('screenFrontCameraBottom')}></div>
                                 </div>
-                                <div className="screenFrontOutside"></div>
-                                <div className="screenFrontInside"></div>
-                                <div className="screenFrontCenterLineVert"></div>
-                                <div className="screenFrontTopLine"></div>
-                                <div className="screenFrontBottomLine"></div>
-                                <p className="screenFrontLabel">Front View</p>
+                                <div className={classes('screenFrontOutside')}></div>
+                                <div className={classes('screenFrontInside')}></div>
+                                <div className={classes('screenFrontCenterLineVert')}></div>
+                                <div className={classes('screenFrontTopLine')}></div>
+                                <div className={classes('screenFrontBottomLine')}></div>
+                                <p className={classes('screenFrontLabel')}>Front View</p>
                             </div>
                         </div>
-
-                        <div className="screenSideWrapper">
-                            <div className="screenSideMock">
-                                <div className="screenSideCamera">
-                                    <div className="screenSideCameraBottom"></div>
+                        <div className={classes('screen-container')}>
+                            <div className={classes('screenSideMock')}>
+                                <div className={classes('screenSideCamera')}>
+                                    <div className={classes('screenSideCameraBottom')}></div>
                                 </div>
-                                <div className="screenSideOutside"></div>
-                                <div className="screenSideInside"></div>
-                                <div className="screenSideCenterLineVert"></div>
-                                <div className="screenSideExtraLineVert"></div>
-                                <div className="screenSideTopLine"></div>
-                                <div className="screenSideBottomLine"></div>
-                                <div className="screenSideTiltBox"></div>
-                                <p className="screenSideLabel">Side View</p>
+                                <div className={classes('screenSideOutside')}></div>
+                                <div className={classes('screenSideInside')}></div>
+                                <div className={classes('screenSideCenterLineVert')}></div>
+                                <div className={classes('screenSideExtraLineVert')}></div>
+                                <div className={classes('screenSideTopLine')}></div>
+                                <div className={classes('screenSideBottomLine')}></div>
+                                <div className={classes('screenSideTiltBox')}></div>
+                                <p className={classes('screenSideLabel')}>Side View</p>
                             </div>
                         </div>
                     </div>

@@ -1,11 +1,45 @@
 @use '@/variables.module.scss' as v;
+@use '@/App.scss';
+
+.container {
+    margin: 0 2vw;
+}
+
+.sub-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    @media (orientation: landscape) {
+        grid-template-columns: 0.7fr 1fr;
+    }
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    @media (orientation: portrait) {
+        height: 1000px;
+    }
+}
+
+.screen-images {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    @media (orientation: landscape) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.title-line {
+    @include App.title-line;
+}
 
 .pageDivider {
     height: 200px;
 }
 
-.screenFrontWrapper,
-.screenSideWrapper {
+.screen-container {
     width: 450px;
     height: 500px;
     overflow: hidden;
