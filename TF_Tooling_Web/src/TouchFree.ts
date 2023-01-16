@@ -102,6 +102,13 @@ const EventImplementations: () => EventImpls = () =>
                 },
             }),
         },
+        OnServiceStatusChange: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: MakeCustomEventWrapper(callback),
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
         OnTrackingServiceStateChange: {
             Target: ConnectionManager.instance,
             WithCallback: (callback) => ({

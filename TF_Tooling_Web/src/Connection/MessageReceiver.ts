@@ -228,6 +228,8 @@ export class MessageReceiver {
                     if (serviceStatus.trackingServiceState !== null) {
                         TouchFree.DispatchEvent('OnTrackingServiceStateChange', serviceStatus.trackingServiceState);
                     }
+
+                    TouchFree.DispatchEvent('OnServiceStatusChange', serviceStatus);
                     break;
                 case 'Success':
                     // no-op
