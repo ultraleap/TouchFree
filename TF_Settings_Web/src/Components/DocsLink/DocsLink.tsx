@@ -49,7 +49,11 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
                     <div
                         className="qr-img--container"
                         onPointerEnter={() => TouchFree.GetCurrentCursor()?.SetCursorOpacity(0.5)}
-                        onPointerLeave={() => TouchFree.GetCurrentCursor()?.SetCursorOpacity(1)}
+                        onPointerLeave={() => {
+                            if (TouchFree.GetCurrentCursor()?.shouldShow) {
+                                TouchFree.GetCurrentCursor()?.SetCursorOpacity(1);
+                            }
+                        }}
                     >
                         <QRCodeSVG value={url} style={{ width: '100%', height: '100%' }} />
                     </div>

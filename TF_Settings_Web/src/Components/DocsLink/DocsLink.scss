@@ -44,6 +44,10 @@
             height: 95%;
             margin-left: 5%;
             aspect-ratio: 1/1;
+
+            > svg {
+                pointer-events: none;
+            }
         }
 
         > h1 {

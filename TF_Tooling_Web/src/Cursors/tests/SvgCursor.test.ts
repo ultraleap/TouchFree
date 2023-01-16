@@ -111,4 +111,12 @@ describe('SVG Cursor', () => {
             expect(cursor?.style.opacity).toBe(randomNumber.toString());
         }
     });
+
+    test('ShowCursor should set opacity to the same as before hands lost', () => {
+        svgCursor.SetCursorOpacity(0.4);
+        svgCursor.HideCursor();
+        expect(cursor?.style.opacity).toBe('0');
+        svgCursor.ShowCursor();
+        expect(cursor?.style.opacity).toBe('0.4');
+    });
 });
