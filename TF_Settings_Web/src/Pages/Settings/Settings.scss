@@ -1,0 +1,12 @@
+@use '@/variables.module.scss' as v;
+
+.version-info {
+    background: v.$dark-grey-gradient;
+    box-shadow: 0px 2px 10px #00000099;
+    border: 1px solid #ffffff1a;
+    border-radius: 10px;
+
+    margin-left: 2.5%;
+    width: 95%;
+    height: 20vh;
+}
