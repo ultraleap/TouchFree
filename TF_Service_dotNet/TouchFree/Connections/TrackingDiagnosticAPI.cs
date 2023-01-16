@@ -173,6 +173,9 @@ namespace Ultraleap.TouchFree.Library.Connections
             _trackingConnectionManager.Controller.Device += ControllerOnDevice;
             _trackingConnectionManager.Controller.DeviceLost += ControllerOnDeviceLost;
 
+            RequestGetServerInfo();
+            RequestGetDeviceInfo();
+
             OnMaskingResponse += maskingData.HandleResponse;
             OnAnalyticsResponse += analyticsEnabled.HandleResponse;
             OnAllowImagesResponse += allowImages.HandleResponse;
