@@ -60,7 +60,9 @@ export abstract class TouchlessCursor {
     // Used to make the cursor visible
     ShowCursor(): void {
         this.shouldShow = true;
-        this.SetCursorOpacity(1);
+        if (this.enabled) {
+            this.SetCursorOpacity(1);
+        }
     }
 
     // Function: HideCursor
