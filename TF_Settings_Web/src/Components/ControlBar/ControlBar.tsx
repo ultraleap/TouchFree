@@ -60,7 +60,7 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
         <div className={classes['control-bar-container']}>
             <div className={classes['control-bar-top']}>
                 <StatusIndicator tfStatus={tfStatus} />
-                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
+                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className={classes['control-bar-logo']} />
                 <VersionIndicator touchFreeVersion={touchFreeVersion} />
             </div>
             <div className={classes['control-bar-bottom']}>
