@@ -13,10 +13,13 @@ const SettingsScreen: React.FC = () => {
     const [cameraSerial, setCameraSerial] = useState<string | null>(null);
 
     useEffect(() => {
-        TouchFree.RegisterEventCallback('OnServiceStatusChange', (serviceStatus: ServiceStatus) => {
-            console.log('Recieved Service Status Change');
-            console.dir(serviceStatus);
-        });
+        const onServiceChangeHandler = TouchFree.RegisterEventCallback(
+            'OnServiceStatusChange',
+            (serviceStatus: ServiceStatus) => {
+                console.log('Recieved Service Status Change');
+                console.dir(serviceStatus);
+            }
+        );
 
         ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
             const { cameraFirmwareVersion, cameraSerial, serviceVersion, trackingVersion } = detail;
@@ -28,7 +31,9 @@ const SettingsScreen: React.FC = () => {
             console.log(detail);
         });
 
-        // Query from service once added in TF-930
+        return () => {
+            onServiceChangeHandler.UnregisterEventCallback();
+        };
     }, []);
 
     return (
