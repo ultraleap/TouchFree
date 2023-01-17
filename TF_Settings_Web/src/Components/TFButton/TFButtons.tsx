@@ -24,6 +24,32 @@ interface IconTextButtonProps extends TextButtonProps {
     iconStyle?: React.CSSProperties;
 }
 
+const getButtonTextElements = (
+    title: string,
+    text: string,
+    titleStyle?: CSSProperties,
+    textStyle?: CSSProperties
+): JSX.Element[] => {
+    const elements: JSX.Element[] = [];
+    if (title) {
+        elements.push(
+            <h1 key={title} style={titleStyle}>
+                {title}
+            </h1>
+        );
+    }
+
+    if (text) {
+        elements.push(
+            <p key={text} style={textStyle}>
+                {text}
+            </p>
+        );
+    }
+
+    return elements;
+};
+
 export const TextButton: React.FC<TextButtonProps> = ({
     className,
     buttonStyle,
@@ -34,16 +60,7 @@ export const TextButton: React.FC<TextButtonProps> = ({
     onClick,
     canHover = true,
 }) => {
-    let hideTextStyle: CSSProperties = {};
-    if (!text) {
-        hideTextStyle = { display: 'none' };
-    }
-    const content = (
-        <>
-            <h1 style={titleStyle}>{title}</h1>
-            <p style={{ ...hideTextStyle, ...textStyle }}>{text}</p>
-        </>
-    );
+    const content = <>{getButtonTextElements(title, text, titleStyle, textStyle)}</>;
 
     return BaseTFButton(`${className} text-tf-button`, canHover, onClick, content, buttonStyle);
 };
@@ -64,8 +81,7 @@ export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
     const content = (
         <>
             <img style={iconStyle} src={icon} alt={alt} />
-            <h1 style={titleStyle}>{title}</h1>
-            <p style={textStyle}>{text}</p>
+            {getButtonTextElements(title, text, titleStyle, textStyle)}
         </>
     );
 
@@ -87,10 +103,7 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
 }) => {
     const content = (
         <>
-            <div className="tf-button-text-container">
-                <h1 style={titleStyle}>{title}</h1>
-                <p style={textStyle}>{text}</p>
-            </div>
+            <div className="tf-button-text-container">{getButtonTextElements(title, text, titleStyle, textStyle)}</div>
             <img style={iconStyle} src={icon} alt={alt} />
         </>
     );
