@@ -19,8 +19,9 @@ const App: React.FC = () => {
     useEffect(() => {
         TouchFree.Init({ initialiseCursor: true });
 
-        ConnectionManager.AddConnectionListener(() => {
+        TouchFree.RegisterEventCallback('WhenConnected', () => {
             ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+                console.log(detail);
                 const status = detail.trackingServiceState;
                 if (status) {
                     setTfStatus(status);
@@ -30,6 +31,11 @@ const App: React.FC = () => {
             const serviceConnection = ConnectionManager.serviceConnection();
             const tfVersion = serviceConnection?.touchFreeVersion ?? '';
             setTouchFreeVersion(tfVersion);
+
+            TouchFree.RegisterEventCallback('OnServiceStatusChange', (serviceStatus: ServiceStatus) => {
+                console.log('Recieved Service Status Change');
+                console.dir(serviceStatus);
+            });
         });
         ConnectionManager.AddServiceStatusListener(setTfStatus);
 

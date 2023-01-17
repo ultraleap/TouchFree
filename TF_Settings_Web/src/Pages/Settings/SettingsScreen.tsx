@@ -2,18 +2,33 @@ import './Settings.scss';
 
 import React, { useState, useEffect } from 'react';
 
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'TouchFree/src/TouchFree';
+
 const SettingsScreen: React.FC = () => {
-    const [tFVersion, setTFVersion] = useState<string>('');
-    const [trackingVersion, setTrackingVersion] = useState<string>('');
-    const [cameraFWVersion, setCameraFWVersion] = useState<string>('');
-    const [cameraID, setCameraID] = useState<string>('');
+    const [tFVersion, setTFVersion] = useState<string | null>(null);
+    const [trackingVersion, setTrackingVersion] = useState<string | null>(null);
+    const [cameraFWVersion, setCameraFWVersion] = useState<string | null>(null);
+    const [cameraSerial, setCameraSerial] = useState<string | null>(null);
 
     useEffect(() => {
+        TouchFree.RegisterEventCallback('OnServiceStatusChange', (serviceStatus: ServiceStatus) => {
+            console.log('Recieved Service Status Change');
+            console.dir(serviceStatus);
+        });
+
+        ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+            const { cameraFirmwareVersion, cameraSerial, serviceVersion, trackingVersion } = detail;
+            setTFVersion(serviceVersion);
+            setTrackingVersion(trackingVersion);
+            setCameraFWVersion(cameraFirmwareVersion);
+            setCameraSerial(cameraSerial);
+
+            console.log(detail);
+        });
+
         // Query from service once added in TF-930
-        setTFVersion('2.2.1');
-        setTrackingVersion('5.1');
-        setCameraFWVersion('3.4');
-        setCameraID('84237527');
     }, []);
 
     return (
@@ -25,7 +40,7 @@ const SettingsScreen: React.FC = () => {
                 <VersionInfoEntry title="TouchFree Version" version={tFVersion} />
                 <VersionInfoEntry title="Tracking Version" version={trackingVersion} />
                 <VersionInfoEntry title="Camera Firmware Version" version={cameraFWVersion} />
-                <VersionInfoEntry title="Camera Device ID" version={cameraID} />
+                <VersionInfoEntry title="Camera Device ID" version={cameraSerial} />
             </div>
             <div className="page-divider" />
         </>
@@ -34,7 +49,7 @@ const SettingsScreen: React.FC = () => {
 
 interface VersionInfoEntryProps {
     title: string;
-    version: string;
+    version: string | null;
 }
 
 const VersionInfoEntry: React.FC<VersionInfoEntryProps> = ({ title, version }) => (
