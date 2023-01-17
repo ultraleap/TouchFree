@@ -15,7 +15,6 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public string trackingServiceVersion { get; }
 
-        public uint? connectedDeviceID { get; }
         public string connectedDeviceFirmware { get; }
         public string connectedDeviceSerial { get; }
 

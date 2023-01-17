@@ -194,6 +194,8 @@ export class ServiceStatus extends TouchFreeRequest {
     serviceVersion: string | null;
     // Variable: trackingVersion
     trackingVersion: string | null;
+    // Variable: cameraSerial
+    cameraSerial: string | null;
     // Variable: cameraFirmwareVersion
     cameraFirmwareVersion: string | null;
 
@@ -203,6 +205,7 @@ export class ServiceStatus extends TouchFreeRequest {
         _configurationState: ConfigurationState | null,
         _serviceVersion: string | null,
         _trackingVersion: string | null,
+        _cameraSerial: string | null,
         _cameraFirmwareVersion: string | null
     ) {
         super(_id);
@@ -210,6 +213,7 @@ export class ServiceStatus extends TouchFreeRequest {
         this.configurationState = _configurationState;
         this.serviceVersion = _serviceVersion;
         this.trackingVersion = _trackingVersion;
+        this.cameraSerial = _cameraSerial;
         this.cameraFirmwareVersion = _cameraFirmwareVersion;
     }
 }

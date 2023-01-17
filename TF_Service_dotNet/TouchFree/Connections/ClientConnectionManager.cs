@@ -49,6 +49,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
                 VersionManager.ApiVersion.ToString(),
                 trackingApi.trackingServiceVersion,
+                trackingApi.connectedDeviceSerial,
                 trackingApi.connectedDeviceFirmware);
 
             SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
