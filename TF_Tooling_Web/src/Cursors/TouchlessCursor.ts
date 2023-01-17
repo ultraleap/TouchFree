@@ -22,10 +22,6 @@ export abstract class TouchlessCursor {
     // Whether the cursor should be visible or not after being enabled
     shouldShow: boolean;
 
-    // Variable: opacityOnHandsLost
-    // The opacity of the cursor when hands are lost
-    protected opacityOnHandsLost = 1;
-
     // Group: Functions
 
     // Function: constructor
@@ -65,16 +61,13 @@ export abstract class TouchlessCursor {
     ShowCursor(): void {
         this.shouldShow = true;
         if (this.enabled) {
-            this.SetCursorOpacity(this.opacityOnHandsLost);
+            this.SetCursorOpacity(1);
         }
     }
 
     // Function: HideCursor
     // Used to make the cursor invisible
     HideCursor(): void {
-        if (this.shouldShow) {
-            this.opacityOnHandsLost = Number(this.cursor?.style.opacity ?? 1);
-        }
         this.shouldShow = false;
         this.SetCursorOpacity(0);
     }
@@ -84,7 +77,6 @@ export abstract class TouchlessCursor {
     EnableCursor(): void {
         this.enabled = true;
         if (this.shouldShow) {
-            this.opacityOnHandsLost = 1;
             this.ShowCursor();
         }
     }
