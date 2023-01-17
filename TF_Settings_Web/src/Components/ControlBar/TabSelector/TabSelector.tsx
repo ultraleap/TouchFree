@@ -5,11 +5,12 @@ import React, { useCallback, useState, useEffect } from 'react';
 interface TabSelectorProps {
     name: string;
     icon?: string;
+    hoveredIcon?: string;
     isActiveTab: boolean;
     onClick: () => void;
 }
 
-const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, isActiveTab, onClick }) => {
+const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon, isActiveTab, onClick }) => {
     const [hovered, setHovered] = useState<boolean>(false);
     const [pressed, setPressed] = useState<boolean>(false);
     const [tabContent, setTabContent] = useState<JSX.Element>();
@@ -27,14 +28,15 @@ const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, isActiveTab, onCl
     useEffect(() => {
         let content: JSX.Element = <span>{name}</span>;
         if (icon) {
+            const showHoveredIcon = !isActiveTab && hovered && hoveredIcon;
             content = (
                 <div className="icon--container">
-                    <img src={icon} />{' '}
+                    <img src={showHoveredIcon ? hoveredIcon : icon} />{' '}
                 </div>
             );
         }
         setTabContent(content);
-    }, [icon, name]);
+    }, [icon, name, hovered, isActiveTab]);
 
     return (
         <button

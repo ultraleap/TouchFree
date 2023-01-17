@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
-import { BackArrow, GearIcon, Logo } from '@/Images';
+import { BackArrow, GearIcon, GearIconGlow, Logo } from '@/Images';
 
 import { VerticalIconTextButton } from '@/Components';
 
@@ -62,12 +62,18 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
             return (
                 <>
                     {tabNames.map((tabName) => {
-                        const icon = tabName === 'Settings' ? GearIcon : undefined;
+                        let icon: string | undefined;
+                        let hoveredIcon: string | undefined;
+                        if (tabName === 'Settings') {
+                            icon = GearIcon;
+                            hoveredIcon = GearIconGlow;
+                        }
                         return (
                             <TabSelector
                                 key={tabName}
                                 name={tabName}
                                 icon={icon}
+                                hoveredIcon={hoveredIcon}
                                 isActiveTab={activeTab === tabName}
                                 onClick={() => {
                                     setActiveTab(tabName);
