@@ -152,13 +152,17 @@ export class SVGCursor extends TouchlessCursor {
         this.shouldShow = true;
         if (this.enabled && !this.cursorShowing) {
             this.cursorShowing = true;
-            this.SetCursorOpacity(1);
+            this.SetCursorOpacity(this.opacityOnHandsLost);
         }
     }
 
     // Function: HideCursor
     // Used to make the cursor invisible, fades over time
     HideCursor() {
+        if (this.shouldShow) {
+            // If opacity is NaN or 0 then set it to be 1
+            this.opacityOnHandsLost = Number(this.cursorCanvas.style.opacity) || 1;
+        }
         this.shouldShow = false;
         this.cursorShowing = false;
         this.SetCursorOpacity(0);
