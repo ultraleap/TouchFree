@@ -46,19 +46,12 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => (
                     className="modal-button"
                     title="Open Link"
                     text=""
-                    textStyle={{ display: 'none' }}
                     onClick={() => {
                         window.open(url, '_blank')?.focus();
                         toggleModal();
                     }}
                 />
-                <TextButton
-                    className="modal-button"
-                    title="Close"
-                    text=""
-                    textStyle={{ display: 'none' }}
-                    onClick={toggleModal}
-                />
+                <TextButton className="modal-button" title="Close" text="" onClick={toggleModal} />
             </div>
         </div>
         ;

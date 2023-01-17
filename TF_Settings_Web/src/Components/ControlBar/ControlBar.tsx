@@ -94,7 +94,6 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
                 title="Back"
                 titleStyle={backButtonTitleStyle}
                 text={''}
-                textStyle={{ display: 'none' }}
                 onClick={() => {
                     navigate(getBackLocation(pathname));
                 }}

@@ -34,10 +34,14 @@ export const TextButton: React.FC<TextButtonProps> = ({
     onClick,
     canHover = true,
 }) => {
+    let hideTextStyle: CSSProperties = {};
+    if (!text) {
+        hideTextStyle = { display: 'none' };
+    }
     const content = (
         <>
             <h1 style={titleStyle}>{title}</h1>
-            <p style={textStyle}>{text}</p>
+            <p style={{ ...hideTextStyle, ...textStyle }}>{text}</p>
         </>
     );
 

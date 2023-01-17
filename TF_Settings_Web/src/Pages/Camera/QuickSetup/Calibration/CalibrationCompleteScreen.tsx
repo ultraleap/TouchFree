@@ -92,7 +92,6 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                     title="Redo Auto Calibration"
                     titleStyle={titleStyle}
                     text={''}
-                    textStyle={{ display: 'none' }}
                     onClick={redoClickHandler}
                 />
                 <TextButton
@@ -100,7 +99,6 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                     title="Done"
                     titleStyle={titleStyle}
                     text={''}
-                    textStyle={{ display: 'none' }}
                     onClick={doneClickHandler}
                 />
                 <CalibrationPracticeButton isHandPresent={isHandPresent} progress={progressToClick} />
