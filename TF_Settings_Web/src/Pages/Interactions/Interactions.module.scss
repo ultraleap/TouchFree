@@ -10,7 +10,7 @@
 .section-container {
     @media (orientation: landscape) {
         display: grid;
-        grid-template-columns: 50% 50%;
+        grid-template-columns: 1fr 1fr;
         gap: 2vw;
     }
 }
