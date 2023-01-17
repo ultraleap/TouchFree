@@ -1,9 +1,13 @@
-import './CameraMasking.scss';
+import classNames from 'classnames/bind';
+
+import styles from './CameraMasking.module.scss';
 
 import React, { CSSProperties, PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
+
+const classes = classNames.bind(styles);
 
 export type SliderDirection = keyof Mask;
 export interface CanvasInfo {
@@ -52,7 +56,7 @@ export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, masking
     return (
         <span
             ref={sliderRef}
-            className={`masking-slider masking-slider--${direction}`}
+            className={classes('masking-slider', `masking-slider--${direction}`)}
             style={
                 {
                     '--canvas-size': `${canvasInfo.size}px`,
@@ -166,15 +170,15 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
 
     const content = (
         <div
-            className={`masking-slider-knob ${
-                isHovered || isDraggingRef.current ? 'masking-slider-knob--dragging' : ''
-            }`}
+            className={classes('masking-slider-knob', {
+                'masking-slider-knob--dragging': isHovered || isDraggingRef.current,
+            })}
             onPointerDown={onStartDrag}
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => setIsHovered(false)}
         >
-            <div className="masking-slider-arrow--one" />
-            <div className="masking-slider-arrow--two" />
+            <div className={classes('masking-slider-arrow--one')} />
+            <div className={classes('masking-slider-arrow--two')} />
         </div>
     );
 

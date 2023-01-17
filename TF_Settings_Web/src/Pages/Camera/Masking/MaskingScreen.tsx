@@ -1,4 +1,4 @@
-import './CameraMasking.scss';
+import classes from './CameraMasking.module.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -198,67 +198,69 @@ const MaskingScreen: React.FC = () => {
     );
 
     return (
-        <div>
-            <div className="title-line" style={{ flexDirection: 'column' }}>
+        <div className={classes.container}>
+            <div className={classes['title-line']}>
                 <h1> Camera Masking </h1>
                 <p style={{ opacity: '50%' }}>
                     The camera will ignore the areas defined by the boxes that you draw on the camera feed
                 </p>
             </div>
-            <div className="cam-feed-box--main">
-                {sliders}
-                <div className="cam-feed-box-feed">
-                    <div className="cam-feed-box-feed--render" ref={camFeedRef} />
+            <div className={classes['sub-container']}>
+                <div className={classes['cam-feed-box']}>
+                    {sliders}
+                    <div className={classes['cam-feed-box-feed']}>
+                        <div className={classes['cam-feed-box-feed--render']} ref={camFeedRef} />
+                    </div>
+                    <div className={classes['lens-toggle-container']}>{lensToggles}</div>
                 </div>
-                <div className="lens-toggle-container">{lensToggles}</div>
-            </div>
-            <div className="cam-feeds-bottom-container">
-                <div className="cam-feeds-options-container">
-                    {useMemo(
-                        () => (
-                            <MaskingOption
-                                title="Display Overexposed Areas"
-                                description="Areas, where hand tracking may be an issue will be highlighted"
-                                value={showOverexposed.current}
-                                onChange={(value) => (showOverexposed.current = value)}
-                            />
-                        ),
-                        [showOverexposed.current]
-                    )}
-                    {useMemo(
-                        () => (
-                            <MaskingOption
-                                title="Allow Images"
-                                description="Allow images to be sent from the TouchFree Camera"
-                                value={allowImages.current}
-                                onChange={setAllowImages}
-                            />
-                        ),
-                        [allowImages.current]
-                    )}
-                    {useMemo(
-                        () => (
-                            <MaskingOption
-                                title="Reverse Camera Orientation"
-                                description="Reverse the camera orientation (hand should enter from the bottom)"
-                                value={isCamReversed.current}
-                                onChange={setIsCameraReversed}
-                                isMouseOnly
-                            />
-                        ),
-                        [isCamReversed.current]
-                    )}
-                    {useMemo(
-                        () => (
-                            <MaskingOption
-                                title="Allow Analytics"
-                                description="Allow analytic data to be collected"
-                                value={allowAnalytics}
-                                onChange={setAllowAnalytics}
-                            />
-                        ),
-                        [allowAnalytics]
-                    )}
+                <div className={classes['cam-feeds-bottom-container']}>
+                    <div className={classes['cam-feeds-options-container']}>
+                        {useMemo(
+                            () => (
+                                <MaskingOption
+                                    title="Display Overexposed Areas"
+                                    description="Areas, where hand tracking may be an issue will be highlighted"
+                                    value={showOverexposed.current}
+                                    onChange={(value) => (showOverexposed.current = value)}
+                                />
+                            ),
+                            [showOverexposed.current]
+                        )}
+                        {useMemo(
+                            () => (
+                                <MaskingOption
+                                    title="Allow Images"
+                                    description="Allow images to be sent from the TouchFree Camera"
+                                    value={allowImages.current}
+                                    onChange={setAllowImages}
+                                />
+                            ),
+                            [allowImages.current]
+                        )}
+                        {useMemo(
+                            () => (
+                                <MaskingOption
+                                    title="Reverse Camera Orientation"
+                                    description="Reverse the camera orientation (hand should enter from the bottom)"
+                                    value={isCamReversed.current}
+                                    onChange={setIsCameraReversed}
+                                    isMouseOnly
+                                />
+                            ),
+                            [isCamReversed.current]
+                        )}
+                        {useMemo(
+                            () => (
+                                <MaskingOption
+                                    title="Allow Analytics"
+                                    description="Allow analytic data to be collected"
+                                    value={allowAnalytics}
+                                    onChange={setAllowAnalytics}
+                                />
+                            ),
+                            [allowAnalytics]
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
