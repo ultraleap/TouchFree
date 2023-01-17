@@ -8,12 +8,13 @@
 
     user-select: none;
 
-    &--pressed {
-        box-shadow: 0px 0px 40px white;
-    }
-
     &--hovered {
         box-shadow: 0px 0px 30px v.$ultraleap-green;
+    }
+
+    &--pressed {
+        box-shadow: 0px 0px 30px white;
+        transform: scale(0.95, 0.95);
     }
 
     h1 {
