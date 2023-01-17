@@ -1,3 +1,4 @@
+import { ServiceStatus } from 'Connection/TouchFreeServiceTypes';
 import { Vector, Vector2 } from './Configuration/ConfigurationTypes';
 
 // Class: VersionInfo
@@ -174,6 +175,7 @@ export interface TouchFreeEventSignatures {
     OnConnected: () => void;
     WhenConnected: () => void;
     OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
+    OnServiceStatusChange: (state: ServiceStatus) => void;
     HandFound: () => void;
     HandsLost: () => void;
     TransmitHandData: (data: HandFrame) => void;
