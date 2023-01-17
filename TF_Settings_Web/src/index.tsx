@@ -1,6 +1,6 @@
 import App from '@/App';
 
-import './Fonts/fonts.css';
+import '@/Fonts/fonts.css';
 import '@/index.scss';
 
 import ReactDOM from 'react-dom';

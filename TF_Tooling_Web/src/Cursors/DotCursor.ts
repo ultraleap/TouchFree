@@ -62,7 +62,7 @@ export class DotCursor extends TouchlessCursor {
     // Function: UpdateCursor
     // Used to update the cursor when recieving a "MOVE" <ClientInputAction>. Updates the
     // cursor's position, as well as the size of the ring based on the current ProgressToClick.
-    UpdateCursor(_inputAction: TouchFreeInputAction): void {
+    protected UpdateCursor(_inputAction: TouchFreeInputAction): void {
         if (!this.enabled) return;
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
         const ringScaler = MapRangeToRange(_inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
@@ -86,7 +86,7 @@ export class DotCursor extends TouchlessCursor {
     //
     // When a "CANCEL" event is received, the cursor is hidden as it suggests the hand has been lost.
     // When any other event is received and the cursor is hidden, the cursor is shown again.
-    HandleInputAction(_inputData: TouchFreeInputAction): void {
+    protected HandleInputAction(_inputData: TouchFreeInputAction): void {
         switch (_inputData.InputType) {
             case InputType.MOVE:
                 this.UpdateCursor(_inputData);
