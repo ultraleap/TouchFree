@@ -2,7 +2,7 @@ import classNames from 'classnames/bind';
 
 import styles from './CameraMasking.module.scss';
 
-import React, { CSSProperties, PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
+import React, { PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
@@ -10,16 +10,11 @@ import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 const classes = classNames.bind(styles);
 
 export type SliderDirection = keyof Mask;
-export interface CanvasInfo {
-    size: number;
-    topOffset: number;
-    leftOffset: number;
-}
 
 interface MaskingSliderProps {
     direction: SliderDirection;
     maskingValue: number;
-    canvasInfo: CanvasInfo;
+    canvasSize: number;
     content?: ReactElement;
 }
 
@@ -28,7 +23,7 @@ interface SliderPos {
     left: number;
 }
 
-export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, canvasInfo, content }) => {
+export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, canvasSize, content }) => {
     const [initialSliderPos, setInitialSliderPos] = useState<SliderPos>({
         top: Number.NaN,
         left: Number.NaN,
@@ -40,31 +35,22 @@ export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, masking
     // ===== UseEffects =====
     useEffect(() => {
         if (!sliderRef.current) return;
-        const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
-        const left = Number.parseFloat(getComputedStyle(sliderRef.current).left);
+        const height = innerHeight * (innerHeight < innerWidth ? 0.45 : 0.4);
+        const top = direction === 'lower' ? height : 0;
+        const left = direction === 'right' ? height : 0;
 
-        setPosition(direction, maskingValue, canvasInfo.size, { top, left }, sliderRef.current);
+        setPosition(direction, maskingValue, canvasSize, { top, left }, sliderRef.current);
         setInitialSliderPos({ top, left });
-    }, []);
+    }, [innerHeight]);
 
     useEffect(() => {
         if (!sliderRef.current) return;
 
-        setPosition(direction, maskingValue, canvasInfo.size, initialSliderPos, sliderRef.current);
+        setPosition(direction, maskingValue, canvasSize, initialSliderPos, sliderRef.current);
     }, [maskingValue]);
 
     return (
-        <span
-            ref={sliderRef}
-            className={classes('masking-slider', `masking-slider--${direction}`)}
-            style={
-                {
-                    '--canvas-size': `${canvasInfo.size}px`,
-                    '--top-offset': `${canvasInfo.topOffset}px`,
-                    '--left-offset': `${canvasInfo.leftOffset}px`,
-                } as CSSProperties
-            }
-        >
+        <span ref={sliderRef} className={classes('masking-slider', `masking-slider--${direction}`)}>
             {content}
         </span>
     );
@@ -79,7 +65,7 @@ interface MaskingSliderDraggableProps extends MaskingSliderProps {
 export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
     direction,
     maskingValue,
-    canvasInfo,
+    canvasSize,
     clearMasking,
     onDrag,
     onDragEnd,
@@ -142,7 +128,7 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
         }
 
         // Convert value from CSS value range [0..400] to masking range[0..0.5]
-        const newMaskingValue = maskingValue + diffValue / canvasInfo.size;
+        const newMaskingValue = maskingValue + diffValue / canvasSize;
 
         // Limit masking value to [0..0.5]
         const limitedNewMaskingValue = Math.min(0.5, Math.max(0, newMaskingValue));
@@ -183,7 +169,7 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
     );
 
     return (
-        <MaskingSlider direction={direction} maskingValue={maskingValue} canvasInfo={canvasInfo} content={content} />
+        <MaskingSlider direction={direction} maskingValue={maskingValue} canvasSize={canvasSize} content={content} />
     );
 };
 

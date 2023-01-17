@@ -72,6 +72,11 @@ const dummy = new Object3D();
 const BASE_LINE_THICKNESS = 0.005;
 
 export const setupRenderScene = (div: HTMLDivElement) => {
+    if (div.children.length > 0) {
+        for (const child of div.children) {
+            div.removeChild(child);
+        }
+    }
     _scene = new Scene();
     _camera = new PerspectiveCamera(90);
     _camera.position.z = 2;
@@ -87,6 +92,8 @@ export const setupRenderScene = (div: HTMLDivElement) => {
     _primaryHandMesh = createHandMesh(_scene, true);
     _secondaryHandMesh = createHandMesh(_scene, false);
     _compiled = false;
+
+    return _renderer;
 };
 
 export const renderScene = () => {

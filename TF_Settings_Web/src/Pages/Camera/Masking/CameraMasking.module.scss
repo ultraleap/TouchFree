@@ -1,6 +1,18 @@
 @use '@/variables.module.scss' as v;
 @use '@/App.scss';
 
+:root {
+    --size: 50vh;
+    --padding: 10vh;
+}
+
+@media (orientation: landscape) {
+    :root {
+        --size: 60vh;
+        --padding: 15vh;
+    }
+}
+
 .container {
     margin: 0 2vw;
     overflow: hidden;
@@ -11,6 +23,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         align-items: center;
+        justify-items: center;
     }
 }
 
@@ -22,12 +35,10 @@
 
 // ===== Camera Feeds =====
 .cam-feed-box {
-    $size: 1000px;
-    $padding: 200px;
     position: relative;
     margin: 3% auto;
-    width: $size;
-    height: $size;
+    width: var(--size);
+    height: var(--size);
 
     background: v.$dark-grey-gradient;
     box-shadow: 0px 2px 14px #000000;
@@ -38,16 +49,18 @@
     user-select: none;
 
     .cam-feed-box-feed {
-        $canvas-size: $size - $padding;
-        margin-top: calc((100% - $canvas-size) / 2);
+        $canvas-size: calc(var(--size) - var(--padding));
         z-index: 10;
         margin-top: 50px;
 
         &--render {
-            $canvas-size: $size - $padding;
             width: $canvas-size;
             height: $canvas-size;
-            margin-left: calc($padding / 2);
+            @media (orientation: landscape) {
+                width: $canvas-size;
+                height: $canvas-size;
+            }
+            margin-left: calc(var(--padding) / 2);
 
             border: 1px solid #717171;
         }
@@ -56,7 +69,7 @@
     > p {
         font-size: 25px;
         line-height: 20px;
-        margin-top: calc(($padding / 2 - 30px) / 2);
+        margin-top: calc((var(--padding) / 2 - 30px) / 2);
 
         text-align: center;
         color: white;
@@ -66,10 +79,9 @@
 
 .lens-toggle-container {
     display: flex;
-    width: 28%;
-    height: 5%;
-    margin: auto;
-    margin-top: 4.5%;
+    width: calc(var(--size) / 3);
+    height: calc(var(--padding) / 4);
+    margin: calc(var(--padding) / 4) auto;
     align-items: center;
 }
 
@@ -127,9 +139,11 @@
 }
 
 // ===== Masking Sliders =====
-@mixin masking-slider($top, $left, $canvas-size, $vertical) {
+@mixin masking-slider($top, $left, $vertical) {
+    $canvas-size: calc(var(--size) - var(--padding));
+
     position: absolute;
-    $size: 10px;
+    $slider-size: 10px;
 
     $canvas-margin: calc($canvas-size / 8);
     $canvas-padding: calc($canvas-size / 2 - $canvas-margin);
@@ -138,16 +152,16 @@
     $gradient-color: #00000000 0%, v.$ultraleap-green 50%, #00000000 100%;
     @if $vertical {
         top: $top;
-        left: calc($left - ($size / 2));
+        left: calc($left - ($slider-size / 2));
         height: 0px;
-        width: $size;
+        width: $slider-size;
         padding: $canvas-padding 0 $canvas-padding 0;
         margin: $canvas-margin 0 $canvas-margin 0;
         background: linear-gradient(0deg, $gradient-color);
     } @else {
-        top: calc($top - ($size / 2));
+        top: calc($top - ($slider-size / 2));
         left: $left;
-        height: $size;
+        height: $slider-size;
         width: 0px;
         padding: 0 $canvas-padding 0 $canvas-padding;
         margin: 0 $canvas-margin 0 $canvas-margin;
@@ -215,32 +229,31 @@
     }
 }
 
-.masking-slider {
-    --canvas-size: 800px;
-    --top-offset: 100px;
-    --bottom-offset: calc(var(--top-offset) + var(--canvas-size));
-    --left-offset: 100px;
-    --right-offset: calc(var(--left-offset) + var(--canvas-size));
-}
-
 .masking-slider--left {
-    @include masking-slider(var(--top-offset), var(--left-offset), var(--canvas-size), $vertical: true);
+    @include masking-slider(0px, 0px, true);
     border-radius: 0 50% 50% 0;
 }
 
 .masking-slider--right {
-    @include masking-slider(var(--top-offset), var(--right-offset), var(--canvas-size), $vertical: true);
+    @include masking-slider(0px, 40vh, true);
     border-radius: 50% 0 0 50%;
 }
 
 .masking-slider--upper {
-    @include masking-slider(var(--top-offset), var(--left-offset), var(--canvas-size), $vertical: false);
+    @include masking-slider(0px, 0px, false);
     border-radius: 0 0 50% 50%;
 }
 
 .masking-slider--lower {
-    @include masking-slider(var(--bottom-offset), var(--left-offset), var(--canvas-size), $vertical: false);
+    @include masking-slider(40vh, 0px, false);
     border-radius: 50% 50% 0 0;
+}
+
+.slider-container {
+    position: absolute;
+    left: calc(var(--padding) / 2);
+    height: calc(var(--size) - var(--padding));
+    width: calc(var(--size) - var(--padding));
 }
 
 // ===== Bottom container =====
@@ -251,25 +264,28 @@
 }
 
 .cam-feeds-options-container {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    @media (orientation: landscape) {
+        grid-template-columns: 1fr;
+    }
 }
 
 // ===== Camera Feed Option =====
 .cam-feeds-option {
     background: v.$dark-grey-gradient;
-    width: 48.5%;
     height: 100px;
     box-shadow: 0px 2px 14px #000000;
     border: 1px solid #ffffff1a;
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin: 10px 20px;
     display: flex;
     position: relative;
     justify-content: space-evenly;
+
+    @media (orientation: landscape) {
+        max-width: 30vw;
+    }
 }
 
 .cam-feeds-option-text {
@@ -292,10 +308,10 @@
 }
 
 .cam-feeds-option-toggle {
-    width: 18%;
+    width: 80px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     margin: auto 0 auto 0;
     height: 40px;
 

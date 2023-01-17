@@ -1,3 +1,5 @@
+import { WebGLRenderer } from 'three';
+
 import classes from './CameraMasking.module.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -34,6 +36,8 @@ const MaskingScreen: React.FC = () => {
 
     const isHandProcessing = useStatefulRef<boolean>(false);
 
+    const renderer = useRef<WebGLRenderer>();
+
     // ===== State Setters =====
     const setMasking = (direction: SliderDirection, maskingValue: number) => {
         masking.current = { ...masking.current, [direction]: maskingValue };
@@ -57,6 +61,11 @@ const MaskingScreen: React.FC = () => {
         _setAllowAnalytics(value);
         TrackingManager.RequestTrackingChange({ analyticsEnabled: value }, null);
     };
+    const onResize = () => {
+        if (!camFeedRef.current) return;
+        const { clientWidth, clientHeight } = camFeedRef.current;
+        renderer.current?.setSize(clientWidth, clientHeight);
+    };
 
     // ===== Refs =====
     const camFeedRef = useRef<HTMLDivElement>(null);
@@ -66,17 +75,20 @@ const MaskingScreen: React.FC = () => {
 
     useEffect(() => {
         if (camFeedRef.current) {
-            setupRenderScene(camFeedRef.current);
+            renderer.current = setupRenderScene(camFeedRef.current);
         }
         TrackingManager.RequestTrackingState(handleInitialTrackingState);
 
         HandDataManager.instance.addEventListener('TransmitHandData', handleTFInput as EventListener);
         setHandRenderState(true, mainLens.current === 'Left' ? 'left' : 'right');
 
+        window.addEventListener('resize', onResize);
+
         return () => {
             HandDataManager.instance.removeEventListener('TransmitHandData', handleTFInput as EventListener);
             setHandRenderState(false, mainLens.current === 'Left' ? 'left' : 'right');
             window.clearTimeout(handTimeoutRef.current);
+            window.removeEventListener('resize', onResize);
         };
     }, []);
 
@@ -170,13 +182,13 @@ const MaskingScreen: React.FC = () => {
                     key={sliderInfo[0]}
                     direction={sliderInfo[0] as SliderDirection}
                     maskingValue={sliderInfo[1]}
-                    canvasInfo={{ size: 800, topOffset: 50, leftOffset: 100 }}
+                    canvasSize={innerHeight * (innerHeight < innerWidth ? 0.45 : 0.4)}
                     clearMasking={clearMasking}
                     onDrag={setMasking}
                     onDragEnd={sendMaskingRequest}
                 />
             )),
-        [masking.current]
+        [masking.current, innerHeight]
     );
 
     const lensToggles = useMemo(
@@ -207,8 +219,8 @@ const MaskingScreen: React.FC = () => {
             </div>
             <div className={classes['sub-container']}>
                 <div className={classes['cam-feed-box']}>
-                    {sliders}
                     <div className={classes['cam-feed-box-feed']}>
+                        <div className={classes['slider-container']}>{sliders}</div>
                         <div className={classes['cam-feed-box-feed--render']} ref={camFeedRef} />
                     </div>
                     <div className={classes['lens-toggle-container']}>{lensToggles}</div>
