@@ -37,12 +37,17 @@ const SettingsScreen: React.FC = () => {
                 <InfoButtonEntry
                     title="Tracking Log Files"
                     buttonTitle="Show Tracking Log Files"
-                    onClick={() => console.log('Track')}
+                    // File location: C:/ProgramData/Ultraleap/HandTracker/Logs
+                    onClick={() => {
+                        console.log('C:/ProgramData/Ultraleap/HandTracker/Logs');
+                        window.open('file:///' + 'C:/ProgramData/Ultraleap/HandTracker/Logs');
+                    }}
                 />
                 <InfoButtonEntry
                     title="TouchFree Log Files"
                     buttonTitle="Show TouchFree Log Files"
-                    onClick={() => console.log('Touch')}
+                    // File location: C:/ProgramData/Ultraleap/TouchFree/Logs
+                    onClick={() => console.log('C:/ProgramData/Ultraleap/TouchFree/Logs')}
                 />
             </div>
         </>
