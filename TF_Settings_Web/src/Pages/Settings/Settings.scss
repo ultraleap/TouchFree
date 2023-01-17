@@ -7,6 +7,33 @@
     border-radius: 10px;
 
     margin-left: 2.5%;
-    width: 95%;
-    height: 20vh;
+    width: 92%;
+    padding: 0 1.5%;
+    height: 22%;
+
+    display: flex;
+    flex-direction: column;
+
+    .version-info-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-basis: 25%;
+
+        font-size: 1.7rem;
+        font-family: v.$base-font;
+
+        border-bottom: 2px solid #666666;
+
+        &__title {
+            color: white;
+        }
+        &__version {
+            color: white;
+        }
+    }
+
+    :nth-last-child(1) {
+        border-bottom: none;
+    }
 }

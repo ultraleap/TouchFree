@@ -1,15 +1,23 @@
 import './Settings.scss';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const SettingsScreen: React.FC = () => {
-    const [tFVersion, setTFVersion] = useState<string>('2.2.1');
-    const [trackingVersion, setTrackingVersion] = useState<string>('5.1');
-    const [cameraFWVersion, setCameraFWVersion] = useState<string>('3.4');
-    const [cameraID, setCameraID] = useState<string>('84237527');
+    const [tFVersion, setTFVersion] = useState<string>('');
+    const [trackingVersion, setTrackingVersion] = useState<string>('');
+    const [cameraFWVersion, setCameraFWVersion] = useState<string>('');
+    const [cameraID, setCameraID] = useState<string>('');
+
+    useEffect(() => {
+        // Query from service once added in TF-930
+        setTFVersion('2.2.1');
+        setTrackingVersion('5.1');
+        setCameraFWVersion('3.4');
+        setCameraID('84237527');
+    }, []);
 
     return (
-        <div>
+        <>
             <div className="title-line">
                 <h1> About </h1>
             </div>
@@ -20,7 +28,7 @@ const SettingsScreen: React.FC = () => {
                 <VersionInfoEntry title="Camera Device ID" version={cameraID} />
             </div>
             <div className="page-divider" />
-        </div>
+        </>
     );
 };
 
@@ -30,9 +38,9 @@ interface VersionInfoEntryProps {
 }
 
 const VersionInfoEntry: React.FC<VersionInfoEntryProps> = ({ title, version }) => (
-    <div>
-        <span>{title}</span>
-        <span>{version}</span>
+    <div className="version-info-entry">
+        <span className="version-info-entry__title">{title}:</span>
+        <span className="version-info-entry__version">{version}</span>
     </div>
 );
 

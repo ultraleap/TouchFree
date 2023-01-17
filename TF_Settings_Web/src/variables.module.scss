@@ -5,7 +5,9 @@ $app-background-color: #222222;
 $ultraleap-green: #00eb85;
 $ultraleap-green-gradient: linear-gradient(180deg, $ultraleap-green, #00ccce);
 $light-grey-gradient: linear-gradient(180deg, #5c5c5c 0%, #454545 100%);
-$dark-grey-gradient: linear-gradient(180deg, #373737 0%, #2c2c2c 100%);
+$dark-grey: #363636;
+$dark-grey-gradient: linear-gradient(180deg, $dark-grey 0%, #2c2c2c 100%);
+
 $base-font: MontserratRegular, Arial;
 
 :export {
@@ -17,6 +19,7 @@ $base-font: MontserratRegular, Arial;
     ultraleapGreenGradient: $ultraleap-green-gradient;
     lightGreyGradient: $light-grey-gradient;
     darkGreyGradient: $dark-grey-gradient;
+    darkGrey: $dark-grey;
     baseFont: $base-font;
 }
 
