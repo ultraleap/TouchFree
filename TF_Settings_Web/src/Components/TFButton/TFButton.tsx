@@ -1,6 +1,10 @@
-import './TFButton.scss';
+import classNames from 'classnames/bind';
+
+import styles from './TFButton.module.scss';
 
 import React, { CSSProperties } from 'react';
+
+const classes = classNames.bind(styles);
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
@@ -76,7 +80,7 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
 }) => {
     const content = (
         <>
-            <div className="tf-button-text-container">
+            <div className={classes('tf-button-text-container')}>
                 <h1 style={titleStyle}>{title}</h1>
                 <p style={textStyle}>{text}</p>
             </div>
@@ -99,9 +103,10 @@ const TFButton = (
 
     return (
         <button
-            className={`${buttonClass} tf-button ${canHover && hovered ? 'tf-button--hovered' : ''} ${
-                pressed ? 'tf-button--pressed' : ''
-            }`}
+            className={classes(buttonClass, 'tf-button', {
+                'tf-button--hovered': canHover && hovered,
+                'tf-button--pressed': pressed,
+            })}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {

@@ -1,4 +1,4 @@
-import './ControlBar.scss';
+import classes from './ControlBar.module.scss';
 import cssVariables from '@/variables.module.scss';
 
 import React, { CSSProperties } from 'react';
@@ -57,13 +57,13 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
     return pathname.includes('calibrate') ? (
         <></>
     ) : (
-        <div className="control-bar-container">
-            <div className="control-bar-top">
+        <div className={classes['control-bar-container']}>
+            <div className={classes['control-bar-top']}>
                 <StatusIndicator tfStatus={tfStatus} />
                 <img src={Logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
                 <VersionIndicator touchFreeVersion={touchFreeVersion} />
             </div>
-            <div className="control-bar-bottom">
+            <div className={classes['control-bar-bottom']}>
                 {pathname === '/settings/camera' || pathname === '/settings/interactions' ? (
                     <>
                         <TabSelector

@@ -1,7 +1,11 @@
-import './TabSelector.scss';
+import classNames from 'classnames/bind';
+
+import styles from './TabSelector.module.scss';
 
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+const classes = classNames.bind(styles);
 
 interface TabSelectorProps {
     name: string;
@@ -30,7 +34,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
     const lowerCaseName = name.toLowerCase();
     return (
         <button
-            className={`tab-button ${getSpecialClassName()}`}
+            className={classes('tab-button', getSpecialClassName())}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
                 setHovered(false);
