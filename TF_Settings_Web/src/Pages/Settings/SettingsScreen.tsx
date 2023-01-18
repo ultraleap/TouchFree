@@ -50,16 +50,13 @@ const SettingsScreen: React.FC = () => {
                 <InfoButtonEntry
                     title="Tracking Log Files"
                     buttonTitle="Show Tracking Log Files"
-                    // File location: C:/ProgramData/Ultraleap/HandTracker/Logs
                     onClick={() => {
                         console.log('C:/ProgramData/Ultraleap/HandTracker/Logs');
-                        window.open('file:///' + 'C:/ProgramData/Ultraleap/HandTracker/Logs');
                     }}
                 />
                 <InfoButtonEntry
                     title="TouchFree Log Files"
                     buttonTitle="Show TouchFree Log Files"
-                    // File location: C:/ProgramData/Ultraleap/TouchFree/Logs
                     onClick={() => console.log('C:/ProgramData/Ultraleap/TouchFree/Logs')}
                 />
             </div>
@@ -73,9 +70,9 @@ interface InfoTextEntryProps {
 }
 
 const InfoTextEntry: React.FC<InfoTextEntryProps> = ({ title, text }) => (
-    <div className="info-entry">
-        <span className="info-entry__title">{title}:</span>
-        <span className="info-entry__text">{text}</span>
+    <div className="info-table__entry">
+        <span className="info-table__entry__title">{title}:</span>
+        <span className="info-table__entry__text">{text}</span>
     </div>
 );
 
@@ -86,9 +83,9 @@ interface InfoButtonEntryProps {
 }
 
 const InfoButtonEntry: React.FC<InfoButtonEntryProps> = ({ title, buttonTitle, onClick }) => (
-    <div className="info-entry">
-        <span className="info-entry__title">{title}:</span>
-        <span className="info-entry__button">
+    <div className="info-table__entry">
+        <span className="info-table__entry__title">{title}:</span>
+        <span className="info-table__entry__button">
             <TextButton title={buttonTitle} text={''} onClick={onClick} />
         </span>
     </div>
