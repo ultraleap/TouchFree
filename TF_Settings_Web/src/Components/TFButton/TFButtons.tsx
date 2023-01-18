@@ -42,13 +42,7 @@ export const TextButton: React.FC<TextButtonProps> = ({
     onClick,
     canHover = true,
 }) => (
-    <BaseTFButton
-        buttonClass={className}
-        canHover={canHover}
-        onClick={onClick}
-        buttonStyle={buttonStyle}
-        type="vertical"
-    >
+    <BaseTFButton buttonClass={className} canHover={canHover} onClick={onClick} buttonStyle={buttonStyle} type="text">
         <h1 style={{ ...titleStyle, display: title ? '' : 'none' }}>{title}</h1>
         <p style={{ ...textStyle, display: text ? '' : 'none' }}>{text}</p>
     </BaseTFButton>

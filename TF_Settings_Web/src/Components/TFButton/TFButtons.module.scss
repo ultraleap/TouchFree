@@ -35,6 +35,9 @@
     }
 
     &--text {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         p {
             padding: 0;
             text-align: center;

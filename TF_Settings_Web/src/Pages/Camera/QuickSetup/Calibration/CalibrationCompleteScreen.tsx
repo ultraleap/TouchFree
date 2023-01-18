@@ -22,9 +22,6 @@ const titleStyle: CSSProperties = {
     fontSize: '2rem',
     padding: '0',
     margin: '0',
-    display: 'inline-flex',
-    justifyContent: 'center',
-    alignItems: 'center',
 };
 
 interface CalibrationCompleteProps {
@@ -94,18 +91,9 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
                     buttonStyle={buttonStyle}
                     title="Redo Auto Calibration"
                     titleStyle={titleStyle}
-                    text={''}
-                    textStyle={{ display: 'none' }}
                     onClick={redoClickHandler}
                 />
-                <TextButton
-                    buttonStyle={buttonStyle}
-                    title="Done"
-                    titleStyle={titleStyle}
-                    text={''}
-                    textStyle={{ display: 'none' }}
-                    onClick={doneClickHandler}
-                />
+                <TextButton buttonStyle={buttonStyle} title="Done" titleStyle={titleStyle} onClick={doneClickHandler} />
                 <CalibrationPracticeButton isHandPresent={isHandPresent} progress={progressToClick} />
             </div>
         </div>

@@ -171,9 +171,6 @@ const cancelSetupButtonStyle: CSSProperties = {
     borderRadius: '50px',
     padding: '0 30px',
     background: cssVariables.lightGreyGradient,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
 };
 
 interface CalibrationCancelButtonProps {
