@@ -52,7 +52,6 @@ const reducer = (state: InteractionConfig, action: ReducerAction) => {
 
 const InteractionsScreen = () => {
     const [config, dispatch] = useReducer(reducer, DefaultInteractionConfig);
-    const [resetButtonHovered, setResetButtonHovered] = useState(false);
     const [activeInteraction, setActiveInteraction] = useState(0);
     const [activePlaneTracking, setActivePlaneTracking] = useState(0);
 
