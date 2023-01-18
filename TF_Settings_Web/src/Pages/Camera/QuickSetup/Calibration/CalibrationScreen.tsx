@@ -23,7 +23,7 @@ interface CalibrationScreenProps {
     onCancel: (event?: TFClickEvent) => void;
 }
 
-export const TIMEOUT_S = 1000;
+export const TIMEOUT_S = 10;
 const TIMEOUT_MS = TIMEOUT_S * 1000;
 const INITIAL_WAIT_MS = 5000;
 
