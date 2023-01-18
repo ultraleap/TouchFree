@@ -1,6 +1,6 @@
 @use '@/variables.module.scss' as v;
 
-.docs-modal--cover {
+.bg-cover {
     position: absolute;
     z-index: 2;
     top: 0;
@@ -11,12 +11,12 @@
     pointer-events: all;
 }
 
-.docs-modal--container {
-    $height: 40vh;
+.docs-modal {
+    $height: 25%;
     position: absolute;
     z-index: 3;
     height: $height;
-    top: calc((100vh - $height) / 2);
+    top: calc((100% - $height) / 2);
     width: 80vw;
     left: 10vw;
 
@@ -29,44 +29,34 @@
     align-items: center;
     justify-content: space-evenly;
 
-    .qr-code--container {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
+    &__qr-code {
+        border: 10px solid white;
+        margin-top: 2%;
+        border-radius: 10px;
+        height: 45%;
+        aspect-ratio: 1/1;
 
-        height: 70%;
-        width: 100%;
-
-        .qr-img--container {
-            border: 20px solid white;
-            border-radius: 10px;
-            height: 95%;
-            margin-left: 5%;
-            aspect-ratio: 1/1;
-
-            > svg {
-                pointer-events: none;
-            }
+        > svg {
+            pointer-events: none;
         }
+    }
 
-        > h1 {
-            padding: 0 5%;
-            font-size: 1.8rem;
-            font-family: v.$base-font;
-            color: white;
-        }
+    &__text {
+        padding: 0 5%;
+        font-size: 2rem;
+        font-family: v.$base-font;
+        color: white;
     }
 }
 
-.docs-modal-buttons--container {
+.docs-modal-buttons {
     width: 100%;
-    height: 15%;
+    height: 25%;
     display: flex;
     justify-content: space-around;
     align-items: center;
 
-    .modal-button {
+    .docs-modal__button {
         width: 40%;
         height: 80%;
 
@@ -78,18 +68,18 @@
         }
     }
 
-    .link-modal-button--container {
+    &--link {
         width: 40%;
         height: 80%;
 
-        .modal-button {
+        .docs-modal__button {
             width: 100%;
             height: 100%;
         }
     }
 }
 
-#docs-button--container .docs-button {
+#docs-open .docs-open__button {
     position: absolute;
     bottom: 2vh;
     right: 2vh;
