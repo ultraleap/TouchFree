@@ -13,23 +13,16 @@ const SettingsScreen: React.FC = () => {
     const [cameraSerial, setCameraSerial] = useState<string | null>(null);
 
     useEffect(() => {
-        const onServiceChangeHandler = TouchFree.RegisterEventCallback(
-            'OnServiceStatusChange',
-            (serviceStatus: ServiceStatus) => {
-                console.log('Recieved Service Status Change');
-                console.dir(serviceStatus);
-            }
-        );
-
-        ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
+        const setVersionInfo = (detail: ServiceStatus) => {
             const { cameraFirmwareVersion, cameraSerial, serviceVersion, trackingVersion } = detail;
             setTFVersion(serviceVersion);
             setTrackingVersion(trackingVersion);
             setCameraFWVersion(cameraFirmwareVersion);
             setCameraSerial(cameraSerial);
+        };
+        ConnectionManager.RequestServiceStatus(setVersionInfo);
 
-            console.log(detail);
-        });
+        const onServiceChangeHandler = TouchFree.RegisterEventCallback('OnServiceStatusChange', setVersionInfo);
 
         return () => {
             onServiceChangeHandler.UnregisterEventCallback();

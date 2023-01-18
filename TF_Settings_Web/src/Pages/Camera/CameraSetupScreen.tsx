@@ -1,26 +1,25 @@
 import './Camera.scss';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
 
 import { Alert, DocsLink, HorizontalIconTextButton, VerticalIconTextButton } from '@/Components';
 
-const CameraSetupScreen = () => {
+interface CameraSetupScreenProps {
+    trackingStatus: TrackingServiceState;
+}
+
+const CameraSetupScreen: React.FC<CameraSetupScreenProps> = ({ trackingStatus }) => {
+    const [isConnected, setIsConnected] = useState<boolean>(false);
     const navigate = useNavigate();
 
-    const [touchFreeConnected, setTouchFreeConnected] = useState<boolean>(false);
-
-    const onConnected = () => {
-        setTouchFreeConnected(true);
-    };
-
     useEffect(() => {
-        ConnectionManager.AddConnectionListener(onConnected);
-    }, []);
+        setIsConnected(trackingStatus !== TrackingServiceState.UNAVAILABLE);
+    }, [trackingStatus]);
 
     return (
         <div>
@@ -55,8 +54,8 @@ const CameraSetupScreen = () => {
                 <HorizontalIconTextButton
                     buttonStyle={{
                         position: 'relative',
-                        opacity: touchFreeConnected ? 1 : 0.5,
-                        pointerEvents: touchFreeConnected ? 'auto' : 'none',
+                        opacity: isConnected ? 1 : 0.5,
+                        pointerEvents: isConnected ? 'auto' : 'none',
                     }}
                     icon={CameraMaskingIcon}
                     alt="Icon for Camera Masking"
@@ -66,7 +65,7 @@ const CameraSetupScreen = () => {
                     onClick={() => navigate('masking')}
                 />
                 <Alert
-                    show={!touchFreeConnected}
+                    show={!isConnected}
                     cssWidth={'60%'}
                     text="Failed to connect to service: masking unavailable"
                     animationType="fadeIn"
