@@ -14,7 +14,7 @@ import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { InteractionExplainer } from '@/Videos';
 
-import { LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
+import { DocsLink, LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
 
 import { DefaultInteractionConfig } from './SettingsTypes';
 
@@ -268,6 +268,7 @@ const InteractionsScreen = () => {
                     </div>
                 </div>
             </div>
+            <DocsLink title="Support" url="https://www.ultraleap.com/contact-us/" />
         </div>
     );
 };

@@ -9,7 +9,7 @@ import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 
 import { CameraFacingUserIcon, CameraFacingScreenIcon, CameraBelowIcon } from '@/Images';
 
-import { VerticalIconTextButton } from '@/Components';
+import { DocsLink, VerticalIconTextButton } from '@/Components';
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 
@@ -71,6 +71,7 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
                     />
                 ))}
             </div>
+            <DocsLink title="Setup Guide" url="https://docs.ultraleap.com/touchfree-user-manual/camera-placement" />
         </div>
     );
 };

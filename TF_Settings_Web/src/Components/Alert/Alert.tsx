@@ -1,21 +1,20 @@
 import classes from './Alert.module.scss';
 
-import React from 'react';
+import React, { CSSProperties } from 'react';
 
 interface AlertProps {
     show: boolean;
-    cssWidth: string;
+    style: CSSProperties;
     text: string;
     animationType: 'fadeIn' | 'fadeInOut' | 'none';
     animationTime: number;
 }
-const Alert: React.FC<AlertProps> = ({ show, cssWidth, text, animationType, animationTime }) =>
+const Alert: React.FC<AlertProps> = ({ show, style, text, animationType, animationTime }) =>
     show ? (
         <div
             className={classes['alert-container']}
             style={{
-                width: cssWidth,
-                left: `calc(50% - ${cssWidth}/2)`,
+                ...style,
                 animation: getAlertAnimation(animationType, animationTime),
             }}
         >

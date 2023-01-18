@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 
-import styles from './TFButton.module.scss';
+import styles from './TFButtons.module.scss';
 
 import React, { CSSProperties } from 'react';
 
@@ -8,13 +8,20 @@ const classes = classNames.bind(styles);
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
-interface TextButtonProps {
+export const tFClickIsPointer = (event: TFClickEvent): event is React.PointerEvent<HTMLButtonElement> =>
+    event.type.includes('pointer');
+
+export interface BaseButtonProps {
+    className?: string;
     buttonStyle?: React.CSSProperties;
     title: string;
     titleStyle?: React.CSSProperties;
+    onClick: (event: TFClickEvent) => void;
+}
+
+interface TextButtonProps extends BaseButtonProps {
     text: string;
     textStyle?: React.CSSProperties;
-    onClick: (event: React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) => void;
     canHover?: boolean;
 }
 
@@ -25,6 +32,7 @@ interface IconTextButtonProps extends TextButtonProps {
 }
 
 export const TextButton: React.FC<TextButtonProps> = ({
+    className,
     buttonStyle,
     title,
     titleStyle,
@@ -40,10 +48,11 @@ export const TextButton: React.FC<TextButtonProps> = ({
         </>
     );
 
-    return TFButton('text-tf-button', canHover, onClick, content, buttonStyle);
+    return BaseTFButton(`${className} text-tf-button`, canHover, onClick, content, buttonStyle);
 };
 
 export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
+    className,
     buttonStyle,
     icon,
     alt,
@@ -63,10 +72,11 @@ export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
         </>
     );
 
-    return TFButton('vertical-tf-button', canHover, onClick, content, buttonStyle);
+    return BaseTFButton(`${className} vertical-tf-button`, canHover, onClick, content, buttonStyle);
 };
 
 export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
+    className,
     buttonStyle,
     icon,
     alt,
@@ -88,10 +98,10 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
         </>
     );
 
-    return TFButton('horizontal-tf-button', canHover, onClick, content, buttonStyle);
+    return BaseTFButton(`${className} horizontal-tf-button`, canHover, onClick, content, buttonStyle);
 };
 
-const TFButton = (
+export const BaseTFButton = (
     buttonClass: string,
     canHover: boolean,
     onClick: (event: TFClickEvent) => void,
@@ -105,7 +115,7 @@ const TFButton = (
         <button
             className={classes(buttonClass, 'tf-button', {
                 'tf-button--hovered': canHover && hovered,
-                'tf-button--pressed': pressed,
+                [`tf-button--pressed ${buttonClass}--pressed`]: pressed,
             })}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
