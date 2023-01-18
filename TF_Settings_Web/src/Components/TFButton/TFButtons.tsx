@@ -4,6 +4,9 @@ import React, { CSSProperties } from 'react';
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
+export const tFClickIsPointer = (event: TFClickEvent): event is React.PointerEvent<HTMLButtonElement> =>
+    event.type.includes('pointer');
+
 export interface BaseButtonProps {
     className?: string;
     buttonStyle?: React.CSSProperties;
