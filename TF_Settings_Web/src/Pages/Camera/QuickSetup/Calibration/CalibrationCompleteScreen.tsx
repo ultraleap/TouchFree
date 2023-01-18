@@ -1,4 +1,4 @@
-import './Calibration.scss';
+import classes from './Calibration.module.scss';
 import cssVariables from '@/variables.module.scss';
 
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
@@ -75,18 +75,21 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
 
     const navigate = useNavigate();
     return (
-        <div style={{ height: '100%', alignItems: 'center' }}>
-            <CalibrationHandLostMessage
-                display={!isHandPresent}
-                handsLostStyle={{ height: '3vh', padding: '5px 30px' }}
-            />
-            <div style={{ paddingTop: '100px' }}>
-                <h1 className="setup-complete-title">
-                    Setup <br />
-                    Complete
-                </h1>
+        <div className={classes['setup-complete-container']}>
+            <div>
+                <CalibrationHandLostMessage
+                    display={!isHandPresent}
+                    handsLostStyle={{ height: '3vh', padding: '5px 30px' }}
+                />
             </div>
-            <div className="setup-complete-options-container" style={{ pointerEvents: showButtons ? 'all' : 'none' }}>
+            <h1 className={classes['setup-complete-title']}>
+                Setup <br />
+                Complete
+            </h1>
+            <div
+                className={classes['setup-complete-options-container']}
+                style={{ pointerEvents: showButtons ? 'all' : 'none' }}
+            >
                 <TextButton
                     buttonStyle={buttonStyle}
                     title="Redo Auto Calibration"
