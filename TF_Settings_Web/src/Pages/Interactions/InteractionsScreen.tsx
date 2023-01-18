@@ -50,11 +50,15 @@ const reducer = (state: InteractionConfig, action: ReducerAction) => {
     }
 };
 
+const supportPortraitStyle: CSSProperties = { position: 'fixed', bottom: '2vh', right: '2vh' };
+
 const InteractionsScreen = () => {
     const [config, dispatch] = useReducer(reducer, DefaultInteractionConfig);
     const [activeInteraction, setActiveInteraction] = useState(0);
     const [activePlaneTracking, setActivePlaneTracking] = useState(0);
-    const [supportPosition, setSupportPosition] = useState<CSSProperties | undefined>();
+    const [supportStyle, setSupportStyle] = useState<CSSProperties | undefined>(
+        innerHeight > innerWidth ? supportPortraitStyle : undefined
+    );
 
     useEffect(() => {
         ConfigurationManager.RequestConfigFileState((config) =>
@@ -62,9 +66,7 @@ const InteractionsScreen = () => {
         );
 
         const onResize = () => {
-            setSupportPosition(
-                innerHeight > innerWidth ? { position: 'fixed', bottom: '2vh', right: '2vh' } : undefined
-            );
+            setSupportStyle(innerHeight > innerWidth ? supportPortraitStyle : undefined);
         };
 
         window.addEventListener('resize', onResize);
@@ -182,11 +184,7 @@ const InteractionsScreen = () => {
             <div className={classes('title-line')}>
                 <h1> Interaction Type </h1>
                 <div className={classes('misc-button-container')}>
-                    <DocsLink
-                        title="Support"
-                        url="https://www.ultraleap.com/contact-us/"
-                        buttonStyle={supportPosition}
-                    />
+                    <DocsLink title="Support" url="https://www.ultraleap.com/contact-us/" buttonStyle={supportStyle} />
                     <MiscTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
                 </div>
             </div>
