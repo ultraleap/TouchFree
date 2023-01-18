@@ -20,8 +20,8 @@ interface BaseButtonProps {
 }
 
 interface TextButtonProps extends BaseButtonProps {
-    text: string;
-    title: string;
+    text?: string;
+    title?: string;
     textStyle?: React.CSSProperties;
 }
 
@@ -49,8 +49,8 @@ export const TextButton: React.FC<TextButtonProps> = ({
         buttonStyle={buttonStyle}
         type="vertical"
     >
-        <h1 style={titleStyle}>{title}</h1>
-        <p style={textStyle}>{text}</p>
+        <h1 style={{ ...titleStyle, display: title ? '' : 'none' }}>{title}</h1>
+        <p style={{ ...textStyle, display: text ? '' : 'none' }}>{text}</p>
     </BaseTFButton>
 );
 

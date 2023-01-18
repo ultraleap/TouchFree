@@ -166,15 +166,14 @@ export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> =
 };
 
 const cancelSetupButtonStyle: CSSProperties = {
-    width: '300px',
+    width: 'auto',
     height: '4vh',
     borderRadius: '50px',
+    padding: '0 30px',
     background: cssVariables.lightGreyGradient,
-};
-
-const cancelSetupButtonTextStyle: CSSProperties = {
-    fontSize: '1.7vh',
-    opacity: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
 };
 
 interface CalibrationCancelButtonProps {
@@ -185,11 +184,9 @@ interface CalibrationCancelButtonProps {
 export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
         <TextButton
-            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle, width: 'auto', padding: '0 30px' }}
-            title=""
-            titleStyle={{ display: 'none' }}
-            text="Cancel Setup"
-            textStyle={cancelSetupButtonTextStyle}
+            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
+            title="Cancel Setup"
+            titleStyle={{ margin: 0, padding: 0 }}
             onClick={onCancel}
             canHover={false}
         />
