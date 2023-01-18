@@ -68,7 +68,11 @@ const CameraSetupScreen = () => {
                     animationTime={1}
                 />
             </div>
-            <DocsLink title="Support" url="https://www.ultraleap.com/contact-us/" />
+            <DocsLink
+                title="Support"
+                url="https://www.ultraleap.com/contact-us/"
+                buttonStyle={{ position: 'fixed', bottom: '2vh', right: '2vh' }}
+            />
         </div>
     );
 };

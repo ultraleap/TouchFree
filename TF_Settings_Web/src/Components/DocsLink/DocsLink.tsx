@@ -11,11 +11,10 @@ import { MiscTextButton, tFClickIsPointer } from '@/Components/TFButton/TFButton
 interface DocsLinkProps {
     buttonStyle?: CSSProperties;
     title: string;
-    titleStyle?: CSSProperties;
     url: string;
 }
 
-const DocsLink: React.FC<DocsLinkProps> = ({ title, url }) => {
+const DocsLink: React.FC<DocsLinkProps> = ({ title, url, buttonStyle }) => {
     const [showModal, setShowModal] = useState<boolean>(false);
 
     const toggleModal = () => setShowModal(!showModal);
@@ -23,11 +22,7 @@ const DocsLink: React.FC<DocsLinkProps> = ({ title, url }) => {
     return (
         <>
             {showModal && <DocsModal url={url} toggleModal={toggleModal} />}
-            <MiscTextButton
-                title={title}
-                onClick={toggleModal}
-                buttonStyle={{ position: 'fixed', bottom: '2vh', right: '2vh' }}
-            />
+            <MiscTextButton title={title} onClick={toggleModal} buttonStyle={buttonStyle} />
         </>
     );
 };

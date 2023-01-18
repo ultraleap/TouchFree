@@ -36,6 +36,11 @@ video.InteractionPreview.Interaction2 {
     object-position: 50% -18.5rem;
 }
 
+.interaction-zone-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
 .verticalContainer {
     display: flex;
     flex-direction: column;
@@ -85,4 +90,12 @@ p {
     @include App.title-line;
     justify-content: space-between;
     align-items: center;
+}
+
+.misc-button-container {
+    @media (orientation: landscape) {
+        button {
+            margin: 0 1vw;
+        }
+    }
 }

@@ -71,7 +71,11 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
                     />
                 ))}
             </div>
-            <DocsLink title="Setup Guide" url="https://docs.ultraleap.com/touchfree-user-manual/camera-placement" />
+            <DocsLink
+                title="Setup Guide"
+                url="https://docs.ultraleap.com/touchfree-user-manual/camera-placement"
+                buttonStyle={{ position: 'fixed', bottom: '2vh', right: '2vh' }}
+            />
         </div>
     );
 };

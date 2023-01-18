@@ -2,7 +2,7 @@ import classnames from 'classnames/bind';
 
 import styles from './Interactions.module.scss';
 
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState, CSSProperties } from 'react';
 
 import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
 import {
@@ -54,11 +54,22 @@ const InteractionsScreen = () => {
     const [config, dispatch] = useReducer(reducer, DefaultInteractionConfig);
     const [activeInteraction, setActiveInteraction] = useState(0);
     const [activePlaneTracking, setActivePlaneTracking] = useState(0);
+    const [supportPosition, setSupportPosition] = useState<CSSProperties | undefined>();
 
     useEffect(() => {
         ConfigurationManager.RequestConfigFileState((config) =>
             dispatch({ type: 'update', content: config.interaction })
         );
+
+        const onResize = () => {
+            setSupportPosition(
+                innerHeight > innerWidth ? { position: 'fixed', bottom: '2vh', right: '2vh' } : undefined
+            );
+        };
+
+        window.addEventListener('resize', onResize);
+
+        return () => window.removeEventListener('resize', onResize);
     }, []);
 
     useEffect(() => {
@@ -170,7 +181,14 @@ const InteractionsScreen = () => {
         <div className={classes('container')}>
             <div className={classes('title-line')}>
                 <h1> Interaction Type </h1>
-                <MiscTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
+                <div className={classes('misc-button-container')}>
+                    <DocsLink
+                        title="Support"
+                        url="https://www.ultraleap.com/contact-us/"
+                        buttonStyle={supportPosition}
+                    />
+                    <MiscTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
+                </div>
             </div>
             <div className={classes('section-container')}>
                 <div className={classes('content')}>
@@ -260,7 +278,6 @@ const InteractionsScreen = () => {
                     </div>
                 </div>
             </div>
-            <DocsLink title="Support" url="https://www.ultraleap.com/contact-us/" />
         </div>
     );
 };
