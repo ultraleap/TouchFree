@@ -57,8 +57,8 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
                     <QRCodeSVG value={url} style={{ width: '100%', height: '100%' }} />
                 </div>
                 <h1 className="docs-modal__text">Scan QR Code to find help at Ultraleap.com</h1>
-                <div className="docs-modal__buttons">
-                    <div className="docs-modal__buttons--link">
+                <div className="docs-modal-buttons">
+                    <div className="docs-modal-buttons--link">
                         <TextButton
                             className="docs-modal__button"
                             title="Open Link"

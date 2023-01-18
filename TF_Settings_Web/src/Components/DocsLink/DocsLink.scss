@@ -12,7 +12,7 @@
 }
 
 .docs-modal {
-    $height: 30%;
+    $height: 25%;
     position: absolute;
     z-index: 3;
     height: $height;
@@ -31,6 +31,7 @@
 
     &__qr-code {
         border: 10px solid white;
+        margin-top: 2%;
         border-radius: 10px;
         height: 45%;
         margin-left: 5%;
@@ -49,9 +50,9 @@
     }
 }
 
-.docs-modal__buttons {
+.docs-modal-buttons {
     width: 100%;
-    height: 20%;
+    height: 25%;
     display: flex;
     justify-content: space-around;
     align-items: center;
