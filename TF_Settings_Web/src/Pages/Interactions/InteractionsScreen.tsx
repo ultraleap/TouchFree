@@ -15,6 +15,7 @@ import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 import { InteractionExplainer } from '@/Videos';
 
 import { DocsLink, LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
+import { MiscTextButton } from '@/Components/TFButton/TFButtons';
 
 import { DefaultInteractionConfig } from './SettingsTypes';
 
@@ -170,15 +171,7 @@ const InteractionsScreen = () => {
         <div className={classes('container')}>
             <div className={classes('title-line')}>
                 <h1> Interaction Type </h1>
-                <button
-                    onClick={() => dispatch({ type: 'reset' })}
-                    onPointerUp={() => dispatch({ type: 'reset' })}
-                    onPointerEnter={() => setResetButtonHovered(true)}
-                    onPointerLeave={() => setResetButtonHovered(false)}
-                    className={resetButtonHovered ? `${classes('reset-button')} hover` : classes('reset-button')}
-                >
-                    <p> Reset to Default </p>
-                </button>
+                <MiscTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
             </div>
             <div className={classes('section-container')}>
                 <div className={classes('content')}>

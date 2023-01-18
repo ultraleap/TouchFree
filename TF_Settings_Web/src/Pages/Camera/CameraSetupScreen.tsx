@@ -62,7 +62,7 @@ const CameraSetupScreen = () => {
                 />
                 <Alert
                     show={!touchFreeConnected}
-                    cssWidth={'60%'}
+                    style={{ width: '60%' }}
                     text="Failed to connect to service: masking unavailable"
                     animationType="fadeIn"
                     animationTime={1}
