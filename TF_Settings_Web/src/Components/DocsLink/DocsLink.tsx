@@ -23,7 +23,7 @@ const DocsLink: React.FC<DocsLinkProps> = ({ buttonStyle, title, titleStyle, url
     return (
         <>
             {showModal && <DocsModal url={url} toggleModal={toggleModal} />}
-            <DocsButton buttonStyle={buttonStyle} title={title} titleStyle={titleStyle} onClick={toggleModal} />
+            <DocsOpenButton buttonStyle={buttonStyle} title={title} titleStyle={titleStyle} onClick={toggleModal} />
         </>
     );
 };
@@ -43,26 +43,24 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
 
     return (
         <>
-            <div className="docs-modal--cover" />
-            <div className="docs-modal--container">
-                <div className="qr-code--container">
-                    <div
-                        className="qr-img--container"
-                        onPointerEnter={() => TouchFree.GetCurrentCursor()?.SetCursorOpacity(0.5)}
-                        onPointerLeave={() => {
-                            if (TouchFree.GetCurrentCursor()?.shouldShow) {
-                                TouchFree.GetCurrentCursor()?.SetCursorOpacity(1);
-                            }
-                        }}
-                    >
-                        <QRCodeSVG value={url} style={{ width: '100%', height: '100%' }} />
-                    </div>
-                    <h1>Scan QR Code to find help at Ultraleap.com</h1>
+            <div className="bg-cover" />
+            <div className="docs-modal">
+                <div
+                    className="docs-modal__qr-code"
+                    onPointerEnter={() => TouchFree.GetCurrentCursor()?.SetCursorOpacity(0.5)}
+                    onPointerLeave={() => {
+                        if (TouchFree.GetCurrentCursor()?.shouldShow) {
+                            TouchFree.GetCurrentCursor()?.SetCursorOpacity(1);
+                        }
+                    }}
+                >
+                    <QRCodeSVG value={url} style={{ width: '100%', height: '100%' }} />
                 </div>
-                <div className="docs-modal-buttons--container">
-                    <div className="link-modal-button--container">
+                <h1 className="docs-modal__text">Scan QR Code to find help at Ultraleap.com</h1>
+                <div className="docs-modal-buttons">
+                    <div className="docs-modal-buttons--link">
                         <TextButton
-                            className="modal-button"
+                            className="docs-modal__button"
                             title="Open Link"
                             text=""
                             textStyle={{ display: 'none' }}
@@ -87,7 +85,7 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
                         />
                     </div>
                     <TextButton
-                        className="modal-button"
+                        className="docs-modal__button"
                         title="Close"
                         text=""
                         textStyle={{ display: 'none' }}
@@ -99,14 +97,10 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
     );
 };
 
-const DocsButton: React.FC<BaseButtonProps> = ({ buttonStyle, title, titleStyle, onClick }) => {
+const DocsOpenButton: React.FC<BaseButtonProps> = ({ buttonStyle, title, titleStyle, onClick }) => {
     const buttonContent = <h1 style={titleStyle}>{title}</h1>;
 
-    return (
-        <span id="docs-button--container">
-            {BaseTFButton('docs-button', true, onClick, buttonContent, buttonStyle)}
-        </span>
-    );
+    return <span id="docs-open">{BaseTFButton('docs-open__button', true, onClick, buttonContent, buttonStyle)}</span>;
 };
 
 export default DocsLink;
