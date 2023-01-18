@@ -231,6 +231,10 @@ const InteractionsScreen = () => {
                                 dispatch({ type: 'update', content: { InteractionZoneEnabled: value } })
                             }
                         />
+                    </div>
+                </div>
+                <div className={classes('content')}>
+                    <div className={classes('verticalContainer')}>
                         {config.InteractionZoneEnabled ? (
                             <>
                                 <TextSlider
