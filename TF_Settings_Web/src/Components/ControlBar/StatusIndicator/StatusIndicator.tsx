@@ -7,7 +7,7 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 import { CameraStatusIcon, HandIcon } from '@/Images';
 
 interface StatusIndicatorProps {
-    tfStatus: TrackingServiceState;
+    trackingStatus: TrackingServiceState;
 }
 interface StatusIndicator {
     title: string;
@@ -15,25 +15,10 @@ interface StatusIndicator {
     className: string;
 }
 
-const getStatusIndicators = (tfStatus: TrackingServiceState): StatusIndicator[] => {
-    return [
-        {
-            title: 'Camera',
-            icon: CameraStatusIcon,
-            className: tfStatus === TrackingServiceState.CONNECTED ? 'status-dot-ok' : 'status-dot-bad',
-        },
-        {
-            title: 'Tracking Service',
-            icon: HandIcon,
-            className: tfStatus === TrackingServiceState.UNAVAILABLE ? 'status-dot-bad' : 'status-dot-ok',
-        },
-    ];
-};
-
-const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tfStatus }) => {
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({ trackingStatus }) => {
     return (
         <div className="status-container">
-            {getStatusIndicators(tfStatus).map((indicator: StatusIndicator) => (
+            {getStatusIndicators(trackingStatus).map((indicator: StatusIndicator) => (
                 <div className="status-icon-container" key={indicator.title}>
                     <img src={indicator.icon} alt={`${indicator.title} Status Icon`} />
                     <div className={`status-dot ${indicator.className}`} />
@@ -41,6 +26,21 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tfStatus }) => {
             ))}
         </div>
     );
+};
+
+const getStatusIndicators = (trackingStatus: TrackingServiceState): StatusIndicator[] => {
+    return [
+        {
+            title: 'Camera',
+            icon: CameraStatusIcon,
+            className: trackingStatus === TrackingServiceState.CONNECTED ? 'status-dot-ok' : 'status-dot-bad',
+        },
+        {
+            title: 'Tracking Service',
+            icon: HandIcon,
+            className: trackingStatus === TrackingServiceState.UNAVAILABLE ? 'status-dot-bad' : 'status-dot-ok',
+        },
+    ];
 };
 
 export default StatusIndicator;

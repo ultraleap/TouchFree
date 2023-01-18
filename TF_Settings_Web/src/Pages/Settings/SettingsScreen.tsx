@@ -2,20 +2,33 @@ import './Settings.scss';
 
 import React, { useState, useEffect } from 'react';
 
+import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'TouchFree/src/TouchFree';
+
 import { TextButton } from '@/Components';
 
 const SettingsScreen: React.FC = () => {
-    const [tFVersion, setTFVersion] = useState<string>('');
-    const [trackingVersion, setTrackingVersion] = useState<string>('');
-    const [cameraFWVersion, setCameraFWVersion] = useState<string>('');
-    const [cameraSerial, setCameraSerial] = useState<string>('');
+    const [tFVersion, setTFVersion] = useState<string | null>(null);
+    const [trackingVersion, setTrackingVersion] = useState<string | null>(null);
+    const [cameraFWVersion, setCameraFWVersion] = useState<string | null>(null);
+    const [cameraSerial, setCameraSerial] = useState<string | null>(null);
 
     useEffect(() => {
-        // Query from service once added in TF-930
-        setTFVersion('2.2.1');
-        setTrackingVersion('5.1');
-        setCameraFWVersion('3.4');
-        setCameraSerial('84237527');
+        const setVersionInfo = (detail: ServiceStatus) => {
+            const { cameraFirmwareVersion, cameraSerial, serviceVersion, trackingVersion } = detail;
+            setTFVersion(serviceVersion);
+            setTrackingVersion(trackingVersion);
+            setCameraFWVersion(cameraFirmwareVersion);
+            setCameraSerial(cameraSerial);
+        };
+        ConnectionManager.RequestServiceStatus(setVersionInfo);
+
+        const onServiceChangeHandler = TouchFree.RegisterEventCallback('OnServiceStatusChange', setVersionInfo);
+
+        return () => {
+            onServiceChangeHandler.UnregisterEventCallback();
+        };
     }, []);
 
     return (
@@ -56,7 +69,7 @@ const SettingsScreen: React.FC = () => {
 
 interface InfoTextEntryProps {
     title: string;
-    text: string;
+    text: string | null;
 }
 
 const InfoTextEntry: React.FC<InfoTextEntryProps> = ({ title, text }) => (

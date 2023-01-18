@@ -13,12 +13,13 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         private static string uri = "ws://127.0.0.1:1024/";
         private readonly IConfigManager configManager;
-        private string trackingServiceVersion;
         private Version version;
 
-        public uint? connectedDeviceID;
-        public string connectedDeviceFirmware;
-        public string connectedDeviceSerial;
+        public string trackingServiceVersion { get; private set; }
+
+        private uint? connectedDeviceID;
+        public string connectedDeviceFirmware { get; private set; }
+        public string connectedDeviceSerial { get; private set; }
 
         public event Action<Result<ImageMaskData>> OnMaskingResponse;
         public event Action<Result<bool>> OnAnalyticsResponse;
@@ -165,8 +166,11 @@ namespace Ultraleap.TouchFree.Library.Connections
                 cameraReversed.RequestSet(config.CameraReversed);
                 maskingData.RequestSet((ImageMaskData)config.Mask);
             }
-            void ControllerOnDevice(object sender, DeviceEventArgs e) => RequestGetDevices(); // Get devices response will update the connected device and refresh tracking config
-            void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => RequestGetDevices(); // Works even when no device is connected
+            // Get devices response will update the connected device and refresh tracking config
+            void ControllerOnDevice(object sender, DeviceEventArgs e) => RequestGetDevices();
+
+            // Works even when no device is connected
+            void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => RequestGetDevices();
 
             _configManager.OnTrackingConfigUpdated += SetTrackingConfigurationOnDevice;
             _trackingConnectionManager.Controller.Device += ControllerOnDevice;
@@ -185,7 +189,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void SetTrackingConfigIfUnset<T>(Result<T> _)
         {
-            if (configManager.TrackingConfig == null && 
+            if (configManager.TrackingConfig == null &&
                 maskingData.Initialized &&
                 analyticsEnabled.Initialized &&
                 allowImages.Initialized &&
@@ -360,6 +364,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                                         analyticsEnabled.Match(RequestSetAnalyticsMode, RequestGetAnalyticsMode);
                                         cameraReversed.Match(RequestSetCameraOrientation, RequestGetCameraOrientation);
                                         maskingData.Match(data => RequestSetImageMask(data.left, data.right, data.upper, data.lower), RequestGetImageMask);
+                                        RequestGetDeviceInfo();
                                     }
                                 }
                             }); // TODO: Handle failure?

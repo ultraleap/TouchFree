@@ -12,11 +12,6 @@ import { VerticalIconTextButton } from '@/Components';
 
 import { StatusIndicator, TabSelector, VersionIndicator } from './';
 
-interface ControlBarProps {
-    tfStatus: TrackingServiceState;
-    touchFreeVersion: string;
-}
-
 const backButtonStyle: CSSProperties = {
     width: '200px',
     height: '80px',
@@ -47,9 +42,14 @@ const getBackLocation = (path: string): string => {
 };
 
 const tabNames = ['Camera', 'Interactions', 'Settings'] as const;
-type TabName = typeof tabNames[number];
+type TabName = (typeof tabNames)[number];
 
-const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) => {
+interface ControlBarProps {
+    trackingStatus: TrackingServiceState;
+    touchFreeVersion: string;
+}
+
+const ControlBar: React.FC<ControlBarProps> = ({ trackingStatus, touchFreeVersion }) => {
     const [activeTab, setActiveTab] = React.useState<TabName>('Camera');
 
     const { pathname } = useLocation();
@@ -104,7 +104,7 @@ const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) =
     return (
         <div className="control-bar-container">
             <div className="control-bar-top">
-                <StatusIndicator tfStatus={tfStatus} />
+                <StatusIndicator trackingStatus={trackingStatus} />
                 <img src={Logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
                 <VersionIndicator touchFreeVersion={touchFreeVersion} />
             </div>
