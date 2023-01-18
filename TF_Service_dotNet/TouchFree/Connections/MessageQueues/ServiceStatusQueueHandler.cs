@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
@@ -24,16 +25,24 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
-            var currentConfig = new ServiceStatus(
-                requestId,
-                handManager.ConnectionManager.TrackingServiceState,
-                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
-                VersionManager.ApiVersion.ToString(),
-                trackingApi.trackingServiceVersion,
-                trackingApi.connectedDeviceSerial,
-                trackingApi.connectedDeviceFirmware);
+            void handleDeviceInfoResponse()
+            {
+                var currentConfig = new ServiceStatus(
+                    string.Empty, // No request id as this event is not a response to a request
+                    handManager.ConnectionManager.TrackingServiceState,
+                    configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
+                    VersionManager.ApiVersion.ToString(),
+                    trackingApi.trackingServiceVersion != null ? trackingApi.trackingServiceVersion : "Tracking not connected",
+                    trackingApi.connectedDeviceSerial != null ? trackingApi.connectedDeviceSerial : "Device not connected",
+                    trackingApi.connectedDeviceFirmware != null ? trackingApi.connectedDeviceFirmware : "Device not connected");
 
-            clientMgr.SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+                clientMgr.SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+
+                trackingApi.OnTrackingDeviceInfoResponse -= handleDeviceInfoResponse;
+            };
+
+            trackingApi.OnTrackingDeviceInfoResponse += handleDeviceInfoResponse;
+            trackingApi.RequestGetDeviceInfo();
         }
     }
 }
