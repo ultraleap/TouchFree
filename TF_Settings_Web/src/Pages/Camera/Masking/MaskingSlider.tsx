@@ -35,9 +35,9 @@ export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, masking
     // ===== UseEffects =====
     useEffect(() => {
         if (!sliderRef.current) return;
-        const height = innerHeight * (innerHeight < innerWidth ? 0.45 : 0.4);
-        const top = direction === 'lower' ? height : 0;
-        const left = direction === 'right' ? height : 0;
+        const size = innerHeight < innerWidth ? innerHeight * 0.45 : innerWidth * 0.96 - innerHeight * 0.1;
+        const top = direction === 'lower' ? size - 5 : 0;
+        const left = direction === 'right' ? size - 5 : 0;
 
         setPosition(direction, maskingValue, canvasSize, { top, left }, sliderRef.current);
         setInitialSliderPos({ top, left });

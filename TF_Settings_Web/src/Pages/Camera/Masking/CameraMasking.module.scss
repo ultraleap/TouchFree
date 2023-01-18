@@ -2,7 +2,7 @@
 @use '@/App.module.scss';
 
 :root {
-    --size: 50vh;
+    --size: 96vw;
     --padding: 10vh;
 }
 
@@ -15,7 +15,6 @@
 
 .container {
     margin: 0 2vw;
-    overflow: hidden;
 }
 
 .sub-container {
@@ -266,6 +265,7 @@
 .cam-feeds-options-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 2vw;
     @media (orientation: landscape) {
         grid-template-columns: 1fr;
     }
@@ -278,7 +278,7 @@
     box-shadow: 0px 2px 14px #000000;
     border: 1px solid #ffffff1a;
     border-radius: 10px;
-    margin: 10px 20px;
+    margin: 10px 0;
     display: flex;
     position: relative;
     justify-content: space-evenly;

@@ -182,7 +182,7 @@ const MaskingScreen: React.FC = () => {
                     key={sliderInfo[0]}
                     direction={sliderInfo[0] as SliderDirection}
                     maskingValue={sliderInfo[1]}
-                    canvasSize={innerHeight * (innerHeight < innerWidth ? 0.45 : 0.4)}
+                    canvasSize={innerHeight < innerWidth ? innerHeight * 0.45 : innerWidth * 0.96 - innerHeight * 0.1}
                     clearMasking={clearMasking}
                     onDrag={setMasking}
                     onDragEnd={sendMaskingRequest}
@@ -210,7 +210,7 @@ const MaskingScreen: React.FC = () => {
     );
 
     return (
-        <div className={classes.container}>
+        <div className={classes['container']}>
             <div className={classes['title-line']}>
                 <h1> Camera Masking </h1>
                 <p style={{ opacity: '50%' }}>
