@@ -30,7 +30,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         void RequestGetCameraOrientation();
         void RequestSetCameraOrientation(bool reverseOrientation);
 
-        void RequestGetDeviceInfo();
+        bool RequestGetDeviceInfo();
         void RequestGetDevices();
         void RequestGetServerInfo();
         void RequestGetVersion();
