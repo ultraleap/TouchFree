@@ -60,9 +60,9 @@ namespace Ultraleap.TouchFree.Library.Connections
             trackingServiceState = _trackingServiceState;
             configurationState = _configurationState;
             serviceVersion = _serviceVersion;
-            trackingVersion = _trackingVersion != null ? _trackingVersion : "Tracking not connected";
-            cameraSerial = _cameraSerial != null ? _cameraSerial : "Device not connected";
-            cameraFirmwareVersion = _cameraFirmwareVersion != null ? _cameraFirmwareVersion : "Device not connected";
+            trackingVersion = _trackingVersion ?? "Tracking not connected";
+            cameraSerial = _cameraSerial ?? "Device not connected";
+            cameraFirmwareVersion = _cameraFirmwareVersion ?? "Device not connected";
         }
     }
 
