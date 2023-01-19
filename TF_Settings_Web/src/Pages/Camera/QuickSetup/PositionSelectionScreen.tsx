@@ -1,4 +1,4 @@
-import '@/Pages/Camera/Camera.scss';
+import classes from './QuickSetup.module.scss';
 import cssVariables from '@/variables.module.scss';
 
 import React, { useEffect } from 'react';
@@ -25,7 +25,7 @@ const positionOptions: PositionOption[] = [
     { type: 'Below', title: 'Camera Below', icon: CameraBelowIcon },
 ];
 
-const buttonStyle: React.CSSProperties = { width: '48.75%', height: '350px', marginBottom: '2.5%' };
+const buttonStyle: React.CSSProperties = { width: '100%', height: '350px', marginBottom: '2.5%' };
 const iconStyle: React.CSSProperties = { marginTop: '20px', height: '220px' };
 const textStyle: React.CSSProperties = {
     color: cssVariables.ultraleapGreen,
@@ -43,14 +43,17 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
 
     const navigate = useNavigate();
     return (
-        <div>
-            <div className="title-line">
+        <div className={classes.container}>
+            <div className={classes['title-line']}>
                 <h1> Where is Your Camera Positioned? </h1>
             </div>
-            <div className="title-line" style={{ fontStyle: 'italic', paddingBottom: '1vh', marginTop: '-0.5vh' }}>
+            <div
+                className={classes['title-line']}
+                style={{ fontStyle: 'italic', paddingBottom: '1vh', marginTop: '-0.5vh' }}
+            >
                 <p>Full screen is recommended for optimal calibration</p>
             </div>
-            <div className="tf-button-container">
+            <div className={classes['button-container']}>
                 {positionOptions.map(({ type, title, icon }: PositionOption) => (
                     <VerticalIconTextButton
                         key={type}
@@ -68,7 +71,11 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
                     />
                 ))}
             </div>
-            <DocsLink title="Setup Guide" url="https://docs.ultraleap.com/touchfree-user-manual/camera-placement" />
+            <DocsLink
+                title="Setup Guide"
+                url="https://docs.ultraleap.com/touchfree-user-manual/camera-placement"
+                buttonStyle={{ position: 'fixed', bottom: '2vh', right: '2vh' }}
+            />
         </div>
     );
 };

@@ -12,7 +12,7 @@ import {
     TFClickEvent,
     BaseTFButton,
 } from './TFButton/TFButtons';
-import { TextEntry } from './TextEntry/TextEntry';
+import TextEntry from './TextEntry/TextEntry';
 import { ToggleSwitch, LabelledToggleSwitch } from './ToggleSwitch/ToggleSwitch';
 
 export {

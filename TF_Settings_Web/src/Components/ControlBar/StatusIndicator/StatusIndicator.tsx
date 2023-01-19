@@ -1,10 +1,14 @@
-import './StatusIndicator.scss';
+import classNames from 'classnames/bind';
+
+import styles from './StatusIndicator.module.scss';
 
 import React from 'react';
 
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { CameraStatusIcon, HandIcon } from '@/Images';
+
+const classes = classNames.bind(styles);
 
 interface StatusIndicatorProps {
     trackingStatus: TrackingServiceState;
@@ -17,11 +21,11 @@ interface StatusIndicator {
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({ trackingStatus }) => {
     return (
-        <div className="status-container">
+        <div className={classes('status-container')}>
             {getStatusIndicators(trackingStatus).map((indicator: StatusIndicator) => (
-                <div className="status-icon-container" key={indicator.title}>
+                <div className={classes('status-icon-container')} key={indicator.title}>
                     <img src={indicator.icon} alt={`${indicator.title} Status Icon`} />
-                    <div className={`status-dot ${indicator.className}`} />
+                    <div className={classes('status-dot', indicator.className)} />
                 </div>
             ))}
         </div>

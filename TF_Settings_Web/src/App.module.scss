@@ -3,29 +3,19 @@
 .app {
     text-align: center;
     height: 100vh;
-    width: v.$app-width;
-    margin-left: v.$app-margin-left;
     background-color: v.$app-background-color;
 }
 
 .page-content {
-    padding-top: v.$control-bar-size;
-    height: calc(100% - v.$control-bar-size);
     background-color: v.$app-background-color;
 }
 
-.title-line {
+@mixin title-line {
     color: white;
     text-align: left;
-    padding-left: 3rem;
     display: flex;
     flex-direction: row;
     align-items: left;
-    font-family: v.$base-font;
-
-    h1 {
-        flex: 1 1 auto;
-    }
 }
 
 .page-divider {

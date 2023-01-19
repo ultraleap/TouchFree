@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import './Calibration.scss';
+import classes from './Calibration.module.scss';
 
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -139,7 +138,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
 
     if (location.pathname.endsWith('top')) {
         return (
-            <div className="content-container">
+            <div className={classes['content-container']}>
                 <FullScreenPrompt promptStyle={{ position: 'fixed', top: '5vh' }} />
                 <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', top: '15.5vh' }} />
                 <CalibrationInstructions
@@ -159,7 +158,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     }
 
     return (
-        <div className="content-container">
+        <div className={classes['content-container']}>
             <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '30vh' }} />
             <CalibrationInstructions progress={progress} containerStyle={{ position: 'fixed', bottom: '27vh' }} />
             <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', bottom: '15.5vh' }} />

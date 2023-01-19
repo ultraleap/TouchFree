@@ -1,4 +1,4 @@
-import './RadioButtons.scss';
+import interactionClasses from '@/Pages/Interactions/Interactions.module.scss';
 
 import React from 'react';
 
@@ -16,11 +16,11 @@ export class RadioGroup extends React.Component<RadioProps, {}> {
 
     render() {
         return (
-            <div className="verticalContainer halfWidth">
+            <div className={interactionClasses['verticalContainer']}>
                 {this.props.options.map((option, index) => (
                     <label
                         key={index}
-                        className="input-label-container"
+                        className={interactionClasses['input-label-container']}
                         onPointerDown={() => {
                             this.props.onChange(option);
                         }}

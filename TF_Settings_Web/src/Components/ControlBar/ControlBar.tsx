@@ -1,4 +1,4 @@
-import './ControlBar.scss';
+import classes from './ControlBar.module.scss';
 import cssVariables from '@/variables.module.scss';
 
 import React, { CSSProperties } from 'react';
@@ -102,13 +102,13 @@ const ControlBar: React.FC<ControlBarProps> = ({ trackingStatus, touchFreeVersio
     };
 
     return (
-        <div className="control-bar-container">
-            <div className="control-bar-top">
+        <div className={classes['control-bar-container']}>
+            <div className={classes['control-bar-top']}>
                 <StatusIndicator trackingStatus={trackingStatus} />
-                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className="control-bar-logo" />
+                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className={classes['control-bar-logo']} />
                 <VersionIndicator touchFreeVersion={touchFreeVersion} />
             </div>
-            <div className="control-bar-bottom">{getBottomContent()}</div>
+            <div className={classes['control-bar-bottom']}>{getBottomContent()}</div>
         </div>
     );
 };

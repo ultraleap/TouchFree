@@ -128,12 +128,18 @@
     height: 32vh;
 }
 
+.setup-complete-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
 .setup-complete-options-container {
-    height: 800px;
-    margin-top: 50px;
+    height: 60vh;
+    display: flex;
     justify-content: space-around;
     align-items: center;
-    display: flex;
     flex-direction: column;
 
     animation: fadeInAnimation ease 1s;

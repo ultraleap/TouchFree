@@ -1,4 +1,4 @@
-import './Alert.scss';
+import classes from './Alert.module.scss';
 
 import React, { CSSProperties } from 'react';
 
@@ -12,13 +12,13 @@ interface AlertProps {
 const Alert: React.FC<AlertProps> = ({ show, style, text, animationType, animationTime }) =>
     show ? (
         <div
-            className="alert-container"
+            className={classes['alert-container']}
             style={{
                 ...style,
                 animation: getAlertAnimation(animationType, animationTime),
             }}
         >
-            <div className="alert-container--triangle" />
+            <div className={classes['alert-container--triangle']} />
             <p>{text}</p>
         </div>
     ) : (

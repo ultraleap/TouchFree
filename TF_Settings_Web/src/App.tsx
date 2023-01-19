@@ -1,4 +1,4 @@
-import './App.scss';
+import classes from './App.module.scss';
 
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -42,9 +42,9 @@ const App: React.FC = () => {
     }, []);
 
     return (
-        <div className="app">
+        <div className={classes['app']}>
             <ControlBar trackingStatus={trackingStatus} touchFreeVersion={touchFreeVersion} />
-            <div className="page-content">
+            <div className={classes['page-content']}>
                 <Routes>
                     <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
                     <Route path="/settings/interactions" element={<InteractionsScreen />} />

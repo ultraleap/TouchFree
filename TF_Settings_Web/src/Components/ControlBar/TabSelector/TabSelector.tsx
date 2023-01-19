@@ -1,6 +1,10 @@
-import './TabSelector.scss';
+import classNames from 'classnames/bind';
+
+import styles from './TabSelector.module.scss';
 
 import React, { useCallback, useState, useEffect } from 'react';
+
+const classes = classNames.bind(styles);
 
 interface TabSelectorProps {
     name: string;
@@ -40,7 +44,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon, isAc
 
     return (
         <button
-            className={`tab-button ${getSpecialClassName()}`}
+            className={classes('tab-button', getSpecialClassName())}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
                 setHovered(false);
