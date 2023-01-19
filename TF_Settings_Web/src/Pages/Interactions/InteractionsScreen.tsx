@@ -37,6 +37,11 @@ type ReducerAction = { type: 'reset' } | { type: 'update'; content: Partial<Inte
 const reducer = (state: InteractionConfig, action: ReducerAction) => {
     switch (action.type) {
         case 'reset':
+            ConfigurationManager.RequestConfigFileChange(DefaultInteractionConfig, null, (result) => {
+                if (result.status !== 'Success') {
+                    console.error(`Failed to set config state! Info: ${result.message}`);
+                }
+            });
             return DefaultInteractionConfig;
         case 'update': {
             const newState = { ...state, ...action.content };
