@@ -46,53 +46,16 @@ const getBackLocation = (path: string): string => {
     return path.slice(0, lastIndex);
 };
 
-type TabName = 'Camera' | 'Interactions';
-
 const ControlBar: React.FC<ControlBarProps> = ({ tfStatus, touchFreeVersion }) => {
-    const [activeTab, setActiveTab] = React.useState<TabName>('Camera');
-
     const { pathname } = useLocation();
-    const navigate = useNavigate();
 
     return pathname.includes('calibrate') ? (
         <></>
     ) : (
         <div className={classes['control-bar-container']}>
-            <div className={classes['control-bar-top']}>
-                <StatusIndicator tfStatus={tfStatus} />
-                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className={classes['control-bar-logo']} />
-                <VersionIndicator touchFreeVersion={touchFreeVersion} />
-            </div>
-            <div className={classes['control-bar-bottom']}>
-                {pathname === '/settings/camera' || pathname === '/settings/interactions' ? (
-                    <>
-                        <TabSelector
-                            name="Camera"
-                            isActiveTab={activeTab === 'Camera'}
-                            onClick={() => setActiveTab('Camera')}
-                        />
-                        <TabSelector
-                            name="Interactions"
-                            isActiveTab={activeTab === 'Interactions'}
-                            onClick={() => setActiveTab('Interactions')}
-                        />
-                    </>
-                ) : (
-                    <VerticalIconTextButton
-                        buttonStyle={backButtonStyle}
-                        icon={BackArrow}
-                        alt="Arrow pointing back"
-                        iconStyle={backButtonIconStyle}
-                        title="Back"
-                        titleStyle={backButtonTitleStyle}
-                        text={''}
-                        textStyle={{ display: 'none' }}
-                        onClick={() => {
-                            navigate(getBackLocation(pathname));
-                        }}
-                    />
-                )}
-            </div>
+            <StatusIndicator tfStatus={tfStatus} />
+            <img src={Logo} alt="Logo: TouchFree by UltraLeap" className={classes['control-bar-logo']} />
+            <VersionIndicator touchFreeVersion={touchFreeVersion} />
         </div>
     );
 };

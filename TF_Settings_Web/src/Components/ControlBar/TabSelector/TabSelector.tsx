@@ -10,7 +10,7 @@ const classes = classNames.bind(styles);
 interface TabSelectorProps {
     name: string;
     isActiveTab: boolean;
-    onClick: () => void;
+    onClick?: () => void;
 }
 
 const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick }) => {
@@ -20,7 +20,9 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
     const handleClick = () => {
         if (!isActiveTab) {
             navigate(`/settings/${lowerCaseName}`);
-            onClick();
+            if (onClick) {
+                onClick();
+            }
         }
     };
 

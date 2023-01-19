@@ -1,14 +1,8 @@
 .version-container {
-    height: 100%;
     min-width: 6rem;
     display: flex;
     justify-content: center;
-    padding-left: 2rem;
-}
-
-.version-information {
-    position: absolute;
-    top: 80px;
-    right: 20px;
+    margin: 0 2rem;
     color: #999999;
+    justify-self: end;
 }

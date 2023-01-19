@@ -8,11 +8,7 @@ interface VersionIndicatorProps {
 
 const VersionIndicator: React.FC<VersionIndicatorProps> = ({ touchFreeVersion }) => {
     return (
-        <div className={classes['version-container']}>
-            <div className={classes['version-information']}>
-                {touchFreeVersion ? `TouchFree: v${touchFreeVersion}` : ''}
-            </div>
-        </div>
+        <div className={classes['version-container']}>{touchFreeVersion ? `TouchFree: v${touchFreeVersion}` : ''}</div>
     );
 };
 
