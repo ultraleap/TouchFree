@@ -2,7 +2,7 @@ import classes from './TabBar.module.scss';
 
 import { useLocation } from 'react-router-dom';
 
-import { TabSelector } from '../ControlBar';
+import { TabSelector } from '@/Components';
 
 const TabBar = () => {
     const { pathname } = useLocation();
