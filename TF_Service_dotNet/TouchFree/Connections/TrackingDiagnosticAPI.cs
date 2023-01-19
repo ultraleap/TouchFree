@@ -352,6 +352,11 @@ namespace Ultraleap.TouchFree.Library.Connections
                                 {
                                     newConnectedDeviceId = devices[0].device_id;
                                 }
+                                else
+                                {
+                                    connectedDeviceFirmware = null;
+                                    connectedDeviceSerial = null;
+                                }
 
                                 if (connectedDeviceID != newConnectedDeviceId)
                                 {
@@ -395,7 +400,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                         }); // TODO: Handle failure?
                         break;
 
-                    default:
+                     default:
                         TouchFreeLog.WriteLine(
                             $"DiagnosticAPI - Could not parse response of type: {response.type} with message: {_message}");
                         break;
