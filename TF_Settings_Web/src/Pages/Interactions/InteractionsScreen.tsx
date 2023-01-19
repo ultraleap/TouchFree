@@ -16,8 +16,16 @@ import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { InteractionExplainer } from '@/Videos';
 
-import { DocsLink, LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TabBar, TextSlider } from '@/Components';
-import { OutlinedTextButton } from '@/Components/TFButton/TFButtons';
+import {
+    DocsLink,
+    LabelledToggleSwitch,
+    RadioGroup,
+    RadioLine,
+    Slider,
+    TabBar,
+    TextSlider,
+    OutlinedTextButton,
+} from '@/Components';
 
 import { DefaultInteractionConfig } from './SettingsTypes';
 
@@ -73,9 +81,7 @@ const InteractionsScreen = () => {
             dispatch({ type: 'update', content: config.interaction })
         );
 
-        const onResize = () => {
-            setSupportStyle(isLandscape ? undefined : supportPortraitStyle);
-        };
+        const onResize = () => setSupportStyle(isLandscape ? undefined : supportPortraitStyle);
 
         window.addEventListener('resize', onResize);
 

@@ -45,13 +45,11 @@ const App: React.FC = () => {
     return (
         <div className={classes('app')}>
             <ControlBar tfStatus={tfStatus} touchFreeVersion={touchFreeVersion} />
-            <div className={classes('page-content')}>
-                <Routes>
-                    <Route path="/settings/camera/*" element={<CameraManager />} />
-                    <Route path="/settings/interactions" element={<InteractionsScreen />} />
-                    <Route path="*" element={<Navigate to="/settings/camera" replace />} />
-                </Routes>
-            </div>
+            <Routes>
+                <Route path="/settings/camera/*" element={<CameraManager />} />
+                <Route path="/settings/interactions" element={<InteractionsScreen />} />
+                <Route path="*" element={<Navigate to="/settings/camera" replace />} />
+            </Routes>
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import classnames from 'classnames/bind';
 
-import styles from './QuickSetup.module.scss';
+import styles from './PositionSelection.module.scss';
 import cssVariables from '@/variables.module.scss';
 
 import React, { useEffect } from 'react';
