@@ -4,8 +4,6 @@ import styles from './CameraMasking.module.scss';
 
 import React, { PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
-import { useIsLandscape } from '@/customHooks';
-
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
