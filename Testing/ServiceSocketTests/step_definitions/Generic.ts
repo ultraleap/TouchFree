@@ -1,8 +1,12 @@
-import { Given, When, Then, AfterAll } from '@cucumber/cucumber';
+import { Given, When, Then, After } from '@cucumber/cucumber';
 import { expect } from 'chai';
 import { callbackify } from 'util';
 
 var WebSocket = require('ws');
+
+let connectedWebSocket: WebSocket | undefined = undefined;
+let responses: MessageEvent[] = [];
+let responsesSetUp = false;
 
 Given('the Service is running', function(callback) {
     // attempt to connect via WS.
@@ -17,8 +21,6 @@ Given('the Service is running', function(callback) {
     });
 });
 
-let connectedWebSocket: WebSocket | undefined = undefined;
-
 Given('the Service is connected', function(callback) {
     // attempt to connect via WS.
     // if connection unsuccessful, fail
@@ -32,9 +34,67 @@ Given('the Service is connected', function(callback) {
     }
 });
 
-let responses: MessageEvent[] = [];
-
 When('a handshake message is sent',  (callback) => {
+    sendHandshake();
+    callback();
+});
+
+Then('a handshake response is received', (callback) => {
+    callbackOnHandshake(callback);
+});
+
+Given('the Service is connected with handshake', (callback) => {
+    // attempt to connect via WS.
+    // if connection unsuccessful, fail
+
+    connectedWebSocket = new WebSocket("ws://127.0.0.1:9739/connect");
+
+    if (connectedWebSocket) {
+        connectedWebSocket.addEventListener('open', function () {
+            sendHandshake();
+        });
+    }
+
+    callbackOnHandshake(callback);
+});
+
+When('service status is requested',  (callback) => {
+    const serviceStatusMessage = {
+        action: 'REQUEST_SERVICE_STATUS',
+        content: {
+            requestID: '6423d82e-3266-4830-82d8-c46cc17fc646'
+        },
+    };
+
+    sendMessage(serviceStatusMessage);
+    callback();
+});
+
+Then('a service status response is received', (callback) => {
+    callbackOnServiceStatus(callback);
+});
+
+After(() => {
+    if (connectedWebSocket && connectedWebSocket.readyState === connectedWebSocket.OPEN) {
+        connectedWebSocket.close();
+    }
+    responsesSetUp = false;
+});
+
+const sendMessage = (message: any) => {
+    if (connectedWebSocket) {
+        if (!responsesSetUp) {
+            connectedWebSocket.addEventListener('message', (_message: MessageEvent) => {
+                responses.push(_message);
+            });
+            responsesSetUp = true;
+        }
+
+        connectedWebSocket.send(JSON.stringify(message));
+    }
+}
+
+const sendHandshake = () => {
     const handshakeMessage = {
         action: 'VERSION_HANDSHAKE',
         content: {
@@ -43,56 +103,19 @@ When('a handshake message is sent',  (callback) => {
         },
     };
 
-    if (connectedWebSocket) {
-        connectedWebSocket.addEventListener('message', (_message: MessageEvent) => {
-            responses.push(_message);
-        });
+    sendMessage(handshakeMessage);
+};
 
-        connectedWebSocket.send(JSON.stringify(handshakeMessage));
-    }
-
-    callback();
-});
-
-Then('a handshake response is received', (callback) => {
+const callbackOnMessage = (callback: () => void, validation: (responseData: any, intervalId: NodeJS.Timer, callback: () => void) => void) => {
     let checkTime = 0;
     const interval = 10;
 
-    const intervalId = setInterval(() => {
+    const intervalId: NodeJS.Timer = setInterval(() => {
         checkTime += interval;
 
         const response = responses.shift();
-        if (response) {
-            const content = JSON.parse(response.data);
-
-            clearInterval(intervalId);
-
-            const expectedResponse = { 
-                action: 'VERSION_HANDSHAKE_RESPONSE',
-                content: {
-                  requestID: '6423d82e-3266-4830-82d8-c46cc17fc645',
-                  status: 'Success',
-                  message: 'Handshake Successful.',
-                  originalRequest: '{"requestID":"6423d82e-3266-4830-82d8-c46cc17fc645","TfApiVersion":"1.3.0"}',
-                  touchFreeVersion: '',
-                  apiVersion: '1.3.0'
-                }
-            };
-
-            if (content.action === expectedResponse.action &&
-                content.content.requestID === expectedResponse.content.requestID &&
-                content.content.status === expectedResponse.content.status &&
-                content.content.message === expectedResponse.content.message) {
-                callback();
-            } else {
-                console.log('');
-                console.log('Received:');
-                console.log(content);
-                console.log('');
-                console.log('Expected:');
-                console.log(expectedResponse);
-                throw Error('Handshake message does not match expected');
-            }
+        if (response && typeof response.data === 'string') {
+            validation(response.data, intervalId, callback);
         }
 
         if (checkTime > 3000) {
@@ -100,10 +123,73 @@ Then('a handshake response is received', (callback) => {
             throw Error('No message received');
         }
     }, interval);
-});
+};
 
-AfterAll(() => {
-    if (connectedWebSocket && connectedWebSocket.readyState === connectedWebSocket.OPEN) {
-        connectedWebSocket.close();
+const callbackOnHandshake = (callback: () => void) => {
+    callbackOnMessage(callback, (responseData: any, intervalId: NodeJS.Timer, callback: () => void) => {
+        const expectedResponse = { 
+            action: 'VERSION_HANDSHAKE_RESPONSE',
+            content: {
+                requestID: '6423d82e-3266-4830-82d8-c46cc17fc645',
+                status: 'Success',
+                message: 'Handshake Successful.',
+                originalRequest: '{"requestID":"6423d82e-3266-4830-82d8-c46cc17fc645","TfApiVersion":"1.3.0"}',
+                touchFreeVersion: '',
+                apiVersion: '1.3.0'
+            }
+        };
+
+        checkActionResponse(responseData, expectedResponse, expectedResponse.action, intervalId, (received: any) => {
+            return received.content.requestID === expectedResponse.content.requestID &&
+                received.content.status === expectedResponse.content.status &&
+                received.content.message === expectedResponse.content.message;
+        }, callback, 'Handshake message does not match expected');
+    });
+};
+
+const callbackOnServiceStatus = (callback: () => void) => {
+    callbackOnMessage(callback, (responseData: any, intervalId: NodeJS.Timer, callback: () => void) => {
+        const expectedResponse = { 
+            action: 'SERVICE_STATUS',
+            content: {
+                requestID: '6423d82e-3266-4830-82d8-c46cc17fc646'
+            }
+        };
+
+        checkActionResponse(responseData, expectedResponse, expectedResponse.action, intervalId, (received: any) => {
+            return received.content.requestID === expectedResponse.content.requestID;
+        }, callback, 'Service Status message does not match expected');
+    });
+};
+
+const checkActionResponse = (
+    responseData: any,
+    expectedResponse: any,
+    action: string,
+    intervalId: NodeJS.Timer,
+    validation: (received: any) => boolean,
+    callback: () => void,
+    errorMessage: string) => {
+
+    const content = JSON.parse(responseData);
+
+    if (content.action === action)  {
+        clearInterval(intervalId);
+
+        if (validation(content)) {
+            callback();
+        } else {
+            logMessageComparisonAndThrow(content, expectedResponse, errorMessage);
+        }
     }
-});
+};
+
+const logMessageComparisonAndThrow = (received: any, expected: any, errorMessage: string) => {
+    console.log('');
+    console.log('Received:');
+    console.log(received);
+    console.log('');
+    console.log('Expected:');
+    console.log(expected);
+    throw Error(errorMessage);
+};
