@@ -13,13 +13,27 @@
     }
 }
 
-.col {
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5vh 0;
+}
+
+.options-container {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    @media (orientation: portrait) {
-        height: 1000px;
+    @media (orientation: landscape) {
+        height: 70vh;
     }
+}
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .screen-images {
@@ -43,52 +57,39 @@
     width: 450px;
     height: 500px;
     overflow: hidden;
-}
-
-.screenFrontMock {
-    width: 450px;
-    height: 500px;
-    position: relative;
-    margin-top: -210px;
-    margin-left: -550px;
-}
-
-.screenFrontLabel {
-    top: 638px;
-    left: 624px;
-    width: 337px;
-    height: 24px;
-
-    text-align: center;
-    color: #ffffff;
-    position: absolute;
-    opacity: 0.5;
+    display: flex;
+    flex-direction: column;
 }
 
 .screenFrontOutside {
-    top: 284px;
-    left: 678px;
-    width: 231px;
-    height: 338px;
+    position: relative;
+    $width: 231px;
+    $height: 338px;
+    width: $width;
+    height: $height;
+
+    top: calc($height / 4);
+    left: calc($width / 2);
     background: transparent linear-gradient(146deg, #535353 0%, #313131 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 10px;
-    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .screenFrontInside {
-    top: 296px;
-    left: 689px;
     width: 209px;
     height: 314px;
-
     background: transparent linear-gradient(146deg, #909090 0%, #454545 100%) 0% 0% no-repeat padding-box;
-    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .screenFrontCamera {
-    top: 245px;
-    left: 761px;
+    top: -40px;
     width: 66px;
     height: 29px;
 
@@ -99,8 +100,18 @@
     position: absolute;
 }
 
+$left-to-right: 57px;
+
 .cameraLeftToRight .screenFrontCamera {
-    left: 703px;
+    transform: translate(-$left-to-right, 0);
+}
+
+.cameraLeftToRight .screenFrontInside {
+    justify-content: center;
+    * {
+        position: absolute;
+        transform: translate(-(calc($left-to-right / 2)), 0);
+    }
 }
 
 .screenFrontCameraBottom {
@@ -112,26 +123,25 @@
     height: 7px;
 }
 
-.screenFrontCenterLineVert {
-    top: 298px;
-    left: 794px;
-    width: 0px;
-    height: 314px;
+$vert-base-height: 314px;
+$height-diff: 10px;
 
+.screenFrontCenterLineVert {
+    width: 0px;
+    height: $vert-base-height;
     border-left: 4px dotted v.$ultraleap-green;
     position: absolute;
 }
 
 .cameraHeight .screenFrontCenterLineVert {
-    top: 276px;
-    height: 333px;
+    top: -$height-diff;
+    height: $vert-base-height + $height-diff * 2;
 }
 
 .cameraLeftToRight .screenFrontCenterLineVert {
-    top: 278px;
-    left: 736px;
-    width: 57px;
-    height: 351px;
+    width: $left-to-right;
+    top: -$height-diff;
+    height: $vert-base-height + $height-diff * 4;
 
     border-left: 3px solid v.$ultraleap-green;
     border-right: 3px solid v.$ultraleap-green;
@@ -143,8 +153,7 @@
 }
 
 .cameraDistanceFromScreen .screenFrontCenterLineVert {
-    top: 598px;
-    left: 782px;
+    transform: translate(0, 10px);
     width: 20px;
     height: 20px;
 
@@ -152,14 +161,15 @@
     border-radius: 20px;
 }
 
+.cameraDistanceFromScreen .screenFrontInside {
+    justify-content: flex-end;
+}
+
 .screenFrontTopLine {
-    top: 296px;
-    left: 652px;
     width: 288px;
     height: 0px;
 
     border-top: 3px solid v.$ultraleap-green;
-    position: absolute;
 }
 
 .cameraHeight .screenFrontTopLine {
@@ -168,8 +178,6 @@
 }
 
 .cameraLeftToRight .screenFrontTopLine {
-    top: 453px;
-    left: 742px;
     width: 52px;
     height: 0px;
 
@@ -183,13 +191,9 @@
 }
 
 .screenFrontBottomLine {
-    top: 609px;
-    left: 652px;
     width: 288px;
     height: 0px;
-
     border-top: 3px solid v.$ultraleap-green;
-    position: absolute;
 }
 
 .cameraLeftToRight .screenFrontBottomLine,
@@ -199,23 +203,14 @@
     display: none;
 }
 
-.screenSideMock {
+.screen-mock {
     width: 450px;
     height: 500px;
-    position: relative;
-    margin-top: -710px;
-    margin-left: -550px;
 }
 
-.screenSideLabel {
-    top: 1119px;
-    left: 624px;
-    width: 337px;
-    height: 24px;
-
+.screen-label {
     text-align: center;
     color: #ffffff;
-    position: absolute;
     opacity: 0.5;
 }
 

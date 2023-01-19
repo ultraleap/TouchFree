@@ -1,6 +1,6 @@
 import CameraManager from './Camera/CameraManager';
 import CameraSetupScreen from './Camera/CameraSetupScreen';
-import { ManualSetupScreen } from './Camera/ManualSetup/ManualSetupScreen';
+import ManualSetupScreen from './Camera/ManualSetup/ManualSetupScreen';
 import MaskingScreen from './Camera/Masking/MaskingScreen';
 import CalibrationCompleteScreen from './Camera/QuickSetup/Calibration/CalibrationCompleteScreen';
 import CalibrationManager from './Camera/QuickSetup/Calibration/CalibrationManager';

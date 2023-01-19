@@ -11,8 +11,8 @@ interface TextEntryProps {
     value: string;
     selected: boolean;
     onChange: ChangeEventHandler<HTMLInputElement>;
-    onClick: MouseEventHandler<HTMLElement>;
     onPointerDown: PointerEventHandler<HTMLElement>;
+    onClick?: MouseEventHandler<HTMLElement>;
 }
 
 const TextEntry: React.FC<TextEntryProps> = ({ name, value, selected, onChange, onClick, onPointerDown }) => {
