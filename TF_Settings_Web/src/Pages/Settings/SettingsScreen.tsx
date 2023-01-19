@@ -2,6 +2,8 @@ import './Settings.scss';
 
 import React, { useState, useEffect } from 'react';
 
+import { isBRS } from '@/customHooks';
+
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import TouchFree from 'TouchFree/src/TouchFree';
@@ -46,23 +48,27 @@ const SettingsScreen: React.FC = () => {
                 <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
             </div>
             <div className="page-divider" />
-            <div className="title-line">
-                <h1> Advanced Settings </h1>
-            </div>
-            <div className="info-table--advanced">
-                <InfoButtonEntry
-                    title="Tracking Log Files"
-                    buttonTitle="Show Tracking Log Files"
-                    onClick={() => {
-                        console.log('C:/ProgramData/Ultraleap/HandTracker/Logs');
-                    }}
-                />
-                <InfoButtonEntry
-                    title="TouchFree Log Files"
-                    buttonTitle="Show TouchFree Log Files"
-                    onClick={() => console.log('C:/ProgramData/Ultraleap/TouchFree/Logs')}
-                />
-            </div>
+            {!isBRS() && (
+                <>
+                    <div className="title-line">
+                        <h1> Advanced Settings </h1>
+                    </div>
+                    <div className="info-table--advanced">
+                        <InfoButtonEntry
+                            title="Tracking Log Files"
+                            buttonTitle="Show Tracking Log Files"
+                            onClick={() => {
+                                console.log('C:/ProgramData/Ultraleap/HandTracker/Logs');
+                            }}
+                        />
+                        <InfoButtonEntry
+                            title="TouchFree Log Files"
+                            buttonTitle="Show TouchFree Log Files"
+                            onClick={() => console.log('C:/ProgramData/Ultraleap/TouchFree/Logs')}
+                        />
+                    </div>
+                </>
+            )}
         </>
     );
 };
