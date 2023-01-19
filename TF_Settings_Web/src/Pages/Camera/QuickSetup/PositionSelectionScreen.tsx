@@ -6,12 +6,14 @@ import cssVariables from '@/variables.module.scss';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useIsLandscape } from '@/customHooks';
+
 import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
 import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 
 import { CameraFacingUserIcon, CameraFacingScreenIcon, CameraBelowIcon } from '@/Images';
 
-import { DocsLink, VerticalIconTextButton } from '@/Components';
+import { BackButton, DocsLink, VerticalIconTextButton } from '@/Components';
 
 const classes = classnames.bind(styles);
 
@@ -39,6 +41,8 @@ const textStyle: React.CSSProperties = {
 type PositionSelectionProps = { activePosition: PositionType; setPosition: (position: PositionType) => void };
 
 const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosition, setPosition }) => {
+    const isLandscape = useIsLandscape();
+
     useEffect(() => {
         ConfigurationManager.RequestConfigState((config: ConfigState) => {
             setPosition(getPositionFromConfig(config));
@@ -48,14 +52,19 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
     const navigate = useNavigate();
     return (
         <div className={classes('container')}>
-            <div className={classes('title-line')}>
-                <h1> Where is Your Camera Positioned? </h1>
-            </div>
-            <div
-                className={classes('title-line')}
-                style={{ fontStyle: 'italic', paddingBottom: '1vh', marginTop: '-0.5vh' }}
-            >
-                <p>Full screen is recommended for optimal calibration</p>
+            <div className={classes('header')}>
+                <div>
+                    <div className={classes('title-line')}>
+                        <h1> Where is Your Camera Positioned? </h1>
+                    </div>
+                    <div
+                        className={classes('title-line')}
+                        style={{ fontStyle: 'italic', paddingBottom: '1vh', marginTop: '-0.5vh' }}
+                    >
+                        <p>Full screen is recommended for optimal calibration</p>
+                    </div>
+                </div>
+                {isLandscape ? <></> : <BackButton />}
             </div>
             <div className={classes('button-container')}>
                 {positionOptions.map(({ type, title, icon }: PositionOption) => (
@@ -74,6 +83,8 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
                         }}
                     />
                 ))}
+                <div></div>
+                {isLandscape ? <BackButton /> : <></>}
             </div>
             <DocsLink
                 title="Setup Guide"

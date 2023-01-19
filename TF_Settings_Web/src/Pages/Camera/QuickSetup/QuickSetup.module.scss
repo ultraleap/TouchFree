@@ -7,6 +7,7 @@
 .button-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    justify-items: center;
     @media (orientation: landscape) {
         grid-template-columns: 1fr 1fr 1fr;
     }
@@ -16,4 +17,11 @@
 
 .title-line {
     @include App.title-line;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1vh 0;
 }
