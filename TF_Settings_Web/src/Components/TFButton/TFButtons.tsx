@@ -108,9 +108,11 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
 export const BackButton = () => {
     const nav = useNavigate();
     return (
-        <BaseTFButton buttonClass="back-button" canHover onClick={() => nav('/')} type="back">
-            <img src={BackArrow} alt="Arrow pointing back" />
-            <h1>Back</h1>
+        <BaseTFButton canHover onClick={() => nav('/')} type="back">
+            <div className={classes('back-container')}>
+                <img src={BackArrow} alt="Arrow pointing back" />
+                <h1>Back</h1>
+            </div>
         </BaseTFButton>
     );
 };
