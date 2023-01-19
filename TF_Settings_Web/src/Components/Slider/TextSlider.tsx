@@ -78,7 +78,7 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
     render() {
         return (
             <label className={interactionClasses['input-label-container']}>
-                <p className={classes['sliderLabel']}>{this.props.name}</p>
+                <p className={interactionClasses['label']}>{this.props.name}</p>
                 <div className={classes['sliderContainer']}>
                     <input
                         type="range"
@@ -96,8 +96,8 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                         ref={this.inputElement}
                     />
                     <div className={classes['sliderLabelContainer']}>
-                        <label className={classes['leftSliderLabel']}>{this.props.leftLabel}</label>
-                        <label className={classes['rightSliderLabel']}>{this.props.rightLabel}</label>
+                        <label className={interactionClasses['leftLabel']}>{this.props.leftLabel}</label>
+                        <label className={interactionClasses['rightLabel']}>{this.props.rightLabel}</label>
                     </div>
                 </div>
                 <label className={classes['sliderTextContainer']}>

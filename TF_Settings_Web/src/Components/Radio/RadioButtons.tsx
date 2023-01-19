@@ -1,7 +1,6 @@
 import classnames from 'classnames/bind';
 
 import classes from './RadioButtons.module.scss';
-import sliderClasses from '@/Components/Slider/Sliders.module.scss';
 import interactionsStyles from '@/Pages/Interactions/Interactions.module.scss';
 
 import React from 'react';
@@ -17,7 +16,7 @@ interface RadioProps {
 
 export const RadioLine: React.FC<RadioProps> = ({ name, options, selected, onChange }) => (
     <label className={interactionsClasses('horizontalContainer', 'input-label-container')}>
-        <p className={sliderClasses['sliderLabel']}> {name} </p>
+        <p className={interactionsClasses('label')}> {name} </p>
         {options.map((option, index) => (
             <div
                 className={classes['horizontalRadioContainer']}
@@ -36,7 +35,7 @@ export const RadioLine: React.FC<RadioProps> = ({ name, options, selected, onCha
                     checked={selected === index}
                 />
                 <span className="checkmark" />
-                <p className={sliderClasses['sliderLabel']}> {option} </p>
+                <p className={interactionsClasses('label')}> {option} </p>
             </div>
         ))}
     </label>
