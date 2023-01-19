@@ -12,6 +12,7 @@ import {
     TFClickEvent,
     BaseTFButton,
     BackButton,
+    OutlinedTextButton,
 } from './TFButton/TFButtons';
 import TabBar from './TabBar/TabBar';
 import TextEntry from './TextEntry/TextEntry';
@@ -34,6 +35,7 @@ export {
     DocsLink,
     TabBar,
     BackButton,
+    OutlinedTextButton,
 };
 
 export type { TFClickEvent };

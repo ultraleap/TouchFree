@@ -121,13 +121,17 @@ interface MiscTextButtonProps extends BaseButtonProps {
     title: string;
 }
 
-export const MiscTextButton: React.FC<MiscTextButtonProps> = ({ buttonStyle, title, titleStyle, onClick }) => {
-    return (
-        <BaseTFButton canHover onClick={onClick} buttonStyle={buttonStyle} type="misc">
-            <h1 style={titleStyle}>{title}</h1>
-        </BaseTFButton>
-    );
-};
+export const OutlinedTextButton: React.FC<MiscTextButtonProps> = ({
+    buttonStyle,
+    title,
+    titleStyle,
+    onClick,
+    className,
+}) => (
+    <BaseTFButton className={className} canHover onClick={onClick} buttonStyle={buttonStyle} type="misc">
+        <h1 style={titleStyle}>{title}</h1>
+    </BaseTFButton>
+);
 
 interface BaseTFButtonProps extends BaseButtonProps {
     type: 'horizontal' | 'vertical' | 'text' | 'misc' | 'back';

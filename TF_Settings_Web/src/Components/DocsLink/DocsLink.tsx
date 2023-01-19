@@ -5,8 +5,8 @@ import React, { CSSProperties, useState, useRef, useEffect } from 'react';
 
 import TouchFree from 'TouchFree/src/TouchFree';
 
-import { Alert, TextButton } from '@/Components';
-import { MiscTextButton, tFClickIsPointer } from '@/Components/TFButton/TFButtons';
+import { Alert, TextButton, OutlinedTextButton } from '@/Components';
+import { tFClickIsPointer } from '@/Components/TFButton/TFButtons';
 
 interface DocsLinkProps {
     buttonStyle?: CSSProperties;
@@ -22,7 +22,7 @@ const DocsLink: React.FC<DocsLinkProps> = ({ title, url, buttonStyle }) => {
     return (
         <>
             {showModal && <DocsModal url={url} toggleModal={toggleModal} />}
-            <MiscTextButton title={title} onClick={toggleModal} buttonStyle={buttonStyle} />
+            <OutlinedTextButton title={title} onClick={toggleModal} buttonStyle={buttonStyle} />
         </>
     );
 };

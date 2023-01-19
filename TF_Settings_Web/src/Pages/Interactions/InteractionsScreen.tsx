@@ -15,7 +15,7 @@ import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 import { InteractionExplainer } from '@/Videos';
 
 import { DocsLink, LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TabBar, TextSlider } from '@/Components';
-import { MiscTextButton } from '@/Components/TFButton/TFButtons';
+import { OutlinedTextButton } from '@/Components/TFButton/TFButtons';
 
 import { DefaultInteractionConfig } from './SettingsTypes';
 
@@ -196,7 +196,7 @@ const InteractionsScreen = () => {
                             url="https://www.ultraleap.com/contact-us/"
                             buttonStyle={supportStyle}
                         />
-                        <MiscTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
+                        <OutlinedTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
                     </div>
                 </div>
                 <div className={classes('section-container')}>
