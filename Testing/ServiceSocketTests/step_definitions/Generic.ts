@@ -61,8 +61,8 @@ Then('a handshake response is received', (callback) => {
     const intervalId = setInterval(() => {
         checkTime += interval;
 
-        if (responses.length > 0) {
-            const response = responses[0];
+        const response = responses.shift();
+        if (response) {
             const content = JSON.parse(response.data);
 
             clearInterval(intervalId);
