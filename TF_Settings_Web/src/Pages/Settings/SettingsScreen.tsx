@@ -9,10 +9,10 @@ import TouchFree from 'TouchFree/src/TouchFree';
 import { TextButton } from '@/Components';
 
 const SettingsScreen: React.FC = () => {
-    const [tFVersion, setTFVersion] = useState<string | null>(null);
-    const [trackingVersion, setTrackingVersion] = useState<string | null>(null);
-    const [cameraFWVersion, setCameraFWVersion] = useState<string | null>(null);
-    const [cameraSerial, setCameraSerial] = useState<string | null>(null);
+    const [tFVersion, setTFVersion] = useState<string>('');
+    const [trackingVersion, setTrackingVersion] = useState<string>('');
+    const [cameraFWVersion, setCameraFWVersion] = useState<string>('');
+    const [cameraSerial, setCameraSerial] = useState<string>('');
 
     useEffect(() => {
         const setVersionInfo = (detail: ServiceStatus) => {
@@ -22,7 +22,10 @@ const SettingsScreen: React.FC = () => {
             setCameraFWVersion(cameraFirmwareVersion);
             setCameraSerial(cameraSerial);
         };
-        ConnectionManager.RequestServiceStatus(setVersionInfo);
+
+        if (TouchFree.IsConnected()) {
+            ConnectionManager.RequestServiceStatus(setVersionInfo);
+        }
 
         const onServiceChangeHandler = TouchFree.RegisterEventCallback('OnServiceStatusChange', setVersionInfo);
 
@@ -66,7 +69,7 @@ const SettingsScreen: React.FC = () => {
 
 interface InfoTextEntryProps {
     title: string;
-    text: string | null;
+    text: string;
 }
 
 const InfoTextEntry: React.FC<InfoTextEntryProps> = ({ title, text }) => (
