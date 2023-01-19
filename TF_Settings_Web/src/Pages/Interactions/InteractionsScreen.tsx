@@ -4,6 +4,8 @@ import styles from './Interactions.module.scss';
 
 import { useEffect, useReducer, useState, CSSProperties } from 'react';
 
+import { useIsLandscape } from '@/customHooks';
+
 import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
 import {
     InteractionConfig,
@@ -61,8 +63,9 @@ const InteractionsScreen = () => {
     const [config, dispatch] = useReducer(reducer, DefaultInteractionConfig);
     const [activeInteraction, setActiveInteraction] = useState(0);
     const [activePlaneTracking, setActivePlaneTracking] = useState(0);
+    const isLandscape = useIsLandscape();
     const [supportStyle, setSupportStyle] = useState<CSSProperties | undefined>(
-        innerHeight > innerWidth ? supportPortraitStyle : undefined
+        isLandscape ? undefined : supportPortraitStyle
     );
 
     useEffect(() => {
@@ -71,7 +74,7 @@ const InteractionsScreen = () => {
         );
 
         const onResize = () => {
-            setSupportStyle(innerHeight > innerWidth ? supportPortraitStyle : undefined);
+            setSupportStyle(isLandscape ? undefined : supportPortraitStyle);
         };
 
         window.addEventListener('resize', onResize);

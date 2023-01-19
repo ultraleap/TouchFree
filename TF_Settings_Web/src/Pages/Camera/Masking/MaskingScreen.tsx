@@ -4,7 +4,7 @@ import classes from './CameraMasking.module.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useStatefulRef } from '@/customHooks';
+import { useIsLandscape, useStatefulRef } from '@/customHooks';
 
 import { TrackingStateResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import { HandDataManager } from 'TouchFree/src/Plugins/HandDataManager';
@@ -33,6 +33,8 @@ const MaskingScreen: React.FC = () => {
     const isCamReversed = useStatefulRef<boolean>(false);
     const allowImages = useStatefulRef<boolean>(false);
     const [allowAnalytics, _setAllowAnalytics] = useState<boolean>(false);
+
+    const isLandscape = useIsLandscape();
 
     const showOverexposed = useStatefulRef<boolean>(false);
 
@@ -184,13 +186,13 @@ const MaskingScreen: React.FC = () => {
                     key={sliderInfo[0]}
                     direction={sliderInfo[0] as SliderDirection}
                     maskingValue={sliderInfo[1]}
-                    canvasSize={innerHeight < innerWidth ? innerHeight * 0.55 : innerWidth * 0.96 - innerHeight * 0.1}
+                    canvasSize={isLandscape ? innerHeight * 0.55 : innerWidth * 0.96 - innerHeight * 0.1}
                     clearMasking={clearMasking}
                     onDrag={setMasking}
                     onDragEnd={sendMaskingRequest}
                 />
             )),
-        [masking.current, innerHeight]
+        [masking.current, isLandscape]
     );
 
     const lensToggles = useMemo(
@@ -220,7 +222,7 @@ const MaskingScreen: React.FC = () => {
                         The camera will ignore the areas defined by the boxes that you draw on the camera feed
                     </p>
                 </div>
-                {innerHeight > innerWidth ? <BackButton /> : <></>}
+                {isLandscape ? <></> : <BackButton />}
             </div>
             <div className={classes['sub-container']}>
                 <div className={classes['cam-feed-box']}>
@@ -277,7 +279,7 @@ const MaskingScreen: React.FC = () => {
                             ),
                             [allowAnalytics]
                         )}
-                        {innerHeight < innerWidth ? <BackButton /> : <></>}
+                        {isLandscape ? <BackButton /> : <></>}
                     </div>
                 </div>
             </div>

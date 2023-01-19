@@ -72,10 +72,8 @@ const dummy = new Object3D();
 const BASE_LINE_THICKNESS = 0.005;
 
 export const setupRenderScene = (div: HTMLDivElement) => {
-    if (div.children.length > 0) {
-        for (const child of div.children) {
-            div.removeChild(child);
-        }
+    for (const child of div.children) {
+        div.removeChild(child);
     }
     _scene = new Scene();
     _camera = new PerspectiveCamera(90);
