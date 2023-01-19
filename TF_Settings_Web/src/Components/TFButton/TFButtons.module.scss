@@ -73,6 +73,22 @@
         }
     }
 
+    &--back {
+        width: 200px;
+        height: 80px;
+        border-radius: 30px;
+        background: v.$light-grey-gradient;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        justify-items: center;
+        align-items: center;
+
+        h1 {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    }
+
     h1 {
         color: white;
         text-align: left;

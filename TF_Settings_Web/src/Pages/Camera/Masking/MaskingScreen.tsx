@@ -11,6 +11,8 @@ import { HandDataManager } from 'TouchFree/src/Plugins/HandDataManager';
 import { TrackingManager } from 'TouchFree/src/Tracking/TrackingManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
+import { BackButton } from '@/Components';
+
 import MaskingLensToggle from './MaskingLensToggle';
 import MaskingOption from './MaskingOptions';
 import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
@@ -182,7 +184,7 @@ const MaskingScreen: React.FC = () => {
                     key={sliderInfo[0]}
                     direction={sliderInfo[0] as SliderDirection}
                     maskingValue={sliderInfo[1]}
-                    canvasSize={innerHeight < innerWidth ? innerHeight * 0.45 : innerWidth * 0.96 - innerHeight * 0.1}
+                    canvasSize={innerHeight < innerWidth ? innerHeight * 0.55 : innerWidth * 0.96 - innerHeight * 0.1}
                     clearMasking={clearMasking}
                     onDrag={setMasking}
                     onDragEnd={sendMaskingRequest}
@@ -211,11 +213,14 @@ const MaskingScreen: React.FC = () => {
 
     return (
         <div className={classes['container']}>
-            <div className={classes['title-line']}>
-                <h1> Camera Masking </h1>
-                <p style={{ opacity: '50%' }}>
-                    The camera will ignore the areas defined by the boxes that you draw on the camera feed
-                </p>
+            <div className={classes['header']}>
+                <div className={classes['title-line']}>
+                    <h1> Camera Masking </h1>
+                    <p style={{ opacity: '50%' }}>
+                        The camera will ignore the areas defined by the boxes that you draw on the camera feed
+                    </p>
+                </div>
+                {innerHeight > innerWidth ? <BackButton /> : <></>}
             </div>
             <div className={classes['sub-container']}>
                 <div className={classes['cam-feed-box']}>
@@ -272,6 +277,7 @@ const MaskingScreen: React.FC = () => {
                             ),
                             [allowAnalytics]
                         )}
+                        {innerHeight < innerWidth ? <BackButton /> : <></>}
                     </div>
                 </div>
             </div>

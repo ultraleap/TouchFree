@@ -11,6 +11,7 @@ import {
     HorizontalIconTextButton,
     TFClickEvent,
     BaseTFButton,
+    BackButton,
 } from './TFButton/TFButtons';
 import TabBar from './TabBar/TabBar';
 import TextEntry from './TextEntry/TextEntry';
@@ -32,6 +33,7 @@ export {
     BaseTFButton,
     DocsLink,
     TabBar,
+    BackButton,
 };
 
 export type { TFClickEvent };

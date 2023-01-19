@@ -3,6 +3,9 @@ import classNames from 'classnames/bind';
 import styles from './TFButtons.module.scss';
 
 import React, { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { BackArrow } from '@/Images';
 
 const classes = classNames.bind(styles);
 
@@ -25,13 +28,6 @@ interface TextButtonProps extends BaseButtonProps {
     textStyle?: React.CSSProperties;
 }
 
-interface IconTextButtonProps extends TextButtonProps {
-    icon: string;
-    alt: string;
-    title: string;
-    iconStyle?: React.CSSProperties;
-}
-
 export const TextButton: React.FC<TextButtonProps> = ({
     className,
     buttonStyle,
@@ -47,6 +43,13 @@ export const TextButton: React.FC<TextButtonProps> = ({
         <p style={{ ...textStyle, display: text ? '' : 'none' }}>{text}</p>
     </BaseTFButton>
 );
+
+interface IconTextButtonProps extends TextButtonProps {
+    icon: string;
+    alt: string;
+    title: string;
+    iconStyle?: React.CSSProperties;
+}
 
 export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
     className,
@@ -102,6 +105,16 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
     </BaseTFButton>
 );
 
+export const BackButton = () => {
+    const nav = useNavigate();
+    return (
+        <BaseTFButton buttonClass="back-button" canHover onClick={() => nav('/')} type="back">
+            <img src={BackArrow} alt="Arrow pointing back" />
+            <h1>Back</h1>
+        </BaseTFButton>
+    );
+};
+
 interface MiscTextButtonProps extends BaseButtonProps {
     title: string;
 }
@@ -115,7 +128,7 @@ export const MiscTextButton: React.FC<MiscTextButtonProps> = ({ buttonStyle, tit
 };
 
 interface BaseTFButtonProps extends BaseButtonProps {
-    type: 'horizontal' | 'vertical' | 'text' | 'misc';
+    type: 'horizontal' | 'vertical' | 'text' | 'misc' | 'back';
     buttonClass?: string;
     children?: ReactNode;
 }
