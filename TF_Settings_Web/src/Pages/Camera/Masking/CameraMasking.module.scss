@@ -304,6 +304,9 @@
     font-family: v.$base-font;
     color: white;
     user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     > h1 {
         font-size: 18px;
