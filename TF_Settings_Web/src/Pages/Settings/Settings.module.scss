@@ -1,4 +1,13 @@
 @use '@/variables.module.scss' as v;
+@use '@/App.module.scss';
+
+.title-line {
+    @include App.title-line;
+}
+
+.container {
+    margin: 0 2vw;
+}
 
 .info-table {
     background: v.$dark-grey-gradient;
@@ -6,8 +15,6 @@
     border: 1px solid #ffffff1a;
     border-radius: 10px;
 
-    margin-left: 2.5%;
-    width: 92%;
     padding: 0 1.5%;
 
     display: flex;
@@ -57,10 +64,10 @@
 
 .info-table--versions {
     @extend .info-table;
-    height: 22%;
+    height: 22vh;
 }
 
 .info-table--advanced {
     @extend .info-table;
-    height: 15%;
+    height: 11vh;
 }

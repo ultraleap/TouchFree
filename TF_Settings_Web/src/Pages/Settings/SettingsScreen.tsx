@@ -1,5 +1,6 @@
-import './Settings.scss';
+import styles from './Settings.module.scss';
 
+import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
 
 import { isBRS } from '@/customHooks';
@@ -9,6 +10,8 @@ import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import TouchFree from 'TouchFree/src/TouchFree';
 
 import { TextButton } from '@/Components';
+
+const classes = classNames.bind(styles);
 
 const SettingsScreen: React.FC = () => {
     const [tFVersion, setTFVersion] = useState<string>('');
@@ -37,23 +40,23 @@ const SettingsScreen: React.FC = () => {
     }, []);
 
     return (
-        <>
-            <div className="title-line">
+        <div className={classes('container')}>
+            <div className={classes('title-line')}>
                 <h1> About </h1>
             </div>
-            <div className="info-table--versions">
+            <div className={classes('info-table--versions')}>
                 <InfoTextEntry title="TouchFree Version" text={tFVersion} />
                 <InfoTextEntry title="Tracking Version" text={trackingVersion} />
                 <InfoTextEntry title="Camera Firmware Version" text={cameraFWVersion} />
                 <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
             </div>
-            <div className="page-divider" />
+            <div className={classes('page-divider')} />
             {!isBRS() && (
                 <>
-                    <div className="title-line">
+                    <div className={classes('title-line')}>
                         <h1> Advanced Settings </h1>
                     </div>
-                    <div className="info-table--advanced">
+                    <div className={classes('info-table--advanced')}>
                         <InfoButtonEntry
                             title="Tracking Log Files"
                             buttonTitle="Show Tracking Log Files"
@@ -69,7 +72,7 @@ const SettingsScreen: React.FC = () => {
                     </div>
                 </>
             )}
-        </>
+        </div>
     );
 };
 
@@ -79,9 +82,9 @@ interface InfoTextEntryProps {
 }
 
 const InfoTextEntry: React.FC<InfoTextEntryProps> = ({ title, text }) => (
-    <div className="info-table__entry">
-        <span className="info-table__entry__title">{title}:</span>
-        <span className="info-table__entry__text">{text}</span>
+    <div className={classes('info-table__entry')}>
+        <span className={classes('info-table__entry__title')}>{title}:</span>
+        <span className={classes('info-table__entry__text')}>{text}</span>
     </div>
 );
 
@@ -92,10 +95,10 @@ interface InfoButtonEntryProps {
 }
 
 const InfoButtonEntry: React.FC<InfoButtonEntryProps> = ({ title, buttonTitle, onClick }) => (
-    <div className="info-table__entry">
-        <span className="info-table__entry__title">{title}:</span>
-        <span className="info-table__entry__button">
-            <TextButton title={buttonTitle} text={''} onClick={onClick} />
+    <div className={classes('info-table__entry')}>
+        <span className={classes('info-table__entry__title')}>{title}:</span>
+        <span className={classes('info-table__entry__button')}>
+            <TextButton title={buttonTitle} onClick={onClick} />
         </span>
     </div>
 );
