@@ -43,16 +43,16 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void ConnectionStatusChange(TrackingServiceState state)
         {
-            void handleDeviceInfoResponse() 
+            void handleDeviceInfoResponse()
             {
                 var currentConfig = new ServiceStatus(
                     string.Empty, // No request id as this event is not a response to a request
                     state,
                     configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
                     VersionManager.ApiVersion.ToString(),
-                    trackingApi.trackingServiceVersion != null ? trackingApi.trackingServiceVersion : "Tracking not connected",
-                    trackingApi.connectedDeviceSerial != null ? trackingApi.connectedDeviceSerial : "Device not connected",
-                    trackingApi.connectedDeviceFirmware != null ? trackingApi.connectedDeviceFirmware : "Device not connected");
+                    trackingApi.trackingServiceVersion,
+                    trackingApi.connectedDeviceSerial,
+                    trackingApi.connectedDeviceFirmware);
 
                 SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
 

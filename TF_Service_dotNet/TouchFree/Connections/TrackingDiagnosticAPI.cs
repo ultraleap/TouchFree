@@ -257,6 +257,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 };
                 webSocket.OnClose += (sender, e) =>
                 {
+                    trackingServiceVersion = null;
                     TouchFreeLog.WriteLine($"DiagnosticAPI closed. {e.Reason}");
                 };
             }
@@ -453,13 +454,15 @@ namespace Ultraleap.TouchFree.Library.Connections
         public void RequestGetCameraOrientation() => cameraReversed.RequestGet();
         public void RequestSetCameraOrientation(bool reverseOrientation) => cameraReversed.RequestSet(reverseOrientation);
 
-        public void RequestGetDeviceInfo()
+        public bool RequestGetDeviceInfo()
         {
             // Only send the request if we have a device
-            if (!connectedDeviceID.HasValue) return;
+            if (!connectedDeviceID.HasValue) return false;
 
             var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
             Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
+
+            return true;
         }
 
         public void RequestGetDevices() => Request(new DApiMessage(DApiMsgTypes.GetDevices));
