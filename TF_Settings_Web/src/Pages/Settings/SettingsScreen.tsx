@@ -44,7 +44,7 @@ const SettingsScreen: React.FC = () => {
             <div className={classes('title-line')}>
                 <h1> About </h1>
             </div>
-            <div className={classes('info-table--versions')}>
+            <div className={classes('info-table')}>
                 <InfoTextEntry title="TouchFree Version" text={tFVersion} />
                 <InfoTextEntry title="Tracking Version" text={trackingVersion} />
                 <InfoTextEntry title="Camera Firmware Version" text={cameraFWVersion} />
@@ -56,7 +56,7 @@ const SettingsScreen: React.FC = () => {
                     <div className={classes('title-line')}>
                         <h1> Advanced Settings </h1>
                     </div>
-                    <div className={classes('info-table--advanced')}>
+                    <div className={classes('info-table')}>
                         <InfoButtonEntry
                             title="Tracking Log Files"
                             buttonTitle="Show Tracking Log Files"
