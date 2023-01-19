@@ -1,6 +1,7 @@
+import classnames from 'classnames/bind';
 import { WebGLRenderer } from 'three';
 
-import classes from './CameraMasking.module.scss';
+import styles from './CameraMasking.module.scss';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -19,6 +20,8 @@ import { MaskingSliderDraggable, SliderDirection } from './MaskingSlider';
 import { updateCameraCanvas } from './createCameraData';
 import { HandState, rawHandToHandData, setHandRenderState } from './createHandData';
 import { setupRenderScene } from './sceneRendering';
+
+const classes = classnames.bind(styles);
 
 export type Lens = 'Left' | 'Right';
 
@@ -214,9 +217,9 @@ const MaskingScreen: React.FC = () => {
     );
 
     return (
-        <div className={classes['container']}>
-            <div className={classes['header']}>
-                <div className={classes['title-line']}>
+        <div className={classes('container')}>
+            <div className={classes('header')}>
+                <div className={classes('title-line')}>
                     <h1> Camera Masking </h1>
                     <p style={{ opacity: '50%' }}>
                         The camera will ignore the areas defined by the boxes that you draw on the camera feed
@@ -224,16 +227,16 @@ const MaskingScreen: React.FC = () => {
                 </div>
                 {isLandscape ? <></> : <BackButton />}
             </div>
-            <div className={classes['sub-container']}>
-                <div className={classes['cam-feed-box']}>
-                    <div className={classes['cam-feed-box-feed']}>
-                        <div className={classes['slider-container']}>{sliders}</div>
-                        <div className={classes['cam-feed-box-feed--render']} ref={camFeedRef} />
+            <div className={classes('sub-container')}>
+                <div className={classes('cam-feed-box')}>
+                    <div className={classes('cam-feed-box-feed')}>
+                        <div className={classes('slider-container')}>{sliders}</div>
+                        <div className={classes('cam-feed-box-feed--render')} ref={camFeedRef} />
                     </div>
-                    <div className={classes['lens-toggle-container']}>{lensToggles}</div>
+                    <div className={classes('lens-toggle-container')}>{lensToggles}</div>
                 </div>
-                <div className={classes['cam-feeds-bottom-container']}>
-                    <div className={classes['cam-feeds-options-container']}>
+                <div className={classes('cam-feeds-bottom-container')}>
+                    <div className={classes('cam-feeds-options-container')}>
                         {useMemo(
                             () => (
                                 <MaskingOption

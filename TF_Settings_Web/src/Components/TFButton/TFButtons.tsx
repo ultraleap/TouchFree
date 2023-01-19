@@ -1,4 +1,4 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './TFButtons.module.scss';
 
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { BackArrow } from '@/Images';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 

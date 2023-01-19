@@ -1,4 +1,6 @@
-import classes from './Calibration.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './Calibration.module.scss';
 import cssVariables from '@/variables.module.scss';
 
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
@@ -10,6 +12,8 @@ import { InputType, TouchFreeInputAction } from 'TouchFree/src/TouchFreeToolingT
 import { TextButton } from '@/Components';
 
 import { CalibrationHandLostMessage, CalibrationPracticeButton } from './CalibrationComponents';
+
+const classes = classnames.bind(styles);
 
 const buttonStyle: CSSProperties = {
     width: '60%',
@@ -72,19 +76,19 @@ const CalibrationCompleteScreen: React.FC<CalibrationCompleteProps> = ({ onLoad,
 
     const navigate = useNavigate();
     return (
-        <div className={classes['setup-complete-container']}>
+        <div className={classes('setup-complete-container')}>
             <div>
                 <CalibrationHandLostMessage
                     display={!isHandPresent}
                     handsLostStyle={{ height: '3vh', padding: '5px 30px' }}
                 />
             </div>
-            <h1 className={classes['setup-complete-title']}>
+            <h1 className={classes('setup-complete-title')}>
                 Setup <br />
                 Complete
             </h1>
             <div
-                className={classes['setup-complete-options-container']}
+                className={classes('setup-complete-options-container')}
                 style={{ pointerEvents: showButtons ? 'all' : 'none' }}
             >
                 <TextButton

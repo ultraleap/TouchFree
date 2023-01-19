@@ -1,4 +1,6 @@
-import classes from './DocsLink.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './DocsLink.module.scss';
 
 import { QRCodeSVG } from 'qrcode.react';
 import React, { CSSProperties, useState, useRef, useEffect } from 'react';
@@ -7,6 +9,8 @@ import TouchFree from 'TouchFree/src/TouchFree';
 
 import { Alert, TextButton, OutlinedTextButton } from '@/Components';
 import { tFClickIsPointer } from '@/Components/TFButton/TFButtons';
+
+const classes = classnames.bind(styles);
 
 interface DocsLinkProps {
     buttonStyle?: CSSProperties;
@@ -42,10 +46,10 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
 
     return (
         <>
-            <div className={classes['bg-cover']} />
-            <div className={classes['docs-modal']}>
+            <div className={classes('bg-cover')} />
+            <div className={classes('docs-modal')}>
                 <div
-                    className={classes['docs-modal__qr-code']}
+                    className={classes('docs-modal__qr-code')}
                     onPointerEnter={() => TouchFree.GetCurrentCursor()?.SetCursorOpacity(0.5)}
                     onPointerLeave={() => {
                         if (TouchFree.GetCurrentCursor()?.shouldShow) {
@@ -55,11 +59,11 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
                 >
                     <QRCodeSVG value={url} style={{ width: '100%', height: '100%' }} />
                 </div>
-                <h1 className={classes['docs-modal__text']}>Scan QR Code to find help at Ultraleap.com</h1>
-                <div className={classes['docs-modal-buttons']}>
-                    <div className={classes['docs-modal-buttons--link']}>
+                <h1 className={classes('docs-modal__text')}>Scan QR Code to find help at Ultraleap.com</h1>
+                <div className={classes('docs-modal-buttons')}>
+                    <div className={classes('docs-modal-buttons--link')}>
                         <TextButton
-                            className={classes['docs-modal__button']}
+                            className={classes('docs-modal__button')}
                             title="Open Link"
                             text=""
                             textStyle={{ display: 'none' }}
@@ -84,7 +88,7 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
                         />
                     </div>
                     <TextButton
-                        className={classes['docs-modal__button']}
+                        className={classes('docs-modal__button')}
                         title="Close"
                         text=""
                         textStyle={{ display: 'none' }}

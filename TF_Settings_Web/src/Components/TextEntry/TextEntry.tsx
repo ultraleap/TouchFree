@@ -1,10 +1,10 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './TextEntry.module.scss';
 
 import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 interface TextEntryProps {
     name: string;

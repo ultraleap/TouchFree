@@ -1,4 +1,4 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './ManualSetup.module.scss';
 
@@ -13,7 +13,7 @@ import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 
 import { BackButton, TextEntry } from '@/Components';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 interface PhysicalState {
     screenHeight: number;

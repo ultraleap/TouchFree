@@ -1,11 +1,11 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './TabSelector.module.scss';
 
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 interface TabSelectorProps {
     name: string;

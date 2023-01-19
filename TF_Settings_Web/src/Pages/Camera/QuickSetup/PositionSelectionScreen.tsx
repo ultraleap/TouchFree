@@ -1,4 +1,6 @@
-import classes from './QuickSetup.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './QuickSetup.module.scss';
 import cssVariables from '@/variables.module.scss';
 
 import React, { useEffect } from 'react';
@@ -10,6 +12,8 @@ import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import { CameraFacingUserIcon, CameraFacingScreenIcon, CameraBelowIcon } from '@/Images';
 
 import { DocsLink, VerticalIconTextButton } from '@/Components';
+
+const classes = classnames.bind(styles);
 
 export type PositionType = 'FaceUser' | 'FaceScreen' | 'Below' | null;
 
@@ -43,17 +47,17 @@ const PositionSelectionScreen: React.FC<PositionSelectionProps> = ({ activePosit
 
     const navigate = useNavigate();
     return (
-        <div className={classes.container}>
-            <div className={classes['title-line']}>
+        <div className={classes('container')}>
+            <div className={classes('title-line')}>
                 <h1> Where is Your Camera Positioned? </h1>
             </div>
             <div
-                className={classes['title-line']}
+                className={classes('title-line')}
                 style={{ fontStyle: 'italic', paddingBottom: '1vh', marginTop: '-0.5vh' }}
             >
                 <p>Full screen is recommended for optimal calibration</p>
             </div>
-            <div className={classes['button-container']}>
+            <div className={classes('button-container')}>
                 {positionOptions.map(({ type, title, icon }: PositionOption) => (
                     <VerticalIconTextButton
                         key={type}

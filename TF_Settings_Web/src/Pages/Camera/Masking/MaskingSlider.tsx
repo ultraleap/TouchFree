@@ -1,4 +1,4 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './CameraMasking.module.scss';
 
@@ -7,7 +7,7 @@ import React, { PointerEvent, ReactElement, useEffect, useRef, useState } from '
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 export type SliderDirection = keyof Mask;
 

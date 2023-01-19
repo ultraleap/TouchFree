@@ -1,11 +1,12 @@
 import classnames from 'classnames/bind';
 
-import classes from './RadioButtons.module.scss';
+import styles from './RadioButtons.module.scss';
 import interactionsStyles from '@/Pages/Interactions/Interactions.module.scss';
 
 import React from 'react';
 
 const interactionsClasses = classnames.bind(interactionsStyles);
+const classes = classnames.bind(styles);
 
 interface RadioProps {
     name: string;
@@ -19,14 +20,14 @@ export const RadioLine: React.FC<RadioProps> = ({ name, options, selected, onCha
         <p className={interactionsClasses('label')}> {name} </p>
         {options.map((option, index) => (
             <div
-                className={classes['horizontalRadioContainer']}
+                className={classes('horizontalRadioContainer')}
                 key={option}
                 onPointerDown={() => {
                     onChange(option);
                 }}
             >
                 <input
-                    className={classes['radio-button']}
+                    className={classes('radio-button')}
                     type="radio"
                     key={option}
                     name={name}
@@ -52,7 +53,7 @@ export const RadioGroup: React.FC<RadioProps> = ({ name, options, selected, onCh
                 }}
             >
                 <input
-                    className={classes['radio-button']}
+                    className={classes('radio-button')}
                     type="radio"
                     name={name}
                     value={option}

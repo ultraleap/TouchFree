@@ -1,4 +1,6 @@
-import classes from './Camera.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './Camera.module.scss';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +10,8 @@ import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
 
 import { Alert, DocsLink, HorizontalIconTextButton, TabBar, VerticalIconTextButton } from '@/Components';
+
+const classes = classnames.bind(styles);
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
@@ -25,10 +29,10 @@ const CameraSetupScreen = () => {
     return (
         <>
             <TabBar />
-            <div className={classes['camera-setup-container']}>
-                <div className={classes['sub-container']}>
-                    <h1 className={classes['title-line']}> Camera Setup </h1>
-                    <div className={classes['tf-button-container']}>
+            <div className={classes('camera-setup-container')}>
+                <div className={classes('sub-container')}>
+                    <h1 className={classes('title-line')}> Camera Setup </h1>
+                    <div className={classes('tf-button-container')}>
                         <VerticalIconTextButton
                             icon={QuickSetupIcon}
                             alt="Icon for Quick Setup option"
@@ -47,9 +51,9 @@ const CameraSetupScreen = () => {
                         />
                     </div>
                 </div>
-                <div className={classes['camera-page-divider']} />
-                <div className={classes['sub-container']}>
-                    <h1 className={classes['title-line']}> Tools </h1>
+                <div className={classes('camera-page-divider')} />
+                <div className={classes('sub-container')}>
+                    <h1 className={classes('title-line')}> Tools </h1>
                     <HorizontalIconTextButton
                         buttonStyle={{
                             opacity: touchFreeConnected ? 1 : 0.5,

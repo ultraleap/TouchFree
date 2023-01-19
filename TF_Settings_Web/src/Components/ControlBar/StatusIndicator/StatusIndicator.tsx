@@ -1,4 +1,4 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './StatusIndicator.module.scss';
 
@@ -8,7 +8,7 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { CameraStatusIcon, HandIcon } from '@/Images';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 interface StatusIndicatorProps {
     tfStatus: TrackingServiceState;

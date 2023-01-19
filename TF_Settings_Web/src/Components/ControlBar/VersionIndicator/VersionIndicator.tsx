@@ -1,6 +1,10 @@
-import classes from './VersionIndicator.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './VersionIndicator.module.scss';
 
 import React from 'react';
+
+const classes = classnames.bind(styles);
 
 interface VersionIndicatorProps {
     touchFreeVersion: string;
@@ -8,7 +12,7 @@ interface VersionIndicatorProps {
 
 const VersionIndicator: React.FC<VersionIndicatorProps> = ({ touchFreeVersion }) => {
     return (
-        <div className={classes['version-container']}>{touchFreeVersion ? `TouchFree: v${touchFreeVersion}` : ''}</div>
+        <div className={classes('version-container')}>{touchFreeVersion ? `TouchFree: v${touchFreeVersion}` : ''}</div>
     );
 };
 

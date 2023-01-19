@@ -1,4 +1,6 @@
-import classes from './Calibration.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './Calibration.module.scss';
 
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -17,6 +19,8 @@ import {
     CalibrationProgressCircle,
     FullScreenPrompt,
 } from './CalibrationComponents';
+
+const classes = classnames.bind(styles);
 
 interface CalibrationScreenProps {
     isHandPresent: boolean;
@@ -138,7 +142,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
 
     if (location.pathname.endsWith('top')) {
         return (
-            <div className={classes['content-container']}>
+            <div className={classes('content-container')}>
                 <FullScreenPrompt promptStyle={{ position: 'fixed', top: '5vh' }} />
                 <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', top: '15.5vh' }} />
                 <CalibrationInstructions
@@ -158,7 +162,7 @@ const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ isHandPresent, on
     }
 
     return (
-        <div className={classes['content-container']}>
+        <div className={classes('content-container')}>
             <CalibrationTutorialVideo videoStyle={{ position: 'fixed', top: '30vh' }} />
             <CalibrationInstructions progress={progress} containerStyle={{ position: 'fixed', bottom: '27vh' }} />
             <CalibrationProgressCircle progress={progress} style={{ position: 'fixed', bottom: '15.5vh' }} />

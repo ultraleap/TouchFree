@@ -1,7 +1,12 @@
-import classes from './Sliders.module.scss';
-import interactionClasses from '@/Pages/Interactions/Interactions.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './Sliders.module.scss';
+import interactionStyles from '@/Pages/Interactions/Interactions.module.scss';
 
 import React, { PointerEvent, RefObject } from 'react';
+
+const classes = classnames.bind(styles);
+const interactionClasses = classnames.bind(interactionStyles);
 
 interface TextSliderProps {
     name: string;
@@ -77,16 +82,16 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
 
     render() {
         return (
-            <label className={interactionClasses['input-label-container']}>
-                <p className={interactionClasses['label']}>{this.props.name}</p>
-                <div className={classes['sliderContainer']}>
+            <label className={interactionClasses('input-label-container')}>
+                <p className={interactionClasses('label')}>{this.props.name}</p>
+                <div className={classes('sliderContainer')}>
                     <input
                         type="range"
                         step={this.stepSize}
                         min={this.props.rangeMin}
                         max={this.props.rangeMax}
                         value={this.props.value}
-                        className={classes['slider']}
+                        className={classes('slider')}
                         onChange={this.onChange}
                         onPointerMove={this.onMove.bind(this)}
                         onPointerDown={this.onDown.bind(this)}
@@ -95,16 +100,16 @@ export class TextSlider extends React.Component<TextSliderProps, {}> {
                         id="myRange"
                         ref={this.inputElement}
                     />
-                    <div className={classes['sliderLabelContainer']}>
-                        <label className={interactionClasses['leftLabel']}>{this.props.leftLabel}</label>
-                        <label className={interactionClasses['rightLabel']}>{this.props.rightLabel}</label>
+                    <div className={classes('sliderLabelContainer')}>
+                        <label className={interactionClasses('leftLabel')}>{this.props.leftLabel}</label>
+                        <label className={interactionClasses('rightLabel')}>{this.props.rightLabel}</label>
                     </div>
                 </div>
-                <label className={classes['sliderTextContainer']}>
+                <label className={classes('sliderTextContainer')}>
                     <input
                         type="number"
                         step={this.stepSize}
-                        className={classes['sliderText']}
+                        className={classes('sliderText')}
                         value={this.props.value}
                         onChange={this.onTextChange.bind(this)}
                     />
