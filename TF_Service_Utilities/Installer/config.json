@@ -1,0 +1,5 @@
+{
+    "log_stats_timeout": 5,
+    "log_days": 10,
+    "log_days_rotation_hour": 3
+}
