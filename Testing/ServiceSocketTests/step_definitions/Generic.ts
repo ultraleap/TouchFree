@@ -56,8 +56,10 @@ When('a handshake message is sent',  (callback) => {
 
 Then('a handshake response is received', (callback) => {
     let checkTime = 0;
+    const interval = 10;
+
     const intervalId = setInterval(() => {
-        checkTime += 100;
+        checkTime += interval;
 
         if (responses.length > 0) {
             const response = responses[0];
@@ -97,7 +99,7 @@ Then('a handshake response is received', (callback) => {
             clearInterval(intervalId);
             throw Error('No message received');
         }
-    }, 100);
+    }, interval);
 });
 
 AfterAll(() => {
