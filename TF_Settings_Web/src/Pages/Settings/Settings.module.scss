@@ -16,6 +16,10 @@
     margin: 0 2vw;
 }
 
+.page-divider {
+    @include App.page-divider;
+}
+
 .info-table {
     $numCols: 1;
     background: v.$dark-grey-gradient;

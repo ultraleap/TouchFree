@@ -21,10 +21,8 @@
     }
 }
 
-.camera-page-divider {
-    height: 10px;
-    margin: 40px 0;
-    background-color: #363636;
+.page-divider {
+    @include App.page-divider;
     @media (orientation: landscape) {
         width: 12px;
         height: unset;

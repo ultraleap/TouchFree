@@ -53,7 +53,7 @@ const CameraSetupScreen: React.FC<CameraSetupScreenProps> = ({ trackingStatus })
                         />
                     </div>
                 </div>
-                {isLandscape ? <></> : <div className={classes('camera-page-divider')} />}
+                {isLandscape ? <></> : <div className={classes('page-divider')} />}
                 <div className={classes('sub-container')}>
                     <h1 className={classes('title-line')}> Tools </h1>
                     <HorizontalIconTextButton

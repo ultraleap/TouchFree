@@ -13,10 +13,9 @@
     flex-direction: row;
 }
 
-.page-divider {
+@mixin page-divider {
     height: 10px;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin: 40px 0;
     background-color: v.$dark-grey;
 }
 
