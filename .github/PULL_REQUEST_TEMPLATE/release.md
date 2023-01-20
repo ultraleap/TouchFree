@@ -16,7 +16,10 @@ _These tasks must be completed to release._
 
 - [ ] Create and request approval of a [Request to Release on Cognidox](https://ultrahaptics.cdox.net/cgi-perl/browse-categories?id=973) for the relevant product being released. This will include several tasks within.
 - [ ] Ensure version numbers within software have been updated
-- [ ] Ensure any changelogs have been updated
+- [ ] Relevant changelogs have been updated with user-visible changes
+    - [ ] [TouchFree Windows](../../CHANGELOG-windows.md)
+    - [ ] [TouchFree BrightSign](../../CHANGELOG-brightsign.md)
+    - [ ] [TouchFree Web Tooling](../../TF_Tooling_Web/CHANGELOG.md)
 - [ ] Continue release process on [Confluence](https://ultrahaptics.atlassian.net/wiki/spaces/SC/pages/3107979726/TouchFree+Work+Practices#Release-Processes)
 
 ## JIRA Release

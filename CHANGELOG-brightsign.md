@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Web Settings/Service: TouchFree version is now shown in the UI and logged by the service
+- Web Settings: UI will now scale dynamically to viewport resolution
 
 ### Changed
 - Web Settings: Configuration can be updated when no camera is connected

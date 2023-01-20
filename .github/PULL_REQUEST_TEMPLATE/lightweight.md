@@ -18,13 +18,16 @@ _Summary of the purpose of this pull request._
 
 _These tasks are for the pull request creator to tick off._
 
-- [ ] Developer testing
-- [ ] Make sure relevant changelog is updated if any changes affect users
+- [ ] Relevant changelogs have been updated with user-visible changes
+    - [ ] [TouchFree Windows](../../CHANGELOG-windows.md)
+    - [ ] [TouchFree BrightSign](../../CHANGELOG-brightsign.md)
+    - [ ] [TouchFree Web Tooling](../../TF_Tooling_Web/CHANGELOG.md)
 
 ## Reviewer Tasks
 
 _Add any instructions or tasks for the reviewer such as specific test considerations before this can be merged._
 
+- [ ] Developer testing
 - [ ] Code reviewed
 - [ ] Non-code assets reviewed
 - [ ] Documentation reviewed - includes checking documentation requirements are met and not missing e.g., public API is commented
