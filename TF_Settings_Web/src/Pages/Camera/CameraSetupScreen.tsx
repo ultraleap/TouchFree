@@ -10,7 +10,8 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
 
-import { Alert, DocsLink, HorizontalIconTextButton, TabBar, VerticalIconTextButton } from '@/Components';
+import { Alert, DocsLink, HorizontalIconTextButton, VerticalIconTextButton } from '@/Components';
+import { TabBar } from '@/Components/ControlBar';
 
 const classes = classnames.bind(styles);
 

@@ -1,7 +1,8 @@
 import styles from './TabSelector.module.scss';
 
 import classnames from 'classnames/bind';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const classes = classnames.bind(styles);
 
@@ -9,41 +10,44 @@ interface TabSelectorProps {
     name: string;
     icon?: string;
     hoveredIcon?: string;
-    isActiveTab: boolean;
-    onClick?: () => void;
 }
 
-const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon, isActiveTab, onClick }) => {
+const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon }) => {
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+
     const [hovered, setHovered] = useState<boolean>(false);
     const [pressed, setPressed] = useState<boolean>(false);
-    const [tabContent, setTabContent] = useState<JSX.Element>();
-
-    const handleClick = () => {
-        if (!isActiveTab && onClick) onClick();
-    };
-
-    const getSpecialClassName = useCallback((): string => {
-        if (isActiveTab) return 'tab-button--active';
-
-        return pressed ? 'tab-button--pressed' : hovered ? 'tab-button--hovered' : '';
-    }, [isActiveTab, hovered, pressed]);
+    const [isActiveTab, setIsActiveTab] = useState<boolean>(false);
 
     useEffect(() => {
-        let content: JSX.Element = <span>{name}</span>;
-        if (icon) {
-            const showHoveredIcon = !isActiveTab && hovered && hoveredIcon;
-            content = (
-                <div className="icon--container">
-                    <img src={showHoveredIcon ? hoveredIcon : icon} />{' '}
-                </div>
-            );
+        setIsActiveTab(pathname.endsWith(name.toLowerCase()));
+    }, [pathname]);
+
+    const handleClick = () => {
+        if (!isActiveTab) {
+            navigate(`/settings/${name.toLowerCase()}`);
         }
-        setTabContent(content);
+    };
+
+    const content = useMemo((): JSX.Element => {
+        if (!icon) return <span>{name}</span>;
+
+        const showHoveredIcon = !isActiveTab && hovered && hoveredIcon;
+        return (
+            <div className={classes('icon--container')}>
+                <img src={showHoveredIcon ? hoveredIcon : icon} />{' '}
+            </div>
+        );
     }, [icon, name, hovered, isActiveTab]);
 
     return (
         <button
-            className={classes('tab-button', getSpecialClassName())}
+            className={classes('tab-button', {
+                'tab-button--active': isActiveTab,
+                'tab-button--pressed': pressed,
+                'tab-button--hovered': hovered,
+            })}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
                 setHovered(false);
@@ -62,7 +66,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon, isAc
                 if (keyEvent.key === 'Enter') handleClick();
             }}
         >
-            {tabContent}
+            {content}
         </button>
     );
 };

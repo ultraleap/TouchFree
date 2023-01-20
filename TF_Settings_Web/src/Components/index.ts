@@ -13,7 +13,6 @@ import {
     BackButton,
     OutlinedTextButton,
 } from './TFButton/TFButtons';
-import TabBar from './TabBar/TabBar';
 import TextEntry from './TextEntry/TextEntry';
 import { ToggleSwitch, LabelledToggleSwitch } from './ToggleSwitch/ToggleSwitch';
 
@@ -35,7 +34,6 @@ export {
     LabelledToggleSwitch,
     BaseTFButton,
     DocsLink,
-    TabBar,
     BackButton,
     OutlinedTextButton,
 };

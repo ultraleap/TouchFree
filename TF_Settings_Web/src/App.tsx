@@ -50,6 +50,7 @@ const App: React.FC = () => {
             <Routes>
                 <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
                 <Route path="/settings/interactions" element={<InteractionsScreen />} />
+                <Route path="/settings/settings" element={<SettingsScreen />} />
                 <Route path="*" element={<Navigate to="/settings/camera" replace />} />
             </Routes>
         </div>
