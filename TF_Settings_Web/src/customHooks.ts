@@ -2,8 +2,6 @@ import platform from 'platform';
 
 import { useEffect, useRef, useState } from 'react';
 
-export const isBRS = (): boolean => platform.os?.family === 'Linux' || platform.os?.family === 'Ubuntu';
-
 export const useIsFullScreen = () => {
     const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -28,6 +26,8 @@ export const useIsFullScreen = () => {
 
     return isFullScreen;
 };
+
+export const useIsBrightSign = (): boolean => platform.os?.family === 'Linux' || platform.os?.family === 'Ubuntu';
 
 export const useStatefulRef = function <T>(initialValue: T): {
     current: T;

@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './ManualSetup.module.scss';
 
+import classnames from 'classnames/bind';
 import { FormEvent, useEffect, useReducer } from 'react';
 
 import { useIsLandscape } from '@/customHooks';

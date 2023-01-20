@@ -5,6 +5,13 @@
     @include App.title-line;
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1vh 0;
+}
+
 .container {
     margin: 0 2vw;
 }

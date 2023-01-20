@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './StatusIndicator.module.scss';
 
+import classnames from 'classnames/bind';
 import React from 'react';
 
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';

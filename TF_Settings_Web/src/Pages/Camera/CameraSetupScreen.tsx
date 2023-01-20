@@ -70,7 +70,7 @@ const CameraSetupScreen: React.FC<CameraSetupScreenProps> = ({ trackingStatus })
                     />
                     <Alert
                         show={!isConnected}
-                        style={{ width: '60%' }}
+                        style={{ width: '60%', marginLeft: '20%', position: 'relative' }}
                         text="Failed to connect to service: masking unavailable"
                         animationType="fadeIn"
                         animationTime={1}

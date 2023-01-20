@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './DocsLink.module.scss';
 
+import classnames from 'classnames/bind';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { CSSProperties, useState, useRef, useEffect } from 'react';
 
@@ -81,7 +80,7 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
                         />
                         <Alert
                             show={showAlert}
-                            style={{ width: '40%' }}
+                            style={{ width: '100%', position: 'relative' }}
                             text="Cannot be opened using the TouchFree cursor"
                             animationType="fadeInOut"
                             animationTime={4}

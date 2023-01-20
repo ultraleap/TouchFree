@@ -59,7 +59,7 @@
         height: 4rem;
         padding: 0.3rem;
 
-        background-image: v.$darker-grey-gradient, v.$outline-button-gradient;
+        background-image: v.$dark-grey-gradient, v.$outline-button-gradient;
         background-clip: content-box, border-box;
         border-radius: 50px;
 
@@ -87,9 +87,9 @@
         align-items: center;
 
         .back-container {
-            width: 120px;
-            display: flex;
-            justify-content: space-evenly;
+            width: 50%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             align-items: center;
         }
 
