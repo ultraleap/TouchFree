@@ -22,9 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- Tracking Service: Updated Ultraleap Tracking software version to 5.9.1 which includes improvements for tracking hands with sleeves
-
 ### Fixed
 - Unity Settings/Service: Fixed an issue where using Touch Plane with Scroll and Drag caused cursor jumps
 - Unity Settings/Service: Fixed an issue where clicking was very difficult while Touch Plane and Scroll and Drag were both active
@@ -34,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.4.0] - 2022-10-14
 
 ### Changed
-- Tracking Service: Updated Ultraleap Tracking software version to 5.7.2 which includes stability and security enhancements
+- Tracking Service: Updated Ultraleap Tracking software which includes stability and security enhancements
 - Service: TouchFree detects and reacts to the most appropriate hand in the scene
 - All TouchFree related settings are now camera independent, allowing configuration settings to be copied between similar kiosk hardware
 
@@ -51,16 +48,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.3.1] - 2022-07-13
 
-### Changed
-- Tracking Service: Updated Ultraleap Tracking software version to 5.6.2
-
 ### Fixed
 - Tracking Service: Ultraleap Tracking service is no longer left unresponsive by Windows shutdown/restart
 
 ## [2.3.0] - 2022-05-4
 
 ### Added
-- Installer: Now installs Ultraleap Tracking service (5.5.3) with TouchFree
+- Installer: Now installs Ultraleap Tracking service with TouchFree
 
 ### Changed
 - Service: Scroll and Drag is enabled by default, enabling interaction with scrollable content out of the box

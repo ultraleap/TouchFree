@@ -35,7 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web Settings/Service: TouchFree version is now shown in the UI and logged by the service
 
 ### Changed
-- Tracking Service: Updated Ultraleap Tracking software version to 5.9.1 which includes improvements for tracking hands with sleeves
 - Web Settings: Configuration can be updated when no camera is connected
 - Web Settings: Service status icons will now update immediately upon device connection/disconnection
 - Web Settings: Improved the performance of the camera masking screen
