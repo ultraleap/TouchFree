@@ -1,4 +1,8 @@
+@use '@/variables.module.scss' as v;
+
 .tab-bar {
+    position: sticky;
+    top: v.$control-bar-height;
     display: flex;
     width: 100vw;
     height: 10vh;

@@ -5,6 +5,8 @@ import styles from './Camera.module.scss';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useIsLandscape } from '@/customHooks';
+
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 
 import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
@@ -15,6 +17,7 @@ const classes = classnames.bind(styles);
 
 const CameraSetupScreen = () => {
     const navigate = useNavigate();
+    const isLandscape = useIsLandscape();
 
     const [touchFreeConnected, setTouchFreeConnected] = useState<boolean>(false);
 
@@ -51,7 +54,7 @@ const CameraSetupScreen = () => {
                         />
                     </div>
                 </div>
-                <div className={classes('camera-page-divider')} />
+                {isLandscape ? <></> : <div className={classes('camera-page-divider')} />}
                 <div className={classes('sub-container')}>
                     <h1 className={classes('title-line')}> Tools </h1>
                     <HorizontalIconTextButton

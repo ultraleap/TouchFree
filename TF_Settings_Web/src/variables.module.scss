@@ -8,6 +8,7 @@ $dark-grey-gradient: linear-gradient(180deg, #373737 0%, #2c2c2c 100%);
 $darker-grey-gradient: linear-gradient(180deg, #353535 0%, #2d2d2d 100%);
 $outline-button-gradient: linear-gradient(180deg, $ultraleap-green, #00cdcf);
 $base-font: MontserratRegular, Arial;
+$control-bar-height: 12vh;
 
 :export {
     appWidth: $app-width;

@@ -46,12 +46,7 @@
     }
 
     &--misc {
-        width: 25vw;
         height: 4rem;
-        @media (orientation: landscape) {
-            width: 12vw;
-        }
-
         padding: 0.3rem;
 
         background-image: v.$darker-grey-gradient, v.$outline-button-gradient;
@@ -61,7 +56,7 @@
         > h1 {
             font-size: 1.5rem !important;
             margin: 0 !important;
-            padding: 0 !important;
+            padding: 0 20px !important;
             color: white !important;
             text-align: center !important;
         }

@@ -73,6 +73,9 @@ video.InteractionPreview.Interaction2 {
     border-radius: 0.5rem;
 
     height: 5rem;
+    @media (orientation: landscape) {
+        height: 7vh;
+    }
 
     padding: 0 10px;
 }

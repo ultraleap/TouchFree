@@ -72,20 +72,11 @@ const InteractionsScreen = () => {
     const [activeInteraction, setActiveInteraction] = useState(0);
     const [activePlaneTracking, setActivePlaneTracking] = useState(0);
     const isLandscape = useIsLandscape();
-    const [supportStyle, setSupportStyle] = useState<CSSProperties | undefined>(
-        isLandscape ? undefined : supportPortraitStyle
-    );
 
     useEffect(() => {
         ConfigurationManager.RequestConfigFileState((config) =>
             dispatch({ type: 'update', content: config.interaction })
         );
-
-        const onResize = () => setSupportStyle(isLandscape ? undefined : supportPortraitStyle);
-
-        window.addEventListener('resize', onResize);
-
-        return () => window.removeEventListener('resize', onResize);
     }, []);
 
     useEffect(() => {
@@ -203,7 +194,7 @@ const InteractionsScreen = () => {
                         <DocsLink
                             title="Support"
                             url="https://www.ultraleap.com/contact-us/"
-                            buttonStyle={supportStyle}
+                            buttonStyle={isLandscape ? undefined : supportPortraitStyle}
                         />
                         <OutlinedTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
                     </div>
