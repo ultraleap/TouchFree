@@ -1,4 +1,6 @@
-import './Calibration.scss';
+import classnames from 'classnames/bind';
+
+import styles from './Calibration.module.scss';
 import cssVariables from '@/variables.module.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -17,6 +19,8 @@ import { TextButton, TFClickEvent } from '@/Components';
 
 import { TIMEOUT_S } from './CalibrationScreen';
 
+const classes = classnames.bind(styles);
+
 interface CalibrationInstructionsProps {
     progress: number;
     containerStyle: CSSProperties;
@@ -28,16 +32,16 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
     isTop,
 }) => {
     const instructionsText = (
-        <h1 className="instruction-text">
-            Hold INDEX FINGER against <br /> this <span className="green-text">GREEN CIRCLE</span>
+        <h1 className={classes('instruction-text')}>
+            Hold INDEX FINGER against <br /> this <span className={classes('green-text')}>GREEN CIRCLE</span>
         </h1>
     );
 
     const calibratingText = (
-        <h1 className="green-text">
-            <div className="calibrating-text">
+        <h1 className={classes('green-text')}>
+            <div className={classes('calibrating-text')}>
                 <span>Calibrating</span>
-                <span style={{ width: '1vw', textAlign: 'left' }} className="loading" />
+                <span style={{ width: '1vw', textAlign: 'left' }} className={classes('loading')} />
             </div>
             <div style={{ paddingTop: '0.5rem' }}>{Math.ceil(progress * 100).toFixed(0)}%</div>
         </h1>
@@ -45,17 +49,22 @@ export const CalibrationInstructions: React.FC<CalibrationInstructionsProps> = (
 
     if (isTop) {
         return (
-            <div className="instructions" style={containerStyle}>
-                <img src={DownArrow} alt="Down arrow" className="arrow" style={{ transform: 'rotate(180deg)' }} />
+            <div className={classes('instructions')} style={containerStyle}>
+                <img
+                    src={DownArrow}
+                    alt="Down arrow"
+                    className={classes('arrow')}
+                    style={{ transform: 'rotate(180deg)' }}
+                />
                 {progress > 0 ? calibratingText : instructionsText}
             </div>
         );
     }
 
     return (
-        <div className="instructions" style={containerStyle}>
+        <div className={classes('instructions')} style={containerStyle}>
             {progress > 0 ? calibratingText : instructionsText}
-            <img src={DownArrow} alt="Down arrow" className="arrow" />
+            <img src={DownArrow} alt="Down arrow" className={classes('arrow')} />
         </div>
     );
 };
@@ -66,7 +75,7 @@ interface CalibrationProgressCircleProps {
 }
 
 export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps> = ({ progress, style }) => (
-    <div style={style} className="touch-circle-progress">
+    <div style={style} className={classes('touch-circle-progress')}>
         <CircularProgressbar
             value={Math.ceil(progress * 50) / 50}
             maxValue={1}
@@ -79,7 +88,7 @@ export const CalibrationProgressCircle: React.FC<CalibrationProgressCircleProps>
             })}
         />
         <img
-            className="touch-circle"
+            className={classes('touch-circle')}
             style={{ position: 'absolute', top: '22%', left: '22%' }}
             src={FingerprintIcon}
             alt="Fingerprint Icon showing where to place finger for Quick Setup"
@@ -125,7 +134,7 @@ export const CalibrationHandLostMessage: React.FC<HandsLostProps> = ({ display, 
         return <div style={handsLostStyle}></div>;
     }
     return (
-        <div className={'hand-not-found-container'} style={handsLostStyle}>
+        <div className={classes('hand-not-found-container')} style={handsLostStyle}>
             <img src={HandIcon} alt="Hand Icon" />
             <p>No Hand Detected{timeToPosSelect ? ':' : ''}</p>
             <ReturnToPositionScreenMessage timeToPosSelect={timeToPosSelect} />
@@ -146,7 +155,7 @@ export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> =
 
     return (
         <video
-            className="interaction-guide"
+            className={classes('interaction-guide')}
             style={getVideoStyle()}
             autoPlay={true}
             loop={true}
@@ -157,15 +166,11 @@ export const CalibrationTutorialVideo: React.FC<CalibrationTutorialVideoProps> =
 };
 
 const cancelSetupButtonStyle: CSSProperties = {
-    width: '300px',
+    width: 'auto',
     height: '4vh',
     borderRadius: '50px',
+    padding: '0 30px',
     background: cssVariables.lightGreyGradient,
-};
-
-const cancelSetupButtonTextStyle: CSSProperties = {
-    fontSize: '1.7vh',
-    opacity: 1,
 };
 
 interface CalibrationCancelButtonProps {
@@ -176,11 +181,9 @@ interface CalibrationCancelButtonProps {
 export const CalibrationCancelButton: React.FC<CalibrationCancelButtonProps> = ({ onCancel, buttonStyle }) => {
     return (
         <TextButton
-            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle, width: 'auto', padding: '0 30px' }}
-            title=""
-            titleStyle={{ display: 'none' }}
-            text="Cancel Setup"
-            textStyle={cancelSetupButtonTextStyle}
+            buttonStyle={{ ...cancelSetupButtonStyle, ...buttonStyle }}
+            title="Cancel Setup"
+            titleStyle={{ margin: 0, padding: 0 }}
             onClick={onCancel}
             canHover={false}
         />
@@ -238,7 +241,7 @@ export const CalibrationPracticeButton: React.FC<CalibrationPracticeButtonProps>
     return (
         <>
             <button
-                className={`setup-practice-button ${hovered ? ' setup-practice-button-hovered' : ''}`}
+                className={classes('setup-practice-button', { 'setup-practice-button-hovered': hovered })}
                 style={progressStyle(progress, hovered)}
                 onPointerOver={() => setHovered(true)}
                 onPointerLeave={() => setHovered(false)}
@@ -289,7 +292,7 @@ export const FullScreenPrompt: React.FC<{ promptStyle: CSSProperties }> = ({ pro
 
     if (!isFullScreen) {
         return (
-            <div className="full-screen-prompt" style={promptStyle}>
+            <div className={classes('full-screen-prompt')} style={promptStyle}>
                 <span>
                     <p>Full screen and 100% zoom recommended: </p>
                     <p style={{ fontWeight: 'bold' }}>Please reset zoom and/or enter full screen</p>

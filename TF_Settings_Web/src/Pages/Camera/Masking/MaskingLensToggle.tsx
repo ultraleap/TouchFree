@@ -1,8 +1,12 @@
-import './CameraMasking.scss';
+import classnames from 'classnames/bind';
+
+import styles from './CameraMasking.module.scss';
 
 import React, { useState } from 'react';
 
 import { Lens } from './MaskingScreen';
+
+const classes = classnames.bind(styles);
 
 interface MaskingLensToggle {
     lens: Lens;
@@ -18,9 +22,10 @@ const MaskingLensToggle: React.FC<MaskingLensToggle> = ({ lens, isMainLens, setM
             onPointerDown={() => setMainLens(lens)}
             onPointerEnter={() => setHovered(true)}
             onPointerLeave={() => setHovered(false)}
-            className={`${isMainLens ? 'lens-toggle--active' : ''} ${
-                hovered ? 'lens-toggle--hovered' : ''
-            } lens-toggle--${lens.toLowerCase()}`}
+            className={classes(`lens-toggle--${lens.toLowerCase()}`, {
+                'lens-toggle--active': isMainLens,
+                'lens-toggle--hovered': hovered,
+            })}
         >
             <p>{lens} Lens</p>
         </div>

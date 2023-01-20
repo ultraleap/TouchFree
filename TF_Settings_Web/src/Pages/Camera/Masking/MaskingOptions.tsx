@@ -1,8 +1,12 @@
-import './CameraMasking.scss';
+import classnames from 'classnames/bind';
+
+import styles from './CameraMasking.module.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Alert, ToggleSwitch } from '@/Components';
+
+const classes = classnames.bind(styles);
 
 interface MaskingOptionProps {
     title: string;
@@ -25,7 +29,7 @@ const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value
 
     return (
         <label
-            className="cam-feeds-option"
+            className={classes('cam-feeds-option')}
             onPointerDown={(event) => {
                 if (isMouseOnly && event.pointerType === 'pen') {
                     if (!showMousePrompt) {
@@ -37,11 +41,11 @@ const MaskingOption: React.FC<MaskingOptionProps> = ({ title, description, value
                 }
             }}
         >
-            <div className="cam-feeds-option-text">
+            <div className={classes('cam-feeds-option-text')}>
                 <h1>{title}</h1>
                 <p>{description}</p>
             </div>
-            <div className="cam-feeds-option-toggle">
+            <div className={classes('cam-feeds-option-toggle')}>
                 <ToggleSwitch value={value} />
             </div>
             <Alert

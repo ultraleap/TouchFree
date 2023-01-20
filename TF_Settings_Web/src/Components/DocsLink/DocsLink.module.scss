@@ -1,4 +1,5 @@
 @use '@/variables.module.scss' as v;
+@use '@/Components/TFButton/TFButtons.module.scss' as tf-button;
 
 .bg-cover {
     position: absolute;
@@ -12,13 +13,18 @@
 }
 
 .docs-modal {
-    $height: 25%;
+    --height: 25vh;
+    --width: 80vw;
+    @media (orientation: landscape) {
+        --height: 50vh;
+        --width: 50vw;
+    }
     position: absolute;
     z-index: 3;
-    height: $height;
-    top: calc((100% - $height) / 2);
-    width: 80vw;
-    left: 10vw;
+    height: var(--height);
+    width: var(--width);
+    top: calc((100vh - var(--height)) / 2);
+    left: calc((100vw - var(--width)) / 2);
 
     border-radius: 20px;
 
@@ -76,33 +82,5 @@
             width: 100%;
             height: 100%;
         }
-    }
-}
-
-#docs-open .docs-open__button {
-    position: absolute;
-    bottom: 2vh;
-    right: 2vh;
-    width: 25vw;
-    height: 4vh;
-
-    padding: 0.3rem;
-
-    background-image: linear-gradient(180deg, #353535, #2d2d2d), linear-gradient(180deg, #00eb86, #00cdcf);
-    background-clip: content-box, border-box;
-    border-radius: 50px;
-
-    &--hovered {
-        box-shadow: none;
-        background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce),
-            linear-gradient(180deg, v.$ultraleap-green, #00cdcf);
-    }
-
-    > h1 {
-        font-size: 1.8rem;
-        margin: 0;
-        padding: 0;
-        color: white;
-        text-align: center;
     }
 }
