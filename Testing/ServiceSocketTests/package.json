@@ -5,9 +5,7 @@
   "main": "gulpfile.js",
   "dependencies": {
     "@cucumber/cucumber": "^8.10.0",
-    "@types/chai": "^4.2.14",
     "@types/websocket": "^1.0.1",
-    "chai": "^4.2.0",
     "cucumber-junit": "^1.7.1",
     "del": "^5.1.0",
     "gulp": "^4.0.2",

@@ -1,42 +1,28 @@
 import { Given, When, Then, After } from '@cucumber/cucumber';
-import { expect } from 'chai';
-import { callbackify } from 'util';
 
-var WebSocket = require('ws');
+const WebSocket = require('ws');
 
 let connectedWebSocket: WebSocket | undefined = undefined;
-let responses: MessageEvent[] = [];
+const responses: MessageEvent[] = [];
 let responsesSetUp = false;
 
-Given('the Service is running', function(callback) {
-    // attempt to connect via WS.
-    // if connection unsuccessful, fail
-
-    let serviceConnection: WebSocket = new WebSocket("ws://127.0.0.1:9739/connect");
-
-    serviceConnection.addEventListener('open', function () {
-        serviceConnection.close();
-
+Given('the Service is running', (callback) => {
+    openWebSocketAndPerformAction(() => {
+        if (connectedWebSocket) {
+            connectedWebSocket.close();
+        }
         callback();
     });
 });
 
-Given('the Service is connected', function(callback) {
-    // attempt to connect via WS.
-    // if connection unsuccessful, fail
-
-    connectedWebSocket = new WebSocket("ws://127.0.0.1:9739/connect");
-
-    if (connectedWebSocket) {
-        connectedWebSocket.addEventListener('open', function () {
-            callback();
-        });
-    }
+Given('the Service is connected', (callback) => {
+    openWebSocketAndPerformAction(() => {
+        callback();
+    });
 });
 
-When('a handshake message is sent',  (callback) => {
+When('a handshake message is sent',  () => {
     sendHandshake();
-    callback();
 });
 
 Then('a handshake response is received', (callback) => {
@@ -44,21 +30,14 @@ Then('a handshake response is received', (callback) => {
 });
 
 Given('the Service is connected with handshake', (callback) => {
-    // attempt to connect via WS.
-    // if connection unsuccessful, fail
-
-    connectedWebSocket = new WebSocket("ws://127.0.0.1:9739/connect");
-
-    if (connectedWebSocket) {
-        connectedWebSocket.addEventListener('open', function () {
-            sendHandshake();
-        });
-    }
+    openWebSocketAndPerformAction(() => {
+        sendHandshake();
+    });
 
     callbackOnHandshake(callback);
 });
 
-When('service status is requested',  (callback) => {
+When('service status is requested',  () => {
     const serviceStatusMessage = {
         action: 'REQUEST_SERVICE_STATUS',
         content: {
@@ -67,7 +46,6 @@ When('service status is requested',  (callback) => {
     };
 
     sendMessage(serviceStatusMessage);
-    callback();
 });
 
 Then('a service status response is received', (callback) => {
@@ -80,6 +58,19 @@ After(() => {
     }
     responsesSetUp = false;
 });
+
+const openWebSocketAndPerformAction = (callback: () => void) => {
+    // attempt to connect via WS.
+    // if connection unsuccessful, fail
+
+    connectedWebSocket = new WebSocket("ws://127.0.0.1:9739/connect");
+
+    if (connectedWebSocket) {
+        connectedWebSocket.addEventListener('open', () => {
+            callback();
+        });
+    }
+}
 
 const sendMessage = (message: any) => {
     if (connectedWebSocket) {
@@ -139,7 +130,7 @@ const callbackOnHandshake = (callback: () => void) => {
             }
         };
 
-        checkActionResponse(responseData, expectedResponse, expectedResponse.action, intervalId, (received: any) => {
+        checkActionResponse(responseData, expectedResponse, intervalId, (received: any) => {
             return received.content.requestID === expectedResponse.content.requestID &&
                 received.content.status === expectedResponse.content.status &&
                 received.content.message === expectedResponse.content.message;
@@ -156,7 +147,7 @@ const callbackOnServiceStatus = (callback: () => void) => {
             }
         };
 
-        checkActionResponse(responseData, expectedResponse, expectedResponse.action, intervalId, (received: any) => {
+        checkActionResponse(responseData, expectedResponse, intervalId, (received: any) => {
             return received.content.requestID === expectedResponse.content.requestID;
         }, callback, 'Service Status message does not match expected');
     });
@@ -165,7 +156,6 @@ const callbackOnServiceStatus = (callback: () => void) => {
 const checkActionResponse = (
     responseData: any,
     expectedResponse: any,
-    action: string,
     intervalId: NodeJS.Timer,
     validation: (received: any) => boolean,
     callback: () => void,
@@ -173,7 +163,7 @@ const checkActionResponse = (
 
     const content = JSON.parse(responseData);
 
-    if (content.action === action)  {
+    if (content.action === expectedResponse.action)  {
         clearInterval(intervalId);
 
         if (validation(content)) {
