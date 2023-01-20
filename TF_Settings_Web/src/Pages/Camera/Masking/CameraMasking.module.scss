@@ -42,7 +42,9 @@
 // ===== Camera Feeds =====
 .cam-feed-box {
     position: relative;
-    margin-bottom: 1.5vh;
+    @media (orientation: portrait) {
+        margin-bottom: 1.5vh;
+    }
     width: var(--size);
     height: var(--size);
 
@@ -293,8 +295,8 @@
     width: 100%;
 
     @media (orientation: landscape) {
-        width: 35vw;
-        height: 10vh;
+        width: 40vw;
+        height: 8vh;
     }
 }
 
