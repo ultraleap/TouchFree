@@ -1,5 +1,3 @@
-import './Calibration.scss';
-
 import React, { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 

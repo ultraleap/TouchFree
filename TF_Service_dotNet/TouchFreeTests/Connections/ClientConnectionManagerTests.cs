@@ -19,7 +19,7 @@ namespace TouchFreeTests.Connections
             // Arrange
             var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object, new Mock<ITrackingDiagnosticApi>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
             var methodInfo = typeof(ClientConnectionManager).GetMethod(clientConnectionMethod);
             var parameterInfo = methodInfo.GetParameters();
@@ -63,7 +63,7 @@ namespace TouchFreeTests.Connections
             // Arrange
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
             var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
-            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object, new Mock<ITrackingDiagnosticApi>().Object);
 
             // Act
             clientConnectionManager.AddConnection(mockClientConnection.Object);
@@ -78,7 +78,7 @@ namespace TouchFreeTests.Connections
             // Arrange
             var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object, new Mock<ITrackingDiagnosticApi>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
 
             // Act
@@ -96,7 +96,7 @@ namespace TouchFreeTests.Connections
             var mockHandManager = CreateHandManagerMockWithMockTrackingConnection();
             var mockClientConnection = CreateClientConnectionMockWithOpenSocket();
             var mockSecondClientConnection = CreateClientConnectionMockWithOpenSocket();
-            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object);
+            var clientConnectionManager = new ClientConnectionManager(mockHandManager.Object, new Mock<IConfigManager>().Object, new Mock<ITrackingDiagnosticApi>().Object);
             clientConnectionManager.AddConnection(mockClientConnection.Object);
             clientConnectionManager.AddConnection(mockSecondClientConnection.Object);
 

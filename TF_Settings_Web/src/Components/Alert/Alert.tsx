@@ -1,25 +1,28 @@
-import './Alert.scss';
+import classnames from 'classnames/bind';
 
-import React from 'react';
+import styles from './Alert.module.scss';
+
+import React, { CSSProperties } from 'react';
+
+const classes = classnames.bind(styles);
 
 interface AlertProps {
     show: boolean;
-    cssWidth: string;
+    style: CSSProperties;
     text: string;
     animationType: 'fadeIn' | 'fadeInOut' | 'none';
     animationTime: number;
 }
-const Alert: React.FC<AlertProps> = ({ show, cssWidth, text, animationType, animationTime }) =>
+const Alert: React.FC<AlertProps> = ({ show, style, text, animationType, animationTime }) =>
     show ? (
         <div
-            className="alert-container"
+            className={classes('alert-container')}
             style={{
-                width: cssWidth,
-                left: `calc(50% - ${cssWidth}/2)`,
+                ...style,
                 animation: getAlertAnimation(animationType, animationTime),
             }}
         >
-            <div className="alert-container--triangle" />
+            <div className={classes('alert-container--triangle')} />
             <p>{text}</p>
         </div>
     ) : (

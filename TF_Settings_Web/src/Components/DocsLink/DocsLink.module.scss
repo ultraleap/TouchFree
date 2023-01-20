@@ -1,0 +1,86 @@
+@use '@/variables.module.scss' as v;
+@use '@/Components/TFButton/TFButtons.module.scss' as tf-button;
+
+.bg-cover {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.5);
+    pointer-events: all;
+}
+
+.docs-modal {
+    --height: 25vh;
+    --width: 80vw;
+    @media (orientation: landscape) {
+        --height: 50vh;
+        --width: 50vw;
+    }
+    position: absolute;
+    z-index: 3;
+    height: var(--height);
+    width: var(--width);
+    top: calc((100vh - var(--height)) / 2);
+    left: calc((100vw - var(--width)) / 2);
+
+    border-radius: 20px;
+
+    background: v.$light-grey-gradient;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+
+    &__qr-code {
+        border: 10px solid white;
+        margin-top: 2%;
+        border-radius: 10px;
+        height: 45%;
+        aspect-ratio: 1/1;
+
+        > svg {
+            pointer-events: none;
+        }
+    }
+
+    &__text {
+        padding: 0 5%;
+        font-size: 2rem;
+        font-family: v.$base-font;
+        color: white;
+    }
+}
+
+.docs-modal-buttons {
+    width: 100%;
+    height: 25%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    .docs-modal__button {
+        width: 40%;
+        height: 80%;
+
+        > h1 {
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            font-size: 2rem;
+        }
+    }
+
+    &--link {
+        width: 40%;
+        height: 80%;
+
+        .docs-modal__button {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}

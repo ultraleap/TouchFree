@@ -187,18 +187,34 @@ export class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {
 // When receiving a configuration from the Service this structure contains ALL status data
 export class ServiceStatus extends TouchFreeRequest {
     // Variable: trackingServiceState
-    trackingServiceState: TrackingServiceState | null;
+    trackingServiceState: TrackingServiceState;
     // Variable: configurationState
-    configurationState: ConfigurationState | null;
+    configurationState: ConfigurationState;
+    // Variable: serviceVersion
+    serviceVersion: string;
+    // Variable: trackingVersion
+    trackingVersion: string;
+    // Variable: cameraSerial
+    cameraSerial: string;
+    // Variable: cameraFirmwareVersion
+    cameraFirmwareVersion: string;
 
     constructor(
         _id: string,
-        _trackingServiceState: TrackingServiceState | null,
-        _configurationState: ConfigurationState | null
+        _trackingServiceState: TrackingServiceState,
+        _configurationState: ConfigurationState,
+        _serviceVersion: string,
+        _trackingVersion: string,
+        _cameraSerial: string,
+        _cameraFirmwareVersion: string
     ) {
         super(_id);
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
+        this.serviceVersion = _serviceVersion;
+        this.trackingVersion = _trackingVersion;
+        this.cameraSerial = _cameraSerial;
+        this.cameraFirmwareVersion = _cameraFirmwareVersion;
     }
 }
 

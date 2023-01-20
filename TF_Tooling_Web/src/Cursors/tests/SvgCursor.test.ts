@@ -103,4 +103,20 @@ describe('SVG Cursor', () => {
         svgCursor.EnableCursor();
         expect(cursor?.style.opacity).toBe('1');
     });
+
+    test('SetCursorOpacity sets the cursors opacity correctly', () => {
+        for (let i = 0; i < 5; i++) {
+            const randomNumber = Math.random();
+            svgCursor.SetCursorOpacity(randomNumber);
+            expect(cursor?.style.opacity).toBe(randomNumber.toString());
+        }
+    });
+
+    test('ShowCursor should set opacity to the same as before hands lost', () => {
+        svgCursor.SetCursorOpacity(0.4);
+        svgCursor.HideCursor();
+        expect(cursor?.style.opacity).toBe('0');
+        svgCursor.ShowCursor();
+        expect(cursor?.style.opacity).toBe('0.4');
+    });
 });
