@@ -12,7 +12,7 @@ const TabBar = () => (
     <div className={classes('tab-bar')}>
         <TabSelector name="Camera" />
         <TabSelector name="Interactions" />
-        <TabSelector name="Settings" icon={GearIcon} hoveredIcon={GearIconGlow} />
+        <TabSelector name="About" icon={GearIcon} hoveredIcon={GearIconGlow} />
     </div>
 );
 

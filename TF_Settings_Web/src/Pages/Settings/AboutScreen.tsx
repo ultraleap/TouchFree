@@ -1,4 +1,4 @@
-import styles from './Settings.module.scss';
+import styles from './About.module.scss';
 
 import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
@@ -14,9 +14,9 @@ import { TabBar } from '@/Components/ControlBar';
 
 const classes = classNames.bind(styles);
 
-const ENABLE_ADVANCED_SETTINGS = false;
+const ENABLE_ADVANCED_ABOUT = false;
 
-const SettingsScreen: React.FC = () => {
+const AboutScreen: React.FC = () => {
     const isBrightSign = useIsBrightSign();
 
     const [tFVersion, setTFVersion] = useState<string>('');
@@ -58,10 +58,10 @@ const SettingsScreen: React.FC = () => {
                     <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
                 </div>
                 <div className={classes('page-divider')} />
-                {ENABLE_ADVANCED_SETTINGS && !isBrightSign && (
+                {ENABLE_ADVANCED_ABOUT && !isBrightSign && (
                     <>
                         <div className={classes('title-line')}>
-                            <h1> Advanced Settings </h1>
+                            <h1> Advanced </h1>
                         </div>
                         <div className={classes('info-table')}>
                             <InfoButtonEntry
@@ -111,4 +111,4 @@ const InfoButtonEntry: React.FC<InfoButtonEntryProps> = ({ title, buttonTitle, o
     </div>
 );
 
-export default SettingsScreen;
+export default AboutScreen;
