@@ -45,8 +45,8 @@ const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon }) =>
         <button
             className={classes('tab-button', {
                 'tab-button--active': isActiveTab,
-                'tab-button--pressed': pressed,
-                'tab-button--hovered': hovered,
+                'tab-button--pressed': !isActiveTab && pressed,
+                'tab-button--hovered': !isActiveTab && hovered,
             })}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {

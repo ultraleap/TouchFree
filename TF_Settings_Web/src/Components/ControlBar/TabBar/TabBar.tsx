@@ -1,7 +1,6 @@
 import styles from './TabBar.module.scss';
 
 import classnames from 'classnames/bind';
-import { useLocation } from 'react-router-dom';
 
 import { GearIcon, GearIconGlow } from '@/Images';
 
