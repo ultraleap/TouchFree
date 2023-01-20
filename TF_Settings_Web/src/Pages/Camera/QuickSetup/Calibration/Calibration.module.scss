@@ -2,7 +2,6 @@
 
 .content-container {
     overflow: hidden;
-    margin-top: calc(0% - v.$control-bar-size);
     width: 100%;
     display: flex;
     justify-content: center;
@@ -128,13 +127,20 @@
     height: 32vh;
 }
 
-.setup-complete-options-container {
-    height: 800px;
-    margin-top: 50px;
-    justify-content: space-around;
-    align-items: center;
+.setup-complete-container {
+    height: 100vh;
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
+}
+
+.setup-complete-options-container {
+    height: 60vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 10vh;
 
     animation: fadeInAnimation ease 1s;
 }

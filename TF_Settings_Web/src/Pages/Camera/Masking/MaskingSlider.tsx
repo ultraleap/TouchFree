@@ -1,21 +1,20 @@
-import './CameraMasking.scss';
+import classnames from 'classnames/bind';
 
-import React, { CSSProperties, PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
+import styles from './CameraMasking.module.scss';
+
+import React, { PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
+const classes = classnames.bind(styles);
+
 export type SliderDirection = keyof Mask;
-export interface CanvasInfo {
-    size: number;
-    topOffset: number;
-    leftOffset: number;
-}
 
 interface MaskingSliderProps {
     direction: SliderDirection;
     maskingValue: number;
-    canvasInfo: CanvasInfo;
+    canvasSize: number;
     content?: ReactElement;
 }
 
@@ -24,7 +23,7 @@ interface SliderPos {
     left: number;
 }
 
-export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, canvasInfo, content }) => {
+export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, maskingValue, canvasSize, content }) => {
     const [initialSliderPos, setInitialSliderPos] = useState<SliderPos>({
         top: Number.NaN,
         left: Number.NaN,
@@ -36,31 +35,21 @@ export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, masking
     // ===== UseEffects =====
     useEffect(() => {
         if (!sliderRef.current) return;
-        const top = Number.parseFloat(getComputedStyle(sliderRef.current).top);
-        const left = Number.parseFloat(getComputedStyle(sliderRef.current).left);
+        const top = direction === 'lower' ? canvasSize - 5 : 0;
+        const left = direction === 'right' ? canvasSize - 5 : 0;
 
-        setPosition(direction, maskingValue, canvasInfo.size, { top, left }, sliderRef.current);
+        setPosition(direction, maskingValue, canvasSize, { top, left }, sliderRef.current);
         setInitialSliderPos({ top, left });
-    }, []);
+    }, [canvasSize]);
 
     useEffect(() => {
         if (!sliderRef.current) return;
 
-        setPosition(direction, maskingValue, canvasInfo.size, initialSliderPos, sliderRef.current);
+        setPosition(direction, maskingValue, canvasSize, initialSliderPos, sliderRef.current);
     }, [maskingValue]);
 
     return (
-        <span
-            ref={sliderRef}
-            className={`masking-slider masking-slider--${direction}`}
-            style={
-                {
-                    '--canvas-size': `${canvasInfo.size}px`,
-                    '--top-offset': `${canvasInfo.topOffset}px`,
-                    '--left-offset': `${canvasInfo.leftOffset}px`,
-                } as CSSProperties
-            }
-        >
+        <span ref={sliderRef} className={classes('masking-slider', `masking-slider--${direction}`)}>
             {content}
         </span>
     );
@@ -75,7 +64,7 @@ interface MaskingSliderDraggableProps extends MaskingSliderProps {
 export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
     direction,
     maskingValue,
-    canvasInfo,
+    canvasSize,
     clearMasking,
     onDrag,
     onDragEnd,
@@ -138,7 +127,7 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
         }
 
         // Convert value from CSS value range [0..400] to masking range[0..0.5]
-        const newMaskingValue = maskingValue + diffValue / canvasInfo.size;
+        const newMaskingValue = maskingValue + diffValue / canvasSize;
 
         // Limit masking value to [0..0.5]
         const limitedNewMaskingValue = Math.min(0.5, Math.max(0, newMaskingValue));
@@ -166,20 +155,20 @@ export const MaskingSliderDraggable: React.FC<MaskingSliderDraggableProps> = ({
 
     const content = (
         <div
-            className={`masking-slider-knob ${
-                isHovered || isDraggingRef.current ? 'masking-slider-knob--dragging' : ''
-            }`}
+            className={classes('masking-slider-knob', {
+                'masking-slider-knob--dragging': isHovered || isDraggingRef.current,
+            })}
             onPointerDown={onStartDrag}
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => setIsHovered(false)}
         >
-            <div className="masking-slider-arrow--one" />
-            <div className="masking-slider-arrow--two" />
+            <div className={classes('masking-slider-arrow--one')} />
+            <div className={classes('masking-slider-arrow--two')} />
         </div>
     );
 
     return (
-        <MaskingSlider direction={direction} maskingValue={maskingValue} canvasInfo={canvasInfo} content={content} />
+        <MaskingSlider direction={direction} maskingValue={maskingValue} canvasSize={canvasSize} content={content} />
     );
 };
 

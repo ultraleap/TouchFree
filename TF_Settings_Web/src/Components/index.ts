@@ -1,8 +1,7 @@
 import Alert from './Alert/Alert';
-import ControlBar from './ControlBar/ControlBar';
+import { ControlBar, StatusIndicator, TabSelector, VersionIndicator } from './ControlBar';
 import DocsLink from './DocsLink/DocsLink';
-import { RadioGroup } from './Radio/RadioGroup';
-import { RadioLine } from './Radio/RadioLine';
+import { RadioLine, RadioGroup } from './Radio/RadioButtons';
 import { Slider } from './Slider/Slider';
 import { TextSlider } from './Slider/TextSlider';
 import {
@@ -11,8 +10,11 @@ import {
     HorizontalIconTextButton,
     TFClickEvent,
     BaseTFButton,
+    BackButton,
+    OutlinedTextButton,
 } from './TFButton/TFButtons';
-import { TextEntry } from './TextEntry/TextEntry';
+import TabBar from './TabBar/TabBar';
+import TextEntry from './TextEntry/TextEntry';
 import { ToggleSwitch, LabelledToggleSwitch } from './ToggleSwitch/ToggleSwitch';
 
 export {
@@ -27,9 +29,15 @@ export {
     HorizontalIconTextButton,
     ToggleSwitch,
     ControlBar,
+    StatusIndicator,
+    TabSelector,
+    VersionIndicator,
     LabelledToggleSwitch,
     BaseTFButton,
     DocsLink,
+    TabBar,
+    BackButton,
+    OutlinedTextButton,
 };
 
 export type { TFClickEvent };

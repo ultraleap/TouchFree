@@ -13,12 +13,13 @@ namespace Ultraleap.TouchFree.Library.Connections
     {
         private static string uri = "ws://127.0.0.1:1024/";
         private readonly IConfigManager configManager;
-        private string trackingServiceVersion;
         private Version version;
 
-        public uint? connectedDeviceID;
-        public string connectedDeviceFirmware;
-        public string connectedDeviceSerial;
+        public string trackingServiceVersion { get; private set; }
+
+        private uint? connectedDeviceID;
+        public string connectedDeviceFirmware { get; private set; }
+        public string connectedDeviceSerial { get; private set; }
 
         public event Action<Result<ImageMaskData>> OnMaskingResponse;
         public event Action<Result<bool>> OnAnalyticsResponse;
@@ -165,8 +166,11 @@ namespace Ultraleap.TouchFree.Library.Connections
                 cameraReversed.RequestSet(config.CameraReversed);
                 maskingData.RequestSet((ImageMaskData)config.Mask);
             }
-            void ControllerOnDevice(object sender, DeviceEventArgs e) => RequestGetDevices(); // Get devices response will update the connected device and refresh tracking config
-            void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => RequestGetDevices(); // Works even when no device is connected
+            // Get devices response will update the connected device and refresh tracking config
+            void ControllerOnDevice(object sender, DeviceEventArgs e) => RequestGetDevices();
+
+            // Works even when no device is connected
+            void ControllerOnDeviceLost(object sender, DeviceEventArgs e) => RequestGetDevices();
 
             _configManager.OnTrackingConfigUpdated += SetTrackingConfigurationOnDevice;
             _trackingConnectionManager.Controller.Device += ControllerOnDevice;
@@ -185,7 +189,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void SetTrackingConfigIfUnset<T>(Result<T> _)
         {
-            if (configManager.TrackingConfig == null && 
+            if (configManager.TrackingConfig == null &&
                 maskingData.Initialized &&
                 analyticsEnabled.Initialized &&
                 allowImages.Initialized &&
@@ -253,6 +257,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                 };
                 webSocket.OnClose += (sender, e) =>
                 {
+                    trackingServiceVersion = null;
                     TouchFreeLog.WriteLine($"DiagnosticAPI closed. {e.Reason}");
                 };
             }
@@ -348,6 +353,11 @@ namespace Ultraleap.TouchFree.Library.Connections
                                 {
                                     newConnectedDeviceId = devices[0].device_id;
                                 }
+                                else
+                                {
+                                    connectedDeviceFirmware = null;
+                                    connectedDeviceSerial = null;
+                                }
 
                                 if (connectedDeviceID != newConnectedDeviceId)
                                 {
@@ -360,6 +370,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                                         analyticsEnabled.Match(RequestSetAnalyticsMode, RequestGetAnalyticsMode);
                                         cameraReversed.Match(RequestSetCameraOrientation, RequestGetCameraOrientation);
                                         maskingData.Match(data => RequestSetImageMask(data.left, data.right, data.upper, data.lower), RequestGetImageMask);
+                                        RequestGetDeviceInfo();
                                     }
                                 }
                             }); // TODO: Handle failure?
@@ -390,7 +401,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                         }); // TODO: Handle failure?
                         break;
 
-                    default:
+                     default:
                         TouchFreeLog.WriteLine(
                             $"DiagnosticAPI - Could not parse response of type: {response.type} with message: {_message}");
                         break;
@@ -443,13 +454,15 @@ namespace Ultraleap.TouchFree.Library.Connections
         public void RequestGetCameraOrientation() => cameraReversed.RequestGet();
         public void RequestSetCameraOrientation(bool reverseOrientation) => cameraReversed.RequestSet(reverseOrientation);
 
-        public void RequestGetDeviceInfo()
+        public bool RequestGetDeviceInfo()
         {
             // Only send the request if we have a device
-            if (!connectedDeviceID.HasValue) return;
+            if (!connectedDeviceID.HasValue) return false;
 
             var payload = new DeviceIdPayload { device_id = connectedDeviceID.Value };
             Request(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo, payload));
+
+            return true;
         }
 
         public void RequestGetDevices() => Request(new DApiMessage(DApiMsgTypes.GetDevices));

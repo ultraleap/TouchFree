@@ -1,6 +1,10 @@
-import './Alert.scss';
+import classnames from 'classnames/bind';
+
+import styles from './Alert.module.scss';
 
 import React, { CSSProperties } from 'react';
+
+const classes = classnames.bind(styles);
 
 interface AlertProps {
     show: boolean;
@@ -12,13 +16,13 @@ interface AlertProps {
 const Alert: React.FC<AlertProps> = ({ show, style, text, animationType, animationTime }) =>
     show ? (
         <div
-            className="alert-container"
+            className={classes('alert-container')}
             style={{
                 ...style,
                 animation: getAlertAnimation(animationType, animationTime),
             }}
         >
-            <div className="alert-container--triangle" />
+            <div className={classes('alert-container--triangle')} />
             <p>{text}</p>
         </div>
     ) : (

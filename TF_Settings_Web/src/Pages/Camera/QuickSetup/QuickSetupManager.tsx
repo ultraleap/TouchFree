@@ -1,5 +1,3 @@
-import '@/Pages/Camera/Camera.scss';
-
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 

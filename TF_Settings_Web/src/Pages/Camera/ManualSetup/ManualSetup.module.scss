@@ -1,60 +1,90 @@
 @use '@/variables.module.scss' as v;
+@use '@/App.module.scss';
+
+.container {
+    margin: 0 2vw;
+}
+
+.sub-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    @media (orientation: landscape) {
+        grid-template-columns: 0.7fr 1fr;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5vh 0;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    @media (orientation: landscape) {
+        height: 70vh;
+    }
+}
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.screen-images {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    @media (orientation: landscape) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.title-line {
+    @include App.title-line;
+}
 
 .pageDivider {
     height: 200px;
 }
 
-.screenFrontWrapper,
-.screenSideWrapper {
+.screen-container {
     width: 450px;
     height: 500px;
     overflow: hidden;
-}
-
-.screenFrontMock {
-    width: 450px;
-    height: 500px;
-    position: relative;
-    margin-top: -210px;
-    margin-left: -550px;
-}
-
-.screenFrontLabel {
-    top: 638px;
-    left: 624px;
-    width: 337px;
-    height: 24px;
-
-    text-align: center;
-    color: #ffffff;
-    position: absolute;
-    opacity: 0.5;
+    display: flex;
+    flex-direction: column;
 }
 
 .screenFrontOutside {
-    top: 284px;
-    left: 678px;
     width: 231px;
     height: 338px;
+
     background: transparent linear-gradient(146deg, #535353 0%, #313131 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 10px;
-    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .screenFrontInside {
-    top: 296px;
-    left: 689px;
     width: 209px;
     height: 314px;
-
     background: transparent linear-gradient(146deg, #909090 0%, #454545 100%) 0% 0% no-repeat padding-box;
-    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .screenFrontCamera {
-    top: 245px;
-    left: 761px;
+    top: 30px;
     width: 66px;
     height: 29px;
 
@@ -65,8 +95,18 @@
     position: absolute;
 }
 
+$left-to-right: 57px;
+
 .cameraLeftToRight .screenFrontCamera {
-    left: 703px;
+    transform: translate(-$left-to-right, 0);
+}
+
+.cameraLeftToRight .screenFrontInside {
+    justify-content: center;
+    * {
+        position: absolute;
+        transform: translate(-(calc($left-to-right / 2)), 0);
+    }
 }
 
 .screenFrontCameraBottom {
@@ -78,26 +118,24 @@
     height: 7px;
 }
 
-.screenFrontCenterLineVert {
-    top: 298px;
-    left: 794px;
-    width: 0px;
-    height: 314px;
+$vert-base-height: 314px;
+$height-diff: 10px;
 
+.screenFrontCenterLineVert {
+    width: 0px;
+    height: $vert-base-height;
     border-left: 4px dotted v.$ultraleap-green;
     position: absolute;
 }
 
 .cameraHeight .screenFrontCenterLineVert {
-    top: 276px;
-    height: 333px;
+    top: 60px;
+    height: $vert-base-height + 23px;
 }
 
 .cameraLeftToRight .screenFrontCenterLineVert {
-    top: 278px;
-    left: 736px;
-    width: 57px;
-    height: 351px;
+    width: $left-to-right;
+    height: $vert-base-height + $height-diff * 4;
 
     border-left: 3px solid v.$ultraleap-green;
     border-right: 3px solid v.$ultraleap-green;
@@ -109,23 +147,20 @@
 }
 
 .cameraDistanceFromScreen .screenFrontCenterLineVert {
-    top: 598px;
-    left: 782px;
+    top: 385px;
     width: 20px;
     height: 20px;
 
     border: 3px solid v.$ultraleap-green;
     border-radius: 20px;
+    position: absolute;
 }
 
 .screenFrontTopLine {
-    top: 296px;
-    left: 652px;
     width: 288px;
     height: 0px;
 
     border-top: 3px solid v.$ultraleap-green;
-    position: absolute;
 }
 
 .cameraHeight .screenFrontTopLine {
@@ -134,8 +169,6 @@
 }
 
 .cameraLeftToRight .screenFrontTopLine {
-    top: 453px;
-    left: 742px;
     width: 52px;
     height: 0px;
 
@@ -149,13 +182,9 @@
 }
 
 .screenFrontBottomLine {
-    top: 609px;
-    left: 652px;
     width: 288px;
     height: 0px;
-
     border-top: 3px solid v.$ultraleap-green;
-    position: absolute;
 }
 
 .cameraLeftToRight .screenFrontBottomLine,
@@ -165,72 +194,57 @@
     display: none;
 }
 
-.screenSideMock {
+.screen-mock {
     width: 450px;
     height: 500px;
     position: relative;
-    margin-top: -710px;
-    margin-left: -550px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.screenSideLabel {
-    top: 1119px;
-    left: 624px;
-    width: 337px;
-    height: 24px;
-
+.screen-label {
     text-align: center;
     color: #ffffff;
-    position: absolute;
     opacity: 0.5;
 }
 
 .screenSideOutside {
-    top: 763px;
-    left: 779px;
     width: 32px;
     height: 338px;
 
     background: transparent linear-gradient(175deg, #525252 0%, #323232 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 10px 0px 0px 10px;
-
-    position: absolute;
 }
 
 .screenTilt .screenSideOutside {
-    top: 766px;
-    left: 748px;
     width: 32px;
     height: 335px;
-    transform: matrix(0.97, -0.26, 0.26, 0.97, 0, 0);
+    transform-origin: 0% 100%;
+    transform: rotate(-15deg);
 }
 
 .screenSideInside {
-    top: 775px;
-    left: 811px;
     width: 10px;
     height: 314px;
 
     background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
     opacity: 0.54;
-    position: absolute;
 }
 
 .screenTilt .screenSideInside {
-    top: 775px;
-    left: 779px;
-    width: 10px;
-    height: 306px;
-    transform: matrix(0.97, -0.26, 0.26, 0.97, 0, 0);
+    top: 75px;
+    left: 236px;
+    transform-origin: 0% 100%;
+    transform: rotate(-15deg);
 
     background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
     position: absolute;
 }
 
 .screenSideCenterLineVert {
-    top: 776px;
-    left: 840px;
+    left: 265px;
     width: 0px;
     height: 314px;
 
@@ -239,9 +253,10 @@
 }
 
 .cameraHeight .screenSideCenterLineVert {
-    top: 752px;
-    left: 890px;
-    height: 337px;
+    top: 65px;
+    left: 320px;
+    height: 330px;
+    position: absolute;
 }
 
 .cameraLeftToRight .screenSideCenterLineVert {
@@ -249,22 +264,22 @@
 }
 
 .screenTilt .screenSideCenterLineVert {
-    left: 825px;
-    top: 763px;
+    top: 68px;
+    left: 240px;
     height: 338px;
 }
 
 .cameraRotation .screenSideCenterLineVert {
-    left: 985px;
-    top: 746px;
-    height: 358px;
+    top: 60px;
+    left: 410px;
+    height: 340px;
     transform-origin: 0% 100%;
     transform: rotate(-15deg);
 }
 
 .cameraDistanceFromScreen .screenSideCenterLineVert {
-    top: 750px;
-    left: 890px;
+    top: 60px;
+    left: 320px;
     width: 0px;
     height: 348px;
 
@@ -272,8 +287,8 @@
 }
 
 .cameraDistanceFromScreen .screenSideExtraLineVert {
-    top: 1077px;
-    left: 810px;
+    top: 390px;
+    left: 235px;
     width: 0px;
     height: 21px;
 
@@ -282,8 +297,8 @@
 }
 
 .screenSideTopLine {
-    top: 775px;
-    left: 814px;
+    top: 400px;
+    left: 240px;
     width: 55px;
     height: 0px;
 
@@ -291,12 +306,7 @@
     position: absolute;
 }
 
-.cameraHeight .screenSideTopLine {
-    top: 752px;
-    left: 886px;
-    width: 12px;
-}
-
+.cameraHeight .screenSideTopLine,
 .cameraLeftToRight .screenSideTopLine,
 .screenTilt .screenSideTopLine,
 .cameraRotation .screenSideTopLine,
@@ -305,8 +315,8 @@
 }
 
 .screenSideBottomLine {
-    top: 1090px;
-    left: 814px;
+    top: 80px;
+    left: 240px;
     width: 55px;
     height: 0px;
 
@@ -315,7 +325,7 @@
 }
 
 .cameraHeight .screenSideBottomLine {
-    top: 1089px;
+    top: 400px;
     width: 155px;
 }
 
@@ -326,16 +336,16 @@
 }
 
 .cameraDistanceFromScreen .screenSideBottomLine {
-    top: 1086px;
-    left: 816px;
+    top: 400px;
+    left: 243px;
     width: 70px;
 
     border-top: 4px dotted v.$ultraleap-green;
 }
 
 .screenSideCamera {
-    top: 721px;
-    left: 869px;
+    top: 30px;
+    left: 300px;
     width: 39px;
     height: 36px;
     transform: matrix(0.97, -0.24, 0.24, 0.97, 0, 0);
@@ -358,8 +368,8 @@
 
 .screenTilt .screenSideTiltBox {
     overflow: hidden;
-    top: 420px;
-    left: 737px;
+    top: -272px;
+    left: 153px;
     width: 350px;
     height: 350px;
     transform-origin: 0% 100%;
@@ -384,8 +394,8 @@
 
 .cameraRotation .screenSideTiltBox {
     overflow: hidden;
-    top: 745px;
-    left: 985px;
+    top: 50px;
+    left: 410px;
     width: 350px;
     height: 350px;
     transform-origin: 0% 100%;
