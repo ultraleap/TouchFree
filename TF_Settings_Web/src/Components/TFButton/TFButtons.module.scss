@@ -8,6 +8,16 @@
 
     user-select: none;
 
+    h1 {
+        color: white;
+        text-align: left;
+        font-size: 26px;
+        font-family: v.$base-font;
+        font-weight: normal;
+        padding-left: 20px;
+        margin-bottom: 10px;
+    }
+
     &--hovered {
         box-shadow: 0px 0px 30px v.$ultraleap-green;
     }
@@ -54,11 +64,11 @@
         border-radius: 50px;
 
         > h1 {
-            font-size: 1.5rem !important;
-            margin: 0 !important;
-            padding: 0 20px !important;
-            color: white !important;
-            text-align: center !important;
+            font-size: 1.5rem;
+            margin: 0;
+            padding: 0 20px;
+            color: white;
+            text-align: center;
         }
 
         &--hovered {
@@ -87,16 +97,6 @@
             margin: 0 !important;
             padding: 0 !important;
         }
-    }
-
-    h1 {
-        color: white;
-        text-align: left;
-        font-size: 26px;
-        font-family: v.$base-font;
-        font-weight: normal;
-        padding-left: 20px;
-        margin-bottom: 10px;
     }
 
     p {

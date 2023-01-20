@@ -117,11 +117,11 @@ export const BackButton = () => {
     );
 };
 
-interface MiscTextButtonProps extends BaseButtonProps {
+interface OutlinedTextButtonProps extends BaseButtonProps {
     title: string;
 }
 
-export const OutlinedTextButton: React.FC<MiscTextButtonProps> = ({
+export const OutlinedTextButton: React.FC<OutlinedTextButtonProps> = ({
     buttonStyle,
     title,
     titleStyle,
