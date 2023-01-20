@@ -14,6 +14,8 @@ import { TabBar } from '@/Components/ControlBar';
 
 const classes = classNames.bind(styles);
 
+const ENABLE_ADVANCED_SETTINGS = false;
+
 const SettingsScreen: React.FC = () => {
     const isBrightSign = useIsBrightSign();
 
@@ -56,7 +58,7 @@ const SettingsScreen: React.FC = () => {
                     <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
                 </div>
                 <div className={classes('page-divider')} />
-                {!isBrightSign && (
+                {ENABLE_ADVANCED_SETTINGS && !isBrightSign && (
                     <>
                         <div className={classes('title-line')}>
                             <h1> Advanced Settings </h1>
