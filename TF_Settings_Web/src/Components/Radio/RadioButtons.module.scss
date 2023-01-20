@@ -1,4 +1,4 @@
-input[type='radio'] {
+.radio-button {
     min-height: 2rem;
     max-height: 3.5rem;
     min-width: 2rem;
@@ -8,7 +8,7 @@ input[type='radio'] {
     margin-right: 1rem;
 }
 
-input[type='radio']:checked + label {
+.radio-button:checked + label {
     font-family: MontserratBold;
 }
 

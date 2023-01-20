@@ -1,10 +1,12 @@
-import classNames from 'classnames/bind';
-
 import styles from './TFButtons.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const classes = classNames.bind(styles);
+import { BackArrow } from '@/Images';
+
+const classes = classnames.bind(styles);
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
@@ -23,13 +25,6 @@ interface TextButtonProps extends BaseButtonProps {
     text?: string;
     title?: string;
     textStyle?: React.CSSProperties;
-}
-
-interface IconTextButtonProps extends TextButtonProps {
-    icon: string;
-    alt: string;
-    title: string;
-    iconStyle?: React.CSSProperties;
 }
 
 const getButtonTextElements = (
@@ -72,6 +67,13 @@ export const TextButton: React.FC<TextButtonProps> = ({
         {getButtonTextElements(title, titleStyle, text, textStyle)}
     </BaseTFButton>
 );
+
+interface IconTextButtonProps extends TextButtonProps {
+    icon: string;
+    alt: string;
+    title: string;
+    iconStyle?: React.CSSProperties;
+}
 
 export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
     className,
@@ -125,20 +127,36 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
     </BaseTFButton>
 );
 
-interface MiscTextButtonProps extends BaseButtonProps {
-    title: string;
-}
-
-export const MiscTextButton: React.FC<MiscTextButtonProps> = ({ buttonStyle, title, titleStyle, onClick }) => {
+export const BackButton = () => {
+    const nav = useNavigate();
     return (
-        <BaseTFButton canHover onClick={onClick} buttonStyle={buttonStyle} type="misc">
-            {getButtonTextElements(title, titleStyle)}
+        <BaseTFButton canHover onClick={() => nav('/')} type="back">
+            <div className={classes('back-container')}>
+                <img src={BackArrow} alt="Arrow pointing back" />
+                <h1>Back</h1>
+            </div>
         </BaseTFButton>
     );
 };
 
+interface OutlinedTextButtonProps extends BaseButtonProps {
+    title: string;
+}
+
+export const OutlinedTextButton: React.FC<OutlinedTextButtonProps> = ({
+    buttonStyle,
+    title,
+    titleStyle,
+    onClick,
+    className,
+}) => (
+    <BaseTFButton className={className} canHover onClick={onClick} buttonStyle={buttonStyle} type="misc">
+        <h1 style={titleStyle}>{title}</h1>
+    </BaseTFButton>
+);
+
 interface BaseTFButtonProps extends BaseButtonProps {
-    type: 'horizontal' | 'vertical' | 'text' | 'misc';
+    type: 'horizontal' | 'vertical' | 'text' | 'misc' | 'back';
     buttonClass?: string;
     children?: ReactNode;
 }

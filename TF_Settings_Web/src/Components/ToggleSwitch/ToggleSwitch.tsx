@@ -1,7 +1,12 @@
-import classes from './ToggleSwitch.module.scss';
-import interactionClasses from '@/Pages/Interactions/Interactions.module.scss';
+import classnames from 'classnames/bind';
+
+import styles from './ToggleSwitch.module.scss';
+import interactionStyles from '@/Pages/Interactions/Interactions.module.scss';
 
 import React from 'react';
+
+const classes = classnames.bind(styles);
+const interactionClasses = classnames.bind(interactionStyles);
 
 interface ToggleSwitchProps {
     value: boolean;
@@ -12,7 +17,7 @@ interface ToggleSwitchProps {
 export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ value }) => (
     <>
         <input type="checkbox" style={{ display: 'none' }} checked={value} onChange={() => {}} />
-        <div className={classes['switch']} />
+        <div className={classes('switch')} />
     </>
 );
 
@@ -22,9 +27,9 @@ interface LabelledToggleSwitchProps extends ToggleSwitchProps {
 }
 
 export const LabelledToggleSwitch: React.FC<LabelledToggleSwitchProps> = ({ name, value, onChange }) => (
-    <label className={interactionClasses['input-label-container']} onPointerDown={() => onChange(!value)}>
-        <p className={classes['switch-label']}>{name}</p>
-        <span className={classes['switch-container']}>
+    <label className={interactionClasses('input-label-container')} onPointerDown={() => onChange(!value)}>
+        <p className={classes('switch-label')}>{name}</p>
+        <span className={classes('switch-container')}>
             <ToggleSwitch value={value} />
         </span>
     </label>

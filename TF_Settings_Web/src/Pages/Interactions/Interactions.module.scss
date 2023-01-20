@@ -73,6 +73,9 @@ video.InteractionPreview.Interaction2 {
     border-radius: 0.5rem;
 
     height: 5rem;
+    @media (orientation: landscape) {
+        height: 7vh;
+    }
 
     padding: 0 10px;
 }
@@ -98,4 +101,22 @@ p {
             margin: 0 1vw;
         }
     }
+}
+
+.label {
+    margin-left: 0.75rem;
+    max-width: 17.5rem;
+    max-height: 5rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.leftLabel {
+    margin: 0.5rem;
+}
+
+.rightLabel {
+    margin: 0.5rem;
+    align-self: right;
+    text-justify: right;
 }

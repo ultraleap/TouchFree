@@ -2,7 +2,6 @@
 
 .content-container {
     overflow: hidden;
-    margin-top: calc(0% - v.$control-bar-size);
     width: 100%;
     display: flex;
     justify-content: center;
@@ -141,6 +140,7 @@
     justify-content: space-around;
     align-items: center;
     flex-direction: column;
+    margin-bottom: 10vh;
 
     animation: fadeInAnimation ease 1s;
 }

@@ -4,6 +4,8 @@ import styles from './Interactions.module.scss';
 
 import { useEffect, useReducer, useState, CSSProperties } from 'react';
 
+import { useIsLandscape } from '@/customHooks';
+
 import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
 import {
     InteractionConfig,
@@ -14,8 +16,16 @@ import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { InteractionExplainer } from '@/Videos';
 
-import { DocsLink, LabelledToggleSwitch, RadioGroup, RadioLine, Slider, TextSlider } from '@/Components';
-import { MiscTextButton } from '@/Components/TFButton/TFButtons';
+import {
+    DocsLink,
+    LabelledToggleSwitch,
+    RadioGroup,
+    RadioLine,
+    Slider,
+    TabBar,
+    TextSlider,
+    OutlinedTextButton,
+} from '@/Components';
 
 import { DefaultInteractionConfig } from './InteractionDefaults';
 
@@ -37,6 +47,11 @@ type ReducerAction = { type: 'reset' } | { type: 'update'; content: Partial<Inte
 const reducer = (state: InteractionConfig, action: ReducerAction) => {
     switch (action.type) {
         case 'reset':
+            ConfigurationManager.RequestConfigFileChange(DefaultInteractionConfig, null, (result) => {
+                if (result.status !== 'Success') {
+                    console.error(`Failed to set config state! Info: ${result.message}`);
+                }
+            });
             return DefaultInteractionConfig;
         case 'update': {
             const newState = { ...state, ...action.content };
@@ -56,22 +71,12 @@ const InteractionsScreen = () => {
     const [config, dispatch] = useReducer(reducer, DefaultInteractionConfig);
     const [activeInteraction, setActiveInteraction] = useState(0);
     const [activePlaneTracking, setActivePlaneTracking] = useState(0);
-    const [supportStyle, setSupportStyle] = useState<CSSProperties | undefined>(
-        innerHeight > innerWidth ? supportPortraitStyle : undefined
-    );
+    const isLandscape = useIsLandscape();
 
     useEffect(() => {
         ConfigurationManager.RequestConfigFileState((config) =>
             dispatch({ type: 'update', content: config.interaction })
         );
-
-        const onResize = () => {
-            setSupportStyle(innerHeight > innerWidth ? supportPortraitStyle : undefined);
-        };
-
-        window.addEventListener('resize', onResize);
-
-        return () => window.removeEventListener('resize', onResize);
     }, []);
 
     useEffect(() => {
@@ -180,103 +185,110 @@ const InteractionsScreen = () => {
     };
 
     return (
-        <div className={classes('container')}>
-            <div className={classes('title-line')}>
-                <h1> Interaction Type </h1>
-                <div className={classes('misc-button-container')}>
-                    <DocsLink title="Support" url="https://www.ultraleap.com/contact-us/" buttonStyle={supportStyle} />
-                    <MiscTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
+        <>
+            <TabBar />
+            <div className={classes('container')}>
+                <div className={classes('title-line')}>
+                    <h1> Interaction Type </h1>
+                    <div className={classes('misc-button-container')}>
+                        <DocsLink
+                            title="Support"
+                            url="https://www.ultraleap.com/contact-us/"
+                            buttonStyle={isLandscape ? undefined : supportPortraitStyle}
+                        />
+                        <OutlinedTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
+                    </div>
+                </div>
+                <div className={classes('section-container')}>
+                    <div className={classes('content')}>
+                        <div className={classes('horizontalContainer')}>
+                            <RadioGroup
+                                name="InteractionType"
+                                selected={activeInteraction}
+                                options={Object.keys(InteractionTranslator)}
+                                onChange={(value) =>
+                                    dispatch({
+                                        type: 'update',
+                                        content: { InteractionType: InteractionTranslator[value] },
+                                    })
+                                }
+                            />
+                            <video
+                                autoPlay={true}
+                                loop={true}
+                                key={InteractionExplainer}
+                                className={classes('InteractionPreview', `Interaction${activeInteraction.toString()}`)}
+                            >
+                                <source src={InteractionExplainer} />
+                            </video>
+                        </div>
+                        <div className={classes('verticalContainer')}>
+                            <Slider
+                                name="Cursor Movement"
+                                increment={0.0001}
+                                rangeMin={0}
+                                rangeMax={0.015}
+                                leftLabel="Responsive"
+                                rightLabel="Stable"
+                                value={config.DeadzoneRadius}
+                                onChange={(value) => dispatch({ type: 'update', content: { DeadzoneRadius: value } })}
+                            />
+                        </div>
+                    </div>
+                    <div className={classes('content')}>
+                        <div className={classes('verticalContainer')}>{getInteractionControls()}</div>
+                    </div>
+                </div>
+                <h1 className={classes('title-line')}> Interaction Zone </h1>
+                <div className={classes('section-container')}>
+                    <div className={classes('content')}>
+                        <div className={classes('verticalContainer')}>
+                            <LabelledToggleSwitch
+                                name="Enable/Disable"
+                                value={config.InteractionZoneEnabled}
+                                onChange={(value) =>
+                                    dispatch({ type: 'update', content: { InteractionZoneEnabled: value } })
+                                }
+                            />
+                        </div>
+                    </div>
+                    <div className={classes('content')}>
+                        <div className={classes('verticalContainer')}>
+                            {config.InteractionZoneEnabled ? (
+                                <>
+                                    <TextSlider
+                                        name="Minimum Active Distance"
+                                        key="Minimum Active Distance"
+                                        rangeMin={0}
+                                        rangeMax={30}
+                                        leftLabel="0cm"
+                                        rightLabel="30cm"
+                                        value={config.InteractionMinDistanceCm}
+                                        onChange={(value) =>
+                                            dispatch({ type: 'update', content: { InteractionMinDistanceCm: value } })
+                                        }
+                                    />
+                                    <TextSlider
+                                        name="Maximum Active Distance"
+                                        key="Maximum Active Distance"
+                                        rangeMin={0}
+                                        rangeMax={30}
+                                        leftLabel="0cm"
+                                        rightLabel="30cm"
+                                        value={config.InteractionMaxDistanceCm}
+                                        onChange={(value) =>
+                                            dispatch({ type: 'update', content: { InteractionMaxDistanceCm: value } })
+                                        }
+                                    />
+                                </>
+                            ) : (
+                                <></>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className={classes('section-container')}>
-                <div className={classes('content')}>
-                    <div className={classes('horizontalContainer')}>
-                        <RadioGroup
-                            name="InteractionType"
-                            selected={activeInteraction}
-                            options={Object.keys(InteractionTranslator)}
-                            onChange={(value) =>
-                                dispatch({
-                                    type: 'update',
-                                    content: { InteractionType: InteractionTranslator[value] },
-                                })
-                            }
-                        />
-                        <video
-                            autoPlay={true}
-                            loop={true}
-                            key={InteractionExplainer}
-                            className={classes('InteractionPreview', `Interaction${activeInteraction.toString()}`)}
-                        >
-                            <source src={InteractionExplainer} />
-                        </video>
-                    </div>
-                    <div className={classes('verticalContainer')}>
-                        <Slider
-                            name="Cursor Movement"
-                            increment={0.0001}
-                            rangeMin={0}
-                            rangeMax={0.015}
-                            leftLabel="Responsive"
-                            rightLabel="Stable"
-                            value={config.DeadzoneRadius}
-                            onChange={(value) => dispatch({ type: 'update', content: { DeadzoneRadius: value } })}
-                        />
-                    </div>
-                </div>
-                <div className={classes('content')}>
-                    <div className={classes('verticalContainer')}>{getInteractionControls()}</div>
-                </div>
-            </div>
-            <h1 className={classes('title-line')}> Interaction Zone </h1>
-            <div className={classes('section-container')}>
-                <div className={classes('content')}>
-                    <div className={classes('verticalContainer')}>
-                        <LabelledToggleSwitch
-                            name="Enable/Disable"
-                            value={config.InteractionZoneEnabled}
-                            onChange={(value) =>
-                                dispatch({ type: 'update', content: { InteractionZoneEnabled: value } })
-                            }
-                        />
-                    </div>
-                </div>
-                <div className={classes('content')}>
-                    <div className={classes('verticalContainer')}>
-                        {config.InteractionZoneEnabled ? (
-                            <>
-                                <TextSlider
-                                    name="Minimum Active Distance"
-                                    key="Minimum Active Distance"
-                                    rangeMin={0}
-                                    rangeMax={30}
-                                    leftLabel="0cm"
-                                    rightLabel="30cm"
-                                    value={config.InteractionMinDistanceCm}
-                                    onChange={(value) =>
-                                        dispatch({ type: 'update', content: { InteractionMinDistanceCm: value } })
-                                    }
-                                />
-                                <TextSlider
-                                    name="Maximum Active Distance"
-                                    key="Maximum Active Distance"
-                                    rangeMin={0}
-                                    rangeMax={30}
-                                    leftLabel="0cm"
-                                    rightLabel="30cm"
-                                    value={config.InteractionMaxDistanceCm}
-                                    onChange={(value) =>
-                                        dispatch({ type: 'update', content: { InteractionMaxDistanceCm: value } })
-                                    }
-                                />
-                            </>
-                        ) : (
-                            <></>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
+        </>
     );
 };
 

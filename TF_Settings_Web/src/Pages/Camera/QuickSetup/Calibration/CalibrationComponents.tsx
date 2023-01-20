@@ -1,4 +1,4 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './Calibration.module.scss';
 import cssVariables from '@/variables.module.scss';
@@ -19,7 +19,7 @@ import { TextButton, TFClickEvent } from '@/Components';
 
 import { TIMEOUT_S } from './CalibrationScreen';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 interface CalibrationInstructionsProps {
     progress: number;

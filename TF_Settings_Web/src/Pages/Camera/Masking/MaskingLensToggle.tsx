@@ -1,4 +1,4 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './CameraMasking.module.scss';
 
@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 
 import { Lens } from './MaskingScreen';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 interface MaskingLensToggle {
     lens: Lens;

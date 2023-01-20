@@ -8,6 +8,16 @@
 
     user-select: none;
 
+    h1 {
+        color: white;
+        text-align: left;
+        font-size: 26px;
+        font-family: v.$base-font;
+        font-weight: normal;
+        padding-left: 20px;
+        margin-bottom: 10px;
+    }
+
     &--hovered {
         box-shadow: 0px 0px 30px v.$ultraleap-green;
     }
@@ -46,41 +56,47 @@
     }
 
     &--misc {
-        width: 25vw;
         height: 4rem;
-        @media (orientation: landscape) {
-            width: 12vw;
-        }
-
         padding: 0.3rem;
 
-        background-image: linear-gradient(180deg, #353535, #2d2d2d), linear-gradient(180deg, #00eb86, #00cdcf);
+        background-image: v.$darker-grey-gradient, v.$outline-button-gradient;
         background-clip: content-box, border-box;
         border-radius: 50px;
 
         > h1 {
-            font-size: 1.5rem !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            color: white !important;
-            text-align: center !important;
+            font-size: 1.5rem;
+            margin: 0;
+            padding: 0 20px;
+            color: white;
+            text-align: center;
         }
 
         &--hovered {
             box-shadow: none;
-            background-image: linear-gradient(180deg, v.$ultraleap-green, #00ccce),
-                linear-gradient(180deg, v.$ultraleap-green, #00cdcf);
+            background-image: v.$ultraleap-green-gradient, v.$outline-button-gradient;
         }
     }
 
-    h1 {
-        color: white;
-        text-align: left;
-        font-size: 26px;
-        font-family: v.$base-font;
-        font-weight: normal;
-        padding-left: 20px;
-        margin-bottom: 10px;
+    &--back {
+        width: 200px;
+        height: 80px;
+        border-radius: 30px;
+        background: v.$light-grey-gradient;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .back-container {
+            width: 120px;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            padding: 0;
+        }
     }
 
     p {

@@ -1,17 +1,16 @@
-import classNames from 'classnames/bind';
-
 import styles from './TabSelector.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { useCallback, useState, useEffect } from 'react';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 interface TabSelectorProps {
     name: string;
     icon?: string;
     hoveredIcon?: string;
     isActiveTab: boolean;
-    onClick: () => void;
+    onClick?: () => void;
 }
 
 const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon, isActiveTab, onClick }) => {
@@ -20,7 +19,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon, isAc
     const [tabContent, setTabContent] = useState<JSX.Element>();
 
     const handleClick = () => {
-        if (!isActiveTab) onClick();
+        if (!isActiveTab && onClick) onClick();
     };
 
     const getSpecialClassName = useCallback((): string => {

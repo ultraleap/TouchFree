@@ -9,10 +9,9 @@ $hover-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px v.$ultraleap-green, 0 0 40
 
     user-select: none;
 
-    border-top-left-radius: 1.2rem;
-    border-top-right-radius: 1.2rem;
+    border-radius: 1.2rem 1.2rem 0 0;
+    border: none;
     background-color: transparent;
-    border-color: transparent;
 
     flex: 1 1 50%;
     justify-content: center;
@@ -36,7 +35,6 @@ $hover-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px v.$ultraleap-green, 0 0 40
 
     &--active {
         background-color: v.$app-background-color;
-        border-top-color: v.$app-background-color;
     }
 
     &--hovered {

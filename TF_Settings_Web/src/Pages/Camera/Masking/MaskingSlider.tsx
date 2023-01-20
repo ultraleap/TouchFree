@@ -1,4 +1,4 @@
-import classNames from 'classnames/bind';
+import classnames from 'classnames/bind';
 
 import styles from './CameraMasking.module.scss';
 
@@ -7,7 +7,7 @@ import React, { PointerEvent, ReactElement, useEffect, useRef, useState } from '
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
 
-const classes = classNames.bind(styles);
+const classes = classnames.bind(styles);
 
 export type SliderDirection = keyof Mask;
 
@@ -35,13 +35,12 @@ export const MaskingSlider: React.FC<MaskingSliderProps> = ({ direction, masking
     // ===== UseEffects =====
     useEffect(() => {
         if (!sliderRef.current) return;
-        const size = innerHeight < innerWidth ? innerHeight * 0.45 : innerWidth * 0.96 - innerHeight * 0.1;
-        const top = direction === 'lower' ? size - 5 : 0;
-        const left = direction === 'right' ? size - 5 : 0;
+        const top = direction === 'lower' ? canvasSize - 5 : 0;
+        const left = direction === 'right' ? canvasSize - 5 : 0;
 
         setPosition(direction, maskingValue, canvasSize, { top, left }, sliderRef.current);
         setInitialSliderPos({ top, left });
-    }, [innerHeight]);
+    }, [canvasSize]);
 
     useEffect(() => {
         if (!sliderRef.current) return;

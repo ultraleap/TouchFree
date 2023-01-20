@@ -1,5 +1,6 @@
-import classes from './App.module.scss';
+import styles from './App.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
@@ -11,6 +12,8 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 import { CameraManager, InteractionsScreen, SettingsScreen } from '@/Pages';
 
 import { ControlBar } from '@/Components';
+
+const classes = classnames.bind(styles);
 
 const App: React.FC = () => {
     const [trackingStatus, setTrackingStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
@@ -42,16 +45,13 @@ const App: React.FC = () => {
     }, []);
 
     return (
-        <div className={classes['app']}>
+        <div className={classes('app')}>
             <ControlBar trackingStatus={trackingStatus} touchFreeVersion={touchFreeVersion} />
-            <div className={classes['page-content']}>
-                <Routes>
-                    <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
-                    <Route path="/settings/interactions" element={<InteractionsScreen />} />
-                    <Route path="/settings/settings" element={<SettingsScreen />} />
-                    <Route path="*" element={<Navigate to="/settings/camera" replace />} />
-                </Routes>
-            </div>
+            <Routes>
+                <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
+                <Route path="/settings/interactions" element={<InteractionsScreen />} />
+                <Route path="*" element={<Navigate to="/settings/camera" replace />} />
+            </Routes>
         </div>
     );
 };
