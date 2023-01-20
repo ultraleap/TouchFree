@@ -1,3 +1,4 @@
+import AboutScreen from './About/AboutScreen';
 import CameraManager from './Camera/CameraManager';
 import CameraSetupScreen from './Camera/CameraSetupScreen';
 import ManualSetupScreen from './Camera/ManualSetup/ManualSetupScreen';
@@ -8,7 +9,6 @@ import CalibrationScreen from './Camera/QuickSetup/Calibration/CalibrationScreen
 import PositionSelectionScreen from './Camera/QuickSetup/PositionSelectionScreen';
 import QuickSetupManager from './Camera/QuickSetup/QuickSetupManager';
 import InteractionsScreen from './Interactions/InteractionsScreen';
-import AboutScreen from './Settings/AboutScreen';
 
 export {
     ManualSetupScreen,
