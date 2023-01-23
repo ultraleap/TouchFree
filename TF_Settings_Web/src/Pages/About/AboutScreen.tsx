@@ -3,7 +3,7 @@ import styles from './About.module.scss';
 import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
 
-import { useIsBrightSign } from '@/customHooks';
+import { useIsLinux } from '@/customHooks';
 
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
 import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
@@ -17,7 +17,7 @@ const classes = classNames.bind(styles);
 const ENABLE_ADVANCED_ABOUT = false;
 
 const AboutScreen: React.FC = () => {
-    const isBrightSign = useIsBrightSign();
+    const isLinux = useIsLinux();
 
     const [tFVersion, setTFVersion] = useState<string>('');
     const [trackingVersion, setTrackingVersion] = useState<string>('');
@@ -58,7 +58,7 @@ const AboutScreen: React.FC = () => {
                     <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
                 </div>
                 <div className={classes('page-divider')} />
-                {ENABLE_ADVANCED_ABOUT && !isBrightSign && (
+                {ENABLE_ADVANCED_ABOUT && !isLinux && (
                     <>
                         <div className={classes('title-line')}>
                             <h1> Advanced </h1>

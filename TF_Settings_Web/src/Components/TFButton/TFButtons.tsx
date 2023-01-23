@@ -27,32 +27,6 @@ interface TextButtonProps extends BaseButtonProps {
     textStyle?: React.CSSProperties;
 }
 
-const getButtonTextElements = (
-    title?: string,
-    titleStyle?: React.CSSProperties,
-    text?: string,
-    textStyle?: React.CSSProperties
-): JSX.Element[] => {
-    const elements: JSX.Element[] = [];
-    if (title) {
-        elements.push(
-            <h1 key={title} style={titleStyle}>
-                {title}
-            </h1>
-        );
-    }
-
-    if (text) {
-        elements.push(
-            <p key={text} style={textStyle}>
-                {text}
-            </p>
-        );
-    }
-
-    return elements;
-};
-
 export const TextButton: React.FC<TextButtonProps> = ({
     className,
     buttonStyle,
@@ -64,7 +38,7 @@ export const TextButton: React.FC<TextButtonProps> = ({
     canHover = true,
 }) => (
     <BaseTFButton buttonClass={className} canHover={canHover} onClick={onClick} buttonStyle={buttonStyle} type="text">
-        {getButtonTextElements(title, titleStyle, text, textStyle)}
+        <ButtonTextElements title={title} titleStyle={titleStyle} text={text} textStyle={textStyle} />
     </BaseTFButton>
 );
 
@@ -96,7 +70,7 @@ export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
         type="vertical"
     >
         <img style={iconStyle} src={icon} alt={alt} />
-        {getButtonTextElements(title, titleStyle, text, textStyle)}
+        <ButtonTextElements title={title} titleStyle={titleStyle} text={text} textStyle={textStyle} />
     </BaseTFButton>
 );
 
@@ -121,7 +95,7 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
         type="horizontal"
     >
         <div className={classes('tf-button-text-container')}>
-            {getButtonTextElements(title, titleStyle, text, textStyle)}
+            <ButtonTextElements title={title} titleStyle={titleStyle} text={text} textStyle={textStyle} />
         </div>
         <img style={iconStyle} src={icon} alt={alt} />
     </BaseTFButton>
@@ -151,8 +125,30 @@ export const OutlinedTextButton: React.FC<OutlinedTextButtonProps> = ({
     className,
 }) => (
     <BaseTFButton className={className} canHover onClick={onClick} buttonStyle={buttonStyle} type="misc">
-        <h1 style={titleStyle}>{title}</h1>
+        <ButtonTextElements title={title} titleStyle={titleStyle} />
     </BaseTFButton>
+);
+
+interface ButtonTextElementsProps {
+    title: string;
+    titleStyle: React.CSSProperties;
+    text: string;
+    textStyle: React.CSSProperties;
+}
+
+const ButtonTextElements: React.FC<Partial<ButtonTextElementsProps>> = ({ title, titleStyle, text, textStyle }) => (
+    <>
+        {title && (
+            <h1 key={title} style={titleStyle}>
+                {title}
+            </h1>
+        )}
+        {text && (
+            <p key={text} style={textStyle}>
+                {text}
+            </p>
+        )}
+    </>
 );
 
 interface BaseTFButtonProps extends BaseButtonProps {

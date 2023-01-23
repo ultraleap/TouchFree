@@ -27,7 +27,7 @@ export const useIsFullScreen = () => {
     return isFullScreen;
 };
 
-export const useIsBrightSign = (): boolean => platform.os?.family === 'Linux' || platform.os?.family === 'Ubuntu';
+export const useIsLinux = (): boolean => platform.os?.family === 'Linux' || platform.os?.family === 'Ubuntu';
 
 export const useStatefulRef = function <T>(initialValue: T): {
     current: T;
