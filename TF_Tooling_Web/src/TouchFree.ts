@@ -228,9 +228,11 @@ const DispatchEvent = <TEvent extends TouchFreeEvent>(
 // Bundle all our exports into a default object
 // Benefit to this is IDE autocomplete for "TouchFree" will find this object
 export default {
+    CurrentCursor,
     GetCurrentCursor,
     DispatchEvent,
     Init,
+    InputController,
     GetInputController,
     IsConnected,
     RegisterEventCallback,
