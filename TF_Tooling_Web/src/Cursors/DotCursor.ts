@@ -9,7 +9,7 @@ import { TouchlessCursor } from './TouchlessCursor';
 // currently active interaction).
 export class DotCursor extends TouchlessCursor {
     // Set the update rate of the animation to 30fps.
-    private animationUpdateDuration: number = (1 / 30) * 1000;
+    readonly animationUpdateDuration: number = (1 / 30) * 1000;
 
     // Group: Variables
 
@@ -50,14 +50,10 @@ export class DotCursor extends TouchlessCursor {
         this.dotCursorElement = cursor;
         this.cursorRing = cursorRing;
         this.ringSizeMultiplier = ringSizeMultiplier;
-        this.cursorStartSize = [cursor.clientWidth.valueOf(), cursor.clientHeight.valueOf()];
+        this.cursorStartSize = this.GetDimensions(this.dotCursorElement);
 
         this.animationSpeed[0] = this.cursorStartSize[0] / 2 / (animationDuration * 30);
         this.animationSpeed[1] = this.cursorStartSize[1] / 2 / (animationDuration * 30);
-
-        if (animationDuration === 0) {
-            this.animationUpdateDuration = 0;
-        }
 
         TouchFree.RegisterEventCallback('HandFound', this.ShowCursor.bind(this));
         TouchFree.RegisterEventCallback('HandsLost', this.HideCursor.bind(this));
@@ -73,11 +69,14 @@ export class DotCursor extends TouchlessCursor {
 
         this.cursorRing.style.opacity = inputAction.ProgressToClick.toString();
 
-        this.cursorRing.style.width = this.dotCursorElement.clientWidth * ringScaler + 'px';
-        this.cursorRing.style.height = this.dotCursorElement.clientHeight * ringScaler + 'px';
+        const [cursorWidth, cursorHeight] = this.GetDimensions(this.dotCursorElement);
+        const [cursorRingWidth, cursorRingHeight] = this.GetDimensions(this.cursorRing);
 
-        this.cursorRing.style.left = inputAction.CursorPosition[0] - this.cursorRing.clientWidth / 2 + 'px';
-        this.cursorRing.style.top = inputAction.CursorPosition[1] - this.cursorRing.clientHeight / 2 + 'px';
+        this.cursorRing.style.width = cursorWidth * ringScaler + 'px';
+        this.cursorRing.style.height = cursorHeight * ringScaler + 'px';
+
+        this.cursorRing.style.left = inputAction.CursorPosition[0] - cursorRingWidth / 2 + 'px';
+        this.cursorRing.style.top = inputAction.CursorPosition[1] - cursorRingHeight / 2 + 'px';
 
         super.UpdateCursor(inputAction);
     }
@@ -102,11 +101,6 @@ export class DotCursor extends TouchlessCursor {
                     clearInterval(this.currentAnimationInterval);
                 }
 
-                if (this.animationUpdateDuration === 0) {
-                    this.SetCursorSize(this.cursorStartSize[0] / 2, this.cursorStartSize[1] / 2, this.dotCursorElement);
-                    break;
-                }
-
                 this.currentAnimationInterval = setInterval(
                     this.ShrinkCursor.bind(this) as TimerHandler,
                     this.animationUpdateDuration
@@ -117,10 +111,6 @@ export class DotCursor extends TouchlessCursor {
                     this.growQueued = true;
                 } else {
                     this.growQueued = false;
-                    if (this.animationUpdateDuration === 0) {
-                        this.SetCursorSize(this.cursorStartSize[0], this.cursorStartSize[1], this.dotCursorElement);
-                        break;
-                    }
                     this.currentAnimationInterval = setInterval(
                         this.GrowCursor.bind(this) as TimerHandler,
                         this.animationUpdateDuration
@@ -138,15 +128,14 @@ export class DotCursor extends TouchlessCursor {
     // This is performed over a duration set in the <constructor>.
     ShrinkCursor(): void {
         if (!this.enabled) return;
-        let newWidth = this.dotCursorElement.clientWidth;
-        let newHeight = this.dotCursorElement.clientHeight;
+        let [newWidth, newHeight] = this.GetDimensions(this.dotCursorElement);
 
-        if (this.dotCursorElement.clientWidth > this.cursorStartSize[0] / 2) {
-            newWidth = this.dotCursorElement.clientWidth - this.animationSpeed[0];
+        if (newWidth > this.cursorStartSize[0] / 2) {
+            newWidth -= this.animationSpeed[0];
         }
 
-        if (this.dotCursorElement.clientHeight > this.cursorStartSize[1] / 2) {
-            newHeight = this.dotCursorElement.clientHeight - this.animationSpeed[1];
+        if (newHeight > this.cursorStartSize[1] / 2) {
+            newHeight -= this.animationSpeed[1];
         }
 
         this.SetCursorSize(newWidth, newHeight, this.dotCursorElement);
@@ -175,15 +164,14 @@ export class DotCursor extends TouchlessCursor {
     // Grows the cursor to its original size over time set via the <constructor>.
     GrowCursor(): void {
         if (!this.enabled) return;
-        let newWidth = this.dotCursorElement.clientWidth;
-        let newHeight = this.dotCursorElement.clientHeight;
+        let [newWidth, newHeight] = this.GetDimensions(this.dotCursorElement);
 
-        if (this.dotCursorElement.clientWidth < this.cursorStartSize[0]) {
-            newWidth = this.dotCursorElement.clientWidth + this.animationSpeed[0];
+        if (newWidth < this.cursorStartSize[0]) {
+            newWidth += this.animationSpeed[0];
         }
 
-        if (this.dotCursorElement.clientHeight < this.cursorStartSize[1]) {
-            newHeight = this.dotCursorElement.clientHeight + this.animationSpeed[1];
+        if (newHeight < this.cursorStartSize[1]) {
+            newHeight += this.animationSpeed[1];
         }
 
         this.SetCursorSize(newWidth, newHeight, this.dotCursorElement);
@@ -199,8 +187,8 @@ export class DotCursor extends TouchlessCursor {
     }
 
     private SetCursorSize(newWidth: number, newHeight: number, cursorToChange: HTMLElement): void {
-        const deltaX = Math.round((cursorToChange.clientWidth - newWidth) * 5) / 10;
-        const deltaY = Math.round((cursorToChange.clientHeight - newHeight) * 5) / 10;
+        const deltaX = Math.round((parseFloat(cursorToChange.style.width) - newWidth) * 5) / 10;
+        const deltaY = Math.round((parseFloat(cursorToChange.style.height) - newHeight) * 5) / 10;
         const cursorPosX = cursorToChange.offsetLeft + deltaX;
         const cursorPosY = cursorToChange.offsetTop + deltaY;
 
@@ -218,11 +206,6 @@ export class DotCursor extends TouchlessCursor {
         if (!this.enabled) return;
         clearInterval(this.currentFadingInterval);
 
-        if (this.animationUpdateDuration === 0) {
-            this.dotCursorElement.style.opacity = '1';
-            return;
-        }
-
         this.currentFadingInterval = setInterval(
             this.FadeCursorIn.bind(this) as TimerHandler,
             this.animationUpdateDuration
@@ -235,11 +218,6 @@ export class DotCursor extends TouchlessCursor {
         this.shouldShow = false;
         if (parseFloat(this.dotCursorElement.style.opacity) !== 0) {
             clearInterval(this.currentFadingInterval);
-
-            if (this.animationUpdateDuration === 0) {
-                this.dotCursorElement.style.opacity = '0';
-                return;
-            }
 
             this.currentFadingInterval = setInterval(
                 this.FadeCursorOut.bind(this) as TimerHandler,

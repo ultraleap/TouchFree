@@ -4,17 +4,18 @@ import { mockTfInputAction } from '../../tests/testUtils';
 import { DotCursor } from '../DotCursor';
 
 const CURSOR_SIZE = 75;
+const CURSOR_SIZE_STRING = `${CURSOR_SIZE}px`;
+const CURSOR_RING_SIZE_STRING = `${CURSOR_SIZE * 2}px`;
 
 TouchFree.Init({ initialiseCursor: false });
 
 const cursor = document.createElement('img');
 const cursorRing = document.createElement('img');
 
-// Mocks required as Jest doesn't render anything meaning the client width/height of the elements is never set
-jest.spyOn(cursor, 'clientWidth', 'get').mockImplementation(() => CURSOR_SIZE);
-jest.spyOn(cursor, 'clientHeight', 'get').mockImplementation(() => CURSOR_SIZE);
-jest.spyOn(cursorRing, 'clientWidth', 'get').mockImplementation(() => CURSOR_SIZE * 2);
-jest.spyOn(cursorRing, 'clientHeight', 'get').mockImplementation(() => CURSOR_SIZE * 2);
+cursor.style.width = CURSOR_SIZE_STRING;
+cursor.style.height = CURSOR_SIZE_STRING;
+cursorRing.style.width = CURSOR_RING_SIZE_STRING;
+cursorRing.style.height = CURSOR_RING_SIZE_STRING;
 
 cursor.classList.add('touchfree-cursor');
 cursorRing.classList.add('touchfree-cursor');
@@ -22,7 +23,9 @@ cursorRing.classList.add('touchfree-cursor');
 document.body.appendChild(cursor);
 document.body.appendChild(cursorRing);
 
-const dotCursor = new DotCursor(cursor, cursorRing, 0);
+const dotCursor = new DotCursor(cursor, cursorRing);
+
+jest.setTimeout(10000);
 
 describe('Dot Cursor', () => {
     beforeAll(() => {
@@ -37,7 +40,6 @@ describe('Dot Cursor', () => {
         mockTfInputAction({ InputType: InputType.MOVE, CursorPosition: [100, 100] });
         const pos = `${100 - CURSOR_SIZE / 2}px`;
         const ringPos = `${100 - CURSOR_SIZE}px`;
-
         expect(cursor.style.left).toBe(pos);
         expect(cursor.style.top).toBe(pos);
         expect(cursorRing.style.left).toBe(ringPos);
@@ -51,63 +53,65 @@ describe('Dot Cursor', () => {
     });
 
     test('Cursor ring should fade in with ProgressToClick', () => {
-        [0, 0.5, 1].forEach((progress) => {
+        for (const progress of [0, 0.5, 1]) {
             mockTfInputAction({ InputType: InputType.MOVE, ProgressToClick: progress });
             expect(cursorRing.style.opacity).toBe(progress.toString());
-        });
+        }
     });
 
-    test('Cursor should shrink when DOWN action received', () => {
+    test('Cursor should shrink when DOWN action received', async () => {
         mockTfInputAction({ InputType: InputType.DOWN });
-        expect(cursor.style.width).toBe('37.5px');
-        expect(cursor.style.height).toBe('37.5px');
+        expect(cursorRing.style.width).toBe('0px');
+        expect(cursorRing.style.height).toBe('0px');
+        await testCursorStyle('width', '37.5px');
+        await testCursorStyle('height', '37.5px');
     });
 
-    test('Cursor dot should return to original size when UP action received', () => {
+    test('Cursor dot should return to original size when UP action received', async () => {
         mockTfInputAction({ InputType: InputType.DOWN });
         mockTfInputAction({ InputType: InputType.UP });
-        expect(cursor.style.width).toBe('75px');
-        expect(cursor.style.height).toBe('75px');
+        await testCursorStyle('width', '75px');
+        await testCursorStyle('height', '75px');
     });
 
-    test('HideCursor should prevent the cursor from being displayed', () => {
+    test('HideCursor should prevent the cursor from being displayed', async () => {
         dotCursor.HideCursor();
-        expect(cursor.style.opacity).toBe('0');
+        await testCursorStyle('opacity', '0');
         // Carry out TouchFree actions as these have an effect on the opacity of the cursor
         mockTfInputAction({ InputType: InputType.MOVE, CursorPosition: [100, 100] });
-        expect(cursor.style.opacity).toBe('0');
+        await testCursorStyle('opacity', '0');
         mockTfInputAction({ InputType: InputType.DOWN });
-        expect(cursor.style.opacity).toBe('0');
+        await testCursorStyle('opacity', '0');
         mockTfInputAction({ InputType: InputType.UP });
-        expect(cursor.style.opacity).toBe('0');
+        await testCursorStyle('opacity', '0');
     });
 
-    test('ShowCursor should make the cursor visible when enabled', () => {
+    test('ShowCursor should make the cursor visible when enabled', async () => {
         dotCursor.HideCursor();
-        expect(cursor.style.opacity).toBe('0');
+        await testCursorStyle('opacity', '0');
         dotCursor.ShowCursor();
-        expect(cursor.style.opacity).toBe('1');
+        await testCursorStyle('opacity', '1');
         // Carry out TouchFree actions as these have an effect on the opacity of the cursor
         mockTfInputAction({ InputType: InputType.MOVE, CursorPosition: [100, 100] });
-        expect(cursor.style.opacity).toBe('1');
+        await testCursorStyle('opacity', '1');
         mockTfInputAction({ InputType: InputType.DOWN });
-        expect(cursor.style.opacity).toBe('1');
+        await testCursorStyle('opacity', '1');
         mockTfInputAction({ InputType: InputType.UP });
-        expect(cursor.style.opacity).toBe('1');
+        await testCursorStyle('opacity', '1');
     });
 
-    test('DisableCursor should ensure the cursor cannot be visible', () => {
+    test('DisableCursor should ensure the cursor cannot be visible', async () => {
         dotCursor.DisableCursor();
-        expect(cursor.style.opacity).toBe('0');
+        await testCursorStyle('opacity', '0');
         dotCursor.ShowCursor();
-        expect(cursor.style.opacity).toBe('0');
+        await testCursorStyle('opacity', '0');
     });
 
     test('EnableCursor allows cursor to be shown again', async () => {
         dotCursor.DisableCursor();
         dotCursor.EnableCursor();
         dotCursor.ShowCursor();
-        expect(cursor.style.opacity).toBe('1');
+        await testCursorStyle('opacity', '1');
     });
 
     test('SetCursorOpacity sets the cursors opacity correctly', () => {
@@ -118,3 +122,18 @@ describe('Dot Cursor', () => {
         }
     });
 });
+
+const getStyle = (key: keyof CSSStyleDeclaration) => cursor.style[key];
+
+const testCursorStyle = async (key: keyof CSSStyleDeclaration, expected: string) => {
+    await new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                expect(getStyle(key)).toBe(expected);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        }, 1000);
+    });
+};
