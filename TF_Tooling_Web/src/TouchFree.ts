@@ -176,6 +176,9 @@ const EventImplementations: () => EventImpls = () =>
 // Same as OnConnected but calls callback when already connected.
 // Note this event piggybacks as an "OnConnected" event on event targets.
 //
+// OnServiceStatusChanged: (state: ServiceStatus) => void;
+// Event dispatched when TouchFree Service status changes.
+//
 // OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
 // Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
 //
