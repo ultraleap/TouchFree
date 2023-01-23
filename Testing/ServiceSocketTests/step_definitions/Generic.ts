@@ -131,8 +131,7 @@ const callbackOnHandshake = (callback: () => void) => {
         };
 
         checkActionResponse(responseData, expectedResponse, intervalId, (received: any) => {
-            return received.content.requestID === expectedResponse.content.requestID &&
-                received.content.status === expectedResponse.content.status &&
+            return received.content.status === expectedResponse.content.status &&
                 received.content.message === expectedResponse.content.message;
         }, callback, 'Handshake message does not match expected');
     });
@@ -147,8 +146,8 @@ const callbackOnServiceStatus = (callback: () => void) => {
             }
         };
 
-        checkActionResponse(responseData, expectedResponse, intervalId, (received: any) => {
-            return received.content.requestID === expectedResponse.content.requestID;
+        checkActionResponse(responseData, expectedResponse, intervalId, () => {
+            return true;
         }, callback, 'Service Status message does not match expected');
     });
 };
@@ -163,7 +162,7 @@ const checkActionResponse = (
 
     const content = JSON.parse(responseData);
 
-    if (content.action === expectedResponse.action)  {
+    if (content.action === expectedResponse.action && content.requestID === expectedResponse.requestID)  {
         clearInterval(intervalId);
 
         if (validation(content)) {
