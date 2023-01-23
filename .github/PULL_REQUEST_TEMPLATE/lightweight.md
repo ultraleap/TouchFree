@@ -19,9 +19,9 @@ _Summary of the purpose of this pull request._
 _These tasks are for the pull request creator to tick off._
 
 - [ ] Relevant changelogs have been updated with user-visible changes
-    - [ ] [TouchFree Windows](../../CHANGELOG-windows.md)
-    - [ ] [TouchFree BrightSign](../../CHANGELOG-brightsign.md)
-    - [ ] [TouchFree Web Tooling](../../TF_Tooling_Web/CHANGELOG.md)
+    - [ ] [TouchFree Windows](/ultraleap/touchfree/CHANGELOG-windows.md)
+    - [ ] [TouchFree BrightSign](/ultraleap/touchfree/CHANGELOG-brightsign.md)
+    - [ ] [TouchFree Web Tooling](/ultraleap/touchfree/TF_Tooling_Web/CHANGELOG.md)
 
 ## Reviewer Tasks
 
