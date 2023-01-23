@@ -1,5 +1,4 @@
 import { Given, When, Then, After } from '@cucumber/cucumber';
-import { VersionHandshakeResponse } from './TouchFree_Messages';
 
 const WebSocket = require('ws');
 
