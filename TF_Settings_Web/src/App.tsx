@@ -11,7 +11,7 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { AboutScreen, CameraManager, InteractionsScreen } from '@/Pages';
 
-import { ControlBar } from '@/Components';
+import { Header } from '@/Components/TopBar';
 
 const classes = classnames.bind(styles);
 
@@ -46,7 +46,7 @@ const App: React.FC = () => {
 
     return (
         <div className={classes('app')}>
-            <ControlBar trackingStatus={trackingStatus} touchFreeVersion={touchFreeVersion} />
+            <Header trackingStatus={trackingStatus} touchFreeVersion={touchFreeVersion} />
             <Routes>
                 <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
                 <Route path="/settings/interactions" element={<InteractionsScreen />} />

@@ -10,7 +10,7 @@ import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import TouchFree from 'TouchFree/src/TouchFree';
 
 import { TextButton } from '@/Components';
-import { TabBar } from '@/Components/ControlBar';
+import { TabBar } from '@/Components/TopBar';
 
 const classes = classNames.bind(styles);
 

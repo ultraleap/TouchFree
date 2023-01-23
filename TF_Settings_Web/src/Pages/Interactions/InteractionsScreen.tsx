@@ -24,7 +24,7 @@ import {
     TextSlider,
     OutlinedTextButton,
 } from '@/Components';
-import { TabBar } from '@/Components/ControlBar';
+import { TabBar } from '@/Components/TopBar';
 
 import { DefaultInteractionConfig } from './InteractionDefaults';
 

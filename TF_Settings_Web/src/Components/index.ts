@@ -1,5 +1,4 @@
 import Alert from './Alert/Alert';
-import { ControlBar, StatusIndicator, TabSelector, VersionIndicator } from './ControlBar';
 import DocsLink from './DocsLink/DocsLink';
 import { RadioLine, RadioGroup } from './Radio/RadioButtons';
 import { Slider } from './Slider/Slider';
@@ -27,10 +26,6 @@ export {
     VerticalIconTextButton,
     HorizontalIconTextButton,
     ToggleSwitch,
-    ControlBar,
-    StatusIndicator,
-    TabSelector,
-    VersionIndicator,
     LabelledToggleSwitch,
     BaseTFButton,
     DocsLink,
