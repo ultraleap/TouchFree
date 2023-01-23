@@ -24,22 +24,25 @@ _Summary of the tests added as part of this change, or reason why no tests are r
 
 _These tasks are for the pull request creator to tick off._
 
-- [ ] Developer testing
 - [ ] PO review (optional depending on work type)
 - [ ] XDR review (optional depending on work type)
 - [ ] QA review (or another developer if no QA is available)
 - [ ] Ensure documentation requirements are met e.g., public API is commented
+- [ ] Relevant changelogs have been updated with user-visible changes
+    - [ ] [TouchFree Windows](../CHANGELOG-windows.md)
+    - [ ] [TouchFree BrightSign](../CHANGELOG-brightsign.md)
+    - [ ] [TouchFree Web Tooling](../TF_Tooling_Web/CHANGELOG.md)
 - [ ] Consider any licensing/other legal implications e.g., notices required
 
 If there is an associated JIRA issue:
 - [ ] Include a link to the JIRA issue in the summary above
-- [ ] Update the release notes on the issue
 - [ ] Make sure the fix version on the issue is set correctly
 
 ## Reviewer Tasks
 
 _Add any instructions or tasks for the reviewer such as specific test considerations before this can be merged._
 
+- [ ] Developer testing
 - [ ] Code reviewed
 - [ ] Non-code assets reviewed
 - [ ] Documentation reviewed - includes checking documentation requirements are met and not missing e.g., public API is commented
