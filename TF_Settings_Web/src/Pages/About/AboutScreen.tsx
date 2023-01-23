@@ -14,8 +14,6 @@ import { TabBar } from '@/Components/TopBar';
 
 const classes = classNames.bind(styles);
 
-const ENABLE_ADVANCED_ABOUT = false;
-
 const AboutScreen: React.FC = () => {
     const isLinux = useIsLinux();
 
@@ -58,7 +56,7 @@ const AboutScreen: React.FC = () => {
                     <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
                 </div>
                 <div className={classes('page-divider')} />
-                {ENABLE_ADVANCED_ABOUT && !isLinux && (
+                {!isLinux && (
                     <>
                         <div className={classes('title-line')}>
                             <h1> Advanced </h1>
@@ -67,14 +65,12 @@ const AboutScreen: React.FC = () => {
                             <InfoButtonEntry
                                 title="Tracking Log Files"
                                 buttonTitle="Show Tracking Log Files"
-                                onClick={() => {
-                                    console.log('C:/ProgramData/Ultraleap/HandTracker/Logs');
-                                }}
+                                onClick={() => ConnectionManager.OpenFolder('TRACKING_LOGS')}
                             />
                             <InfoButtonEntry
                                 title="TouchFree Log Files"
                                 buttonTitle="Show TouchFree Log Files"
-                                onClick={() => console.log('C:/ProgramData/Ultraleap/TouchFree/Logs')}
+                                onClick={() => ConnectionManager.OpenFolder('TOUCHFREE_LOGS')}
                             />
                         </div>
                     </>

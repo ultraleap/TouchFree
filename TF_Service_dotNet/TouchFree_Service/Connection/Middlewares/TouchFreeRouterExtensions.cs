@@ -35,6 +35,7 @@ namespace Ultraleap.TouchFree.Service.Connection
             services.AddSingleton<IMessageQueueHandler, ServiceStatusQueueHandler>();
             services.AddSingleton<IMessageQueueHandler, HandDataStreamStateQueueHandler>();
             services.AddSingleton<IMessageQueueHandler, TrackingApiChangeQueueHandler>();
+            services.AddSingleton<IMessageQueueHandler, OpenFolderQueueHandler>();
             return services;
         }
 

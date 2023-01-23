@@ -161,4 +161,16 @@ namespace Ultraleap.TouchFree.Library
             y = _y;
         }
     }
+
+    [Serializable]
+    public struct OpenFolderRequest
+    {
+        public FolderType Type { get; set; }
+        public string requestID { get; set; }
+    }
+    public enum FolderType
+    {
+        TRACKING_LOGS,
+        TOUCHFREE_LOGS
+    }
 }

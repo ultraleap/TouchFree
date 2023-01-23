@@ -2,7 +2,7 @@ import TouchFree from '../TouchFree';
 import { TrackingServiceState } from '../TouchFreeToolingTypes';
 import { MessageReceiver } from './MessageReceiver';
 import { ServiceConnection } from './ServiceConnection';
-import { HandPresenceState, ServiceStatus } from './TouchFreeServiceTypes';
+import { HandPresenceState, OPEN_FOLDER_TYPE, ServiceStatus } from './TouchFreeServiceTypes';
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -132,5 +132,11 @@ export class ConnectionManager extends EventTarget {
     // Function to get the current hand presense state
     public static GetCurrentHandPresence(): HandPresenceState {
         return ConnectionManager.currentHandPresence;
+    }
+
+    // Function: OpenFolder
+    // Used internally to request the service to open a predefined folder
+    public static OpenFolder(type: OPEN_FOLDER_TYPE): void {
+        ConnectionManager.serviceConnection()?.OpenFolder(type);
     }
 }

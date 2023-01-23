@@ -9,6 +9,8 @@ import {
     ConfigState,
     ConfigStateCallback,
     HandPresenceEvent,
+    OpenFolderRequest,
+    OPEN_FOLDER_TYPE,
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
@@ -246,7 +248,7 @@ export class ServiceConnection {
 
         const guid: string = uuidgen();
         const request: ServiceStatusRequest = new ServiceStatusRequest(guid);
-        const wrapper = new CommunicationWrapper<ConfigChangeRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
+        const wrapper = new CommunicationWrapper<ServiceStatusRequest>(ActionCode.REQUEST_SERVICE_STATUS, request);
         const message: string = JSON.stringify(wrapper);
 
         ConnectionManager.messageReceiver.serviceStatusCallbacks[guid] = new ServiceStatusCallback(
@@ -379,6 +381,18 @@ export class ServiceConnection {
                 _callback
             );
         }
+
+        this.webSocket.send(message);
+    };
+
+    // Function: OpenFolder
+    // Used internally to request the service to open a predefined folder
+    OpenFolder = (type: OPEN_FOLDER_TYPE) => {
+        // TODO: If desired add callback functionality to know if folder successfully opened
+        const guid: string = uuidgen();
+        const request: OpenFolderRequest = new OpenFolderRequest(guid, type);
+        const wrapper = new CommunicationWrapper<OpenFolderRequest>(ActionCode.OPEN_FOLDER_REQUEST, request);
+        const message: string = JSON.stringify(wrapper);
 
         this.webSocket.send(message);
     };

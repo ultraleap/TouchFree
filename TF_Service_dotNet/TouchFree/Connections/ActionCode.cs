@@ -36,6 +36,10 @@ namespace Ultraleap.TouchFree.Library.Connections
         GET_TRACKING_STATE,
         SET_TRACKING_STATE,
         TRACKING_STATE,
+
+        OPEN_FOLDER_REQUEST,
+        OPEN_FOLDER_RESPONSE,
+
     }
 
     public static class ActionCodeExtensions

@@ -26,6 +26,7 @@ import { Mask } from '../Tracking/TrackingTypes';
 // HAND_DATA - Represents more complete hand data sent from the service.
 // SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable
 //                              the HAND_DATA stream or change the lens to have the hand position relative to.
+// OPEN_FOLDER_REQUEST - Represents a request for the service to open a predefined folder
 export enum ActionCode {
     INPUT_ACTION = 'INPUT_ACTION',
 
@@ -58,6 +59,8 @@ export enum ActionCode {
 
     HAND_DATA = 'HAND_DATA',
     SET_HAND_DATA_STREAM_STATE = 'SET_HAND_DATA_STREAM_STATE',
+
+    OPEN_FOLDER_REQUEST = 'OPEN_FOLDER_REQUEST',
 }
 
 // Enum: HandPresenceState
@@ -368,5 +371,20 @@ export class TrackingStateCallback {
     constructor(_timestamp: number, _callback: (detail: TrackingStateResponse) => void) {
         this.timestamp = _timestamp;
         this.callback = _callback;
+    }
+}
+
+// Type: OPEN_FOLDER_TYPE
+// Type of folder you want the service to open (via <OpenFolderRequest>)
+export type OPEN_FOLDER_TYPE = 'TRACKING_LOGS' | 'TOUCHFREE_LOGS';
+
+// Class: OpenFolderRequest
+// Used to request the serivce to open a predefined folder. See <OPEN_FOLDER_TYPE> for applicable folders
+export class OpenFolderRequest extends TouchFreeRequest {
+    type: OPEN_FOLDER_TYPE;
+
+    constructor(_id: string, _type: OPEN_FOLDER_TYPE) {
+        super(_id);
+        this.type = _type;
     }
 }
