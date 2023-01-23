@@ -9,7 +9,7 @@ import { TouchlessCursor } from './TouchlessCursor';
 // currently active interaction).
 export class DotCursor extends TouchlessCursor {
     // Set the update rate of the animation to 30fps.
-    readonly animationUpdateDuration: number = (1 / 30) * 1000;
+    private animationUpdateDuration: number = (1 / 30) * 1000;
 
     // Group: Variables
 
@@ -55,6 +55,10 @@ export class DotCursor extends TouchlessCursor {
         this.animationSpeed[0] = this.cursorStartSize[0] / 2 / (animationDuration * 30);
         this.animationSpeed[1] = this.cursorStartSize[1] / 2 / (animationDuration * 30);
 
+        if (animationDuration === 0) {
+            this.animationUpdateDuration = 0;
+        }
+
         TouchFree.RegisterEventCallback('HandFound', this.ShowCursor.bind(this));
         TouchFree.RegisterEventCallback('HandsLost', this.HideCursor.bind(this));
     }
@@ -67,7 +71,7 @@ export class DotCursor extends TouchlessCursor {
         //progressToClick is between 0 and 1. Click triggered at progressToClick = 1
         const ringScaler = MapRangeToRange(inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
-        this.cursorRing.style.opacity = inputAction.ProgressToClick + '';
+        this.cursorRing.style.opacity = inputAction.ProgressToClick.toString();
 
         this.cursorRing.style.width = this.dotCursorElement.clientWidth * ringScaler + 'px';
         this.cursorRing.style.height = this.dotCursorElement.clientHeight * ringScaler + 'px';
@@ -98,6 +102,11 @@ export class DotCursor extends TouchlessCursor {
                     clearInterval(this.currentAnimationInterval);
                 }
 
+                if (this.animationUpdateDuration === 0) {
+                    this.SetCursorSize(this.cursorStartSize[0] / 2, this.cursorStartSize[1] / 2, this.dotCursorElement);
+                    break;
+                }
+
                 this.currentAnimationInterval = setInterval(
                     this.ShrinkCursor.bind(this) as TimerHandler,
                     this.animationUpdateDuration
@@ -108,6 +117,10 @@ export class DotCursor extends TouchlessCursor {
                     this.growQueued = true;
                 } else {
                     this.growQueued = false;
+                    if (this.animationUpdateDuration === 0) {
+                        this.SetCursorSize(this.cursorStartSize[0], this.cursorStartSize[1], this.dotCursorElement);
+                        break;
+                    }
                     this.currentAnimationInterval = setInterval(
                         this.GrowCursor.bind(this) as TimerHandler,
                         this.animationUpdateDuration
@@ -204,6 +217,12 @@ export class DotCursor extends TouchlessCursor {
         this.shouldShow = true;
         if (!this.enabled) return;
         clearInterval(this.currentFadingInterval);
+
+        if (this.animationUpdateDuration === 0) {
+            this.dotCursorElement.style.opacity = '1';
+            return;
+        }
+
         this.currentFadingInterval = setInterval(
             this.FadeCursorIn.bind(this) as TimerHandler,
             this.animationUpdateDuration
@@ -216,6 +235,12 @@ export class DotCursor extends TouchlessCursor {
         this.shouldShow = false;
         if (parseFloat(this.dotCursorElement.style.opacity) !== 0) {
             clearInterval(this.currentFadingInterval);
+
+            if (this.animationUpdateDuration === 0) {
+                this.dotCursorElement.style.opacity = '0';
+                return;
+            }
+
             this.currentFadingInterval = setInterval(
                 this.FadeCursorOut.bind(this) as TimerHandler,
                 this.animationUpdateDuration
