@@ -56,64 +56,70 @@ interface HandMeshData {
     circleMeshes: InstancedMesh<CircleBufferGeometry, MeshBasicMaterial>;
 }
 
-let _scene: Scene;
-let _renderer: WebGLRenderer;
-let _camera: PerspectiveCamera;
-let _cameraFeedMesh: BasicMesh;
-let _cameraFeedTexture: DataTexture;
+let scene: Scene;
+let renderer: WebGLRenderer;
+let camera: PerspectiveCamera;
+let cameraFeedMesh: BasicMesh;
+let cameraFeedTexture: DataTexture;
 
-let _primaryHandMesh: HandMeshData;
-let _secondaryHandMesh: HandMeshData;
+let primaryHandMesh: HandMeshData;
+let secondaryHandMesh: HandMeshData;
 
-let _compiled = false;
+let compiled = false;
 
 const dummy = new Object3D();
 
 const BASE_LINE_THICKNESS = 0.005;
 
 export const setupRenderScene = (div: HTMLDivElement) => {
-    _scene = new Scene();
-    _camera = new PerspectiveCamera(90);
-    _camera.position.z = 2;
+    // On hot reload, this stops multiple canvases from being displayed.
+    for (const child of div.children) {
+        div.removeChild(child);
+    }
+    scene = new Scene();
+    camera = new PerspectiveCamera(90);
+    camera.position.z = 2;
 
-    _renderer = new WebGLRenderer();
-    _renderer.setPixelRatio(window.devicePixelRatio);
-    _renderer.setSize(div.clientWidth, div.clientHeight);
-    div.appendChild(_renderer.domElement);
+    renderer = new WebGLRenderer();
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(div.clientWidth, div.clientHeight);
+    div.appendChild(renderer.domElement);
 
-    _cameraFeedMesh = new Mesh(new PlaneGeometry(4, 4), new MeshBasicMaterial());
-    _scene.add(_cameraFeedMesh);
+    cameraFeedMesh = new Mesh(new PlaneGeometry(4, 4), new MeshBasicMaterial());
+    scene.add(cameraFeedMesh);
 
-    _primaryHandMesh = createHandMesh(_scene, true);
-    _secondaryHandMesh = createHandMesh(_scene, false);
-    _compiled = false;
+    primaryHandMesh = createHandMesh(scene, true);
+    secondaryHandMesh = createHandMesh(scene, false);
+    compiled = false;
+
+    return renderer;
 };
 
 export const renderScene = () => {
-    if (!_compiled) {
-        _compiled = true;
-        _renderer.compile(_scene, _camera);
+    if (!compiled) {
+        compiled = true;
+        renderer.compile(scene, camera);
     }
 
-    _renderer.render(_scene, _camera);
+    renderer.render(scene, camera);
 };
 
 export const updateCameraRender = (data: Uint8Array, width: number, height: number, handData: HandState) => {
-    if (_cameraFeedTexture) _cameraFeedTexture.dispose();
+    if (cameraFeedTexture) cameraFeedTexture.dispose();
 
-    _cameraFeedTexture = new DataTexture(data, width, height);
-    _cameraFeedTexture.flipY = true;
-    _cameraFeedTexture.needsUpdate = true;
+    cameraFeedTexture = new DataTexture(data, width, height);
+    cameraFeedTexture.flipY = true;
+    cameraFeedTexture.needsUpdate = true;
 
-    _cameraFeedMesh.material.map = _cameraFeedTexture;
-    _cameraFeedMesh.material.color.convertSRGBToLinear();
+    cameraFeedMesh.material.map = cameraFeedTexture;
+    cameraFeedMesh.material.color.convertSRGBToLinear();
 
     if (handData?.one?.primaryHand) {
-        updateHandMesh(_primaryHandMesh, handData?.one);
-        updateHandMesh(_secondaryHandMesh, handData?.two);
+        updateHandMesh(primaryHandMesh, handData?.one);
+        updateHandMesh(secondaryHandMesh, handData?.two);
     } else {
-        updateHandMesh(_primaryHandMesh, handData?.two);
-        updateHandMesh(_secondaryHandMesh, handData?.one);
+        updateHandMesh(primaryHandMesh, handData?.two);
+        updateHandMesh(secondaryHandMesh, handData?.one);
     }
 };
 

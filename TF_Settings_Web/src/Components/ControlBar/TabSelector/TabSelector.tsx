@@ -1,12 +1,16 @@
-import './TabSelector.scss';
+import classnames from 'classnames/bind';
+
+import styles from './TabSelector.module.scss';
 
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const classes = classnames.bind(styles);
+
 interface TabSelectorProps {
     name: string;
     isActiveTab: boolean;
-    onClick: () => void;
+    onClick?: () => void;
 }
 
 const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick }) => {
@@ -16,7 +20,9 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
     const handleClick = () => {
         if (!isActiveTab) {
             navigate(`/settings/${lowerCaseName}`);
-            onClick();
+            if (onClick) {
+                onClick();
+            }
         }
     };
 
@@ -30,7 +36,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({ name, isActiveTab, onClick })
     const lowerCaseName = name.toLowerCase();
     return (
         <button
-            className={`tab-button ${getSpecialClassName()}`}
+            className={classes('tab-button', getSpecialClassName())}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
                 setHovered(false);

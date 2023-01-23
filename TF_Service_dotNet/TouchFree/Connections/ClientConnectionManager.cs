@@ -21,12 +21,14 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private readonly IHandManager handManager;
         private readonly IConfigManager configManager;
+        private readonly ITrackingDiagnosticApi trackingApi;
 
-        public ClientConnectionManager(IHandManager _handManager, IConfigManager _configManager)
+        public ClientConnectionManager(IHandManager _handManager, IConfigManager _configManager, ITrackingDiagnosticApi _trackingApi)
         {
             MissedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
             handManager = _handManager;
             configManager = _configManager;
+            trackingApi = _trackingApi;
             handManager.HandFound += OnHandFound;
             handManager.HandsLost += OnHandsLost;
             handManager.ConnectionManager.ServiceStatusChange += ConnectionStatusChange;
@@ -41,12 +43,24 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void ConnectionStatusChange(TrackingServiceState state)
         {
-            var currentConfig = new ServiceStatus(
-                string.Empty, // No request id as this event is not a response to a request
-                state,
-                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
+            void handleDeviceInfoResponse()
+            {
+                var currentConfig = new ServiceStatus(
+                    string.Empty, // No request id as this event is not a response to a request
+                    state,
+                    configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
+                    VersionManager.ApiVersion.ToString(),
+                    trackingApi.trackingServiceVersion,
+                    trackingApi.connectedDeviceSerial,
+                    trackingApi.connectedDeviceFirmware);
 
-            SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+                SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+
+                trackingApi.OnTrackingDeviceInfoResponse -= handleDeviceInfoResponse;
+            };
+
+            trackingApi.OnTrackingDeviceInfoResponse += handleDeviceInfoResponse;
+            trackingApi.RequestGetDeviceInfo();
         }
 
         private void HandleHandPresenceEvent(HandPresenceState state)

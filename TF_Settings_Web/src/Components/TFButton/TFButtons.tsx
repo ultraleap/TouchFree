@@ -1,30 +1,31 @@
-import './TFButtons.scss';
+import classnames from 'classnames/bind';
 
-import React, { CSSProperties } from 'react';
+import styles from './TFButtons.module.scss';
+
+import React, { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { BackArrow } from '@/Images';
+
+const classes = classnames.bind(styles);
 
 export type TFClickEvent = React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>;
 
 export const tFClickIsPointer = (event: TFClickEvent): event is React.PointerEvent<HTMLButtonElement> =>
     event.type.includes('pointer');
 
-export interface BaseButtonProps {
+interface BaseButtonProps {
     className?: string;
     buttonStyle?: React.CSSProperties;
-    title: string;
     titleStyle?: React.CSSProperties;
     onClick: (event: TFClickEvent) => void;
-}
-
-interface TextButtonProps extends BaseButtonProps {
-    text: string;
-    textStyle?: React.CSSProperties;
     canHover?: boolean;
 }
 
-interface IconTextButtonProps extends TextButtonProps {
-    icon: string;
-    alt: string;
-    iconStyle?: React.CSSProperties;
+interface TextButtonProps extends BaseButtonProps {
+    text?: string;
+    title?: string;
+    textStyle?: React.CSSProperties;
 }
 
 export const TextButton: React.FC<TextButtonProps> = ({
@@ -36,16 +37,19 @@ export const TextButton: React.FC<TextButtonProps> = ({
     textStyle,
     onClick,
     canHover = true,
-}) => {
-    const content = (
-        <>
-            <h1 style={titleStyle}>{title}</h1>
-            <p style={textStyle}>{text}</p>
-        </>
-    );
+}) => (
+    <BaseTFButton buttonClass={className} canHover={canHover} onClick={onClick} buttonStyle={buttonStyle} type="text">
+        <h1 style={{ ...titleStyle, display: title ? '' : 'none' }}>{title}</h1>
+        <p style={{ ...textStyle, display: text ? '' : 'none' }}>{text}</p>
+    </BaseTFButton>
+);
 
-    return BaseTFButton(`${className} text-tf-button`, canHover, onClick, content, buttonStyle);
-};
+interface IconTextButtonProps extends TextButtonProps {
+    icon: string;
+    alt: string;
+    title: string;
+    iconStyle?: React.CSSProperties;
+}
 
 export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
     className,
@@ -59,17 +63,19 @@ export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
     textStyle,
     onClick,
     canHover = true,
-}) => {
-    const content = (
-        <>
-            <img style={iconStyle} src={icon} alt={alt} />
-            <h1 style={titleStyle}>{title}</h1>
-            <p style={textStyle}>{text}</p>
-        </>
-    );
-
-    return BaseTFButton(`${className} vertical-tf-button`, canHover, onClick, content, buttonStyle);
-};
+}) => (
+    <BaseTFButton
+        buttonClass={className}
+        canHover={canHover}
+        onClick={onClick}
+        buttonStyle={buttonStyle}
+        type="vertical"
+    >
+        <img style={iconStyle} src={icon} alt={alt} />
+        <h1 style={titleStyle}>{title}</h1>
+        <p style={textStyle}>{text}</p>
+    </BaseTFButton>
+);
 
 export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
     className,
@@ -83,35 +89,74 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
     textStyle,
     onClick,
     canHover = true,
-}) => {
-    const content = (
-        <>
-            <div className="tf-button-text-container">
-                <h1 style={titleStyle}>{title}</h1>
-                <p style={textStyle}>{text}</p>
-            </div>
-            <img style={iconStyle} src={icon} alt={alt} />
-        </>
-    );
+}) => (
+    <BaseTFButton
+        buttonClass={className}
+        canHover={canHover}
+        onClick={onClick}
+        buttonStyle={buttonStyle}
+        type="horizontal"
+    >
+        <div className={classes('tf-button-text-container')}>
+            <h1 style={titleStyle}>{title}</h1>
+            <p style={textStyle}>{text}</p>
+        </div>
+        <img style={iconStyle} src={icon} alt={alt} />
+    </BaseTFButton>
+);
 
-    return BaseTFButton(`${className} horizontal-tf-button`, canHover, onClick, content, buttonStyle);
+export const BackButton = () => {
+    const nav = useNavigate();
+    return (
+        <BaseTFButton canHover onClick={() => nav('/')} type="back">
+            <div className={classes('back-container')}>
+                <img src={BackArrow} alt="Arrow pointing back" />
+                <h1>Back</h1>
+            </div>
+        </BaseTFButton>
+    );
 };
 
-export const BaseTFButton = (
-    buttonClass: string,
-    canHover: boolean,
-    onClick: (event: TFClickEvent) => void,
-    content: JSX.Element,
-    buttonStyle?: CSSProperties
-) => {
+interface OutlinedTextButtonProps extends BaseButtonProps {
+    title: string;
+}
+
+export const OutlinedTextButton: React.FC<OutlinedTextButtonProps> = ({
+    buttonStyle,
+    title,
+    titleStyle,
+    onClick,
+    className,
+}) => (
+    <BaseTFButton className={className} canHover onClick={onClick} buttonStyle={buttonStyle} type="misc">
+        <h1 style={titleStyle}>{title}</h1>
+    </BaseTFButton>
+);
+
+interface BaseTFButtonProps extends BaseButtonProps {
+    type: 'horizontal' | 'vertical' | 'text' | 'misc' | 'back';
+    buttonClass?: string;
+    children?: ReactNode;
+}
+
+export const BaseTFButton: React.FC<BaseTFButtonProps> = ({
+    type,
+    buttonClass,
+    canHover,
+    onClick,
+    buttonStyle,
+    children,
+}) => {
     const [hovered, setHovered] = React.useState<boolean>(false);
     const [pressed, setPressed] = React.useState<boolean>(false);
 
     return (
         <button
-            className={`${buttonClass} tf-button ${
-                canHover && hovered ? `tf-button--hovered ${buttonClass}--hovered` : ''
-            } ${pressed ? `tf-button--pressed ${buttonClass}--pressed` : ''}`}
+            className={classes(buttonClass, 'tf-button', `tf-button--${type}`, {
+                'tf-button--hovered': canHover && hovered,
+                [`tf-button--${type}--hovered`]: canHover && hovered,
+                'tf-button--pressed': pressed,
+            })}
             style={buttonStyle}
             onPointerOver={() => setHovered(true)}
             onPointerLeave={() => {
@@ -131,7 +176,7 @@ export const BaseTFButton = (
                 if (keyEvent.key === 'Enter') onClick(keyEvent);
             }}
         >
-            {content}
+            {children}
         </button>
     );
 };
