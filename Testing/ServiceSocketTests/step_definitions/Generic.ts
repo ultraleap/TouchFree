@@ -1,4 +1,5 @@
 import { Given, When, Then, After } from '@cucumber/cucumber';
+import { VersionHandshakeResponse } from './TouchFree_Messages';
 
 const WebSocket = require('ws');
 
@@ -72,7 +73,7 @@ const openWebSocketAndPerformAction = (callback: () => void) => {
     }
 }
 
-const sendMessage = (message: any) => {
+const sendMessage = (message: unknown) => {
     if (connectedWebSocket) {
         if (!responsesSetUp) {
             connectedWebSocket.addEventListener('message', (_message: MessageEvent) => {
@@ -97,7 +98,7 @@ const sendHandshake = () => {
     sendMessage(handshakeMessage);
 };
 
-const callbackOnMessage = (callback: () => void, validation: (responseData: any, intervalId: NodeJS.Timer, callback: () => void) => void) => {
+const callbackOnMessage = (callback: () => void, validation: (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => void) => {
     let checkTime = 0;
     const interval = 10;
 
@@ -117,7 +118,7 @@ const callbackOnMessage = (callback: () => void, validation: (responseData: any,
 };
 
 const callbackOnHandshake = (callback: () => void) => {
-    callbackOnMessage(callback, (responseData: any, intervalId: NodeJS.Timer, callback: () => void) => {
+    callbackOnMessage(callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
         const expectedResponse = { 
             action: 'VERSION_HANDSHAKE_RESPONSE',
             content: {
@@ -139,7 +140,7 @@ const callbackOnHandshake = (callback: () => void) => {
 };
 
 const callbackOnServiceStatus = (callback: () => void) => {
-    callbackOnMessage(callback, (responseData: any, intervalId: NodeJS.Timer, callback: () => void) => {
+    callbackOnMessage(callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
         const expectedResponse = { 
             action: 'SERVICE_STATUS',
             content: {
@@ -154,7 +155,7 @@ const callbackOnServiceStatus = (callback: () => void) => {
 };
 
 const checkActionResponse = (
-    responseData: any,
+    responseData: string,
     expectedResponse: any,
     intervalId: NodeJS.Timer,
     validation: (received: any) => boolean,
