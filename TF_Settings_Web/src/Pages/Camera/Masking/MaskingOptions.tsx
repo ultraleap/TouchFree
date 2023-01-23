@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './CameraMasking.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Alert, ToggleSwitch } from '@/Components';

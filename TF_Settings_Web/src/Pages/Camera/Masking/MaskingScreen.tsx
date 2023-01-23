@@ -1,8 +1,8 @@
-import classnames from 'classnames/bind';
 import { WebGLRenderer } from 'three';
 
 import styles from './CameraMasking.module.scss';
 
+import classnames from 'classnames/bind';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useIsLandscape, useStatefulRef } from '@/customHooks';

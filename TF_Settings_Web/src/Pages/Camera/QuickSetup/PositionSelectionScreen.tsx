@@ -1,8 +1,7 @@
-import classnames from 'classnames/bind';
-
 import styles from './PositionSelection.module.scss';
 import cssVariables from '@/variables.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
