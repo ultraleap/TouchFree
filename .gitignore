@@ -76,8 +76,6 @@ Documentation/Tooling for Unity/**
 #  Testing  #
 # ========= #
 
-**/package-lock.json
-**/packages-lock.json
 **/usage.txt
 Testing/ServiceSocketTests/results/*
 Testing/ServiceSocketTests/results/**

@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './VersionIndicator.module.scss';
 
+import classnames from 'classnames/bind';
 import React from 'react';
 
 const classes = classnames.bind(styles);

@@ -43,7 +43,7 @@
     align-items: center;
 
     margin: 0.75rem 0;
-    background-image: v.$darker-grey-gradient, v.$dark-grey-gradient;
+    background-image: v.$dark-grey-gradient;
     background-origin: border-box;
     background-clip: content-box, border-box;
     border: double 0.25rem transparent;
@@ -53,6 +53,6 @@
     height: 5rem;
 
     &--selected {
-        background-image: v.$darker-grey-gradient, v.$outline-button-gradient;
+        background-image: v.$dark-grey-gradient, v.$outline-button-gradient;
     }
 }

@@ -221,13 +221,15 @@ export class MessageReceiver {
             switch (callbackResult) {
                 // If callback didn't happen for known reasons, we can be sure it's an independent status event rather
                 // than a request response
-                // TODO: Send/handle this request from service differently from normal response so we can be sure it's
-                // an independent event
+                // TODO: Send/handle this request from service differently from normal response so
+                // we can be sure it's an independent event
                 case 'NoCallbacksFound':
                     // If service state is null we didn't get info about it from this message
                     if (serviceStatus.trackingServiceState !== null) {
                         TouchFree.DispatchEvent('OnTrackingServiceStateChange', serviceStatus.trackingServiceState);
                     }
+
+                    TouchFree.DispatchEvent('OnServiceStatusChange', serviceStatus);
                     break;
                 case 'Success':
                     // no-op

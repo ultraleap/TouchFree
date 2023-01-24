@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './TFButtons.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,8 +38,7 @@ export const TextButton: React.FC<TextButtonProps> = ({
     canHover = true,
 }) => (
     <BaseTFButton buttonClass={className} canHover={canHover} onClick={onClick} buttonStyle={buttonStyle} type="text">
-        <h1 style={{ ...titleStyle, display: title ? '' : 'none' }}>{title}</h1>
-        <p style={{ ...textStyle, display: text ? '' : 'none' }}>{text}</p>
+        <ButtonTextElements title={title} titleStyle={titleStyle} text={text} textStyle={textStyle} />
     </BaseTFButton>
 );
 
@@ -72,8 +70,7 @@ export const VerticalIconTextButton: React.FC<IconTextButtonProps> = ({
         type="vertical"
     >
         <img style={iconStyle} src={icon} alt={alt} />
-        <h1 style={titleStyle}>{title}</h1>
-        <p style={textStyle}>{text}</p>
+        <ButtonTextElements title={title} titleStyle={titleStyle} text={text} textStyle={textStyle} />
     </BaseTFButton>
 );
 
@@ -98,8 +95,7 @@ export const HorizontalIconTextButton: React.FC<IconTextButtonProps> = ({
         type="horizontal"
     >
         <div className={classes('tf-button-text-container')}>
-            <h1 style={titleStyle}>{title}</h1>
-            <p style={textStyle}>{text}</p>
+            <ButtonTextElements title={title} titleStyle={titleStyle} text={text} textStyle={textStyle} />
         </div>
         <img style={iconStyle} src={icon} alt={alt} />
     </BaseTFButton>
@@ -129,8 +125,30 @@ export const OutlinedTextButton: React.FC<OutlinedTextButtonProps> = ({
     className,
 }) => (
     <BaseTFButton className={className} canHover onClick={onClick} buttonStyle={buttonStyle} type="misc">
-        <h1 style={titleStyle}>{title}</h1>
+        <ButtonTextElements title={title} titleStyle={titleStyle} />
     </BaseTFButton>
+);
+
+interface ButtonTextElementsProps {
+    title: string;
+    titleStyle: React.CSSProperties;
+    text: string;
+    textStyle: React.CSSProperties;
+}
+
+const ButtonTextElements: React.FC<Partial<ButtonTextElementsProps>> = ({ title, titleStyle, text, textStyle }) => (
+    <>
+        {title && (
+            <h1 key={title} style={titleStyle}>
+                {title}
+            </h1>
+        )}
+        {text && (
+            <p key={text} style={textStyle}>
+                {text}
+            </p>
+        )}
+    </>
 );
 
 interface BaseTFButtonProps extends BaseButtonProps {

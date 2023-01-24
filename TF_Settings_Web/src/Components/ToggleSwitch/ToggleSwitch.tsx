@@ -1,8 +1,7 @@
-import classnames from 'classnames/bind';
-
 import styles from './ToggleSwitch.module.scss';
 import interactionStyles from '@/Pages/Interactions/Interactions.module.scss';
 
+import classnames from 'classnames/bind';
 import React from 'react';
 
 const classes = classnames.bind(styles);

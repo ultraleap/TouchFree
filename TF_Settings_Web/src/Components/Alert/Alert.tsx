@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './Alert.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { CSSProperties } from 'react';
 
 const classes = classnames.bind(styles);
@@ -13,8 +12,10 @@ interface AlertProps {
     animationType: 'fadeIn' | 'fadeInOut' | 'none';
     animationTime: number;
 }
-const Alert: React.FC<AlertProps> = ({ show, style, text, animationType, animationTime }) =>
-    show ? (
+const Alert: React.FC<AlertProps> = ({ show, style, text, animationType, animationTime }) => {
+    if (!show) return <></>;
+
+    return (
         <div
             className={classes('alert-container')}
             style={{
@@ -25,9 +26,8 @@ const Alert: React.FC<AlertProps> = ({ show, style, text, animationType, animati
             <div className={classes('alert-container--triangle')} />
             <p>{text}</p>
         </div>
-    ) : (
-        <></>
     );
+};
 
 const getAlertAnimation = (animationType: 'fadeIn' | 'fadeInOut' | 'none', animationTime: number): string => {
     switch (animationType) {

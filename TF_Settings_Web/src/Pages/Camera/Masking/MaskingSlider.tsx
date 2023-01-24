@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './CameraMasking.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
 import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
