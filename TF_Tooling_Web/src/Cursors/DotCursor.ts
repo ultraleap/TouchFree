@@ -70,10 +70,11 @@ export class DotCursor extends TouchlessCursor {
         this.cursorRing.style.opacity = inputAction.ProgressToClick.toString();
 
         const [cursorWidth, cursorHeight] = this.GetDimensions(this.dotCursorElement);
-        const [cursorRingWidth, cursorRingHeight] = this.GetDimensions(this.cursorRing);
 
         this.cursorRing.style.width = cursorWidth * ringScaler + 'px';
         this.cursorRing.style.height = cursorHeight * ringScaler + 'px';
+
+        const [cursorRingWidth, cursorRingHeight] = this.GetDimensions(this.cursorRing);
 
         this.cursorRing.style.left = inputAction.CursorPosition[0] - cursorRingWidth / 2 + 'px';
         this.cursorRing.style.top = inputAction.CursorPosition[1] - cursorRingHeight / 2 + 'px';
@@ -187,8 +188,9 @@ export class DotCursor extends TouchlessCursor {
     }
 
     private SetCursorSize(newWidth: number, newHeight: number, cursorToChange: HTMLElement): void {
-        const deltaX = Math.round((parseFloat(cursorToChange.style.width) - newWidth) * 5) / 10;
-        const deltaY = Math.round((parseFloat(cursorToChange.style.height) - newHeight) * 5) / 10;
+        const [width, height] = this.GetDimensions(cursorToChange);
+        const deltaX = Math.round((width - newWidth) * 5) / 10;
+        const deltaY = Math.round((height - newHeight) * 5) / 10;
         const cursorPosX = cursorToChange.offsetLeft + deltaX;
         const cursorPosY = cursorToChange.offsetTop + deltaY;
 

@@ -4,36 +4,37 @@ import { mockTfInputAction } from '../../tests/testUtils';
 import { DotCursor } from '../DotCursor';
 
 const CURSOR_SIZE = 75;
-const CURSOR_SIZE_STRING = `${CURSOR_SIZE}px`;
-const CURSOR_RING_SIZE_STRING = `${CURSOR_SIZE * 2}px`;
 
 TouchFree.Init({ initialiseCursor: false });
+let dotCursor: DotCursor;
+let cursor: HTMLImageElement;
+let cursorRing: HTMLImageElement;
 
-const cursor = document.createElement('img');
-const cursorRing = document.createElement('img');
+const setup = (ringSizeMultiplier?: number) => {
+    cursor = document.createElement('img');
+    cursorRing = document.createElement('img');
 
-cursor.style.width = CURSOR_SIZE_STRING;
-cursor.style.height = CURSOR_SIZE_STRING;
-cursorRing.style.width = CURSOR_RING_SIZE_STRING;
-cursorRing.style.height = CURSOR_RING_SIZE_STRING;
+    cursor.style.width = cursor.style.height = `${CURSOR_SIZE}px`;
 
-cursor.classList.add('touchfree-cursor');
-cursorRing.classList.add('touchfree-cursor');
+    cursor.classList.add('touchfree-cursor');
+    cursorRing.classList.add('touchfree-cursor');
 
-document.body.appendChild(cursor);
-document.body.appendChild(cursorRing);
-
-const dotCursor = new DotCursor(cursor, cursorRing);
-
-jest.setTimeout(10000);
+    document.body.appendChild(cursor);
+    document.body.appendChild(cursorRing);
+    if (ringSizeMultiplier) {
+        dotCursor = new DotCursor(cursor, cursorRing, 0.2, ringSizeMultiplier);
+    } else {
+        dotCursor = new DotCursor(cursor, cursorRing);
+    }
+    mockTfInputAction();
+};
 
 describe('Dot Cursor', () => {
-    beforeAll(() => {
-        // Set cursor to known state before each test
-        mockTfInputAction();
-        mockTfInputAction({ InputType: InputType.UP });
-        dotCursor.EnableCursor();
-        dotCursor.ShowCursor();
+    beforeEach(() => setup());
+
+    afterEach(() => {
+        document.body.removeChild(cursor);
+        document.body.removeChild(cursorRing);
     });
 
     test('Update cursor position when MOVE action received', () => {
@@ -50,6 +51,11 @@ describe('Dot Cursor', () => {
         expect(cursorRing.style.width).toBe('150px');
         mockTfInputAction({ InputType: InputType.MOVE, ProgressToClick: 0.5 });
         expect(cursorRing.style.width).toBe('112.5px');
+        // Test for different ringSizeMultiplier
+        setup(4);
+        expect(cursorRing.style.width).toBe('300px');
+        mockTfInputAction({ InputType: InputType.MOVE, ProgressToClick: 0.5 });
+        expect(cursorRing.style.width).toBe('187.5px');
     });
 
     test('Cursor ring should fade in with ProgressToClick', () => {
@@ -127,13 +133,19 @@ const getStyle = (key: keyof CSSStyleDeclaration) => cursor.style[key];
 
 const testCursorStyle = async (key: keyof CSSStyleDeclaration, expected: string) => {
     await new Promise<void>((resolve, reject) => {
-        setTimeout(() => {
+        let time = 0;
+        const interval = setInterval(() => {
             try {
                 expect(getStyle(key)).toBe(expected);
+                clearInterval(interval);
                 resolve();
             } catch (e) {
-                reject(e);
+                if (time > 1000) {
+                    clearInterval(interval);
+                    reject(e);
+                }
+                time += 20;
             }
-        }, 1000);
+        }, 20);
     });
 };
