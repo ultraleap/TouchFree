@@ -13,6 +13,12 @@
     flex-direction: row;
 }
 
+@mixin page-divider {
+    height: 10px;
+    margin: 40px 0;
+    background-color: v.$dark-grey;
+}
+
 .fade-enter {
     opacity: 0;
 }

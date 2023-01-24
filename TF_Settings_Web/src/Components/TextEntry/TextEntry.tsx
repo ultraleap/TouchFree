@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './TextEntry.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
 
 const classes = classnames.bind(styles);

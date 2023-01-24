@@ -1,3 +1,4 @@
+import AboutScreen from './About/AboutScreen';
 import CameraManager from './Camera/CameraManager';
 import CameraSetupScreen from './Camera/CameraSetupScreen';
 import ManualSetupScreen from './Camera/ManualSetup/ManualSetupScreen';
@@ -20,4 +21,5 @@ export {
     CalibrationManager,
     CameraManager,
     QuickSetupManager,
+    AboutScreen,
 };

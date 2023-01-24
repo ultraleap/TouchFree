@@ -1,9 +1,9 @@
 @use '@/variables.module.scss' as v;
 
-.control-bar-container {
+.header-container {
     position: sticky;
     top: 0;
-    height: v.$control-bar-height;
+    height: v.$header-height;
     background-image: linear-gradient(270deg, #3c3c3c, #2f2f2f);
     z-index: 1;
     display: grid;
@@ -11,7 +11,7 @@
     align-items: center;
 }
 
-.control-bar-logo {
+.header-logo {
     justify-self: center;
     width: 30rem;
 }
