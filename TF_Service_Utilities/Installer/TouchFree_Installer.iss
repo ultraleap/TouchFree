@@ -50,7 +50,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Source: "{#SourcePath}..\..\Service_Package\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourcePath}..\..\TouchFree_Build\*"; DestDir: "{app}\TouchFree"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourcePath}..\..\Scripts\Tracking_Build\Tracking_for_TouchFree_{#TouchFreeVersion}.exe"; DestDir: "{app}\Tracking"; Flags: ignoreversion deleteafterinstall
-Source: "{#SourcePath}config.json"; DestDir: "{app}\Tracking\TrackingService\bin"; Flags: onlyifdoesntexist recursesubdirs createallsubdirs
+Source: "{#SourcePath}config.json"; DestDir: "{commonappdata}\Ultraleap\Handtracker"; Flags: onlyifdoesntexist recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
