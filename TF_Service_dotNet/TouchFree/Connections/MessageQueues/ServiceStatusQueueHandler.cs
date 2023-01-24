@@ -51,6 +51,10 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 handleDeviceInfoResponse();
                 trackingApi.OnTrackingDeviceInfoResponse -= handleDeviceInfoResponse;
             }
+            else
+            {
+                trackingApi.RequestGetDeviceInfo();
+            }
         }
     }
 }
