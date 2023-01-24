@@ -31,7 +31,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                     string.Empty, // No request id as this event is not a response to a request
                     handManager.ConnectionManager.TrackingServiceState,
                     configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
-                    VersionManager.ApiVersion.ToString(),
+                    VersionManager.Version,
                     trackingApi.trackingServiceVersion,
                     trackingApi.connectedDeviceSerial,
                     trackingApi.connectedDeviceFirmware);
