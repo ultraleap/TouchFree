@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './CameraMasking.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { useState } from 'react';
 
 import { Lens } from './MaskingScreen';

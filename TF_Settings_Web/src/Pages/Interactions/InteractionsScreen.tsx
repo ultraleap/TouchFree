@@ -1,7 +1,6 @@
-import classnames from 'classnames/bind';
-
 import styles from './Interactions.module.scss';
 
+import classnames from 'classnames/bind';
 import { useEffect, useReducer, useState, CSSProperties } from 'react';
 
 import { useIsLandscape } from '@/customHooks';
@@ -22,12 +21,12 @@ import {
     RadioGroup,
     RadioLine,
     Slider,
-    TabBar,
     TextSlider,
     OutlinedTextButton,
 } from '@/Components';
+import { TabBar } from '@/Components/TopBar';
 
-import { DefaultInteractionConfig } from './SettingsTypes';
+import { DefaultInteractionConfig } from './InteractionDefaults';
 
 const classes = classnames.bind(styles);
 

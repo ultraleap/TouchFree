@@ -1,10 +1,9 @@
-import classnames from 'classnames/bind';
-
 import styles from './Calibration.module.scss';
 import cssVariables from '@/variables.module.scss';
 import 'react-circular-progressbar/dist/styles.css';
 
 import { CreateTypes } from 'canvas-confetti';
+import classnames from 'classnames/bind';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSSProperties } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';

@@ -13,6 +13,11 @@ namespace Ultraleap.TouchFree.Library.Connections
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;
 
+        public string trackingServiceVersion { get; }
+
+        public string connectedDeviceFirmware { get; }
+        public string connectedDeviceSerial { get; }
+
         void RequestGetAnalyticsMode();
         void RequestSetAnalyticsMode(bool enabled);
 
@@ -25,7 +30,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         void RequestGetCameraOrientation();
         void RequestSetCameraOrientation(bool reverseOrientation);
 
-        void RequestGetDeviceInfo();
+        bool RequestGetDeviceInfo();
         void RequestGetDevices();
         void RequestGetServerInfo();
         void RequestGetVersion();

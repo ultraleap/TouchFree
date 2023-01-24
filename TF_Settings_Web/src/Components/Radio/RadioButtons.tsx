@@ -1,8 +1,7 @@
-import classnames from 'classnames/bind';
-
 import styles from './RadioButtons.module.scss';
 import interactionsStyles from '@/Pages/Interactions/Interactions.module.scss';
 
+import classnames from 'classnames/bind';
 import React from 'react';
 
 const interactionsClasses = classnames.bind(interactionsStyles);

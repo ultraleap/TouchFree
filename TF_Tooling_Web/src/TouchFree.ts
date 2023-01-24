@@ -105,6 +105,13 @@ const EventImplementations: () => EventImpls = () =>
                 },
             }),
         },
+        OnServiceStatusChange: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: MakeCustomEventWrapper(callback),
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
         OnTrackingServiceStateChange: {
             Target: ConnectionManager.instance,
             WithCallback: (callback) => ({
@@ -169,6 +176,9 @@ const EventImplementations: () => EventImpls = () =>
 // Same as OnConnected but calls callback when already connected.
 // Note this event piggybacks as an "OnConnected" event on event targets.
 //
+// OnServiceStatusChanged: (state: ServiceStatus) => void;
+// Event dispatched when TouchFree Service status changes.
+//
 // OnTrackingServiceStateChange: (state: TrackingServiceState) => void;
 // Event dispatched when the connection between TouchFreeService and Ultraleap Tracking Service changes
 //
@@ -221,9 +231,11 @@ const DispatchEvent = <TEvent extends TouchFreeEvent>(
 // Bundle all our exports into a default object
 // Benefit to this is IDE autocomplete for "TouchFree" will find this object
 export default {
+    CurrentCursor,
     GetCurrentCursor,
     DispatchEvent,
     Init,
+    InputController,
     GetInputController,
     IsConnected,
     RegisterEventCallback,
