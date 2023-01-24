@@ -463,6 +463,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public bool RequestGetDeviceInfo()
         {
+            TouchFreeLog.WriteLine("Getting Device Info");
             // Only send the request if we have a device
             if (!connectedDeviceID.HasValue) return false;
 
