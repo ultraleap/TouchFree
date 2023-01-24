@@ -20,6 +20,13 @@ namespace Ultraleap.TouchFree.Library.Connections
         private uint? connectedDeviceID;
         public string connectedDeviceFirmware { get; private set; }
         public string connectedDeviceSerial { get; private set; }
+        public bool IsDeviceConnected 
+        { 
+            get
+            {
+                return connectedDeviceID.HasValue;
+            } 
+        }
 
         public event Action<Result<ImageMaskData>> OnMaskingResponse;
         public event Action<Result<bool>> OnAnalyticsResponse;

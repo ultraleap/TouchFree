@@ -37,6 +37,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                     trackingApi.connectedDeviceFirmware);
 
                 clientMgr.SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+
+                trackingApi.OnTrackingDeviceInfoResponse -= handleDeviceInfoResponse;
             };
 
             trackingApi.OnTrackingDeviceInfoResponse += handleDeviceInfoResponse;
@@ -44,7 +46,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             // RequestGetDeviceInfo will return false if there is no currently connected camera. This ensures we send
             // a response in cases there's no camera. If there is a camera, we wait for the request for its Device
             // information to resolve and then transmit that.
-            if (!(trackingApi.RequestGetDeviceInfo()))
+            if (!trackingApi.IsDeviceConnected)
             {
                 handleDeviceInfoResponse();
                 trackingApi.OnTrackingDeviceInfoResponse -= handleDeviceInfoResponse;
