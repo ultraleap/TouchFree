@@ -2,7 +2,7 @@ import TouchFree from '../TouchFree';
 import { TrackingServiceState } from '../TouchFreeToolingTypes';
 import { MessageReceiver } from './MessageReceiver';
 import { ServiceConnection } from './ServiceConnection';
-import { HandPresenceState, OPEN_FOLDER_TYPE, ServiceStatus } from './TouchFreeServiceTypes';
+import { HandPresenceState, OpenFolderType, ServiceStatus } from './TouchFreeServiceTypes';
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -136,7 +136,7 @@ export class ConnectionManager extends EventTarget {
 
     // Function: OpenFolder
     // Used internally to request the service to open a predefined folder
-    public static OpenFolder(type: OPEN_FOLDER_TYPE): void {
+    public static OpenFolder(type: OpenFolderType): void {
         ConnectionManager.serviceConnection()?.OpenFolder(type);
     }
 }

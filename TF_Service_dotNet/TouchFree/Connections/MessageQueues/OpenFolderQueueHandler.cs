@@ -9,7 +9,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public class OpenFolderQueueHandler : MessageQueueHandler
     {
-        public override ActionCode[] ActionCodes => new[] { ActionCode.OPEN_FOLDER_REQUEST };
+        public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_OPEN_FOLDER };
 
         protected override string noRequestIdFailureMessage => "Opening folder failed. This is due to a missing or invalid requestID";
 

@@ -37,7 +37,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         SET_TRACKING_STATE,
         TRACKING_STATE,
 
-        OPEN_FOLDER_REQUEST,
+        REQUEST_OPEN_FOLDER,
         OPEN_FOLDER_RESPONSE,
 
     }
@@ -55,7 +55,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             ActionCode.GET_TRACKING_STATE,
             ActionCode.SET_TRACKING_STATE,
             ActionCode.VERSION_HANDSHAKE,
-            ActionCode.OPEN_FOLDER_REQUEST
+            ActionCode.REQUEST_OPEN_FOLDER
         };
 
         private static readonly ActionCode[] UnexpectedActionCodes = new ActionCode[] {

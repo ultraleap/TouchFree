@@ -10,7 +10,7 @@ import {
     ConfigStateCallback,
     HandPresenceEvent,
     OpenFolderRequest,
-    OPEN_FOLDER_TYPE,
+    OpenFolderType,
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
@@ -387,11 +387,11 @@ export class ServiceConnection {
 
     // Function: OpenFolder
     // Used internally to request the service to open a predefined folder
-    OpenFolder = (type: OPEN_FOLDER_TYPE) => {
+    OpenFolder = (type: OpenFolderType) => {
         // TODO: If desired add callback functionality to know if folder successfully opened
         const guid: string = uuidgen();
         const request: OpenFolderRequest = new OpenFolderRequest(guid, type);
-        const wrapper = new CommunicationWrapper<OpenFolderRequest>(ActionCode.OPEN_FOLDER_REQUEST, request);
+        const wrapper = new CommunicationWrapper<OpenFolderRequest>(ActionCode.REQUEST_OPEN_FOLDER, request);
         const message: string = JSON.stringify(wrapper);
 
         this.webSocket.send(message);
