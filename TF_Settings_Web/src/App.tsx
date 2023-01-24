@@ -17,7 +17,6 @@ const classes = classnames.bind(styles);
 
 const App: React.FC = () => {
     const [trackingStatus, setTrackingStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
-    const [touchFreeVersion, setTouchFreeVersion] = React.useState<string>('');
 
     useEffect(() => {
         TouchFree.Init({ initialiseCursor: true });
@@ -31,10 +30,6 @@ const App: React.FC = () => {
         const whenConnectedHandler = TouchFree.RegisterEventCallback('WhenConnected', () => {
             ConnectionManager.RequestServiceStatus(setTrackingStatusCallback);
             serviceChangeCallback = TouchFree.RegisterEventCallback('OnServiceStatusChange', setTrackingStatusCallback);
-
-            const serviceConnection = ConnectionManager.serviceConnection();
-            const tfVersion = serviceConnection?.touchFreeVersion ?? '';
-            setTouchFreeVersion(tfVersion);
         });
 
         return () => {
@@ -46,7 +41,7 @@ const App: React.FC = () => {
 
     return (
         <div className={classes('app')}>
-            <Header trackingStatus={trackingStatus} touchFreeVersion={touchFreeVersion} />
+            <Header trackingStatus={trackingStatus} />
             <Routes>
                 <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
                 <Route path="/settings/interactions" element={<InteractionsScreen />} />
