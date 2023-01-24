@@ -49,7 +49,7 @@ namespace Ultraleap.TouchFree.Library.Connections
                     string.Empty, // No request id as this event is not a response to a request
                     state,
                     configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
-                    VersionManager.ApiVersion.ToString(),
+                    VersionManager.Version,
                     trackingApi.trackingServiceVersion,
                     trackingApi.connectedDeviceSerial,
                     trackingApi.connectedDeviceFirmware);
