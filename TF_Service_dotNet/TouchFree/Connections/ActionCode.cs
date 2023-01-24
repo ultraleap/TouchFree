@@ -54,7 +54,8 @@ namespace Ultraleap.TouchFree.Library.Connections
             ActionCode.SET_HAND_DATA_STREAM_STATE,
             ActionCode.GET_TRACKING_STATE,
             ActionCode.SET_TRACKING_STATE,
-            ActionCode.VERSION_HANDSHAKE
+            ActionCode.VERSION_HANDSHAKE,
+            ActionCode.OPEN_FOLDER_REQUEST
         };
 
         private static readonly ActionCode[] UnexpectedActionCodes = new ActionCode[] {
@@ -71,7 +72,8 @@ namespace Ultraleap.TouchFree.Library.Connections
             ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE,
             ActionCode.QUICK_SETUP_RESPONSE,
             ActionCode.TRACKING_STATE,
-            ActionCode.QUICK_SETUP_CONFIG
+            ActionCode.QUICK_SETUP_CONFIG,
+            ActionCode.OPEN_FOLDER_RESPONSE
         };
 
         public static bool ExpectedToBeHandled(this ActionCode actionCode)
