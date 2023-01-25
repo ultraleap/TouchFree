@@ -49,15 +49,22 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
                     if (Directory.Exists(path))
                     {
-                        ProcessStartInfo startInfo = new ProcessStartInfo
+                        try
                         {
-                            FileName = path,
-                            UseShellExecute = true,
-                            Verb = "open",
-                        };
-                        Process.Start(startInfo);
+                            ProcessStartInfo startInfo = new ProcessStartInfo
+                            {
+                                FileName = path,
+                                UseShellExecute = true,
+                                Verb = "open",
+                            };
+                            Process.Start(startInfo);
 
-                        response = new ResponseToClient(requestId, "Success", string.Empty, _request.content);
+                            response = new ResponseToClient(requestId, "Success", string.Empty, _request.content);
+                        }
+                        catch (System.Exception e)
+                        {
+                            response = new ResponseToClient(requestId, "Failure", e.ToString(), _request.content);
+                        }
                     }
                 }
             }
