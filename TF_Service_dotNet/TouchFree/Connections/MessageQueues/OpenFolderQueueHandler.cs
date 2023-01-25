@@ -47,8 +47,12 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                             break;
                     }
 
+                    TouchFreeLog.WriteLine("XYZ");
+
                     if (Directory.Exists(path))
                     {
+                    TouchFreeLog.WriteLine("JB-EXISTS: " + path);
+
                         try
                         {
                             ProcessStartInfo startInfo = new ProcessStartInfo
@@ -59,11 +63,16 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                             };
                             Process.Start(startInfo);
 
+                            TouchFreeLog.WriteLine("JB-Success");
                             response = new ResponseToClient(requestId, "Success", string.Empty, _request.content);
                         }
                         catch (System.Exception e)
                         {
+                            TouchFreeLog.WriteLine("JB-CAUGHT: " + e);
+
                             response = new ResponseToClient(requestId, "Failure", e.ToString(), _request.content);
+                            clientMgr.SendResponse(response, ActionCode.OPEN_FOLDER_RESPONSE);
+                            return;
                         }
                     }
                 }
