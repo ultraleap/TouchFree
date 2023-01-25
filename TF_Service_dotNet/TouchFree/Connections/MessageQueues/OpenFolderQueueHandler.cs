@@ -53,8 +53,9 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                         {
                             ProcessStartInfo startInfo = new ProcessStartInfo
                             {
-                                Arguments = path,
-                                FileName = "explorer.exe"
+                                FileName = path,
+                                UseShellExecute = true,
+                                Verb = "open",
                             };
                             Process.Start(startInfo);
 
