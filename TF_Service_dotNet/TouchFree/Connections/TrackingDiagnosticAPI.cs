@@ -116,6 +116,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         public TrackingDiagnosticApi(IConfigManager _configManager, ITrackingConnectionManager _trackingConnectionManager)
         {
             configManager = _configManager;
+            connectedDeviceID = null;
 
             // Payload functions commonly used between multiple configuration variables
             Func<uint?, object> DefaultGetPayloadFunc(DApiMsgTypes requestType) =>
@@ -270,6 +271,11 @@ namespace Ultraleap.TouchFree.Library.Connections
             {
                 TouchFreeLog.ErrorWriteLine($"DiagnosticAPI connection exception... \n{ex}");
             }
+        }
+
+        public bool IsConnected()
+        {
+            return webSocket.ReadyState == WebSocketState.Open;
         }
 
         private void OnMessage(object sender, MessageEventArgs e)

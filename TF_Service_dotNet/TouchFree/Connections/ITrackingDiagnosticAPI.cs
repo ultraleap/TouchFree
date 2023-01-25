@@ -18,6 +18,8 @@ namespace Ultraleap.TouchFree.Library.Connections
         public string connectedDeviceFirmware { get; }
         public string connectedDeviceSerial { get; }
 
+        public bool IsConnected();
+
         void RequestGetAnalyticsMode();
         void RequestSetAnalyticsMode(bool enabled);
 

@@ -25,10 +25,23 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
+            if (!trackingApi.IsConnected())
+            {
+                var currentConfig = new ServiceStatus(
+                    string.Empty,
+                    handManager.ConnectionManager.TrackingServiceState,
+                    configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
+                    VersionManager.Version,
+                    null, null, null);
+
+                clientMgr.SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+                return;
+            }
+
             void handleDeviceInfoResponse()
             {
                 var currentConfig = new ServiceStatus(
-                    string.Empty, // No request id as this event is not a response to a request
+                    string.Empty,
                     handManager.ConnectionManager.TrackingServiceState,
                     configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
                     VersionManager.Version,
@@ -46,8 +59,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             // information to resolve and then transmit that.
             if (!(trackingApi.RequestGetDeviceInfo()))
             {
-                handleDeviceInfoResponse();
                 trackingApi.OnTrackingDeviceInfoResponse -= handleDeviceInfoResponse;
+                handleDeviceInfoResponse();
             }
         }
     }
