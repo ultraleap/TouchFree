@@ -30,7 +30,7 @@ describe('SVG Cursor', () => {
         expect(cursorRing?.getAttribute('cy')).toBe('100');
     });
 
-    test('Cursor ring should grow with ProgressToClick', () => {
+    test('Cursor ring should shrink with ProgressToClick', () => {
         expect(cursorRing?.getAttribute('r')).toBe('30');
 
         mockTfInputAction({ InputType: InputType.MOVE, ProgressToClick: 0.5 });

@@ -5,8 +5,9 @@
     "main": "index.js",
     "typings": "index.d.ts",
     "scripts": {
-        "test:watch": "jest --watch",
         "test": "jest --ci --reporters=default --reporters=jest-junit",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
         "build": "webpack",
         "prettyLint": "prettier --write . && eslint --fix .",
         "lintCheck": "conc \"prettier -c .\" \"eslint .\" \"tsc --noEmit\""
