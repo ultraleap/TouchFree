@@ -6,8 +6,12 @@ It contains the following features:
 -    Calibrate the service either automatically or manually
 -    Mask off problematic areas of the camera feed, e.g. bright, reflective areas
 -    Flip the camera feed vertically
+-    Toggle allowing analytics
+-    Toggle allowing access to the camera feed
 -    Switch between interaction types (Hover and Hold, AirPush etc)
+-    Edit interaction specific settings
 -    Control sensitivity of the TouchFree cursor
+-    Edit Interaction Zone settings
 -    View Service and Tracking version numbers
 -    View current camera Firmware and Serial number
 
