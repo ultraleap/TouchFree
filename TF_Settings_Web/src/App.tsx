@@ -9,7 +9,7 @@ import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
 import TouchFree, { EventHandle } from 'TouchFree/src/TouchFree';
 import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
-import { AboutScreen, CameraManager, InteractionsScreen } from '@/Pages';
+import { AboutScreen, CameraManager, InteractionsScreen, VisualsScreen } from '@/Pages';
 
 import { Header } from '@/Components';
 
@@ -46,6 +46,7 @@ const App: React.FC = () => {
                 <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
                 <Route path="/settings/interactions" element={<InteractionsScreen />} />
                 <Route path="/settings/about" element={<AboutScreen />} />
+                <Route path="/settings/visuals" element={<VisualsScreen />} />
                 <Route path="*" element={<Navigate to="/settings/camera" replace />} />
             </Routes>
         </div>

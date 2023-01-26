@@ -4,10 +4,14 @@
     position: sticky;
     top: v.$header-height;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 0.5fr;
+    grid-template-columns: 1fr 1fr 0.5fr;
     width: 100vw;
     height: 10vh;
     @media (orientation: portrait) {
         height: 5vh;
+    }
+
+    &--show-visuals {
+        grid-template-columns: 1fr 1fr 1fr 0.5fr;
     }
 }
