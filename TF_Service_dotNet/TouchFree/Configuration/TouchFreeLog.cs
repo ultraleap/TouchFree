@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -55,7 +56,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             if (!string.IsNullOrWhiteSpace(text))
             {
-                Console.WriteLine($"{DateTime.Now} - {text}");
+                Console.WriteLine($"{getTimestamp()} - {text}");
             }
             else
             {
@@ -67,12 +68,17 @@ namespace Ultraleap.TouchFree.Library.Configuration
         {
             if (!string.IsNullOrWhiteSpace(text))
             {
-                Console.Error.WriteLine($"{DateTime.Now} - {text}");
+                Console.Error.WriteLine($"{getTimestamp()} - {text}");
             }
             else
             {
                 Console.Error.WriteLine();
             }
+        }
+
+        private static string getTimestamp()
+        {
+            return DateTime.Now.ToString(new CultureInfo("en-GB"));
         }
     }
 }
