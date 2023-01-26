@@ -22,7 +22,7 @@
         }
     },
     "plugins": ["@typescript-eslint", "spellcheck"],
-    "ignorePatterns": ["/dist*", "/release", "build/*", "*_Example.html"],
+    "ignorePatterns": ["/dist*", "/release", "build/*", "*_Example.html", "coverage/"],
     "rules": {
         "indent": "off",
         "linebreak-style": "off",
