@@ -27,13 +27,13 @@ const Header: React.FC<HeaderProps> = ({ trackingStatus }) => {
     if (pathname.includes('calibrate')) return <></>;
 
     return (
-        <>
-            <div className={classes('header-container')}>
+        <div className={classes('header')}>
+            <div className={classes('header__top')}>
                 <StatusIndicator trackingStatus={trackingStatus} />
-                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className={classes('header-logo')} />
+                <img src={Logo} alt="Logo: TouchFree by UltraLeap" className={classes('header__top__logo')} />
             </div>
             {showTabBar && <TabBar />}
-        </>
+        </div>
     );
 };
 
