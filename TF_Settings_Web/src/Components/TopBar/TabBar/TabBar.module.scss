@@ -3,7 +3,8 @@
 .tab-bar {
     position: sticky;
     top: v.$header-height;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
     width: 100vw;
     height: 10vh;
     @media (orientation: portrait) {

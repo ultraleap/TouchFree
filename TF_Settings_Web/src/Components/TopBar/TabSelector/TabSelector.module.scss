@@ -1,47 +1,48 @@
 @use '@/variables.module.scss' as v;
 
-$hover-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px v.$ultraleap-green, 0 0 40px v.$ultraleap-green,
-    0 0 50px v.$ultraleap-green;
+.tab {
+    display: flex;
 
-.tab-button {
-    cursor: default;
-    align-self: stretch;
+    &__button {
+        cursor: default;
+        align-self: stretch;
 
-    user-select: none;
+        user-select: none;
 
-    border-radius: 1.2rem 1.2rem 0 0;
-    border: none;
-    background-color: transparent;
+        border-radius: 1.2rem 1.2rem 0 0;
+        border: none;
+        background-color: transparent;
 
-    flex: 1 1 50%;
-    justify-content: center;
-    align-items: center;
+        flex-grow: 1;
 
-    font-family: v.$base-font;
-    color: white;
-    font-size: 2.4rem;
+        font-family: v.$base-font;
+        color: white;
+        font-size: 2rem;
 
-    .icon--container {
-        height: 100%;
+        &__icon {
+            height: 50%;
+        }
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        &--active {
+            background-color: v.$app-background-color;
+        }
 
-        > img {
-            height: 70%;
+        &--hovered {
+            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px v.$ultraleap-green, 0 0 40px v.$ultraleap-green,
+                0 0 50px v.$ultraleap-green;
+        }
+
+        &--pressed {
+            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff, 0 0 50px #fff;
         }
     }
 
-    &--active {
+    &__divider {
+        $height: 60%;
+        width: 2%;
         background-color: v.$app-background-color;
-    }
-
-    &--hovered {
-        text-shadow: $hover-shadow;
-    }
-
-    &--pressed {
-        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff, 0 0 50px #fff;
+        position: relative;
+        top: calc((100% - $height) / 2);
+        height: $height;
     }
 }
