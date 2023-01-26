@@ -8,16 +8,15 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { Logo } from '@/Images';
 
-import { StatusIndicator, VersionIndicator } from '..';
+import { StatusIndicator } from '@/Components/TopBar';
 
 const classes = classnames.bind(styles);
 
 interface HeaderProps {
     trackingStatus: TrackingServiceState;
-    touchFreeVersion: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ trackingStatus, touchFreeVersion }) => {
+const Header: React.FC<HeaderProps> = ({ trackingStatus }) => {
     const { pathname } = useLocation();
 
     if (pathname.includes('calibrate')) return <></>;
@@ -26,7 +25,6 @@ const Header: React.FC<HeaderProps> = ({ trackingStatus, touchFreeVersion }) => 
         <div className={classes('header-container')}>
             <StatusIndicator trackingStatus={trackingStatus} />
             <img src={Logo} alt="Logo: TouchFree by UltraLeap" className={classes('header-logo')} />
-            <VersionIndicator touchFreeVersion={touchFreeVersion} />
         </div>
     );
 };

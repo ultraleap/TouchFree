@@ -46,7 +46,7 @@ const App: React.FC = () => {
 
     return (
         <div className={classes('app')}>
-            <Header trackingStatus={trackingStatus} touchFreeVersion={touchFreeVersion} />
+            <Header trackingStatus={trackingStatus} />
             <Routes>
                 <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
                 <Route path="/settings/interactions" element={<InteractionsScreen />} />
