@@ -1,5 +1,6 @@
 import Alert from './Alert/Alert';
 import DocsLink from './DocsLink/DocsLink';
+import Header from './Header/Header';
 import { RadioLine, RadioGroup } from './Radio/RadioButtons';
 import { Slider } from './Slider/Slider';
 import { TextSlider } from './Slider/TextSlider';
@@ -31,6 +32,7 @@ export {
     DocsLink,
     BackButton,
     OutlinedTextButton,
+    Header,
 };
 
 export type { TFClickEvent };

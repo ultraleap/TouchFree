@@ -8,7 +8,7 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { Logo } from '@/Images';
 
-import { StatusIndicator, TabBar } from '@/Components/TopBar';
+import { StatusIndicator, TabBar } from '@/Components/Header';
 
 const classes = classnames.bind(styles);
 

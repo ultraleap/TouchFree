@@ -11,7 +11,7 @@ import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
 
 import { AboutScreen, CameraManager, InteractionsScreen } from '@/Pages';
 
-import { Header } from '@/Components/TopBar';
+import { Header } from '@/Components';
 
 const classes = classnames.bind(styles);
 

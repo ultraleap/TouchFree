@@ -4,7 +4,7 @@ import classnames from 'classnames/bind';
 
 import { GearIcon, GearIconGlow } from '@/Images';
 
-import { TabSelector } from '@/Components/TopBar';
+import { TabSelector } from '@/Components/Header';
 
 const classes = classnames.bind(styles);
 
