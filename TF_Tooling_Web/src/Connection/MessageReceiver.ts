@@ -21,6 +21,7 @@ import {
     TrackingStateCallback,
     TrackingStateResponse,
     WebSocketResponse,
+    InteractionZoneState,
 } from './TouchFreeServiceTypes';
 
 // Class: MessageReceiver
@@ -86,6 +87,10 @@ export class MessageReceiver {
     // The last hand presence state update received from the Service.
     lastStateUpdate: HandPresenceState;
 
+    // Variable: lastInteractionZoneUpdate
+    // The last interaction zone state update received from the Service.
+    lastInteractionZoneUpdate: InteractionZoneState;
+
     // Variable: trackingStateQueue
     // A queue of <TrackingStates> that have been received from the Service.
     trackingStateQueue: Array<TrackingStateResponse> = [];
@@ -116,6 +121,7 @@ export class MessageReceiver {
     // interval of <callbackClearTimer> and <Update> on an interval of updateDuration
     constructor() {
         this.lastStateUpdate = HandPresenceState.PROCESSED;
+        this.lastInteractionZoneUpdate = InteractionZoneState.PROCESSED;
         this.updateDuration = (1 / this.updateRate) * 1000;
 
         this.callbackClearInterval = setInterval(
@@ -309,6 +315,11 @@ export class MessageReceiver {
         if (this.lastStateUpdate !== HandPresenceState.PROCESSED) {
             ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
             this.lastStateUpdate = HandPresenceState.PROCESSED;
+        }
+
+        if (this.lastInteractionZoneUpdate !== InteractionZoneState.PROCESSED) {
+            ConnectionManager.HandleInteractionZoneEvent(this.lastInteractionZoneUpdate);
+            this.lastInteractionZoneUpdate = InteractionZoneState.PROCESSED;
         }
     }
 

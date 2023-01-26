@@ -36,6 +36,8 @@ namespace Ultraleap.TouchFree.Library.Connections
         GET_TRACKING_STATE,
         SET_TRACKING_STATE,
         TRACKING_STATE,
+
+        INTERACTION_ZONE_EVENT,
     }
 
     public static class ActionCodeExtensions

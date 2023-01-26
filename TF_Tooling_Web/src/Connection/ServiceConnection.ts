@@ -9,6 +9,7 @@ import {
     ConfigState,
     ConfigStateCallback,
     HandPresenceEvent,
+    InteractionZoneEvent,
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
@@ -171,6 +172,12 @@ export class ServiceConnection {
             case ActionCode.TRACKING_STATE: {
                 const trackingResponse = looseData.content as TrackingStateResponse;
                 ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
+                break;
+            }
+
+            case ActionCode.INTERACTION_ZONE_EVENT: {
+                const interactionZoneEvent = looseData.content as InteractionZoneEvent;
+                ConnectionManager.messageReceiver.lastInteractionZoneUpdate = interactionZoneEvent.state;
                 break;
             }
         }

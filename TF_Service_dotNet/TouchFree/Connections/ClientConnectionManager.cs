@@ -18,6 +18,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         public short port = 9739;
 
         public HandPresenceEvent MissedHandPresenceEvent { get; private set; }
+        public InteractionZoneEvent MissedInteractionZoneEvent { get; private set; }
 
         private readonly IHandManager handManager;
         private readonly IConfigManager configManager;
@@ -76,6 +77,22 @@ namespace Ultraleap.TouchFree.Library.Connections
             if (activeConnections.IsEmpty)
             {
                 MissedHandPresenceEvent = handsLostEvent;
+            }
+        }
+
+        public void HandleInteractionZoneEvent(InteractionZoneState _state)
+        {
+            InteractionZoneEvent interactionZoneEvent = new InteractionZoneEvent(_state);
+
+            SendMessageToWebSockets((_connection) =>
+            {
+                _connection.SendInteractionZoneEvent(interactionZoneEvent);
+            });
+
+            // Cache interactionZoneEvent when no clients are connected
+            if (activeConnections.IsEmpty)
+            {
+                MissedInteractionZoneEvent = interactionZoneEvent;
             }
         }
 

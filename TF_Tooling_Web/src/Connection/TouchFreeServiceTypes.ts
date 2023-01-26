@@ -58,6 +58,8 @@ export enum ActionCode {
 
     HAND_DATA = 'HAND_DATA',
     SET_HAND_DATA_STREAM_STATE = 'SET_HAND_DATA_STREAM_STATE',
+
+    INTERACTION_ZONE_EVENT = 'INTERACTION_ZONE_EVENT',
 }
 
 // Enum: HandPresenceState
@@ -68,6 +70,15 @@ export enum ActionCode {
 export enum HandPresenceState {
     HAND_FOUND,
     HANDS_LOST,
+    PROCESSED,
+}
+
+// Enum: InteractionZoneState
+// HAND_ENTERED - Sent when the "active" hand enters the interaction zone
+// HAND_EXITED - Sent when the "active" hand leaves the interaction zone
+export enum InteractionZoneState {
+    HAND_ENTERED,
+    HAND_EXITED,
     PROCESSED,
 }
 
@@ -88,6 +99,16 @@ export class HandPresenceEvent {
 
     constructor(_state: HandPresenceState) {
         this.state = _state;
+    }
+}
+
+// Class: InteractionZoneEvent
+// This data structure is used to receive interaction zone requests
+export class InteractionZoneEvent {
+    state: InteractionZoneState;
+
+    constructor(state: InteractionZoneState) {
+        this.state = state;
     }
 }
 

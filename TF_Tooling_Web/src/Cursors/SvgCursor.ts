@@ -1,4 +1,5 @@
-import { ConnectionManager } from '../Connection/ConnectionManager';
+import TouchFree from 'TouchFree/src/TouchFree';
+
 import { InputType, TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { MapRangeToRange } from '../Utilities';
 import { TouchlessCursor } from './TouchlessCursor';
@@ -32,6 +33,7 @@ export class SVGCursor extends TouchlessCursor {
         svgElement.style.left = '0px';
         svgElement.style.zIndex = '1000';
         svgElement.style.pointerEvents = 'none';
+        svgElement.style.transition = 'opacity 0.5s linear';
         svgElement.setAttribute('width', '100%');
         svgElement.setAttribute('height', '100%');
         svgElement.setAttribute('shape-rendering', 'optimizeSpeed');
@@ -78,8 +80,10 @@ export class SVGCursor extends TouchlessCursor {
 
         this.ringSizeMultiplier = ringSizeMultiplier;
 
-        ConnectionManager.instance.addEventListener('HandFound', this.ShowCursor.bind(this));
-        ConnectionManager.instance.addEventListener('HandsLost', this.HideCursor.bind(this));
+        TouchFree.RegisterEventCallback('HandFound', this.ShowCursor.bind(this));
+        TouchFree.RegisterEventCallback('HandsLost', this.HideCursor.bind(this));
+        TouchFree.RegisterEventCallback('HandEntered', this.ShowCursor.bind(this));
+        TouchFree.RegisterEventCallback('HandExited', this.HideCursor.bind(this));
     }
 
     // Function: UpdateCursor
