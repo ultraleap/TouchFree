@@ -3,8 +3,9 @@ $app-margin-left: calc((100% - $app-width) / 2);
 $app-background-color: #222222;
 $ultraleap-green: #00eb85;
 $ultraleap-green-gradient: linear-gradient(180deg, $ultraleap-green, #00ccce);
-$light-grey-gradient: linear-gradient(180deg, #5c5c5c 0%, #454545 100%);
+$light-grey: #5c5c5c;
 $dark-grey: #363636;
+$light-grey-gradient: linear-gradient(180deg, $light-grey 0%, #454545 100%);
 $dark-grey-gradient: linear-gradient(180deg, $dark-grey 0%, #2c2c2c 100%);
 $outline-button-gradient: linear-gradient(180deg, $ultraleap-green, #00cdcf);
 $base-font: MontserratRegular, Arial;
@@ -16,9 +17,10 @@ $header-height: 8vh;
     appBackgroundColor: $app-background-color;
     ultraleapGreen: $ultraleap-green;
     ultraleapGreenGradient: $ultraleap-green-gradient;
+    lightGrey: $light-grey;
+    darkGrey: $dark-grey;
     lightGreyGradient: $light-grey-gradient;
     darkGreyGradient: $dark-grey-gradient;
-    darkGrey: $dark-grey;
     baseFont: $base-font;
 }
 

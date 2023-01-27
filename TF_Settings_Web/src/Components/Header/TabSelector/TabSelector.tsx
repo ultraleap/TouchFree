@@ -1,40 +1,54 @@
 import styles from './TabSelector.module.scss';
 
 import classnames from 'classnames/bind';
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const classes = classnames.bind(styles);
 
 interface TabSelectorProps {
     name: string;
+    tabIndex: number;
+    activeTabIndex: number;
+    setAsActiveTab: (i: number) => void;
     icon?: string;
     hoveredIcon?: string;
 }
 
-const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon }) => {
-    const navigate = useNavigate();
-    const { pathname } = useLocation();
-
+const TabSelector: React.FC<TabSelectorProps> = ({
+    icon,
+    name,
+    hoveredIcon,
+    tabIndex,
+    activeTabIndex,
+    setAsActiveTab,
+}) => {
     const [hovered, setHovered] = useState<boolean>(false);
     const [pressed, setPressed] = useState<boolean>(false);
-    const [isActiveTab, setIsActiveTab] = useState<boolean>(false);
+    const [showDivider, setShowDivider] = useState<boolean>(true);
+
+    const navigate = useNavigate();
+    const isActiveTab = tabIndex === activeTabIndex;
 
     useEffect(() => {
-        setIsActiveTab(pathname.endsWith(name.toLowerCase()));
-    }, [pathname]);
+        setShowDivider(!!icon || isActiveTab || tabIndex + 1 === activeTabIndex);
+    }, [icon, activeTabIndex]);
 
     const handleClick = () => {
         if (!isActiveTab) {
+            setAsActiveTab(tabIndex);
             navigate(`/settings/${name.toLowerCase()}`);
         }
     };
 
     return (
-        <div className={classes('tab')}>
+        <div
+            className={classes('tab', {
+                'tab--active': isActiveTab,
+            })}
+        >
             <button
                 className={classes('tab__button', {
-                    'tab__button--active': isActiveTab,
                     'tab__button--pressed': !isActiveTab && pressed,
                     'tab__button--hovered': !isActiveTab && hovered,
                 })}
@@ -62,13 +76,18 @@ const TabSelector: React.FC<TabSelectorProps> = ({ icon, name, hoveredIcon }) =>
                     hoveredIcon={!isActiveTab && hovered && hoveredIcon ? hoveredIcon : undefined}
                 />
             </button>
+            {<div className={classes('tab__divider', { 'tab__divider--hidden': showDivider })} />}
         </div>
     );
 };
 
-const TabContent: React.FC<TabSelectorProps> = ({ name, icon, hoveredIcon }) => {
-    // return <span>{name}</span>;
+interface TabContentProps {
+    name: string;
+    icon?: string;
+    hoveredIcon?: string;
+}
 
+const TabContent: React.FC<TabContentProps> = ({ name, icon, hoveredIcon }) => {
     if (!icon) return <span>{name}</span>;
 
     return <img className={classes('tab__button__icon')} src={hoveredIcon ?? icon} />;
