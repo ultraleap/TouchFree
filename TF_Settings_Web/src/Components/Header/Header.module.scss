@@ -2,10 +2,10 @@
 
 .header {
     background-image: linear-gradient(270deg, #3c3c3c, #2f2f2f);
+    position: sticky;
+    top: 0;
 
     &__top {
-        position: sticky;
-        top: 0;
         height: v.$header-height;
         z-index: 1;
         display: grid;

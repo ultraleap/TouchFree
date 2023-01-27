@@ -6,11 +6,9 @@
     justify-content: space-between;
     align-items: center;
 
-    .misc-button-container {
+    > button {
         @media (orientation: landscape) {
-            button {
-                margin: 0 1vw;
-            }
+            margin: 0 1vw;
         }
     }
 }
@@ -18,20 +16,26 @@
 .container {
     margin: 0 2vw;
 
-    .section-container {
+    .section {
         @media (orientation: landscape) {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2vw;
+            gap: 0 2vw;
         }
     }
 
-    .horizontalContainer {
+    .two-cols {
         display: grid;
-        grid-template-columns: auto auto;
+        grid-template-columns: 1fr 1fr;
         gap: 2vw;
         align-items: center;
     }
+}
+
+.cursor-preview {
+    background-color: paleturquoise;
+    height: 95%;
+    border-radius: 0.5rem;
 }
 
 .page-divider {

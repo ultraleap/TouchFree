@@ -11,13 +11,12 @@ interface TextSliderProps {
     name: string;
     rangeMin: number;
     rangeMax: number;
+    stepSize?: number;
     leftLabel: string;
     rightLabel: string;
     value: number;
     onChange: (newValue: number) => void;
 }
-
-const stepSize = 0.05;
 
 const TextSlider: React.FC<TextSliderProps> = ({
     name,
@@ -27,6 +26,7 @@ const TextSlider: React.FC<TextSliderProps> = ({
     rightLabel,
     value,
     onChange,
+    stepSize = 0.05,
 }) => {
     const [isDragging, setDragging] = useState<boolean>(false);
     const inputElement = useRef<HTMLInputElement>(null);
