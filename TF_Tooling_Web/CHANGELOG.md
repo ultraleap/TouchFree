@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OnServiceStatusChange` event - provides data about the status of the TouchFree Service whenever it changes.
 - `WhenConnected` event - functions identically to `OnConnected` but will dispatch an event immediately if already connected to the TouchFree Service.
 - `IsConnected` function exported as part of the top level `TouchFree` object for querying whether or not the client is connected to the TouchFree Service.
+- `HandEntered` event disptached when the active hand enters the interaction zone (if enabled).
+- `HandExited` event disptached when the active hand exits the interaction zone (if enabled).
 
 ### Deprecated
 
