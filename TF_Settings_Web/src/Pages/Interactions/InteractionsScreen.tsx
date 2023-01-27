@@ -107,7 +107,10 @@ const InteractionsScreen = () => {
                             rightLabel="1s"
                             value={config.HoverAndHold.HoverStartTimeS}
                             onChange={(value) =>
-                                dispatch({ type: 'update', content: { HoverAndHold: { HoverStartTimeS: value } } })
+                                dispatch({
+                                    type: 'update',
+                                    content: { HoverAndHold: { ...config.HoverAndHold, HoverStartTimeS: value } },
+                                })
                             }
                         />
                         <TextSlider
@@ -119,7 +122,10 @@ const InteractionsScreen = () => {
                             rightLabel="1s"
                             value={config.HoverAndHold.HoverCompleteTimeS}
                             onChange={(value) =>
-                                dispatch({ type: 'update', content: { HoverAndHold: { HoverCompleteTimeS: value } } })
+                                dispatch({
+                                    type: 'update',
+                                    content: { HoverAndHold: { ...config.HoverAndHold, HoverCompleteTimeS: value } },
+                                })
                             }
                         />
                     </>
@@ -146,7 +152,9 @@ const InteractionsScreen = () => {
                             onChange={(value) =>
                                 dispatch({
                                     type: 'update',
-                                    content: { TouchPlane: { TouchPlaneActivationDistanceCm: value } },
+                                    content: {
+                                        TouchPlane: { ...config.TouchPlane, TouchPlaneActivationDistanceCm: value },
+                                    },
                                 })
                             }
                         />
@@ -159,7 +167,10 @@ const InteractionsScreen = () => {
                                 dispatch({
                                     type: 'update',
                                     content: {
-                                        TouchPlane: { TouchPlaneTrackedPosition: TouchPlaneTrackingOptions[value] },
+                                        TouchPlane: {
+                                            ...config.TouchPlane,
+                                            TouchPlaneTrackedPosition: TouchPlaneTrackingOptions[value],
+                                        },
                                     },
                                 })
                             }

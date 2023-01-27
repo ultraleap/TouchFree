@@ -3,7 +3,7 @@ import DocsLink from './DocsLink/DocsLink';
 import Header from './Header/Header';
 import { RadioLine, RadioGroup } from './Radio/RadioButtons';
 import { Slider } from './Slider/Slider';
-import { TextSlider } from './Slider/TextSlider';
+import TextSlider from './Slider/TextSlider';
 import {
     TextButton,
     VerticalIconTextButton,
