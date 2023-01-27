@@ -69,7 +69,8 @@ namespace Ultraleap.TouchFree.Library.Connections
             ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE,
             ActionCode.QUICK_SETUP_RESPONSE,
             ActionCode.TRACKING_STATE,
-            ActionCode.QUICK_SETUP_CONFIG
+            ActionCode.QUICK_SETUP_CONFIG,
+            ActionCode.INTERACTION_ZONE_EVENT,
         };
 
         public static bool ExpectedToBeHandled(this ActionCode actionCode)
