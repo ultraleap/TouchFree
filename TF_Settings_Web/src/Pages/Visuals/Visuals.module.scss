@@ -59,3 +59,32 @@
 .page-divider {
     @include App.page-divider;
 }
+
+.color-picker {
+    @extend .input-label-container;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    height: 20vh;
+    display: grid;
+    grid-template-rows: 0.2fr 0.8fr;
+
+    &__tabs {
+        > div {
+            border-radius: 0.5rem 0.5rem 0 0;
+            > button {
+                font-size: 1.5rem;
+            }
+        }
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    &__body {
+        position: relative;
+        left: 2.5%;
+        height: 90%;
+        width: 95%;
+        gap: 0.5rem;
+    }
+}

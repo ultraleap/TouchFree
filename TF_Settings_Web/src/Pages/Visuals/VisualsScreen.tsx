@@ -1,9 +1,9 @@
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { useIsLinux } from '@/customHooks';
+import { useIsLinux, useStatefulRef } from '@/customHooks';
 
 import {
     DocsLink,
@@ -15,22 +15,34 @@ import {
     TextSlider,
 } from '@/Components';
 
-import ColorPicker from './ColorPicker';
+import ColorPicker, { CursorSectionColors } from './ColorPicker';
 
 const classes = classNames.bind(styles);
 
-const StylePresets: string[] = ['Recommended (Light)', 'Recommended (Dark)', 'Solid (Light)', 'Solid (Dark)', 'Custom'];
-const CloseCtiOptions: string[] = ['Users Hand Present', 'User Performs Interaction'];
+const StylePresets = ['Recommended (Light)', 'Recommended (Dark)', 'Solid (Light)', 'Solid (Dark)', 'Custom'];
+const CloseCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
     if (useIsLinux()) return <></>;
-
-    const [currentStyleIndex, setCurrentStyleIndex] = useState<number>(0);
+    const [currentStyleIndex, setCurrentStyleIndex] = useState<number>(4);
     const [size, setSize] = useState<number>(0.5);
     const [ringThickness, setRingThickness] = useState<number>(0.15);
     const [ctiEnabled, setCtiEnabled] = useState<boolean>(true);
     const [ctiTriggerTime, setCtiTriggerTime] = useState<number>(10);
     const [ctiCloseOptionIndex, setCtiCloseOptionIndex] = useState<number>(0);
+
+    const cursorColors = useStatefulRef<CursorSectionColors>({
+        'Center Border': '#f8b195ff',
+        'Center Fill': '#f67280ff',
+        'Outer Border': '#c06c84ff',
+        'Outer Fill': '#6c5b7bff',
+    });
+
+    useEffect(() => {
+        return () => {
+            console.log('UPDATE FILE');
+        };
+    }, []);
 
     return (
         <div className={classes('container')}>
@@ -56,7 +68,12 @@ const VisualsScreen: React.FC = () => {
                     />
                     <div className={classes('cursor-preview')}></div>
                 </div>
-                <ColorPicker />
+                {StylePresets[currentStyleIndex] === 'Custom' && (
+                    <ColorPicker
+                        cursorColors={cursorColors.current}
+                        updateCursorColors={(colors) => (cursorColors.current = colors)}
+                    />
+                )}
                 <TextSlider
                     name="Size (cm)"
                     rangeMin={0.1}
