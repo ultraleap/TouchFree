@@ -22,6 +22,7 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     // SET_TRACKING_STATE - Represents a request to set the current state of the tracking settings
     // TRACKING_STATE - Represents the state of the TouchFree-Controllable Tracking settings, received
     //                  as a response to a GET_TRACKING_STATE or SET_TRACKING_STATE
+    // INTERACTION_ZONE_EVENT - Represents the interaction zone state received from the Service
     internal enum ActionCode
     {
         INPUT_ACTION,
@@ -52,6 +53,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         GET_TRACKING_STATE,
         SET_TRACKING_STATE,
         TRACKING_STATE,
+
+        INTERACTION_ZONE_EVENT
     }
 
     // Enum: HandPresenceState
@@ -63,6 +66,23 @@ namespace Ultraleap.TouchFree.Tooling.Connection
     {
         HAND_FOUND,
         HANDS_LOST,
+        PROCESSED
+    }
+
+    // Enum: HandPresenceState
+    // HAND_ENTERED - Sent when the first hand is found when no hand has been present for a moment
+    // HAND_EXITED - Sent when the last observed hand is lost, meaning no more hands are observed
+    // PROCESSED - Used locally to indicate that no change in state is awaiting processing. See its
+    //             use in <MessageReciever> for more details.
+    public enum InteractionZoneState
+    {
+        HAND_ENTERED,
+        HAND_EXITED,
+    }
+
+    public enum EventStatus 
+    {
+        UNPROCESSED,
         PROCESSED
     }
 
@@ -99,6 +119,25 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         ERRORED
     }
 
+    // Struct EventUpdate
+    // Generic interface for handling events from the service.
+    // state - the received state from the event
+    // status - indicates whether the event has been processed by the service
+    // [Serializable]
+    // public record EventUpdate<T>(T state, EventStatus status);
+    [Serializable]
+    public struct EventUpdate<T>
+    {
+        public T state;
+        public EventStatus status;
+
+        public EventUpdate(T _state, EventStatus _status)
+        {
+            state = _state;
+            status = _status;
+        }
+    }
+
     // Struct HandPresenceEvent
     // This struct is the format events relating to the presence of hands (a hand being found or all
     // hands being lost) are passed across in from the Service.
@@ -108,6 +147,22 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         public HandPresenceState state;
 
         public HandPresenceEvent(HandPresenceState _state)
+        {
+            state = _state;
+        }
+    }
+
+    // Struct InteractionZoneEvent
+    // This struct is the format events relating to the active hand entering or exiting the interaction zone are
+    // passed in from the Service.
+    // [Serializable]
+    // public record InteractionZoneEvent(InteractionZoneState state);
+    [Serializable]
+    public struct InteractionZoneEvent
+    {
+        public InteractionZoneState state;
+
+        public InteractionZoneEvent(InteractionZoneState _state)
         {
             state = _state;
         }

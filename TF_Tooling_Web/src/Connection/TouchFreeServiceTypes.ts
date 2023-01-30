@@ -26,6 +26,7 @@ import { Mask } from '../Tracking/TrackingTypes';
 // HAND_DATA - Represents more complete hand data sent from the service.
 // SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable
 //                              the HAND_DATA stream or change the lens to have the hand position relative to.
+// INTERACTION_ZONE_EVENT - Represents the interaction zone state received from the Service
 export enum ActionCode {
     INPUT_ACTION = 'INPUT_ACTION',
 

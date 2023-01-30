@@ -44,6 +44,14 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // An event allowing users to react to the last hand being lost when one has been present.
         public static event Action HandsLost;
 
+        // Variable: HandEntered
+        // An event allowing users to react to the active hand entering the interaction zone.
+        public static event Action HandEntered;
+
+        // Variable: HandExited
+        // An event allowing users to react to the active hand exiting the interaction zone.
+        public static event Action HandExited;
+
         // Variable: iPAddress
         // The IP Address that will be used in the <ServiceConnection> to connect to the target WebSocket.
         // This value is settable in the Inspector.
@@ -134,6 +142,19 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             else
             {
                 HandsLost?.Invoke();
+            }
+        }
+
+        internal static void HandleInteractionZoneEvent(InteractionZoneState _state)
+        {
+            switch (_state)
+            {
+                case InteractionZoneState.HAND_ENTERED:
+                    HandEntered?.Invoke();
+                    break;
+                case InteractionZoneState.HAND_EXITED:
+                    HandExited?.Invoke();
+                    break;
             }
         }
 
