@@ -15,6 +15,8 @@ import {
     TextSlider,
 } from '@/Components';
 
+import ColorPicker from './ColorPicker';
+
 const classes = classNames.bind(styles);
 
 const StylePresets: string[] = ['Recommended (Light)', 'Recommended (Dark)', 'Solid (Light)', 'Solid (Dark)', 'Custom'];
@@ -27,7 +29,6 @@ const VisualsScreen: React.FC = () => {
     const [size, setSize] = useState<number>(0.5);
     const [ringThickness, setRingThickness] = useState<number>(0.15);
     const [ctiEnabled, setCtiEnabled] = useState<boolean>(true);
-    const [ctiPath, setCtiPath] = useState<boolean>(true);
     const [ctiTriggerTime, setCtiTriggerTime] = useState<number>(10);
     const [ctiCloseOptionIndex, setCtiCloseOptionIndex] = useState<number>(0);
 
@@ -55,6 +56,7 @@ const VisualsScreen: React.FC = () => {
                     />
                     <div className={classes('cursor-preview')}></div>
                 </div>
+                <ColorPicker />
                 <TextSlider
                     name="Size (cm)"
                     rangeMin={0.1}

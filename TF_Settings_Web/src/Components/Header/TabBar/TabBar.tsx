@@ -20,21 +20,24 @@ const TabBar = () => {
             <TabSelector
                 name="Camera"
                 tabIndex={0}
+                redirect
                 activeTabIndex={activeTabIndex}
-                setAsActiveTab={(i) => setActiveTabIndex(i)}
+                setAsActiveTab={setActiveTabIndex}
             />
             <TabSelector
                 name="Interactions"
                 tabIndex={1}
+                redirect
                 activeTabIndex={activeTabIndex}
-                setAsActiveTab={(i) => setActiveTabIndex(i)}
+                setAsActiveTab={setActiveTabIndex}
             />
             {showVisualsTab && (
                 <TabSelector
                     name="Visuals"
                     tabIndex={2}
+                    redirect
                     activeTabIndex={activeTabIndex}
-                    setAsActiveTab={(i) => setActiveTabIndex(i)}
+                    setAsActiveTab={setActiveTabIndex}
                 />
             )}
             <TabSelector
@@ -42,8 +45,10 @@ const TabBar = () => {
                 icon={GearIcon}
                 hoveredIcon={GearIconGlow}
                 tabIndex={showVisualsTab ? 3 : 2}
+                redirect
+                forceHideDivider
                 activeTabIndex={activeTabIndex}
-                setAsActiveTab={(i) => setActiveTabIndex(i)}
+                setAsActiveTab={setActiveTabIndex}
             />
         </div>
     );

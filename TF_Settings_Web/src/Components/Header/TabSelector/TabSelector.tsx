@@ -13,6 +13,8 @@ interface TabSelectorProps {
     setAsActiveTab: (i: number) => void;
     icon?: string;
     hoveredIcon?: string;
+    redirect?: boolean;
+    forceHideDivider?: boolean;
 }
 
 const TabSelector: React.FC<TabSelectorProps> = ({
@@ -22,22 +24,27 @@ const TabSelector: React.FC<TabSelectorProps> = ({
     tabIndex,
     activeTabIndex,
     setAsActiveTab,
+    redirect = false,
+    forceHideDivider = false,
 }) => {
     const [hovered, setHovered] = useState<boolean>(false);
     const [pressed, setPressed] = useState<boolean>(false);
-    const [showDivider, setShowDivider] = useState<boolean>(true);
+    const [showDivider, setShowDivider] = useState<boolean>(forceHideDivider);
 
     const navigate = useNavigate();
     const isActiveTab = tabIndex === activeTabIndex;
 
     useEffect(() => {
-        setShowDivider(!!icon || isActiveTab || tabIndex + 1 === activeTabIndex);
+        if (forceHideDivider) return;
+        setShowDivider(isActiveTab || tabIndex + 1 === activeTabIndex);
     }, [icon, activeTabIndex]);
 
     const handleClick = () => {
         if (!isActiveTab) {
             setAsActiveTab(tabIndex);
-            navigate(`/settings/${name.toLowerCase()}`);
+            if (redirect) {
+                navigate(`/settings/${name.toLowerCase()}`);
+            }
         }
     };
 

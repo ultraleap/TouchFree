@@ -1,0 +1,25 @@
+@use '@/variables.module.scss' as v;
+@use '@/Pages/Interactions/Interactions.module.scss';
+
+.color-picker {
+    @extend .input-label-container;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    height: 20vh;
+    display: grid;
+    grid-template-rows: 0.2fr 0.8fr;
+
+    &__tabs {
+        > div {
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    &__body {
+        height: 100%;
+        background-color: palegoldenrod;
+    }
+}
