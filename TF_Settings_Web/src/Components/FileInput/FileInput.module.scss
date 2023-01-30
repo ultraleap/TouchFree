@@ -1,0 +1,32 @@
+@use '@/variables.module.scss' as v;
+
+.label {
+    margin-left: 0.75rem;
+}
+
+.container {
+    height: 80%;
+    width: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-right: 0.8rem;
+
+    background: v.$light-grey-gradient;
+    box-shadow: 0px 2px 5px #00000080;
+    border-radius: 25px;
+
+    &__input {
+        display: none;
+    }
+
+    &__path {
+        padding-left: 2rem;
+    }
+
+    &__icon {
+        margin-top: 0.5%;
+        height: 60px;
+        padding-right: 0.4rem;
+    }
+}

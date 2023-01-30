@@ -5,7 +5,15 @@ import React, { useState } from 'react';
 
 import { useIsLinux } from '@/customHooks';
 
-import { LabelledToggleSwitch, OutlinedTextButton, RadioGroup, RadioLine, TextSlider } from '@/Components';
+import {
+    DocsLink,
+    FileInput,
+    LabelledToggleSwitch,
+    OutlinedTextButton,
+    RadioGroup,
+    RadioLine,
+    TextSlider,
+} from '@/Components';
 
 const classes = classNames.bind(styles);
 
@@ -19,6 +27,7 @@ const VisualsScreen: React.FC = () => {
     const [size, setSize] = useState<number>(0.5);
     const [ringThickness, setRingThickness] = useState<number>(0.15);
     const [ctiEnabled, setCtiEnabled] = useState<boolean>(true);
+    const [ctiPath, setCtiPath] = useState<boolean>(true);
     const [ctiTriggerTime, setCtiTriggerTime] = useState<number>(10);
     const [ctiCloseOptionIndex, setCtiCloseOptionIndex] = useState<number>(0);
 
@@ -28,6 +37,14 @@ const VisualsScreen: React.FC = () => {
                 <h1> Cursor Styles </h1>
                 <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET STYLES')} />
             </div>
+            <label className={classes('label-container')}>
+                <p className={classes('label-container__label')}>
+                    Visuals affects Overlay application only.
+                    <br />
+                    To update the cursor in web, use TouchFree Tooling
+                </p>
+                <DocsLink title={'Find out More'} url={'https://developer.leapmotion.com/touchfree-tooling-for-web'} />
+            </label>
             <div className={classes('section')}>
                 <div className={classes('two-cols')}>
                     <RadioGroup
@@ -66,6 +83,12 @@ const VisualsScreen: React.FC = () => {
                 <LabelledToggleSwitch name="Enable Call to Interact" value={ctiEnabled} onChange={setCtiEnabled} />
                 {ctiEnabled && (
                     <>
+                        <FileInput
+                            name="Call to Interact File"
+                            value="1 Push in mid-air to start.mp4"
+                            acceptedFileTypes="video/*"
+                            onChange={(e) => console.log(e.target.value)}
+                        />
                         <TextSlider
                             name="Inactivity Activation"
                             rangeMin={5}

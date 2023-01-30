@@ -1,5 +1,6 @@
 @use '@/variables.module.scss' as v;
 @use '@/App.module.scss';
+@use '@/Pages/Interactions/Interactions.module.scss';
 
 .title-line {
     @include App.title-line;
@@ -13,6 +14,23 @@
     }
 }
 
+.label-container {
+    @extend .input-label-container;
+    height: 7rem;
+
+    &__label {
+        margin-left: 0.75rem;
+        color: v.$ultraleap-green;
+        margin-left: 0.75rem;
+        font-size: 1.7rem;
+        max-height: none;
+    }
+
+    > button {
+        margin-right: 0.75rem;
+    }
+}
+
 .container {
     margin: 0 2vw;
 
@@ -22,13 +40,13 @@
             grid-template-columns: 1fr 1fr;
             gap: 0 2vw;
         }
-    }
 
-    .two-cols {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2vw;
-        align-items: center;
+        .two-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2vw;
+            align-items: center;
+        }
     }
 }
 

@@ -8,6 +8,7 @@ import ManualSetupIcon from './Camera/Manual_Setup_Icon.svg';
 import QuickSetupIcon from './Camera/Quick_Setup_Icon.svg';
 import CameraStatusIcon from './Camera_Status_Icon.png';
 import DownArrow from './Down_Arrow.svg';
+import FileIcon from './File_Icon.svg';
 import GearIcon from './Gear_Icon.png';
 import GearIconGlow from './Gear_Icon_Glow.png';
 import HandIcon from './Hand_Icon.svg';
@@ -28,4 +29,5 @@ export {
     QuickSetupIcon,
     GearIcon,
     GearIconGlow,
+    FileIcon,
 };
