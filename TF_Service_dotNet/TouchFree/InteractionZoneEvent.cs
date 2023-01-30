@@ -4,15 +4,7 @@ namespace Ultraleap.TouchFree.Library
 {
 
     [Serializable]
-    public struct InteractionZoneEvent
-    {
-        public InteractionZoneState state;
-
-        public InteractionZoneEvent(InteractionZoneState _state)
-        {
-            state = _state;
-        }
-    }
+    public record struct InteractionZoneEvent(InteractionZoneState state);
 
     public enum InteractionZoneState
     {
