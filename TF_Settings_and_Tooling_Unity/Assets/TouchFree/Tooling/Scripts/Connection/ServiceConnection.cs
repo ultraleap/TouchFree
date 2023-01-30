@@ -155,8 +155,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
                     break;
 
                 case ActionCode.INTERACTION_ZONE_EVENT:
-                    InteractionZoneState interactionZoneState = JsonUtility.FromJson<InteractionZoneState>(content);
-                    ConnectionManager.messageReceiver.interactionZoneUpdate = new EventUpdate<InteractionZoneState>(interactionZoneState, EventStatus.UNPROCESSED);
+                    InteractionZoneEvent interactionZoneEvent = JsonUtility.FromJson<InteractionZoneEvent>(content);
+                    ConnectionManager.messageReceiver.interactionZoneUpdate = new EventUpdate<InteractionZoneState>(interactionZoneEvent.state, EventStatus.UNPROCESSED);
                     break;
             }
         }
