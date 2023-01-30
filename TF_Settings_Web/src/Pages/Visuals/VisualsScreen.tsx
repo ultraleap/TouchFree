@@ -1,7 +1,7 @@
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { useIsLinux, useStatefulRef } from '@/customHooks';
 
@@ -24,6 +24,8 @@ const CloseCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
     if (useIsLinux()) return <></>;
+    const previewContainer = useRef<HTMLDivElement>(null);
+
     const [currentStyleIndex, setCurrentStyleIndex] = useState<number>(4);
     const [size, setSize] = useState<number>(0.5);
     const [ringThickness, setRingThickness] = useState<number>(0.15);
@@ -37,6 +39,16 @@ const VisualsScreen: React.FC = () => {
         'Outer Border': '#c06c84ff',
         'Outer Fill': '#6c5b7bff',
     });
+
+    useEffect(() => {
+        const style = previewContainer.current?.style;
+        if (!style) return;
+
+        style.setProperty('--outer-fill', cursorColors.current['Outer Fill']);
+        style.setProperty('--outer-border', cursorColors.current['Outer Border']);
+        style.setProperty('--center-fill', cursorColors.current['Center Fill']);
+        style.setProperty('--center-border', cursorColors.current['Center Border']);
+    }, [cursorColors.current]);
 
     useEffect(() => {
         return () => {
@@ -66,7 +78,7 @@ const VisualsScreen: React.FC = () => {
                         options={StylePresets}
                         onChange={(preset) => setCurrentStyleIndex(StylePresets.indexOf(preset))}
                     />
-                    <div className={classes('cursor-preview')}></div>
+                    <div ref={previewContainer} className={classes('cursor-preview')} />
                 </div>
                 {StylePresets[currentStyleIndex] === 'Custom' && (
                     <ColorPicker

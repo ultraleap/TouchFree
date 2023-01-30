@@ -50,10 +50,24 @@
     }
 }
 
+@function createCircle($start, $width, $color: #ffff33) {
+    @return radial-gradient(
+        circle at 50% 50%,
+        transparent $start,
+        $color calc($start + 1%),
+        $color $start + $width,
+        transparent calc($start + $width + 1%)
+    );
+}
+
 .cursor-preview {
     background-color: paleturquoise;
     height: 95%;
     border-radius: 0.5rem;
+
+    background-image: createCircle(45%, 7%, var(--outer-fill)), createCircle(43%, 2%, var(--outer-border)),
+        createCircle(52%, 2%, var(--outer-border)), createCircle(-1%, 25%, var(--center-fill)),
+        createCircle(24%, 2.5%, var(--center-border));
 }
 
 .page-divider {
