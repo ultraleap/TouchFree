@@ -29,6 +29,8 @@ export class WebInputController extends BaseInputController {
     private scrollDirection: ScrollDirection | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
 
+    private readonly noScrollClassName: string = 'touchfree-no-scroll';
+
     // Group: Methods
 
     // Function: constructor
@@ -149,7 +151,7 @@ export class WebInputController extends BaseInputController {
                 this.ResetScrollData();
                 this.elementsOnDown = this.clickableElementsAtPosition(elementsAtPoint);
                 this.scrollElementsOnDown = this.elementsOnDown.filter(
-                    (e) => !e.classList.contains('touchfree-no-scroll')
+                    (e) => !e.classList.contains(this.noScrollClassName)
                 );
 
                 this.lastPosition = _inputData.CursorPosition;
@@ -298,13 +300,21 @@ export class WebInputController extends BaseInputController {
             let parentSelected = false;
             let parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
             while (parentAsHtmlElement) {
-                if (!parentScrollValidation(elementToCheckScroll, parentAsHtmlElement)) {
+                const parentIsNoScroll = parentAsHtmlElement.classList.contains(this.noScrollClassName);
+                const elementIsNoScroll = elementToCheckScroll.classList.contains(this.noScrollClassName);
+                const scrollValid = parentScrollValidation(elementToCheckScroll, parentAsHtmlElement);
+
+                if (!parentIsNoScroll && !elementIsNoScroll && !scrollValid) {
                     break;
                 }
 
-                parentSelected = true;
-                elementToCheckScroll = parentAsHtmlElement;
-                parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+                if (parentIsNoScroll) {
+                    parentAsHtmlElement = parentAsHtmlElement.parentElement as HTMLElement;
+                } else {
+                    parentSelected = true;
+                    elementToCheckScroll = parentAsHtmlElement;
+                    parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+                }
             }
 
             if (parentSelected && !scrollValidation(elementToCheckScroll)) continue;
