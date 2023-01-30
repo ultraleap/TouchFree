@@ -22,6 +22,7 @@ import {
     TrackingStateResponse,
     WebSocketResponse,
     InteractionZoneState,
+    EventUpdate,
 } from './TouchFreeServiceTypes';
 
 // Class: MessageReceiver
@@ -85,11 +86,14 @@ export class MessageReceiver {
 
     // Variable: lastStateUpdate
     // The last hand presence state update received from the Service.
-    lastStateUpdate: HandPresenceState;
+    lastStateUpdate: HandPresenceState = HandPresenceState.PROCESSED;
 
     // Variable: lastInteractionZoneUpdate
-    // The last interaction zone state update received from the Service.
-    lastInteractionZoneUpdate: InteractionZoneState;
+    // The last interaction zone event update received from the Service.
+    lastInteractionZoneUpdate: EventUpdate<InteractionZoneState> = {
+        state: InteractionZoneState.HAND_EXITED,
+        status: 'PROCESSED',
+    };
 
     // Variable: trackingStateQueue
     // A queue of <TrackingStates> that have been received from the Service.
@@ -120,8 +124,6 @@ export class MessageReceiver {
     // Starts the two regular intervals managed for this (running <ClearUnresponsiveCallbacks> on an
     // interval of <callbackClearTimer> and <Update> on an interval of updateDuration
     constructor() {
-        this.lastStateUpdate = HandPresenceState.PROCESSED;
-        this.lastInteractionZoneUpdate = InteractionZoneState.PROCESSED;
         this.updateDuration = (1 / this.updateRate) * 1000;
 
         this.callbackClearInterval = setInterval(
@@ -317,9 +319,9 @@ export class MessageReceiver {
             this.lastStateUpdate = HandPresenceState.PROCESSED;
         }
 
-        if (this.lastInteractionZoneUpdate !== InteractionZoneState.PROCESSED) {
-            ConnectionManager.HandleInteractionZoneEvent(this.lastInteractionZoneUpdate);
-            this.lastInteractionZoneUpdate = InteractionZoneState.PROCESSED;
+        if (this.lastInteractionZoneUpdate.status === 'UNPROCESSED') {
+            ConnectionManager.HandleInteractionZoneEvent(this.lastInteractionZoneUpdate.state);
+            this.lastInteractionZoneUpdate.status = 'PROCESSED';
         }
     }
 

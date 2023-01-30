@@ -62,6 +62,8 @@ export enum ActionCode {
     INTERACTION_ZONE_EVENT = 'INTERACTION_ZONE_EVENT',
 }
 
+export type EventStatus = 'PROCESSED' | 'UNPROCESSED';
+
 // Enum: HandPresenceState
 // HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
 // HANDS_LOST - Sent when the last observed hand is lost, meaning no more hands are observed
@@ -79,7 +81,17 @@ export enum HandPresenceState {
 export enum InteractionZoneState {
     HAND_ENTERED,
     HAND_EXITED,
-    PROCESSED,
+}
+
+// Class: EventUpdate
+// Generic interface for handling events from the service.
+// status - indicates whether the event has been processed by the service
+// state - the received state from the event
+export interface EventUpdate<T> {
+    // Variable: status
+    status: EventStatus;
+    // Variable: state
+    state: T;
 }
 
 // Enum: Compatibility
@@ -104,12 +116,8 @@ export class HandPresenceEvent {
 
 // Class: InteractionZoneEvent
 // This data structure is used to receive interaction zone requests
-export class InteractionZoneEvent {
+export interface InteractionZoneEvent {
     state: InteractionZoneState;
-
-    constructor(state: InteractionZoneState) {
-        this.state = state;
-    }
 }
 
 // Class: TouchFreeRequestCallback

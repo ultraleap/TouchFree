@@ -133,7 +133,7 @@ export class ServiceConnection {
 
         const looseData: CommunicationWrapper<unknown> = JSON.parse(_message.data);
 
-        switch (looseData.action as ActionCode) {
+        switch (looseData.action) {
             case ActionCode.INPUT_ACTION: {
                 const wsInput = looseData.content as WebsocketInputAction;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
@@ -176,8 +176,8 @@ export class ServiceConnection {
             }
 
             case ActionCode.INTERACTION_ZONE_EVENT: {
-                const interactionZoneEvent = looseData.content as InteractionZoneEvent;
-                ConnectionManager.messageReceiver.lastInteractionZoneUpdate = interactionZoneEvent.state;
+                const { state } = looseData.content as InteractionZoneEvent;
+                ConnectionManager.messageReceiver.lastInteractionZoneUpdate = { status: 'UNPROCESSED', state: state };
                 break;
             }
         }
