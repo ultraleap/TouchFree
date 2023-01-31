@@ -21,6 +21,7 @@ It contains the following features:
 ### Requirements
 
 -   [NodeJS](https://nodejs.dev/)
+-   [Rust + Build tools](https://tauri.app/v1/guides/getting-started/prerequisites)
 
 ### Usage
 
