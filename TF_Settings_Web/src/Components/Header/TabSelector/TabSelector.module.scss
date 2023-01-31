@@ -1,17 +1,22 @@
 @use '@/variables.module.scss' as v;
 
 .tab {
+    --tab-bg: transparent;
+    --tab-bg-active: #{v.$app-background-color};
+
+    &--light {
+        --tab-bg: #{v.$app-background-color};
+        --tab-bg-active: #{v.$dark-grey-gradient};
+    }
+
     display: flex;
     border-radius: 1.2rem 1.2rem 0 0;
     user-select: none;
 
-    &--active {
-        background-color: v.$app-background-color;
-    }
-
+    background: var(--tab-bg);
     &__button {
-        flex-grow: 1;
         background-color: transparent;
+        flex-grow: 1;
         border: none;
 
         font-family: v.$base-font;
@@ -30,6 +35,10 @@
         &--pressed {
             text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff, 0 0 50px #fff;
         }
+    }
+
+    &--active {
+        background: var(--tab-bg-active);
     }
 
     &__divider {

@@ -15,6 +15,7 @@ interface TabSelectorProps {
     hoveredIcon?: string;
     redirect?: boolean;
     forceHideDivider?: boolean;
+    scheme?: 'light' | 'dark';
 }
 
 const TabSelector: React.FC<TabSelectorProps> = ({
@@ -26,6 +27,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({
     setAsActiveTab,
     redirect = false,
     forceHideDivider = false,
+    scheme = 'dark',
 }) => {
     const [hovered, setHovered] = useState<boolean>(false);
     const [pressed, setPressed] = useState<boolean>(false);
@@ -51,6 +53,7 @@ const TabSelector: React.FC<TabSelectorProps> = ({
     return (
         <div
             className={classes('tab', {
+                'tab--light': scheme === 'light',
                 'tab--active': isActiveTab,
             })}
         >

@@ -1,14 +1,10 @@
-import './ReactColorful.scss';
-import styles from './Visuals.module.scss';
+import './ColorPicker.scss';
 
-import classNames from 'classnames/bind';
 import React, { useState } from 'react';
 import { useMemo } from 'react';
 import { HexAlphaColorPicker } from 'react-colorful';
 
 import { TabSelector } from '@/Components/Header';
-
-const classes = classNames.bind(styles);
 
 export const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
 
@@ -33,29 +29,28 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorColors, updateCursorCol
     };
 
     return (
-        <div className={classes('color-picker')}>
-            <div className={classes('color-picker__tabs')}>
+        <div className={'color-picker'}>
+            <div className={'color-picker__tabs'}>
                 {cursorSections.map((name, index) => (
                     <TabSelector
                         name={name}
                         key={index}
                         tabIndex={index}
+                        scheme={'light'}
                         forceHideDivider={index === cursorSections.length - 1}
                         activeTabIndex={activeTabIndex}
                         setAsActiveTab={setActiveTabIndex}
                     />
                 ))}
             </div>
-            <div className={classes('color-picker__body')} id="color-picker">
+            <div className={'color-picker__body'}>
                 <HexAlphaColorPicker color={cursorColors[currentSection]} onChange={setCurrentColor} />
-                <div>
-                    <input
-                        type="text"
-                        id="color-picker__text"
-                        value={cursorColors[currentSection]}
-                        onChange={(e) => setCurrentColor(e.target.value)}
-                    />
-                </div>
+                <input
+                    type="text"
+                    className={'color-picker__body__text'}
+                    value={cursorColors[currentSection]}
+                    onChange={(e) => setCurrentColor(e.target.value)}
+                />
             </div>
         </div>
     );

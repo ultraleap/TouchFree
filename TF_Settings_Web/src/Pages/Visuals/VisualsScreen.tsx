@@ -49,9 +49,7 @@ const VisualsScreen: React.FC = () => {
     }, [cursorColors.current]);
 
     useEffect(() => {
-        return () => {
-            console.log('UPDATE FILE');
-        };
+        return () => {};
     }, []);
 
     return (
