@@ -18,8 +18,8 @@ import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 
 import cssVariables from '@/variables.module.scss';
 
-import { FingerType } from 'TouchFree/src/TouchFreeToolingTypes';
-import { MapRangeToRange } from 'TouchFree/src/Utilities';
+import { FingerType } from 'touchfree/src/TouchFreeToolingTypes';
+import { MapRangeToRange } from 'touchfree/src/Utilities';
 
 import { FingerData, HandData, HandState } from './createHandData';
 

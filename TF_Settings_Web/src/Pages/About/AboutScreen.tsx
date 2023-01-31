@@ -5,9 +5,9 @@ import React, { useState, useEffect } from 'react';
 
 import { useIsLinux } from '@/customHooks';
 
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import TouchFree from 'TouchFree/src/TouchFree';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'touchfree/src/TouchFree';
 
 import { TextButton } from '@/Components';
 import { TabBar } from '@/Components/TopBar';
@@ -74,7 +74,7 @@ const AboutScreen: React.FC = () => {
                             <InfoButtonEntry
                                 title="TouchFree Log Files"
                                 buttonTitle="Show TouchFree Log Files"
-                                onClick={() => console.log('C:/ProgramData/Ultraleap/TouchFree/Logs')}
+                                onClick={() => console.log('C:/ProgramData/Ultraleap/touchfree/src/Logs')}
                             />
                         </div>
                     </>

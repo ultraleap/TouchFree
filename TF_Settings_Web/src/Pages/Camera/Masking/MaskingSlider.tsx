@@ -3,8 +3,8 @@ import styles from './CameraMasking.module.scss';
 import classnames from 'classnames/bind';
 import React, { PointerEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { Mask } from 'touchfree/src/Tracking/TrackingTypes';
 
 const classes = classnames.bind(styles);
 
