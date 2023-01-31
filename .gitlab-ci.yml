@@ -353,12 +353,13 @@ TF_Settings::Web::build:
     - npm install -w TF_Settings_Web
     - npm ls
     - cd ./TF_Settings_Web
-    - npm run build
+    - npm run tauri build
     - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol posix
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - ./TF_Settings_Web/dist/*
+    - ./TF_Settings_Web/src-tauri/target/release/*.exe
     expire_in: 2 weeks
     when: always
   tags:
