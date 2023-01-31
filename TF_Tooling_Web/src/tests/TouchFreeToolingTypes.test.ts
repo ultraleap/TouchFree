@@ -1,4 +1,11 @@
-import { BitmaskFlags, FlagUtilities, HandChirality, HandType, InputType, InteractionType } from '../TouchFreeToolingTypes';
+import {
+    BitmaskFlags,
+    FlagUtilities,
+    HandChirality,
+    HandType,
+    InputType,
+    InteractionType,
+} from '../TouchFreeToolingTypes';
 
 // TODO: Generate enum values from types themselves?
 
@@ -7,28 +14,18 @@ const interactionTypes: InteractionType[] = [
     InteractionType.HOVER,
     InteractionType.PUSH,
     InteractionType.TOUCHPLANE,
-    InteractionType.VELOCITYSWIPE
+    InteractionType.VELOCITYSWIPE,
 ];
-const handTypes: HandType[] = [
-    HandType.PRIMARY,
-    HandType.SECONDARY
-];
-const handChiralities: HandChirality[] = [
-    HandChirality.LEFT,
-    HandChirality.RIGHT
-];
-const inputTypes: InputType[] = [
-    InputType.CANCEL,
-    InputType.DOWN,
-    InputType.MOVE,
-    InputType.NONE,
-    InputType.UP
-];
+const handTypes: HandType[] = [HandType.PRIMARY, HandType.SECONDARY];
+const handChiralities: HandChirality[] = [HandChirality.LEFT, HandChirality.RIGHT];
+const inputTypes: InputType[] = [InputType.CANCEL, InputType.DOWN, InputType.MOVE, InputType.NONE, InputType.UP];
 
 const allHandChiralityBitmask: BitmaskFlags = BitmaskFlags.LEFT | BitmaskFlags.RIGHT;
 const allHandTypeBitmask: BitmaskFlags = BitmaskFlags.PRIMARY | BitmaskFlags.SECONDARY;
-const allInputTypeBitmask: BitmaskFlags = BitmaskFlags.NONE_INPUT | BitmaskFlags.CANCEL | BitmaskFlags.DOWN | BitmaskFlags.MOVE | BitmaskFlags.UP;
-const allInteractionTypeBitmask: BitmaskFlags = BitmaskFlags.GRAB | BitmaskFlags.HOVER | BitmaskFlags.PUSH | BitmaskFlags.TOUCHPLANE | BitmaskFlags.VELOCITYSWIPE;
+const allInputTypeBitmask: BitmaskFlags =
+    BitmaskFlags.NONE_INPUT | BitmaskFlags.CANCEL | BitmaskFlags.DOWN | BitmaskFlags.MOVE | BitmaskFlags.UP;
+const allInteractionTypeBitmask: BitmaskFlags =
+    BitmaskFlags.GRAB | BitmaskFlags.HOVER | BitmaskFlags.PUSH | BitmaskFlags.TOUCHPLANE | BitmaskFlags.VELOCITYSWIPE;
 const bitmaskFlagParams: BitmaskFlags[] = [
     // The parameters here are hand-written and non-exhaustive as the cost
     // of exhaustive combinations in maintenance and performance is excessive
@@ -64,7 +61,7 @@ const bitmaskFlagParams: BitmaskFlags[] = [
     allInputTypeBitmask,
     allInteractionTypeBitmask,
     // Nothing set
-    BitmaskFlags.NONE
+    BitmaskFlags.NONE,
 ];
 
 describe('BitmaskFlag', () => {
@@ -75,7 +72,6 @@ describe('BitmaskFlag', () => {
             handChiralities,
             inputTypes
         );
-
     });
 
     it('should deserialize hand chirality the same as before', () => {
