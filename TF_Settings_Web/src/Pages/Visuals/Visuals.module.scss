@@ -50,7 +50,7 @@
     }
 }
 
-@function createCircle($start, $width, $color: #ffff33) {
+@function createCircle($start, $width, $color) {
     @return radial-gradient(
         circle at 50% 50%,
         transparent $start,
@@ -65,8 +65,7 @@
     height: 95%;
     border-radius: 0.5rem;
 
-    background-image: createCircle(45%, 7%, var(--outer-fill)), createCircle(43%, 2%, var(--outer-border)),
-        createCircle(52%, 2%, var(--outer-border)), createCircle(-1%, 25%, var(--center-fill)),
+    background-image: createCircle(45%, 7%, var(--outer-fill)), createCircle(-1%, 25%, var(--center-fill)),
         createCircle(24%, 2.5%, var(--center-border));
 }
 
@@ -83,6 +82,7 @@
     grid-template-rows: 0.2fr 0.8fr;
 
     &__tabs {
+        background-color: v.$app-background-color;
         > div {
             border-radius: 0.5rem 0.5rem 0 0;
             > button {
@@ -91,7 +91,7 @@
         }
         height: 100%;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
     }
 
     &__body {

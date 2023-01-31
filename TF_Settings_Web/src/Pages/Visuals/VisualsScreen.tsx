@@ -36,7 +36,6 @@ const VisualsScreen: React.FC = () => {
     const cursorColors = useStatefulRef<CursorSectionColors>({
         'Center Border': '#f8b195ff',
         'Center Fill': '#f67280ff',
-        'Outer Border': '#c06c84ff',
         'Outer Fill': '#6c5b7bff',
     });
 
@@ -45,7 +44,6 @@ const VisualsScreen: React.FC = () => {
         if (!style) return;
 
         style.setProperty('--outer-fill', cursorColors.current['Outer Fill']);
-        style.setProperty('--outer-border', cursorColors.current['Outer Border']);
         style.setProperty('--center-fill', cursorColors.current['Center Fill']);
         style.setProperty('--center-border', cursorColors.current['Center Border']);
     }, [cursorColors.current]);

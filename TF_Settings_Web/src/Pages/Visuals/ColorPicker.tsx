@@ -10,7 +10,7 @@ import { TabSelector } from '@/Components/Header';
 
 const classes = classNames.bind(styles);
 
-export const cursorSections = ['Outer Fill', 'Outer Border', 'Center Fill', 'Center Border'] as const;
+export const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
 
 export type CursorSectionColors = {
     [Property in (typeof cursorSections)[number]]: string;

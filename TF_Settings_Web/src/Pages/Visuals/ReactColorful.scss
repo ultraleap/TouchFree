@@ -2,38 +2,19 @@
 @use '@/Pages/Interactions/Interactions.module.scss';
 
 #color-picker {
+    @mixin left-aligned($index) {
+        left: 0%;
+        height: 15%;
+        width: 45%;
+        position: absolute;
+        border-radius: 10px;
+        top: calc(55% / 4) * ($index + 1) + (15% * $index);
+    }
+
     .react-colorful {
         height: 100%;
         width: 100%;
         display: flex;
-
-        &__saturation {
-            border-bottom: none;
-        }
-
-        // &__saturation {
-        //     margin-left: 5%;
-        //     position: relative;
-        //     width: 45%;
-        //     left: 50%;
-        // }
-
-        // &__hue {
-        //     position: absolute;
-        //     width: 50%;
-        //     top: 10%;
-        // }
-
-        // &__alpha {
-        //     position: absolute;
-        //     width: 50%;
-        //     top: 30%;
-        // }
-
-        > div {
-            position: absolute;
-            border-radius: 10px;
-        }
 
         &__pointer {
             width: 50px;
@@ -42,10 +23,13 @@
         }
 
         &__saturation {
-            top: 0%;
+            border-bottom: none;
             height: 100%;
-            left: 0%;
+            left: 50%;
             width: 50%;
+
+            position: absolute;
+            border-radius: 10px;
 
             &-pointer {
                 width: 60px;
@@ -53,32 +37,19 @@
             }
         }
 
-        @mixin left-aligned {
-            height: 15%;
-            left: 55%;
-            width: 45%;
-        }
-
         &__hue {
-            top: 12%;
-            @include left-aligned;
+            @include left-aligned(0);
         }
 
         &__alpha {
-            top: 39%;
-            @include left-aligned;
+            @include left-aligned(1);
         }
     }
 
     &__text {
-        position: absolute;
-        top: 68%;
-        height: 20%;
-        left: 65%;
-        width: 25%;
+        @include left-aligned(2);
 
         border: 2px solid black;
-        border-radius: 10px;
 
         font-size: 2rem;
         text-align: center;
