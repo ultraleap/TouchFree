@@ -16,7 +16,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         Stopwatch clickHoldStopwatch = new Stopwatch();
 
-        public float? handAppearedTimestamp;
+        TimestampStopwatch handAppearedStopwatch = new TimestampStopwatch();
 
         // Speed in millimeters per second
         public float speedMin = 150f;
@@ -149,7 +149,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 pressing = false;
                 isDragging = false;
                 // Restarts the hand timer every frame that we have no active hand
-                handAppearedTimestamp = latestTimestamp / 1000;
+                handAppearedStopwatch.Restart(latestTimestamp);
 
                 if (hadHandLastFrame)
                 {
@@ -168,13 +168,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             InputActionResult inputActionResult;
             long currentTimestamp = latestTimestamp;
 
-            if (handAppearedTimestamp.HasValue && (currentTimestamp / 1000) - handAppearedTimestamp >= millisecondsCooldownOnEntry)
+            if (handAppearedStopwatch.HasBeenRunningForThreshold(currentTimestamp, millisecondsCooldownOnEntry))
             {
-                handAppearedTimestamp = null;
+                handAppearedStopwatch.Stop();
             }
 
             // If not ignoring clicks...
-            if ((previousTime != 0f) && !handAppearedTimestamp.HasValue)
+            if ((previousTime != 0f) && !handAppearedStopwatch.IsRunning)
             {
                 // Calculate important variables needed in determining the key events
                 long dtMicroseconds = (currentTimestamp - previousTime);
