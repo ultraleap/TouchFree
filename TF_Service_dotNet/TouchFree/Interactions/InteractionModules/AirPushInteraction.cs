@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Leap;
+using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
 using System.Numerics;
@@ -62,13 +63,20 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private readonly InteractionTuning interactionTuning;
 
+        private Positions positions2;
+        private IPositioningModule positioningModule2;
+        private IPositionStabiliser positionStabiliser2;
+        private PositionTrackerConfiguration[] positionConfiguration2;
+
         public AirPushInteraction(
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
             IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
-            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
+            IPositionStabiliser _positionStabiliser,
+            IPositioningModule _positioningModule2,
+            IPositionStabiliser _positionStabiliser2) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
         {
             interactionTuning = _interactionTuning?.Value;
 
@@ -99,9 +107,16 @@ namespace Ultraleap.TouchFree.Library.Interactions
             extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
             filter = new PositionFilter(_interactionTuning);
 
+            positioningModule2 = _positioningModule2;
+            positionStabiliser2 = _positionStabiliser2;
+
             positionConfiguration = new[]
             {
                 new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
+            };
+            positionConfiguration2 = new[]
+            {
+                new PositionTrackerConfiguration(TrackedPosition.INDEX_TIP, 1)
             };
         }
 
@@ -159,7 +174,15 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 return new InputActionResult();
             }
 
+            UpdateSecondPositionModule(hand);
+
             return HandleInteractionsAirPush(confidence);
+        }
+
+        protected void UpdateSecondPositionModule(Leap.Hand hand)
+        {
+            positions2 = positioningModule2.CalculatePositions(hand, positionConfiguration2);
+            positions2 = positioningModule2.ApplyStabiliation(positions2, positionStabiliser2);
         }
 
         private InputActionResult HandleInteractionsAirPush(float confidence)
@@ -176,16 +199,18 @@ namespace Ultraleap.TouchFree.Library.Interactions
             if ((previousTime != 0f) && !handAppearedCooldown.IsRunning)
             {
                 // Calculate important variables needed in determining the key events
+                float pokeDistanceFromScreen = positions2.DistanceFromScreen * 1000f;
+
                 long dtMicroseconds = (currentTimestamp - previousTime);
                 float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
-                float dz = (-1f) * (distanceFromScreenMm - previousScreenDistanceMm);   // Millimetres +ve = towards screen
+                float dz = (-1f) * (pokeDistanceFromScreen - previousScreenDistanceMm);   // Millimetres +ve = towards screen
                 float currentVelocity = dz / dt;    // mm/s
 
                 Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
                 Vector2 dPerp = virtualScreen.PixelsToMillimeters(dPerpPx);
 
                 // Multiply by confidence to make it harder to use when disused
-                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, distanceFromScreenMm) * confidence;
+                float forceChange = GetAppliedForceChange(currentVelocity, dt, dPerp, pokeDistanceFromScreen) * confidence;
                 // Update AppliedForce, which is the crux of the AirPush algorithm
                 appliedForce += forceChange;
                 appliedForce = Math.Clamp(appliedForce, 0f, 1f);
@@ -274,7 +299,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
             // Update stored variables
             previousTime = currentTimestamp;
-            previousScreenDistanceMm = distanceFromScreenMm;
+            previousScreenDistanceMm = positions2.DistanceFromScreen * 1000f;
             previousScreenPos = positions.CursorPosition;
 
             return inputActionResult;
