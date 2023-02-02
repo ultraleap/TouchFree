@@ -27,7 +27,20 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 // If work, send response from above
                 try
                 {
-                    ChangeConfigFile(_request.content);
+                    var contentJson = JObject.Parse(_request.content);
+
+#region DAVIDS_TEST_CODE
+                    string trackingJson = @"{
+                        'log_days': 10,
+                        'log_days_rotation_hour': 3
+                    }";
+
+                    contentJson.Add("trackingLogging", JToken.Parse(trackingJson));
+#endregion
+
+                    PhysicalConfigFile.UpdateFromJson(contentJson["physical"]);
+                    InteractionConfigFile.UpdateFromJson(contentJson["interaction"]);
+                    TrackingLoggingConfigFile.UpdateFromJson(contentJson["trackingLogging"]);
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -38,30 +51,6 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
 
             clientMgr.SendResponse(response, ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE);
-        }
-
-        void ChangeConfigFile(string _content)
-        {
-            // Get the current state of the config file(s)
-            InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
-            PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
-
-            var contentJson = JObject.Parse(_content);
-
-            string physicalChanges = contentJson["physical"].ToString();
-            string interactionChanges = contentJson["interaction"].ToString();
-
-            if (physicalChanges != string.Empty)
-            {
-                JsonConvert.PopulateObject(physicalChanges, physFromFile);
-                PhysicalConfigFile.SaveConfig(physFromFile);
-            }
-
-            if (interactionChanges != string.Empty)
-            {
-                JsonConvert.PopulateObject(interactionChanges, intFromFile);
-                InteractionConfigFile.SaveConfig(intFromFile);
-            }
         }
     }
 }

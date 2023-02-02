@@ -6,9 +6,12 @@
         public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigSaved;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
+        public event IConfigManager.TrackingLoggingConfigEvent OnTrackingLoggingConfigUpdated;
+
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
         private TrackingConfig _tracking;
+        private TrackingLoggingConfig _trackingLogging;
 
         public ConfigManager()
         {
@@ -86,6 +89,23 @@
             }
         }
 
+        public TrackingLoggingConfig TrackingLoggingConfig
+        {
+            get 
+            {
+                if (_trackingLogging == null && TrackingLoggingConfigFile.DoesConfigFileExist())
+                {
+                    _trackingLogging = TrackingLoggingConfigFile.LoadConfig();
+                }
+
+                return _trackingLogging;
+            }
+            set 
+            {
+                _trackingLogging = value; 
+            } 
+        }
+
         public void LoadConfigsFromFiles()
         {
             var interactionsUpdated = false;
@@ -117,6 +137,17 @@
                 }
             }
 
+            var trackingLoggingUpdated = false;
+            if (TrackingLoggingConfigFile.DoesConfigFileExist())
+            {
+                var loadedTrackingLogging = TrackingLoggingConfigFile.LoadConfig();
+                if (_trackingLogging == null || _trackingLogging != loadedTrackingLogging)
+                {
+                    _trackingLogging = loadedTrackingLogging;
+                    trackingLoggingUpdated = true;
+                }
+            }
+
             if (interactionsUpdated)
             {
                 InteractionConfigWasUpdated();
@@ -132,6 +163,10 @@
                 TrackingConfigWasUpdated();
             }
 
+            if (trackingLoggingUpdated)
+            {
+                TrackingLoggingConfigWasUpdated();
+            }
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
@@ -139,7 +174,7 @@
         public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
         public void InteractionConfigWasUpdated() => OnInteractionConfigUpdated?.Invoke(_interactions);
         public void TrackingConfigWasUpdated() => OnTrackingConfigUpdated?.Invoke(_tracking);
-
+        public void TrackingLoggingConfigWasUpdated() => OnTrackingLoggingConfigUpdated?.Invoke(_trackingLogging);
 
         public bool AreConfigsInGoodState()
         {

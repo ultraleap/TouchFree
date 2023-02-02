@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -52,6 +53,16 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
+        public static void UpdateFromJson(JToken newData)
+        {
+            if (newData == null) return;
+            if (String.IsNullOrEmpty(newData.ToString())) return;
+
+            TData config = LoadConfig();
+            JsonConvert.PopulateObject(newData.ToString(), config);
+            SaveConfig(config);
+        }
+
         public static bool ErrorLoadingConfiguration() => Instance.ErrorLoadingConfig;
 
         #endregion
@@ -60,7 +71,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         private event Action _OnConfigFileSaved;
         private event Action _OnConfigFileUpdated;
-        protected virtual string _ConfigFilePath => Path.Combine(ConfigFileUtils.ConfigFileDirectory, ConfigFileName);
+        protected virtual string _ConfigFileDirectory => ConfigFileUtils.ConfigFileDirectory;
+
+        protected virtual string _ConfigFilePath => Path.Combine(_ConfigFileDirectory, ConfigFileName);
+    
 
         public bool ErrorLoadingConfig { get; private set; } = false;
 
@@ -112,7 +126,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         public static bool DoesConfigFileExist()
         {
-            if (!Directory.Exists(ConfigFileUtils.ConfigFileDirectory))
+            if (!Directory.Exists(Instance._ConfigFileDirectory))
             {
                 return false;
             }
@@ -127,10 +141,10 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         private void CreateDefaultConfigFile()
         {
-            Directory.CreateDirectory(ConfigFileUtils.ConfigFileDirectory);
+            Directory.CreateDirectory(_ConfigFileDirectory);
             RequestConfigFilePermissions();
             WriteConfigToFile(new TData());
-            TouchFreeLog.WriteLine($"No {ConfigFileName} file found in {ConfigFileUtils.ConfigFileDirectory}. One has been generated for you with default values.");
+            TouchFreeLog.WriteLine($"No {ConfigFileName} file found in {_ConfigFileDirectory}. One has been generated for you with default values.");
         }
 
         private void WriteConfigToFile(TData data)
@@ -160,7 +174,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                         PropagationFlags.InheritOnly,
                         AccessControlType.Allow);
 
-                    DirectoryInfo dirInfo = new DirectoryInfo(ConfigFileUtils.ConfigFileDirectory);
+                    DirectoryInfo dirInfo = new DirectoryInfo(_ConfigFileDirectory);
 
                     // Create the directory and request permissions to it for all users
                     DirectorySecurity directorySecurity = dirInfo.GetAccessControl();

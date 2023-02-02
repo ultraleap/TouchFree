@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LeapInternal;
+using System;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections
@@ -28,12 +29,20 @@ namespace Ultraleap.TouchFree.Library.Connections
         public string requestID;
         public InteractionConfig interaction;
         public PhysicalConfig physical;
+        public TrackingLoggingConfig trackingLog;
+
+        public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical, TrackingLoggingConfig _tracking)
+            : this(_id, _interaction, _physical)
+        {
+            trackingLog = _tracking;
+        }
 
         public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
         {
             requestID = _id;
             interaction = _interaction;
             physical = _physical;
+            trackingLog = null;
         }
     }
 

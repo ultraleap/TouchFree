@@ -19,11 +19,13 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         {
             InteractionConfig interactions = InteractionConfigFile.LoadConfig();
             PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
+            TrackingLoggingConfig trackingLog = TrackingLoggingConfigFile.LoadConfig();
 
             ConfigState currentConfig = new ConfigState(
                 requestId,
                 interactions,
-                physical);
+                physical,
+                trackingLog);
 
             clientMgr.SendResponse(currentConfig, ActionCode.CONFIGURATION_FILE_STATE);
         }
