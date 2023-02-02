@@ -61,12 +61,31 @@
 }
 
 .cursor-preview {
-    background-color: paleturquoise;
+    background-color: rebeccapurple;
     height: 95%;
     border-radius: 0.5rem;
 
-    background-image: createCircle(45%, 5%, var(--outer-fill)), createCircle(-1%, 25%, var(--center-fill)),
-        createCircle(23%, 3.5%, var(--center-border));
+    &__cursor {
+        height: 85%;
+        background-image: createCircle(45%, 5%, var(--outer-fill)), createCircle(-1%, 25%, var(--center-fill)),
+            createCircle(23%, 3.5%, var(--center-border));
+    }
+
+    &__bg-selector {
+        height: 15%;
+        background-color: #ffffff60;
+
+        width: 40%;
+        padding: 0% 30%;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+
+        > img {
+            box-shadow: v.$dark-box-shadow;
+            border-radius: 10px;
+        }
+    }
 }
 
 .page-divider {

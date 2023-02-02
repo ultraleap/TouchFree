@@ -5,6 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { useIsLinux, useStatefulRef } from '@/customHooks';
 
+import { GearIcon, GearIconGlow, HandIcon } from '@/Images';
+
 import {
     DocsLink,
     FileInput,
@@ -21,6 +23,7 @@ import { CursorSectionColors, StyleDefaults, styleDefaults } from './CursorColor
 const classes = classNames.bind(styles);
 
 const styleOptions = Object.keys(styleDefaults);
+const bgImages = [GearIcon, GearIconGlow, HandIcon];
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
@@ -83,7 +86,14 @@ const VisualsScreen: React.FC = () => {
                         options={styleOptions}
                         onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
                     />
-                    <div ref={previewContainer} className={classes('cursor-preview')} />
+                    <div className={classes('cursor-preview')}>
+                        <div ref={previewContainer} className={classes('cursor-preview__cursor')} />
+                        <div className={classes('cursor-preview__bg-selector')}>
+                            {bgImages.map((src) => (
+                                <img key={src} src={src} />
+                            ))}
+                        </div>
+                    </div>
                 </div>
                 {currentStyle.current === 'Custom' && (
                     <ColorPicker

@@ -90,7 +90,7 @@
             font-size: 1.8rem;
             text-align: center;
             background: v.$light-grey-gradient;
-            box-shadow: 0px 2px 5px #00000080;
+            box-shadow: v.$dark-box-shadow;
         }
     }
 }
