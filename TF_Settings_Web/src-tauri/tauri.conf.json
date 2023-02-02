@@ -59,12 +59,10 @@
         "windows": [
             {
                 "fullscreen": false,
-                "height": 600,
+                "maximized": true,
                 "resizable": true,
-                "title": "TouchFree Settings",
-                "width": 800
+                "title": "TouchFree Settings"
             }
         ]
     }
 }
-
