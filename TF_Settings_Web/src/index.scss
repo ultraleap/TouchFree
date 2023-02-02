@@ -8,9 +8,16 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    overflow-x: hidden;
+    overflow-y: hidden;
+
     ::-webkit-scrollbar {
-        display: none;
+        width: 2px;
+        &-track {
+            background: v.$dark-grey;
+        }
+        &-thumb {
+            background: #ffffff;
+        }
     }
 }

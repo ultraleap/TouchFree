@@ -76,104 +76,111 @@ const VisualsScreen: React.FC = () => {
     }, []);
 
     return (
-        <div className={classes('container')}>
-            <div className={classes('title-line')}>
-                <h1> Cursor Styles </h1>
-                <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET STYLES')} />
-            </div>
-            <label className={classes('label-container')}>
-                <p className={classes('label-container__label')}>
-                    Visuals affects Overlay application only.
-                    <br />
-                    To update the cursor in web, use TouchFree Tooling
-                </p>
-                <DocsLink title={'Find out More'} url={'https://developer.leapmotion.com/touchfree-tooling-for-web'} />
-            </label>
-            <div className={classes('section')}>
-                <div className={classes('two-cols')}>
-                    <RadioGroup
-                        name="StylePresets"
-                        selected={styleOptions.indexOf(currentStyle.current) ?? 0}
-                        options={styleOptions}
-                        onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
+        <div className={classes('scroll-div')}>
+            <div className={classes('container')}>
+                <div className={classes('title-line')}>
+                    <h1> Cursor Styles </h1>
+                    <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET STYLES')} />
+                </div>
+                <label className={classes('label-container')}>
+                    <p className={classes('label-container__label')}>
+                        Visuals affects Overlay application only.
+                        <br />
+                        To update the cursor in web, use TouchFree Tooling
+                    </p>
+                    <DocsLink
+                        title={'Find out More'}
+                        url={'https://developer.leapmotion.com/touchfree-tooling-for-web'}
                     />
-                    <div
-                        className={classes('cursor-preview')}
-                        style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
-                    >
-                        <div ref={previewContainer} className={classes('cursor-preview__cursor')} />
-                        <div className={classes('cursor-preview__bg-selector')}>
-                            {bgPreviewImages.map((src, index) => (
-                                <img
-                                    key={index}
-                                    className={classes('cursor-preview__bg-selector__img', {
-                                        'cursor-preview__bg-selector__img--active': index === currentPreviewBgIndex,
-                                    })}
-                                    onClick={() => setCurrentPreviewBgIndex(index)}
-                                    src={src}
-                                />
-                            ))}
+                </label>
+                <div className={classes('section')}>
+                    <div className={classes('two-cols')}>
+                        <RadioGroup
+                            name="StylePresets"
+                            selected={styleOptions.indexOf(currentStyle.current) ?? 0}
+                            options={styleOptions}
+                            onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
+                        />
+                        <div
+                            className={classes('cursor-preview')}
+                            style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
+                        >
+                            <div ref={previewContainer} className={classes('cursor-preview__cursor')} />
+                            <div className={classes('cursor-preview__bg-selector')}>
+                                {bgPreviewImages.map((src, index) => (
+                                    <img
+                                        key={index}
+                                        className={classes('cursor-preview__bg-selector__img', {
+                                            'cursor-preview__bg-selector__img--active': index === currentPreviewBgIndex,
+                                        })}
+                                        onClick={() => setCurrentPreviewBgIndex(index)}
+                                        src={src}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {currentStyle.current === 'Custom' && (
-                    <ColorPicker
-                        cursorColors={cursorColors.current}
-                        updateCursorColors={(colors) => (customCursorColors.current = cursorColors.current = colors)}
+                    {currentStyle.current === 'Custom' && (
+                        <ColorPicker
+                            cursorColors={cursorColors.current}
+                            updateCursorColors={(colors) =>
+                                (customCursorColors.current = cursorColors.current = colors)
+                            }
+                        />
+                    )}
+                    <TextSlider
+                        name="Size (cm)"
+                        rangeMin={0.1}
+                        rangeMax={1}
+                        leftLabel="Min"
+                        rightLabel="Max"
+                        value={size}
+                        onChange={setSize}
                     />
-                )}
-                <TextSlider
-                    name="Size (cm)"
-                    rangeMin={0.1}
-                    rangeMax={1}
-                    leftLabel="Min"
-                    rightLabel="Max"
-                    value={size}
-                    onChange={setSize}
-                />
-                <TextSlider
-                    name="Ring Thickness (cm)"
-                    rangeMin={0.05}
-                    rangeMax={0.6}
-                    leftLabel="Min"
-                    rightLabel="Max"
-                    value={ringThickness}
-                    onChange={setRingThickness}
-                />
-            </div>
-            <div className={classes('page-divider')} />
-            <div className={classes('title-line')}>
-                <h1> Call to Interact </h1>
-                <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET CTI')} />
-            </div>
-            <div className={classes('section')}>
-                <LabelledToggleSwitch name="Enable Call to Interact" value={ctiEnabled} onChange={setCtiEnabled} />
-                {ctiEnabled && (
-                    <>
-                        <FileInput
-                            name="Call to Interact File"
-                            value="1 Push in mid-air to start.mp4"
-                            acceptedFileTypes="video/*"
-                            onChange={(e) => console.log(e.target.value)}
-                        />
-                        <TextSlider
-                            name="Inactivity Activation"
-                            rangeMin={5}
-                            rangeMax={60}
-                            stepSize={1}
-                            leftLabel="5 Seconds"
-                            rightLabel="60 Seconds"
-                            value={ctiTriggerTime}
-                            onChange={setCtiTriggerTime}
-                        />
-                        <RadioLine
-                            name="Close CTI When"
-                            selected={ctiCloseOptionIndex}
-                            options={closeCtiOptions}
-                            onChange={(option) => setCtiCloseOptionIndex(closeCtiOptions.indexOf(option))}
-                        />
-                    </>
-                )}
+                    <TextSlider
+                        name="Ring Thickness (cm)"
+                        rangeMin={0.05}
+                        rangeMax={0.6}
+                        leftLabel="Min"
+                        rightLabel="Max"
+                        value={ringThickness}
+                        onChange={setRingThickness}
+                    />
+                </div>
+                <div className={classes('page-divider')} />
+                <div className={classes('title-line')}>
+                    <h1> Call to Interact </h1>
+                    <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET CTI')} />
+                </div>
+                <div className={classes('section')}>
+                    <LabelledToggleSwitch name="Enable Call to Interact" value={ctiEnabled} onChange={setCtiEnabled} />
+                    {ctiEnabled && (
+                        <>
+                            <FileInput
+                                name="Call to Interact File"
+                                value="1 Push in mid-air to start.mp4"
+                                acceptedFileTypes="video/*"
+                                onChange={(e) => console.log(e.target.value)}
+                            />
+                            <TextSlider
+                                name="Inactivity Activation"
+                                rangeMin={5}
+                                rangeMax={60}
+                                stepSize={1}
+                                leftLabel="5 Seconds"
+                                rightLabel="60 Seconds"
+                                value={ctiTriggerTime}
+                                onChange={setCtiTriggerTime}
+                            />
+                            <RadioLine
+                                name="Close CTI When"
+                                selected={ctiCloseOptionIndex}
+                                options={closeCtiOptions}
+                                onChange={(option) => setCtiCloseOptionIndex(closeCtiOptions.indexOf(option))}
+                            />
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -11,6 +11,8 @@ $outline-button-gradient: linear-gradient(180deg, $ultraleap-green, #00cdcf);
 $dark-box-shadow: 0px 2px 10px #00000080;
 $base-font: MontserratRegular, Arial;
 $header-height: 8vh;
+$tab-height: 5vh;
+$tab-height-landscape: 10vh;
 
 :export {
     appWidth: $app-width;

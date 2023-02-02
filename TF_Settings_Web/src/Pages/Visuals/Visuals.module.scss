@@ -31,6 +31,10 @@
     }
 }
 
+.scroll-div {
+    @include App.scroll-div;
+}
+
 .container {
     margin: 0 2vw;
 
