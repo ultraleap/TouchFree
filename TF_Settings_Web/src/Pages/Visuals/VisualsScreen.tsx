@@ -15,29 +15,34 @@ import {
     TextSlider,
 } from '@/Components';
 
-import ColorPicker, { CursorSectionColors } from './ColorPicker';
+import ColorPicker from './ColorPicker';
+import { CursorSectionColors, StyleDefaults, styleDefaults } from './CursorColorDefaults';
 
 const classes = classNames.bind(styles);
 
-const StylePresets = ['Recommended (Light)', 'Recommended (Dark)', 'Solid (Light)', 'Solid (Dark)', 'Custom'];
-const CloseCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
+const styleOptions = Object.keys(styleDefaults);
+const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
     if (useIsLinux()) return <></>;
     const previewContainer = useRef<HTMLDivElement>(null);
 
-    const [currentStyleIndex, setCurrentStyleIndex] = useState<number>(4);
+    const currentStyle = useStatefulRef<StyleDefaults>('Recommended (Light)');
     const [size, setSize] = useState<number>(0.5);
     const [ringThickness, setRingThickness] = useState<number>(0.15);
     const [ctiEnabled, setCtiEnabled] = useState<boolean>(true);
     const [ctiTriggerTime, setCtiTriggerTime] = useState<number>(10);
     const [ctiCloseOptionIndex, setCtiCloseOptionIndex] = useState<number>(0);
 
-    const cursorColors = useStatefulRef<CursorSectionColors>({
+    const customCursorColors = useStatefulRef<CursorSectionColors>({
         'Center Border': '#f8b195ff',
         'Center Fill': '#f67280ff',
         'Outer Fill': '#6c5b7bff',
     });
+
+    const cursorColors = useStatefulRef<CursorSectionColors>(
+        styleDefaults[currentStyle.current] ?? customCursorColors.current
+    );
 
     useEffect(() => {
         const style = previewContainer.current?.style;
@@ -47,6 +52,10 @@ const VisualsScreen: React.FC = () => {
         style.setProperty('--center-fill', cursorColors.current['Center Fill']);
         style.setProperty('--center-border', cursorColors.current['Center Border']);
     }, [cursorColors.current]);
+
+    useEffect(() => {
+        cursorColors.current = styleDefaults[currentStyle.current] ?? customCursorColors.current;
+    }, [currentStyle.current]);
 
     useEffect(() => {
         return () => {};
@@ -70,16 +79,16 @@ const VisualsScreen: React.FC = () => {
                 <div className={classes('two-cols')}>
                     <RadioGroup
                         name="StylePresets"
-                        selected={currentStyleIndex}
-                        options={StylePresets}
-                        onChange={(preset) => setCurrentStyleIndex(StylePresets.indexOf(preset))}
+                        selected={styleOptions.indexOf(currentStyle.current) ?? 0}
+                        options={styleOptions}
+                        onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
                     />
                     <div ref={previewContainer} className={classes('cursor-preview')} />
                 </div>
-                {StylePresets[currentStyleIndex] === 'Custom' && (
+                {currentStyle.current === 'Custom' && (
                     <ColorPicker
                         cursorColors={cursorColors.current}
-                        updateCursorColors={(colors) => (cursorColors.current = colors)}
+                        updateCursorColors={(colors) => (customCursorColors.current = cursorColors.current = colors)}
                     />
                 )}
                 <TextSlider
@@ -129,8 +138,8 @@ const VisualsScreen: React.FC = () => {
                         <RadioLine
                             name="Close CTI When"
                             selected={ctiCloseOptionIndex}
-                            options={CloseCtiOptions}
-                            onChange={(option) => setCtiCloseOptionIndex(CloseCtiOptions.indexOf(option))}
+                            options={closeCtiOptions}
+                            onChange={(option) => setCtiCloseOptionIndex(closeCtiOptions.indexOf(option))}
                         />
                     </>
                 )}

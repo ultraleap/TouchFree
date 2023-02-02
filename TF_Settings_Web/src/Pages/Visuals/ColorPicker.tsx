@@ -6,11 +6,7 @@ import { HexAlphaColorPicker } from 'react-colorful';
 
 import { TabSelector } from '@/Components/Header';
 
-export const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
-
-export type CursorSectionColors = {
-    [Property in (typeof cursorSections)[number]]: string;
-};
+import { CursorSectionColors, cursorSections } from './CursorColorDefaults';
 
 interface ColorPickerProps {
     cursorColors: CursorSectionColors;
