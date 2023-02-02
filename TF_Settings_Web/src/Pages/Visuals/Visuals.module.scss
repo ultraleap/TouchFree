@@ -61,29 +61,36 @@
 }
 
 .cursor-preview {
-    background-color: rebeccapurple;
     height: 95%;
     border-radius: 0.5rem;
+    background-size: cover;
+    background-repeat: no-repeat;
 
     &__cursor {
-        height: 85%;
-        background-image: createCircle(45%, 5%, var(--outer-fill)), createCircle(-1%, 25%, var(--center-fill)),
-            createCircle(23%, 3.5%, var(--center-border));
+        height: 80%;
+        background-image: createCircle(35%, 3%, var(--outer-fill)), createCircle(-1%, 20%, var(--center-fill)),
+            createCircle(18%, 3%, var(--center-border));
     }
 
     &__bg-selector {
-        height: 15%;
+        height: 20%;
         background-color: #ffffff60;
 
-        width: 40%;
-        padding: 0% 30%;
+        width: 100%;
 
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
 
-        > img {
+        &__img {
             box-shadow: v.$dark-box-shadow;
             border-radius: 10px;
+            width: 13%;
+            border: 3px solid transparent;
+            aspect-ratio: 1/1;
+            &--active {
+                border: 3px solid v.$ultraleap-green;
+            }
         }
     }
 }

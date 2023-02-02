@@ -5,7 +5,16 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { useIsLinux, useStatefulRef } from '@/customHooks';
 
-import { GearIcon, GearIconGlow, HandIcon } from '@/Images';
+import {
+    BlackTextBg,
+    BlackTextBgPreview,
+    GradientBg,
+    GradientBgPreview,
+    MountainBg,
+    MountainBgPreview,
+    WhiteTextBg,
+    WhiteTextBgPreview,
+} from '@/Images';
 
 import {
     DocsLink,
@@ -23,7 +32,8 @@ import { CursorSectionColors, StyleDefaults, styleDefaults } from './CursorColor
 const classes = classNames.bind(styles);
 
 const styleOptions = Object.keys(styleDefaults);
-const bgImages = [GearIcon, GearIconGlow, HandIcon];
+const bgImages = [GradientBg, WhiteTextBg, BlackTextBg, MountainBg];
+const bgPreviewImages = [GradientBgPreview, WhiteTextBgPreview, BlackTextBgPreview, MountainBgPreview];
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
@@ -31,6 +41,7 @@ const VisualsScreen: React.FC = () => {
     const previewContainer = useRef<HTMLDivElement>(null);
 
     const currentStyle = useStatefulRef<StyleDefaults>('Recommended (Light)');
+    const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
     const [size, setSize] = useState<number>(0.5);
     const [ringThickness, setRingThickness] = useState<number>(0.15);
     const [ctiEnabled, setCtiEnabled] = useState<boolean>(true);
@@ -86,11 +97,21 @@ const VisualsScreen: React.FC = () => {
                         options={styleOptions}
                         onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
                     />
-                    <div className={classes('cursor-preview')}>
+                    <div
+                        className={classes('cursor-preview')}
+                        style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
+                    >
                         <div ref={previewContainer} className={classes('cursor-preview__cursor')} />
                         <div className={classes('cursor-preview__bg-selector')}>
-                            {bgImages.map((src) => (
-                                <img key={src} src={src} />
+                            {bgPreviewImages.map((src, index) => (
+                                <img
+                                    key={index}
+                                    className={classes('cursor-preview__bg-selector__img', {
+                                        'cursor-preview__bg-selector__img--active': index === currentPreviewBgIndex,
+                                    })}
+                                    onClick={() => setCurrentPreviewBgIndex(index)}
+                                    src={src}
+                                />
                             ))}
                         </div>
                     </div>
