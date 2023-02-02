@@ -36,6 +36,7 @@
                 "skipWords": [
                     "touchfree",
                     "touchfreecursor",
+                    "chiralities",
                     "bitmask",
                     "umd",
                     "tsx",
