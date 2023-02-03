@@ -218,7 +218,7 @@ export class WebInputController extends BaseInputController {
             ) {
                 const element = this.GetElementToScroll(
                     (e: HTMLElement) =>
-                        e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
+                        e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight - 1,
                     (e: HTMLElement, p: HTMLElement) =>
                         e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight
                 );
@@ -302,9 +302,9 @@ export class WebInputController extends BaseInputController {
             while (parentAsHtmlElement) {
                 const parentIsNoScroll = parentAsHtmlElement.classList.contains(this.noScrollClassName);
                 const elementIsNoScroll = elementToCheckScroll.classList.contains(this.noScrollClassName);
-                const scrollValid = parentScrollValidation(elementToCheckScroll, parentAsHtmlElement);
+                const parentScrollValid = parentScrollValidation(elementToCheckScroll, parentAsHtmlElement);
 
-                if (!parentIsNoScroll && !elementIsNoScroll && !scrollValid) {
+                if (!parentIsNoScroll && !elementIsNoScroll && !parentScrollValid) {
                     break;
                 }
 
