@@ -1,5 +1,5 @@
-import { ServiceStatus } from 'Connection/TouchFreeServiceTypes';
 import { Vector, Vector2 } from './Configuration/ConfigurationTypes';
+import { ServiceStatus } from 'Connection/TouchFreeServiceTypes';
 
 // Class: VersionInfo
 // This class is used when comparing the <ApiVersion> of the Tooling and the Service.
@@ -171,6 +171,8 @@ export enum BitmaskFlags {
 // InputAction - Event dispatched when any input action is received from the TouchFree service
 // TransmitInputActionRaw - Event dispatched directly from the <InputActionManager> without any proxying
 // TransmitInputAction - Event dispatched from the <InputActionManager> to each registered Plugin
+// HandEntered - Event dispatched when the active hand enters the interaction zone
+// HandExited - Event dispatched when the active hand enters the interaction zone
 export interface TouchFreeEventSignatures {
     OnConnected: () => void;
     WhenConnected: () => void;
@@ -182,6 +184,8 @@ export interface TouchFreeEventSignatures {
     InputAction: (inputAction: TouchFreeInputAction) => void;
     TransmitInputActionRaw: (inputAction: TouchFreeInputAction) => void;
     TransmitInputAction: (inputAction: TouchFreeInputAction) => void;
+    HandEntered: () => void;
+    HandExited: () => void;
 }
 
 export type TouchFreeEvent = Extract<keyof TouchFreeEventSignatures, string>;

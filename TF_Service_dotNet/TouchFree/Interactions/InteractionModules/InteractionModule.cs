@@ -22,20 +22,31 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         protected bool hadHandLastFrame = false;
 
+        private InteractionZoneState lastInteractionZoneState = InteractionZoneState.HAND_EXITED;
+
         protected IPositioningModule positioningModule;
         protected IPositionStabiliser positionStabiliser;
 
         protected readonly IHandManager handManager;
         protected readonly IVirtualScreen virtualScreen;
         private readonly IConfigManager configManager;
+        private readonly IClientConnectionManager connectionManager;
 
         protected IEnumerable<PositionTrackerConfiguration> positionConfiguration;
 
-        public InteractionModule(IHandManager _handManager, IVirtualScreen _virtualScreen, IConfigManager _configManager, IPositioningModule _positioningModule, IPositionStabiliser _positionStabiliser)
+        public InteractionModule(
+            IHandManager _handManager, 
+            IVirtualScreen _virtualScreen,
+            IConfigManager _configManager,
+            IClientConnectionManager _connectionManager,
+            IPositioningModule _positioningModule,
+            IPositionStabiliser _positionStabiliser
+        )
         {
             handManager = _handManager;
             virtualScreen = _virtualScreen;
             configManager = _configManager;
+            connectionManager = _connectionManager;
             positioningModule = _positioningModule;
             positionStabiliser = _positionStabiliser;
 
@@ -123,9 +134,22 @@ namespace Ultraleap.TouchFree.Library.Interactions
             {
                 if (distanceFromScreenMm < configManager.InteractionConfig.InteractionMinDistanceMm ||
                     distanceFromScreenMm > configManager.InteractionConfig.InteractionMaxDistanceMm)
-                {
+                {   
+
+                    if (lastInteractionZoneState != InteractionZoneState.HAND_EXITED) 
+                    {
+                        connectionManager.HandleInteractionZoneEvent(InteractionZoneState.HAND_EXITED);
+                        lastInteractionZoneState = InteractionZoneState.HAND_EXITED;
+                    }
                     return null;
                 }
+
+                if (lastInteractionZoneState != InteractionZoneState.HAND_ENTERED) 
+                {
+                    connectionManager.HandleInteractionZoneEvent(InteractionZoneState.HAND_ENTERED);
+                    lastInteractionZoneState = InteractionZoneState.HAND_ENTERED;
+                }
+
             }
 
             return _hand;

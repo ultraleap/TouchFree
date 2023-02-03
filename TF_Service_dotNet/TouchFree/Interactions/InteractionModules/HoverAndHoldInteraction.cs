@@ -35,8 +35,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
+            IClientConnectionManager _connectionManager,
             IPositioningModule _positioningModule,
-            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
+            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _connectionManager, _positioningModule, _positionStabiliser)
         {
             positionConfiguration = new[]
             {
