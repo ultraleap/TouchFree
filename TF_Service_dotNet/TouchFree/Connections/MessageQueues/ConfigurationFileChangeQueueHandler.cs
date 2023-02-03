@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
@@ -13,11 +14,17 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         public ConfigurationFileChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
         {
+            // Validate the incoming change for the listed types
+            // Is there a better way of initializing this?
+            typeLookup = new Dictionary<string, Type>
+            {
+                { "interation", typeof(InteractionConfig) },
+                { "physical", typeof(PhysicalConfig) }
+            };
         }
 
         protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
         {
-            // Validate the incoming change
             ResponseToClient response = ValidateConfigChange(_request.content, _contentObject);
 
             if (response.status == "Success")

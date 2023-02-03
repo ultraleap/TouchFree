@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using Ultraleap.TouchFree.Library.Configuration;
 
@@ -13,6 +14,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override string noRequestIdFailureMessage => "Setting configuration failed. This is due to a missing or invalid requestID";
 
+        protected Dictionary<string, Type> typeLookup;
+
         /// <summary>
         /// Checks for invalid states of the config request
         /// </summary>
@@ -22,120 +25,40 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         {
             ResponseToClient response = new ResponseToClient(string.Empty, "Success", string.Empty, _content);
 
-            var configRequestFields = typeof(ConfigState).GetFields();
-            var interactionFields = typeof(InteractionConfig).GetFields();
-            var hoverAndHoldFields = typeof(HoverAndHoldInteractionSettings).GetFields();
-            var physicalFields = typeof(PhysicalConfig).GetFields();
-
-            foreach (var contentElement in _contentObj)
+            // Check for at least the request ID
+            if (_contentObj.TryGetValue("requestID", out JToken id))
             {
-                // first layer of _content should contain only fields that ConfigRequest owns
-                bool validField = IsFieldValid(contentElement, configRequestFields);
+                response.requestID = id.ToString();
+            }
+            else
+            {
+                response.status = "Failure";
+                response.message = "A valid request ID was not found";
+                return response;
+            }
 
-                if (!validField)
+            if (typeLookup != null)
+            {
+                foreach (var contentElement in _contentObj)
                 {
-                    // Validation has failed because the field is not valid
-                    response.status = "Failure";
-                    response.message = "Setting configuration failed. This is due to an invalid field \"" + contentElement.Key + "\"";
-                    return response;
-                }
-
-                if (contentElement.Key == "requestID")
-                {
-                    // We have a request ID so set it in the _response
-                    response.requestID = contentElement.Value.ToString();
-                }
-
-                if (contentElement.Key == "interaction")
-                {
-                    JObject interactionObj = JsonConvert.DeserializeObject<JObject>(contentElement.Value.ToString());
-
-                    if (interactionObj != null)
+                    if (typeLookup.TryGetValue(contentElement.Key, out Type T))
                     {
-                        foreach (var interactionContent in interactionObj)
+                        try
                         {
-                            // this layer of _content should contain only fields that InteractionConfig owns
-                            bool validInteractionField = IsFieldValid(interactionContent, interactionFields);
-
-                            if (!validInteractionField)
-                            {
-                                // Validation has failed because the field is not valid
-                                response.status = "Failure";
-                                response.message = "Setting configuration failed. This is due to an invalid field \"" + interactionContent.Key + "\"";
-                                return response;
-                            }
-
-                            if (interactionContent.Key == "HoverAndHold")
-                            {
-                                JObject hoverAndHoldObj = JsonConvert.DeserializeObject<JObject>(interactionContent.Value.ToString());
-
-                                if (hoverAndHoldObj != null)
-                                {
-                                    foreach (var hoverAndHoldContent in hoverAndHoldObj)
-                                    {
-                                        // this layer of _content should contain only fields that HoverAndHoldInteractionSettings owns
-                                        bool validHoverField = IsFieldValid(hoverAndHoldContent, hoverAndHoldFields);
-
-                                        if (!validHoverField)
-                                        {
-                                            // Validation has failed because the field is not valid
-                                            response.status = "Failure";
-                                            response.message = "Setting configuration failed. This is due to an invalid field \"" + hoverAndHoldContent.Key + "\"";
-                                            return response;
-                                        }
-                                    }
-                                }
-                            }
+                            // Check that _contentObj matches ConfigState structure, including all types
+                            JsonConvert.DeserializeObject(contentElement.Value.ToString(), T);
                         }
-                    }
-                }
-
-                if (contentElement.Key == "physical")
-                {
-                    JObject physicalObj = JsonConvert.DeserializeObject<JObject>(contentElement.Value.ToString());
-
-                    if (physicalObj != null)
-                    {
-                        foreach (var physicalContent in physicalObj)
+                        catch (JsonReaderException ex)
                         {
-                            // this layer of _content should contain only fields that PhysicalConfig owns
-                            bool validPhysicslField = IsFieldValid(physicalContent, physicalFields);
-
-                            if (!validPhysicslField)
-                            {
-                                // Validation has failed because the field is not valid
-                                response.status = "Failure";
-                                response.message = "Setting configuration failed. This is due to an invalid field \"" + physicalContent.Key + "\"";
-                                return response;
-                            }
+                            response.status = "Failure";
+                            response.message = "Setting configuration failed with message:\n\"" + ex.Message + "\"";
+                            return response;
                         }
                     }
                 }
             }
 
             return response;
-        }
-
-        bool IsFieldValid(KeyValuePair<string, JToken> _field, System.Reflection.FieldInfo[] _possibleFields)
-        {
-            foreach (var configField in _possibleFields)
-            {
-                if (_field.Key == configField.Name)
-                {
-                    try
-                    {
-                        // Try to parse the value to the expected type, if it in invalid, we will catch th error and return false
-                        _field.Value.ToObject(configField.FieldType);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }
