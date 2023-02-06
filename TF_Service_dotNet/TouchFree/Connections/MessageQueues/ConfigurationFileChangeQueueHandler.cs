@@ -29,15 +29,6 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 {
                     var contentJson = JObject.Parse(_request.content);
 
-#region DAVIDS_TEST_CODE
-                    string trackingJson = @"{
-                        'log_days': 10,
-                        'log_days_rotation_hour': 3
-                    }";
-
-                    contentJson.Add("trackingLogging", JToken.Parse(trackingJson));
-#endregion
-
                     PhysicalConfigFile.UpdateFromJson(contentJson["physical"]);
                     InteractionConfigFile.UpdateFromJson(contentJson["interaction"]);
                     TrackingLoggingConfigFile.UpdateFromJson(contentJson["trackingLogging"]);
