@@ -365,6 +365,7 @@ TF_Settings::Web::build:
   tags:
     - unity
     - win10
+    - rust
 
 TouchFree::build:
   stage: build
