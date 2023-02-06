@@ -1,4 +1,7 @@
 import { openDir } from '@/FileSystemUtils';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'touchfree/src/TouchFree';
 
 import styles from './About.module.scss';
 
@@ -6,10 +9,6 @@ import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
 
 import { useIsDesktop } from '@/customHooks';
-
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import TouchFree from 'TouchFree/src/TouchFree';
 
 import { TextButton } from '@/Components';
 import { TabBar } from '@/Components/TopBar';

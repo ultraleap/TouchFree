@@ -4,7 +4,7 @@ import classnames from 'classnames/bind';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
+import { TrackingServiceState } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { Logo } from '@/Images';
 

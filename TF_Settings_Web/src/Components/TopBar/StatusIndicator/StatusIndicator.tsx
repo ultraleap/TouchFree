@@ -3,7 +3,7 @@ import styles from './StatusIndicator.module.scss';
 import classnames from 'classnames/bind';
 import React from 'react';
 
-import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
+import { TrackingServiceState } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { CameraStatusIcon, HandIcon } from '@/Images';
 

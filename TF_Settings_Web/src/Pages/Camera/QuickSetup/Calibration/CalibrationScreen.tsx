@@ -4,9 +4,9 @@ import classnames from 'classnames/bind';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { InputActionManager } from 'TouchFree/src/Plugins/InputActionManager';
-import { InputType, InteractionType, TouchFreeInputAction } from 'TouchFree/src/TouchFreeToolingTypes';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { InputActionManager } from 'touchfree/src/Plugins/InputActionManager';
+import { InputType, InteractionType, TouchFreeInputAction } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { TFClickEvent } from '@/Components';
 
