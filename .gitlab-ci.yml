@@ -364,7 +364,6 @@ TF_Settings::Web::build:
     when: always
   tags:
     - rust
-    - win10
 
 TouchFree::build:
   stage: build
