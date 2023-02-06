@@ -8,6 +8,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         private readonly FileSystemWatcher interactionWatcher;
         private readonly FileSystemWatcher physicalWatcher;
         private readonly FileSystemWatcher trackingWatcher;
+        private readonly FileSystemWatcher trackingLoggingWatcher;
         private int trackingWatcherIgnoreEventCount;
 
         private bool configFileChanged = false;
@@ -21,6 +22,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             InteractionConfigInternal InteractionCfg = _configManager.InteractionConfig;
             PhysicalConfigInternal PhysicalCfg = _configManager.PhysicalConfig;
             TrackingConfig TrackingCfg = _configManager.TrackingConfig;
+            TrackingLoggingConfig TrackingLoggingCfg = _configManager.TrackingLoggingConfig;
 
             configManager = _configManager;
             configManager.OnTrackingConfigSaved += _ => trackingWatcherIgnoreEventCount++;
@@ -28,6 +30,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
             interactionWatcher = CreateWatcherForFile(InteractionConfigFile.ConfigFileName);
             physicalWatcher = CreateWatcherForFile(PhysicalConfigFile.ConfigFileName);
             trackingWatcher = CreateWatcherForFile(TrackingConfigFile.ConfigFileName);
+            trackingLoggingWatcher = CreateWatcherForFile(TrackingLoggingConfigFile.ConfigFileName);
 
             updateBehaviour.OnUpdate += Update;
         }
@@ -55,6 +58,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                     interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     trackingWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                    trackingLoggingWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
                     configManager.LoadConfigsFromFiles();
                     TouchFreeLog.WriteLine("A config file was changed. Re-loading configs from files.");
                     configFileChanged = false;
