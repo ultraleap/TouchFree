@@ -27,6 +27,7 @@
         "eslint-plugin-spellcheck": "^0.0.19",
         "jest": "^29.3.1",
         "jest-environment-jsdom": "^29.3.1",
+        "jest-extended-snapshot": "^1.1.5",
         "jest-junit": "^14.0.1",
         "prettier": "^2.8.2",
         "ts-jest": "^29.0.4",

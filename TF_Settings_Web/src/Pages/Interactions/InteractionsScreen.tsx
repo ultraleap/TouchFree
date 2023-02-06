@@ -5,13 +5,13 @@ import { useEffect, useReducer, useState, CSSProperties } from 'react';
 
 import { useIsLandscape } from '@/customHooks';
 
-import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
+import { ConfigurationManager } from 'touchfree/src/Configuration/ConfigurationManager';
 import {
     InteractionConfig,
     InteractionConfigFull,
     TrackedPosition,
-} from 'TouchFree/src/Configuration/ConfigurationTypes';
-import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
+} from 'touchfree/src/Configuration/ConfigurationTypes';
+import { InteractionType } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { InteractionExplainer } from '@/Videos';
 

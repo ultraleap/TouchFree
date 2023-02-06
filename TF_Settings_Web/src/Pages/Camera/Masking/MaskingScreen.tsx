@@ -7,10 +7,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useIsLandscape, useStatefulRef } from '@/customHooks';
 
-import { TrackingStateResponse } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import { HandDataManager } from 'TouchFree/src/Plugins/HandDataManager';
-import { TrackingManager } from 'TouchFree/src/Tracking/TrackingManager';
-import { Mask } from 'TouchFree/src/Tracking/TrackingTypes';
+import { TrackingStateResponse } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import { HandDataManager } from 'touchfree/src/Plugins/HandDataManager';
+import { TrackingManager } from 'touchfree/src/Tracking/TrackingManager';
+import { Mask } from 'touchfree/src/Tracking/TrackingTypes';
 
 import { BackButton } from '@/Components';
 

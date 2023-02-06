@@ -2,14 +2,14 @@ import { Vector3 } from 'three';
 
 import { v4 as uuidgen } from 'uuid';
 
-import { Vector } from 'TouchFree/src/Configuration/ConfigurationTypes';
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
+import { Vector } from 'touchfree/src/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
 import {
     ActionCode,
     CommunicationWrapper,
     HandRenderDataStateRequest,
-} from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import { FingerType, RawFinger, RawHand } from 'TouchFree/src/TouchFreeToolingTypes';
+} from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import { FingerType, RawFinger, RawHand } from 'touchfree/src/TouchFreeToolingTypes';
 
 export interface FingerData {
     tip: Vector3;

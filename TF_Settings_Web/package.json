@@ -3,9 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@tauri-apps/api": "^1.2.0",
         "classnames": "^2.3.2",
         "csstype": "^3.0.10",
-        "platform": "^1.3.6",
         "qrcode.react": "^3.1.0",
         "react": "^17.0.2",
         "react-canvas-confetti": "^1.3.0",
@@ -23,7 +23,8 @@
         "build": "vite build",
         "pretty": "prettier --write .",
         "lint": "eslint --fix .",
-        "prettyLint": "prettier --write . && eslint --fix ."
+        "prettyLint": "prettier --write . && eslint --fix .",
+        "tauri": "tauri"
     },
     "eslintConfig": {
         "extends": [
@@ -44,6 +45,7 @@
         ]
     },
     "devDependencies": {
+        "@tauri-apps/cli": "^1.2.3",
         "@trivago/prettier-plugin-sort-imports": "^3.2.0",
         "@types/node": "^16.11.25",
         "@types/platform": "^1.3.4",

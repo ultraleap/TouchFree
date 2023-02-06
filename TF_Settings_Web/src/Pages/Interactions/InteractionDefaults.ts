@@ -3,8 +3,8 @@ import {
     InteractionConfigFull,
     TouchPlaneInteractionSettings,
     TrackedPosition,
-} from 'TouchFree/src/Configuration/ConfigurationTypes';
-import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
+} from 'touchfree/src/Configuration/ConfigurationTypes';
+import { InteractionType } from 'touchfree/src/TouchFreeToolingTypes';
 
 const DefaultHoverAndHoldInteractionSettings: HoverAndHoldInteractionSettings = {
     HoverStartTimeS: 0.5,
