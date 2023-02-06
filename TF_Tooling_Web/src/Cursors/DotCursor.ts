@@ -57,6 +57,8 @@ export class DotCursor extends TouchlessCursor {
 
         TouchFree.RegisterEventCallback('HandFound', this.ShowCursor.bind(this));
         TouchFree.RegisterEventCallback('HandsLost', this.HideCursor.bind(this));
+        TouchFree.RegisterEventCallback('HandEntered', this.ShowCursor.bind(this));
+        TouchFree.RegisterEventCallback('HandExited', this.HideCursor.bind(this));
     }
 
     // Function: UpdateCursor

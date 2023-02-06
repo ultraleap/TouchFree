@@ -9,6 +9,7 @@ import {
     ConfigState,
     ConfigStateCallback,
     HandPresenceEvent,
+    InteractionZoneEvent,
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
@@ -132,7 +133,7 @@ export class ServiceConnection {
 
         const looseData: CommunicationWrapper<unknown> = JSON.parse(_message.data);
 
-        switch (looseData.action as ActionCode) {
+        switch (looseData.action) {
             case ActionCode.INPUT_ACTION: {
                 const wsInput = looseData.content as WebsocketInputAction;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
@@ -171,6 +172,12 @@ export class ServiceConnection {
             case ActionCode.TRACKING_STATE: {
                 const trackingResponse = looseData.content as TrackingStateResponse;
                 ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
+                break;
+            }
+
+            case ActionCode.INTERACTION_ZONE_EVENT: {
+                const { state } = looseData.content as InteractionZoneEvent;
+                ConnectionManager.messageReceiver.lastInteractionZoneUpdate = { status: 'UNPROCESSED', state: state };
                 break;
             }
         }

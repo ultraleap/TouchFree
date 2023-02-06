@@ -2,7 +2,7 @@ import TouchFree from '../TouchFree';
 import { TrackingServiceState } from '../TouchFreeToolingTypes';
 import { MessageReceiver } from './MessageReceiver';
 import { ServiceConnection } from './ServiceConnection';
-import { HandPresenceState, ServiceStatus } from './TouchFreeServiceTypes';
+import { HandPresenceState, InteractionZoneState, ServiceStatus } from './TouchFreeServiceTypes';
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -50,6 +50,10 @@ export class ConnectionManager extends EventTarget {
     // Variable: currentHandPresence
     // Private reference to the current hand presence state
     private static currentHandPresence: HandPresenceState = HandPresenceState.HANDS_LOST;
+
+    // Variable: currentInteractionZoneState
+    // Private reference to the current interaction zone state
+    private static currentInteractionZoneState: InteractionZoneState = InteractionZoneState.HAND_EXITED;
 
     // Group: Functions
 
@@ -104,6 +108,19 @@ export class ConnectionManager extends EventTarget {
         }
     }
 
+    // Function: HandleInteractionZoneEvent
+    // Called by the <MessageReciever> to pass InteractionZone events via the <HandEntered> and
+    // <HandsExited> events on this class
+    public static HandleInteractionZoneEvent(_state: InteractionZoneState): void {
+        ConnectionManager.currentInteractionZoneState = _state;
+
+        if (_state === InteractionZoneState.HAND_ENTERED) {
+            TouchFree.DispatchEvent('HandEntered');
+        } else {
+            TouchFree.DispatchEvent('HandExited');
+        }
+    }
+
     // Function: Disconnect
     // Disconnects <currentServiceConnection> if it is connected to a WebSocket and
     // sets it to null.
@@ -128,9 +145,15 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.serviceConnection()?.RequestServiceStatus(_callback);
     }
 
-    // Function: RequestServiceStatus
+    // Function: GetCurrentHandPresence
     // Function to get the current hand presense state
     public static GetCurrentHandPresence(): HandPresenceState {
         return ConnectionManager.currentHandPresence;
+    }
+
+    // Function: GetCurrentInteractionZoneState
+    // Function to get the current hand presense state
+    public static GetCurrentInteractionZoneState(): InteractionZoneState {
+        return ConnectionManager.currentInteractionZoneState;
     }
 }
