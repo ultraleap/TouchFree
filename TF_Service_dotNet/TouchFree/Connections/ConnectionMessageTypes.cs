@@ -31,18 +31,12 @@ namespace Ultraleap.TouchFree.Library.Connections
         public PhysicalConfig physical;
         public TrackingLoggingConfig trackingLog;
 
-        public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical, TrackingLoggingConfig _tracking)
-            : this(_id, _interaction, _physical)
-        {
-            trackingLog = _tracking;
-        }
-
-        public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical)
+        public ConfigState(string _id, InteractionConfig _interaction, PhysicalConfig _physical, TrackingLoggingConfig _trackingLog = null)
         {
             requestID = _id;
             interaction = _interaction;
             physical = _physical;
-            trackingLog = null;
+            trackingLog = _trackingLog;
         }
     }
 
