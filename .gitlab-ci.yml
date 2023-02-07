@@ -292,7 +292,7 @@ TF_Tooling::Web::test:
 TF_Tooling::Web::deploy-coverage-page:
   stage: deploy
   dependencies:
-    - test
+    - TF_Tooling::Web::test
   script:
     - mkdir .public
     - cp ${env:TF_TFW_PATH}/coverage/* .public
