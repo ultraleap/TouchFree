@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
@@ -27,25 +28,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
             configManager = _configManager;
             configManager.OnTrackingConfigSaved += _ => trackingWatcherIgnoreEventCount++;
 
-            interactionWatcher = CreateWatcherForFile(InteractionConfigFile.ConfigFileName);
-            physicalWatcher = CreateWatcherForFile(PhysicalConfigFile.ConfigFileName);
-            trackingWatcher = CreateWatcherForFile(TrackingConfigFile.ConfigFileName);
-            trackingLoggingWatcher = CreateWatcherForFile(TrackingLoggingConfigFile.ConfigFileName);
+            interactionWatcher = InteractionConfigFile.CreateWatcher(FileUpdated);
+            physicalWatcher = PhysicalConfigFile.CreateWatcher(FileUpdated);
+            trackingWatcher = TrackingConfigFile.CreateWatcher(FileUpdated);
+            trackingLoggingWatcher = TrackingLoggingConfigFile.CreateWatcher(FileUpdated);
 
             updateBehaviour.OnUpdate += Update;
-        }
-
-        public FileSystemWatcher CreateWatcherForFile(string fileName)
-        {
-            var fileWatcher = new FileSystemWatcher();
-            fileWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
-            fileWatcher.Filter = fileName;
-            fileWatcher.Changed += FileUpdated;
-            fileWatcher.IncludeSubdirectories = true;
-            fileWatcher.EnableRaisingEvents = true;
-
-            return fileWatcher;
         }
 
         private void Update()
@@ -55,10 +43,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 if (configFileChanged)
                 {
                     ConfigFileUtils.CheckForConfigDirectoryChange();
-                    interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    trackingWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    trackingLoggingWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                    // Refresh watcher paths
+                    interactionWatcher.Path = InteractionConfigFile.ConfigFileDirectory;
+                    physicalWatcher.Path = PhysicalConfigFile.ConfigFileDirectory;
+                    trackingWatcher.Path = TrackingConfigFile.ConfigFileDirectory;
+                    trackingLoggingWatcher.Path = TrackingLoggingConfigFile.ConfigFileDirectory;
                     configManager.LoadConfigsFromFiles();
                     TouchFreeLog.WriteLine("A config file was changed. Re-loading configs from files.");
                     configFileChanged = false;

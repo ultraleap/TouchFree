@@ -39,6 +39,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 
         protected abstract string _ConfigFileName { get; }
 
+        public static string ConfigFileDirectory => Instance._ConfigFileDirectory;
         public static string ConfigFilePath => Instance._ConfigFilePath;
         public static string ConfigFileName => Instance._ConfigFileName;
 
@@ -186,6 +187,19 @@ namespace Ultraleap.TouchFree.Library.Configuration
             {
                 TouchFreeLog.WriteLine("Did not have permissions to set file access rules");
             }
+        }
+
+        public static FileSystemWatcher CreateWatcher(FileSystemEventHandler fileUpdateFunc)
+        {
+            var fileWatcher = new FileSystemWatcher();
+            fileWatcher.Path = ConfigFileDirectory;
+            fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
+            fileWatcher.Filter = ConfigFileName;
+            fileWatcher.Changed += fileUpdateFunc;
+            fileWatcher.IncludeSubdirectories = true;
+            fileWatcher.EnableRaisingEvents = true;
+
+            return fileWatcher;
         }
 
         #endregion

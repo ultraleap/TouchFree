@@ -8,12 +8,6 @@ using System.Runtime.InteropServices;
 
 namespace Ultraleap.TouchFree.Library.Configuration
 {
-    public enum LogggingMode
-    {
-        ROTATING,
-        DAILY
-    }
-
     public class TrackingLoggingConfigFile : ConfigFile<TrackingLoggingConfig, TrackingLoggingConfigFile>
     {
         // Note the config.json filename is the name used by the Tracking Service
