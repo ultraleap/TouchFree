@@ -303,6 +303,7 @@ TF_Tooling::Web::deploy-coverage-page:
   only:
     - main
     - develop
+    - feature/TF-1060_gitlab_code_coverage
 
 
 TF_Service::Tray::build:
