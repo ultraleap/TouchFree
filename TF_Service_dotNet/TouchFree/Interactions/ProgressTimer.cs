@@ -1,50 +1,56 @@
 ﻿using System;
 
-using Stopwatch = System.Diagnostics.Stopwatch;
-
 namespace Ultraleap.TouchFree.Library.Interactions
 {
     public class ProgressTimer
     {
         public float timeLimit = 500f;
 
-        private Stopwatch stopwatch = new Stopwatch();
+        private long? startMilliseconds;
+
+        public void Restart(long timestamp)
+        {
+            startMilliseconds = ConvertTimestamp(timestamp);
+        }
+
+        public bool IsRunning
+        {
+            get
+            {
+                return startMilliseconds.HasValue;
+            }
+        }
+
+        public bool HasBeenRunningForThreshold(long currentTimestamp, double threshold)
+        {
+            return IsRunning && ConvertTimestamp(currentTimestamp) - startMilliseconds >= threshold;
+        }
+
+        public void Stop()
+        {
+            startMilliseconds = null;
+        }
 
         public ProgressTimer(float _timeLimit)
         {
             timeLimit = _timeLimit;
         }
 
-        public bool IsRunning
+        private long ConvertTimestamp(long timestamp)
         {
-            get { return stopwatch.IsRunning; }
+            return timestamp / 1000;
         }
 
-        public float Progress
+        public float GetProgress(long currentTimestamp)
         {
-            get { return GetProgress(); }
-        }
+            if (!IsRunning)
+            {
+                return 0.0f;
+            }
 
-        private float GetProgress()
-        {
-            float progress = stopwatch.ElapsedMilliseconds / timeLimit;
+            float progress = (ConvertTimestamp(currentTimestamp) - startMilliseconds.Value) / timeLimit;
             progress = Math.Min(progress, 1f);
             return progress;
-        }
-
-        public void StartTimer()
-        {
-            stopwatch.Restart();
-        }
-
-        public void StopTimer()
-        {
-            stopwatch.Stop();
-        }
-
-        public void ResetTimer()
-        {
-            stopwatch.Reset();
         }
     }
 }

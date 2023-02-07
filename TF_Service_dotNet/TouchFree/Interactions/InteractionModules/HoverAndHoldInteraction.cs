@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
@@ -25,11 +24,11 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private bool hoverTriggered = false;
         private float hoverTriggeredDeadzoneRadius = 0f;
-        private Stopwatch hoverTriggerTimer = new Stopwatch();
+        private TimestampStopwatch hoverTriggerTimer = new TimestampStopwatch();
 
         private bool clickHeld = false;
         private bool clickAlreadySent = false;
-        private Stopwatch clickingTimer = new Stopwatch();
+        private TimestampStopwatch clickingTimer = new TimestampStopwatch();
 
         public HoverAndHoldInteraction(
             IHandManager _handManager,
@@ -74,15 +73,15 @@ namespace Ultraleap.TouchFree.Library.Interactions
 
         private InputActionResult HandleInteractions()
         {
-            var inputActionResult = CreateInputActionResult(InputType.MOVE, positions, progressTimer.Progress);
+            var inputActionResult = CreateInputActionResult(InputType.MOVE, positions, progressTimer.GetProgress(latestTimestamp));
 
             if (!clickHeld && !hoverTriggered && positions.CursorPosition == previousScreenPos)
             {
                 if (!hoverTriggerTimer.IsRunning)
                 {
-                    hoverTriggerTimer.Restart();
+                    hoverTriggerTimer.Restart(latestTimestamp);
                 }
-                else if (hoverTriggerTimer.ElapsedMilliseconds > hoverTriggerTime)
+                else if (hoverTriggerTimer.HasBeenRunningForThreshold(latestTimestamp, hoverTriggerTime))
                 {
                     hoverTriggered = true;
                     hoverTriggerTimer.Stop();
@@ -97,31 +96,31 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 {
                     if (!clickHeld)
                     {
-                        if (!progressTimer.IsRunning && progressTimer.Progress == 0f)
+                        if (!progressTimer.IsRunning && progressTimer.GetProgress(latestTimestamp) == 0f)
                         {
-                            progressTimer.StartTimer();
+                            progressTimer.Restart(latestTimestamp);
                         }
-                        else if (progressTimer.IsRunning && progressTimer.Progress == 1f)
+                        else if (progressTimer.IsRunning && progressTimer.GetProgress(latestTimestamp) == 1f)
                         {
                             positionStabiliser.currentDeadzoneRadius = (timerDeadzoneEnlargementDistance + positionStabiliser.defaultDeadzoneRadius);
-                            progressTimer.StopTimer();
+                            progressTimer.Stop();
                             clickHeld = true;
-                            clickingTimer.Restart();
+                            clickingTimer.Restart(latestTimestamp);
                             inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 1f);
                         }
                         else
                         {
                             float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positionStabiliser.defaultDeadzoneRadius;
-                            float deadzoneRadius = Utilities.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.Progress);
+                            float deadzoneRadius = Utilities.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.GetProgress(latestTimestamp));
 
                             positionStabiliser.currentDeadzoneRadius = deadzoneRadius;
                         }
                     }
                     else
                     {
-                        if (!clickAlreadySent && clickingTimer.ElapsedMilliseconds > clickHoldTime)
+                        if (!clickAlreadySent && clickingTimer.HasBeenRunningForThreshold(latestTimestamp, clickHoldTime))
                         {
-                            inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.Progress);
+                            inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.GetProgress(latestTimestamp));
                             clickAlreadySent = true;
                         }
                     }
@@ -131,10 +130,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
                     if (clickHeld && !clickAlreadySent)
                     {
                         // Handle unclick if move before timer's up
-                        inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.Progress);
+                        inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.GetProgress(latestTimestamp));
                     }
 
-                    progressTimer.ResetTimer();
+                    progressTimer.Stop();
 
                     hoverTriggered = false;
                     hoverTriggerTimer.Stop();
