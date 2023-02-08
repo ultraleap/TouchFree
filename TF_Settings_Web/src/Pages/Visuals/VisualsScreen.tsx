@@ -3,7 +3,8 @@ import styles from './Visuals.module.scss';
 import classNames from 'classnames/bind';
 import React, { useState, useEffect, useRef } from 'react';
 
-import { useIsDesktop, useStatefulRef } from '@/customHooks';
+import { readVisualsConfig } from '@/FileSystemUtils';
+import { useStatefulRef } from '@/customHooks';
 
 import {
     BlackTextBg,
@@ -37,7 +38,6 @@ const bgPreviewImages = [GradientBgPreview, WhiteTextBgPreview, BlackTextBgPrevi
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
-    const isDesktop = useIsDesktop();
     const previewContainer = useRef<HTMLDivElement>(null);
 
     const currentStyle = useStatefulRef<StyleDefaults>('Recommended (Light)');
@@ -71,7 +71,9 @@ const VisualsScreen: React.FC = () => {
         cursorColors.current = styleDefaults[currentStyle.current] ?? customCursorColors.current;
     }, [currentStyle.current]);
 
-    if (!isDesktop) return <></>;
+    useEffect(() => {
+        readVisualsConfig();
+    }, []);
 
     return (
         <div className={classes('scroll-div')}>

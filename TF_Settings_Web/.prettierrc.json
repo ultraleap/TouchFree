@@ -7,7 +7,7 @@
         "(.*)(.css|.scss)$",
         "(.*)react(.*)|canvas-confetti|classnames",
         "uuid",
-        "^@/(index|customHooks)",
+        "^@/(index|customHooks|FileSystem)",
         "^TouchFree/(.*)",
         "^@/(Images|Videos)",
         "^@/Pages(.*)",
