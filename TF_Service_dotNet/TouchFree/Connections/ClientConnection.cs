@@ -78,6 +78,11 @@ namespace Ultraleap.TouchFree.Library.Connections
             SendResponse(_response, ActionCode.HAND_PRESENCE_EVENT);
         }
 
+        public void SendInteractionZoneEvent(InteractionZoneEvent _response)
+        {
+            SendResponse(_response, ActionCode.INTERACTION_ZONE_EVENT);
+        }
+
         private void SendHandshakeResponse(HandShakeResponse _response)
         {
             SendResponse(_response, ActionCode.VERSION_HANDSHAKE_RESPONSE);
@@ -100,6 +105,11 @@ namespace Ultraleap.TouchFree.Library.Connections
         private void SendInitialHandState()
         {
             this.SendHandPresenceEvent(clientMgr.MissedHandPresenceEvent);
+        }
+
+        private void SendInitialInteractionZoneState()
+        {
+            this.SendInteractionZoneEvent(clientMgr.MissedInteractionZoneEvent);
         }
 
         public static Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)

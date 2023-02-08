@@ -14,8 +14,9 @@ namespace Ultraleap.TouchFree.Library.Interactions
         public double millisecondsCooldownOnEntry = 300.0;
         public double clickHoldTimerMs = 1500.0;
 
-        Stopwatch handAppearedCooldown = new Stopwatch();
         Stopwatch clickHoldStopwatch = new Stopwatch();
+
+        TimestampStopwatch handAppearedStopwatch = new TimestampStopwatch();
 
         // Speed in millimeters per second
         public float speedMin = 150f;
@@ -66,9 +67,10 @@ namespace Ultraleap.TouchFree.Library.Interactions
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
+            IClientConnectionManager _connectionManager,
             IOptions<InteractionTuning> _interactionTuning,
             IPositioningModule _positioningModule,
-            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
+            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _connectionManager, _positioningModule, _positionStabiliser)
         {
             interactionTuning = _interactionTuning?.Value;
 
@@ -148,7 +150,7 @@ namespace Ultraleap.TouchFree.Library.Interactions
                 pressing = false;
                 isDragging = false;
                 // Restarts the hand timer every frame that we have no active hand
-                handAppearedCooldown.Restart();
+                handAppearedStopwatch.Restart(latestTimestamp);
 
                 if (hadHandLastFrame)
                 {
@@ -167,13 +169,13 @@ namespace Ultraleap.TouchFree.Library.Interactions
             InputActionResult inputActionResult;
             long currentTimestamp = latestTimestamp;
 
-            if (handAppearedCooldown.IsRunning && handAppearedCooldown.ElapsedMilliseconds >= millisecondsCooldownOnEntry)
+            if (handAppearedStopwatch.HasBeenRunningForThreshold(currentTimestamp, millisecondsCooldownOnEntry))
             {
-                handAppearedCooldown.Stop();
+                handAppearedStopwatch.Stop();
             }
 
             // If not ignoring clicks...
-            if ((previousTime != 0f) && !handAppearedCooldown.IsRunning)
+            if ((previousTime != 0f) && !handAppearedStopwatch.IsRunning)
             {
                 // Calculate important variables needed in determining the key events
                 long dtMicroseconds = (currentTimestamp - previousTime);

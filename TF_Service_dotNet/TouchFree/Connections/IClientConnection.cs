@@ -11,6 +11,7 @@ namespace Ultraleap.TouchFree.Library
         void SendInputAction(InputAction data);
         void SendHandData(HandFrame data, ArraySegment<byte> lastHandData);
         void SendHandPresenceEvent(HandPresenceEvent handsLostEvent);
+        void SendInteractionZoneEvent(InteractionZoneEvent interactionZoneEvent);
         void SendResponse<T>(T _response, ActionCode actionCode);
     }
 }

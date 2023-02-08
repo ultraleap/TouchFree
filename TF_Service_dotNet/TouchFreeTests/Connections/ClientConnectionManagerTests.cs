@@ -11,7 +11,7 @@ namespace TouchFreeTests.Connections
 {
     public class ClientConnectionManagerTests
     {
-        public static string[] ClientConnectionMethods = typeof(IClientConnection).GetMethods().Select(x => x.Name).Where(x => x.StartsWith("Send") && x != "SendHandPresenceEvent").ToArray();
+        public static string[] ClientConnectionMethods = typeof(IClientConnection).GetMethods().Select(x => x.Name).Where(x => x.StartsWith("Send") && x != "SendHandPresenceEvent" && x != "SendInteractionZoneEvent").ToArray();
 
         [TestCaseSource(nameof(ClientConnectionMethods))]
         public void SendMessageMethods_Called_CallsSimilarlyNamedMethodOnClientConnection(string clientConnectionMethod)
