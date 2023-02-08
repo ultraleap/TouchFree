@@ -29,10 +29,12 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         public event Action<TrackingServiceState> ServiceStatusChange;
 
-        public TrackingConnectionManager(IConfigManager _configManager)
+        public TrackingConnectionManager(IConfigManager _configManager) : this(_configManager, new Controller()) { }
+
+        public TrackingConnectionManager(IConfigManager _configManager, IController _controller)
         {
             configManager = _configManager;
-            Controller = new Controller();
+            Controller = _controller;
             Controller.Connect += ControllerOnConnect;
             Controller.Disconnect += ControllerOnDisconnect;
             Controller.Device += ControllerOnDevice;

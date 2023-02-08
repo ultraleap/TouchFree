@@ -38,8 +38,9 @@ namespace Ultraleap.TouchFree.Service
             IHandManager _handManager,
             IVirtualScreen _virtualScreen,
             IConfigManager _configManager,
+            IClientConnectionManager _connectionManager,
             IPositioningModule _positioningModule,
-            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
+            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _connectionManager, _positioningModule, _positionStabiliser)
         {
             grabDetector = new GeneralisedGrabDetector();
             positionConfiguration = new[]

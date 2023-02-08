@@ -65,6 +65,8 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // appropriately. "PROCESSED" when there are no unprocessed changes.
         public HandPresenceState handState = HandPresenceState.PROCESSED;
 
+        public EventUpdate<InteractionZoneState> interactionZoneUpdate = new EventUpdate<InteractionZoneState>(InteractionZoneState.HAND_EXITED, EventStatus.PROCESSED);
+
         // Used to ensure UP events are sent at the correct position relative to the previous
         // MOVE event.
         // This is required due to the culling of events from the actionQueue in CheckForAction.
@@ -224,6 +226,12 @@ namespace Ultraleap.TouchFree.Tooling.Connection
             {
                 ConnectionManager.HandleHandPresenceEvent(handState);
                 handState = HandPresenceState.PROCESSED;
+            }
+
+            if (interactionZoneUpdate.status == EventStatus.UNPROCESSED)
+            {
+                ConnectionManager.HandleInteractionZoneEvent(interactionZoneUpdate.state);
+                interactionZoneUpdate.status = EventStatus.PROCESSED;
             }
         }
 
