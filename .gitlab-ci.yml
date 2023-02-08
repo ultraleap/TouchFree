@@ -348,7 +348,7 @@ TF_Settings::Windows::build:
 TF_Settings::Web::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/ooh/infrastucture/windows-touchfree-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
   script:
     - npm -v
     - npm install -w TF_Settings_Web
