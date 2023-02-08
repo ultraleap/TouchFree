@@ -5,8 +5,8 @@ import classnames from 'classnames/bind';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { InputActionManager } from 'TouchFree/src/Plugins/InputActionManager';
-import { InputType, TouchFreeInputAction } from 'TouchFree/src/TouchFreeToolingTypes';
+import { InputActionManager } from 'touchfree/src/Plugins/InputActionManager';
+import { InputType, TouchFreeInputAction } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { TextButton } from '@/Components';
 

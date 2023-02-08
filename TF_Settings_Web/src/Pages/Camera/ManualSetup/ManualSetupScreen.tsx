@@ -5,10 +5,10 @@ import { FormEvent, useEffect, useReducer } from 'react';
 
 import { useIsLandscape } from '@/customHooks';
 
-import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
-import { PhysicalConfig } from 'TouchFree/src/Configuration/ConfigurationTypes';
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { ConfigurationManager } from 'touchfree/src/Configuration/ConfigurationManager';
+import { PhysicalConfig } from 'touchfree/src/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ConfigState } from 'touchfree/src/Connection/TouchFreeServiceTypes';
 
 import { BackButton, TextEntry } from '@/Components';
 

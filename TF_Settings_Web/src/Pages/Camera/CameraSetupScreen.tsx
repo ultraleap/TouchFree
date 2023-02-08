@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useIsLandscape } from '@/customHooks';
 
-import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
+import { TrackingServiceState } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { QuickSetupIcon, ManualSetupIcon, CameraMaskingIcon } from '@/Images';
 
