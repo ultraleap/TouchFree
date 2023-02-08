@@ -29,6 +29,11 @@ export class WebInputController extends BaseInputController {
     private scrollDirection: ScrollDirection | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
 
+    // Constant: noScrollClassName
+    // Any element with this class name in its css class list will be ignored when trying to find
+    // the correct element for the WebInputController to scroll
+    private readonly noScrollClassName: string = 'touchfree-no-scroll';
+
     // Group: Methods
 
     // Function: constructor
@@ -149,7 +154,7 @@ export class WebInputController extends BaseInputController {
                 this.ResetScrollData();
                 this.elementsOnDown = this.clickableElementsAtPosition(elementsAtPoint);
                 this.scrollElementsOnDown = this.elementsOnDown.filter(
-                    (e) => !e.classList.contains('touchfree-no-scroll')
+                    (e) => !e.classList.contains(this.noScrollClassName)
                 );
 
                 this.lastPosition = _inputData.CursorPosition;
@@ -216,7 +221,7 @@ export class WebInputController extends BaseInputController {
             ) {
                 const element = this.GetElementToScroll(
                     (e: HTMLElement) =>
-                        e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight,
+                        e.scrollHeight > e.clientHeight && e.scrollTop + e.clientHeight < e.scrollHeight - 1,
                     (e: HTMLElement, p: HTMLElement) =>
                         e.offsetHeight === p.offsetHeight && e.scrollHeight === p.scrollHeight
                 );
@@ -283,7 +288,9 @@ export class WebInputController extends BaseInputController {
         }
     }
 
-    // Gets the element that should have scrolling applied to it
+    // Gets the element that should have scrolling applied to it.
+    // Any elements with the class name listed as noScrollClassName applied will be ignored when
+    // finding which element to scroll
     private GetElementToScroll = (
         scrollValidation: (element: HTMLElement) => boolean,
         parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean
@@ -298,13 +305,21 @@ export class WebInputController extends BaseInputController {
             let parentSelected = false;
             let parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
             while (parentAsHtmlElement) {
-                if (!parentScrollValidation(elementToCheckScroll, parentAsHtmlElement)) {
+                const parentIsNoScroll = parentAsHtmlElement.classList.contains(this.noScrollClassName);
+                const elementIsNoScroll = elementToCheckScroll.classList.contains(this.noScrollClassName);
+                const parentScrollValid = parentScrollValidation(elementToCheckScroll, parentAsHtmlElement);
+
+                if (!parentIsNoScroll && !elementIsNoScroll && !parentScrollValid) {
                     break;
                 }
 
-                parentSelected = true;
-                elementToCheckScroll = parentAsHtmlElement;
-                parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+                if (parentIsNoScroll) {
+                    parentAsHtmlElement = parentAsHtmlElement.parentElement as HTMLElement;
+                } else {
+                    parentSelected = true;
+                    elementToCheckScroll = parentAsHtmlElement;
+                    parentAsHtmlElement = elementToCheckScroll.parentElement as HTMLElement;
+                }
             }
 
             if (parentSelected && !scrollValidation(elementToCheckScroll)) continue;
