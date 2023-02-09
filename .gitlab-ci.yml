@@ -123,7 +123,7 @@ TF_Tooling::Docs::build:
 TF_Service::Wrapper::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/ooh/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = ''
@@ -150,7 +150,7 @@ TF_Service::Wrapper::build:
 TF_Service::dotNet::Windows::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/ooh/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = ''
@@ -185,7 +185,7 @@ TF_Service::dotNet::Windows::build:
 TF_Service::dotNet::ARMLinux::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/ooh/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = 'beta'
@@ -242,7 +242,7 @@ Tracking::ARMLinux::download_package:
 TF_Service::dotNet::test:
   stage: test
   when: always
-  image: registry.ultrahaptics.com/ooh/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     # Run unit tests
     - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --results-directory $CI_PROJECT_DIR/TestResults --collect:"XPlat Code Coverage;Format=Cobertura" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
