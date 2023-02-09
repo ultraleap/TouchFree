@@ -1,5 +1,3 @@
-import { getVersion } from '@tauri-apps/api/app';
-
 import { useEffect, useRef, useState } from 'react';
 
 export const useIsFullScreen = () => {
@@ -59,16 +57,4 @@ export const useIsLandscape = () => {
     }, []);
 
     return isLandscape;
-};
-
-export const useIsDesktop = () => {
-    const [isDesktop, setIsDesktop] = useState(false);
-    getVersion()
-        .then(() => {
-            setIsDesktop(true);
-        })
-        .catch(() => {
-            setIsDesktop(false);
-        });
-    return isDesktop;
 };

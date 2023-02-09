@@ -1,21 +1,19 @@
-import { openDir } from '@/FileSystemUtils';
-import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
-import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
-import TouchFree from 'touchfree/src/TouchFree';
-
 import styles from './About.module.scss';
 
 import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
 
-import { useIsDesktop } from '@/customHooks';
+import { openDir, isDesktop } from '@/TauriUtils';
+
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'touchfree/src/TouchFree';
 
 import { TextButton } from '@/Components';
 
 const classes = classNames.bind(styles);
 
 const AboutScreen: React.FC = () => {
-    const isDesktop = useIsDesktop();
     const [tFVersion, setTFVersion] = useState<string>('');
     const [trackingVersion, setTrackingVersion] = useState<string>('');
     const [cameraFWVersion, setCameraFWVersion] = useState<string>('');
@@ -53,7 +51,7 @@ const AboutScreen: React.FC = () => {
                 <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
             </div>
             <div className={classes('page-divider')} />
-            {isDesktop && (
+            {isDesktop() && (
                 <>
                     <div className={classes('title-line')}>
                         <h1> Advanced </h1>

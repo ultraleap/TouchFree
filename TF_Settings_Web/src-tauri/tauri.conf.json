@@ -15,6 +15,10 @@
             "all": false,
             "shell": {
                 "open": ""
+            },
+            "window": {
+                "all": false,
+                "setFullscreen": true
             }
         },
         "bundle": {
@@ -58,10 +62,10 @@
         },
         "windows": [
             {
-                "fullscreen": false,
+                "title": "TouchFree Settings",
+                "fullscreen": true,
                 "maximized": true,
-                "resizable": true,
-                "title": "TouchFree Settings"
+                "resizable": true
             }
         ]
     }

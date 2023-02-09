@@ -161,6 +161,20 @@ const EventImplementations: () => EventImpls = () =>
                 RegisterEventFunc: DefaultRegisterEventFunc,
             }),
         },
+        HandEntered: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: callback, // Void callback can be returned directly
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
+        HandExited: {
+            Target: ConnectionManager.instance,
+            WithCallback: (callback) => ({
+                Listener: callback, // Void callback can be returned directly
+                RegisterEventFunc: DefaultRegisterEventFunc,
+            }),
+        },
     });
 
 // Function: RegisterEventCallback
@@ -199,6 +213,12 @@ const EventImplementations: () => EventImpls = () =>
 //
 // TransmitInputAction: (inputAction: TouchFreeInputAction) => void;
 // Event dispatched from the <InputActionManager> to each registered Plugin
+//
+// HandEntered: () => void;
+// Event dispatched when the active hand enters the interaction zone
+//
+// HandExited: () => void;
+// Event dispatched when the the active hand exits the interaction zone
 const RegisterEventCallback = <TEvent extends TouchFreeEvent>(
     event: TEvent,
     callback: TouchFreeEventSignatures[TEvent]
