@@ -2,6 +2,8 @@ import { open } from '@tauri-apps/api/shell';
 import { invoke } from '@tauri-apps/api/tauri';
 import { appWindow } from '@tauri-apps/api/window';
 
+import { VisualsConfig } from './Pages/Visuals/CursorColorDefaults';
+
 export const isDesktop = () => '__TAURI_METADATA__' in window;
 
 export const toggleFullScreen = async () => {
@@ -12,16 +14,14 @@ export const toggleFullScreen = async () => {
 export const openDir = async (dirPath: string) => {
     try {
         await open(dirPath);
-    } catch {
-        console.warn('No access to file system');
-    }
-};
-
-export const readVisualsConfig = async () => {
-    try {
-        const x = await invoke('read_visuals_config');
-        console.log(x);
     } catch (e) {
         console.warn(e);
     }
+};
+
+export const readVisualsConfig = async (): Promise<VisualsConfig> => {
+    const rawConfig: string = await invoke('read_file_to_string', {
+        path: 'C:/ProgramData/Ultraleap/TouchFree/Configuration/TouchFreeConfig.json',
+    });
+    return JSON.parse(rawConfig) as VisualsConfig;
 };

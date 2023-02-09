@@ -1,14 +1,12 @@
-export const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
+const presets = ['Recommended (Light)', 'Recommended (Dark)', 'Solid (Light)', 'Solid (Dark)', 'Custom'] as const;
+export type StyleDefaults = (typeof presets)[number];
 
+export const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
 export type CursorSectionColors = {
     [Property in (typeof cursorSections)[number]]: string;
 };
 
-const presets = ['Recommended (Light)', 'Recommended (Dark)', 'Solid (Light)', 'Solid (Dark)', 'Custom'] as const;
-
-export type StyleDefaults = (typeof presets)[number];
-
-export const styleDefaults: { [Property in (typeof presets)[number]]: CursorSectionColors | undefined } = {
+export const styleDefaults: { [Property in StyleDefaults]: CursorSectionColors | undefined } = {
     'Recommended (Light)': {
         'Center Border': '#ffffff',
         'Center Fill': '#ffffff00',
@@ -31,3 +29,25 @@ export const styleDefaults: { [Property in (typeof presets)[number]]: CursorSect
     },
     Custom: undefined,
 };
+
+export interface VisualsConfigColor {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+}
+
+export interface VisualsConfig {
+    cursorEnabled: boolean;
+    cursorSizeCm: number;
+    cursorRingThickness: number;
+    activeCursorPreset: number;
+    primaryCustomColor: VisualsConfigColor;
+    secondaryCustomColor: VisualsConfigColor;
+    tertiaryCustomColor: VisualsConfigColor;
+    ctiEnabled: boolean;
+    ctiFilePath: string;
+    ctiHideTrigger: number;
+    ctiShowAfterTimer: number;
+    StartupUIShown: boolean;
+}

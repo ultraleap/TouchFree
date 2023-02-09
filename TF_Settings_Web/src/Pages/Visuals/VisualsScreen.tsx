@@ -3,7 +3,7 @@ import styles from './Visuals.module.scss';
 import classNames from 'classnames/bind';
 import React, { useState, useEffect, useRef } from 'react';
 
-import { readVisualsConfig } from '@/FileSystemUtils';
+import { readVisualsConfig } from '@/TauriUtils';
 import { useStatefulRef } from '@/customHooks';
 
 import {
@@ -72,7 +72,9 @@ const VisualsScreen: React.FC = () => {
     }, [currentStyle.current]);
 
     useEffect(() => {
-        readVisualsConfig();
+        readVisualsConfig()
+            .then((config) => console.log(config))
+            .catch((err) => console.error(err));
     }, []);
 
     return (
