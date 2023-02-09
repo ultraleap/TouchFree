@@ -3,7 +3,7 @@ import styles from './TabBar.module.scss';
 import classnames from 'classnames/bind';
 import { useState } from 'react';
 
-import { useIsDesktop } from '@/customHooks';
+import { isDesktop } from '@/TauriUtils';
 
 import { GearIcon, GearIconGlow } from '@/Images';
 
@@ -12,7 +12,7 @@ import { TabSelector } from '@/Components/Header';
 const classes = classnames.bind(styles);
 
 const TabBar = () => {
-    const showVisualsTab = useIsDesktop();
+    const [showVisualsTab] = useState<boolean>(isDesktop());
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     return (
