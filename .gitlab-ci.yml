@@ -355,6 +355,8 @@ TF_Settings::Web::build:
     - npm ls
     - cd ./TF_Settings_Web
     - npm run tauri build
+    # npm workspaces break generate-license-file so need to remove them before generating the license file
+    - Remove-Item -Force ..\node_modules\touchfree\
     - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol lf
     - azuresigntool sign -du "https://www.ultraleap.com" -kvu "https://$env:SIGN_VAULT_ID.vault.azure.net/"  -kvi "$env:SIGN_VAULT_APPLICATION_ID" -kvs "$env:SIGN_VAULT_APPLICATION_CLIENT_CODE" -kvc "ultraleap-ltd" -kvt "$env:SIGN_VAULT_TENANT_ID" -tr http://timestamp.digicert.com -v "$CI_PROJECT_DIR/TF_Settings_Web/src-tauri/target/release/touchfree-settings-web.exe"
   artifacts:
