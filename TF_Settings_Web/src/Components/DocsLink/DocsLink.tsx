@@ -4,7 +4,7 @@ import classnames from 'classnames/bind';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { CSSProperties, useState, useRef, useEffect } from 'react';
 
-import TouchFree from 'TouchFree/src/TouchFree';
+import TouchFree from 'touchfree/src/TouchFree';
 
 import { Alert, TextButton, OutlinedTextButton } from '@/Components';
 import { tFClickIsPointer } from '@/Components/TFButton/TFButtons';

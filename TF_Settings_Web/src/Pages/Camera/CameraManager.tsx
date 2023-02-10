@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
+import { TrackingServiceState } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { CameraSetupScreen, ManualSetupScreen, MaskingScreen, QuickSetupManager } from '@/Pages';
 

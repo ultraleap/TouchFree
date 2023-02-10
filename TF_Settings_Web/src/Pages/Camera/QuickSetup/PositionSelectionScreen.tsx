@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { useIsLandscape } from '@/customHooks';
 
-import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
-import { ConfigState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
+import { ConfigurationManager } from 'touchfree/src/Configuration/ConfigurationManager';
+import { ConfigState } from 'touchfree/src/Connection/TouchFreeServiceTypes';
 
 import { CameraFacingUserIcon, CameraFacingScreenIcon, CameraBelowIcon } from '@/Images';
 
