@@ -4,7 +4,6 @@ import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
 import React, { useState, useEffect, useRef, useReducer } from 'react';
-import { RgbaColor } from 'react-colorful';
 
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
 import { useStatefulRef } from '@/customHooks';
@@ -31,11 +30,17 @@ import {
 } from '@/Components';
 
 import ColorPicker from './ColorPicker';
-import { StyleDefaults, styleDefaults, VisualsConfig, defaultVisualsConfig, CursorColors } from './VisualsUtils';
+import {
+    CursorStylePresets,
+    cursorStylePresets,
+    VisualsConfig,
+    defaultVisualsConfig,
+    CursorStyle,
+} from './VisualsUtils';
 
 const classes = classNames.bind(styles);
 
-const styleOptions = Object.keys(styleDefaults);
+const styleOptions = Object.keys(cursorStylePresets);
 const bgImages = [GradientBg, WhiteTextBg, BlackTextBg, MountainBg];
 const bgPreviewImages = [GradientBgPreview, WhiteTextBgPreview, BlackTextBgPreview, MountainBgPreview];
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
@@ -52,13 +57,14 @@ const VisualsScreen: React.FC = () => {
     const [state, dispatch] = useReducer(reducer, defaultVisualsConfig);
     const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
 
-    const currentStyle = useStatefulRef<StyleDefaults>('Solid (Light)');
+    const currentStyle = useStatefulRef<CursorStylePresets>('Solid (Light)');
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
 
-    const customCursorColors = useStatefulRef<CursorColors>(['#f8b195ff', '#f67280ff', '#6c5b7bff']);
+    // Store this in the cursor defaults???
+    const customCursorColors = useStatefulRef<CursorStyle>(['#f8b195ff', '#f67280ff', '#6c5b7bff']);
 
-    const cursorColors = useStatefulRef<CursorColors>(
-        styleDefaults[currentStyle.current] ?? customCursorColors.current
+    const cursorColors = useStatefulRef<CursorStyle>(
+        cursorStylePresets[currentStyle.current] ?? customCursorColors.current
     );
 
     useEffect(() => {
@@ -71,7 +77,7 @@ const VisualsScreen: React.FC = () => {
     }, [cursorColors.current]);
 
     useEffect(() => {
-        cursorColors.current = styleDefaults[currentStyle.current] ?? customCursorColors.current;
+        cursorColors.current = cursorStylePresets[currentStyle.current] ?? customCursorColors.current;
     }, [currentStyle.current]);
 
     useEffect(() => {
@@ -122,7 +128,7 @@ const VisualsScreen: React.FC = () => {
                                     selected={styleOptions.indexOf(currentStyle.current) ?? 0}
                                     options={styleOptions}
                                     onChange={(preset) => {
-                                        currentStyle.current = preset as StyleDefaults;
+                                        currentStyle.current = preset as CursorStylePresets;
                                     }}
                                 />
                                 <div
@@ -217,17 +223,20 @@ const VisualsScreen: React.FC = () => {
     );
 };
 
-const getStylePresetFromState = (state: VisualsConfig) => {
+const getStylePresetFromState = (state: VisualsConfig): CursorStylePresets => {
     const { activeCursorPreset, primaryCustomColor, secondaryCustomColor, tertiaryCustomColor } = state;
-    if (activeCursorPreset <= 1) return activeCursorPreset;
+    if (activeCursorPreset === 0) return 'Solid (Light)';
+    if (activeCursorPreset === 1) return 'Solid (Dark)';
 
-    const colors = [primaryCustomColor, secondaryCustomColor, tertiaryCustomColor].map((color) =>
-        convertFromConfigRGBA(color)
-    ) as CursorColors;
-};
+    const stateCursorStyle = [primaryCustomColor, secondaryCustomColor, tertiaryCustomColor].map(
+        (color) => '#' + rgbaToHex(color.r * 255, color.g * 255, color.b * 255, color.a)
+    ) as CursorStyle;
 
-const convertFromConfigRGBA = (color: RgbaColor): string => {
-    return rgbaToHex(color.r * 255, color.g * 255, color.b * 255, color.a);
+    if (isCursorStyleEqual(stateCursorStyle, cursorStylePresets['Outline (Light)'])) return 'Outline (Light)';
+    if (isCursorStyleEqual(stateCursorStyle, cursorStylePresets['Outline (Dark)'])) return 'Outline (Dark)';
+
+    return 'Custom';
 };
+const isCursorStyleEqual = (a: CursorStyle, b?: CursorStyle) => b && a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
 
 export default VisualsScreen;

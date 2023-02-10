@@ -5,20 +5,20 @@ import { HexAlphaColorPicker } from 'react-colorful';
 
 import { TabSelector } from '@/Components/Header';
 
-import { CursorColors } from './VisualsUtils';
+import { CursorStyle } from './VisualsUtils';
 
 interface ColorPickerProps {
-    cursorColors: CursorColors;
-    updateCursorColors: (colors: CursorColors) => void;
+    cursorColors: CursorStyle;
+    updateCursorColors: (colors: CursorStyle) => void;
 }
 
-const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
+const cursorSections = ['Center Fill', 'Outer Fill', 'Center Border'] as const;
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ cursorColors, updateCursorColors }) => {
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     const setCurrentColor = (color: string) => {
-        const newState: CursorColors = { ...cursorColors };
+        const newState: CursorStyle = { ...cursorColors };
         newState[activeTabIndex] = color;
         updateCursorColors(newState);
     };

@@ -1,15 +1,14 @@
 import { RgbaColor } from 'react-colorful';
 
-const presets = ['Solid (Light)', 'Solid (Dark)', 'Outline (Light)', 'Outline (Dark)', 'Custom'] as const;
-export type StyleDefaults = (typeof presets)[number];
+export type CursorStylePresets = 'Solid (Light)' | 'Solid (Dark)' | 'Outline (Light)' | 'Outline (Dark)' | 'Custom';
 
-export type CursorColors = [string, string, string];
+export type CursorStyle = [string, string, string];
 
-export const styleDefaults: { [Property in StyleDefaults]: CursorColors | undefined } = {
-    'Solid (Light)': ['#000000ff', '#ffffffff', '#ffffffff'],
-    'Solid (Dark)': ['#ffffffff', '#000000ff', '#000000ff'],
-    'Outline (Light)': ['#ffffffff', '#ffffff00', '#ffffffff'],
-    'Outline (Dark)': ['#000000ff', '#00000000', '#000000ff'],
+export const cursorStylePresets: { [Property in CursorStylePresets]: CursorStyle | undefined } = {
+    'Solid (Light)': ['#ffffffff', '#ffffffff', '#000000ff'],
+    'Solid (Dark)': ['#000000ff', '#000000ff', '#ffffffff'],
+    'Outline (Light)': ['#ffffffff', '#ffffffff', '#ffffff00'],
+    'Outline (Dark)': ['#000000ff', '#000000ff', '#00000000'],
     Custom: undefined,
 };
 
