@@ -1,26 +1,25 @@
 import './ColorPicker.scss';
 
 import React, { useState } from 'react';
-import { useMemo } from 'react';
 import { HexAlphaColorPicker } from 'react-colorful';
 
 import { TabSelector } from '@/Components/Header';
 
-import { CursorSectionColors, cursorSections } from './VisualsUtils';
+import { CursorColors } from './VisualsUtils';
 
 interface ColorPickerProps {
-    cursorColors: CursorSectionColors;
-    updateCursorColors: (colors: CursorSectionColors) => void;
+    cursorColors: CursorColors;
+    updateCursorColors: (colors: CursorColors) => void;
 }
+
+const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ cursorColors, updateCursorColors }) => {
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
-    const currentSection = useMemo(() => cursorSections[activeTabIndex], [activeTabIndex]);
-
     const setCurrentColor = (color: string) => {
-        const newState = { ...cursorColors };
-        newState[currentSection] = color;
+        const newState: CursorColors = { ...cursorColors };
+        newState[activeTabIndex] = color;
         updateCursorColors(newState);
     };
 
@@ -40,11 +39,11 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorColors, updateCursorCol
                 ))}
             </div>
             <div className={'color-picker__body'}>
-                <HexAlphaColorPicker color={cursorColors[currentSection]} onChange={setCurrentColor} />
+                <HexAlphaColorPicker color={cursorColors[activeTabIndex]} onChange={setCurrentColor} />
                 <input
                     type="text"
                     className={'color-picker__body__text'}
-                    value={cursorColors[currentSection]}
+                    value={cursorColors[activeTabIndex]}
                     onChange={(e) => setCurrentColor(e.target.value)}
                 />
             </div>

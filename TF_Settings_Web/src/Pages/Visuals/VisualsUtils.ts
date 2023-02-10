@@ -1,50 +1,26 @@
+import { RgbaColor } from 'react-colorful';
+
 const presets = ['Solid (Light)', 'Solid (Dark)', 'Outline (Light)', 'Outline (Dark)', 'Custom'] as const;
 export type StyleDefaults = (typeof presets)[number];
 
-export const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
-export type CursorSectionColors = {
-    [Property in (typeof cursorSections)[number]]: string;
-};
+export type CursorColors = [string, string, string];
 
-export const styleDefaults: { [Property in StyleDefaults]: CursorSectionColors | undefined } = {
-    'Solid (Light)': {
-        'Center Border': '#000000',
-        'Center Fill': '#ffffff',
-        'Outer Fill': '#ffffff',
-    },
-    'Solid (Dark)': {
-        'Center Border': '#ffffff',
-        'Center Fill': '#000000',
-        'Outer Fill': '#000000',
-    },
-    'Outline (Light)': {
-        'Center Border': '#ffffff',
-        'Center Fill': '#ffffff00',
-        'Outer Fill': '#ffffff',
-    },
-    'Outline (Dark)': {
-        'Center Border': '#000000',
-        'Center Fill': '#00000000',
-        'Outer Fill': '#000000',
-    },
+export const styleDefaults: { [Property in StyleDefaults]: CursorColors | undefined } = {
+    'Solid (Light)': ['#000000ff', '#ffffffff', '#ffffffff'],
+    'Solid (Dark)': ['#ffffffff', '#000000ff', '#000000ff'],
+    'Outline (Light)': ['#ffffffff', '#ffffff00', '#ffffffff'],
+    'Outline (Dark)': ['#000000ff', '#00000000', '#000000ff'],
     Custom: undefined,
 };
-
-export interface VisualsConfigColor {
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-}
 
 export interface VisualsConfig {
     cursorEnabled: boolean;
     cursorSizeCm: number;
     cursorRingThickness: number;
     activeCursorPreset: number;
-    primaryCustomColor: VisualsConfigColor;
-    secondaryCustomColor: VisualsConfigColor;
-    tertiaryCustomColor: VisualsConfigColor;
+    primaryCustomColor: RgbaColor;
+    secondaryCustomColor: RgbaColor;
+    tertiaryCustomColor: RgbaColor;
     ctiEnabled: boolean;
     ctiFilePath: string;
     ctiHideTrigger: number;
@@ -57,24 +33,9 @@ export const defaultVisualsConfig: VisualsConfig = {
     cursorSizeCm: 0.25,
     cursorRingThickness: 0.15,
     activeCursorPreset: 0,
-    primaryCustomColor: {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0,
-        a: 1.0,
-    },
-    secondaryCustomColor: {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0,
-        a: 1.0,
-    },
-    tertiaryCustomColor: {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    },
+    primaryCustomColor: { r: 1, b: 1, g: 1, a: 1 },
+    secondaryCustomColor: { r: 1, b: 1, g: 1, a: 1 },
+    tertiaryCustomColor: { r: 0, b: 0, g: 0, a: 1 },
     ctiEnabled: false,
     ctiFilePath:
         // eslint-disable-next-line max-len

@@ -1,7 +1,10 @@
+import rgbaToHex from 'rgb-hex';
+
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
 import React, { useState, useEffect, useRef, useReducer } from 'react';
+import { RgbaColor } from 'react-colorful';
 
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
 import { useStatefulRef } from '@/customHooks';
@@ -28,7 +31,7 @@ import {
 } from '@/Components';
 
 import ColorPicker from './ColorPicker';
-import { CursorSectionColors, StyleDefaults, styleDefaults, VisualsConfig, defaultVisualsConfig } from './VisualsUtils';
+import { StyleDefaults, styleDefaults, VisualsConfig, defaultVisualsConfig, CursorColors } from './VisualsUtils';
 
 const classes = classNames.bind(styles);
 
@@ -52,13 +55,9 @@ const VisualsScreen: React.FC = () => {
     const currentStyle = useStatefulRef<StyleDefaults>('Solid (Light)');
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
 
-    const customCursorColors = useStatefulRef<CursorSectionColors>({
-        'Center Border': '#f8b195ff',
-        'Center Fill': '#f67280ff',
-        'Outer Fill': '#6c5b7bff',
-    });
+    const customCursorColors = useStatefulRef<CursorColors>(['#f8b195ff', '#f67280ff', '#6c5b7bff']);
 
-    const cursorColors = useStatefulRef<CursorSectionColors>(
+    const cursorColors = useStatefulRef<CursorColors>(
         styleDefaults[currentStyle.current] ?? customCursorColors.current
     );
 
@@ -66,9 +65,9 @@ const VisualsScreen: React.FC = () => {
         const style = previewContainer.current?.style;
         if (!style) return;
 
-        style.setProperty('--outer-fill', cursorColors.current['Outer Fill']);
-        style.setProperty('--center-fill', cursorColors.current['Center Fill']);
-        style.setProperty('--center-border', cursorColors.current['Center Border']);
+        style.setProperty('--center-fill', cursorColors.current[0]);
+        style.setProperty('--outer-fill', cursorColors.current[1]);
+        style.setProperty('--center-border', cursorColors.current[2]);
     }, [cursorColors.current]);
 
     useEffect(() => {
@@ -80,6 +79,7 @@ const VisualsScreen: React.FC = () => {
             .then((fileConfig) => {
                 dispatch(fileConfig);
                 setHasReadConfig(true);
+                getStylePresetFromState(fileConfig);
             })
             .catch((err) => console.error(err));
 
@@ -121,7 +121,9 @@ const VisualsScreen: React.FC = () => {
                                     name="StylePresets"
                                     selected={styleOptions.indexOf(currentStyle.current) ?? 0}
                                     options={styleOptions}
-                                    onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
+                                    onChange={(preset) => {
+                                        currentStyle.current = preset as StyleDefaults;
+                                    }}
                                 />
                                 <div
                                     className={classes('cursor-preview')}
@@ -213,6 +215,19 @@ const VisualsScreen: React.FC = () => {
             </div>
         </div>
     );
+};
+
+const getStylePresetFromState = (state: VisualsConfig) => {
+    const { activeCursorPreset, primaryCustomColor, secondaryCustomColor, tertiaryCustomColor } = state;
+    if (activeCursorPreset <= 1) return activeCursorPreset;
+
+    const colors = [primaryCustomColor, secondaryCustomColor, tertiaryCustomColor].map((color) =>
+        convertFromConfigRGBA(color)
+    ) as CursorColors;
+};
+
+const convertFromConfigRGBA = (color: RgbaColor): string => {
+    return rgbaToHex(color.r * 255, color.g * 255, color.b * 255, color.a);
 };
 
 export default VisualsScreen;
