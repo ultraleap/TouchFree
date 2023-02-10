@@ -3,7 +3,7 @@ import styles from './Visuals.module.scss';
 import classNames from 'classnames/bind';
 import React, { useState, useEffect, useRef } from 'react';
 
-import { readVisualsConfig } from '@/TauriUtils';
+import { readVisualsConfig, isDesktop } from '@/TauriUtils';
 import { useStatefulRef } from '@/customHooks';
 
 import {
@@ -28,7 +28,7 @@ import {
 } from '@/Components';
 
 import ColorPicker from './ColorPicker';
-import { CursorSectionColors, StyleDefaults, styleDefaults } from './CursorColorDefaults';
+import { CursorSectionColors, StyleDefaults, styleDefaults, VisualsConfig } from './CursorColorDefaults';
 
 const classes = classNames.bind(styles);
 
@@ -39,6 +39,7 @@ const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
     const previewContainer = useRef<HTMLDivElement>(null);
+    const [config, setConfig] = useState<VisualsConfig>();
 
     const currentStyle = useStatefulRef<StyleDefaults>('Recommended (Light)');
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
@@ -73,9 +74,11 @@ const VisualsScreen: React.FC = () => {
 
     useEffect(() => {
         readVisualsConfig()
-            .then((config) => console.log(config))
+            .then((fileConfig) => setConfig(fileConfig))
             .catch((err) => console.error(err));
     }, []);
+
+    if (!isDesktop() || !config) return <></>;
 
     return (
         <div className={classes('scroll-div')}>
