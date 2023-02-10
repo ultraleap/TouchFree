@@ -1,4 +1,4 @@
-const presets = ['Recommended (Light)', 'Recommended (Dark)', 'Solid (Light)', 'Solid (Dark)', 'Custom'] as const;
+const presets = ['Solid (Light)', 'Solid (Dark)', 'Outline (Light)', 'Outline (Dark)', 'Custom'] as const;
 export type StyleDefaults = (typeof presets)[number];
 
 export const cursorSections = ['Outer Fill', 'Center Fill', 'Center Border'] as const;
@@ -7,16 +7,6 @@ export type CursorSectionColors = {
 };
 
 export const styleDefaults: { [Property in StyleDefaults]: CursorSectionColors | undefined } = {
-    'Recommended (Light)': {
-        'Center Border': '#ffffff',
-        'Center Fill': '#ffffff00',
-        'Outer Fill': '#ffffff',
-    },
-    'Recommended (Dark)': {
-        'Center Border': '#000000',
-        'Center Fill': '#00000000',
-        'Outer Fill': '#000000',
-    },
     'Solid (Light)': {
         'Center Border': '#000000',
         'Center Fill': '#ffffff',
@@ -25,6 +15,16 @@ export const styleDefaults: { [Property in StyleDefaults]: CursorSectionColors |
     'Solid (Dark)': {
         'Center Border': '#ffffff',
         'Center Fill': '#000000',
+        'Outer Fill': '#000000',
+    },
+    'Outline (Light)': {
+        'Center Border': '#ffffff',
+        'Center Fill': '#ffffff00',
+        'Outer Fill': '#ffffff',
+    },
+    'Outline (Dark)': {
+        'Center Border': '#000000',
+        'Center Fill': '#00000000',
         'Outer Fill': '#000000',
     },
     Custom: undefined,
@@ -51,3 +51,35 @@ export interface VisualsConfig {
     ctiShowAfterTimer: number;
     StartupUIShown: boolean;
 }
+
+export const defaultVisualsConfig: VisualsConfig = {
+    cursorEnabled: true,
+    cursorSizeCm: 0.25,
+    cursorRingThickness: 0.15,
+    activeCursorPreset: 0,
+    primaryCustomColor: {
+        r: 1.0,
+        g: 1.0,
+        b: 1.0,
+        a: 1.0,
+    },
+    secondaryCustomColor: {
+        r: 1.0,
+        g: 1.0,
+        b: 1.0,
+        a: 1.0,
+    },
+    tertiaryCustomColor: {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    },
+    ctiEnabled: false,
+    ctiFilePath:
+        // eslint-disable-next-line max-len
+        'C:/Program Files/Ultraleap/TouchFree/SettingsUI/TouchFreeSettingsUI_Data/StreamingAssets/CallToInteract/AirPush_Portrait.mp4',
+    ctiHideTrigger: 1,
+    ctiShowAfterTimer: 10.0,
+    StartupUIShown: false,
+};

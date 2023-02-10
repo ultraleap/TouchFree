@@ -1,9 +1,9 @@
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 
-import { readVisualsConfig, isDesktop } from '@/TauriUtils';
+import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
 import { useStatefulRef } from '@/customHooks';
 
 import {
@@ -28,7 +28,7 @@ import {
 } from '@/Components';
 
 import ColorPicker from './ColorPicker';
-import { CursorSectionColors, StyleDefaults, styleDefaults, VisualsConfig } from './CursorColorDefaults';
+import { CursorSectionColors, StyleDefaults, styleDefaults, VisualsConfig, defaultVisualsConfig } from './VisualsUtils';
 
 const classes = classNames.bind(styles);
 
@@ -39,15 +39,18 @@ const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
     const previewContainer = useRef<HTMLDivElement>(null);
-    const [config, setConfig] = useState<VisualsConfig>();
 
-    const currentStyle = useStatefulRef<StyleDefaults>('Recommended (Light)');
+    const reducer = (state: VisualsConfig, content: Partial<VisualsConfig>) => {
+        const newState: VisualsConfig = { ...state, ...content };
+        stateRef.current = newState;
+        return newState;
+    };
+    const stateRef = useRef<VisualsConfig>(defaultVisualsConfig);
+    const [state, dispatch] = useReducer(reducer, defaultVisualsConfig);
+    const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
+
+    const currentStyle = useStatefulRef<StyleDefaults>('Solid (Light)');
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
-    const [size, setSize] = useState<number>(0.5);
-    const [ringThickness, setRingThickness] = useState<number>(0.15);
-    const [ctiEnabled, setCtiEnabled] = useState<boolean>(true);
-    const [ctiTriggerTime, setCtiTriggerTime] = useState<number>(10);
-    const [ctiCloseOptionIndex, setCtiCloseOptionIndex] = useState<number>(0);
 
     const customCursorColors = useStatefulRef<CursorSectionColors>({
         'Center Border': '#f8b195ff',
@@ -74,19 +77,22 @@ const VisualsScreen: React.FC = () => {
 
     useEffect(() => {
         readVisualsConfig()
-            .then((fileConfig) => setConfig(fileConfig))
+            .then((fileConfig) => {
+                dispatch(fileConfig);
+                setHasReadConfig(true);
+            })
             .catch((err) => console.error(err));
+
+        return () => {
+            writeVisualsConfig(stateRef.current);
+        };
     }, []);
 
-    if (!isDesktop() || !config) return <></>;
+    if (!isDesktop() || !hasReadConfig) return <></>;
 
     return (
         <div className={classes('scroll-div')}>
             <div className={classes('container')}>
-                <div className={classes('title-line')}>
-                    <h1> Cursor Styles </h1>
-                    <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET STYLES')} />
-                </div>
                 <label className={classes('label-container')}>
                     <p className={classes('label-container__label')}>
                         Visuals affects Overlay application only.
@@ -98,59 +104,73 @@ const VisualsScreen: React.FC = () => {
                         url={'https://developer.leapmotion.com/touchfree-tooling-for-web'}
                     />
                 </label>
+                <div className={classes('title-line')}>
+                    <h1> Cursor Styles </h1>
+                    <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET STYLES')} />
+                </div>
                 <div className={classes('section')}>
-                    <div className={classes('two-cols')}>
-                        <RadioGroup
-                            name="StylePresets"
-                            selected={styleOptions.indexOf(currentStyle.current) ?? 0}
-                            options={styleOptions}
-                            onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
-                        />
-                        <div
-                            className={classes('cursor-preview')}
-                            style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
-                        >
-                            <div ref={previewContainer} className={classes('cursor-preview__cursor')} />
-                            <div className={classes('cursor-preview__bg-selector')}>
-                                {bgPreviewImages.map((src, index) => (
-                                    <img
-                                        key={index}
-                                        className={classes('cursor-preview__bg-selector__img', {
-                                            'cursor-preview__bg-selector__img--active': index === currentPreviewBgIndex,
-                                        })}
-                                        onClick={() => setCurrentPreviewBgIndex(index)}
-                                        src={src}
-                                    />
-                                ))}
+                    <LabelledToggleSwitch
+                        name="Enable Cursor"
+                        value={state.cursorEnabled}
+                        onChange={(value) => dispatch({ cursorEnabled: value })}
+                    />
+                    {state.cursorEnabled && (
+                        <>
+                            <div className={classes('two-cols')}>
+                                <RadioGroup
+                                    name="StylePresets"
+                                    selected={styleOptions.indexOf(currentStyle.current) ?? 0}
+                                    options={styleOptions}
+                                    onChange={(preset) => (currentStyle.current = preset as StyleDefaults)}
+                                />
+                                <div
+                                    className={classes('cursor-preview')}
+                                    style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
+                                >
+                                    <div ref={previewContainer} className={classes('cursor-preview__cursor')} />
+                                    <div className={classes('cursor-preview__bg-selector')}>
+                                        {bgPreviewImages.map((src, index) => (
+                                            <img
+                                                key={index}
+                                                className={classes('cursor-preview__bg-selector__img', {
+                                                    'cursor-preview__bg-selector__img--active':
+                                                        index === currentPreviewBgIndex,
+                                                })}
+                                                onClick={() => setCurrentPreviewBgIndex(index)}
+                                                src={src}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    {currentStyle.current === 'Custom' && (
-                        <ColorPicker
-                            cursorColors={cursorColors.current}
-                            updateCursorColors={(colors) =>
-                                (customCursorColors.current = cursorColors.current = colors)
-                            }
-                        />
+                            {currentStyle.current === 'Custom' && (
+                                <ColorPicker
+                                    cursorColors={cursorColors.current}
+                                    updateCursorColors={(colors) =>
+                                        (customCursorColors.current = cursorColors.current = colors)
+                                    }
+                                />
+                            )}
+                            <TextSlider
+                                name="Size (cm)"
+                                rangeMin={0.1}
+                                rangeMax={1}
+                                leftLabel="Min"
+                                rightLabel="Max"
+                                value={state.cursorSizeCm}
+                                onChange={(value) => dispatch({ cursorSizeCm: value })}
+                            />
+                            <TextSlider
+                                name="Ring Thickness (cm)"
+                                rangeMin={0.05}
+                                rangeMax={0.6}
+                                leftLabel="Min"
+                                rightLabel="Max"
+                                value={state.cursorRingThickness}
+                                onChange={(value) => dispatch({ cursorRingThickness: value })}
+                            />
+                        </>
                     )}
-                    <TextSlider
-                        name="Size (cm)"
-                        rangeMin={0.1}
-                        rangeMax={1}
-                        leftLabel="Min"
-                        rightLabel="Max"
-                        value={size}
-                        onChange={setSize}
-                    />
-                    <TextSlider
-                        name="Ring Thickness (cm)"
-                        rangeMin={0.05}
-                        rangeMax={0.6}
-                        leftLabel="Min"
-                        rightLabel="Max"
-                        value={ringThickness}
-                        onChange={setRingThickness}
-                    />
                 </div>
                 <div className={classes('page-divider')} />
                 <div className={classes('title-line')}>
@@ -158,8 +178,12 @@ const VisualsScreen: React.FC = () => {
                     <OutlinedTextButton title="Reset to Default" onClick={() => console.log('RESET CTI')} />
                 </div>
                 <div className={classes('section')}>
-                    <LabelledToggleSwitch name="Enable Call to Interact" value={ctiEnabled} onChange={setCtiEnabled} />
-                    {ctiEnabled && (
+                    <LabelledToggleSwitch
+                        name="Enable Call to Interact"
+                        value={state.ctiEnabled}
+                        onChange={(value) => dispatch({ ctiEnabled: value })}
+                    />
+                    {state.ctiEnabled && (
                         <>
                             <FileInput
                                 name="Call to Interact File"
@@ -169,19 +193,19 @@ const VisualsScreen: React.FC = () => {
                             />
                             <TextSlider
                                 name="Inactivity Activation"
-                                rangeMin={5}
+                                rangeMin={1}
                                 rangeMax={60}
                                 stepSize={1}
-                                leftLabel="5 Seconds"
+                                leftLabel="1 Seconds"
                                 rightLabel="60 Seconds"
-                                value={ctiTriggerTime}
-                                onChange={setCtiTriggerTime}
+                                value={state.ctiShowAfterTimer}
+                                onChange={(value) => dispatch({ ctiShowAfterTimer: value })}
                             />
                             <RadioLine
                                 name="Close CTI When"
-                                selected={ctiCloseOptionIndex}
+                                selected={state.ctiHideTrigger}
                                 options={closeCtiOptions}
-                                onChange={(option) => setCtiCloseOptionIndex(closeCtiOptions.indexOf(option))}
+                                onChange={(option) => dispatch({ ctiHideTrigger: closeCtiOptions.indexOf(option) })}
                             />
                         </>
                     )}

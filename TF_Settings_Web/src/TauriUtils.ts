@@ -2,7 +2,7 @@ import { open } from '@tauri-apps/api/shell';
 import { invoke } from '@tauri-apps/api/tauri';
 import { appWindow } from '@tauri-apps/api/window';
 
-import { VisualsConfig } from './Pages/Visuals/CursorColorDefaults';
+import { VisualsConfig } from './Pages/Visuals/VisualsUtils';
 
 export const isDesktop = () => '__TAURI_METADATA__' in window;
 
@@ -24,4 +24,11 @@ export const readVisualsConfig = async (): Promise<VisualsConfig> => {
         path: 'C:/ProgramData/Ultraleap/TouchFree/Configuration/TouchFreeConfig.json',
     });
     return JSON.parse(rawConfig) as VisualsConfig;
+};
+
+export const writeVisualsConfig = async (config: VisualsConfig) => {
+    invoke('write_string_to_file', {
+        path: 'C:/ProgramData/Ultraleap/TouchFree/Configuration/TouchFreeConfig.json',
+        contents: JSON.stringify(config, null, 4),
+    });
 };

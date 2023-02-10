@@ -6,7 +6,7 @@ import { HexAlphaColorPicker } from 'react-colorful';
 
 import { TabSelector } from '@/Components/Header';
 
-import { CursorSectionColors, cursorSections } from './CursorColorDefaults';
+import { CursorSectionColors, cursorSections } from './VisualsUtils';
 
 interface ColorPickerProps {
     cursorColors: CursorSectionColors;
