@@ -202,9 +202,9 @@ const VisualsScreen: React.FC = () => {
                         <>
                             <FileInput
                                 name="Call to Interact File"
-                                value="1 Push in mid-air to start.mp4"
-                                acceptedFileTypes="video/*"
-                                onChange={(e) => console.log(e.target.value)}
+                                value={state.ctiFilePath.split('/').pop() ?? ''}
+                                acceptedExtensions={['mp4']}
+                                onFilePicked={(path) => dispatch({ ctiFilePath: path })}
                             />
                             <TextSlider
                                 name="Inactivity Activation"

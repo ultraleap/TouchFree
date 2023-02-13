@@ -1,3 +1,4 @@
+import { open as openDialog } from '@tauri-apps/api/dialog';
 import { open } from '@tauri-apps/api/shell';
 import { invoke } from '@tauri-apps/api/tauri';
 import { appWindow } from '@tauri-apps/api/window';
@@ -32,3 +33,6 @@ export const writeVisualsConfig = async (config: VisualsConfig) => {
         contents: JSON.stringify(config, null, 4),
     });
 };
+
+export const openFilePicker = async (extensions: string[]): Promise<string | string[] | null> =>
+    await openDialog({ directory: false, multiple: false, filters: [{ name: 'filter', extensions }] });

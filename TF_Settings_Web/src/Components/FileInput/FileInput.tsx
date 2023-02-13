@@ -2,7 +2,10 @@ import styles from './FileInput.module.scss';
 import interactionStyles from '@/Pages/Interactions/Interactions.module.scss';
 
 import classnames from 'classnames/bind';
-import React, { ChangeEventHandler } from 'react';
+import React from 'react';
+
+import { isDesktop } from '@/TauriUtils';
+import { openFilePicker } from '@/TauriUtils';
 
 import { FileIcon } from '@/Images';
 
@@ -12,21 +15,29 @@ const interactionClasses = classnames.bind(interactionStyles);
 interface FileInputProps {
     name: string;
     value: string;
-    acceptedFileTypes?: string;
-    onChange: ChangeEventHandler<HTMLInputElement>;
+    acceptedExtensions: string[];
+    onFilePicked: (path: string) => void;
 }
 
-const FileInput: React.FC<FileInputProps> = ({ name, value, acceptedFileTypes, onChange }) => {
+// Only to be used when inside a Tauri context (as openFilePickers uses Tauri dialogs)
+const FileInput: React.FC<FileInputProps> = ({ name, value, acceptedExtensions, onFilePicked }) => {
+    if (!isDesktop()) return <></>;
+
     return (
         <label className={interactionClasses('input-label-container')}>
             <p className={classes('label')}>{name}</p>
-            <label className={classes('container')}>
-                <input
-                    type="file"
-                    accept={acceptedFileTypes}
-                    className={classes('container__input')}
-                    onChange={onChange}
-                />
+            <label
+                className={classes('container')}
+                onClick={() => {
+                    openFilePicker(acceptedExtensions)
+                        .then((path) => {
+                            if (typeof path === 'string' && !Array.isArray(path)) {
+                                onFilePicked(path.replaceAll('\\', '/'));
+                            }
+                        })
+                        .catch((e) => console.error(e));
+                }}
+            >
                 <div className={classes('container__path')}>{value}</div>
                 <img className={classes('container__icon')} src={FileIcon} />
             </label>
