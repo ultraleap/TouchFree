@@ -3,8 +3,10 @@ import { open } from '@tauri-apps/api/shell';
 import { invoke } from '@tauri-apps/api/tauri';
 import { appWindow } from '@tauri-apps/api/window';
 
-import { VisualsConfig } from './Pages/Visuals/VisualsUtils';
+import { VisualsConfig } from '@/Pages/Visuals/VisualsUtils';
 
+// If we are running in a tauri environment (i.e. are a desktop app) then the
+// window will have the __TAURI_METADATA__ property
 export const isDesktop = () => '__TAURI_METADATA__' in window;
 
 export const toggleFullScreen = async () => {
