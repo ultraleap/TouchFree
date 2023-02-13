@@ -84,12 +84,6 @@ const VisualsScreen: React.FC = () => {
             .catch((err) => console.error(err));
 
         return () => {
-            const cursorStyle = cursorStyles['Custom'];
-            dispatch({
-                primaryCustomColor: convertHexToRGBA(cursorStyle[0]),
-                secondaryCustomColor: convertHexToRGBA(cursorStyle[1]),
-                tertiaryCustomColor: convertHexToRGBA(cursorStyle[2]),
-            });
             writeVisualsConfig(stateRef.current).catch((err) => console.error(err));
         };
     }, []);
@@ -122,7 +116,7 @@ const VisualsScreen: React.FC = () => {
                     />
                     {state.cursorEnabled && (
                         <>
-                            <div className={classes('two-cols')}>
+                            <div className={classes('cursor-styles')}>
                                 <RadioGroup
                                     name="StylePresets"
                                     selected={styleOptions.indexOf(currentPreset) ?? 0}
@@ -133,16 +127,16 @@ const VisualsScreen: React.FC = () => {
                                     }}
                                 />
                                 <div
-                                    className={classes('cursor-preview')}
+                                    className={classes('cursor-styles-preview')}
                                     style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
                                 >
-                                    <div ref={previewContainer} className={classes('cursor-preview__cursor')} />
-                                    <div className={classes('cursor-preview__bg-selector')}>
+                                    <div ref={previewContainer} className={classes('cursor-styles-preview__cursor')} />
+                                    <div className={classes('cursor-styles-preview__bg-selector')}>
                                         {bgPreviewImages.map((src, index) => (
                                             <img
                                                 key={index}
-                                                className={classes('cursor-preview__bg-selector__img', {
-                                                    'cursor-preview__bg-selector__img--active':
+                                                className={classes('cursor-styles-preview__bg-selector__img', {
+                                                    'cursor-styles-preview__bg-selector__img--active':
                                                         index === currentPreviewBgIndex,
                                                 })}
                                                 onClick={() => setCurrentPreviewBgIndex(index)}
@@ -153,37 +147,43 @@ const VisualsScreen: React.FC = () => {
                                 </div>
                             </div>
                             {currentPreset === 'Custom' && (
-                                <ColorPicker
-                                    cursorColors={cursorStyles['Custom']}
-                                    updateCursorColors={(colors) => {
-                                        cursorStyles.Custom = colors;
-                                        dispatch({
-                                            primaryCustomColor: convertHexToRGBA(colors[0]),
-                                            secondaryCustomColor: convertHexToRGBA(colors[1]),
-                                            tertiaryCustomColor: convertHexToRGBA(colors[2]),
-                                        });
-                                        updateCursorPreview(colors);
-                                    }}
-                                />
+                                <span className={classes('cursor__color-picker')}>
+                                    <ColorPicker
+                                        cursorColors={cursorStyles['Custom']}
+                                        updateCursorColors={(colors) => {
+                                            cursorStyles.Custom = colors;
+                                            dispatch({
+                                                primaryCustomColor: convertHexToRGBA(colors[0]),
+                                                secondaryCustomColor: convertHexToRGBA(colors[1]),
+                                                tertiaryCustomColor: convertHexToRGBA(colors[2]),
+                                            });
+                                            updateCursorPreview(colors);
+                                        }}
+                                    />
+                                </span>
                             )}
-                            <TextSlider
-                                name="Size (cm)"
-                                rangeMin={0.1}
-                                rangeMax={1}
-                                leftLabel="Min"
-                                rightLabel="Max"
-                                value={state.cursorSizeCm}
-                                onChange={(value) => dispatch({ cursorSizeCm: value })}
-                            />
-                            <TextSlider
-                                name="Ring Thickness (cm)"
-                                rangeMin={0.05}
-                                rangeMax={0.6}
-                                leftLabel="Min"
-                                rightLabel="Max"
-                                value={state.cursorRingThickness}
-                                onChange={(value) => dispatch({ cursorRingThickness: value })}
-                            />
+                            <span className={classes('cursor__size')}>
+                                <TextSlider
+                                    name="Size (cm)"
+                                    rangeMin={0.1}
+                                    rangeMax={1}
+                                    leftLabel="Min"
+                                    rightLabel="Max"
+                                    value={roundToTwoDP(state.cursorSizeCm)}
+                                    onChange={(value) => dispatch({ cursorSizeCm: value })}
+                                />
+                            </span>
+                            <span className={classes('cursor__thickness')}>
+                                <TextSlider
+                                    name="Ring Thickness (cm)"
+                                    rangeMin={0.05}
+                                    rangeMax={0.6}
+                                    leftLabel="Min"
+                                    rightLabel="Max"
+                                    value={roundToTwoDP(state.cursorRingThickness)}
+                                    onChange={(value) => dispatch({ cursorRingThickness: value })}
+                                />
+                            </span>
                         </>
                     )}
                 </div>
@@ -213,7 +213,7 @@ const VisualsScreen: React.FC = () => {
                                 stepSize={1}
                                 leftLabel="1 Seconds"
                                 rightLabel="60 Seconds"
-                                value={state.ctiShowAfterTimer}
+                                value={roundToTwoDP(state.ctiShowAfterTimer)}
                                 onChange={(value) => dispatch({ ctiShowAfterTimer: value })}
                             />
                             <RadioLine
@@ -230,10 +230,12 @@ const VisualsScreen: React.FC = () => {
     );
 };
 
+const roundToTwoDP = (numberIn: number) => Math.round(numberIn * 100) / 100;
+
 const setCustomColorsFromConfig = (config: VisualsConfig) => {
     const { primaryCustomColor, secondaryCustomColor, tertiaryCustomColor } = config;
     cursorStyles.Custom = [primaryCustomColor, secondaryCustomColor, tertiaryCustomColor].map(
-        (color) => '#' + tinycolor.fromRatio(color).toHex8()
+        (color) => '#' + tinycolor.fromRatio(color).toHex()
     ) as CursorStyle;
 };
 

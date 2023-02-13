@@ -45,11 +45,64 @@
             gap: 0 2vw;
         }
 
-        .two-cols {
+        .cursor-styles {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2vw;
             align-items: center;
+
+            &-preview {
+                height: 95%;
+                border-radius: 0.5rem;
+                background-size: cover;
+                background-repeat: no-repeat;
+
+                &__cursor {
+                    height: 80%;
+                    background-image: createCircle(35%, 3%, var(--outer-fill)),
+                        createCircle(-1%, 20%, var(--center-fill)), createCircle(18%, 3%, var(--center-border));
+                }
+
+                &__bg-selector {
+                    height: 20%;
+                    background-color: #ffffff60;
+
+                    width: 100%;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-evenly;
+
+                    &__img {
+                        box-shadow: v.$dark-box-shadow;
+                        border-radius: 10px;
+                        width: 13%;
+                        border: 3px solid transparent;
+                        &--active {
+                            border: 3px solid v.$ultraleap-green;
+                        }
+                    }
+                }
+            }
+        }
+
+        @media (orientation: landscape) {
+            .cursor {
+                &-styles {
+                    order: 2;
+                }
+                &__color-picker {
+                    order: 3;
+                }
+
+                &__size {
+                    order: 1;
+                }
+
+                &__thickness {
+                    order: 2;
+                }
+            }
         }
     }
 }
@@ -62,40 +115,6 @@
         $color $start + $width,
         transparent calc($start + $width + 1%)
     );
-}
-
-.cursor-preview {
-    height: 95%;
-    border-radius: 0.5rem;
-    background-size: cover;
-    background-repeat: no-repeat;
-
-    &__cursor {
-        height: 80%;
-        background-image: createCircle(35%, 3%, var(--outer-fill)), createCircle(-1%, 20%, var(--center-fill)),
-            createCircle(18%, 3%, var(--center-border));
-    }
-
-    &__bg-selector {
-        height: 20%;
-        background-color: #ffffff60;
-
-        width: 100%;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-evenly;
-
-        &__img {
-            box-shadow: v.$dark-box-shadow;
-            border-radius: 10px;
-            width: 13%;
-            border: 3px solid transparent;
-            &--active {
-                border: 3px solid v.$ultraleap-green;
-            }
-        }
-    }
 }
 
 .page-divider {
