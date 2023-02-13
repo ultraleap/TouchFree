@@ -49,7 +49,7 @@ const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
     const isLandscape = useIsLandscape();
-    const previewContainer = useRef<HTMLDivElement>(null);
+    const cursorSection = useRef<HTMLDivElement>(null);
 
     const reducer = (state: VisualsConfig, content: Partial<VisualsConfig>) => {
         const newState: VisualsConfig = { ...state, ...content };
@@ -63,12 +63,12 @@ const VisualsScreen: React.FC = () => {
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
 
     const updateCursorPreview = (cursorStyle: CursorStyle) => {
-        const cursorPreview = previewContainer.current?.style;
-        if (!cursorPreview) return;
+        const section = cursorSection.current?.style;
+        if (!section) return;
 
-        cursorPreview.setProperty('--center-fill', cursorStyle[0]);
-        cursorPreview.setProperty('--outer-fill', cursorStyle[1]);
-        cursorPreview.setProperty('--center-border', cursorStyle[2]);
+        section.setProperty('--center-fill', cursorStyle[0]);
+        section.setProperty('--outer-fill', cursorStyle[1]);
+        section.setProperty('--center-border', cursorStyle[2]);
     };
 
     const currentPreset = useMemo((): CursorPreset => {
@@ -103,7 +103,7 @@ const VisualsScreen: React.FC = () => {
                 <DocsLink title={'Find out More'} url={'https://developer.leapmotion.com/touchfree-tooling-for-web'} />
             </label>
             <div className={classes('container')}>
-                <div className={classes('section')}>
+                <div ref={cursorSection} className={classes('section')}>
                     <div className={classes('title-line')}>
                         <h1> Cursor Styles </h1>
                         <OutlinedTextButton
@@ -137,7 +137,7 @@ const VisualsScreen: React.FC = () => {
                                     className={classes('cursor-style__preview')}
                                     style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
                                 >
-                                    <div ref={previewContainer} className={classes('cursor-style__preview__cursor')} />
+                                    <div className={classes('cursor-style__preview__cursor')} />
                                     <div className={classes('cursor-style__preview__bg-selector')}>
                                         {bgPreviewImages.map((src, index) => (
                                             <img
