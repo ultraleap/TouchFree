@@ -82,6 +82,7 @@ Testing/ServiceSocketTests/results/**
 !Testing/ServiceSocketTests/results/results.md
 **/PUT_TEST_BUILD_IN_HERE/*
 !**/PUT_TEST_BUILD_IN_HERE/info.md
+TestResults/
 
 # =================== #
 #  Service Utilities  #
