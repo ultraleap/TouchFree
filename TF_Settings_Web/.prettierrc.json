@@ -5,7 +5,7 @@
     "printWidth": 120,
     "importOrder": [
         "(.*)(.css|.scss)$",
-        "(.*)react(.*)|canvas-confetti|classnames",
+        "(.*)react(.*)|canvas-confetti|classnames|tinycolor2",
         "uuid",
         "^@/(index|customHooks|TauriUtils)",
         "^touchfree/(.*)",
