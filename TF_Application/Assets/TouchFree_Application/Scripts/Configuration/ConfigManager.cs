@@ -14,6 +14,8 @@ namespace Ultraleap.TouchFree
     {
         LIGHT,
         DARK,
+        LIGHT_OUTLINE,
+        DARK_OUTLINE,
         CUSTOM
     }
 
@@ -83,6 +85,16 @@ namespace Ultraleap.TouchFree
                     Primary = primaryCustomColor;
                     Secondary = secondaryCustomColor;
                     Tertiary = tertiaryCustomColor;
+                    break;
+                case CursorColorPreset.LIGHT_OUTLINE:
+                    Primary = Color.white;
+                    Secondary = Color.white;
+                    Tertiary = Color.clear;
+                    break;
+                case CursorColorPreset.DARK_OUTLINE:
+                    Primary = Color.black;
+                    Secondary = Color.black;
+                    Tertiary = Color.clear;
                     break;
             }
         }
