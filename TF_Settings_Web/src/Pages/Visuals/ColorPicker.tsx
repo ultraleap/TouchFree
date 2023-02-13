@@ -43,7 +43,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorColors, updateCursorCol
                 <input
                     type="text"
                     className={'color-picker__body__text'}
-                    value={cursorColors[activeTabIndex]}
+                    value={cursorColors[activeTabIndex].toUpperCase()}
                     onChange={(e) => setCurrentColor(e.target.value)}
                 />
             </div>

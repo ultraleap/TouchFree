@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import tinycolor, { ColorFormats } from 'tinycolor2';
 
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
+import { useIsLandscape } from '@/customHooks';
 
 import {
     BlackTextBg,
@@ -47,6 +48,7 @@ const bgPreviewImages = [GradientBgPreview, WhiteTextBgPreview, BlackTextBgPrevi
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
 const VisualsScreen: React.FC = () => {
+    const isLandscape = useIsLandscape();
     const previewContainer = useRef<HTMLDivElement>(null);
 
     const reducer = (state: VisualsConfig, content: Partial<VisualsConfig>) => {
@@ -92,23 +94,23 @@ const VisualsScreen: React.FC = () => {
 
     return (
         <div className={classes('scroll-div')}>
+            <label className={classes('label-container')}>
+                <p className={classes('label-container__label')}>
+                    Visuals affects Overlay application only.
+                    <br />
+                    To update the cursor in web, use TouchFree Tooling
+                </p>
+                <DocsLink title={'Find out More'} url={'https://developer.leapmotion.com/touchfree-tooling-for-web'} />
+            </label>
             <div className={classes('container')}>
-                <label className={classes('label-container')}>
-                    <p className={classes('label-container__label')}>
-                        Visuals affects Overlay application only.
-                        <br />
-                        To update the cursor in web, use TouchFree Tooling
-                    </p>
-                    <DocsLink
-                        title={'Find out More'}
-                        url={'https://developer.leapmotion.com/touchfree-tooling-for-web'}
-                    />
-                </label>
-                <div className={classes('title-line')}>
-                    <h1> Cursor Styles </h1>
-                    <OutlinedTextButton title="Reset to Default" onClick={() => dispatch(defaultCursorVisualsConfig)} />
-                </div>
                 <div className={classes('section')}>
+                    <div className={classes('title-line')}>
+                        <h1> Cursor Styles </h1>
+                        <OutlinedTextButton
+                            title="Reset to Default"
+                            onClick={() => dispatch(defaultCursorVisualsConfig)}
+                        />
+                    </div>
                     <LabelledToggleSwitch
                         name="Enable Cursor"
                         value={state.cursorEnabled}
@@ -116,7 +118,7 @@ const VisualsScreen: React.FC = () => {
                     />
                     {state.cursorEnabled && (
                         <>
-                            <div className={classes('cursor-styles')}>
+                            <div className={classes('cursor-style')}>
                                 <RadioGroup
                                     name="StylePresets"
                                     selected={styleOptions.indexOf(currentPreset) ?? 0}
@@ -127,16 +129,16 @@ const VisualsScreen: React.FC = () => {
                                     }}
                                 />
                                 <div
-                                    className={classes('cursor-styles-preview')}
+                                    className={classes('cursor-style__preview')}
                                     style={{ backgroundImage: `url(${bgImages[currentPreviewBgIndex]})` }}
                                 >
-                                    <div ref={previewContainer} className={classes('cursor-styles-preview__cursor')} />
-                                    <div className={classes('cursor-styles-preview__bg-selector')}>
+                                    <div ref={previewContainer} className={classes('cursor-style__preview__cursor')} />
+                                    <div className={classes('cursor-style__preview__bg-selector')}>
                                         {bgPreviewImages.map((src, index) => (
                                             <img
                                                 key={index}
-                                                className={classes('cursor-styles-preview__bg-selector__img', {
-                                                    'cursor-styles-preview__bg-selector__img--active':
+                                                className={classes('cursor-style__preview__bg-selector__img', {
+                                                    'cursor-style__preview__bg-selector__img--active':
                                                         index === currentPreviewBgIndex,
                                                 })}
                                                 onClick={() => setCurrentPreviewBgIndex(index)}
@@ -147,52 +149,49 @@ const VisualsScreen: React.FC = () => {
                                 </div>
                             </div>
                             {currentPreset === 'Custom' && (
-                                <span className={classes('cursor__color-picker')}>
-                                    <ColorPicker
-                                        cursorColors={cursorStyles['Custom']}
-                                        updateCursorColors={(colors) => {
-                                            cursorStyles.Custom = colors;
-                                            dispatch({
-                                                primaryCustomColor: convertHexToRGBA(colors[0]),
-                                                secondaryCustomColor: convertHexToRGBA(colors[1]),
-                                                tertiaryCustomColor: convertHexToRGBA(colors[2]),
-                                            });
-                                            updateCursorPreview(colors);
-                                        }}
-                                    />
-                                </span>
+                                <ColorPicker
+                                    cursorColors={cursorStyles['Custom']}
+                                    updateCursorColors={(colors) => {
+                                        cursorStyles.Custom = colors;
+                                        dispatch({
+                                            primaryCustomColor: convertHexToRGBA(colors[0]),
+                                            secondaryCustomColor: convertHexToRGBA(colors[1]),
+                                            tertiaryCustomColor: convertHexToRGBA(colors[2]),
+                                        });
+                                        updateCursorPreview(colors);
+                                    }}
+                                />
                             )}
-                            <span className={classes('cursor__size')}>
-                                <TextSlider
-                                    name="Size (cm)"
-                                    rangeMin={0.1}
-                                    rangeMax={1}
-                                    leftLabel="Min"
-                                    rightLabel="Max"
-                                    value={roundToTwoDP(state.cursorSizeCm)}
-                                    onChange={(value) => dispatch({ cursorSizeCm: value })}
-                                />
-                            </span>
-                            <span className={classes('cursor__thickness')}>
-                                <TextSlider
-                                    name="Ring Thickness (cm)"
-                                    rangeMin={0.05}
-                                    rangeMax={0.6}
-                                    leftLabel="Min"
-                                    rightLabel="Max"
-                                    value={roundToTwoDP(state.cursorRingThickness)}
-                                    onChange={(value) => dispatch({ cursorRingThickness: value })}
-                                />
-                            </span>
+                            <TextSlider
+                                name="Size (cm)"
+                                rangeMin={0.1}
+                                rangeMax={1}
+                                leftLabel="Min"
+                                rightLabel="Max"
+                                value={roundToTwoDP(state.cursorSizeCm)}
+                                onChange={(value) => dispatch({ cursorSizeCm: value })}
+                            />
+                            <TextSlider
+                                name="Ring Thickness (cm)"
+                                rangeMin={0.05}
+                                rangeMax={0.6}
+                                leftLabel="Min"
+                                rightLabel="Max"
+                                value={roundToTwoDP(state.cursorRingThickness)}
+                                onChange={(value) => dispatch({ cursorRingThickness: value })}
+                            />
                         </>
                     )}
                 </div>
-                <div className={classes('page-divider')} />
-                <div className={classes('title-line')}>
-                    <h1> Call to Interact </h1>
-                    <OutlinedTextButton title="Reset to Default" onClick={() => dispatch(defaultCtiVisualsConfig)} />
-                </div>
+                <div className={classes('page-divider', { 'page-divider--vertical': isLandscape })} />
                 <div className={classes('section')}>
+                    <div className={classes('title-line')}>
+                        <h1> Call to Interact </h1>
+                        <OutlinedTextButton
+                            title="Reset to Default"
+                            onClick={() => dispatch(defaultCtiVisualsConfig)}
+                        />
+                    </div>
                     <LabelledToggleSwitch
                         name="Enable Call to Interact"
                         value={state.ctiEnabled}

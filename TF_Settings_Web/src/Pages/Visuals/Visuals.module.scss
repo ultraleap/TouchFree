@@ -17,6 +17,8 @@
 .label-container {
     @extend .input-label-container;
     height: 7rem;
+    margin-left: 2vw;
+    margin-right: 2vw;
 
     &__label {
         margin-left: 0.75rem;
@@ -38,85 +40,71 @@
 .container {
     margin: 0 2vw;
 
-    .section {
-        @media (orientation: landscape) {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0 2vw;
-        }
+    @media (orientation: landscape) {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 0 0vw;
+    }
 
-        .cursor-styles {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2vw;
-            align-items: center;
+    .cursor-style {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2vw;
+        align-items: center;
 
-            &-preview {
-                height: 95%;
-                border-radius: 0.5rem;
-                background-size: cover;
-                background-repeat: no-repeat;
+        &__preview {
+            height: 95%;
+            border-radius: 0.5rem;
+            background-size: cover;
+            background-repeat: no-repeat;
 
-                &__cursor {
-                    height: 80%;
-                    background-image: createCircle(35%, 3%, var(--outer-fill)),
-                        createCircle(-1%, 20%, var(--center-fill)), createCircle(18%, 3%, var(--center-border));
+            &__cursor {
+                height: 80%;
+
+                @function createCircle($start, $width, $color) {
+                    @return radial-gradient(
+                        circle at 50% 50%,
+                        transparent $start,
+                        $color calc($start + 1%),
+                        $color $start + $width,
+                        transparent calc($start + $width + 1%)
+                    );
                 }
 
-                &__bg-selector {
-                    height: 20%;
-                    background-color: #ffffff60;
-
-                    width: 100%;
-
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-evenly;
-
-                    &__img {
-                        box-shadow: v.$dark-box-shadow;
-                        border-radius: 10px;
-                        width: 13%;
-                        border: 3px solid transparent;
-                        &--active {
-                            border: 3px solid v.$ultraleap-green;
-                        }
-                    }
-                }
+                background-image: createCircle(35%, 3%, var(--outer-fill)), createCircle(-1%, 20%, var(--center-fill)),
+                    createCircle(18%, 3%, var(--center-border));
             }
-        }
 
-        @media (orientation: landscape) {
-            .cursor {
-                &-styles {
-                    order: 2;
-                }
-                &__color-picker {
-                    order: 3;
-                }
+            &__bg-selector {
+                height: 20%;
+                background-color: #ffffff60;
 
-                &__size {
-                    order: 1;
-                }
+                width: 100%;
 
-                &__thickness {
-                    order: 2;
+                display: flex;
+                align-items: center;
+                justify-content: space-evenly;
+
+                &__img {
+                    box-shadow: v.$dark-box-shadow;
+                    border-radius: 10px;
+                    width: 13%;
+                    border: 3px solid transparent;
+                    &--active {
+                        border: 3px solid v.$ultraleap-green;
+                    }
                 }
             }
         }
     }
 }
 
-@function createCircle($start, $width, $color) {
-    @return radial-gradient(
-        circle at 50% 50%,
-        transparent $start,
-        $color calc($start + 1%),
-        $color $start + $width,
-        transparent calc($start + $width + 1%)
-    );
-}
-
 .page-divider {
     @include App.page-divider;
+
+    &--vertical {
+        width: 10px;
+        margin: 0.75rem 40px 0 40px;
+        height: auto;
+    }
 }
