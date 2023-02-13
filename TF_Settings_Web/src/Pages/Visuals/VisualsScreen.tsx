@@ -108,7 +108,12 @@ const VisualsScreen: React.FC = () => {
                         <h1> Cursor Styles </h1>
                         <OutlinedTextButton
                             title="Reset to Default"
-                            onClick={() => dispatch(defaultCursorVisualsConfig)}
+                            onClick={() => {
+                                dispatch(defaultCursorVisualsConfig);
+                                updateCursorPreview(
+                                    cursorStyles[presets[defaultCursorVisualsConfig.activeCursorPreset]]
+                                );
+                            }}
                         />
                     </div>
                     <LabelledToggleSwitch
