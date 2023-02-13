@@ -303,7 +303,7 @@ pages:
     paths:
       - public
   only:
-    - main
+    - develop
 
 TF_Service::Tray::build:
   stage: build
