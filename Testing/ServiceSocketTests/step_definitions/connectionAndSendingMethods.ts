@@ -3,6 +3,13 @@ import { v4 as uuidgen } from 'uuid';
 
 const WebSocket = require('ws');
 
+export const expectedApiVersion = '1.3.0';
+export const patchVersionChange = '1.3.1';
+export const minorVersionDecrease = '1.2.0';
+export const minorVersionIncrease = '1.4.0';
+export const majorVersionDecrease = '0.3.0';
+export const majorVersionIncrease = '2.3.0';
+
 export const reset = (world: IWorld) => {
     if (world?.connectedWebSocket?.readyState === WebSocket.OPEN) {
         world.connectedWebSocket.close();
@@ -49,12 +56,12 @@ export const sendMessage = (world: IWorld, message: any, addRequestID: boolean) 
     }
 }
 
-export const sendHandshake = (world: IWorld) => {
+export const sendHandshake = (world: IWorld, apiVersion: string = expectedApiVersion) => {
     const handshakeMessage = {
         action: 'VERSION_HANDSHAKE',
         content: {
             requestID: '',
-            TfApiVersion: '1.3.0'
+            TfApiVersion: apiVersion
         },
     };
 
@@ -80,23 +87,44 @@ export const callbackOnMessage = (world: IWorld, callback: () => void, validatio
     }, interval);
 };
 
-export const callbackOnHandshake = (world: IWorld, callback: () => void) => {
+export const callbackOnHandshake = (world: IWorld, callback: () => void, successMessage: string = 'Handshake Successful.') => {
     const expectedResponse = { 
         action: 'VERSION_HANDSHAKE_RESPONSE',
         content: {
             requestID: world?.configuredData?.requestID,
             status: 'Success',
-            message: 'Handshake Successful.',
-            originalRequest: '{"requestID":"6423d82e-3266-4830-82d8-c46cc17fc645","TfApiVersion":"1.3.0"}',
+            message: successMessage,
+            originalRequest: '{"requestID":"","TfApiVersion":"1.3.0"}',
             touchFreeVersion: '',
-            apiVersion: '1.3.0'
+            apiVersion: expectedApiVersion
         }
     };
 
     callbackOnMessage(world, callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
         checkActionResponse(world, responseData, expectedResponse, intervalId, (received: any) => {
             return received.content.status === expectedResponse.content.status &&
-                received.content.message === expectedResponse.content.message;
+                received.content.message.startsWith(expectedResponse.content.message);
+        }, callback, 'Handshake message does not match expected');
+    }, expectedResponse);
+};
+
+export const callbackOnHandshakeWithError = (world: IWorld, callback: () => void, errorMessage: string = 'Handshake Failed:') => {
+    const expectedResponse = { 
+        action: 'VERSION_HANDSHAKE_RESPONSE',
+        content: {
+            requestID: world?.configuredData?.requestID,
+            status: 'Failure',
+            message: errorMessage,
+            originalRequest: '{"requestID":"","TfApiVersion":"1.2.0"}',
+            touchFreeVersion: '',
+            apiVersion: expectedApiVersion
+        }
+    };
+
+    callbackOnMessage(world, callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
+        checkActionResponse(world, responseData, expectedResponse, intervalId, (received: any) => {
+            return received.content.status === expectedResponse.content.status &&
+            received.content.message.startsWith(expectedResponse.content.message);
         }, callback, 'Handshake message does not match expected');
     }, expectedResponse);
 };
