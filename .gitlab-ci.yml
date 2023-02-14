@@ -23,6 +23,7 @@ stages:
   - test
   - package
   - installer
+  - deploy
 
 TF_Tooling::Unity::build:
   stage: build
@@ -122,7 +123,7 @@ TF_Tooling::Docs::build:
 TF_Service::Wrapper::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = ''
@@ -149,7 +150,7 @@ TF_Service::Wrapper::build:
 TF_Service::dotNet::Windows::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = ''
@@ -184,7 +185,7 @@ TF_Service::dotNet::Windows::build:
 TF_Service::dotNet::ARMLinux::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = 'beta'
@@ -241,18 +242,23 @@ Tracking::ARMLinux::download_package:
 TF_Service::dotNet::test:
   stage: test
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     # Run unit tests
-    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
-
+    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --results-directory $CI_PROJECT_DIR/TestResults --collect:"XPlat Code Coverage;Format=Cobertura" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
+    - reportgenerator "-reports:$CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml" "-targetdir:TestReports"
   artifacts:
     when: always
     name: "TestResults"
     paths:
     - $CI_PROJECT_DIR/TestResults/Test_Results.xml
+    - $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
+    - $CI_PROJECT_DIR/TestReports/
     reports:
       junit: $CI_PROJECT_DIR/TestResults/Test_Results.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
   tags:
     - docker-windows
 
@@ -266,17 +272,38 @@ TF_Tooling::Web::test:
     - cd ${env:TF_TFW_PATH}
     - npm i
     - npm run test
+    - npm run test:coverage
 
   artifacts:
     when: always
     name: "TestResults"
     paths:
     - ${env:TF_TFW_PATH}/junit.xml
+    - ${env:TF_TFW_PATH}/coverage/
     reports:
       junit: ${env:TF_TFW_PATH}/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: ${env:TF_TFW_PATH}/coverage/cobertura-coverage.xml
+
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   tags:
     - unity
     - win10
+
+pages:
+  stage: deploy
+  dependencies:
+    - TF_Tooling::Web::test
+  script:
+    - mkdir .public
+    - cp ${env:TF_TFW_PATH}/coverage/* .public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - develop
 
 TF_Service::Tray::build:
   stage: build
