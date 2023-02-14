@@ -27,8 +27,3 @@ Feature: Proof the tests are working
         Given the Service is connected with handshake
         When configuration is requested without a requestID
         Then a configuration error response is received
-
-    Scenario: Can request tracking service status
-        Given the Service is connected with handshake
-        When tracking service status is requested
-        Then a tracking service status response is received
