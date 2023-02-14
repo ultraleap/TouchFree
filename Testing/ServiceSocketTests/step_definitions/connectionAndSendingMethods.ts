@@ -87,13 +87,13 @@ export const callbackOnMessage = (world: IWorld, callback: () => void, validatio
     }, interval);
 };
 
-export const callbackOnHandshake = (world: IWorld, callback: () => void, successMessage: string = 'Handshake Successful.') => {
+const callbackOnHandshakeShared = (expectedStatus: string, expectedMessage: string, world: IWorld, callback: () => void) => {
     const expectedResponse = { 
         action: 'VERSION_HANDSHAKE_RESPONSE',
         content: {
             requestID: world?.configuredData?.requestID,
-            status: 'Success',
-            message: successMessage,
+            status: expectedStatus,
+            message: expectedMessage,
             originalRequest: '{"requestID":"","TfApiVersion":"1.3.0"}',
             touchFreeVersion: '',
             apiVersion: expectedApiVersion
@@ -108,70 +108,39 @@ export const callbackOnHandshake = (world: IWorld, callback: () => void, success
     }, expectedResponse);
 };
 
+export const callbackOnHandshake = (world: IWorld, callback: () => void, successMessage: string = 'Handshake Successful.') => {
+    callbackOnHandshakeShared('Success', successMessage, world, callback);
+};
+
 export const callbackOnHandshakeWithError = (world: IWorld, callback: () => void, errorMessage: string = 'Handshake Failed:') => {
+    callbackOnHandshakeShared('Failure', errorMessage, world, callback);
+};
+
+const handleSimpleCallbackOnMessageCase = (action: string, errorMessage: string, world: IWorld, callback: () => void) => {
     const expectedResponse = { 
-        action: 'VERSION_HANDSHAKE_RESPONSE',
+        action: action,
         content: {
-            requestID: world?.configuredData?.requestID,
-            status: 'Failure',
-            message: errorMessage,
-            originalRequest: '{"requestID":"","TfApiVersion":"1.2.0"}',
-            touchFreeVersion: '',
-            apiVersion: expectedApiVersion
+            requestID: world?.configuredData?.requestID
         }
     };
 
     callbackOnMessage(world, callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
-        checkActionResponse(world, responseData, expectedResponse, intervalId, (received: any) => {
-            return received.content.status === expectedResponse.content.status &&
-            received.content.message.startsWith(expectedResponse.content.message);
-        }, callback, 'Handshake message does not match expected');
+        checkActionResponse(world, responseData, expectedResponse, intervalId, () => {
+            return true;
+        }, callback, errorMessage);
     }, expectedResponse);
 };
 
 export const callbackOnServiceStatus = (world: IWorld, callback: () => void) => {
-    const expectedResponse = { 
-        action: 'SERVICE_STATUS',
-        content: {
-            requestID: world?.configuredData?.requestID
-        }
-    };
-
-    callbackOnMessage(world, callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
-        checkActionResponse(world, responseData, expectedResponse, intervalId, () => {
-            return true;
-        }, callback, 'Service Status message does not match expected');
-    }, expectedResponse);
+    handleSimpleCallbackOnMessageCase('SERVICE_STATUS', 'Service Status message does not match expected', world, callback);
 };
 
 export const callbackOnConfigurationState = (world: IWorld, callback: () => void) => {
-    const expectedResponse = { 
-        action: 'CONFIGURATION_STATE',
-        content: {
-            requestID: world?.configuredData?.requestID
-        }
-    };
-
-    callbackOnMessage(world, callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
-        checkActionResponse(world, responseData, expectedResponse, intervalId, () => {
-            return true;
-        }, callback, 'Configuration State message does not match expected');
-    }, expectedResponse);
+    handleSimpleCallbackOnMessageCase('CONFIGURATION_STATE', 'Configuration State message does not match expected', world, callback);
 };
 
 export const callbackOnConfigurationFileState = (world: IWorld, callback: () => void) => {
-    const expectedResponse = { 
-        action: 'CONFIGURATION_FILE_STATE',
-        content: {
-            requestID: world?.configuredData?.requestID
-        }
-    };
-
-    callbackOnMessage(world, callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
-        checkActionResponse(world, responseData, expectedResponse, intervalId, () => {
-            return true;
-        }, callback, 'Configuration File State message does not match expected');
-    }, expectedResponse);
+    handleSimpleCallbackOnMessageCase('CONFIGURATION_FILE_STATE', 'Configuration File State message does not match expected', world, callback);
 };
 
 export const callbackOnConfigurationErrorResonse = (world: IWorld, callback: () => void) => {
