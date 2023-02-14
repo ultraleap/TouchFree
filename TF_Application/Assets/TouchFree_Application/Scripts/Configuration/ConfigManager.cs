@@ -14,9 +14,9 @@ namespace Ultraleap.TouchFree
     {
         LIGHT,
         DARK,
+        CUSTOM,
         LIGHT_OUTLINE,
         DARK_OUTLINE,
-        CUSTOM
     }
 
     public static class ConfigManager
