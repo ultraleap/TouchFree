@@ -9,8 +9,8 @@ export type CursorStyle = [string, string, string];
 export const cursorStyles: { [Property in CursorPreset]: CursorStyle } = {
     'Solid (Light)': ['#ffffffff', '#ffffffff', '#000000ff'],
     'Solid (Dark)': ['#000000ff', '#000000ff', '#ffffffff'],
-    'Outline (Light)': ['#ffffffff', '#ffffffff', '#ffffff00'],
-    'Outline (Dark)': ['#000000ff', '#000000ff', '#00000000'],
+    'Outline (Light)': ['#ffffff00', '#ffffffff', '#ffffffff'],
+    'Outline (Dark)': ['#00000000', '#000000ff', '#000000ff'],
     Custom: ['#ffffffff', '#ffffffff', '#000000ff'],
 };
 
