@@ -136,7 +136,11 @@ export const callbackOnServiceStatus = (world: IWorld, callback: () => void) => 
 };
 
 export const callbackOnConfigurationState = (world: IWorld, callback: () => void) => {
-    handleSimpleCallbackOnMessageCase('CONFIGURATION_STATE', 'Configuration State message does not match expected', world, callback);
+    handleSimpleCallbackOnMessageCase(
+        'CONFIGURATION_STATE',
+        'Configuration State message does not match expected',
+        world,
+        callback);
 };
 
 export const callbackOnConfigurationFileState = (world: IWorld, callback: () => void) => {
@@ -176,6 +180,21 @@ export const callbackOnTrackingServiceStatus = (world: IWorld, callback: () => v
     }, expectedResponse);
 };
 
+export const callbackOnConfigurationStateWithInteractionDistance = (world: IWorld, callback: () => void) => {
+    const expectedResponse = { 
+        action: 'CONFIGURATION_RESPONSE',
+        content: {
+            requestID: world?.configuredData?.requestID
+        }
+    };
+
+    callbackOnMessage(world, callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
+        checkActionResponse(world, responseData, expectedResponse, intervalId, (received: any) => {
+            return received.content.status === 'Success';
+        }, callback, 'Configuration Response message does not match expected');
+    }, expectedResponse);
+};
+
 const checkActionResponse = (
     world: IWorld, 
     responseData: string,
@@ -190,6 +209,8 @@ const checkActionResponse = (
     if (content.action === expectedResponse.action &&
         (!world?.requestIDSet || content.content.requestID === expectedResponse.content.requestID))  {
         clearInterval(intervalId);
+
+        world.messageContent = content;
 
         if (validation(content)) {
             callback();

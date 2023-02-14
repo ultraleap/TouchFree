@@ -19,3 +19,8 @@ Feature: Proof the tests are working
         Given the Service is connected with handshake
         When configuration is requested without a requestID
         Then a configuration error response is received
+
+    Scenario: Can set configuration
+        Given the Service is connected with handshake
+        When the configuration is set
+        Then a configuration response is received with InteractionDistance

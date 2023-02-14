@@ -3,10 +3,10 @@ import {
     callbackOnConfigurationErrorResonse,
     callbackOnConfigurationFileState,
     callbackOnConfigurationState,
+    callbackOnConfigurationStateWithInteractionDistance,
     callbackOnHandshake,
     callbackOnHandshakeWithError, 
     callbackOnServiceStatus, 
-    callbackOnTrackingServiceStatus,
     majorVersionDecrease, 
     majorVersionIncrease, 
     minorVersionDecrease, 
@@ -159,19 +159,42 @@ Then('a configuration error response is received', function (callback) {
     callbackOnConfigurationErrorResonse(world, callback);
 });
 
-When('tracking service status is requested', function () {
+When('the configuration is set', function() {
     const world = this;
-    const serviceStatusMessage = {
-        action: 'GET_TRACKING_STATE',
+
+    const configuredInteractionDistanceCm = Math.random();
+    world.configuredInteractionDistanceCm = configuredInteractionDistanceCm;
+
+    const configurationRequestMessage = {
+        action: 'SET_CONFIGURATION_STATE',
         content: {
-            requestID: ''
+            requestID: '',
+            interaction: {
+                InteractionMinDistanceCm: configuredInteractionDistanceCm
+            }
         },
     };
 
-    sendMessage(world, serviceStatusMessage, true);
-});
+    sendMessage(world, configurationRequestMessage, true);
+})
 
-Then('a tracking service status response is received', function (callback) {
+Then('a configuration response is received with InteractionDistance', function (callback) {
     const world = this;
-    callbackOnTrackingServiceStatus(world, callback);
+    callbackOnConfigurationStateWithInteractionDistance(world, () => {
+        const configurationRequestMessage = {
+            action: 'REQUEST_CONFIGURATION_STATE',
+            content: {
+                requestID: ''
+            },
+        };
+        sendMessage(world, configurationRequestMessage, true);
+        callbackOnConfigurationState(world, () => {
+            const differenceInValue = Math.abs(world.messageContent.content.interaction.InteractionMinDistanceCm - world.configuredInteractionDistanceCm);
+            if (differenceInValue < 0.00001) {
+                callback();
+            } else {
+                throw new Error("InteractionMinDistanceCm does not match");
+            }
+        });
+    });
 });
