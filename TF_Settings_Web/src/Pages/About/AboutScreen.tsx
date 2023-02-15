@@ -3,7 +3,7 @@ import styles from './About.module.scss';
 import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
 
-import { openDir, isDesktop } from '@/TauriUtils';
+import { openWithShell, isDesktop } from '@/TauriUtils';
 
 import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
 import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
@@ -60,12 +60,12 @@ const AboutScreen: React.FC = () => {
                         <InfoButtonEntry
                             title="Tracking Log Files"
                             buttonTitle="Show Tracking Log Files"
-                            onClick={() => openDir('C:/ProgramData/Ultraleap/HandTracker/Logs')}
+                            onClick={() => openWithShell('C:/ProgramData/Ultraleap/HandTracker/Logs')}
                         />
                         <InfoButtonEntry
                             title="TouchFree Log Files"
                             buttonTitle="Show TouchFree Log Files"
-                            onClick={() => openDir('C:/ProgramData/Ultraleap/TouchFree/Logs')}
+                            onClick={() => openWithShell('C:/ProgramData/Ultraleap/TouchFree/Logs')}
                         />
                     </div>
                 </>

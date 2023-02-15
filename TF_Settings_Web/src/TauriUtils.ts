@@ -14,11 +14,11 @@ export const toggleFullScreen = async () => {
     appWindow.setFullscreen(!isFullScreen);
 };
 
-export const openDir = async (dirPath: string) => {
+export const openWithShell = async (path: string, catchCallback?: () => void) => {
     try {
-        await open(dirPath);
+        await open(path);
     } catch (e) {
-        console.warn(e);
+        catchCallback ? catchCallback() : console.warn(e);
     }
 };
 
