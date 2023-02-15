@@ -18,6 +18,7 @@ import {
     sendMessage
 } from './connectionAndSendingMethods';
 
+// NOTE: Name the test world as "world" to make usage clear in these methods.
 After(function () {
     const world = this;
     reset(world);

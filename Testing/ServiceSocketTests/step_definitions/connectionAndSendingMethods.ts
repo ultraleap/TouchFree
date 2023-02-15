@@ -1,8 +1,8 @@
 import { IWorld } from '@cucumber/cucumber';
 import { v4 as uuidgen } from 'uuid';
+import WebSocket from 'ws';
 
-const WebSocket = require('ws');
-
+// TODO: Improve generation of these version consts and link to TF API version.
 export const expectedApiVersion = '1.3.0';
 export const patchVersionChange = '1.3.1';
 export const minorVersionDecrease = '1.2.0';
@@ -11,7 +11,7 @@ export const majorVersionDecrease = '0.3.0';
 export const majorVersionIncrease = '2.3.0';
 
 export const reset = (world: IWorld) => {
-    if (world?.connectedWebSocket?.readyState === WebSocket.OPEN) {
+    if (world.connectedWebSocket?.readyState === WebSocket.OPEN) {
         world.connectedWebSocket.close();
     }
 }
@@ -30,11 +30,11 @@ export const openWebSocketAndPerformAction = (world: IWorld, callback: () => voi
 }
 
 export const sendMessage = (world: IWorld, message: any, addRequestID: boolean) => {
-    if (world?.connectedWebSocket) {
-        if (!world?.responsesSetUp) {
+    if (world.connectedWebSocket) {
+        if (!world.responsesSetUp) {
             world.responses = [];
             world.connectedWebSocket.addEventListener('message', (_message: MessageEvent) => {
-                world?.responses.push(_message);
+                world.responses.push(_message);
             });
             world.responsesSetUp = true;
         }
@@ -68,7 +68,7 @@ export const sendHandshake = (world: IWorld, apiVersion: string = expectedApiVer
     sendMessage(world, handshakeMessage, true);
 };
 
-export const callbackOnMessage = (world: IWorld, callback: () => void, validation: (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => void, expectedResponse: any) => {
+export const callbackOnMessage = (world: IWorld, callback: () => void, validation: (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => void) => {
     let checkTime = 0;
     const interval = 10;
 
@@ -91,7 +91,7 @@ const callbackOnHandshakeShared = (expectedStatus: string, expectedMessage: stri
     const expectedResponse = { 
         action: 'VERSION_HANDSHAKE_RESPONSE',
         content: {
-            requestID: world?.configuredData?.requestID,
+            requestID: world.configuredData?.requestID,
             status: expectedStatus,
             message: expectedMessage,
             originalRequest: '{"requestID":"","TfApiVersion":"1.3.0"}',
@@ -105,7 +105,7 @@ const callbackOnHandshakeShared = (expectedStatus: string, expectedMessage: stri
             return received.content.status === expectedResponse.content.status &&
                 received.content.message.startsWith(expectedResponse.content.message);
         }, callback, 'Handshake message does not match expected');
-    }, expectedResponse);
+    });
 };
 
 export const callbackOnHandshake = (world: IWorld, callback: () => void, successMessage: string = 'Handshake Successful.') => {
@@ -120,7 +120,7 @@ const handleSimpleCallbackOnMessageCase = (action: string, errorMessage: string,
     const expectedResponse = { 
         action: action,
         content: {
-            requestID: world?.configuredData?.requestID
+            requestID: world.configuredData?.requestID
         }
     };
 
@@ -128,7 +128,7 @@ const handleSimpleCallbackOnMessageCase = (action: string, errorMessage: string,
         checkActionResponse(world, responseData, expectedResponse, intervalId, () => {
             return true;
         }, callback, errorMessage);
-    }, expectedResponse);
+    });
 };
 
 export const callbackOnServiceStatus = (world: IWorld, callback: () => void) => {
@@ -159,14 +159,14 @@ export const callbackOnConfigurationErrorResonse = (world: IWorld, callback: () 
         checkActionResponse(world, responseData, expectedResponse, intervalId, (received: any) => {
             return received.content.status === expectedResponse.content.status;
         }, callback, 'Configuration Response message does not match expected');
-    }, expectedResponse);
+    });
 };
 
 export const callbackOnTrackingServiceStatus = (world: IWorld, callback: () => void) => {
     const expectedResponse = { 
         action: 'TRACKING_STATE',
         content: {
-            requestID: world?.configuredData?.requestID
+            requestID: world.configuredData?.requestID
         }
     };
 
@@ -177,14 +177,14 @@ export const callbackOnTrackingServiceStatus = (world: IWorld, callback: () => v
                 received.content.cameraReversed && 
                 received.content.analyticsEnabled;
         }, callback, 'Tracking Service Status message does not match expected');
-    }, expectedResponse);
+    });
 };
 
 export const callbackOnConfigurationStateWithInteractionDistance = (world: IWorld, callback: () => void) => {
     const expectedResponse = { 
         action: 'CONFIGURATION_RESPONSE',
         content: {
-            requestID: world?.configuredData?.requestID
+            requestID: world.configuredData?.requestID
         }
     };
 
@@ -192,7 +192,7 @@ export const callbackOnConfigurationStateWithInteractionDistance = (world: IWorl
         checkActionResponse(world, responseData, expectedResponse, intervalId, (received: any) => {
             return received.content.status === 'Success';
         }, callback, 'Configuration Response message does not match expected');
-    }, expectedResponse);
+    });
 };
 
 const checkActionResponse = (
@@ -207,7 +207,7 @@ const checkActionResponse = (
     const content = JSON.parse(responseData);
 
     if (content.action === expectedResponse.action &&
-        (!world?.requestIDSet || content.content.requestID === expectedResponse.content.requestID))  {
+        (!world.requestIDSet || content.content.requestID === expectedResponse.content.requestID))  {
         clearInterval(intervalId);
 
         world.messageContent = content;
