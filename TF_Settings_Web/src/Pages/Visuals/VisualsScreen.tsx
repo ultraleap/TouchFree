@@ -50,8 +50,7 @@ const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 const reducer = (state: VisualsConfig, payload: { content: Partial<VisualsConfig>; writeOutConfig: boolean }) => {
     const newState: VisualsConfig = { ...state, ...payload.content };
     if (payload.writeOutConfig) {
-        // writeVisualsConfig(newState).catch((err) => console.error(err));
-        console.log('WRITE OUT CONFIG: ', payload.content);
+        writeVisualsConfig(newState).catch((err) => console.error(err));
     }
     return newState;
 };

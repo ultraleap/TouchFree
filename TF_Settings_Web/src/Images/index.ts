@@ -21,6 +21,9 @@ import GearIcon from './Gear_Icon.png';
 import GearIconGlow from './Gear_Icon_Glow.png';
 import HandIcon from './Hand_Icon.svg';
 import Logo from './Logo.png';
+import WindowCloseIcon from './WindowControls/Close_Icon.svg';
+import WindowMaximizeIcon from './WindowControls/Maximize_Icon.svg';
+import WindowMinusIcon from './WindowControls/Minus_Icon.svg';
 
 export {
     BlackTextBgPreview,
@@ -46,4 +49,7 @@ export {
     GearIcon,
     GearIconGlow,
     FileIcon,
+    WindowCloseIcon,
+    WindowMaximizeIcon,
+    WindowMinusIcon,
 };
