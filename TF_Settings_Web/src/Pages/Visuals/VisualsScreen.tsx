@@ -47,10 +47,12 @@ const bgImages = [GradientBg, WhiteTextBg, BlackTextBg, MountainBg];
 const bgPreviewImages = [GradientBgPreview, WhiteTextBgPreview, BlackTextBgPreview, MountainBgPreview];
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
-const reducer = (state: VisualsConfig, content: Partial<VisualsConfig>) => {
-    const newState: VisualsConfig = { ...state, ...content };
-    // writeVisualsConfig(newState).catch((err) => console.error(err));
-    console.log('WRITE OUT CONFIG: ', content);
+const reducer = (state: VisualsConfig, payload: { content: Partial<VisualsConfig>; writeOutConfig: boolean }) => {
+    const newState: VisualsConfig = { ...state, ...payload.content };
+    if (payload.writeOutConfig) {
+        // writeVisualsConfig(newState).catch((err) => console.error(err));
+        console.log('WRITE OUT CONFIG: ', payload.content);
+    }
     return newState;
 };
 
@@ -59,6 +61,7 @@ const VisualsScreen: React.FC = () => {
     const cursorSection = useRef<HTMLDivElement>(null);
 
     const [state, dispatch] = useReducer(reducer, defaultVisualsConfig);
+    const writeOutConfig = () => dispatch({ content: {}, writeOutConfig: true });
     const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
 
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
@@ -79,10 +82,10 @@ const VisualsScreen: React.FC = () => {
     useEffect(() => {
         readVisualsConfig()
             .then((fileConfig) => {
-                dispatch(fileConfig);
+                dispatch({ content: fileConfig, writeOutConfig: false });
                 setCustomColorsFromConfig(fileConfig);
-                updateCursorPreview(cursorStyles[presets[fileConfig.activeCursorPreset]]);
                 setHasReadConfig(true);
+                updateCursorPreview(cursorStyles[presets[fileConfig.activeCursorPreset]]);
             })
             .catch((err) => console.error(err));
     }, []);
@@ -106,7 +109,7 @@ const VisualsScreen: React.FC = () => {
                         <OutlinedTextButton
                             title="Reset to Default"
                             onClick={() => {
-                                dispatch(defaultCursorVisualsConfig);
+                                dispatch({ content: defaultCursorVisualsConfig, writeOutConfig: true });
                                 updateCursorPreview(
                                     cursorStyles[presets[defaultCursorVisualsConfig.activeCursorPreset]]
                                 );
@@ -116,7 +119,7 @@ const VisualsScreen: React.FC = () => {
                     <LabelledToggleSwitch
                         name="Enable Cursor"
                         value={state.cursorEnabled}
-                        onChange={(value) => dispatch({ cursorEnabled: value })}
+                        onChange={(value) => dispatch({ content: { cursorEnabled: value }, writeOutConfig: true })}
                     />
                     {state.cursorEnabled && (
                         <>
@@ -126,7 +129,10 @@ const VisualsScreen: React.FC = () => {
                                     selected={styleOptions.indexOf(currentPreset) ?? 0}
                                     options={styleOptions}
                                     onChange={(preset) => {
-                                        dispatch({ activeCursorPreset: presets.indexOf(preset as CursorPreset) });
+                                        dispatch({
+                                            content: { activeCursorPreset: presets.indexOf(preset as CursorPreset) },
+                                            writeOutConfig: true,
+                                        });
                                         updateCursorPreview(cursorStyles[preset as CursorPreset]);
                                     }}
                                 />
@@ -153,16 +159,19 @@ const VisualsScreen: React.FC = () => {
                             {currentPreset === 'Custom' && (
                                 <ColorPicker
                                     cursorStyle={cursorStyles.Custom}
-                                    updateCursorPreview={updateCursorPreview}
-                                    updateConfigCursorStyle={(style) => {
+                                    updateCursorStyle={(style) => {
                                         cursorStyles.Custom = style;
                                         dispatch({
-                                            primaryCustomColor: convertHexToRGBA(style[0]),
-                                            secondaryCustomColor: convertHexToRGBA(style[1]),
-                                            tertiaryCustomColor: convertHexToRGBA(style[2]),
+                                            content: {
+                                                primaryCustomColor: convertHexToRGBA(style[0]),
+                                                secondaryCustomColor: convertHexToRGBA(style[1]),
+                                                tertiaryCustomColor: convertHexToRGBA(style[2]),
+                                            },
+                                            writeOutConfig: false,
                                         });
                                         updateCursorPreview(style);
                                     }}
+                                    writeOutConfig={writeOutConfig}
                                 />
                             )}
                             <TextSlider
@@ -172,7 +181,10 @@ const VisualsScreen: React.FC = () => {
                                 leftLabel="Min"
                                 rightLabel="Max"
                                 value={roundToTwoDP(state.cursorSizeCm)}
-                                onChange={(value) => dispatch({ cursorSizeCm: value })}
+                                onChange={(value) =>
+                                    dispatch({ content: { cursorSizeCm: value }, writeOutConfig: false })
+                                }
+                                onFinish={writeOutConfig}
                             />
                             <TextSlider
                                 name="Ring Thickness (cm)"
@@ -181,7 +193,10 @@ const VisualsScreen: React.FC = () => {
                                 leftLabel="Min"
                                 rightLabel="Max"
                                 value={roundToTwoDP(state.cursorRingThickness)}
-                                onChange={(value) => dispatch({ cursorRingThickness: value })}
+                                onChange={(value) =>
+                                    dispatch({ content: { cursorRingThickness: value }, writeOutConfig: false })
+                                }
+                                onFinish={writeOutConfig}
                             />
                         </>
                     )}
@@ -192,13 +207,13 @@ const VisualsScreen: React.FC = () => {
                         <h1> Call to Interact </h1>
                         <OutlinedTextButton
                             title="Reset to Default"
-                            onClick={() => dispatch(defaultCtiVisualsConfig)}
+                            onClick={() => dispatch({ content: defaultCtiVisualsConfig, writeOutConfig: true })}
                         />
                     </div>
                     <LabelledToggleSwitch
                         name="Enable Call to Interact"
                         value={state.ctiEnabled}
-                        onChange={(value) => dispatch({ ctiEnabled: value })}
+                        onChange={(value) => dispatch({ content: { ctiEnabled: value }, writeOutConfig: true })}
                     />
                     {state.ctiEnabled && (
                         <>
@@ -206,7 +221,9 @@ const VisualsScreen: React.FC = () => {
                                 name="Call to Interact File"
                                 value={state.ctiFilePath.split('/').pop() ?? ''}
                                 acceptedExtensions={['mp4']}
-                                onFilePicked={(path) => dispatch({ ctiFilePath: path })}
+                                onFilePicked={(path) =>
+                                    dispatch({ content: { ctiFilePath: path }, writeOutConfig: true })
+                                }
                             />
                             <TextSlider
                                 name="Inactivity Activation"
@@ -216,13 +233,21 @@ const VisualsScreen: React.FC = () => {
                                 leftLabel="1 Seconds"
                                 rightLabel="60 Seconds"
                                 value={roundToTwoDP(state.ctiShowAfterTimer)}
-                                onChange={(value) => dispatch({ ctiShowAfterTimer: value })}
+                                onChange={(value) =>
+                                    dispatch({ content: { ctiShowAfterTimer: value }, writeOutConfig: false })
+                                }
+                                onFinish={writeOutConfig}
                             />
                             <RadioLine
                                 name="Close CTI When"
                                 selected={state.ctiHideTrigger}
                                 options={closeCtiOptions}
-                                onChange={(option) => dispatch({ ctiHideTrigger: closeCtiOptions.indexOf(option) })}
+                                onChange={(option) =>
+                                    dispatch({
+                                        content: { ctiHideTrigger: closeCtiOptions.indexOf(option) },
+                                        writeOutConfig: true,
+                                    })
+                                }
                             />
                         </>
                     )}

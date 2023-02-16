@@ -16,6 +16,7 @@ interface TextSliderProps {
     rightLabel: string;
     value: number;
     onChange: (newValue: number) => void;
+    onFinish?: () => void;
 }
 
 const TextSlider: React.FC<TextSliderProps> = ({
@@ -26,6 +27,7 @@ const TextSlider: React.FC<TextSliderProps> = ({
     rightLabel,
     value,
     onChange,
+    onFinish,
     stepSize = 0.05,
 }) => {
     const [isDragging, setDragging] = useState<boolean>(false);
@@ -37,11 +39,13 @@ const TextSlider: React.FC<TextSliderProps> = ({
     }, []);
 
     const onTextChange = (e: React.FormEvent<HTMLInputElement>): void => {
-        const hoverStartTime: number = Number.parseFloat(e.currentTarget.value);
-        onChange(hoverStartTime);
+        const value: number = Number.parseFloat(e.currentTarget.value);
+        onChange(value);
     };
 
-    const onUpCancel = () => setDragging(false);
+    const onUpCancel = () => {
+        setDragging(false);
+    };
 
     const onDown = (event: PointerEvent<HTMLInputElement>) => {
         setDragging(true);
@@ -87,7 +91,10 @@ const TextSlider: React.FC<TextSliderProps> = ({
                     onChange={() => {}}
                     onPointerMove={onMove}
                     onPointerDown={onDown}
-                    onPointerUp={onUpCancel}
+                    onPointerUp={() => {
+                        onUpCancel();
+                        onFinish?.();
+                    }}
                     onPointerCancel={onUpCancel}
                     id="myRange"
                     ref={inputElement}
@@ -104,6 +111,12 @@ const TextSlider: React.FC<TextSliderProps> = ({
                     className={classes('sliderText')}
                     value={value}
                     onChange={onTextChange}
+                    onBlur={onFinish}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            onFinish?.();
+                        }
+                    }}
                 />
             </label>
         </label>
