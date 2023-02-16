@@ -47,16 +47,17 @@ const bgImages = [GradientBg, WhiteTextBg, BlackTextBg, MountainBg];
 const bgPreviewImages = [GradientBgPreview, WhiteTextBgPreview, BlackTextBgPreview, MountainBgPreview];
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
+const reducer = (state: VisualsConfig, content: Partial<VisualsConfig>) => {
+    const newState: VisualsConfig = { ...state, ...content };
+    // writeVisualsConfig(newState).catch((err) => console.error(err));
+    console.log('WRITE OUT CONFIG: ', content);
+    return newState;
+};
+
 const VisualsScreen: React.FC = () => {
     const isLandscape = useIsLandscape();
     const cursorSection = useRef<HTMLDivElement>(null);
 
-    const reducer = (state: VisualsConfig, content: Partial<VisualsConfig>) => {
-        const newState: VisualsConfig = { ...state, ...content };
-        stateRef.current = newState;
-        return newState;
-    };
-    const stateRef = useRef<VisualsConfig>(defaultVisualsConfig);
     const [state, dispatch] = useReducer(reducer, defaultVisualsConfig);
     const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
 
@@ -79,15 +80,11 @@ const VisualsScreen: React.FC = () => {
         readVisualsConfig()
             .then((fileConfig) => {
                 dispatch(fileConfig);
-                setHasReadConfig(true);
                 setCustomColorsFromConfig(fileConfig);
                 updateCursorPreview(cursorStyles[presets[fileConfig.activeCursorPreset]]);
+                setHasReadConfig(true);
             })
             .catch((err) => console.error(err));
-
-        return () => {
-            writeVisualsConfig(stateRef.current).catch((err) => console.error(err));
-        };
     }, []);
 
     if (!isDesktop() || !hasReadConfig) return <></>;
@@ -155,15 +152,16 @@ const VisualsScreen: React.FC = () => {
                             </div>
                             {currentPreset === 'Custom' && (
                                 <ColorPicker
-                                    cursorColors={cursorStyles['Custom']}
-                                    updateCursorColors={(colors) => {
-                                        cursorStyles.Custom = colors;
+                                    cursorStyle={cursorStyles.Custom}
+                                    updateCursorPreview={updateCursorPreview}
+                                    updateConfigCursorStyle={(style) => {
+                                        cursorStyles.Custom = style;
                                         dispatch({
-                                            primaryCustomColor: convertHexToRGBA(colors[0]),
-                                            secondaryCustomColor: convertHexToRGBA(colors[1]),
-                                            tertiaryCustomColor: convertHexToRGBA(colors[2]),
+                                            primaryCustomColor: convertHexToRGBA(style[0]),
+                                            secondaryCustomColor: convertHexToRGBA(style[1]),
+                                            tertiaryCustomColor: convertHexToRGBA(style[2]),
                                         });
-                                        updateCursorPreview(colors);
+                                        updateCursorPreview(style);
                                     }}
                                 />
                             )}

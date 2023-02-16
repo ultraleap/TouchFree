@@ -1,6 +1,6 @@
 import './ColorPicker.scss';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HexAlphaColorPicker } from 'react-colorful';
 
 import { TabSelector } from '@/Components/Header';
@@ -8,19 +8,25 @@ import { TabSelector } from '@/Components/Header';
 import { CursorStyle } from './VisualsUtils';
 
 interface ColorPickerProps {
-    cursorColors: CursorStyle;
-    updateCursorColors: (colors: CursorStyle) => void;
+    cursorStyle: CursorStyle;
+    updateCursorPreview: (style: CursorStyle) => void;
+    updateConfigCursorStyle: (style: CursorStyle) => void;
 }
 
 const cursorSections = ['Center Fill', 'Outer Fill', 'Center Border'] as const;
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ cursorColors, updateCursorColors }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorPreview, updateConfigCursorStyle }) => {
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
+    const [localCursorStyle, setLocalCursorStyle] = useState<CursorStyle>(cursorStyle);
 
-    const setCurrentColor = (color: string) => {
-        const newState: CursorStyle = { ...cursorColors };
-        newState[activeTabIndex] = color;
-        updateCursorColors(newState);
+    useEffect(() => {
+        setLocalCursorStyle(cursorStyle);
+    }, [cursorStyle]);
+
+    const updateLocalCursorStyle = (style: string) => {
+        const newState = { ...localCursorStyle, [activeTabIndex]: style };
+        updateCursorPreview(newState);
+        setLocalCursorStyle(newState);
     };
 
     return (
@@ -39,12 +45,22 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorColors, updateCursorCol
                 ))}
             </div>
             <div className={'color-picker__body'}>
-                <HexAlphaColorPicker color={cursorColors[activeTabIndex]} onChange={setCurrentColor} />
+                <HexAlphaColorPicker
+                    color={localCursorStyle[activeTabIndex]}
+                    onChange={(color) => updateLocalCursorStyle(color)}
+                    onPointerUp={() => updateConfigCursorStyle(localCursorStyle)}
+                />
                 <input
                     type="text"
                     className={'color-picker__body__text'}
-                    value={cursorColors[activeTabIndex].toUpperCase()}
-                    onChange={(e) => setCurrentColor(e.target.value)}
+                    value={localCursorStyle[activeTabIndex].toUpperCase()}
+                    onChange={(e) => updateLocalCursorStyle(e.target.value)}
+                    onBlur={() => updateConfigCursorStyle(localCursorStyle)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            updateConfigCursorStyle(localCursorStyle);
+                        }
+                    }}
                 />
             </div>
         </div>
