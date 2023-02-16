@@ -477,6 +477,7 @@ Tracking::download:
 
 TF_Service::Integration::test:
   stage: test
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
 
   dependencies:
     - TF_Service::dotNet::Windows::build
@@ -496,8 +497,7 @@ TF_Service::Integration::test:
       junit: ./Testing/ServiceSocketTests/results/test_results.xml
     when: always
   tags:
-    - unity
-    - win10
+    - docker-windows
 
 TF_Tooling::Web::package:
   stage: package
