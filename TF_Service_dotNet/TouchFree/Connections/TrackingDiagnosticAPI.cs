@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Timers;
 using Ultraleap.TouchFree.Library.Configuration;
 using WebSocketSharp;
 
@@ -29,6 +30,8 @@ namespace Ultraleap.TouchFree.Library.Connections
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;
+
+        private Timer connectionCheckTimer;
 
         // Represents a variable that will be "initialized" once set at least once after construction
         private class ConfigurationVariable<TData>
@@ -185,6 +188,11 @@ namespace Ultraleap.TouchFree.Library.Connections
             OnAnalyticsResponse += SetTrackingConfigIfUnset;
             OnAllowImagesResponse += SetTrackingConfigIfUnset;
             OnCameraOrientationResponse += SetTrackingConfigIfUnset;
+
+            connectionCheckTimer = new(30000f);
+            connectionCheckTimer.AutoReset = true;
+            connectionCheckTimer.Enabled = true;
+            connectionCheckTimer.Elapsed += CheckConnection;
         }
 
         private void SetTrackingConfigIfUnset<T>(Result<T> _)
@@ -212,6 +220,23 @@ namespace Ultraleap.TouchFree.Library.Connections
 
                 configManager.TrackingConfig = trackingConfigurationToStore;
                 TrackingConfigFile.SaveConfig(trackingConfigurationToStore);
+            }
+        }
+
+        private void CheckConnection(object sender, ElapsedEventArgs e)
+        {
+            if (webSocket.ReadyState == WebSocketState.Closed)
+            {
+                try
+                {
+                    TouchFreeLog.WriteLine("Trying to reconnect to DiagnosticAPI");
+                    webSocket.Connect();
+                    TouchFreeLog.WriteLine("Reconnected!");
+                }
+                catch (Exception ex)
+                {
+                    TouchFreeLog.ErrorWriteLine($"DiagnosticAPI connection exception... \n{ex}");
+                }
             }
         }
 
