@@ -43,6 +43,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override void HandleValidationError(IncomingRequest request, Error error)
         {
+            // TODO: Put error message somewhere in response
             var maskResponse = new SuccessWrapper<MaskingData?>(false, whatThisHandlerDoes, null);
             var boolResponse = new SuccessWrapper<bool?>(false, whatThisHandlerDoes, null);
 

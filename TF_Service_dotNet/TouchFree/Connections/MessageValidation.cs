@@ -8,7 +8,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 {
     public static class MessageValidation
     {
-        private static readonly Dictionary<string, Type> typeLookup = new()
+        private static readonly Dictionary<string, Type> configJsonPropertyTypes = new()
         {
             { "interaction", typeof(InteractionConfig) },
             { "physical", typeof(PhysicalConfig) }
@@ -24,7 +24,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             bool anyValidContentFound = false;
             foreach (var contentElement in contentObj)
             {
-                if (typeLookup.TryGetValue(contentElement.Key, out Type T))
+                if (configJsonPropertyTypes.TryGetValue(contentElement.Key, out Type T))
                 {
                     try
                     {

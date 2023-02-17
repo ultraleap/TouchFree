@@ -12,6 +12,11 @@ public readonly record struct Empty;
 public readonly record struct Error(string Message)
 {
     public static Error None { get; } = new();
+    
+    // WARNING: These operators are explicit deliberately.
+    // Making them implicit causes issues with conversion to/from Error when dealing with Result<string>
+    public static explicit operator string(Error error) => error.Message;
+    public static explicit operator Error(string error) => new(error);
 }
 
 public delegate Result<Empty> ResultPredicate<in T>(T value);

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Ultraleap.TouchFree.Library.Configuration;
+﻿using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
@@ -27,7 +26,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             void handleDeviceInfoResponse()
             {
                 var currentConfig = new ServiceStatus(
-                    requestId,
+                    request.RequestId,
                     handManager.ConnectionManager.TrackingServiceState,
                     configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
                     VersionManager.Version,

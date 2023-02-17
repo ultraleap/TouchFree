@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Ultraleap.TouchFree.Library.Configuration;
+﻿using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
