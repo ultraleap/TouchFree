@@ -14,6 +14,14 @@ export const toggleFullScreen = async () => {
     appWindow.setFullscreen(!isFullScreen);
 };
 
+export const closeWindow = async () => {
+    appWindow.close();
+};
+
+export const minimizeWindow = async () => {
+    appWindow.minimize();
+};
+
 export const openWithShell = async (path: string, catchCallback?: () => void) => {
     try {
         await open(path);

@@ -3,7 +3,16 @@ import styles from './WindowControls.module.scss';
 import classnames from 'classnames/bind';
 import React, { useState } from 'react';
 
-import { WindowCloseIcon, WindowMaximizeIcon, WindowMinusIcon, GearIconGlow } from '@/Images';
+import { closeWindow, minimizeWindow, toggleFullScreen } from '@/TauriUtils';
+
+import {
+    WindowCloseIcon,
+    WindowFullscreenIcon,
+    WindowMinusIcon,
+    WindowMinusIconGlow,
+    WindowFullscreenIconGlow,
+    WindowCloseIconGlow,
+} from '@/Images';
 
 const classes = classnames.bind(styles);
 
@@ -12,18 +21,18 @@ const WindowControls: React.FC = () => {
         <div className={classes('window-controls')}>
             <WindowControl
                 imagePath={WindowMinusIcon}
-                hoverImagePath={GearIconGlow}
-                onClick={() => console.log('min')}
+                hoverImagePath={WindowMinusIconGlow}
+                onClick={() => minimizeWindow()}
             />
             <WindowControl
-                imagePath={WindowMaximizeIcon}
-                hoverImagePath={GearIconGlow}
-                onClick={() => console.log('max')}
+                imagePath={WindowFullscreenIcon}
+                hoverImagePath={WindowFullscreenIconGlow}
+                onClick={() => toggleFullScreen()}
             />
             <WindowControl
                 imagePath={WindowCloseIcon}
-                hoverImagePath={GearIconGlow}
-                onClick={() => console.log('close')}
+                hoverImagePath={WindowCloseIconGlow}
+                onClick={() => closeWindow()}
             />
         </div>
     );
