@@ -72,6 +72,15 @@ public readonly record struct Result<T>
             ? matchFunc(value)
             : matchError(error);
 
+    /// <summary>
+    /// Transform Result with a mapping function if it is not an error.
+    /// For errors, the error will be propagated and the mapping function will not be called. 
+    /// </summary>
     public Result<TResult> Map<TResult>(Func<T, TResult> mapFunc) => IsSuccess ? mapFunc(value) : error;
+    
+    /// <summary>
+    /// Transform Result with a mapping function if it is not an error.
+    /// For errors, the error will be propagated and the mapping function will not be called. 
+    /// </summary>
     public Result<TResult> Map<TResult>(Func<T, Result<TResult>> mapFunc) => IsSuccess ? mapFunc(value) : error;
 }
