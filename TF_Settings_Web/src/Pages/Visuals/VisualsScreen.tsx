@@ -219,7 +219,7 @@ const VisualsScreen: React.FC = () => {
                             <FileInput
                                 name="Call to Interact File"
                                 value={state.ctiFilePath.split('/').pop() ?? ''}
-                                acceptedExtensions={['mp4']}
+                                acceptedExtensions={['webm', 'mp4']}
                                 onFilePicked={(path) =>
                                     dispatch({ content: { ctiFilePath: path }, writeOutConfig: true })
                                 }
