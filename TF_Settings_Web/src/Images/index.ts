@@ -24,7 +24,7 @@ import Logo from './Logo.png';
 import WindowCloseIcon from './WindowControls/Close_Icon.svg';
 import WindowCloseIconGlow from './WindowControls/Close_Icon_Glow.svg';
 import WindowFullscreenIcon from './WindowControls/Fullscreen_Icon.svg';
-import WindowFullscreenIconGlow from './WindowControls/Fullscreen_Icon_Glow.svg';
+import WindowFullscreenIconGlow from './WindowControls/Fullscreen_Icon_Glow.png';
 import WindowMinusIcon from './WindowControls/Minus_Icon.svg';
 import WindowMinusIconGlow from './WindowControls/Minus_Icon_Glow.svg';
 

@@ -44,6 +44,10 @@
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         gap: 0 0vw;
+
+        .section {
+            padding-bottom: 5vh;
+        }
     }
 
     .cursor-style {
