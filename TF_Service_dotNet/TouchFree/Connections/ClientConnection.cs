@@ -162,10 +162,10 @@ namespace Ultraleap.TouchFree.Library.Connections
 
             // We don't handle after-the-fact Handshake Requests here. We may wish to
             // if / when we anticipate externals building their own Tooling clients.
-            var queueHandler = messageQueueHandlers.SingleOrDefault(x => x.ActionCodes.Contains(action));
+            var queueHandler = messageQueueHandlers.SingleOrDefault(x => x.HandledActionCodes.Contains(action));
             if (queueHandler != null)
             {
-                queueHandler.AddItemToQueue(new IncomingRequest(action, null, content));
+                queueHandler.AddItemToQueue(new IncomingRequest(action, content));
             }
             else if (action.ExpectedToBeHandled())
             {

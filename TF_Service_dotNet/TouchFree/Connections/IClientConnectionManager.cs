@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Net.WebSockets;
-using Ultraleap.TouchFree.Library.Connections;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library.Connections
 {
     public interface IClientConnectionManager
     {
@@ -14,5 +13,29 @@ namespace Ultraleap.TouchFree.Library
         void RemoveConnection(WebSocket _socket);
         void SendResponse<T>(T _response, ActionCode _actionCode);
         void HandleInteractionZoneEvent(InteractionZoneState _state);
+    }
+
+    public static class ClientConnectionManagerExtensions
+    {
+        public static readonly string SuccessString = "Success";
+        public static readonly string FailureString = "Failure";
+        
+        public static void SendSuccessResponse(this IClientConnectionManager manager, ValidatedIncomingRequest validatedIncomingRequest, ActionCode responseActionCode, string message = default)
+        {
+            var response = new ResponseToClient(validatedIncomingRequest.RequestId, SuccessString, message ?? string.Empty, validatedIncomingRequest.OriginalContent);
+            manager.SendResponse(response, responseActionCode);
+        }
+
+        public static void SendErrorResponse(this IClientConnectionManager manager, IncomingRequest incomingRequest, ActionCode responseActionCode, Error error)
+        {
+            var response = new ResponseToClient(string.Empty, FailureString, error.Message, incomingRequest.Content);
+            manager.SendResponse(response, responseActionCode);
+        }
+        
+        public static void SendErrorResponse(this IClientConnectionManager manager, ValidatedIncomingRequest validatedIncomingRequest, ActionCode responseActionCode, Error error)
+        {
+            var response = new ResponseToClient(validatedIncomingRequest.RequestId, FailureString, error.Message, validatedIncomingRequest.OriginalContent);
+            manager.SendResponse(response, responseActionCode);
+        }
     }
 }

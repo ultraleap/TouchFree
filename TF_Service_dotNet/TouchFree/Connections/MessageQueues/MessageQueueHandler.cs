@@ -1,21 +1,19 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Linq;
-using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public abstract class MessageQueueHandler : IMessageQueueHandler
     {
-        public abstract ActionCode[] ActionCodes { get; }
+        public abstract ActionCode[] HandledActionCodes { get; }
 
         private readonly ConcurrentQueue<IncomingRequest> queue = new();
         private readonly IUpdateBehaviour updateBehaviour;
         protected readonly IClientConnectionManager clientMgr;
 
-        protected abstract string noRequestIdFailureMessage { get; }
-        protected abstract ActionCode noRequestIdFailureActionCode { get; }
+        protected abstract string whatThisHandlerDoes { get; }
+        protected abstract ActionCode failureActionCode { get; }
 
         public MessageQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr)
         {
@@ -25,13 +23,14 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             clientMgr = _clientMgr;
         }
 
-        public void AddItemToQueue(IncomingRequest content)
+        public void AddItemToQueue(IncomingRequest request)
         {
-            if (!ActionCodes.Contains(content.action))
+            if (!HandledActionCodes.Contains(request.ActionCode))
             {
-                throw new System.ArgumentException("Unexpected action type", nameof(content));
+                throw new System.ArgumentException("Unexpected action type", nameof(request));
             }
-            queue.Enqueue(new IncomingRequest(content.action, content.requestId, content.content));
+            
+            queue.Enqueue(request);
         }
 
         protected virtual void OnUpdate()
@@ -41,55 +40,39 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         private void CheckQueue()
         {
-            IncomingRequest content;
-            if (queue.TryPeek(out content))
-            {
-                // Parse newly received messages
-                queue.TryDequeue(out content);
-                if (ActionCodes.Contains(content.action))
-                {
-                    ValidateRequestIdAndHandleRequest(content);
-                }
-                else
-                {
-                    TouchFreeLog.ErrorWriteLine($"Unexpected ActionType of {content.action} in {GetType().Name}");
-                }
-            }
+            if (queue.IsEmpty) return;
+            
+            // Parse newly received messages
+            if (!queue.TryDequeue(out var content)) return;
+            HandleRequest(content);
         }
 
-        private void ValidateRequestIdAndHandleRequest(IncomingRequest _request)
-        {
-            JObject contentObj = JsonConvert.DeserializeObject<JObject>(_request.content);
+        private void HandleRequest(IncomingRequest request) =>
+            request.DeserializeAndValidateRequest(jObject => ValidateContent(jObject, request))
+                .Match(Handle, error => HandleValidationError(request, error));
 
-            if (!RequestIdExists(contentObj))
-            {
-                CreateAndSendNoRequestIdError(_request);
-            }
-            else
-            {
-                Handle(_request, contentObj, contentObj.GetValue("requestID").ToString());
-            }
-        }
+        protected virtual void HandleValidationError(IncomingRequest request, Error error) =>
+            clientMgr.SendErrorResponse(request, failureActionCode, new Error($"{whatThisHandlerDoes} failed: {error.Message}"));
 
-        protected virtual void CreateAndSendNoRequestIdError(IncomingRequest _request)
-        {
-            ResponseToClient failureResponse = new ResponseToClient(string.Empty, "Failure", noRequestIdFailureMessage, _request.content);
+        protected void SendSuccessResponse(ValidatedIncomingRequest originalRequest, ActionCode actionCode, string successMessage = default) =>
+            clientMgr.SendSuccessResponse(originalRequest, actionCode, successMessage ?? string.Empty);
 
-            // This is a failed request, do not continue with sending the status,
-            // the Client will have no way to handle the config state
-            clientMgr.SendResponse(failureResponse, noRequestIdFailureActionCode);
-        }
+        protected void SendErrorResponse(ValidatedIncomingRequest originalRequest, Error errorMessage) =>
+            SendErrorResponse(originalRequest, errorMessage, failureActionCode);
+        
+        protected void SendErrorResponse(ValidatedIncomingRequest originalRequest, Error errorMessage, ActionCode errorActionCode) =>
+            clientMgr.SendErrorResponse(originalRequest, errorActionCode, errorMessage);
 
-        protected abstract void Handle(IncomingRequest _request, JObject _contentObject, string requestId);
-
-        public static bool RequestIdExists(JObject _content)
-        {
-            if (_content?.ContainsKey("requestID") != true || _content.GetValue("requestID").ToString() == string.Empty)
-            {
-                return false;
-            }
-
-            return true;
-        }
+        /// <summary>
+        /// Optionally implemented function for validating Json content of the incoming request
+        /// </summary>
+        /// <returns>Result indicating validation success or error</returns>
+        protected virtual Result<Empty> ValidateContent(JObject jObject, IncomingRequest request) => Result.Success;
+        
+        /// <summary>
+        /// Handle a validated request (with validated requestId and passed ValidateContent)
+        /// </summary>
+        /// <param name="request">Validated request to handle</param>
+        protected abstract void Handle(ValidatedIncomingRequest request);
     }
 }

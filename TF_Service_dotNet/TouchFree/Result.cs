@@ -2,75 +2,71 @@
 
 namespace Ultraleap.TouchFree.Library;
 
+public static class Result
+{
+    public static Result<Empty> Success { get; } = new();
+}
+
+public readonly record struct Empty;
+
+public readonly record struct Error(string Message)
+{
+    public static Error None { get; } = new();
+}
+
+public delegate Result<Empty> ResultPredicate<in T>(T value);
+
 /// <summary>
 /// Result that can contain a value or an error
 /// </summary>
 /// <typeparam name="T">Type of contained value</typeparam>
-public abstract record Result<T>
+public readonly record struct Result<T>
 {
-    /// <summary>
-    /// Type that represents a contained value
-    /// </summary>
-    public record Some(T Value) : Result<T>
+    public Result(T value)
     {
-        public static implicit operator Some(T value) => new(value);
+        this.value = value;
+        error = Error.None;
     }
 
-    /// <summary>
-    /// Type that represents an error
-    /// </summary>
-    public record Error(string ErrorValue) : Result<T>
+    public Result(Error error)
     {
-        public static implicit operator Error(string error) => new(error);
+        value = default;
+        this.error = error;
     }
 
-    public static implicit operator Result<T>(T value) => new Some(value);
-    public static implicit operator Result<T>(string error) => new Error(error);
+    private readonly T value;
+    private readonly Error error;
+
+    public static implicit operator Result<T>(T value) => new(value);
+    public static implicit operator Result<T>(Error error) => new(error);
 
     public bool IsSuccess => !IsError;
-    public bool HasValue => this is Some;
-    public bool IsError => this is Error;
+    public bool IsError => error != Error.None;
 
     public bool TryGetValue(out T value)
     {
-        if (this is not Some)
-        {
-            value = default;
-            return false;
-        }
-
-        value = ((Some)this).Value;
-        return true;
+        value = this.value;
+        return IsSuccess;
     }
 
-    public bool TryGetError(out string error)
+    public bool TryGetError(out Error error)
     {
-        if (this is not Error)
-        {
-            error = default;
-            return false;
-        }
-
-        error = ((Error)this).ErrorValue;
-        return true;
+        error = this.error;
+        return IsError;
     }
 
-    public bool GetValueOrError(out T value, out string error)
+    public Result<T> Match(Action<T> matchFunc, Action<Error> matchError)
     {
-        value = HasValue ? ((Some)this).Value : default;
-        error = IsError ? ((Error)this).ErrorValue : default;
-        return HasValue;
-    }
-
-    public Result<T> Match(Action<T> matchFunc, Action<string> matchError)
-    {
-        if (HasValue) matchFunc(((Some)this).Value);
-        if (IsError) matchError(((Error)this).ErrorValue);
+        if (IsSuccess) matchFunc(value);
+        if (IsError) matchError(error);
         return this;
     }
 
-    public TResult Match<TResult>(Func<T, TResult> matchFunc, Func<string, TResult> matchError) =>
-        HasValue
-            ? matchFunc(((Some)this).Value)
-            : matchError(((Error)this).ErrorValue);
+    public TResult Match<TResult>(Func<T, TResult> matchFunc, Func<Error, TResult> matchError) =>
+        IsSuccess
+            ? matchFunc(value)
+            : matchError(error);
+
+    public Result<TResult> Map<TResult>(Func<T, TResult> mapFunc) => IsSuccess ? mapFunc(value) : error;
+    public Result<TResult> Map<TResult>(Func<T, Result<TResult>> mapFunc) => IsSuccess ? mapFunc(value) : error;
 }

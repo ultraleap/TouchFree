@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
@@ -10,11 +9,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         private readonly IHandManager handManager;
         private readonly ITrackingDiagnosticApi trackingApi;
 
-        public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_SERVICE_STATUS };
+        public override ActionCode[] HandledActionCodes => new[] { ActionCode.REQUEST_SERVICE_STATUS };
 
-        protected override string noRequestIdFailureMessage => "Service state request failed. This is due to a missing or invalid requestID";
+        protected override string whatThisHandlerDoes => "Service state request";
 
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.SERVICE_STATUS_RESPONSE;
+        protected override ActionCode failureActionCode => ActionCode.SERVICE_STATUS_RESPONSE;
 
         public ServiceStatusQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager, IHandManager _handManager, ITrackingDiagnosticApi _trackingApi) : base(_updateBehaviour, _clientMgr)
         {
@@ -23,7 +22,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             trackingApi = _trackingApi;
         }
 
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+        protected override void Handle(ValidatedIncomingRequest request)
         {
             void handleDeviceInfoResponse()
             {

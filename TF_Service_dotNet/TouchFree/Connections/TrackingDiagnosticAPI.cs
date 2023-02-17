@@ -323,25 +323,25 @@ namespace Ultraleap.TouchFree.Library.Connections
                     case DApiMsgTypes.GetImageMask:
                     case DApiMsgTypes.SetImageMask:
                         Handle<ImageMaskData>(payload => OnMaskingResponse?.Invoke(payload),
-                            () => OnMaskingResponse?.Invoke($"Could not access Masking data. Tracking Response: \"{_message}\""));
+                            () => OnMaskingResponse?.Invoke(new Error($"Could not access Masking data. Tracking Response: \"{_message}\"")));
                         break;
 
                     case DApiMsgTypes.GetAnalyticsEnabled:
                     case DApiMsgTypes.SetAnalyticsEnabled:
                         Handle<bool>(payload => OnAnalyticsResponse?.Invoke(payload),
-                            () => OnAnalyticsResponse?.Invoke($"Could not access Analytics state. Tracking Response: \"{_message}\""));
+                            () => OnAnalyticsResponse?.Invoke(new Error($"Could not access Analytics state. Tracking Response: \"{_message}\"")));
                         break;
 
                     case DApiMsgTypes.SetAllowImages:
                     case DApiMsgTypes.GetAllowImages:
                         Handle<bool>(payload => OnAllowImagesResponse?.Invoke(payload),
-                            () => OnAllowImagesResponse?.Invoke($"Could not access AllowImages state. Tracking Response: \"{_message}\""));
+                            () => OnAllowImagesResponse?.Invoke(new Error($"Could not access AllowImages state. Tracking Response: \"{_message}\"")));
                         break;
 
                     case DApiMsgTypes.GetCameraOrientation:
                     case DApiMsgTypes.SetCameraOrientation:
                         Handle<CameraOrientationPayload>(payload => OnCameraOrientationResponse?.Invoke(payload.camera_orientation == "fixed-inverted"),
-                            () => OnCameraOrientationResponse?.Invoke($"Could not access CameraOrientation state. Tracking Response: \"{_message}\""));
+                            () => OnCameraOrientationResponse?.Invoke(new Error($"Could not access CameraOrientation state. Tracking Response: \"{_message}\"")));
                         break;
 
                     case DApiMsgTypes.GetDevices:

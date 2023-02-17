@@ -2,7 +2,7 @@
 {
     public interface IMessageQueueHandler
     {
-        ActionCode[] ActionCodes { get; }
-        void AddItemToQueue(IncomingRequest content);
+        ActionCode[] HandledActionCodes { get; }
+        void AddItemToQueue(IncomingRequest request);
     }
 }
