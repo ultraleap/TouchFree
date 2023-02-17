@@ -27,7 +27,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             void handleDeviceInfoResponse()
             {
                 var currentConfig = new ServiceStatus(
-                    string.Empty, // No request id as this event is not a response to a request
+                    requestId,
                     handManager.ConnectionManager.TrackingServiceState,
                     configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
                     VersionManager.Version,

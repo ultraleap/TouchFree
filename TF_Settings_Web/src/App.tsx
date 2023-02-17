@@ -4,10 +4,12 @@ import classnames from 'classnames/bind';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import TouchFree, { EventHandle } from 'TouchFree/src/TouchFree';
-import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
+import { isDesktop, toggleFullScreen } from '@/TauriUtils';
+
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import TouchFree, { EventHandle } from 'touchfree/src/TouchFree';
+import { TrackingServiceState } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { AboutScreen, CameraManager, InteractionsScreen } from '@/Pages';
 
@@ -37,10 +39,21 @@ const App: React.FC = () => {
             setTouchFreeVersion(tfVersion);
         });
 
+        const fullScreenListener = (event: KeyboardEvent) => {
+            if (event.code === 'F11' || (event.altKey && event.code === 'Enter')) {
+                toggleFullScreen();
+            }
+        };
+
+        if (isDesktop()) {
+            window.addEventListener('keydown', fullScreenListener);
+        }
+
         return () => {
             whenConnectedHandler.UnregisterEventCallback();
             serviceChangeCallback.UnregisterEventCallback();
             TouchFree.GetInputController()?.disconnect();
+            window.removeEventListener('keydown', fullScreenListener);
         };
     }, []);
 

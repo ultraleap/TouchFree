@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
-import { ConfigurationManager } from 'TouchFree/src/Configuration/ConfigurationManager';
-import { InteractionConfig, PhysicalConfig, Vector } from 'TouchFree/src/Configuration/ConfigurationTypes';
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { ConfigState, HandPresenceState } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import TouchFree from 'TouchFree/src/TouchFree';
-import { InteractionType } from 'TouchFree/src/TouchFreeToolingTypes';
+import { ConfigurationManager } from 'touchfree/src/Configuration/ConfigurationManager';
+import { InteractionConfig, PhysicalConfig, Vector } from 'touchfree/src/Configuration/ConfigurationTypes';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ConfigState, HandPresenceState } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'touchfree/src/TouchFree';
+import { InteractionType } from 'touchfree/src/TouchFreeToolingTypes';
 
 import { CalibrationCompleteScreen, CalibrationScreen } from '@/Pages';
 import { PositionType } from '@/Pages/Camera/QuickSetup/PositionSelectionScreen';

@@ -3,22 +3,18 @@ import styles from './About.module.scss';
 import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
 
-import { useIsLinux } from '@/customHooks';
+import { openDir, isDesktop } from '@/TauriUtils';
 
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import TouchFree from 'TouchFree/src/TouchFree';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import TouchFree from 'touchfree/src/TouchFree';
 
 import { TextButton } from '@/Components';
 import { TabBar } from '@/Components/TopBar';
 
 const classes = classNames.bind(styles);
 
-const ENABLE_ADVANCED_ABOUT = false;
-
 const AboutScreen: React.FC = () => {
-    const isLinux = useIsLinux();
-
     const [tFVersion, setTFVersion] = useState<string>('');
     const [trackingVersion, setTrackingVersion] = useState<string>('');
     const [cameraFWVersion, setCameraFWVersion] = useState<string>('');
@@ -58,7 +54,7 @@ const AboutScreen: React.FC = () => {
                     <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
                 </div>
                 <div className={classes('page-divider')} />
-                {ENABLE_ADVANCED_ABOUT && !isLinux && (
+                {isDesktop() && (
                     <>
                         <div className={classes('title-line')}>
                             <h1> Advanced </h1>
@@ -67,14 +63,12 @@ const AboutScreen: React.FC = () => {
                             <InfoButtonEntry
                                 title="Tracking Log Files"
                                 buttonTitle="Show Tracking Log Files"
-                                onClick={() => {
-                                    console.log('C:/ProgramData/Ultraleap/HandTracker/Logs');
-                                }}
+                                onClick={() => openDir('C:/ProgramData/Ultraleap/HandTracker/Logs')}
                             />
                             <InfoButtonEntry
                                 title="TouchFree Log Files"
                                 buttonTitle="Show TouchFree Log Files"
-                                onClick={() => console.log('C:/ProgramData/Ultraleap/TouchFree/Logs')}
+                                onClick={() => openDir('C:/ProgramData/Ultraleap/TouchFree/Logs')}
                             />
                         </div>
                     </>

@@ -1,184 +1,201 @@
-import { Given, When, Then, After } from '@cucumber/cucumber';
+import { Given, When, Then, After } from "@cucumber/cucumber";
+import {
+    callbackOnConfigurationErrorResonse,
+    callbackOnConfigurationFileState,
+    callbackOnConfigurationState,
+    callbackOnConfigurationStateWithInteractionDistance,
+    callbackOnHandshake,
+    callbackOnHandshakeWithError, 
+    callbackOnServiceStatus, 
+    majorVersionDecrease, 
+    majorVersionIncrease, 
+    minorVersionDecrease, 
+    minorVersionIncrease, 
+    patchVersionChange, 
+    openWebSocketAndPerformAction, 
+    reset, 
+    sendHandshake, 
+    sendMessage
+} from './connectionAndSendingMethods';
 
-const WebSocket = require('ws');
+// NOTE: Name the test world as "world" to make usage clear in these methods.
+After(function () {
+    const world = this;
+    reset(world);
+});
 
-let connectedWebSocket: WebSocket | undefined = undefined;
-const responses: MessageEvent[] = [];
-let responsesSetUp = false;
+Given('the Service is running', function (callback) {
+    const world = this;
+    openWebSocketAndPerformAction(world, () => {
+        callback();
+    });
+});
 
-Given('the Service is running', (callback) => {
-    openWebSocketAndPerformAction(() => {
-        if (connectedWebSocket) {
-            connectedWebSocket.close();
+Given('the Service is connected', function (callback) {
+    const world = this;
+    openWebSocketAndPerformAction(world, () => {
+        callback();
+    });
+});
+
+When('a handshake message is sent', function () {
+    const world = this;
+    sendHandshake(world);
+});
+
+Then('a handshake response is received', function (callback) {
+    const world = this;
+    callbackOnHandshake(world, callback);
+});
+
+When('a handshake message is sent with a {string} {string} version', function (difference: string, versionType: string) {
+    const world = this;
+    let version = '';
+    if (difference === 'newer') {
+        if (versionType === 'major') {
+            version = majorVersionIncrease;
+        } else if (versionType === 'minor') {
+            version = minorVersionIncrease;
+        } else {
+            version = patchVersionChange;
         }
-        callback();
+    } else {
+        if (versionType === 'major') {
+            version = majorVersionDecrease;
+        } else if (versionType === 'minor') {
+            version = minorVersionDecrease;
+        } else {
+            version = patchVersionChange;
+        }
+    }
+    sendHandshake(world, version);
+});
+
+Then('a handshake response is received with a warning for versions', function (callback) {
+    const world = this;
+    callbackOnHandshake(world, callback, 'Handshake Warning:');
+});
+
+Then('a handshake response is received with a version error', function (callback) {
+    const world = this;
+    callbackOnHandshakeWithError(world, callback);
+});
+
+Given('the Service is connected with handshake', function (callback) {
+    const world = this;
+    openWebSocketAndPerformAction(world, () => {
+        sendHandshake(world);
+        callbackOnHandshake(world, callback);
     });
 });
 
-Given('the Service is connected', (callback) => {
-    openWebSocketAndPerformAction(() => {
-        callback();
-    });
-});
-
-When('a handshake message is sent',  () => {
-    sendHandshake();
-});
-
-Then('a handshake response is received', (callback) => {
-    callbackOnHandshake(callback);
-});
-
-Given('the Service is connected with handshake', (callback) => {
-    openWebSocketAndPerformAction(() => {
-        sendHandshake();
-    });
-
-    callbackOnHandshake(callback);
-});
-
-When('service status is requested',  () => {
+When('service status is requested', function (callback) {
+    const world = this;
     const serviceStatusMessage = {
         action: 'REQUEST_SERVICE_STATUS',
         content: {
-            requestID: '6423d82e-3266-4830-82d8-c46cc17fc646'
+            requestID: ''
         },
     };
 
-    sendMessage(serviceStatusMessage);
+    setTimeout(() => {
+        sendMessage(world, serviceStatusMessage, true);
+        callback();
+    }, 300);
 });
 
-Then('a service status response is received', (callback) => {
-    callbackOnServiceStatus(callback);
+Then('a service status response is received', function (callback) {
+    const world = this;
+    callbackOnServiceStatus(world, callback);
 });
 
-After(() => {
-    if (connectedWebSocket && connectedWebSocket.readyState === connectedWebSocket.OPEN) {
-        connectedWebSocket.close();
-    }
-    responsesSetUp = false;
-});
-
-const openWebSocketAndPerformAction = (callback: () => void) => {
-    // attempt to connect via WS.
-    // if connection unsuccessful, fail
-
-    connectedWebSocket = new WebSocket("ws://127.0.0.1:9739/connect");
-
-    if (connectedWebSocket) {
-        connectedWebSocket.addEventListener('open', () => {
-            callback();
-        });
-    }
-}
-
-const sendMessage = (message: unknown) => {
-    if (connectedWebSocket) {
-        if (!responsesSetUp) {
-            connectedWebSocket.addEventListener('message', (_message: MessageEvent) => {
-                responses.push(_message);
-            });
-            responsesSetUp = true;
-        }
-
-        connectedWebSocket.send(JSON.stringify(message));
-    }
-}
-
-const sendHandshake = () => {
-    const handshakeMessage = {
-        action: 'VERSION_HANDSHAKE',
+When('configuration is requested', function () {
+    const world = this;
+    const configurationRequestMessage = {
+        action: 'REQUEST_CONFIGURATION_STATE',
         content: {
-            requestID: '6423d82e-3266-4830-82d8-c46cc17fc645',
-            TfApiVersion: '1.3.0'
+            requestID: ''
         },
     };
 
-    sendMessage(handshakeMessage);
-};
+    sendMessage(world, configurationRequestMessage, true);
+});
 
-const callbackOnMessage = (callback: () => void, validation: (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => void) => {
-    let checkTime = 0;
-    const interval = 10;
+Then('a configuration response is received', function (callback) {
+    const world = this;
+    callbackOnConfigurationState(world, callback);
+});
 
-    const intervalId: NodeJS.Timer = setInterval(() => {
-        checkTime += interval;
+When('file configuration is requested', function () {
+    const world = this;
+    const configurationRequestMessage = {
+        action: 'REQUEST_CONFIGURATION_FILE',
+        content: {
+            requestID: ''
+        },
+    };
 
-        const response = responses.shift();
-        if (response && typeof response.data === 'string') {
-            validation(response.data, intervalId, callback);
-        }
+    sendMessage(world, configurationRequestMessage, true);
+});
 
-        if (checkTime > 3000) {
-            clearInterval(intervalId);
-            throw Error('No message received');
-        }
-    }, interval);
-};
+Then('a configuration file response is received', function (callback) {
+    const world = this;
+    callbackOnConfigurationFileState(world, callback);
+});
 
-const callbackOnHandshake = (callback: () => void) => {
-    callbackOnMessage(callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
-        const expectedResponse = { 
-            action: 'VERSION_HANDSHAKE_RESPONSE',
-            content: {
-                requestID: '6423d82e-3266-4830-82d8-c46cc17fc645',
-                status: 'Success',
-                message: 'Handshake Successful.',
-                originalRequest: '{"requestID":"6423d82e-3266-4830-82d8-c46cc17fc645","TfApiVersion":"1.3.0"}',
-                touchFreeVersion: '',
-                apiVersion: '1.3.0'
+When('configuration is requested without a requestID', function () {
+    const world = this;
+    const configurationRequestMessage = {
+        action: 'REQUEST_CONFIGURATION_STATE',
+        content: {
+            requestID: ''
+        },
+    };
+
+    sendMessage(world, configurationRequestMessage, false);
+});
+
+Then('a configuration error response is received', function (callback) {
+    const world = this;
+    callbackOnConfigurationErrorResonse(world, callback);
+});
+
+When('the configuration is set', function() {
+    const world = this;
+
+    const configuredInteractionDistanceCm = Math.random();
+    world.configuredInteractionDistanceCm = configuredInteractionDistanceCm;
+
+    const configurationRequestMessage = {
+        action: 'SET_CONFIGURATION_STATE',
+        content: {
+            requestID: '',
+            interaction: {
+                InteractionMinDistanceCm: configuredInteractionDistanceCm
             }
-        };
+        },
+    };
 
-        checkActionResponse(responseData, expectedResponse, intervalId, (received: any) => {
-            return received.content.status === expectedResponse.content.status &&
-                received.content.message === expectedResponse.content.message;
-        }, callback, 'Handshake message does not match expected');
-    });
-};
+    sendMessage(world, configurationRequestMessage, true);
+})
 
-const callbackOnServiceStatus = (callback: () => void) => {
-    callbackOnMessage(callback, (responseData: string, intervalId: NodeJS.Timer, callback: () => void) => {
-        const expectedResponse = { 
-            action: 'SERVICE_STATUS',
+Then('a configuration response is received with InteractionDistance', function (callback) {
+    const world = this;
+    callbackOnConfigurationStateWithInteractionDistance(world, () => {
+        const configurationRequestMessage = {
+            action: 'REQUEST_CONFIGURATION_STATE',
             content: {
-                requestID: '6423d82e-3266-4830-82d8-c46cc17fc646'
-            }
+                requestID: ''
+            },
         };
-
-        checkActionResponse(responseData, expectedResponse, intervalId, () => {
-            return true;
-        }, callback, 'Service Status message does not match expected');
+        sendMessage(world, configurationRequestMessage, true);
+        callbackOnConfigurationState(world, () => {
+            const differenceInValue = Math.abs(world.messageContent.content.interaction.InteractionMinDistanceCm - world.configuredInteractionDistanceCm);
+            if (differenceInValue < 0.00001) {
+                callback();
+            } else {
+                throw new Error("InteractionMinDistanceCm does not match");
+            }
+        });
     });
-};
-
-const checkActionResponse = (
-    responseData: string,
-    expectedResponse: any,
-    intervalId: NodeJS.Timer,
-    validation: (received: any) => boolean,
-    callback: () => void,
-    errorMessage: string) => {
-
-    const content = JSON.parse(responseData);
-
-    if (content.action === expectedResponse.action && content.requestID === expectedResponse.requestID)  {
-        clearInterval(intervalId);
-
-        if (validation(content)) {
-            callback();
-        } else {
-            logMessageComparisonAndThrow(content, expectedResponse, errorMessage);
-        }
-    }
-};
-
-const logMessageComparisonAndThrow = (received: any, expected: any, errorMessage: string) => {
-    console.log('');
-    console.log('Received:');
-    console.log(received);
-    console.log('');
-    console.log('Expected:');
-    console.log(expected);
-    throw Error(errorMessage);
-};
+});

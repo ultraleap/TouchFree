@@ -1,5 +1,3 @@
-import platform from 'platform';
-
 import { useEffect, useRef, useState } from 'react';
 
 export const useIsFullScreen = () => {
@@ -26,8 +24,6 @@ export const useIsFullScreen = () => {
 
     return isFullScreen;
 };
-
-export const useIsLinux = (): boolean => platform.os?.family === 'Linux' || platform.os?.family === 'Ubuntu';
 
 export const useStatefulRef = function <T>(initialValue: T): {
     current: T;

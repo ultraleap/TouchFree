@@ -23,6 +23,7 @@ stages:
   - test
   - package
   - installer
+  - deploy
 
 TF_Tooling::Unity::build:
   stage: build
@@ -122,7 +123,7 @@ TF_Tooling::Docs::build:
 TF_Service::Wrapper::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = ''
@@ -149,7 +150,7 @@ TF_Service::Wrapper::build:
 TF_Service::dotNet::Windows::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = ''
@@ -184,7 +185,7 @@ TF_Service::dotNet::Windows::build:
 TF_Service::dotNet::ARMLinux::build:
   stage: build
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
         $TOUCHFREE_SUFFIX = 'beta'
@@ -241,18 +242,23 @@ Tracking::ARMLinux::download_package:
 TF_Service::dotNet::test:
   stage: test
   when: always
-  image: registry.ultrahaptics.com/xr/infrastucture/dotnet6-toolchain:latest
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     # Run unit tests
-    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
-
+    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --results-directory $CI_PROJECT_DIR/TestResults --collect:"XPlat Code Coverage;Format=Cobertura" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
+    - reportgenerator "-reports:$CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml" "-targetdir:TestReports"
   artifacts:
     when: always
     name: "TestResults"
     paths:
     - $CI_PROJECT_DIR/TestResults/Test_Results.xml
+    - $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
+    - $CI_PROJECT_DIR/TestReports/
     reports:
       junit: $CI_PROJECT_DIR/TestResults/Test_Results.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
   tags:
     - docker-windows
 
@@ -266,17 +272,38 @@ TF_Tooling::Web::test:
     - cd ${env:TF_TFW_PATH}
     - npm i
     - npm run test
+    - npm run test:coverage
 
   artifacts:
     when: always
     name: "TestResults"
     paths:
     - ${env:TF_TFW_PATH}/junit.xml
+    - ${env:TF_TFW_PATH}/coverage/
     reports:
       junit: ${env:TF_TFW_PATH}/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: ${env:TF_TFW_PATH}/coverage/cobertura-coverage.xml
+
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   tags:
     - unity
     - win10
+
+pages:
+  stage: deploy
+  dependencies:
+    - TF_Tooling::Web::test
+  script:
+    - mkdir .public
+    - cp ${env:TF_TFW_PATH}/coverage/* .public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - develop
 
 TF_Service::Tray::build:
   stage: build
@@ -348,22 +375,33 @@ TF_Settings::Windows::build:
 TF_Settings::Web::build:
   stage: build
   when: always
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
   script:
     - npm -v
     - npm install -w TF_Settings_Web
     - npm ls
     - cd ./TF_Settings_Web
-    - npm run build
-    - npx generate-license-file --input ./package.json --output ./dist/ThirdPartyLicenses.txt --eol posix
+    - npm run tauri build
+    # npm workspaces cause the Web Settings node modules to be installed in the root folder so need to copy the Web Settings' package.json up a level
+    # so it's at the same level as the node modules
+    - cp ./package.json ../
+    - cd ../
+    # We don't want the touchfree module to appear in the licensing file
+    - Remove-Item -Force -Recurse .\node_modules\touchfree\
+    - npx generate-license-file@2.0.0 --input ./package.json --output ./TF_Settings_Web/dist/ThirdPartyLicenses.txt --eol lf --ci
+    - if ((cat ./TF_Settings_Web/dist/ThirdPartyLicenses.txt | Select-String "react").Count -eq 0) {
+        exit 1
+      }
+    - azuresigntool sign -du "https://www.ultraleap.com" -kvu "https://$env:SIGN_VAULT_ID.vault.azure.net/"  -kvi "$env:SIGN_VAULT_APPLICATION_ID" -kvs "$env:SIGN_VAULT_APPLICATION_CLIENT_CODE" -kvc "ultraleap-ltd" -kvt "$env:SIGN_VAULT_TENANT_ID" -tr http://timestamp.digicert.com -v "$CI_PROJECT_DIR/TF_Settings_Web/src-tauri/target/release/touchfree-settings-web.exe"
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - ./TF_Settings_Web/dist/*
+    - ./TF_Settings_Web/src-tauri/target/release/*.exe
     expire_in: 2 weeks
     when: always
   tags:
-    - unity
-    - win10
+    - docker-windows
 
 TouchFree::build:
   stage: build
@@ -439,6 +477,7 @@ Tracking::download:
 
 TF_Service::Integration::test:
   stage: test
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
 
   dependencies:
     - TF_Service::dotNet::Windows::build
@@ -458,8 +497,7 @@ TF_Service::Integration::test:
       junit: ./Testing/ServiceSocketTests/results/test_results.xml
     when: always
   tags:
-    - unity
-    - win10
+    - docker-windows
 
 TF_Tooling::Web::package:
   stage: package
