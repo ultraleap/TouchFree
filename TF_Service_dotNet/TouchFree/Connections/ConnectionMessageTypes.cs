@@ -90,7 +90,7 @@ namespace Ultraleap.TouchFree.Library.Connections
     }
 
     [Serializable]
-    public record struct ResponseToClient(string RequestId, string Status, string Message, string OriginalRequest);
+    public record struct ResponseToClient(string requestID, string status, string message, string originalRequest);
     
     public struct MaskingData
     {
