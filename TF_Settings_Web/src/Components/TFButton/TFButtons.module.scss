@@ -2,7 +2,7 @@
 
 .tf-button {
     background: v.$dark-grey-gradient;
-    box-shadow: 0px 2px 10px #00000099;
+    box-shadow: v.$dark-box-shadow;
     border: 1px solid #ffffff1a;
     border-radius: 10px;
 
@@ -40,7 +40,6 @@
 
         img {
             margin: auto;
-            width: 16%;
         }
     }
 

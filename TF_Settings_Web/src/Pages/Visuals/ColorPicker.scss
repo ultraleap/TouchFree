@@ -1,0 +1,96 @@
+@use '@/variables.module.scss' as v;
+@use '@/Pages/Interactions/Interactions.module.scss';
+
+.color-picker {
+    padding: 0;
+    margin-top: 0.75rem;
+    margin-bottom: 1.5rem;
+    height: 20vh;
+    @media (orientation: landscape) {
+        height: 35vh;
+    }
+
+    display: grid;
+    grid-template-rows: 0.2fr 0.8fr;
+
+    font-size: 1.4rem;
+    font-family: v.$base-font;
+    color: white;
+
+    &__tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        height: 100%;
+        > div {
+            border-radius: 0.5rem 0.5rem 0 0;
+            > button {
+                font-size: 1.5rem;
+            }
+        }
+    }
+
+    &__body {
+        background: v.$dark-grey-gradient;
+        position: relative;
+        height: 100%;
+        width: 100%;
+        gap: 0.5rem;
+
+        @mixin left-aligned($index) {
+            left: 2.5%;
+            height: 15%;
+            width: 45%;
+            position: absolute;
+            border-radius: 25px;
+            top: calc(55% / 4) * ($index + 1) + (15% * $index);
+        }
+
+        .react-colorful {
+            height: 100%;
+            width: 100%;
+            display: flex;
+
+            &__pointer {
+                width: 50px;
+                height: 50px;
+                border-width: 5px;
+            }
+
+            &__saturation {
+                border-bottom: none;
+                top: 5%;
+                height: 90%;
+                left: 52.5%;
+                width: 45%;
+
+                position: absolute;
+                border-radius: 25px;
+
+                &-pointer {
+                    width: 60px;
+                    height: 60px;
+                }
+            }
+
+            &__hue {
+                @include left-aligned(0);
+            }
+
+            &__alpha {
+                @include left-aligned(1);
+            }
+        }
+
+        &__text {
+            position: absolute;
+            @include left-aligned(2);
+            border: 1px solid v.$light-grey;
+
+            color: white;
+            font-size: 1.8rem;
+            text-align: center;
+            background: v.$light-grey-gradient;
+            box-shadow: v.$dark-box-shadow;
+        }
+    }
+}

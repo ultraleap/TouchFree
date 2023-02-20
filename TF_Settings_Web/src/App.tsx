@@ -11,15 +11,14 @@ import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
 import TouchFree, { EventHandle } from 'touchfree/src/TouchFree';
 import { TrackingServiceState } from 'touchfree/src/TouchFreeToolingTypes';
 
-import { AboutScreen, CameraManager, InteractionsScreen } from '@/Pages';
+import { AboutScreen, CameraManager, InteractionsScreen, VisualsScreen } from '@/Pages';
 
-import { Header } from '@/Components/TopBar';
+import { Header } from '@/Components';
 
 const classes = classnames.bind(styles);
 
 const App: React.FC = () => {
     const [trackingStatus, setTrackingStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
-    const [touchFreeVersion, setTouchFreeVersion] = React.useState<string>('');
 
     useEffect(() => {
         TouchFree.Init({ initialiseCursor: true });
@@ -33,10 +32,6 @@ const App: React.FC = () => {
         const whenConnectedHandler = TouchFree.RegisterEventCallback('WhenConnected', () => {
             ConnectionManager.RequestServiceStatus(setTrackingStatusCallback);
             serviceChangeCallback = TouchFree.RegisterEventCallback('OnServiceStatusChange', setTrackingStatusCallback);
-
-            const serviceConnection = ConnectionManager.serviceConnection();
-            const tfVersion = serviceConnection?.touchFreeVersion ?? '';
-            setTouchFreeVersion(tfVersion);
         });
 
         const fullScreenListener = (event: KeyboardEvent) => {
@@ -59,11 +54,12 @@ const App: React.FC = () => {
 
     return (
         <div className={classes('app')}>
-            <Header trackingStatus={trackingStatus} touchFreeVersion={touchFreeVersion} />
+            <Header trackingStatus={trackingStatus} />
             <Routes>
                 <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
                 <Route path="/settings/interactions" element={<InteractionsScreen />} />
                 <Route path="/settings/about" element={<AboutScreen />} />
+                <Route path="/settings/visuals" element={<VisualsScreen />} />
                 <Route path="*" element={<Navigate to="/settings/camera" replace />} />
             </Routes>
         </div>

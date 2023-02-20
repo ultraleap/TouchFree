@@ -1,0 +1,114 @@
+@use '@/variables.module.scss' as v;
+@use '@/App.module.scss';
+@use '@/Pages/Interactions/Interactions.module.scss';
+
+.title-line {
+    @include App.title-line;
+    justify-content: space-between;
+    align-items: center;
+
+    > button {
+        @media (orientation: landscape) {
+            margin: 0 1vw;
+        }
+    }
+}
+
+.label-container {
+    @extend .input-label-container;
+    height: 7rem;
+    margin-left: 2vw;
+    margin-right: 2vw;
+
+    &__label {
+        margin-left: 0.75rem;
+        color: v.$ultraleap-green;
+        margin-left: 0.75rem;
+        font-size: 1.7rem;
+        max-height: none;
+    }
+
+    > button {
+        margin-right: 0.75rem;
+    }
+}
+
+.scroll-div {
+    @include App.scroll-div;
+}
+
+.container {
+    margin: 0 2vw;
+
+    @media (orientation: landscape) {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 0 0vw;
+
+        .section {
+            padding-bottom: 5vh;
+        }
+    }
+
+    .cursor-style {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2vw;
+        align-items: center;
+
+        &__preview {
+            height: 95%;
+            border-radius: 0.5rem;
+            background-size: cover;
+            background-repeat: no-repeat;
+
+            &__cursor {
+                height: 80%;
+
+                @function createCircle($start, $width, $color) {
+                    @return radial-gradient(
+                        circle at 50% 50%,
+                        transparent $start,
+                        $color calc($start + 1%),
+                        $color $start + $width,
+                        transparent calc($start + $width + 1%)
+                    );
+                }
+
+                background-image: createCircle(35%, 3%, var(--outer-fill)), createCircle(-1%, 20%, var(--center-fill)),
+                    createCircle(18%, 3%, var(--center-border));
+            }
+
+            &__bg-selector {
+                height: 20%;
+                background-color: #ffffff60;
+
+                width: 100%;
+
+                display: flex;
+                align-items: center;
+                justify-content: space-evenly;
+
+                &__img {
+                    box-shadow: v.$dark-box-shadow;
+                    border-radius: 10px;
+                    width: 13%;
+                    border: 3px solid transparent;
+                    &--active {
+                        border: 3px solid v.$ultraleap-green;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.page-divider {
+    @include App.page-divider;
+
+    &--vertical {
+        width: 10px;
+        margin: 0.75rem 40px 0 40px;
+        height: auto;
+    }
+}

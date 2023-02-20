@@ -24,7 +24,6 @@ import {
     TextSlider,
     OutlinedTextButton,
 } from '@/Components';
-import { TabBar } from '@/Components/TopBar';
 
 import { DefaultInteractionConfig } from './InteractionDefaults';
 
@@ -108,7 +107,10 @@ const InteractionsScreen = () => {
                             rightLabel="1s"
                             value={config.HoverAndHold.HoverStartTimeS}
                             onChange={(value) =>
-                                dispatch({ type: 'update', content: { HoverAndHold: { HoverStartTimeS: value } } })
+                                dispatch({
+                                    type: 'update',
+                                    content: { HoverAndHold: { ...config.HoverAndHold, HoverStartTimeS: value } },
+                                })
                             }
                         />
                         <TextSlider
@@ -120,7 +122,10 @@ const InteractionsScreen = () => {
                             rightLabel="1s"
                             value={config.HoverAndHold.HoverCompleteTimeS}
                             onChange={(value) =>
-                                dispatch({ type: 'update', content: { HoverAndHold: { HoverCompleteTimeS: value } } })
+                                dispatch({
+                                    type: 'update',
+                                    content: { HoverAndHold: { ...config.HoverAndHold, HoverCompleteTimeS: value } },
+                                })
                             }
                         />
                     </>
@@ -147,7 +152,9 @@ const InteractionsScreen = () => {
                             onChange={(value) =>
                                 dispatch({
                                     type: 'update',
-                                    content: { TouchPlane: { TouchPlaneActivationDistanceCm: value } },
+                                    content: {
+                                        TouchPlane: { ...config.TouchPlane, TouchPlaneActivationDistanceCm: value },
+                                    },
                                 })
                             }
                         />
@@ -160,7 +167,10 @@ const InteractionsScreen = () => {
                                 dispatch({
                                     type: 'update',
                                     content: {
-                                        TouchPlane: { TouchPlaneTrackedPosition: TouchPlaneTrackingOptions[value] },
+                                        TouchPlane: {
+                                            ...config.TouchPlane,
+                                            TouchPlaneTrackedPosition: TouchPlaneTrackingOptions[value],
+                                        },
                                     },
                                 })
                             }
@@ -184,110 +194,107 @@ const InteractionsScreen = () => {
     };
 
     return (
-        <>
-            <TabBar />
-            <div className={classes('container')}>
-                <div className={classes('title-line')}>
-                    <h1> Interaction Type </h1>
-                    <div className={classes('misc-button-container')}>
-                        <DocsLink
-                            title="Support"
-                            url="https://www.ultraleap.com/contact-us/"
-                            buttonStyle={isLandscape ? undefined : supportPortraitStyle}
+        <div className={classes('container')}>
+            <div className={classes('title-line')}>
+                <h1> Interaction Type </h1>
+                <div className={classes('misc-button-container')}>
+                    <DocsLink
+                        title="Support"
+                        url="https://www.ultraleap.com/contact-us/"
+                        buttonStyle={isLandscape ? undefined : supportPortraitStyle}
+                    />
+                    <OutlinedTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
+                </div>
+            </div>
+            <div className={classes('section-container')}>
+                <div className={classes('content')}>
+                    <div className={classes('horizontalContainer')}>
+                        <RadioGroup
+                            name="InteractionType"
+                            selected={activeInteraction}
+                            options={Object.keys(InteractionTranslator)}
+                            onChange={(value) =>
+                                dispatch({
+                                    type: 'update',
+                                    content: { InteractionType: InteractionTranslator[value] },
+                                })
+                            }
                         />
-                        <OutlinedTextButton title="Reset to Default" onClick={() => dispatch({ type: 'reset' })} />
+                        <video
+                            autoPlay={true}
+                            loop={true}
+                            key={InteractionExplainer}
+                            className={classes('InteractionPreview', `Interaction${activeInteraction.toString()}`)}
+                        >
+                            <source src={InteractionExplainer} />
+                        </video>
+                    </div>
+                    <div className={classes('verticalContainer')}>
+                        <Slider
+                            name="Cursor Movement"
+                            increment={0.0001}
+                            rangeMin={0}
+                            rangeMax={0.015}
+                            leftLabel="Responsive"
+                            rightLabel="Stable"
+                            value={config.DeadzoneRadius}
+                            onChange={(value) => dispatch({ type: 'update', content: { DeadzoneRadius: value } })}
+                        />
                     </div>
                 </div>
-                <div className={classes('section-container')}>
-                    <div className={classes('content')}>
-                        <div className={classes('horizontalContainer')}>
-                            <RadioGroup
-                                name="InteractionType"
-                                selected={activeInteraction}
-                                options={Object.keys(InteractionTranslator)}
-                                onChange={(value) =>
-                                    dispatch({
-                                        type: 'update',
-                                        content: { InteractionType: InteractionTranslator[value] },
-                                    })
-                                }
-                            />
-                            <video
-                                autoPlay={true}
-                                loop={true}
-                                key={InteractionExplainer}
-                                className={classes('InteractionPreview', `Interaction${activeInteraction.toString()}`)}
-                            >
-                                <source src={InteractionExplainer} />
-                            </video>
-                        </div>
-                        <div className={classes('verticalContainer')}>
-                            <Slider
-                                name="Cursor Movement"
-                                increment={0.0001}
-                                rangeMin={0}
-                                rangeMax={0.015}
-                                leftLabel="Responsive"
-                                rightLabel="Stable"
-                                value={config.DeadzoneRadius}
-                                onChange={(value) => dispatch({ type: 'update', content: { DeadzoneRadius: value } })}
-                            />
-                        </div>
-                    </div>
-                    <div className={classes('content')}>
-                        <div className={classes('verticalContainer')}>{getInteractionControls()}</div>
+                <div className={classes('content')}>
+                    <div className={classes('verticalContainer')}>{getInteractionControls()}</div>
+                </div>
+            </div>
+            <h1 className={classes('title-line')}> Interaction Zone </h1>
+            <div className={classes('section-container')}>
+                <div className={classes('content')}>
+                    <div className={classes('verticalContainer')}>
+                        <LabelledToggleSwitch
+                            name="Enable/Disable"
+                            value={config.InteractionZoneEnabled}
+                            onChange={(value) =>
+                                dispatch({ type: 'update', content: { InteractionZoneEnabled: value } })
+                            }
+                        />
                     </div>
                 </div>
-                <h1 className={classes('title-line')}> Interaction Zone </h1>
-                <div className={classes('section-container')}>
-                    <div className={classes('content')}>
-                        <div className={classes('verticalContainer')}>
-                            <LabelledToggleSwitch
-                                name="Enable/Disable"
-                                value={config.InteractionZoneEnabled}
-                                onChange={(value) =>
-                                    dispatch({ type: 'update', content: { InteractionZoneEnabled: value } })
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className={classes('content')}>
-                        <div className={classes('verticalContainer')}>
-                            {config.InteractionZoneEnabled ? (
-                                <>
-                                    <TextSlider
-                                        name="Minimum Active Distance"
-                                        key="Minimum Active Distance"
-                                        rangeMin={0}
-                                        rangeMax={30}
-                                        leftLabel="0cm"
-                                        rightLabel="30cm"
-                                        value={config.InteractionMinDistanceCm}
-                                        onChange={(value) =>
-                                            dispatch({ type: 'update', content: { InteractionMinDistanceCm: value } })
-                                        }
-                                    />
-                                    <TextSlider
-                                        name="Maximum Active Distance"
-                                        key="Maximum Active Distance"
-                                        rangeMin={0}
-                                        rangeMax={30}
-                                        leftLabel="0cm"
-                                        rightLabel="30cm"
-                                        value={config.InteractionMaxDistanceCm}
-                                        onChange={(value) =>
-                                            dispatch({ type: 'update', content: { InteractionMaxDistanceCm: value } })
-                                        }
-                                    />
-                                </>
-                            ) : (
-                                <></>
-                            )}
-                        </div>
+                <div className={classes('content')}>
+                    <div className={classes('verticalContainer')}>
+                        {config.InteractionZoneEnabled ? (
+                            <>
+                                <TextSlider
+                                    name="Minimum Active Distance"
+                                    key="Minimum Active Distance"
+                                    rangeMin={0}
+                                    rangeMax={30}
+                                    leftLabel="0cm"
+                                    rightLabel="30cm"
+                                    value={config.InteractionMinDistanceCm}
+                                    onChange={(value) =>
+                                        dispatch({ type: 'update', content: { InteractionMinDistanceCm: value } })
+                                    }
+                                />
+                                <TextSlider
+                                    name="Maximum Active Distance"
+                                    key="Maximum Active Distance"
+                                    rangeMin={0}
+                                    rangeMax={30}
+                                    leftLabel="0cm"
+                                    rightLabel="30cm"
+                                    value={config.InteractionMaxDistanceCm}
+                                    onChange={(value) =>
+                                        dispatch({ type: 'update', content: { InteractionMaxDistanceCm: value } })
+                                    }
+                                />
+                            </>
+                        ) : (
+                            <></>
+                        )}
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

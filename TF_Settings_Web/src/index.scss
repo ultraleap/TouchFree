@@ -7,4 +7,17 @@ body {
         'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    ::-webkit-scrollbar {
+        width: 2px;
+        &-track {
+            background: v.$dark-grey;
+        }
+        &-thumb {
+            background: #ffffff;
+        }
+    }
 }
