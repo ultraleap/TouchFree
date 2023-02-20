@@ -1,0 +1,20 @@
+@use '@/variables.module.scss' as v;
+
+.header {
+    background-image: linear-gradient(270deg, #3c3c3c, #2f2f2f);
+    position: sticky;
+    top: 0;
+
+    &__top {
+        height: v.$header-height;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        align-items: center;
+
+        &__logo {
+            justify-self: center;
+            width: 30rem;
+        }
+    }
+}

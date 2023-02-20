@@ -4,6 +4,8 @@ import classnames from 'classnames/bind';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { CSSProperties, useState, useRef, useEffect } from 'react';
 
+import { openWithShell } from '@/TauriUtils';
+
 import TouchFree from 'touchfree/src/TouchFree';
 
 import { Alert, TextButton, OutlinedTextButton } from '@/Components';
@@ -73,7 +75,9 @@ const DocsModal: React.FC<DocsModalProps> = ({ url, toggleModal }) => {
                                         timeoutRef.current = window.setTimeout(() => setShowAlert(false), 4000);
                                     }
                                 } else {
-                                    window.open(url, '_blank')?.focus();
+                                    openWithShell(url, () => {
+                                        window.open(url, '_blank')?.focus();
+                                    });
                                     toggleModal();
                                 }
                             }}

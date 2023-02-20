@@ -28,7 +28,7 @@
     padding: 0.2rem;
 
     background: v.$light-grey-gradient;
-    box-shadow: 0px 2px 5px #00000080;
+    box-shadow: v.$dark-box-shadow;
     border: 1px solid #ffffff1a;
     border-radius: 10px;
 }
@@ -47,7 +47,7 @@
     background-origin: border-box;
     background-clip: content-box, border-box;
     border: double 0.25rem transparent;
-    box-shadow: 0 2px 10px 0 #00000099;
+    box-shadow: v.$dark-box-shadow;
     border-radius: 0.5rem;
 
     height: 5rem;

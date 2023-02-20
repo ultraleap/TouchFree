@@ -1,8 +1,10 @@
 import Alert from './Alert/Alert';
 import DocsLink from './DocsLink/DocsLink';
+import FileInput from './FileInput/FileInput';
+import Header from './Header/Header';
 import { RadioLine, RadioGroup } from './Radio/RadioButtons';
 import { Slider } from './Slider/Slider';
-import { TextSlider } from './Slider/TextSlider';
+import TextSlider from './Slider/TextSlider';
 import {
     TextButton,
     VerticalIconTextButton,
@@ -31,6 +33,8 @@ export {
     DocsLink,
     BackButton,
     OutlinedTextButton,
+    Header,
+    FileInput,
 };
 
 export type { TFClickEvent };
