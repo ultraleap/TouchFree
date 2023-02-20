@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
+- Service: Fixed an issue where TouchFree Service would stop being able to configure certain tracking settings until restarted
 
 ## [2.5.0-beta] - 2022-11-30
 
