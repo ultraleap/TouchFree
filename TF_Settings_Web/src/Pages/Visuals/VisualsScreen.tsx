@@ -7,6 +7,9 @@ import tinycolor, { ColorFormats } from 'tinycolor2';
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
 import { useIsLandscape } from '@/customHooks';
 
+import { SVGCursor } from 'touchfree/src/Cursors/SvgCursor';
+import TouchFree from 'touchfree/src/TouchFree';
+
 import {
     BlackTextBg,
     BlackTextBgPreview,
@@ -63,15 +66,18 @@ const VisualsScreen: React.FC = () => {
     const writeOutConfig = () => dispatch({ content: {}, writeOutConfig: true });
     const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
 
+    const [cursor] = useState<SVGCursor>(TouchFree.GetCurrentCursor() as SVGCursor);
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
 
-    const updateCursorPreview = (cursorStyle: CursorStyle) => {
+    const updateCursorStyle = (cursorStyle: CursorStyle) => {
         const section = cursorSection.current?.style;
         if (!section) return;
 
         section.setProperty('--center-fill', cursorStyle[0]);
         section.setProperty('--outer-fill', cursorStyle[1]);
         section.setProperty('--center-border', cursorStyle[2]);
+
+        cursorStyle.forEach((value, index) => cursor.SetColor(index, value));
     };
 
     const currentPreset = useMemo((): CursorPreset => {
@@ -84,9 +90,11 @@ const VisualsScreen: React.FC = () => {
                 dispatch({ content: fileConfig, writeOutConfig: false });
                 setCustomColorsFromConfig(fileConfig);
                 setHasReadConfig(true);
-                updateCursorPreview(cursorStyles[presets[fileConfig.activeCursorPreset]]);
+                updateCursorStyle(cursorStyles[presets[fileConfig.activeCursorPreset]]);
             })
             .catch((err) => console.error(err));
+
+        return () => cursor.ResetToDefaultColors();
     }, []);
 
     if (!isDesktop() || !hasReadConfig) return <></>;
@@ -109,9 +117,7 @@ const VisualsScreen: React.FC = () => {
                             title="Reset to Default"
                             onClick={() => {
                                 dispatch({ content: defaultCursorVisualsConfig, writeOutConfig: true });
-                                updateCursorPreview(
-                                    cursorStyles[presets[defaultCursorVisualsConfig.activeCursorPreset]]
-                                );
+                                updateCursorStyle(cursorStyles[presets[defaultCursorVisualsConfig.activeCursorPreset]]);
                             }}
                         />
                     </div>
@@ -132,7 +138,7 @@ const VisualsScreen: React.FC = () => {
                                             content: { activeCursorPreset: presets.indexOf(preset as CursorPreset) },
                                             writeOutConfig: true,
                                         });
-                                        updateCursorPreview(cursorStyles[preset as CursorPreset]);
+                                        updateCursorStyle(cursorStyles[preset as CursorPreset]);
                                     }}
                                 />
                                 <div
@@ -168,13 +174,13 @@ const VisualsScreen: React.FC = () => {
                                             },
                                             writeOutConfig: false,
                                         });
-                                        updateCursorPreview(style);
+                                        updateCursorStyle(style);
                                     }}
                                     writeOutConfig={writeOutConfig}
                                 />
                             )}
                             <TextSlider
-                                name="Size (cm)"
+                                name="Size"
                                 rangeMin={0.1}
                                 rangeMax={1}
                                 leftLabel="Min"
@@ -186,9 +192,9 @@ const VisualsScreen: React.FC = () => {
                                 onFinish={writeOutConfig}
                             />
                             <TextSlider
-                                name="Ring Thickness (cm)"
-                                rangeMin={0.05}
-                                rangeMax={0.6}
+                                name="Ring Thickness"
+                                rangeMin={0.1}
+                                rangeMax={1}
                                 leftLabel="Min"
                                 rightLabel="Max"
                                 value={roundToTwoDP(state.cursorRingThickness)}
