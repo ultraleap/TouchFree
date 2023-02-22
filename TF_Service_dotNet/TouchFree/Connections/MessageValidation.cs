@@ -29,12 +29,12 @@ namespace Ultraleap.TouchFree.Library.Connections
                     try
                     {
                         // Check that _contentObj matches ConfigState structure, including all types
-                        JsonConvert.DeserializeObject(contentElement.Value.ToString(), T);
+                        JsonConvert.DeserializeObject(contentElement.Value!.ToString(), T);
                         anyValidContentFound = true;
                     }
                     catch (JsonReaderException ex)
                     {
-                        return new Error("Setting configuration failed with message:\n\"" + ex.Message + "\"");
+                        return new Error($"Setting configuration failed with message:\n\"{ex.Message}\"");
                     }
                 }
             }
