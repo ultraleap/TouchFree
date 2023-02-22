@@ -174,6 +174,7 @@ export class ConnectionManager extends EventTarget {
     public static SetAddress(address: Address): void {
         ConnectionManager.iPAddress = address.ip ?? '127.0.0.1';
         ConnectionManager.port = address.port ?? '9739';
+        ConnectionManager.Disconnect();
         ConnectionManager.Connect();
     }
 }
