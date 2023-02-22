@@ -10,12 +10,11 @@ import { CursorStyle } from './VisualsUtils';
 interface ColorPickerProps {
     cursorStyle: CursorStyle;
     updateCursorStyle: (style: CursorStyle) => void;
-    writeOutConfig: () => void;
 }
 
 const cursorSections = ['Center Fill', 'Outer Fill', 'Center Border'] as const;
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyle, writeOutConfig }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyle }) => {
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     return (
@@ -37,24 +36,12 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyl
                 <HexAlphaColorPicker
                     color={cursorStyle[activeTabIndex]}
                     onChange={(color) => updateCursorStyle({ ...cursorStyle, [activeTabIndex]: color })}
-                    onPointerUp={() => writeOutConfig()}
-                    onPointerLeave={(e) => {
-                        if (e.pressure != 0) {
-                            writeOutConfig();
-                        }
-                    }}
                 />
                 <input
                     type="text"
                     className={'color-picker__body__text'}
                     value={cursorStyle[activeTabIndex].toUpperCase()}
                     onChange={(e) => updateCursorStyle({ ...cursorStyle, [activeTabIndex]: e.target.value })}
-                    onBlur={() => writeOutConfig()}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            writeOutConfig();
-                        }
-                    }}
                 />
             </div>
         </div>
