@@ -38,6 +38,11 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyl
                     color={cursorStyle[activeTabIndex]}
                     onChange={(color) => updateCursorStyle({ ...cursorStyle, [activeTabIndex]: color })}
                     onPointerUp={() => writeOutConfig()}
+                    onPointerLeave={(e) => {
+                        if (e.pressure != 0) {
+                            writeOutConfig();
+                        }
+                    }}
                 />
                 <input
                     type="text"
