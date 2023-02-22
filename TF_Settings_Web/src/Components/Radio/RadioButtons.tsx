@@ -18,20 +18,14 @@ export const RadioLine: React.FC<RadioProps> = ({ name, options, selected, onCha
     <label className={interactionsClasses('horizontalContainer', 'input-label-container')}>
         <p className={interactionsClasses('label')}> {name} </p>
         {options.map((option, index) => (
-            <div
-                className={classes('horizontalRadioContainer')}
-                key={option}
-                onPointerDown={() => {
-                    onChange(option);
-                }}
-            >
+            <div className={classes('horizontalRadioContainer')} key={option} onPointerUp={() => onChange(option)}>
                 <input
                     className={classes('radio-button')}
                     type="radio"
                     key={option}
-                    name={name}
+                    name={option}
                     value={option}
-                    onChange={(event) => onChange(event.currentTarget.value)}
+                    onChange={() => {}}
                     checked={selected === index}
                 />
                 <span className="checkmark" />
@@ -44,13 +38,7 @@ export const RadioLine: React.FC<RadioProps> = ({ name, options, selected, onCha
 export const RadioGroup: React.FC<RadioProps> = ({ name, options, selected, onChange }) => (
     <div className={interactionsClasses('verticalContainer')}>
         {options.map((option, index) => (
-            <label
-                key={index}
-                className={interactionsClasses('input-label-container')}
-                onPointerDown={() => {
-                    onChange(option);
-                }}
-            >
+            <label key={index} className={interactionsClasses('input-label-container')}>
                 <input
                     className={classes('radio-button')}
                     type="radio"

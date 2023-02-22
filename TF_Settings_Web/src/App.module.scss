@@ -19,6 +19,14 @@
     background-color: v.$dark-grey;
 }
 
+@mixin scroll-div {
+    overflow-y: overlay;
+    max-height: 100vh - v.$header-height - v.$tab-height;
+    @media (orientation: landscape) {
+        max-height: 100vh - v.$header-height - v.$tab-height-landscape;
+    }
+}
+
 .fade-enter {
     opacity: 0;
 }
