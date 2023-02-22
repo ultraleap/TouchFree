@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web Settings: Added a button that links to docs
 - Web Settings: Auto calibration can be progressed by pressing spacebar
 - Service: `HandEntered` & `HandExited` events, sent when the active hand enters and exits the interaction zone (if enabled) respectively
+- Service: Removed informational level logging to improve readability of log files
 
 ### Fixed
 
