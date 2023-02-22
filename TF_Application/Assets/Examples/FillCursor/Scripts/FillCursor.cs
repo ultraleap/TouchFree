@@ -127,9 +127,9 @@ public class FillCursor : TouchlessCursor
         _secondaryColor = _secondary;
         _tertiaryColor = _tertiary;
 
-        cursorFill.color = new Color(primaryColor.r, primaryColor.g, primaryColor.b, cursorFill.color.a);
-        fillRingImage.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, fillRingImage.color.a);
-        cursorBorder.color = new Color(tertiaryColor.r, tertiaryColor.g, tertiaryColor.b, cursorBorder.color.a);
+        cursorFill.color = _primaryColor;
+        fillRingImage.color = _secondaryColor;
+        cursorBorder.color = _tertiaryColor;
     }
 
     // Function: ShowCursor
@@ -233,7 +233,7 @@ public class FillCursor : TouchlessCursor
                 r = cursorBorder.color.r,
                 g = cursorBorder.color.g,
                 b = cursorBorder.color.b,
-                a = a * tertiaryColor.a
+                a = a * cursorBorder.color.a
             };
 
             cursorFill.color = new Color()
@@ -241,7 +241,7 @@ public class FillCursor : TouchlessCursor
                 r = cursorFill.color.r,
                 g = cursorFill.color.g,
                 b = cursorFill.color.b,
-                a = a * primaryColor.a
+                a = a * cursorFill.color.a
             };
 
             fillRingImage.color = new Color()
@@ -249,7 +249,7 @@ public class FillCursor : TouchlessCursor
                 r = fillRingImage.color.r,
                 g = fillRingImage.color.g,
                 b = fillRingImage.color.b,
-                a = a * secondaryColor.a
+                a = a * fillRingImage.color.a
             };
         };
 
