@@ -87,11 +87,12 @@ const VisualsScreen: React.FC = () => {
 
     if (!isDesktop() || !hasReadConfig) return <></>;
 
+    window.onpointerup = (e) => {
+        writeVisualsConfig(state).catch((err) => console.error(err));
+    };
+
     return (
-        <div className={classes('scroll-div')} 
-             onPointerUp={() => {
-                writeVisualsConfig(state).catch((err) => console.error(err));
-             }}>
+        <div className={classes('scroll-div')}>
             <label className={classes('label-container')}>
                 <p className={classes('label-container__label')}>
                     Visuals affects Overlay application only.
