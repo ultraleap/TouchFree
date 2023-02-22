@@ -77,8 +77,14 @@ const VisualsScreen: React.FC = () => {
         section.setProperty('--outer-fill', cursorStyle[1]);
         section.setProperty('--center-border', cursorStyle[2]);
 
-        cursorStyle.forEach((value, index) => cursor.SetColor(index, value));
+        if (hasReadConfig && state.cursorEnabled) {
+            cursorStyle.forEach((value, index) => cursor.SetColor(index, value));
+        }
     };
+
+    useEffect(() => {
+        updateCursorStyle(cursorStyles[currentPreset]);
+    }, [hasReadConfig]);
 
     const currentPreset = useMemo((): CursorPreset => {
         return presets[state.activeCursorPreset];
@@ -90,7 +96,6 @@ const VisualsScreen: React.FC = () => {
                 dispatch({ content: fileConfig, writeOutConfig: false });
                 setCustomColorsFromConfig(fileConfig);
                 setHasReadConfig(true);
-                updateCursorStyle(cursorStyles[presets[fileConfig.activeCursorPreset]]);
             })
             .catch((err) => console.error(err));
 
@@ -124,7 +129,14 @@ const VisualsScreen: React.FC = () => {
                     <LabelledToggleSwitch
                         name="Enable Cursor"
                         value={state.cursorEnabled}
-                        onChange={(value) => dispatch({ content: { cursorEnabled: value }, writeOutConfig: true })}
+                        onChange={(value) => {
+                            dispatch({ content: { cursorEnabled: value }, writeOutConfig: true });
+                            if (!value) {
+                                cursor.ResetToDefaultColors();
+                            } else {
+                                cursorStyles[currentPreset].forEach((value, index) => cursor.SetColor(index, value));
+                            }
+                        }}
                     />
                     {state.cursorEnabled && (
                         <>
