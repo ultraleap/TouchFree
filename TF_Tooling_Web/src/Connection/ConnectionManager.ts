@@ -4,6 +4,15 @@ import { MessageReceiver } from './MessageReceiver';
 import { ServiceConnection } from './ServiceConnection';
 import { HandPresenceState, InteractionZoneState, ServiceStatus } from './TouchFreeServiceTypes';
 
+export interface Address {
+    ip?: string;
+    port?: string;
+}
+
+interface InitParams {
+    address?: Address;
+}
+
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
 // for ease of use and is a Singleton to allow for easy referencing.
@@ -60,7 +69,10 @@ export class ConnectionManager extends EventTarget {
     // Function: init
     // Used to begin the connection. Creates the required <MessageReceiver>.
     // Also attempts to immediately <Connect> to a WebSocket.
-    public static init() {
+    public static init(initParams?: InitParams) {
+        if (initParams?.address) {
+            ConnectionManager.SetAddress(initParams.address);
+        }
         ConnectionManager.messageReceiver = new MessageReceiver();
         ConnectionManager.instance = new ConnectionManager();
         ConnectionManager.Connect();
@@ -155,5 +167,13 @@ export class ConnectionManager extends EventTarget {
     // Function to get the current hand presense state
     public static GetCurrentInteractionZoneState(): InteractionZoneState {
         return ConnectionManager.currentInteractionZoneState;
+    }
+
+    // Function: SetAddress
+    // Function to set the ip and port that Tooling should attempt to connect to the Service via
+    public static SetAddress(address: Address): void {
+        ConnectionManager.iPAddress = address.ip ?? '127.0.0.1';
+        ConnectionManager.port = address.port ?? '9739';
+        ConnectionManager.Connect();
     }
 }
