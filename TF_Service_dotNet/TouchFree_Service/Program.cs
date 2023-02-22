@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service
@@ -24,6 +25,9 @@ namespace Ultraleap.TouchFree.Service
                 {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls("http://localhost:9739");
+#if !DEBUG
+                    webBuilder.ConfigureLogging((loggingBuilder) => loggingBuilder.SetMinimumLevel(LogLevel.Warning));
+#endif
                 });
     }
 }
