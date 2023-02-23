@@ -85,6 +85,7 @@ const VisualsScreen: React.FC = () => {
     }, [
         hasReadConfig,
         state.cursorEnabled,
+        state.activeCursorPreset,
         state.primaryCustomColor,
         state.secondaryCustomColor,
         state.tertiaryCustomColor,
