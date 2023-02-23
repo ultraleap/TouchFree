@@ -70,6 +70,13 @@ const VisualsScreen: React.FC = () => {
         section.setProperty('--center-border', cursorStyle[2]);
     };
 
+    let writtenConfig: VisualsConfig;
+    const writeVisualsConfigIfNew = () => {
+        if (writtenConfig == state) return;
+        writtenConfig = state;
+        writeVisualsConfig(state).catch((err) => console.error(err));
+    };
+
     const currentPreset = useMemo((): CursorPreset => {
         return presets[state.activeCursorPreset];
     }, [state.activeCursorPreset]);
@@ -87,8 +94,11 @@ const VisualsScreen: React.FC = () => {
 
     if (!isDesktop() || !hasReadConfig) return <></>;
 
-    window.onpointerup = (e) => {
-        writeVisualsConfig(state).catch((err) => console.error(err));
+    window.onpointerup = () => {
+        writeVisualsConfigIfNew();
+    };
+    window.onpointerout = () => {
+        writeVisualsConfigIfNew();
     };
 
     return (
