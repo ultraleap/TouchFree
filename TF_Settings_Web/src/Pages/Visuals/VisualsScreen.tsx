@@ -77,7 +77,6 @@ const VisualsScreen: React.FC = () => {
     const writeVisualsConfigIfNew = () => {
         if (writtenConfig !== null && writtenConfig.current === config.current) return;
         writtenConfig.current = config.current;
-        console.log('writing');
         writeVisualsConfig(config.current).catch((err) => console.error(err));
     }; 
 
