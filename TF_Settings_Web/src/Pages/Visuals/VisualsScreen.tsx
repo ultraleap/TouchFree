@@ -1,11 +1,11 @@
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
-import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import tinycolor, { ColorFormats } from 'tinycolor2';
 
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
-import { useIsLandscape } from '@/customHooks';
+import { useIsLandscape, useStatefulRef } from '@/customHooks';
 
 import {
     BlackTextBg,
@@ -47,19 +47,19 @@ const bgImages = [GradientBg, WhiteTextBg, BlackTextBg, MountainBg];
 const bgPreviewImages = [GradientBgPreview, WhiteTextBgPreview, BlackTextBgPreview, MountainBgPreview];
 const closeCtiOptions = ['Users Hand Present', 'User Performs Interaction'];
 
-const reducer = (state: VisualsConfig, payload: { content: Partial<VisualsConfig> }) => {
-    const newState: VisualsConfig = { ...state, ...payload.content };
-    return newState;
-};
-
 const VisualsScreen: React.FC = () => {
     const isLandscape = useIsLandscape();
     const cursorSection = useRef<HTMLDivElement>(null);
 
-    const [state, dispatch] = useReducer(reducer, defaultVisualsConfig);
-    const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
+    const writtenConfig = useRef<VisualsConfig|null>(null);
+    const config = useStatefulRef<VisualsConfig>(defaultVisualsConfig);
 
+    const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
+    
+    const currentPreset = useMemo((): CursorPreset => {
+        return presets[config.current.activeCursorPreset];
+    }, [config.current.activeCursorPreset]);
 
     const updateCursorPreview = (cursorStyle: CursorStyle) => {
         const section = cursorSection.current?.style;
@@ -70,36 +70,34 @@ const VisualsScreen: React.FC = () => {
         section.setProperty('--center-border', cursorStyle[2]);
     };
 
-    let writtenConfig: VisualsConfig;
-    const writeVisualsConfigIfNew = () => {
-        if (writtenConfig == state) return;
-        writtenConfig = state;
-        writeVisualsConfig(state).catch((err) => console.error(err));
+    const updateConfig = (content: Partial<VisualsConfig>) => {
+        config.current = {...config.current, ...content};
     };
 
-    const currentPreset = useMemo((): CursorPreset => {
-        return presets[state.activeCursorPreset];
-    }, [state.activeCursorPreset]);
+    const writeVisualsConfigIfNew = () => {
+        if (writtenConfig !== null && writtenConfig.current === config.current) return;
+        writtenConfig.current = config.current;
+        console.log('writing');
+        writeVisualsConfig(config.current).catch((err) => console.error(err));
+    }; 
 
     useEffect(() => {
         readVisualsConfig()
             .then((fileConfig) => {
-                dispatch({ content: fileConfig });
+                updateConfig(fileConfig);
                 setCustomColorsFromConfig(fileConfig);
                 setHasReadConfig(true);
                 updateCursorPreview(cursorStyles[presets[fileConfig.activeCursorPreset]]);
+                window.addEventListener('pointerup', writeVisualsConfigIfNew);
             })
             .catch((err) => console.error(err));
+
+            return () => {
+                window.removeEventListener('pointerup', writeVisualsConfigIfNew);
+            };
     }, []);
 
     if (!isDesktop() || !hasReadConfig) return <></>;
-
-    window.onpointerup = () => {
-        writeVisualsConfigIfNew();
-    };
-    window.onpointerout = () => {
-        writeVisualsConfigIfNew();
-    };
 
     return (
         <div className={classes('scroll-div')}>
@@ -118,7 +116,7 @@ const VisualsScreen: React.FC = () => {
                         <OutlinedTextButton
                             title="Reset to Default"
                             onClick={() => {
-                                dispatch({ content: defaultCursorVisualsConfig });
+                                updateConfig(defaultCursorVisualsConfig);
                                 updateCursorPreview(
                                     cursorStyles[presets[defaultCursorVisualsConfig.activeCursorPreset]]
                                 );
@@ -127,10 +125,10 @@ const VisualsScreen: React.FC = () => {
                     </div>
                     <LabelledToggleSwitch
                         name="Enable Cursor"
-                        value={state.cursorEnabled}
-                        onChange={(value) => dispatch({ content: { cursorEnabled: value }})}
+                        value={config.current.cursorEnabled}
+                        onChange={(value) => updateConfig({ cursorEnabled: value })}
                     />
-                    {state.cursorEnabled && (
+                    {config.current.cursorEnabled && (
                         <>
                             <div className={classes('cursor-style')}>
                                 <RadioGroup
@@ -138,10 +136,9 @@ const VisualsScreen: React.FC = () => {
                                     selected={styleOptions.indexOf(currentPreset) ?? 0}
                                     options={styleOptions}
                                     onChange={(preset) => {
-                                        dispatch({ 
-                                            content: { activeCursorPreset: presets.indexOf(preset as CursorPreset) }
-                                        });
+                                        updateConfig({ activeCursorPreset: presets.indexOf(preset as CursorPreset) });
                                         updateCursorPreview(cursorStyles[preset as CursorPreset]);
+                                        writeVisualsConfigIfNew();
                                     }}
                                 />
                                 <div
@@ -169,14 +166,13 @@ const VisualsScreen: React.FC = () => {
                                     cursorStyle={cursorStyles.Custom}
                                     updateCursorStyle={(style) => {
                                         cursorStyles.Custom = style;
-                                        dispatch({ 
-                                            content: {
-                                                primaryCustomColor: convertHexToRGBA(style[0]),
-                                                secondaryCustomColor: convertHexToRGBA(style[1]),
-                                                tertiaryCustomColor: convertHexToRGBA(style[2]),
-                                            }
+                                        updateConfig({
+                                            primaryCustomColor: convertHexToRGBA(style[0]),
+                                            secondaryCustomColor: convertHexToRGBA(style[1]),
+                                            tertiaryCustomColor: convertHexToRGBA(style[2]),
                                         });
                                         updateCursorPreview(style);
+                                        writeVisualsConfigIfNew();
                                     }}
                                 />
                             )}
@@ -186,8 +182,8 @@ const VisualsScreen: React.FC = () => {
                                 rangeMax={1}
                                 leftLabel="Min"
                                 rightLabel="Max"
-                                value={roundToTwoDP(state.cursorSizeCm)}
-                                onChange={(value) => dispatch({ content: { cursorSizeCm: value }})}
+                                value={roundToTwoDP(config.current.cursorSizeCm)}
+                                onChange={(value) => updateConfig({ cursorSizeCm: value })}
                             />
                             <TextSlider
                                 name="Ring Thickness (cm)"
@@ -195,8 +191,8 @@ const VisualsScreen: React.FC = () => {
                                 rangeMax={0.6}
                                 leftLabel="Min"
                                 rightLabel="Max"
-                                value={roundToTwoDP(state.cursorRingThickness)}
-                                onChange={(value) => dispatch({ content: { cursorRingThickness: value }})}
+                                value={roundToTwoDP(config.current.cursorRingThickness)}
+                                onChange={(value) => updateConfig({ cursorRingThickness: value })}
                             />
                         </>
                     )}
@@ -207,21 +203,24 @@ const VisualsScreen: React.FC = () => {
                         <h1> Call to Interact </h1>
                         <OutlinedTextButton
                             title="Reset to Default"
-                            onClick={() => dispatch({ content: defaultCtiVisualsConfig })}
+                            onClick={() => updateConfig(defaultCtiVisualsConfig)}
                         />
                     </div>
                     <LabelledToggleSwitch
                         name="Enable Call to Interact"
-                        value={state.ctiEnabled}
-                        onChange={(value) => dispatch({ content: { ctiEnabled: value }})}
+                        value={config.current.ctiEnabled}
+                        onChange={(value) => updateConfig({ ctiEnabled: value })}
                     />
-                    {state.ctiEnabled && (
+                    {config.current.ctiEnabled && (
                         <>
                             <FileInput
                                 name="Call to Interact File"
-                                value={state.ctiFilePath.split('/').pop() ?? ''}
+                                value={config.current.ctiFilePath.split('/').pop() ?? ''}
                                 acceptedExtensions={['webm', 'mp4']}
-                                onFilePicked={(path) => dispatch({ content: { ctiFilePath: path }}) }
+                                onFilePicked={(path) => {
+                                    updateConfig({ ctiFilePath: path });
+                                    writeVisualsConfigIfNew();
+                                }}
                             />
                             <TextSlider
                                 name="Inactivity Activation"
@@ -230,16 +229,14 @@ const VisualsScreen: React.FC = () => {
                                 stepSize={1}
                                 leftLabel="1 Seconds"
                                 rightLabel="60 Seconds"
-                                value={roundToTwoDP(state.ctiShowAfterTimer)}
-                                onChange={(value) => dispatch({ content: { ctiShowAfterTimer: value }}) }
+                                value={roundToTwoDP(config.current.ctiShowAfterTimer)}
+                                onChange={(value) => updateConfig({ ctiShowAfterTimer: value }) }
                             />
                             <RadioLine
                                 name="Close CTI When"
-                                selected={state.ctiHideTrigger}
+                                selected={config.current.ctiHideTrigger}
                                 options={closeCtiOptions}
-                                onChange={(option) => dispatch({ 
-                                    content: { ctiHideTrigger: closeCtiOptions.indexOf(option) 
-                                }})}
+                                onChange={(option) => updateConfig({ ctiHideTrigger: closeCtiOptions.indexOf(option)})}
                             />
                         </>
                     )}

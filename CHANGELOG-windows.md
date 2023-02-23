@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unity Settings/Service: Fixed an issue where clicking was very difficult while Touch Plane and Scroll and Drag were both active
 - Unity Settings: Fixed an issue with moving the bottom masking slider
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
-- Overlay Application: Fixed an issue where alpha values would not be updated within the same instance of a cursor when modifying through web settings.
+- Overlay Application: Fixed an issue where modified cursor alpha values would not be updated correctly.
 
 ## [2.4.0] - 2022-10-14
 
