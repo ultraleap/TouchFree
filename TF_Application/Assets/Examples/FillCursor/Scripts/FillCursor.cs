@@ -48,6 +48,7 @@ public class FillCursor : TouchlessCursor
     Coroutine cursorScalingRoutine;
 
     protected bool hidingCursor = true;
+    protected bool fadingCursor = false;
     protected bool growQueued = false;
     protected Vector3 cursorLocalScale = Vector3.one;
 
@@ -127,9 +128,18 @@ public class FillCursor : TouchlessCursor
         _secondaryColor = _secondary;
         _tertiaryColor = _tertiary;
 
-        cursorFill.color = _primaryColor;
-        fillRingImage.color = _secondaryColor;
-        cursorBorder.color = _tertiaryColor;
+        if (!fadingCursor && !hidingCursor)
+        {
+            cursorFill.color = _primaryColor;
+            fillRingImage.color = _secondaryColor;
+            cursorBorder.color = _tertiaryColor;
+        }
+        else
+        {
+            cursorFill.color = new Color(primaryColor.r, primaryColor.g, primaryColor.b, cursorFill.color.a);
+            fillRingImage.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, fillRingImage.color.a);
+            cursorBorder.color = new Color(tertiaryColor.r, tertiaryColor.g, tertiaryColor.b, cursorBorder.color.a);
+        }
     }
 
     // Function: ShowCursor
@@ -223,6 +233,7 @@ public class FillCursor : TouchlessCursor
     // This coroutine smoothly fades the cursors colours.
     protected virtual IEnumerator FadeCursor(float _from, float _to, float _duration, bool _disableOnEnd = false)
     {
+        fadingCursor = true;
         for (int i = 0; i < _duration; i++)
         {
             yield return null;
@@ -233,7 +244,7 @@ public class FillCursor : TouchlessCursor
                 r = cursorBorder.color.r,
                 g = cursorBorder.color.g,
                 b = cursorBorder.color.b,
-                a = a * cursorBorder.color.a
+                a = a * tertiaryColor.a
             };
 
             cursorFill.color = new Color()
@@ -241,7 +252,7 @@ public class FillCursor : TouchlessCursor
                 r = cursorFill.color.r,
                 g = cursorFill.color.g,
                 b = cursorFill.color.b,
-                a = a * cursorFill.color.a
+                a = a * primaryColor.a
             };
 
             fillRingImage.color = new Color()
@@ -249,7 +260,7 @@ public class FillCursor : TouchlessCursor
                 r = fillRingImage.color.r,
                 g = fillRingImage.color.g,
                 b = fillRingImage.color.b,
-                a = a * fillRingImage.color.a
+                a = a * secondaryColor.a
             };
         };
 
@@ -261,6 +272,7 @@ public class FillCursor : TouchlessCursor
             cursorFill.enabled = false;
             fillRingImage.enabled = false;
         }
+        fadingCursor = false;
     }
 
     // Function: SetCursorLocalScale
