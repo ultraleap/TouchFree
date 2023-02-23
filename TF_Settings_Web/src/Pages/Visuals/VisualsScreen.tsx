@@ -1,7 +1,7 @@
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
-import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 import tinycolor, { ColorFormats } from 'tinycolor2';
 
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
@@ -69,26 +69,26 @@ const VisualsScreen: React.FC = () => {
     const [cursor] = useState<SVGCursor>(TouchFree.GetCurrentCursor() as SVGCursor);
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
 
-    const updateCursorStyle = (cursorStyle: CursorStyle) => {
+    useEffect(() => {
         const section = cursorSection.current?.style;
-        if (!section) return;
+        if (!section || !hasReadConfig) return;
 
+        const currentPreset = presets[state.activeCursorPreset];
+        const cursorStyle = cursorStyles[currentPreset];
         section.setProperty('--center-fill', cursorStyle[0]);
         section.setProperty('--outer-fill', cursorStyle[1]);
         section.setProperty('--center-border', cursorStyle[2]);
 
-        if (hasReadConfig && state.cursorEnabled) {
-            cursorStyle.forEach((value, index) => cursor.SetColor(index, value));
-        }
-    };
-
-    useEffect(() => {
-        updateCursorStyle(cursorStyles[currentPreset]);
-    }, [hasReadConfig]);
-
-    const currentPreset = useMemo((): CursorPreset => {
-        return presets[state.activeCursorPreset];
-    }, [state.activeCursorPreset]);
+        state.cursorEnabled
+            ? cursorStyle.forEach((value, index) => cursor.SetColor(index, value))
+            : cursor.ResetToDefaultColors();
+    }, [
+        hasReadConfig,
+        state.cursorEnabled,
+        state.primaryCustomColor,
+        state.secondaryCustomColor,
+        state.tertiaryCustomColor,
+    ]);
 
     useEffect(() => {
         readVisualsConfig()
@@ -99,7 +99,9 @@ const VisualsScreen: React.FC = () => {
             })
             .catch((err) => console.error(err));
 
-        return () => cursor.ResetToDefaultColors();
+        return () => {
+            cursor.ResetToDefaultColors();
+        };
     }, []);
 
     if (!isDesktop() || !hasReadConfig) return <></>;
@@ -120,38 +122,27 @@ const VisualsScreen: React.FC = () => {
                         <h1> Cursor Styles </h1>
                         <OutlinedTextButton
                             title="Reset to Default"
-                            onClick={() => {
-                                dispatch({ content: defaultCursorVisualsConfig, writeOutConfig: true });
-                                updateCursorStyle(cursorStyles[presets[defaultCursorVisualsConfig.activeCursorPreset]]);
-                            }}
+                            onClick={() => dispatch({ content: defaultCursorVisualsConfig, writeOutConfig: true })}
                         />
                     </div>
                     <LabelledToggleSwitch
                         name="Enable Cursor"
                         value={state.cursorEnabled}
-                        onChange={(value) => {
-                            dispatch({ content: { cursorEnabled: value }, writeOutConfig: true });
-                            if (!value) {
-                                cursor.ResetToDefaultColors();
-                            } else {
-                                cursorStyles[currentPreset].forEach((value, index) => cursor.SetColor(index, value));
-                            }
-                        }}
+                        onChange={(value) => dispatch({ content: { cursorEnabled: value }, writeOutConfig: true })}
                     />
                     {state.cursorEnabled && (
                         <>
                             <div className={classes('cursor-style')}>
                                 <RadioGroup
                                     name="StylePresets"
-                                    selected={styleOptions.indexOf(currentPreset) ?? 0}
+                                    selected={styleOptions.indexOf(presets[state.activeCursorPreset]) ?? 0}
                                     options={styleOptions}
-                                    onChange={(preset) => {
+                                    onChange={(preset) =>
                                         dispatch({
                                             content: { activeCursorPreset: presets.indexOf(preset as CursorPreset) },
                                             writeOutConfig: true,
-                                        });
-                                        updateCursorStyle(cursorStyles[preset as CursorPreset]);
-                                    }}
+                                        })
+                                    }
                                 />
                                 <div
                                     className={classes('cursor-style__preview')}
@@ -173,7 +164,7 @@ const VisualsScreen: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            {currentPreset === 'Custom' && (
+                            {presets[state.activeCursorPreset] === 'Custom' && (
                                 <ColorPicker
                                     cursorStyle={cursorStyles.Custom}
                                     updateCursorStyle={(style) => {
@@ -186,7 +177,6 @@ const VisualsScreen: React.FC = () => {
                                             },
                                             writeOutConfig: false,
                                         });
-                                        updateCursorStyle(style);
                                     }}
                                     writeOutConfig={writeOutConfig}
                                 />
