@@ -29,7 +29,7 @@ export class ConnectionManager extends EventTarget {
 
     // Variable: currentServiceConnection
     // The private reference to the currently managed <ServiceConnection>.
-    private static currentServiceConnection: ServiceConnection | null;
+    private static currentServiceConnection: ServiceConnection | null = null;
 
     // Variable: serviceConnection
     // The public get-only reference to the currently managed <ServiceConnection>.
