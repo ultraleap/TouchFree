@@ -13,6 +13,10 @@ export class SVGCursor extends TouchlessCursor {
     private isDarkCursor = false;
     private cursorShowing = false;
 
+    private baseRadius = 15;
+    private baseDotBorderThickness = 2;
+    private baseRingThickness = 5;
+
     // Group: Functions
 
     // Function: constructor
@@ -42,9 +46,9 @@ export class SVGCursor extends TouchlessCursor {
 
         const svgRingElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgRingElement.classList.add('touchfree-cursor');
-        svgRingElement.setAttribute('r', '15');
+        svgRingElement.setAttribute('r', this.baseRadius.toString());
         svgRingElement.setAttribute('fill-opacity', '0');
-        svgRingElement.setAttribute('stroke-width', '5');
+        svgRingElement.setAttribute('stroke-width', this.baseRingThickness.toString());
         svgRingElement.setAttribute(this.xPositionAttribute, '100');
         svgRingElement.setAttribute(this.yPositionAttribute, '100');
         svgRingElement.style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.7))';
@@ -54,7 +58,7 @@ export class SVGCursor extends TouchlessCursor {
 
         const svgDotElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgDotElement.classList.add('touchfree-cursor');
-        svgDotElement.setAttribute('r', '15');
+        svgDotElement.setAttribute('r', this.baseRadius.toString());
         svgDotElement.setAttribute(this.xPositionAttribute, '100');
         svgDotElement.setAttribute(this.yPositionAttribute, '100');
         svgDotElement.setAttribute('opacity', '1');
@@ -97,7 +101,8 @@ export class SVGCursor extends TouchlessCursor {
         const ringScaler = MapRangeToRange(inputAction.ProgressToClick, 0, 1, this.ringSizeMultiplier, 1);
 
         this.cursorRing.setAttribute('opacity', inputAction.ProgressToClick.toString());
-        this.cursorRing.setAttribute('r', Math.round(this.GetCurrentCursorRadius() * ringScaler).toString());
+        const radius = Math.round(this.GetCurrentCursorRadius() * ringScaler + this.GetCurrentCursorRingWidth() / 3);
+        this.cursorRing.setAttribute('r', radius.toString());
 
         let position = inputAction.CursorPosition;
 
@@ -150,6 +155,21 @@ export class SVGCursor extends TouchlessCursor {
         cursorToChange?.setAttribute('r', Math.round(newWidth).toString());
     }
 
+    // Function: SetCursorScale
+    // Used to set the scale of the cursor
+    SetCursorScale(scale: number) {
+        const cursor = this.cursor as SVGElement;
+        this.SetCursorSize(this.baseRadius * scale, cursor);
+        this.ringSizeMultiplier = this.ringSizeMultiplier + (scale - 1) * 0.75;
+        cursor.setAttribute('stroke-width', Math.round(this.baseDotBorderThickness * scale).toString());
+    }
+
+    // Function: SetRingThicknessScale
+    // Used to set the scale of the cursor's ring thickness
+    SetRingThicknessScale(scale: number) {
+        this.cursorRing.setAttribute('stroke-width', Math.round(this.baseRingThickness * scale).toString());
+    }
+
     // Function: ShowCursor
     // Used to make the cursor visible, fades over time
     ShowCursor() {
@@ -195,6 +215,17 @@ export class SVGCursor extends TouchlessCursor {
         return 0;
     }
 
+    private GetCurrentCursorRingWidth(): number {
+        const radius = this.cursorRing.getAttribute('r');
+        if (!radius) {
+            return 0;
+        }
+
+        const radiusAsNumber = parseFloat(radius);
+
+        return radiusAsNumber;
+    }
+
     // Function: SetDefaultColors
     // Used to reset the SVGCursor to it's default styling
     ResetToDefaultColors() {
@@ -221,7 +252,7 @@ export class SVGCursor extends TouchlessCursor {
                 return;
             case 2:
                 this.cursor?.setAttribute('stroke', color);
-                this.cursor?.setAttribute('stroke-width', '2');
+                this.cursor?.setAttribute('stroke-width', this.baseDotBorderThickness.toString());
                 return;
         }
     }

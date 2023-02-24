@@ -9,6 +9,7 @@ import { useIsLandscape } from '@/customHooks';
 
 import { SVGCursor } from 'touchfree/src/Cursors/SvgCursor';
 import TouchFree from 'touchfree/src/TouchFree';
+import { MapRangeToRange } from 'touchfree/src/Utilities';
 
 import {
     BlackTextBg,
@@ -92,6 +93,30 @@ const VisualsScreen: React.FC = () => {
     ]);
 
     useEffect(() => {
+        if (!hasReadConfig) return;
+
+        if (!state.cursorEnabled) {
+            cursor.SetCursorScale(1);
+            return;
+        }
+
+        const scale = MapRangeToRange(state.cursorSizeCm, 0.1, 1, 0.8, 3);
+        cursor.SetCursorScale(scale);
+    }, [hasReadConfig, state.cursorEnabled, state.cursorSizeCm]);
+
+    useEffect(() => {
+        if (!hasReadConfig) return;
+
+        if (!state.cursorEnabled) {
+            cursor.SetRingThicknessScale(1);
+            return;
+        }
+
+        const scale = MapRangeToRange(state.cursorRingThickness, 0.1, 1, 0.8, 8);
+        cursor.SetRingThicknessScale(scale);
+    }, [hasReadConfig, state.cursorEnabled, state.cursorRingThickness]);
+
+    useEffect(() => {
         readVisualsConfig()
             .then((fileConfig) => {
                 dispatch({ content: fileConfig, writeOutConfig: false });
@@ -102,6 +127,8 @@ const VisualsScreen: React.FC = () => {
 
         return () => {
             cursor.ResetToDefaultColors();
+            cursor.SetCursorScale(1);
+            cursor.SetRingThicknessScale(1);
         };
     }, []);
 
