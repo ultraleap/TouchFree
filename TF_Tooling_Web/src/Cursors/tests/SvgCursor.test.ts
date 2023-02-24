@@ -1,7 +1,7 @@
 import TouchFree from '../../TouchFree';
 import { InputType } from '../../TouchFreeToolingTypes';
 import { mockTfInputAction } from '../../tests/testUtils';
-import { SVGCursor } from '../SvgCursor';
+import { CursorPart, SVGCursor } from '../SvgCursor';
 
 TouchFree.Init();
 let svgCursor = new SVGCursor();
@@ -18,9 +18,9 @@ const checkDefaultCursorColors = (isDarkCursor = false) => {
 };
 
 const setNonDefaultCursorColors = () => {
-    svgCursor.SetColor(0, 'red');
-    svgCursor.SetColor(1, 'blue');
-    svgCursor.SetColor(2, 'green');
+    svgCursor.SetColor(CursorPart.CENTER_FILL, 'red');
+    svgCursor.SetColor(CursorPart.RING_FILL, 'blue');
+    svgCursor.SetColor(CursorPart.CENTER_BORDER, 'green');
     expect(cursorDot?.getAttribute('fill')).toBe('red');
     expect(cursorDot?.getAttribute('stroke')).toBe('green');
     expect(cursorDot?.getAttribute('stroke-width')).toBe('2');
@@ -142,19 +142,19 @@ describe('SVG Cursor', () => {
     test('SetColor should set the color of the correct cursor part', () => {
         checkDefaultCursorColors();
 
-        svgCursor.SetColor(0, 'red');
+        svgCursor.SetColor(CursorPart.CENTER_FILL, 'red');
         expect(cursorDot?.getAttribute('fill')).toBe('red');
         expect(cursorDot?.getAttribute('stroke')).toBe(null);
         expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
         expect(cursorRing?.getAttribute('stroke')).toBe('white');
 
-        svgCursor.SetColor(1, 'blue');
+        svgCursor.SetColor(CursorPart.RING_FILL, 'blue');
         expect(cursorDot?.getAttribute('fill')).toBe('red');
         expect(cursorDot?.getAttribute('stroke')).toBe(null);
         expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
         expect(cursorRing?.getAttribute('stroke')).toBe('blue');
 
-        svgCursor.SetColor(2, 'green');
+        svgCursor.SetColor(CursorPart.CENTER_BORDER, 'green');
         expect(cursorDot?.getAttribute('fill')).toBe('red');
         expect(cursorDot?.getAttribute('stroke')).toBe('green');
         expect(cursorDot?.getAttribute('stroke-width')).toBe('2');

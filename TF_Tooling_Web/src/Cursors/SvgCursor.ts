@@ -3,6 +3,12 @@ import { InputType, TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { MapRangeToRange } from '../Utilities';
 import { TouchlessCursor } from './TouchlessCursor';
 
+export const enum CursorPart {
+    CENTER_FILL,
+    RING_FILL,
+    CENTER_BORDER,
+}
+
 export class SVGCursor extends TouchlessCursor {
     private xPositionAttribute = 'cx';
     private yPositionAttribute = 'cy';
@@ -206,12 +212,8 @@ export class SVGCursor extends TouchlessCursor {
 
     // Function: SetColor
     // Used to set a part of the SVGCursor to a specific color
-    // Takes a number to select the cursorPart where
-    //      0 = center fill
-    //      1 = ring fill
-    //      2 = center border
-    // and a color represented by a string
-    SetColor(cursorPart: number, color: string) {
+    // Takes a CursorPart enum to select which part of the cursor to color and a color represented by a string
+    SetColor(cursorPart: CursorPart, color: string) {
         switch (cursorPart) {
             case 0:
                 this.cursor?.setAttribute('fill', color);
