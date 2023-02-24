@@ -215,13 +215,13 @@ export class SVGCursor extends TouchlessCursor {
     // Takes a CursorPart enum to select which part of the cursor to color and a color represented by a string
     SetColor(cursorPart: CursorPart, color: string) {
         switch (cursorPart) {
-            case 0:
+            case CursorPart.CENTER_FILL:
                 this.cursor?.setAttribute('fill', color);
                 return;
-            case 1:
+            case CursorPart.RING_FILL:
                 this.cursorRing.setAttribute('stroke', color);
                 return;
-            case 2:
+            case CursorPart.CENTER_BORDER:
                 this.cursor?.setAttribute('stroke', color);
                 this.cursor?.setAttribute('stroke-width', '2');
                 return;
