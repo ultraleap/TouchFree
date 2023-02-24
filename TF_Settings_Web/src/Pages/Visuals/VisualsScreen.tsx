@@ -1,11 +1,14 @@
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
-import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 import tinycolor, { ColorFormats } from 'tinycolor2';
 
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
 import { useIsLandscape } from '@/customHooks';
+
+import { SVGCursor } from 'touchfree/src/Cursors/SvgCursor';
+import TouchFree from 'touchfree/src/TouchFree';
 
 import {
     BlackTextBg,
@@ -63,20 +66,30 @@ const VisualsScreen: React.FC = () => {
     const writeOutConfig = () => dispatch({ content: {}, writeOutConfig: true });
     const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
 
+    const [cursor] = useState<SVGCursor>(TouchFree.GetCurrentCursor() as SVGCursor);
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
 
-    const updateCursorPreview = (cursorStyle: CursorStyle) => {
+    useEffect(() => {
         const section = cursorSection.current?.style;
-        if (!section) return;
+        if (!section || !hasReadConfig) return;
 
+        const currentPreset = presets[state.activeCursorPreset];
+        const cursorStyle = cursorStyles[currentPreset];
         section.setProperty('--center-fill', cursorStyle[0]);
         section.setProperty('--outer-fill', cursorStyle[1]);
         section.setProperty('--center-border', cursorStyle[2]);
-    };
 
-    const currentPreset = useMemo((): CursorPreset => {
-        return presets[state.activeCursorPreset];
-    }, [state.activeCursorPreset]);
+        state.cursorEnabled
+            ? cursorStyle.forEach((value, index) => cursor.SetColor(index, value))
+            : cursor.ResetToDefaultColors();
+    }, [
+        hasReadConfig,
+        state.cursorEnabled,
+        state.activeCursorPreset,
+        state.primaryCustomColor,
+        state.secondaryCustomColor,
+        state.tertiaryCustomColor,
+    ]);
 
     useEffect(() => {
         readVisualsConfig()
@@ -84,9 +97,12 @@ const VisualsScreen: React.FC = () => {
                 dispatch({ content: fileConfig, writeOutConfig: false });
                 setCustomColorsFromConfig(fileConfig);
                 setHasReadConfig(true);
-                updateCursorPreview(cursorStyles[presets[fileConfig.activeCursorPreset]]);
             })
             .catch((err) => console.error(err));
+
+        return () => {
+            cursor.ResetToDefaultColors();
+        };
     }, []);
 
     if (!isDesktop() || !hasReadConfig) return <></>;
@@ -95,9 +111,9 @@ const VisualsScreen: React.FC = () => {
         <div className={classes('scroll-div')}>
             <label className={classes('label-container')}>
                 <p className={classes('label-container__label')}>
-                    Visuals affects Overlay application only.
+                    Visuals affects the TouchFree Overlay application only.
                     <br />
-                    To update the cursor in web, use TouchFree Tooling
+                    To update the cursor in your application, use TouchFree Tooling
                 </p>
                 <DocsLink title={'Find out More'} url={'https://developer.leapmotion.com/touchfree-tooling-for-web'} />
             </label>
@@ -107,12 +123,7 @@ const VisualsScreen: React.FC = () => {
                         <h1> Cursor Styles </h1>
                         <OutlinedTextButton
                             title="Reset to Default"
-                            onClick={() => {
-                                dispatch({ content: defaultCursorVisualsConfig, writeOutConfig: true });
-                                updateCursorPreview(
-                                    cursorStyles[presets[defaultCursorVisualsConfig.activeCursorPreset]]
-                                );
-                            }}
+                            onClick={() => dispatch({ content: defaultCursorVisualsConfig, writeOutConfig: true })}
                         />
                     </div>
                     <LabelledToggleSwitch
@@ -125,15 +136,14 @@ const VisualsScreen: React.FC = () => {
                             <div className={classes('cursor-style')}>
                                 <RadioGroup
                                     name="StylePresets"
-                                    selected={styleOptions.indexOf(currentPreset) ?? 0}
+                                    selected={styleOptions.indexOf(presets[state.activeCursorPreset]) ?? 0}
                                     options={styleOptions}
-                                    onChange={(preset) => {
+                                    onChange={(preset) =>
                                         dispatch({
                                             content: { activeCursorPreset: presets.indexOf(preset as CursorPreset) },
                                             writeOutConfig: true,
-                                        });
-                                        updateCursorPreview(cursorStyles[preset as CursorPreset]);
-                                    }}
+                                        })
+                                    }
                                 />
                                 <div
                                     className={classes('cursor-style__preview')}
@@ -155,7 +165,7 @@ const VisualsScreen: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            {currentPreset === 'Custom' && (
+                            {presets[state.activeCursorPreset] === 'Custom' && (
                                 <ColorPicker
                                     cursorStyle={cursorStyles.Custom}
                                     updateCursorStyle={(style) => {
@@ -168,13 +178,12 @@ const VisualsScreen: React.FC = () => {
                                             },
                                             writeOutConfig: false,
                                         });
-                                        updateCursorPreview(style);
                                     }}
                                     writeOutConfig={writeOutConfig}
                                 />
                             )}
                             <TextSlider
-                                name="Size (cm)"
+                                name="Size"
                                 rangeMin={0.1}
                                 rangeMax={1}
                                 leftLabel="Min"
@@ -186,9 +195,9 @@ const VisualsScreen: React.FC = () => {
                                 onFinish={writeOutConfig}
                             />
                             <TextSlider
-                                name="Ring Thickness (cm)"
-                                rangeMin={0.05}
-                                rangeMax={0.6}
+                                name="Ring Thickness"
+                                rangeMin={0.1}
+                                rangeMax={1}
                                 leftLabel="Min"
                                 rightLabel="Max"
                                 value={roundToTwoDP(state.cursorRingThickness)}
