@@ -51,7 +51,7 @@ const VisualsScreen: React.FC = () => {
     const isLandscape = useIsLandscape();
     const cursorSection = useRef<HTMLDivElement>(null);
 
-    const writtenConfig = useRef<VisualsConfig|null>(null);
+    const writtenConfig = useRef<VisualsConfig>();
     const config = useStatefulRef<VisualsConfig>(defaultVisualsConfig);
 
     const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
@@ -75,7 +75,7 @@ const VisualsScreen: React.FC = () => {
     };
 
     const writeVisualsConfigIfNew = () => {
-        if (writtenConfig !== null && writtenConfig.current === config.current) return;
+        if (writtenConfig.current === config.current) return;
         writtenConfig.current = config.current;
         writeVisualsConfig(config.current).catch((err) => console.error(err));
     }; 
@@ -171,8 +171,8 @@ const VisualsScreen: React.FC = () => {
                                             tertiaryCustomColor: convertHexToRGBA(style[2]),
                                         });
                                         updateCursorPreview(style);
-                                        writeVisualsConfigIfNew();
                                     }}
+                                    writeVisualsConfigIfNew={writeVisualsConfigIfNew}
                                 />
                             )}
                             <TextSlider

@@ -10,11 +10,12 @@ import { CursorStyle } from './VisualsUtils';
 interface ColorPickerProps {
     cursorStyle: CursorStyle;
     updateCursorStyle: (style: CursorStyle) => void;
+    writeVisualsConfigIfNew: () => void;
 }
 
 const cursorSections = ['Center Fill', 'Outer Fill', 'Center Border'] as const;
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyle }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyle, writeVisualsConfigIfNew }) => {
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     return (
@@ -41,7 +42,10 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyl
                     type="text"
                     className={'color-picker__body__text'}
                     value={cursorStyle[activeTabIndex].toUpperCase()}
-                    onChange={(e) => updateCursorStyle({ ...cursorStyle, [activeTabIndex]: e.target.value })}
+                    onChange={(e) => {
+                        updateCursorStyle({ ...cursorStyle, [activeTabIndex]: e.target.value });
+                        writeVisualsConfigIfNew();
+                    }}
                 />
             </div>
         </div>
