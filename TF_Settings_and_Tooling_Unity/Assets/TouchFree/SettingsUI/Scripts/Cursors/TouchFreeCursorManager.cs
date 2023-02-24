@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using Ultraleap.TouchFree.ServiceShared;
+using UnityEngine;
 
 namespace Ultraleap.TouchFree
 {
@@ -8,39 +10,64 @@ namespace Ultraleap.TouchFree
         protected Color Secondary;
         protected Color Tertiary;
 
+        private FileSystemWatcher watcher;
+        private FileSystemEventHandler watcherHandler;
+        private bool fileChanged = true;
+
         protected override void OnEnable()
         {
-            ServiceShared.TFAppConfig.Config.OnConfigUpdated += ConfigUpdated;
+            watcher.Changed += watcherHandler;
+            fileChanged = true;
             base.OnEnable();
-            ConfigUpdated();
         }
 
         protected override void OnDisable()
         {
-            ServiceShared.TFAppConfig.Config.OnConfigUpdated -= ConfigUpdated;
+            watcher.Changed -= watcherHandler;
             base.OnDisable();
         }
 
-        void Start()
+        void Awake()
         {
             Primary = defaultCursor.primaryColor;
             Secondary = defaultCursor.secondaryColor;
             Tertiary = defaultCursor.tertiaryColor;
+
+            watcher = new FileSystemWatcher();
+            watcher.Path = ConfigFileUtils.ConfigFileDirectory;
+            watcher.NotifyFilter = NotifyFilters.LastWrite;
+            watcher.NotifyFilter = NotifyFilters.LastAccess;
+            watcher.Filter = TouchFreeAppConfigFile.ConfigFileName;
+            watcher.IncludeSubdirectories = true;
+            watcher.EnableRaisingEvents = true;
+
+            watcherHandler = new FileSystemEventHandler(FileUpdated);
         }
 
-        void ConfigUpdated()
+        private void FileUpdated(object source, FileSystemEventArgs e)
         {
-            // Update size, colors, & visibility based on current Config
-            SetCursorVisibility(ServiceShared.TFAppConfig.Config.cursorEnabled);
+            fileChanged = true;
+        }
 
-            var cursorSize = ServiceShared.TFAppConfig.Config.cursorSizeCm;
-            ServiceShared.TFAppConfig.Config.GetCurrentColors(ref Primary, ref Secondary, ref Tertiary);
-
-            foreach (InteractionCursor cursor in interactionCursors)
+        private void Update()
+        {
+            if (fileChanged)
             {
-                cursor.cursor.SetRingThickness(ServiceShared.TFAppConfig.Config.cursorRingThickness);
-                cursor.cursor.cursorSize = cursorSize;
-                cursor.cursor.SetColors(Primary, Secondary, Tertiary);
+                TFAppConfig.Refresh();
+
+                SetCursorVisibility(TFAppConfig.Config.cursorEnabled);
+
+                var cursorSize = TFAppConfig.Config.cursorSizeCm;
+
+                TFAppConfig.Config.GetCurrentColors(ref Primary, ref Secondary, ref Tertiary);
+                foreach (InteractionCursor cursor in interactionCursors)
+                {
+                    cursor.cursor.SetRingThickness(TFAppConfig.Config.cursorRingThickness);
+                    cursor.cursor.cursorSize = cursorSize;
+                    cursor.cursor.SetColors(Primary, Secondary, Tertiary);
+                }
+
+                fileChanged = false;
             }
         }
     }
