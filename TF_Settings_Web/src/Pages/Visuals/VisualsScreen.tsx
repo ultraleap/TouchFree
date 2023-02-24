@@ -111,9 +111,9 @@ const VisualsScreen: React.FC = () => {
         <div className={classes('scroll-div')}>
             <label className={classes('label-container')}>
                 <p className={classes('label-container__label')}>
-                    Visuals affects Overlay application only.
+                    Visuals affects the TouchFree Overlay application only.
                     <br />
-                    To update the cursor in web, use TouchFree Tooling
+                    To update the cursor in your application, use TouchFree Tooling
                 </p>
                 <DocsLink title={'Find out More'} url={'https://developer.leapmotion.com/touchfree-tooling-for-web'} />
             </label>
