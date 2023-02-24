@@ -4,18 +4,19 @@ import { mockTfInputAction } from '../../tests/testUtils';
 import { SVGCursor } from '../SvgCursor';
 
 TouchFree.Init();
-const svgCursor = new SVGCursor();
-const cursor = document.getElementById('svg-cursor');
-const cursorRing = document.getElementById('svg-cursor-ring');
-const cursorDot = document.getElementById('svg-cursor-dot');
+let svgCursor = new SVGCursor();
+let cursor = document.getElementById('svg-cursor');
+let cursorRing = document.getElementById('svg-cursor-ring');
+let cursorDot = document.getElementById('svg-cursor-dot');
 
 describe('SVG Cursor', () => {
-    beforeAll(() => {
+    beforeEach(() => {
         // Set cursor to known state before each test
         mockTfInputAction();
         mockTfInputAction({ InputType: InputType.UP });
         svgCursor.EnableCursor();
         svgCursor.ShowCursor();
+        svgCursor.ResetToDefaultColors();
     });
 
     test('Creates a cursor in the document body', () => {
@@ -118,5 +119,92 @@ describe('SVG Cursor', () => {
         expect(cursor?.style.opacity).toBe('0');
         svgCursor.ShowCursor();
         expect(cursor?.style.opacity).toBe('0.4');
+    });
+
+    test('SetColor should set the color of the correct cursor part', () => {
+        expect(cursorDot?.getAttribute('fill')).toBe('white');
+        expect(cursorDot?.getAttribute('stroke')).toBe(null);
+        expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+        expect(cursorRing?.getAttribute('stroke')).toBe('white');
+
+        svgCursor.SetColor(0, 'red');
+        expect(cursorDot?.getAttribute('fill')).toBe('red');
+        expect(cursorDot?.getAttribute('stroke')).toBe(null);
+        expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+        expect(cursorRing?.getAttribute('stroke')).toBe('white');
+
+        svgCursor.SetColor(1, 'blue');
+        expect(cursorDot?.getAttribute('fill')).toBe('red');
+        expect(cursorDot?.getAttribute('stroke')).toBe(null);
+        expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+        expect(cursorRing?.getAttribute('stroke')).toBe('blue');
+
+        svgCursor.SetColor(2, 'green');
+        expect(cursorDot?.getAttribute('fill')).toBe('red');
+        expect(cursorDot?.getAttribute('stroke')).toBe('green');
+        expect(cursorDot?.getAttribute('stroke-width')).toBe('2');
+        expect(cursorRing?.getAttribute('stroke')).toBe('blue');
+    });
+
+    test('ResetToDefaultColors should reset the cursor colors', () => {
+        expect(cursorDot?.getAttribute('fill')).toBe('white');
+        expect(cursorDot?.getAttribute('stroke')).toBe(null);
+        expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+        expect(cursorRing?.getAttribute('stroke')).toBe('white');
+
+        svgCursor.SetColor(0, 'red');
+        svgCursor.SetColor(1, 'blue');
+        svgCursor.SetColor(2, 'green');
+        expect(cursorDot?.getAttribute('fill')).toBe('red');
+        expect(cursorDot?.getAttribute('stroke')).toBe('green');
+        expect(cursorDot?.getAttribute('stroke-width')).toBe('2');
+        expect(cursorRing?.getAttribute('stroke')).toBe('blue');
+
+        svgCursor.ResetToDefaultColors();
+        expect(cursorDot?.getAttribute('fill')).toBe('white');
+        expect(cursorDot?.getAttribute('stroke')).toBe(null);
+        expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+        expect(cursorRing?.getAttribute('stroke')).toBe('white');
+    });
+
+    describe('SVG Cursor darkCursor', () => {
+        beforeAll(() => {
+            cursor?.remove();
+            cursorDot?.remove();
+            cursorRing?.remove();
+
+            svgCursor = new SVGCursor(2, true);
+            cursor = document.getElementById('svg-cursor');
+            cursorRing = document.getElementById('svg-cursor-ring');
+            cursorDot = document.getElementById('svg-cursor-dot');
+        });
+
+        test('Cursor has the correct colors with darkCursor set', () => {
+            expect(cursorDot?.getAttribute('fill')).toBe('black');
+            expect(cursorDot?.getAttribute('stroke')).toBe(null);
+            expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+            expect(cursorRing?.getAttribute('stroke')).toBe('black');
+        });
+
+        test('ResetToDefaultColors should reset the cursor colors', () => {
+            expect(cursorDot?.getAttribute('fill')).toBe('black');
+            expect(cursorDot?.getAttribute('stroke')).toBe(null);
+            expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+            expect(cursorRing?.getAttribute('stroke')).toBe('black');
+
+            svgCursor.SetColor(0, 'red');
+            svgCursor.SetColor(1, 'blue');
+            svgCursor.SetColor(2, 'green');
+            expect(cursorDot?.getAttribute('fill')).toBe('red');
+            expect(cursorDot?.getAttribute('stroke')).toBe('green');
+            expect(cursorDot?.getAttribute('stroke-width')).toBe('2');
+            expect(cursorRing?.getAttribute('stroke')).toBe('blue');
+
+            svgCursor.ResetToDefaultColors();
+            expect(cursorDot?.getAttribute('fill')).toBe('black');
+            expect(cursorDot?.getAttribute('stroke')).toBe(null);
+            expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+            expect(cursorRing?.getAttribute('stroke')).toBe('black');
+        });
     });
 });
