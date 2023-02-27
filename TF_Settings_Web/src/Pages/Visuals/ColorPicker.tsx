@@ -36,14 +36,20 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyl
             <div className={'color-picker__body'}>
                 <HexAlphaColorPicker
                     color={cursorStyle[activeTabIndex]}
-                    onChange={(color) => updateCursorStyle({ ...cursorStyle, [activeTabIndex]: color })}
+                    onChange={(color) => {
+                        const newStyle: CursorStyle = [...cursorStyle];
+                        newStyle[activeTabIndex] = color;
+                        updateCursorStyle(newStyle);
+                    }}
                 />
                 <input
                     type="text"
                     className={'color-picker__body__text'}
                     value={cursorStyle[activeTabIndex].toUpperCase()}
                     onChange={(e) => {
-                        updateCursorStyle({ ...cursorStyle, [activeTabIndex]: e.target.value });
+                        const newStyle: CursorStyle = [...cursorStyle];
+                        newStyle[activeTabIndex] = e.target.value;
+                        updateCursorStyle(newStyle);
                         writeVisualsConfigIfNew();
                     }}
                 />

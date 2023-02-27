@@ -3,6 +3,12 @@ import { InputType, TouchFreeInputAction } from '../TouchFreeToolingTypes';
 import { MapRangeToRange } from '../Utilities';
 import { TouchlessCursor } from './TouchlessCursor';
 
+export const enum CursorPart {
+    CENTER_FILL,
+    RING_FILL,
+    CENTER_BORDER,
+}
+
 export class SVGCursor extends TouchlessCursor {
     private xPositionAttribute = 'cx';
     private yPositionAttribute = 'cy';
@@ -10,6 +16,7 @@ export class SVGCursor extends TouchlessCursor {
     private cursorRing: SVGCircleElement;
     private ringSizeMultiplier: number;
 
+    private isDarkCursor = false;
     private cursorShowing = false;
 
     // Group: Functions
@@ -17,11 +24,11 @@ export class SVGCursor extends TouchlessCursor {
     // Function: constructor
     // Constructs a new cursor consisting of a central cursor and a ring.
     // Optionally provide a ringSizeMultiplier to change the size that the <cursorRing> is relative to the _cursor.
-    // Optionally provide a darkCursor to change the cursor to be dark to provide better contrast on light coloured
+    // Optionally provide a darkCursor to change the cursor to be dark to provide better contrast on light colored
     // UIs.
     constructor(ringSizeMultiplier = 2, darkCursor = false) {
         super(undefined);
-
+        this.isDarkCursor = darkCursor;
         const documentBody = document.querySelector('body');
 
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -44,7 +51,6 @@ export class SVGCursor extends TouchlessCursor {
         svgRingElement.setAttribute('r', '15');
         svgRingElement.setAttribute('fill-opacity', '0');
         svgRingElement.setAttribute('stroke-width', '5');
-        svgRingElement.setAttribute('stroke', darkCursor ? 'black' : 'white');
         svgRingElement.setAttribute(this.xPositionAttribute, '100');
         svgRingElement.setAttribute(this.yPositionAttribute, '100');
         svgRingElement.style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.7))';
@@ -55,7 +61,6 @@ export class SVGCursor extends TouchlessCursor {
         const svgDotElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         svgDotElement.classList.add('touchfree-cursor');
         svgDotElement.setAttribute('r', '15');
-        svgDotElement.setAttribute('fill', darkCursor ? 'black' : 'white');
         svgDotElement.setAttribute(this.xPositionAttribute, '100');
         svgDotElement.setAttribute(this.yPositionAttribute, '100');
         svgDotElement.setAttribute('opacity', '1');
@@ -76,6 +81,8 @@ export class SVGCursor extends TouchlessCursor {
         this.cursor = svgDotElement;
 
         this.cursorCanvas = svgElement;
+
+        this.ResetToDefaultColors();
 
         this.ringSizeMultiplier = ringSizeMultiplier;
 
@@ -192,5 +199,32 @@ export class SVGCursor extends TouchlessCursor {
             return radiusAsNumber;
         }
         return 0;
+    }
+
+    // Function: SetDefaultColors
+    // Used to reset the SVGCursor to it's default styling
+    ResetToDefaultColors() {
+        this.cursor?.setAttribute('fill', this.isDarkCursor ? 'black' : 'white');
+        this.cursor?.removeAttribute('stroke-width');
+        this.cursor?.removeAttribute('stroke');
+        this.cursorRing.setAttribute('stroke', this.isDarkCursor ? 'black' : 'white');
+    }
+
+    // Function: SetColor
+    // Used to set a part of the SVGCursor to a specific color
+    // Takes a CursorPart enum to select which part of the cursor to color and a color represented by a string
+    SetColor(cursorPart: CursorPart, color: string) {
+        switch (cursorPart) {
+            case CursorPart.CENTER_FILL:
+                this.cursor?.setAttribute('fill', color);
+                return;
+            case CursorPart.RING_FILL:
+                this.cursorRing.setAttribute('stroke', color);
+                return;
+            case CursorPart.CENTER_BORDER:
+                this.cursor?.setAttribute('stroke', color);
+                this.cursor?.setAttribute('stroke-width', '2');
+                return;
+        }
     }
 }

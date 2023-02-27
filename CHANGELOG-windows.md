@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Service: `HandEntered` & `HandExited` events, sent when the active hand enters and exits the interaction zone (if enabled) respectively
+- Service: Removed informational level logging to improve readability of log files
 
 ### Fixed
 
@@ -35,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unity Settings: Fixed an issue with moving the bottom masking slider
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
 - Overlay Application: Fixed an issue where modified cursor alpha values would not be updated correctly.
+
 
 ## [2.4.0] - 2022-10-14
 
