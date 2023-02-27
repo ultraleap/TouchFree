@@ -108,6 +108,28 @@ namespace TouchFreeTests.Connections
     ""extra"": ""2"",
     ""bar"": ""foo""
 }")]
+        [TestCase(
+            @"{
+    ""requestID"": ""d1bc31f0-dfe1-4801-9b17-c30f80406f6c"",
+    ""physical"": {
+        ""LeapPositionRelativeToScreenBottomM"": {
+            ""X"": 0,
+            ""Y"": -0.3,
+            ""Z"": -0.05
+        },
+        ""LeapRotationD"": {
+            ""X"": 0,
+            ""Y"": 0,
+            ""Z"": 0
+        },
+        ""ScreenHeightM"": 0.3,
+        ""ScreenRotationD"": 0,
+        ""ScreenHeightPX"": 1080,
+        ""ScreenWidthPX"": 1920,
+        ""ExtraFieldShouldFailValidation"": 2000,
+        ""AnotherExtraField"": 1000
+    }
+}")]
         public void ValidateConfigJson_ExtraUnknownContent_FailsValidation(string json)
         {
             var jObj = JsonConvert.DeserializeObject<JObject>(json);

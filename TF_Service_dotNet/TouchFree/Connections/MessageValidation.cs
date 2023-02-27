@@ -18,6 +18,12 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private static readonly IReadOnlySet<string> validConfigContentKeys =
             configJsonPropertyTypes.Keys.Append(requestIdKeyName).ToHashSet();
+        
+        public static JsonSerializerSettings JsonSerializerSettings { get; } = new()
+        {
+            MissingMemberHandling = MissingMemberHandling.Error,
+            NullValueHandling = NullValueHandling.Ignore
+        };
 
         /// <summary>
         /// Checks for invalid states of the config request
@@ -26,8 +32,8 @@ namespace Ultraleap.TouchFree.Library.Connections
         /// <returns>Returns a response as to the validity of the _content</returns>
         public static Result<Empty> ValidateConfigJson(JObject contentObj)
         {
-            bool anyValidContentFound = false;
             var invalidProperties = new List<Error>();
+            bool anyValidContentFound = false;
             foreach (var contentElement in contentObj)
             {
                 if (configJsonPropertyTypes.TryGetValue(contentElement.Key, out Type T))
@@ -35,12 +41,13 @@ namespace Ultraleap.TouchFree.Library.Connections
                     try
                     {
                         // Check that _contentObj matches ConfigState structure, including all types
-                        JsonConvert.DeserializeObject(contentElement.Value!.ToString(), T);
+                        JsonConvert.DeserializeObject(contentElement.Value!.ToString(), T, JsonSerializerSettings);
                         anyValidContentFound = true;
                     }
-                    catch (JsonReaderException ex)
+                    catch (JsonException ex)
                     {
-                        return new Error($"Setting configuration failed with message:\n\"{ex.Message}\"");
+                        // Note: missing or unrecognized members will only be discovered 1 at a time in each type
+                        invalidProperties.Add(new Error($"Configuration validation failed: {ex.Message}"));
                     }
                 }
                 else if (!validConfigContentKeys.Contains(contentElement.Key))
@@ -49,14 +56,10 @@ namespace Ultraleap.TouchFree.Library.Connections
                 }
             }
 
-            if (!anyValidContentFound)
-            {
-                return new Error("Setting configuration failed: No valid configuration content was found in the message");
-            }
-
             return invalidProperties.Count switch
             {
-                0 => Result.Success,
+                0 when anyValidContentFound => Result.Success,
+                0 => new Error("Setting configuration failed: No valid configuration content was found in the message"),
                 1 => invalidProperties.Single(),
                 _ => new Error("Multiple unknown keys in json", invalidProperties)
             };
