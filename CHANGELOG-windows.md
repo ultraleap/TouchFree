@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Service: `HandEntered` & `HandExited` events, sent when the active hand enters and exits the interaction zone (if enabled) respectively
 - Service: Removed informational level logging to improve readability of log files
 
+### Changed
+- Unity Settings: Allow resizing of window when in windowed mode
+
 ### Fixed
 
 - Unity Settings/Service: Fixed an issue where using Touch Plane with Scroll and Drag caused cursor jumps
