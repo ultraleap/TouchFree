@@ -68,7 +68,7 @@
         },
         "windows": [
             {
-                "title": "TouchFree Settings",
+                "title": "TouchFreeSettings",
                 "fullscreen": true,
                 "maximized": true,
                 "resizable": true
