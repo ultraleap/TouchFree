@@ -85,6 +85,35 @@ namespace TouchFreeTests.Connections
             var result = MessageValidation.ValidateConfigJson(jObj);
             Assert.That(result.IsError);
         }
+
+        [TestCase(
+@"{
+    ""requestID"": ""d1bc31f0-dfe1-4801-9b17-c30f80406f6c"",
+    ""physical"": {
+        ""LeapPositionRelativeToScreenBottomM"": {
+            ""X"": 0,
+            ""Y"": -0.3,
+            ""Z"": -0.05
+        },
+        ""LeapRotationD"": {
+            ""X"": 0,
+            ""Y"": 0,
+            ""Z"": 0
+        },
+        ""ScreenHeightM"": 0.3,
+        ""ScreenRotationD"": 0,
+        ""ScreenHeightPX"": 1080,
+        ""ScreenWidthPX"": 1920
+    },
+    ""extra"": ""2"",
+    ""bar"": ""foo""
+}")]
+        public void ValidateConfigJson_ExtraUnknownContent_FailsValidation(string json)
+        {
+            var jObj = JsonConvert.DeserializeObject<JObject>(json);
+            var result = MessageValidation.ValidateConfigJson(jObj);
+            Assert.That(result.IsError);
+        }
         
         [Test]
         public void ValidateRequestId_RequestIDOnObject_ReturnsTrue()
