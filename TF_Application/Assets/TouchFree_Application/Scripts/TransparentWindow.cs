@@ -25,9 +25,6 @@ namespace Ultraleap.TouchFree
         [DllImport("user32.dll")]
         private static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll", EntryPoint = "SetLayeredWindowAttributes")]
-        static extern int SetLayeredWindowAttributes(IntPtr hwnd, int crKey, byte bAlpha, int dwFlags);
-
         [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
         private static extern int SetWindowPos(IntPtr hwnd, int hwndInsertAfter, int x, int y, int cx, int cy, int uFlags);
 
