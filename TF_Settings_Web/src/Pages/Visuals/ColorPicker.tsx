@@ -11,12 +11,12 @@ import { CursorStyle } from './VisualsUtils';
 interface ColorPickerProps {
     cursorStyle: CursorStyle;
     updateCursorStyle: (style: CursorStyle) => void;
-    writeOutConfig: () => void;
+    writeVisualsConfigIfNew: () => void;
 }
 
 const cursorSections = ['Center Fill', 'Outer Fill', 'Center Border'] as const;
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyle, writeOutConfig }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyle, writeVisualsConfigIfNew }) => {
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
     const [localHex, setLocalHex] = useState<string>(cursorStyle[activeTabIndex]);
 
@@ -45,7 +45,6 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyl
                         newStyle[activeTabIndex] = color;
                         updateCursorStyle(newStyle);
                     }}
-                    onPointerUp={() => writeOutConfig()}
                 />
                 <input
                     type="text"
@@ -60,12 +59,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyl
                         const newStyle: CursorStyle = [...cursorStyle];
                         newStyle[activeTabIndex] = color;
                         updateCursorStyle(newStyle);
-                    }}
-                    onBlur={() => writeOutConfig()}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            writeOutConfig();
-                        }
+                        writeVisualsConfigIfNew();
                     }}
                 />
             </div>

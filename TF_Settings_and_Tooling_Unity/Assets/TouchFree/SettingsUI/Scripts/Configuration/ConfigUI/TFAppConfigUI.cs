@@ -18,6 +18,8 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         public Toggle LightColorPresetToggle;
         public Toggle DarkColorPresetToggle;
+        public Toggle LightOutlineColorPresetToggle;
+        public Toggle DarkOutlineColorPresetToggle;
         public Toggle CustomColorPresetToggle;
         public GameObject[] CursorSettingsToHide;
 
@@ -71,27 +73,12 @@ namespace Ultraleap.TouchFree.ServiceUI
 
         private void SetPresetTogglesBasedOnColors(CursorColorPreset _activePreset)
         {
-            switch (_activePreset)
-            {
-                case CursorColorPreset.LIGHT:
-                    LightColorPresetToggle.SetIsOnWithoutNotify(true);
-                    DarkColorPresetToggle.SetIsOnWithoutNotify(false);
-                    CustomColorPresetToggle.SetIsOnWithoutNotify(false);
-                    CustomColorControlContainer.SetActive(false);
-                    break;
-                case CursorColorPreset.DARK:
-                    LightColorPresetToggle.SetIsOnWithoutNotify(false);
-                    DarkColorPresetToggle.SetIsOnWithoutNotify(true);
-                    CustomColorPresetToggle.SetIsOnWithoutNotify(false);
-                    CustomColorControlContainer.SetActive(false);
-                    break;
-                case CursorColorPreset.CUSTOM:
-                    LightColorPresetToggle.SetIsOnWithoutNotify(false);
-                    DarkColorPresetToggle.SetIsOnWithoutNotify(false);
-                    CustomColorPresetToggle.SetIsOnWithoutNotify(true);
-                    CustomColorControlContainer.SetActive(true);
-                    break;
-            }
+            LightColorPresetToggle.SetIsOnWithoutNotify(_activePreset == CursorColorPreset.LIGHT);
+            DarkColorPresetToggle.SetIsOnWithoutNotify(_activePreset == CursorColorPreset.DARK);
+            LightOutlineColorPresetToggle.SetIsOnWithoutNotify(_activePreset == CursorColorPreset.LIGHT_OUTLINE);
+            DarkOutlineColorPresetToggle.SetIsOnWithoutNotify(_activePreset == CursorColorPreset.DARK_OUTLINE);
+            CustomColorPresetToggle.SetIsOnWithoutNotify(_activePreset == CursorColorPreset.CUSTOM);
+            CustomColorControlContainer.SetActive(_activePreset == CursorColorPreset.CUSTOM);
         }
 
         private void AddValueChangedListeners()
@@ -106,6 +93,8 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             LightColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
             DarkColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
+            LightOutlineColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
+            DarkOutlineColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
             CustomColorPresetToggle.onValueChanged.AddListener(OnValueChanged);
 
             PrimaryColorToggle.onValueChanged.AddListener(SetColorPickerColor);
@@ -139,6 +128,8 @@ namespace Ultraleap.TouchFree.ServiceUI
 
             LightColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
             DarkColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
+            LightOutlineColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
+            DarkOutlineColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
             CustomColorPresetToggle.onValueChanged.RemoveListener(OnValueChanged);
 
             PrimaryColorToggle.onValueChanged.RemoveListener(SetColorPickerColor);
@@ -400,6 +391,14 @@ namespace Ultraleap.TouchFree.ServiceUI
             else if (DarkColorPresetToggle.isOn)
             {
                 TFAppConfig.Config.activeCursorPreset = CursorColorPreset.DARK;
+            }
+            else if (LightOutlineColorPresetToggle.isOn)
+            {
+                TFAppConfig.Config.activeCursorPreset = CursorColorPreset.LIGHT_OUTLINE;
+            }
+            else if (DarkOutlineColorPresetToggle.isOn)
+            {
+                TFAppConfig.Config.activeCursorPreset = CursorColorPreset.DARK_OUTLINE;
             }
             else
             {
