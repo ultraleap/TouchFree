@@ -1,7 +1,8 @@
 import './ColorPicker.scss';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HexAlphaColorPicker } from 'react-colorful';
+import tinycolor from 'tinycolor2';
 
 import { TabSelector } from '@/Components/Header';
 
@@ -17,6 +18,9 @@ const cursorSections = ['Center Fill', 'Outer Fill', 'Center Border'] as const;
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyle, writeOutConfig }) => {
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
+    const [localHex, setLocalHex] = useState<string>(cursorStyle[activeTabIndex]);
+
+    useEffect(() => setLocalHex(cursorStyle[activeTabIndex]), [cursorStyle, activeTabIndex]);
 
     return (
         <div className={'color-picker'}>
@@ -46,10 +50,15 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ cursorStyle, updateCursorStyl
                 <input
                     type="text"
                     className={'color-picker__body__text'}
-                    value={cursorStyle[activeTabIndex].toUpperCase()}
+                    value={localHex.toUpperCase()}
                     onChange={(e) => {
+                        const color = e.target.value;
+                        if (!tinycolor(color).isValid()) {
+                            setLocalHex(color);
+                            return;
+                        }
                         const newStyle: CursorStyle = [...cursorStyle];
-                        newStyle[activeTabIndex] = e.target.value;
+                        newStyle[activeTabIndex] = color;
                         updateCursorStyle(newStyle);
                     }}
                     onBlur={() => writeOutConfig()}
