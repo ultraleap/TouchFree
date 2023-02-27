@@ -258,7 +258,7 @@ const roundToTwoDP = (numberIn: number) => Math.round(numberIn * 100) / 100;
 const setCustomColorsFromConfig = (config: VisualsConfig) => {
     const { primaryCustomColor, secondaryCustomColor, tertiaryCustomColor } = config;
     cursorStyles.Custom = [primaryCustomColor, secondaryCustomColor, tertiaryCustomColor].map(
-        (color) => '#' + tinycolor.fromRatio(color).toHex()
+        (color) => tinycolor.fromRatio(color).toHex8String()
     ) as CursorStyle;
 };
 
