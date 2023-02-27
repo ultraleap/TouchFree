@@ -85,6 +85,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         Coroutine cursorScalingRoutine;
 
         protected bool hidingCursor = false;
+        protected bool fadingCursor = false;
         protected bool growQueued = false;
         protected Vector3 cursorLocalScale = Vector3.one;
         protected const int ringSpriteSortingOrder = 32766;
@@ -182,9 +183,18 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
             _secondaryColor = _secondary;
             _tertiaryColor = _tertiary;
 
-            cursorFill.color = new Color(primaryColor.r, primaryColor.g, primaryColor.b, cursorFill.color.a);
-            ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, ringOuterSprite.color.a);
-            cursorBorder.color = new Color(tertiaryColor.r, tertiaryColor.g, tertiaryColor.b, cursorBorder.color.a);
+            if (!fadingCursor && !hidingCursor)
+            {
+                cursorFill.color = _primaryColor;
+                ringOuterSprite.color = _secondaryColor;
+                cursorBorder.color = _tertiaryColor;
+            }
+            else
+            {
+                cursorFill.color = new Color(primaryColor.r, primaryColor.g, primaryColor.b, cursorFill.color.a);
+                ringOuterSprite.color = new Color(secondaryColor.r, secondaryColor.g, secondaryColor.b, ringOuterSprite.color.a);
+                cursorBorder.color = new Color(tertiaryColor.r, tertiaryColor.g, tertiaryColor.b, cursorBorder.color.a);
+            }
         }
 
         // Function: OnDisable
@@ -316,6 +326,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
         // This coroutine smoothly fades the cursors colours.
         protected virtual IEnumerator FadeCursor(float _from, float _to, float _duration, bool _disableOnEnd = false)
         {
+            fadingCursor = true;
             for (int i = 0; i < _duration; i++)
             {
                 yield return null;
@@ -346,6 +357,7 @@ namespace Ultraleap.TouchFree.Tooling.Cursors
                 cursorFill.enabled = false;
                 ringOuterSprite.enabled = false;
             }
+            fadingCursor = false;
         }
 
         // Function: SetCursorLocalScale

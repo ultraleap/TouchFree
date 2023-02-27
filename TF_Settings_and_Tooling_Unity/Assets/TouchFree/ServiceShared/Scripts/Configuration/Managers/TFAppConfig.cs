@@ -14,7 +14,9 @@ namespace Ultraleap.TouchFree.ServiceShared
     {
         LIGHT,
         DARK,
-        CUSTOM
+        CUSTOM,
+        LIGHT_OUTLINE,
+        DARK_OUTLINE,
     }
 
     public static class TFAppConfig
@@ -23,17 +25,18 @@ namespace Ultraleap.TouchFree.ServiceShared
         {
             get
             {
-                if (_config == null)
-                {
-                    _config = TouchFreeAppConfigFile.LoadConfig();
-                }
-
+                if (_config == null) Refresh();
                 return _config;
             }
             set
             {
                 _config = value;
             }
+        }
+
+        public static void Refresh()
+        {
+            _config = TouchFreeAppConfigFile.LoadConfig();
         }
 
         private static ConfigurationState _config = null;
@@ -66,7 +69,8 @@ namespace Ultraleap.TouchFree.ServiceShared
             OnConfigUpdated?.Invoke();
         }
 
-        public void GetCurrentColors(ref Color Primary, ref Color Secondary, ref Color Tertiary) {
+        public void GetCurrentColors(ref Color Primary, ref Color Secondary, ref Color Tertiary)
+        {
             switch (activeCursorPreset)
             {
                 case CursorColorPreset.LIGHT:
@@ -78,6 +82,16 @@ namespace Ultraleap.TouchFree.ServiceShared
                     Primary = Color.black;
                     Secondary = Color.black;
                     Tertiary = Color.white;
+                    break;
+                case CursorColorPreset.LIGHT_OUTLINE:
+                    Primary = Color.clear;
+                    Secondary = Color.white;
+                    Tertiary = Color.white;
+                    break;
+                case CursorColorPreset.DARK_OUTLINE:
+                    Primary = Color.clear;
+                    Secondary = Color.black;
+                    Tertiary = Color.black;
                     break;
                 case CursorColorPreset.CUSTOM:
                     Primary = primaryCustomColor;
