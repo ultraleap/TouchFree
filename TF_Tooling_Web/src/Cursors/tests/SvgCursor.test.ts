@@ -1,21 +1,40 @@
 import TouchFree from '../../TouchFree';
 import { InputType } from '../../TouchFreeToolingTypes';
 import { mockTfInputAction } from '../../tests/testUtils';
-import { SVGCursor } from '../SvgCursor';
+import { CursorPart, SVGCursor } from '../SvgCursor';
 
 TouchFree.Init();
-const svgCursor = new SVGCursor();
-const cursor = document.getElementById('svg-cursor');
-const cursorRing = document.getElementById('svg-cursor-ring');
-const cursorDot = document.getElementById('svg-cursor-dot');
+let svgCursor = new SVGCursor();
+let cursor = document.getElementById('svg-cursor');
+let cursorRing = document.getElementById('svg-cursor-ring');
+let cursorDot = document.getElementById('svg-cursor-dot');
+
+const checkDefaultCursorColors = (isDarkCursor = false) => {
+    const baseColor = isDarkCursor ? 'black' : 'white';
+    expect(cursorDot?.getAttribute('fill')).toBe(baseColor);
+    expect(cursorDot?.getAttribute('stroke')).toBe(null);
+    expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+    expect(cursorRing?.getAttribute('stroke')).toBe(baseColor);
+};
+
+const setNonDefaultCursorColors = () => {
+    svgCursor.SetColor(CursorPart.CENTER_FILL, 'red');
+    svgCursor.SetColor(CursorPart.RING_FILL, 'blue');
+    svgCursor.SetColor(CursorPart.CENTER_BORDER, 'green');
+    expect(cursorDot?.getAttribute('fill')).toBe('red');
+    expect(cursorDot?.getAttribute('stroke')).toBe('green');
+    expect(cursorDot?.getAttribute('stroke-width')).toBe('2');
+    expect(cursorRing?.getAttribute('stroke')).toBe('blue');
+};
 
 describe('SVG Cursor', () => {
-    beforeAll(() => {
+    beforeEach(() => {
         // Set cursor to known state before each test
         mockTfInputAction();
         mockTfInputAction({ InputType: InputType.UP });
         svgCursor.EnableCursor();
         svgCursor.ShowCursor();
+        svgCursor.ResetToDefaultColors();
     });
 
     test('Creates a cursor in the document body', () => {
@@ -118,5 +137,60 @@ describe('SVG Cursor', () => {
         expect(cursor?.style.opacity).toBe('0');
         svgCursor.ShowCursor();
         expect(cursor?.style.opacity).toBe('0.4');
+    });
+
+    test('SetColor should set the color of the correct cursor part', () => {
+        checkDefaultCursorColors();
+
+        svgCursor.SetColor(CursorPart.CENTER_FILL, 'red');
+        expect(cursorDot?.getAttribute('fill')).toBe('red');
+        expect(cursorDot?.getAttribute('stroke')).toBe(null);
+        expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+        expect(cursorRing?.getAttribute('stroke')).toBe('white');
+
+        svgCursor.SetColor(CursorPart.RING_FILL, 'blue');
+        expect(cursorDot?.getAttribute('fill')).toBe('red');
+        expect(cursorDot?.getAttribute('stroke')).toBe(null);
+        expect(cursorDot?.getAttribute('stroke-width')).toBe(null);
+        expect(cursorRing?.getAttribute('stroke')).toBe('blue');
+
+        svgCursor.SetColor(CursorPart.CENTER_BORDER, 'green');
+        expect(cursorDot?.getAttribute('fill')).toBe('red');
+        expect(cursorDot?.getAttribute('stroke')).toBe('green');
+        expect(cursorDot?.getAttribute('stroke-width')).toBe('2');
+        expect(cursorRing?.getAttribute('stroke')).toBe('blue');
+    });
+
+    test('ResetToDefaultColors should reset the cursor colors', () => {
+        checkDefaultCursorColors();
+        setNonDefaultCursorColors();
+
+        svgCursor.ResetToDefaultColors();
+        checkDefaultCursorColors();
+    });
+
+    describe('SVG Cursor darkCursor', () => {
+        beforeAll(() => {
+            cursor?.remove();
+            cursorDot?.remove();
+            cursorRing?.remove();
+
+            svgCursor = new SVGCursor(2, true);
+            cursor = document.getElementById('svg-cursor');
+            cursorRing = document.getElementById('svg-cursor-ring');
+            cursorDot = document.getElementById('svg-cursor-dot');
+        });
+
+        test('Cursor has the correct colors with darkCursor set', () => {
+            checkDefaultCursorColors(true);
+        });
+
+        test('ResetToDefaultColors should reset the cursor colors', () => {
+            checkDefaultCursorColors(true);
+            setNonDefaultCursorColors();
+
+            svgCursor.ResetToDefaultColors();
+            checkDefaultCursorColors(true);
+        });
     });
 });
