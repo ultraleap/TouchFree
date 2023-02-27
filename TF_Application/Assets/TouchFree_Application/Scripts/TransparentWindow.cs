@@ -62,7 +62,6 @@ namespace Ultraleap.TouchFree
         {
 #if !UNITY_EDITOR // You really don't want to enable this in the editor..
             hwnd = FindWindow(null, "TouchFree");
-            //SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);// Transparency=51=20%
             SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 #endif
 
