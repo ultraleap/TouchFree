@@ -21,8 +21,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         
         public static JsonSerializerSettings JsonSerializerSettings { get; } = new()
         {
-            MissingMemberHandling = MissingMemberHandling.Error,
-            NullValueHandling = NullValueHandling.Ignore
+            MissingMemberHandling = MissingMemberHandling.Error
         };
 
         /// <summary>
