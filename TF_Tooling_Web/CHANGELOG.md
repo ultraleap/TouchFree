@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `IsConnected` function exported as part of the top level `TouchFree` object for querying whether or not the client is connected to the TouchFree Service.
 - `HandEntered` event disptached when the active hand enters the interaction zone (if enabled).
 - `HandExited` event disptached when the active hand exits the interaction zone (if enabled).
-- Ability to set the IP that tooling should connect to the service via.
+- Ability to set the IP and port that tooling should connect to the service via.
 
 ### Deprecated
 
