@@ -8,6 +8,7 @@ public class WindowsInputController : InputController
     PointerTouchInfo[] touches;
 
     bool pressing = false;
+    bool useSecondMonitor = false;
 
     protected override void Start()
     {
@@ -19,6 +20,14 @@ public class WindowsInputController : InputController
         touches[0].TouchFlags = TouchFlags.NONE;
         touches[0].TouchMasks = TouchMask.NONE;
         touches[0].PointerInfo.PointerId = 1;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            useSecondMonitor = !useSecondMonitor;
+        }
     }
 
     protected override void OnDestroy()
@@ -34,7 +43,7 @@ public class WindowsInputController : InputController
             return;
         }
 
-        var x = (int)_inputData.CursorPosition.x;
+        var x = (useSecondMonitor ? Display.main.systemWidth : 0) + (int)_inputData.CursorPosition.x;
         var y = Display.main.systemHeight - (int)_inputData.CursorPosition.y;
 
         switch (_inputData.InputType)
