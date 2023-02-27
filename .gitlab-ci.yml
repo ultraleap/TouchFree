@@ -393,11 +393,12 @@ TF_Settings::Web::build:
         exit 1
       }
     - azuresigntool sign -du "https://www.ultraleap.com" -kvu "https://$env:SIGN_VAULT_ID.vault.azure.net/"  -kvi "$env:SIGN_VAULT_APPLICATION_ID" -kvs "$env:SIGN_VAULT_APPLICATION_CLIENT_CODE" -kvc "ultraleap-ltd" -kvt "$env:SIGN_VAULT_TENANT_ID" -tr http://timestamp.digicert.com -v "$CI_PROJECT_DIR/TF_Settings_Web/src-tauri/target/release/touchfree-settings-web.exe"
+    - mv $CI_PROJECT_DIR/TF_Settings_Web/src-tauri/target/release/*.exe $CI_PROJECT_DIR/TF_Settings_Web/
   artifacts:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - ./TF_Settings_Web/dist/*
-    - ./TF_Settings_Web/src-tauri/target/release/*.exe
+    - ./TF_Settings_Web/*.exe
     expire_in: 2 weeks
     when: always
   tags:

@@ -39,6 +39,7 @@
 
 .container {
     margin: 0 2vw;
+    user-select: none;
 
     @media (orientation: landscape) {
         display: grid;
