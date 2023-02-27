@@ -382,6 +382,7 @@ TF_Settings::Web::build:
     - npm ls
     - cd ./TF_Settings_Web
     - npm run tauri build
+    - mv ./src-tauri/target/release/*.exe ./
     # npm workspaces cause the Web Settings node modules to be installed in the root folder so need to copy the Web Settings' package.json up a level
     # so it's at the same level as the node modules
     - cp ./package.json ../
@@ -397,7 +398,7 @@ TF_Settings::Web::build:
     name: "TouchFree_Settings_Web_${env:TOUCHFREE_VERSION}_${env:CI_COMMIT_SHORT_SHA}"
     paths:
     - ./TF_Settings_Web/dist/*
-    - ./TF_Settings_Web/src-tauri/target/release/*.exe
+    - ./TF_Settings_Web/touchfree-settings-web.exe
     expire_in: 2 weeks
     when: always
   tags:
