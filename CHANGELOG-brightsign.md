@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
+- Service: Fixed an issue where the TouchFree Service would crash when non-integer configuration value was sent for an integer configuration property e.g. screen width.
 
 ## [2.5.0-beta] - 2022-11-30
 
