@@ -70,12 +70,13 @@ export class ConnectionManager extends EventTarget {
     // Used to begin the connection. Creates the required <MessageReceiver>.
     // Also attempts to immediately <Connect> to a WebSocket.
     public static init(initParams?: InitParams) {
-        if (initParams?.address) {
-            ConnectionManager.SetAddress(initParams.address);
-        }
         ConnectionManager.messageReceiver = new MessageReceiver();
         ConnectionManager.instance = new ConnectionManager();
-        ConnectionManager.Connect();
+        if (initParams?.address) {
+            ConnectionManager.SetAddress(initParams.address);
+        } else {
+            ConnectionManager.Connect();
+        }
     }
 
     // Function: AddConnectionListener
