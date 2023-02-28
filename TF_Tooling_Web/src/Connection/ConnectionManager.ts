@@ -74,6 +74,8 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.instance = new ConnectionManager();
         if (initParams?.address) {
             ConnectionManager.SetAddress(initParams.address);
+        } else {
+            ConnectionManager.Connect();
         }
     }
 
