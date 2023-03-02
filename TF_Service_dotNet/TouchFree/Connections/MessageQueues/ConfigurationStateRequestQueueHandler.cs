@@ -17,7 +17,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             configManager = _configManager;
         }
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             ConfigState currentConfig = new ConfigState(
                 request.RequestId,

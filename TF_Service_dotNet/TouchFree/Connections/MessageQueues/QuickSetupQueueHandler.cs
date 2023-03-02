@@ -19,7 +19,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             quickSetupHandler = _quickSetupHandler;
         }
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             QuickSetupRequest? quickSetupRequest = null;
 

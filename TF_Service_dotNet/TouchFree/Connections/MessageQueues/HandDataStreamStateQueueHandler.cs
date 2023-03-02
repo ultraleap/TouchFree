@@ -16,7 +16,7 @@
             handManager = _handManager;
         }
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             trackingConnectionManager.SetImagesState(request.ContentRoot.GetValue("enabled").ToString() == true.ToString());
             var lens = request.ContentRoot.GetValue("lens")?.ToString()?.ToLower() == Leap.Image.CameraType.LEFT.ToString().ToLower() ? Leap.Image.CameraType.LEFT : Leap.Image.CameraType.RIGHT;

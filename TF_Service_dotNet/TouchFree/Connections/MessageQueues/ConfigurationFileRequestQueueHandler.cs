@@ -14,7 +14,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         {
         }
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             InteractionConfig interactions = InteractionConfigFile.LoadConfig();
             PhysicalConfig physical = PhysicalConfigFile.LoadConfig();

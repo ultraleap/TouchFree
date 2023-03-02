@@ -14,10 +14,10 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         public ConfigurationFileChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr) { }
 
-        protected override Result<Empty> ValidateContent(JObject jObject, IncomingRequest request) =>
-            MessageValidation.ValidateConfigJson(jObject);
+        protected override Result<Empty> ValidateContent(IncomingRequestWithId request) =>
+            MessageValidation.ValidateConfigJson(request.ContentRoot);
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             // Try saving config
             // If not work, return error

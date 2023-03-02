@@ -20,9 +20,9 @@ namespace Ultraleap.TouchFree.Library.Connections
         public static readonly string SuccessString = "Success";
         public static readonly string FailureString = "Failure";
         
-        public static void SendSuccessResponse(this IClientConnectionManager manager, ValidatedIncomingRequest validatedIncomingRequest, ActionCode responseActionCode, string message = default)
+        public static void SendSuccessResponse(this IClientConnectionManager manager, IncomingRequestWithId incomingRequestWithId, ActionCode responseActionCode, string message = default)
         {
-            var response = new ResponseToClient(validatedIncomingRequest.RequestId, SuccessString, message ?? string.Empty, validatedIncomingRequest.OriginalContent);
+            var response = new ResponseToClient(incomingRequestWithId.RequestId, SuccessString, message ?? string.Empty, incomingRequestWithId.OriginalContent);
             manager.SendResponse(response, responseActionCode);
         }
 
@@ -32,9 +32,9 @@ namespace Ultraleap.TouchFree.Library.Connections
             manager.SendResponse(response, responseActionCode);
         }
         
-        public static void SendErrorResponse(this IClientConnectionManager manager, ValidatedIncomingRequest validatedIncomingRequest, ActionCode responseActionCode, Error error)
+        public static void SendErrorResponse(this IClientConnectionManager manager, IncomingRequestWithId incomingRequestWithId, ActionCode responseActionCode, Error error)
         {
-            var response = new ResponseToClient(validatedIncomingRequest.RequestId, FailureString, error.Message, validatedIncomingRequest.OriginalContent);
+            var response = new ResponseToClient(incomingRequestWithId.RequestId, FailureString, error.Message, incomingRequestWithId.OriginalContent);
             manager.SendResponse(response, responseActionCode);
         }
     }

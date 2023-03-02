@@ -48,31 +48,37 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         }
 
         private void HandleRequest(IncomingRequest request) =>
-            request.DeserializeAndValidateRequest(jObject => ValidateContent(jObject, request))
-                .Match(Handle, error => HandleValidationError(request, error));
+            request.DeserializeAndValidateRequestId()
+                .Match(requestWithId => ValidateContent(requestWithId)
+                        .Match(_ => Handle(requestWithId),
+                            error => HandleValidationError(requestWithId, error)),
+                    error => HandleRequestIdValidationError(request, error));
 
-        protected virtual void HandleValidationError(IncomingRequest request, Error error) =>
+        private void HandleRequestIdValidationError(IncomingRequest request, Error error) =>
             clientMgr.SendErrorResponse(request, failureActionCode, new Error($"{whatThisHandlerDoes} failed: {error.Message}"));
 
-        protected void SendSuccessResponse(ValidatedIncomingRequest originalRequest, ActionCode actionCode, string successMessage = default) =>
+        protected virtual void HandleValidationError(IncomingRequestWithId request, Error error) =>
+            clientMgr.SendErrorResponse(request, failureActionCode, new Error($"{whatThisHandlerDoes} failed: {error.Message}"));
+
+        protected void SendSuccessResponse(IncomingRequestWithId originalRequest, ActionCode actionCode, string successMessage = default) =>
             clientMgr.SendSuccessResponse(originalRequest, actionCode, successMessage ?? string.Empty);
 
-        protected void SendErrorResponse(ValidatedIncomingRequest originalRequest, Error errorMessage) =>
+        protected void SendErrorResponse(IncomingRequestWithId originalRequest, Error errorMessage) =>
             SendErrorResponse(originalRequest, errorMessage, failureActionCode);
         
-        protected void SendErrorResponse(ValidatedIncomingRequest originalRequest, Error errorMessage, ActionCode errorActionCode) =>
+        protected void SendErrorResponse(IncomingRequestWithId originalRequest, Error errorMessage, ActionCode errorActionCode) =>
             clientMgr.SendErrorResponse(originalRequest, errorActionCode, errorMessage);
 
         /// <summary>
         /// Optionally implemented function for validating Json content of the incoming request
         /// </summary>
         /// <returns>Result indicating validation success or error</returns>
-        protected virtual Result<Empty> ValidateContent(JObject jObject, IncomingRequest request) => Result.Success;
+        protected virtual Result<Empty> ValidateContent(IncomingRequestWithId request) => Result.Success;
         
         /// <summary>
         /// Handle a validated request (with validated requestId and passed ValidateContent)
         /// </summary>
         /// <param name="request">Validated request to handle</param>
-        protected abstract void Handle(ValidatedIncomingRequest request);
+        protected abstract void Handle(IncomingRequestWithId request);
     }
 }

@@ -17,10 +17,10 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         protected override ActionCode failureActionCode => ActionCode.CONFIGURATION_RESPONSE;
         protected override string whatThisHandlerDoes => "Setting configuration";
 
-        protected override Result<Empty> ValidateContent(JObject jObject, IncomingRequest request) =>
-            MessageValidation.ValidateConfigJson(jObject);
+        protected override Result<Empty> ValidateContent(IncomingRequestWithId request) =>
+            MessageValidation.ValidateConfigJson(request.ContentRoot);
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             ChangeConfig(request.OriginalContent);
             SendSuccessResponse(request, ActionCode.CONFIGURATION_RESPONSE);

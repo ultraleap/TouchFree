@@ -52,12 +52,12 @@ namespace TouchFreeTests.Connections.MessageQueues
             public override ActionCode[] HandledActionCodes => ConfiguredActionCodes;
             public ActionCode[] ConfiguredActionCodes { get; set; }
 
-            protected override void Handle(ValidatedIncomingRequest request)
+            protected override void Handle(IncomingRequestWithId request)
             {
                 LastRequestHandleWasCalledAgainst = request;
             }
 
-            public ValidatedIncomingRequest? LastRequestHandleWasCalledAgainst { get; set; }
+            public IncomingRequestWithId? LastRequestHandleWasCalledAgainst { get; set; }
 
             protected override string whatThisHandlerDoes => string.Empty;
 

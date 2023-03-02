@@ -134,18 +134,17 @@ namespace Ultraleap.TouchFree.Library.Connections
 
     public readonly record struct IncomingRequest(ActionCode ActionCode, string Content)
     {
-        public Result<ValidatedIncomingRequest> DeserializeAndValidateRequest(ResultPredicate<JObject> validateFunc)
+        public Result<IncomingRequestWithId> DeserializeAndValidateRequestId()
         {
             var contentObj = JsonConvert.DeserializeObject<JObject>(Content);
             if (contentObj == null) return new Error("Deserializing request content failed: returned null");
             
             var request = this; // Lambda cannot capture "this" in structs, need to copy to a local
             return MessageValidation.ValidateRequestId(contentObj)
-                .Map(id => validateFunc(contentObj)
-                    .Map(_ => new ValidatedIncomingRequest(request.ActionCode, contentObj, id, request.Content)));
+                .Map(id =>  new IncomingRequestWithId(request.ActionCode, contentObj, id, request.Content));
         }
     }
-    public readonly record struct ValidatedIncomingRequest(ActionCode ActionCode, JObject ContentRoot, string RequestId, string OriginalContent);
+    public readonly record struct IncomingRequestWithId(ActionCode ActionCode, JObject ContentRoot, string RequestId, string OriginalContent);
 
     public struct TrackingResponse
     {

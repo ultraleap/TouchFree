@@ -41,7 +41,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        protected override void HandleValidationError(IncomingRequest request, Error error)
+        protected override void HandleValidationError(IncomingRequestWithId request, Error error)
         {
             // TODO: Put error message somewhere in response
             var maskResponse = new SuccessWrapper<MaskingData?>(false, whatThisHandlerDoes, null);
@@ -61,23 +61,23 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             clientMgr.SendResponse(state, failureActionCode);
         }
 
-        protected override Result<Empty> ValidateContent(JObject jObject, IncomingRequest request)
+        protected override Result<Empty> ValidateContent(IncomingRequestWithId request)
         {
             if (request.ActionCode == ActionCode.SET_TRACKING_STATE)
             {
                 var atLeastOneProperty = false;
                 // TODO: Check types of properties are correct here too, then remove checks from HandleSetTrackingStateRequest below 
-                atLeastOneProperty |= jObject.ContainsKey("mask")
-                                      || jObject.ContainsKey("allowImages")
-                                      || jObject.ContainsKey("cameraReversed")
-                                      || jObject.ContainsKey("analyticsEnabled");
+                atLeastOneProperty |= request.ContentRoot.ContainsKey("mask")
+                                      || request.ContentRoot.ContainsKey("allowImages")
+                                      || request.ContentRoot.ContainsKey("cameraReversed")
+                                      || request.ContentRoot.ContainsKey("analyticsEnabled");
                 if (!atLeastOneProperty) return new Error("Json contained no properties when attempting to Set Tracking State");
             }
             
             return Result.Success;
         }
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             if (request.ActionCode == ActionCode.GET_TRACKING_STATE)
             {
@@ -91,7 +91,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         #region DiagnosticAPI_Requests
 
-        void HandleGetTrackingStateRequest(ValidatedIncomingRequest request)
+        void HandleGetTrackingStateRequest(IncomingRequestWithId request)
         {
             trackingApiResponse = new TrackingResponse(request.RequestId, request.OriginalContent, true, true, true, true, true);
             responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -102,7 +102,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             diagnosticApi.RequestGetAnalyticsMode();
         }
 
-        void HandleSetTrackingStateRequest(ValidatedIncomingRequest request)
+        void HandleSetTrackingStateRequest(IncomingRequestWithId request)
         {
             JToken maskToken;
             JToken allowImagesToken;

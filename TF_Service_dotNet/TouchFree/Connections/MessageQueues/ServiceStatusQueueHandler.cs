@@ -21,7 +21,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             trackingApi = _trackingApi;
         }
 
-        protected override void Handle(ValidatedIncomingRequest request)
+        protected override void Handle(IncomingRequestWithId request)
         {
             void handleDeviceInfoResponse()
             {
