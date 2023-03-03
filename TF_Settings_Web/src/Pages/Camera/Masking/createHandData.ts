@@ -27,7 +27,7 @@ export interface HandData {
     primaryHand: boolean;
 }
 
-export class HandState {
+export interface HandState {
     one?: HandData;
     two?: HandData;
 }

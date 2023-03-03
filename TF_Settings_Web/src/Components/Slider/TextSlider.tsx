@@ -80,14 +80,14 @@ const TextSlider: React.FC<TextSliderProps> = ({
     return (
         <label className={interactionClasses('input-label-container')}>
             <p className={interactionClasses('label')}>{name}</p>
-            <div className={classes('sliderContainer')}>
+            <div className={classes('slider-container')}>
                 <input
                     type="range"
                     step={stepSize}
                     min={rangeMin}
                     max={rangeMax}
                     value={value}
-                    className={classes('slider')}
+                    className={classes('slider-container__slider')}
                     onChange={() => {}}
                     onPointerMove={onMove}
                     onPointerDown={onDown}
@@ -99,16 +99,16 @@ const TextSlider: React.FC<TextSliderProps> = ({
                     id="myRange"
                     ref={inputElement}
                 />
-                <div className={classes('sliderLabelContainer')}>
+                <div className={classes('slider-container__labels')}>
                     <label className={interactionClasses('leftLabel')}>{leftLabel}</label>
                     <label className={interactionClasses('rightLabel')}>{rightLabel}</label>
                 </div>
             </div>
-            <label className={classes('sliderTextContainer')}>
+            <label className={classes('slider-text-container')}>
                 <input
                     type="number"
                     step={stepSize}
-                    className={classes('sliderText')}
+                    className={classes('slider-text-container__text')}
                     value={value}
                     onChange={onTextChange}
                     onBlur={onFinish}
