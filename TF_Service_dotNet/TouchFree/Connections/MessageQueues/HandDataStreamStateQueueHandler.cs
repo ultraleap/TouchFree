@@ -1,17 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
+﻿namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public class HandDataStreamStateQueueHandler : MessageQueueHandler
     {
         private readonly ITrackingConnectionManager trackingConnectionManager;
         private readonly IHandManager handManager;
 
-        public override ActionCode[] ActionCodes => new[] { ActionCode.SET_HAND_DATA_STREAM_STATE };
+        public override ActionCode[] HandledActionCodes => new[] { ActionCode.SET_HAND_DATA_STREAM_STATE };
 
-        protected override string noRequestIdFailureMessage => "Setting the hand data stream state failed. This is due to a missing or invalid requestID";
-
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE;
+        protected override string whatThisHandlerDoes => "Setting the hand data stream state";
+        protected override ActionCode failureActionCode => ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE;
 
         public HandDataStreamStateQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, ITrackingConnectionManager _trackingConnectionManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
         {
@@ -19,14 +16,13 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             handManager = _handManager;
         }
 
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+        protected override void Handle(IncomingRequestWithId request)
         {
-            trackingConnectionManager.SetImagesState(_contentObject.GetValue("enabled").ToString() == true.ToString());
-            var lens = _contentObject.GetValue("lens")?.ToString()?.ToLower() == Leap.Image.CameraType.LEFT.ToString().ToLower() ? Leap.Image.CameraType.LEFT : Leap.Image.CameraType.RIGHT;
+            trackingConnectionManager.SetImagesState(request.ContentRoot.GetValue("enabled").ToString() == true.ToString());
+            var lens = request.ContentRoot.GetValue("lens")?.ToString()?.ToLower() == Leap.Image.CameraType.LEFT.ToString().ToLower() ? Leap.Image.CameraType.LEFT : Leap.Image.CameraType.RIGHT;
             handManager.HandRenderLens = lens;
 
-            ResponseToClient response = new ResponseToClient(requestId, "Success", string.Empty, _request.content);
-            clientMgr.SendResponse(response, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
+            SendSuccessResponse(request, ActionCode.SET_HAND_DATA_STREAM_STATE_RESPONSE);
         }
     }
 }

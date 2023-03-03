@@ -6,11 +6,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public class TrackingApiChangeQueueHandler : MessageQueueHandler
     {
-        public override ActionCode[] ActionCodes => new[] { ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE };
+        public override ActionCode[] HandledActionCodes => new[] { ActionCode.GET_TRACKING_STATE, ActionCode.SET_TRACKING_STATE };
 
-        protected override string noRequestIdFailureMessage => "Tracking State change request failed. This is due to a missing or invalid requestID";
+        protected override string whatThisHandlerDoes => "Tracking State change request";
 
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.TRACKING_STATE;
+        protected override ActionCode failureActionCode => ActionCode.TRACKING_STATE;
 
         public TrackingResponse? trackingApiResponse = null;
         private float? responseOriginTime = null;
@@ -41,10 +41,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        protected override void CreateAndSendNoRequestIdError(IncomingRequest _request)
+        protected override void HandleValidationError(IncomingRequestWithId request, Error error)
         {
-            var maskResponse = new SuccessWrapper<MaskingData?>(false, noRequestIdFailureMessage, null);
-            var boolResponse = new SuccessWrapper<bool?>(false, noRequestIdFailureMessage, null);
+            // TODO: Put error message somewhere in response
+            var maskResponse = new SuccessWrapper<MaskingData?>(false, whatThisHandlerDoes, null);
+            var boolResponse = new SuccessWrapper<bool?>(false, whatThisHandlerDoes, null);
 
             TrackingApiState state = new TrackingApiState()
             {
@@ -57,28 +58,42 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
             // This is a failed request, do not continue with processing the request,
             // the Client will have no way to handle the config state
-            clientMgr.SendResponse(state, noRequestIdFailureActionCode);
+            clientMgr.SendResponse(state, failureActionCode);
         }
 
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+        protected override Result<Empty> ValidateContent(IncomingRequestWithId request)
         {
-            _request.requestId = requestId;
-
-            if (_request.action == ActionCode.GET_TRACKING_STATE)
+            if (request.ActionCode == ActionCode.SET_TRACKING_STATE)
             {
-                HandleGetTrackingStateRequest(_request);
+                var atLeastOneProperty = false;
+                // TODO: Check types of properties are correct here too, then remove checks from HandleSetTrackingStateRequest below 
+                atLeastOneProperty |= request.ContentRoot.ContainsKey("mask")
+                                      || request.ContentRoot.ContainsKey("allowImages")
+                                      || request.ContentRoot.ContainsKey("cameraReversed")
+                                      || request.ContentRoot.ContainsKey("analyticsEnabled");
+                if (!atLeastOneProperty) return new Error("Json contained no properties when attempting to Set Tracking State");
+            }
+            
+            return Result.Success;
+        }
+
+        protected override void Handle(IncomingRequestWithId request)
+        {
+            if (request.ActionCode == ActionCode.GET_TRACKING_STATE)
+            {
+                HandleGetTrackingStateRequest(request);
             }
             else
             {
-                HandleSetTrackingStateRequest(_contentObject, _request);
+                HandleSetTrackingStateRequest(request);
             }
         }
 
         #region DiagnosticAPI_Requests
 
-        void HandleGetTrackingStateRequest(IncomingRequest _request)
+        void HandleGetTrackingStateRequest(IncomingRequestWithId request)
         {
-            trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, true, true, true, true, true);
+            trackingApiResponse = new TrackingResponse(request.RequestId, request.OriginalContent, true, true, true, true, true);
             responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             diagnosticApi.RequestGetAllowImages();
@@ -87,19 +102,20 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             diagnosticApi.RequestGetAnalyticsMode();
         }
 
-        void HandleSetTrackingStateRequest(JObject contentObj, IncomingRequest _request)
+        void HandleSetTrackingStateRequest(IncomingRequestWithId request)
         {
             JToken maskToken;
             JToken allowImagesToken;
             JToken cameraReversedToken;
             JToken analyticsEnabledToken;
 
+            var contentObj = request.ContentRoot;
             bool needsMask = contentObj.TryGetValue("mask", out maskToken);
             bool needsImages = contentObj.TryGetValue("allowImages", out allowImagesToken);
             bool needsOrientation = contentObj.TryGetValue("cameraReversed", out cameraReversedToken);
             bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
 
-            trackingApiResponse = new TrackingResponse(_request.requestId, _request.content, false, needsMask, needsImages, needsOrientation, needsAnalytics);
+            trackingApiResponse = new TrackingResponse(request.RequestId, request.OriginalContent, false, needsMask, needsImages, needsOrientation, needsAnalytics);
             responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             var trackingFromFile = configManager.TrackingConfig;
@@ -205,7 +221,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                     var convertedMask = new MaskingData((float)mask.lower, (float)mask.upper, (float)mask.right,
                         (float)mask.left);
                     return new SuccessWrapper<MaskingData?>(true, "Image Mask State", convertedMask);
-                }, error => new SuccessWrapper<MaskingData?>(false, error, null));
+                }, error => new SuccessWrapper<MaskingData?>(false, error.Message, null));
 
                 response.needsMask = false;
                 trackingApiResponse = response;
@@ -220,7 +236,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
                 response.state.allowImages =
                     _allowImages.Match(value => new SuccessWrapper<bool?>(true, "AllowImages State", value),
-                        error => new SuccessWrapper<bool?>(false, error, null));
+                        error => new SuccessWrapper<bool?>(false, error.Message, null));
 
                 response.needsImages = false;
                 trackingApiResponse = response;
@@ -235,7 +251,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
                 response.state.cameraReversed = _cameraReversed.Match(
                     value => new SuccessWrapper<bool?>(true, "CameraOrientation State", value),
-                    error => new SuccessWrapper<bool?>(false, error, null));
+                    error => new SuccessWrapper<bool?>(false, error.Message, null));
 
                 response.needsOrientation = false;
                 trackingApiResponse = response;
@@ -250,7 +266,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
                 response.state.analyticsEnabled = _analytics.Match(
                     value => new SuccessWrapper<bool?>(true, "Analytics State", value),
-                    error => new SuccessWrapper<bool?>(false, error, null));
+                    error => new SuccessWrapper<bool?>(false, error.Message, null));
 
                 response.needsAnalytics = false;
                 trackingApiResponse = response;

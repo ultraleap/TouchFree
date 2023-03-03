@@ -5,48 +5,41 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
-    public class ConfigurationFileChangeQueueHandler : BaseConfigurationChangeQueueHandler
+    public class ConfigurationFileChangeQueueHandler : MessageQueueHandler
     {
-        public override ActionCode[] ActionCodes => new[] { ActionCode.SET_CONFIGURATION_FILE };
+        public override ActionCode[] HandledActionCodes => new[] { ActionCode.SET_CONFIGURATION_FILE };
 
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE;
+        protected override ActionCode failureActionCode => ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE;
+        protected override string whatThisHandlerDoes => "Setting configuration";
 
-        public ConfigurationFileChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr)
+        public ConfigurationFileChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr) : base(_updateBehaviour, _clientMgr) { }
+
+        protected override Result<Empty> ValidateContent(IncomingRequestWithId request) =>
+            MessageValidation.ValidateConfigJson(request.ContentRoot);
+
+        protected override void Handle(IncomingRequestWithId request)
         {
-        }
-
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
-        {
-            // Validate the incoming change
-            ResponseToClient response = ValidateConfigChange(_request.content, _contentObject);
-
-            if (response.status == "Success")
+            // Try saving config
+            // If not work, return error
+            // If work, send response from above
+            try
             {
-                // Try saving config
-                // If not work, return error
-                // If work, send response from above
-                try
-                {
-                    ChangeConfigFile(_request.content);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    // Return some response indicating access authorisation issues
-                    string errorMsg = "Did not have appropriate file access to modify the config file(s).";
-                    response = new ResponseToClient(response.requestID, "Failed", errorMsg, _request.content);
-                }
+                ChangeConfigFile(request.ContentRoot);
+                SendSuccessResponse(request, ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE);
             }
-
-            clientMgr.SendResponse(response, ActionCode.CONFIGURATION_FILE_CHANGE_RESPONSE);
+            catch (UnauthorizedAccessException)
+            {
+                // Return some response indicating access authorisation issues
+                SendErrorResponse(request, new Error("Did not have appropriate file access to modify the config file(s)."));
+            }
         }
 
-        void ChangeConfigFile(string _content)
+        // TODO: Move somewhere more general?
+        private static void ChangeConfigFile(JObject contentJson)
         {
             // Get the current state of the config file(s)
             InteractionConfig intFromFile = InteractionConfigFile.LoadConfig();
             PhysicalConfig physFromFile = PhysicalConfigFile.LoadConfig();
-
-            var contentJson = JObject.Parse(_content);
 
             string physicalChanges = contentJson["physical"].ToString();
             string interactionChanges = contentJson["interaction"].ToString();

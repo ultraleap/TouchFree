@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 
@@ -7,11 +6,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
     public class QuickSetupQueueHandler : MessageQueueHandler
     {
-        public override ActionCode[] ActionCodes => new[] { ActionCode.QUICK_SETUP };
+        public override ActionCode[] HandledActionCodes => new[] { ActionCode.QUICK_SETUP };
 
-        protected override string noRequestIdFailureMessage => "Config state request failed. This is due to a missing or invalid requestID";
+        protected override string whatThisHandlerDoes => "Config state request";
 
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
+        protected override ActionCode failureActionCode => ActionCode.CONFIGURATION_RESPONSE;
 
         private readonly IQuickSetupHandler quickSetupHandler;
 
@@ -20,13 +19,13 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             quickSetupHandler = _quickSetupHandler;
         }
 
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+        protected override void Handle(IncomingRequestWithId request)
         {
             QuickSetupRequest? quickSetupRequest = null;
 
             try
             {
-                quickSetupRequest = JsonConvert.DeserializeObject<QuickSetupRequest>(_request.content);
+                quickSetupRequest = JsonConvert.DeserializeObject<QuickSetupRequest>(request.OriginalContent);
             }
             catch { }
 
@@ -38,7 +37,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
 
                 ConfigState currentConfig = new ConfigState(
-                    requestId,
+                    request.RequestId,
                     interactions,
                     physical);
 
@@ -46,13 +45,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
             else if (quickSetupResponse?.PositionRecorded == true)
             {
-                ResponseToClient response = new ResponseToClient(requestId, "Success", string.Empty, _request.content);
-                clientMgr.SendResponse(response, ActionCode.QUICK_SETUP_RESPONSE);
+                SendSuccessResponse(request, ActionCode.QUICK_SETUP_RESPONSE);
             }
             else
             {
-                ResponseToClient response = new ResponseToClient(requestId, "Failure", quickSetupResponse?.QuickSetupError ?? string.Empty, _request.content);
-                clientMgr.SendResponse(response, ActionCode.QUICK_SETUP_RESPONSE);
+                SendErrorResponse(request, new Error(quickSetupResponse?.QuickSetupError ?? string.Empty), ActionCode.QUICK_SETUP_RESPONSE);
             }
         }
     }

@@ -1,4 +1,6 @@
 ﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections
@@ -88,22 +90,8 @@ namespace Ultraleap.TouchFree.Library.Connections
     }
 
     [Serializable]
-    public struct ResponseToClient
-    {
-        public string requestID;
-        public string status;
-        public string message;
-        public string originalRequest;
-
-        public ResponseToClient(string _id, string _status, string _msg, string _request)
-        {
-            requestID = _id;
-            status = _status;
-            message = _msg;
-            originalRequest = _request;
-        }
-    }
-
+    public record struct ResponseToClient(string requestID, string status, string message, string originalRequest);
+    
     public struct MaskingData
     {
         public float lower;
@@ -144,19 +132,19 @@ namespace Ultraleap.TouchFree.Library.Connections
         }
     }
 
-    public struct IncomingRequest
+    public readonly record struct IncomingRequest(ActionCode ActionCode, string Content)
     {
-        public ActionCode action;
-        public string requestId;
-        public string content;
-
-        public IncomingRequest(ActionCode _action, string _requestId, string _content)
+        public Result<IncomingRequestWithId> DeserializeAndValidateRequestId()
         {
-            action = _action;
-            requestId = _requestId;
-            content = _content;
+            var contentObj = JsonConvert.DeserializeObject<JObject>(Content);
+            if (contentObj == null) return new Error("Deserializing request content failed: returned null");
+            
+            var request = this; // Lambda cannot capture "this" in structs, need to copy to a local
+            return MessageValidation.ValidateRequestId(contentObj)
+                .Map(id =>  new IncomingRequestWithId(request.ActionCode, contentObj, id, request.Content));
         }
     }
+    public readonly record struct IncomingRequestWithId(ActionCode ActionCode, JObject ContentRoot, string RequestId, string OriginalContent);
 
     public struct TrackingResponse
     {
