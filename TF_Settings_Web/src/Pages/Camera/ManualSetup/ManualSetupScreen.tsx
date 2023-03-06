@@ -60,8 +60,8 @@ const reducer = (state: PhysicalState, content: Partial<PhysicalState>) => {
         },
         ScreenHeightM: newState.screenHeight / 100,
         ScreenRotationD: newState.screenTilt,
-        ScreenHeightPX: window.screen.height * window.devicePixelRatio,
-        ScreenWidthPX: window.screen.width * window.devicePixelRatio,
+        ScreenHeightPX: window.innerHeight,
+        ScreenWidthPX: window.innerWidth,
     };
     ConfigurationManager.RequestConfigFileChange(null, config, (result) => {
         if (result.status !== 'Success') {
