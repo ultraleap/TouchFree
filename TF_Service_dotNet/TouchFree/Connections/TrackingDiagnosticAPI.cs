@@ -3,15 +3,16 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library.Configuration;
-using WebSocketSharp;
+using Websocket.Client;
 
 namespace Ultraleap.TouchFree.Library.Connections
 {
     public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     {
-        private static string uri = "ws://127.0.0.1:1024/";
+        private static Uri url = new Uri("ws://127.0.0.1:1024/");
         private readonly IConfigManager configManager;
         private Version version;
 
@@ -110,7 +111,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         private readonly ConfigurationVariable<bool> cameraReversed;
         private readonly ConfigurationVariable<bool> analyticsEnabled;
 
-        private WebSocket webSocket = null;
+        private WebsocketClient webSocket = null;
         private readonly ConcurrentQueue<string> newMessages = new();
 
         public TrackingDiagnosticApi(IConfigManager _configManager, ITrackingConnectionManager _trackingConnectionManager)
@@ -233,54 +234,69 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
         }
 
+        private bool IsConnectedOrConnecting() => webSocket is { IsStarted: true, NativeClient.State: WebSocketState.Connecting or WebSocketState.Open };
+        private static readonly object _connectSyncRoot = new();
+
         private void Connect()
         {
-            if (webSocket?.ReadyState is WebSocketState.Connecting or WebSocketState.Open)
+            // Prevent race condition if multiple threads call Connect at same time
+            lock (_connectSyncRoot)
             {
-                return;
-            }
+                if (IsConnectedOrConnecting()) { return; }
 
-            if (webSocket == null)
-            {
-                webSocket = new WebSocket(uri);
-                webSocket.OnMessage += OnMessage;
-                webSocket.OnOpen += (sender, e) =>
+                if (webSocket == null)
                 {
-                    TouchFreeLog.WriteLine("DiagnosticAPI open... ");
-                    RequestGetServerInfo();
-                    RequestGetDevices();
-                    RequestGetVersion();
-                };
-                webSocket.OnError += (sender, e) =>
-                {
-                    TouchFreeLog.ErrorWriteLine($"DiagnosticAPI error! {e.Message}\n");
-                };
-                webSocket.OnClose += (sender, e) =>
-                {
-                    trackingServiceVersion = null;
-                    TouchFreeLog.WriteLine($"DiagnosticAPI closed. {e.Reason}");
-                };
-            }
+                    webSocket = new WebsocketClient(url);
+                    webSocket.ReconnectTimeout = TimeSpan.FromSeconds(30);
+                    webSocket.ReconnectionHappened.Subscribe(info =>
+                    {
+                        TouchFreeLog.WriteLine($"DiagnosticAPI connected - (re)connection type '{info.Type}'");
+                        RequestGetServerInfo();
+                        RequestGetDevices();
+                        RequestGetVersion();
+                    });
+                    webSocket.DisconnectionHappened.Subscribe(info =>
+                    {
+                        trackingServiceVersion = null;
+                        TouchFreeLog.ErrorWriteLine($"DiagnosticAPI disconnected - disconnection type '{info.Type}'");
+                        if (info.Exception != null)
+                        {
+                            TouchFreeLog.ErrorWriteLine($"Disconnection caused by exception: {info.Exception}");
+                        }
 
-            try
-            {
-                webSocket.Connect();
-            }
-            catch (Exception ex)
-            {
-                TouchFreeLog.ErrorWriteLine($"DiagnosticAPI connection exception... \n{ex}");
-            }
-        }
+                        if (info.CloseStatus.HasValue)
+                        {
+                            TouchFreeLog.ErrorWriteLine($"Disconnection close status '{info.CloseStatus.Value}': {info.CloseStatusDescription}");
+                        }
+                    });
+                    webSocket.MessageReceived.Subscribe(info =>
+                    {
+                        switch (info.MessageType)
+                        {
+                            case WebSocketMessageType.Text:
+                                newMessages.Enqueue(info.Text);
+                                break;
+                            case WebSocketMessageType.Binary:
+                                // We don't care about binary messages here - API sends them for image data so we must ignore them
+                                break;
+                            case WebSocketMessageType.Close:
+                                // No-op
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    });
+                }
 
-        private void OnMessage(object sender, MessageEventArgs e)
-        {
-            if (e.IsText)
-            {
-                // + " " is used to avoid stack overflowing by creating a new string to
-                // avoiding keeping around the event args object
-                // TODO: Different method of avoiding stack overflow exceptions?
-                // NOTE: Suspected that overflows are related to this issue https://github.com/sta/websocket-sharp/issues/702
-                newMessages.Enqueue(e.Data + " ");
+                try
+                {
+                    // TODO: Need to wait or propagate exceptions somehow?
+                    webSocket.StartOrFail();
+                }
+                catch (Exception ex)
+                {
+                    TouchFreeLog.ErrorWriteLine($"DiagnosticAPI connection exception... \n{ex}");
+                }
             }
         }
 
@@ -413,7 +429,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             bool TrySend()
             {
-                if (webSocket.ReadyState != WebSocketState.Open) return false;
+                if (!IsConnectedOrConnecting()) return false;
 
                 var requestMessage = JsonConvert.SerializeObject(payload);
                 webSocket.Send(requestMessage);
@@ -475,7 +491,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             if (webSocket != null)
             {
-                webSocket.Close();
+                webSocket.Dispose();
                 webSocket = null; // Used to signal end of lifecycle and break from infinite loop in message loop
                 GC.SuppressFinalize(this);
             }
