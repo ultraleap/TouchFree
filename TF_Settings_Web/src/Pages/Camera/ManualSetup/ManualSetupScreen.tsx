@@ -104,7 +104,7 @@ const ManualSetupScreen = () => {
     };
 
     const update = (key: keyof PhysicalState, event: FormEvent<HTMLInputElement>) => {
-        dispatch({ [key]: parseFloat(event.currentTarget?.value) });
+        dispatch({ [key]: parseFloat((event.currentTarget?.value == '') ? '0' : event.currentTarget?.value) });
     };
 
     return (
