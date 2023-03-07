@@ -87,20 +87,21 @@ const ManualSetupScreen = () => {
                 ? -config.physical.LeapRotationD.X - config.physical.LeapRotationD.Z
                 : config.physical.LeapRotationD.X;
         cameraRotation = cameraRotation <= -180 ? cameraRotation + 360 : cameraRotation;
+        cameraRotation = roundToTwoDecimals(cameraRotation);
 
         dispatch({
-            screenHeight: roundToFiveDecimals(config.physical.ScreenHeightM * 100),
-            cameraHeight: roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
-            cameraLeftToRight: roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
-            cameraDistanceFromScreen: roundToFiveDecimals(-config.physical.LeapPositionRelativeToScreenBottomM.Z * 100),
+            screenHeight: roundToTwoDecimals(config.physical.ScreenHeightM * 100),
+            cameraHeight: roundToTwoDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
+            cameraLeftToRight: roundToTwoDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
+            cameraDistanceFromScreen: roundToTwoDecimals(-config.physical.LeapPositionRelativeToScreenBottomM.Z * 100),
             cameraRotation,
             physicalConfig: config.physical,
             screenTilt: config.physical.ScreenRotationD,
         });
     };
 
-    const roundToFiveDecimals = (numberIn: number) => {
-        return Math.round(numberIn * 100000) / 100000;
+    const roundToTwoDecimals = (numberIn: number) => {
+        return Math.round(numberIn * 100) / 100;
     };
 
     const update = (key: keyof PhysicalState, event: FormEvent<HTMLInputElement>) => {
