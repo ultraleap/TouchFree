@@ -8,11 +8,14 @@ namespace Ultraleap.TouchFree.Library.Connections
         public event Action<Result<bool>> OnAnalyticsResponse;
         public event Action<Result<bool>> OnAllowImagesResponse;
         public event Action<Result<bool>> OnCameraOrientationResponse;
+        public event Action OnConnection;
+        public event Action OnDisconnection;
 
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;
         public event Action OnTrackingDeviceInfoResponse;
 
+        public bool IsConnected { get; }
         public string trackingServiceVersion { get; }
 
         public string connectedDeviceFirmware { get; }

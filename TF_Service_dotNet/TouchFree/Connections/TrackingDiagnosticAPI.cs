@@ -26,6 +26,9 @@ namespace Ultraleap.TouchFree.Library.Connections
         public event Action<Result<bool>> OnAnalyticsResponse;
         public event Action<Result<bool>> OnAllowImagesResponse;
         public event Action<Result<bool>> OnCameraOrientationResponse;
+        public event Action OnConnection;
+        public event Action OnDisconnection;
+        public bool IsConnected => webSocket is { IsStarted: true, NativeClient.State: WebSocketState.Connecting or WebSocketState.Open };
 
         public event Action OnTrackingApiVersionResponse;
         public event Action OnTrackingServerInfoResponse;
@@ -111,7 +114,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         private readonly ConfigurationVariable<bool> cameraReversed;
         private readonly ConfigurationVariable<bool> analyticsEnabled;
 
-        private WebsocketClient webSocket = null;
+        private WebsocketClient webSocket;
         private readonly ConcurrentQueue<string> newMessages = new();
 
         public TrackingDiagnosticApi(IConfigManager _configManager, ITrackingConnectionManager _trackingConnectionManager)
@@ -154,8 +157,50 @@ namespace Ultraleap.TouchFree.Library.Connections
             analyticsEnabled = new ConfigurationVariable<bool>(this, false,
                 DefaultGetPayloadFunc(DApiMsgTypes.GetAnalyticsEnabled),
                 DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAnalyticsEnabled));
+            
+            webSocket = new WebsocketClient(url);
+            webSocket.ReconnectionHappened.Subscribe(info =>
+            {
+                TouchFreeLog.WriteLine($"DiagnosticAPI connected - (re)connection type '{info.Type}'");
+                RequestGetServerInfo();
+                RequestGetDevices();
+                RequestGetVersion();
+                OnConnection?.Invoke();
+            });
+            webSocket.DisconnectionHappened.Subscribe(info =>
+            {
+                trackingServiceVersion = null;
+                TouchFreeLog.ErrorWriteLine($"DiagnosticAPI disconnected - disconnection type '{info.Type}'");
+                if (info.Exception != null)
+                {
+                    TouchFreeLog.ErrorWriteLine($"Disconnection caused by exception: {info.Exception}");
+                }
 
-            Connect();
+                if (info.CloseStatus.HasValue)
+                {
+                    TouchFreeLog.ErrorWriteLine($"Disconnection close status '{info.CloseStatus.Value}': {info.CloseStatusDescription}");
+                }
+                OnDisconnection?.Invoke();
+            });
+            webSocket.MessageReceived.Subscribe(info =>
+            {
+                switch (info.MessageType)
+                {
+                    case WebSocketMessageType.Text:
+                        newMessages.Enqueue(info.Text);
+                        break;
+                    case WebSocketMessageType.Binary:
+                        // We don't care about binary messages here - API sends them for image data so we must ignore them
+                        break;
+                    case WebSocketMessageType.Close:
+                        // No-op
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            });
+
+            webSocket.Start();
 #pragma warning disable CS4014
             MessageQueueReader();
 #pragma warning restore CS4014
@@ -220,7 +265,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             while (true)
             {
-                await Task.Delay(10);
+                await Task.Delay(10); // TODO: Use threading timer instead of loop with delay to reduce allocations
                 while (newMessages.TryDequeue(out var message))
                 {
                     HandleMessage(message);
@@ -230,72 +275,6 @@ namespace Ultraleap.TouchFree.Library.Connections
                 if (webSocket == null)
                 {
                     break;
-                }
-            }
-        }
-
-        private bool IsConnectedOrConnecting() => webSocket is { IsStarted: true, NativeClient.State: WebSocketState.Connecting or WebSocketState.Open };
-        private static readonly object _connectSyncRoot = new();
-
-        private void Connect()
-        {
-            // Prevent race condition if multiple threads call Connect at same time
-            lock (_connectSyncRoot)
-            {
-                if (IsConnectedOrConnecting()) { return; }
-
-                if (webSocket == null)
-                {
-                    webSocket = new WebsocketClient(url);
-                    webSocket.ReconnectTimeout = TimeSpan.FromSeconds(30);
-                    webSocket.ReconnectionHappened.Subscribe(info =>
-                    {
-                        TouchFreeLog.WriteLine($"DiagnosticAPI connected - (re)connection type '{info.Type}'");
-                        RequestGetServerInfo();
-                        RequestGetDevices();
-                        RequestGetVersion();
-                    });
-                    webSocket.DisconnectionHappened.Subscribe(info =>
-                    {
-                        trackingServiceVersion = null;
-                        TouchFreeLog.ErrorWriteLine($"DiagnosticAPI disconnected - disconnection type '{info.Type}'");
-                        if (info.Exception != null)
-                        {
-                            TouchFreeLog.ErrorWriteLine($"Disconnection caused by exception: {info.Exception}");
-                        }
-
-                        if (info.CloseStatus.HasValue)
-                        {
-                            TouchFreeLog.ErrorWriteLine($"Disconnection close status '{info.CloseStatus.Value}': {info.CloseStatusDescription}");
-                        }
-                    });
-                    webSocket.MessageReceived.Subscribe(info =>
-                    {
-                        switch (info.MessageType)
-                        {
-                            case WebSocketMessageType.Text:
-                                newMessages.Enqueue(info.Text);
-                                break;
-                            case WebSocketMessageType.Binary:
-                                // We don't care about binary messages here - API sends them for image data so we must ignore them
-                                break;
-                            case WebSocketMessageType.Close:
-                                // No-op
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    });
-                }
-
-                try
-                {
-                    // TODO: Need to wait or propagate exceptions somehow?
-                    webSocket.StartOrFail();
-                }
-                catch (Exception ex)
-                {
-                    TouchFreeLog.ErrorWriteLine($"DiagnosticAPI connection exception... \n{ex}");
                 }
             }
         }
@@ -429,7 +408,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             bool TrySend()
             {
-                if (!IsConnectedOrConnecting()) return false;
+                if (!IsConnected) return false;
 
                 var requestMessage = JsonConvert.SerializeObject(payload);
                 webSocket.Send(requestMessage);
@@ -438,7 +417,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 
             if (!TrySend())
             {
-                Connect();
+                await webSocket.Start();
                 for (var attempt = 0; attempt < 10; attempt++)
                 {
                     await Task.Delay(1000);

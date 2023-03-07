@@ -23,6 +23,10 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             configManager = _configManager;
             diagnosticApi = _diagnosticApi;
 
+            void ResetTrackingApiResponse() => trackingApiResponse = null;
+            diagnosticApi.OnConnection += ResetTrackingApiResponse;
+            diagnosticApi.OnDisconnection += ResetTrackingApiResponse;
+
             diagnosticApi.OnMaskingResponse += OnMasking;
             diagnosticApi.OnAllowImagesResponse += OnAllowImages;
             diagnosticApi.OnCameraOrientationResponse += OnCameraOrientation;
@@ -91,7 +95,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         #region DiagnosticAPI_Requests
 
-        void HandleGetTrackingStateRequest(IncomingRequestWithId request)
+        private void HandleGetTrackingStateRequest(IncomingRequestWithId request)
         {
             trackingApiResponse = new TrackingResponse(request.RequestId, request.OriginalContent, true, true, true, true, true);
             responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -102,7 +106,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             diagnosticApi.RequestGetAnalyticsMode();
         }
 
-        void HandleSetTrackingStateRequest(IncomingRequestWithId request)
+        private void HandleSetTrackingStateRequest(IncomingRequestWithId request)
         {
             JToken maskToken;
             JToken allowImagesToken;
@@ -157,11 +161,11 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        void CheckDApiResponse()
+        private void CheckDApiResponse()
         {
             lock (trackingResponseLock)
             {
-                if (trackingApiResponse.HasValue && ResponseIsReady(trackingApiResponse.Value))
+                if (trackingApiResponse?.IsReady == true)
                 {
                     TrackingResponse response = trackingApiResponse.Value;
                     trackingApiResponse = null;
@@ -169,7 +173,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
                     clientMgr.SendResponse(response.state, ActionCode.TRACKING_STATE);
                 }
-                else if (responseOriginTime.HasValue && DateTimeOffset.Now.ToUnixTimeMilliseconds() - responseOriginTime.Value > 30000f)
+                // Timeout response if we've been waiting too long
+                else if (responseOriginTime.HasValue && DateTimeOffset.Now.ToUnixTimeMilliseconds() - responseOriginTime.Value > 3000f || !diagnosticApi.IsConnected)
                 {
                     TrackingResponse response = trackingApiResponse.Value;
                     trackingApiResponse = null;
@@ -205,18 +210,13 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        public bool ResponseIsReady(TrackingResponse _response)
-        {
-            return (!_response.needsMask && !_response.needsImages && !_response.needsOrientation && !_response.needsAnalytics);
-        }
-
-        private void OnMasking(Result<ImageMaskData> _imageMask)
+        private void OnMasking(Result<ImageMaskData> imageMask)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
-                response.state.mask = _imageMask.Match(mask =>
+                response.state.mask = imageMask.Match(mask =>
                 {
                     var convertedMask = new MaskingData((float)mask.lower, (float)mask.upper, (float)mask.right,
                         (float)mask.left);
@@ -228,14 +228,14 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        private void OnAllowImages(Result<bool> _allowImages)
+        private void OnAllowImages(Result<bool> allowImages)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
                 response.state.allowImages =
-                    _allowImages.Match(value => new SuccessWrapper<bool?>(true, "AllowImages State", value),
+                    allowImages.Match(value => new SuccessWrapper<bool?>(true, "AllowImages State", value),
                         error => new SuccessWrapper<bool?>(false, error.Message, null));
 
                 response.needsImages = false;
@@ -243,13 +243,13 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        private void OnCameraOrientation(Result<bool> _cameraReversed)
+        private void OnCameraOrientation(Result<bool> cameraReversed)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
-                response.state.cameraReversed = _cameraReversed.Match(
+                response.state.cameraReversed = cameraReversed.Match(
                     value => new SuccessWrapper<bool?>(true, "CameraOrientation State", value),
                     error => new SuccessWrapper<bool?>(false, error.Message, null));
 
@@ -258,13 +258,13 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             }
         }
 
-        private void OnAnalytics(Result<bool> _analytics)
+        private void OnAnalytics(Result<bool> analytics)
         {
             if (trackingApiResponse.HasValue)
             {
                 var response = trackingApiResponse.Value;
 
-                response.state.analyticsEnabled = _analytics.Match(
+                response.state.analyticsEnabled = analytics.Match(
                     value => new SuccessWrapper<bool?>(true, "Analytics State", value),
                     error => new SuccessWrapper<bool?>(false, error.Message, null));
 

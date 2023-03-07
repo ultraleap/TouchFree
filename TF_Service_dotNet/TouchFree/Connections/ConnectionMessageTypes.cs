@@ -146,7 +146,7 @@ namespace Ultraleap.TouchFree.Library.Connections
     }
     public readonly record struct IncomingRequestWithId(ActionCode ActionCode, JObject ContentRoot, string RequestId, string OriginalContent);
 
-    public struct TrackingResponse
+    public record struct TrackingResponse
     {
         public bool needsMask;
         public bool needsImages;
@@ -172,8 +172,18 @@ namespace Ultraleap.TouchFree.Library.Connections
             needsOrientation = _needsOrientation;
             needsAnalytics = _needsAnalytics;
 
-            state = new TrackingApiState();
-            state.requestID = _requestId;
+            state = new TrackingApiState
+            {
+                requestID = _requestId
+            };
         }
+
+        public bool IsReady => this is
+        {
+            needsMask: false,
+            needsImages: false,
+            needsOrientation: false,
+            needsAnalytics: false
+        };
     }
 }
