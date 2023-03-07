@@ -1,4 +1,8 @@
+using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
+using System.Web.Services.Description;
+using Ultraleap.TouchFree.ServiceShared;
 using UnityEngine;
 
 namespace Ultraleap.TouchFree.Tooling.Connection
@@ -52,17 +56,6 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         // An event allowing users to react to the active hand exiting the interaction zone.
         public static event Action HandExited;
 
-        // Variable: iPAddress
-        // The IP Address that will be used in the <ServiceConnection> to connect to the target WebSocket.
-        // This value is settable in the Inspector.
-        [Header("WebSocket connection values")]
-        [SerializeField] string iPAddress = "127.0.0.1";
-
-        // Variable: port
-        // The Port that will be used in the <ServiceConnection> to connect to the target WebSocket.
-        // This value is settable in the Inspector.
-        [SerializeField] string port = "9739";
-
         static bool shouldReconnect = false;
 
         // Group: Functions
@@ -87,7 +80,19 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         {
             shouldReconnect = true;
 
-            currentServiceConnection = new ServiceConnection(iPAddress, port, RetryConnecting);
+            //Read IP and port from TrackingConfig before we attempt to connect
+            string ip = "127.0.0.1";
+            string port = "9739";
+            string configPath = ConfigFileUtils.ConfigFileDirectory + "TrackingConfig.json";
+            if (File.Exists(configPath))
+            {
+                JObject obj = JObject.Parse(File.ReadAllText(configPath));
+                if (obj.ContainsKey("ServiceIP")) ip = obj["ServiceIP"].ToString();
+                if (obj.ContainsKey("ServicePort")) port = obj["ServicePort"].ToString();
+            }
+            Debug.Log("Attempting to connect to TouchFree at: http://" + ip + ":" + port);
+
+            currentServiceConnection = new ServiceConnection(ip, port, RetryConnecting);
             if (currentServiceConnection.IsConnected())
             {
                 OnConnected?.Invoke();
