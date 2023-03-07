@@ -177,7 +177,7 @@ public class DiagnosticAPI : IDisposable
                     trackingServiceVersion = data.payload.server_version ?? trackingServiceVersion;
                     OnTrackingServerInfoResponse?.Invoke();
                 }
-                catch (Exception ex)
+                catch
                 {
                     Debug.Log("DiagnosticAPI - Could not parse server info response: " + _message);
                 }
@@ -190,7 +190,7 @@ public class DiagnosticAPI : IDisposable
                     connectedDeviceSerial = data?.payload.device_serial ?? connectedDeviceSerial;
                     OnTrackingDeviceInfoResponse?.Invoke();
                 }
-                catch (Exception ex)
+                catch
                 {
                     Debug.Log("DiagnosticAPI - Could not parse device info response: " + _message);
                 }
@@ -203,7 +203,7 @@ public class DiagnosticAPI : IDisposable
                     allowImages = data?.payload ?? false;
                     OnAllowImagesResponse?.Invoke();
                 }
-                catch (Exception ex)
+                catch
                 {
                     Debug.Log("DiagnosticAPI - Could not parse allow images response: " + _message);
                 }
@@ -216,7 +216,7 @@ public class DiagnosticAPI : IDisposable
                     cameraReversed = data?.payload.camera_orientation == "fixed-inverted";
                     OnCameraOrientationResponse?.Invoke();
                 }
-                catch (Exception ex)
+                catch
                 {
                     Debug.Log("DiagnosticAPI - Could not parse camera orientation response: " + _message);
                 }
