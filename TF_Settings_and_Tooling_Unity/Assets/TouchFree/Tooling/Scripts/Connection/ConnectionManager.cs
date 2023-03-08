@@ -2,6 +2,9 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using UnityEngine;
+#if SCREENCONTROL_CORE
+using Ultraleap.TouchFree.ServiceShared;
+#endif
 
 namespace Ultraleap.TouchFree.Tooling.Connection
 {
