@@ -413,7 +413,7 @@ namespace Ultraleap.TouchFree.Library.Connections
         {
             bool TrySend()
             {
-                if (webSocket.ReadyState != WebSocketState.Open) return false;
+                if (webSocket == null || webSocket.ReadyState != WebSocketState.Open) return false;
 
                 var requestMessage = JsonConvert.SerializeObject(payload);
                 webSocket.Send(requestMessage);

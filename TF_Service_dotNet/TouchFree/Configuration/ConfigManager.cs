@@ -1,4 +1,7 @@
-﻿namespace Ultraleap.TouchFree.Library.Configuration
+﻿using System.Text.RegularExpressions;
+using Ultraleap.TouchFree.Library.Connections;
+
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
@@ -6,9 +9,11 @@
         public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigSaved;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
+        public event IConfigManager.ServiceConfigEvent OnServiceConfigUpdated;
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
         private TrackingConfig _tracking;
+        private ServiceConfig _service;
 
         public ConfigManager()
         {
@@ -86,6 +91,23 @@
             }
         }
 
+        public ServiceConfig ServiceConfig
+        {
+            get
+            {
+                if (_service == null && ServiceConfigFile.DoesConfigFileExist())
+                {
+                    _service = ServiceConfigFile.LoadConfig();
+                }
+
+                return _service;
+            }
+            set
+            {
+                _service = value;
+            }
+        }
+
         public void LoadConfigsFromFiles()
         {
             var interactionsUpdated = false;
@@ -117,6 +139,17 @@
                 }
             }
 
+            var serviceUpdated = false;
+            if (ServiceConfigFile.DoesConfigFileExist())
+            {
+                var loadedService = ServiceConfigFile.LoadConfig();
+                if (_service == null || _service != loadedService)
+                {
+                    _service = loadedService;
+                    serviceUpdated = true;
+                }
+            }
+
             if (interactionsUpdated)
             {
                 InteractionConfigWasUpdated();
@@ -132,6 +165,11 @@
                 TrackingConfigWasUpdated();
             }
 
+            if (serviceUpdated)
+            {
+                ServiceConfigWasUpdated();
+            }
+
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
@@ -139,13 +177,16 @@
         public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
         public void InteractionConfigWasUpdated() => OnInteractionConfigUpdated?.Invoke(_interactions);
         public void TrackingConfigWasUpdated() => OnTrackingConfigUpdated?.Invoke(_tracking);
+        public void ServiceConfigWasUpdated() => OnServiceConfigUpdated?.Invoke(_service);
 
 
         public bool AreConfigsInGoodState()
         {
             return !ErrorLoadingConfigFiles &&
                 _physical.ScreenWidthPX > 0 &&
-                _physical.ScreenHeightPX > 0;
+                _physical.ScreenHeightPX > 0 && 
+                Regex.Match(_service.ServiceIP, @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}").Success &&
+                int.TryParse(_service.ServicePort, out int val);
         }
     }
 }
