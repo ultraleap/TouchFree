@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unity Settings/Service: Fixed an issue where clicking was very difficult while Touch Plane and Scroll and Drag were both active
 - Unity Settings: Fixed an issue with moving the bottom masking slider
 - Unity Settings: Cursor config correctly reloads when modified on disk
+- Unity Settings: Fixed render order of cursor/camera in masking screen
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
 - Overlay Application: Fixed an issue where modified cursor alpha values would not be updated correctly
 - Service: Fixed an issue where the TouchFree Service would crash when non-integer configuration value was sent for an integer configuration property e.g. screen width.

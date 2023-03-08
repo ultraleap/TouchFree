@@ -34,7 +34,9 @@ export const readVisualsConfig = async (): Promise<VisualsConfig> => {
     const rawConfig: string = await invoke('read_file_to_string', {
         path: 'C:/ProgramData/Ultraleap/TouchFree/Configuration/TouchFreeConfig.json',
     });
-    return JSON.parse(rawConfig) as VisualsConfig;
+    const config = JSON.parse(rawConfig) as VisualsConfig;
+    config.ctiFilePath = config.ctiFilePath.replaceAll('\\', '/');
+    return config;
 };
 
 export const writeVisualsConfig = async (config: VisualsConfig) => {
