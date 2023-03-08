@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.WebSockets;
 
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
 namespace Ultraleap.TouchFree.Library.Connections
 {

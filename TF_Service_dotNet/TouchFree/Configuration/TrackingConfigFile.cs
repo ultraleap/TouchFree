@@ -24,13 +24,5 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public double Upper = 0;
         public double Right = 0;
         public double Left = 0;
-
-        public static explicit operator MaskingData(ImageMaskData other) => new()
-        {
-            Left = other.left,
-            Lower = other.lower,
-            Right = other.right,
-            Upper = other.upper
-        };
     }
 }

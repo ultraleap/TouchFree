@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
@@ -12,36 +13,34 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override ActionCode failureActionCode => ActionCode.TRACKING_STATE;
 
-        public TrackingResponse? trackingApiResponse = null;
-        private float? responseOriginTime = null;
+        private DateTime? requestOriginTime = null;
+        private readonly TimeSpan requestTimeout = TimeSpan.FromSeconds(3d);
         private readonly IConfigManager configManager;
         private readonly ITrackingDiagnosticApi diagnosticApi;
-        private readonly object trackingResponseLock = new object();
+        private readonly object requestLock = new(); 
+        private IncomingRequestWithId? currentRequest;
 
         public TrackingApiChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IConfigManager _configManager, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
         {
             configManager = _configManager;
             diagnosticApi = _diagnosticApi;
-
-            void ResetTrackingApiResponse() => trackingApiResponse = null;
-            diagnosticApi.OnConnection += ResetTrackingApiResponse;
-            diagnosticApi.OnDisconnection += ResetTrackingApiResponse;
-
-            diagnosticApi.OnMaskingResponse += OnMasking;
-            diagnosticApi.OnAllowImagesResponse += OnAllowImages;
-            diagnosticApi.OnCameraOrientationResponse += OnCameraOrientation;
-            diagnosticApi.OnAnalyticsResponse += OnAnalytics;
         }
 
         protected override void OnUpdate()
         {
-            if (trackingApiResponse.HasValue)
+            lock (requestLock)
             {
-                CheckDApiResponse();
-            }
-            else
-            {
-                base.OnUpdate();
+                switch (currentRequest)
+                {
+                    case { } req when requestOriginTime.HasValue &&
+                                      DateTime.Now - requestOriginTime.Value > requestTimeout:
+                        TimeoutCurrentRequest(req);
+                        break;
+                    case null:
+                        // Don't process any more queued messages when we're already processing one
+                        base.OnUpdate();
+                        break;
+                }
             }
         }
 
@@ -53,7 +52,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
             TrackingApiState state = new TrackingApiState()
             {
-                requestID = "",
+                requestID = request.RequestId,
                 mask = maskResponse,
                 allowImages = boolResponse,
                 cameraReversed = boolResponse,
@@ -83,51 +82,102 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override void Handle(IncomingRequestWithId request)
         {
-            if (request.ActionCode == ActionCode.GET_TRACKING_STATE)
+            lock (requestLock)
             {
-                HandleGetTrackingStateRequest(request);
-            }
-            else
-            {
-                HandleSetTrackingStateRequest(request);
+                switch (request.ActionCode)
+                {
+                    case ActionCode.GET_TRACKING_STATE:
+                        currentRequest = request;
+                        HandleGetTrackingStateRequest(request);
+                        break;
+                    case ActionCode.SET_TRACKING_STATE:
+                        currentRequest = request;
+                        HandleSetTrackingStateRequest(request);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(request.ActionCode),
+                            $"{GetType().Name} does not handle '{request.ActionCode}' messages");
+                }
             }
         }
 
-        #region DiagnosticAPI_Requests
-
-        private void HandleGetTrackingStateRequest(IncomingRequestWithId request)
+        private void TimeoutCurrentRequest(IncomingRequestWithId request)
         {
-            trackingApiResponse = new TrackingResponse(request.RequestId, request.OriginalContent, true, true, true, true, true);
-            responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            // TODO: Almost a repeat of HandleValidationError but the error message goes in a different place. Review this!
+            string message = "Tracking State change request failed; no response from Tracking within timeout period";
 
-            diagnosticApi.RequestGetAllowImages();
-            diagnosticApi.RequestGetImageMask();
-            diagnosticApi.RequestGetCameraOrientation();
-            diagnosticApi.RequestGetAnalyticsMode();
+            var maskResponse = new SuccessWrapper<MaskingData?>(false, message, null);
+            var boolResponse = new SuccessWrapper<bool?>(false, message, null);
+
+            var response = new TrackingApiState
+            {
+                requestID = request.RequestId,
+                mask = maskResponse,
+                allowImages = boolResponse,
+                analyticsEnabled = boolResponse,
+                cameraReversed = boolResponse,
+            };
+
+            clientMgr.SendResponse(response, ActionCode.TRACKING_STATE);
+            currentRequest = null;
+            requestOriginTime = null;
         }
 
-        private void HandleSetTrackingStateRequest(IncomingRequestWithId request)
+        private void SendTrackingDataResponse(string requestId, DiagnosticData data)
         {
-            JToken maskToken;
-            JToken allowImagesToken;
-            JToken cameraReversedToken;
-            JToken analyticsEnabledToken;
+            lock (requestLock)
+            {
+                var response = new TrackingApiState
+                {
+                    requestID = requestId,
+                    // TODO: Errors for cases with no value when caused by an error. Should be refactored to use Result
+                    mask = data.Masking.HasValue
+                        ? new SuccessWrapper<MaskingData?>(true, "Image Mask State", data.Masking.Value)
+                        : new SuccessWrapper<MaskingData?>(false, string.Empty, null),
+                    allowImages = data.AllowImages.HasValue
+                        ? new SuccessWrapper<bool?>(true, "AllowImages State", data.AllowImages.Value)
+                        : new SuccessWrapper<bool?>(false, string.Empty, null),
+                    analyticsEnabled = data.Analytics.HasValue
+                        ? new SuccessWrapper<bool?>(true, "Analytics State", data.Analytics.Value)
+                        : new SuccessWrapper<bool?>(false, string.Empty, null),
+                    cameraReversed = data.CameraOrientation.HasValue
+                        ? new SuccessWrapper<bool?>(true, "CameraOrientation State", data.CameraOrientation.Value)
+                        : new SuccessWrapper<bool?>(false, string.Empty, null)
+                };
 
+                clientMgr.SendResponse(response, ActionCode.TRACKING_STATE);
+                currentRequest = null;
+                requestOriginTime = null;
+            }
+        }
+
+        private async void HandleGetTrackingStateRequest(IncomingRequestWithId request)
+        {
+            var data = await diagnosticApi.RequestGetAll(new GetAllInfo(true, true, true, true));
+            SendTrackingDataResponse(request.RequestId, data);
+        }
+
+        private async void HandleSetTrackingStateRequest(IncomingRequestWithId request)
+        {
             var contentObj = request.ContentRoot;
-            bool needsMask = contentObj.TryGetValue("mask", out maskToken);
-            bool needsImages = contentObj.TryGetValue("allowImages", out allowImagesToken);
-            bool needsOrientation = contentObj.TryGetValue("cameraReversed", out cameraReversedToken);
-            bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out analyticsEnabledToken);
 
-            trackingApiResponse = new TrackingResponse(request.RequestId, request.OriginalContent, false, needsMask, needsImages, needsOrientation, needsAnalytics);
-            responseOriginTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            bool needsMask = contentObj.TryGetValue("mask", out var maskToken);
+            bool needsImages = contentObj.TryGetValue("allowImages", out var allowImagesToken);
+            bool needsOrientation = contentObj.TryGetValue("cameraReversed", out var cameraReversedToken);
+            bool needsAnalytics = contentObj.TryGetValue("analyticsEnabled", out var analyticsEnabledToken);
+            
+            var data = new DiagnosticData
+            {
+                Analytics = needsAnalytics ? analyticsEnabledToken.ToObject<bool>() : null,
+                Masking = needsMask ? maskToken.ToObject<MaskingData>() : null,
+                AllowImages = needsImages ? allowImagesToken.ToObject<bool>() : null,
+                CameraOrientation = needsOrientation ? cameraReversedToken.ToObject<bool>() : null
+            };
 
             var trackingFromFile = configManager.TrackingConfig;
 
             if (needsMask)
             {
-                var mask = maskToken!.ToObject<MaskingData>();
-                diagnosticApi.RequestSetImageMask(mask.left, mask.right, mask.upper, mask.lower);
                 trackingFromFile.Mask.Left = mask.left;
                 trackingFromFile.Mask.Right = mask.right;
                 trackingFromFile.Mask.Upper = mask.upper;
@@ -136,142 +186,27 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
             if (needsImages)
             {
-                var allowImages = allowImagesToken!.ToObject<bool>();
-                diagnosticApi.RequestSetAllowImages(allowImages);
                 trackingFromFile.AllowImages = allowImages;
             }
 
             if (needsOrientation)
             {
-                var reversed = cameraReversedToken!.ToObject<bool>();
-                diagnosticApi.RequestSetCameraOrientation(reversed);
                 trackingFromFile.CameraReversed = reversed;
             }
 
             if (needsAnalytics)
             {
-                var analyticsEnable = analyticsEnabledToken!.ToObject<bool>();
-                diagnosticApi.RequestSetAnalyticsMode(analyticsEnable);
                 trackingFromFile.AnalyticsEnabled = analyticsEnable;
             }
+
+            await diagnosticApi.RequestSetAll(data);
 
             if (needsAnalytics || needsImages || needsMask || needsOrientation)
             {
                 TrackingConfigFile.SaveConfig(trackingFromFile);
             }
+            
+            SendTrackingDataResponse(request.RequestId, data);
         }
-
-        private void CheckDApiResponse()
-        {
-            lock (trackingResponseLock)
-            {
-                if (trackingApiResponse?.IsReady == true)
-                {
-                    TrackingResponse response = trackingApiResponse.Value;
-                    trackingApiResponse = null;
-                    responseOriginTime = null;
-
-                    clientMgr.SendResponse(response.state, ActionCode.TRACKING_STATE);
-                }
-                // Timeout response if we've been waiting too long
-                else if (responseOriginTime.HasValue && DateTimeOffset.Now.ToUnixTimeMilliseconds() - responseOriginTime.Value > 3000f || !diagnosticApi.IsConnected)
-                {
-                    TrackingResponse response = trackingApiResponse.Value;
-                    trackingApiResponse = null;
-                    responseOriginTime = null;
-
-                    string message = "Tracking State change request failed; no response from Tracking within timeout period";
-
-                    var maskResponse = new SuccessWrapper<MaskingData?>(false, message, null);
-                    var boolResponse = new SuccessWrapper<bool?>(false, message, null);
-
-                    if (response.needsMask)
-                    {
-                        response.state.mask = maskResponse;
-                    }
-
-                    if (response.needsImages)
-                    {
-                        response.state.allowImages = boolResponse;
-                    }
-
-                    if (response.needsOrientation)
-                    {
-                        response.state.cameraReversed = boolResponse;
-                    }
-
-                    if (response.needsAnalytics)
-                    {
-                        response.state.analyticsEnabled = boolResponse;
-                    }
-
-                    clientMgr.SendResponse(response.state, ActionCode.TRACKING_STATE);
-                }
-            }
-        }
-
-        private void OnMasking(Result<ImageMaskData> imageMask)
-        {
-            if (trackingApiResponse.HasValue)
-            {
-                var response = trackingApiResponse.Value;
-
-                response.state.mask = imageMask.Match(mask =>
-                {
-                    var convertedMask = new MaskingData((float)mask.lower, (float)mask.upper, (float)mask.right,
-                        (float)mask.left);
-                    return new SuccessWrapper<MaskingData?>(true, "Image Mask State", convertedMask);
-                }, error => new SuccessWrapper<MaskingData?>(false, error.Message, null));
-
-                response.needsMask = false;
-                trackingApiResponse = response;
-            }
-        }
-
-        private void OnAllowImages(Result<bool> allowImages)
-        {
-            if (trackingApiResponse.HasValue)
-            {
-                var response = trackingApiResponse.Value;
-
-                response.state.allowImages =
-                    allowImages.Match(value => new SuccessWrapper<bool?>(true, "AllowImages State", value),
-                        error => new SuccessWrapper<bool?>(false, error.Message, null));
-
-                response.needsImages = false;
-                trackingApiResponse = response;
-            }
-        }
-
-        private void OnCameraOrientation(Result<bool> cameraReversed)
-        {
-            if (trackingApiResponse.HasValue)
-            {
-                var response = trackingApiResponse.Value;
-
-                response.state.cameraReversed = cameraReversed.Match(
-                    value => new SuccessWrapper<bool?>(true, "CameraOrientation State", value),
-                    error => new SuccessWrapper<bool?>(false, error.Message, null));
-
-                response.needsOrientation = false;
-                trackingApiResponse = response;
-            }
-        }
-
-        private void OnAnalytics(Result<bool> analytics)
-        {
-            if (trackingApiResponse.HasValue)
-            {
-                var response = trackingApiResponse.Value;
-
-                response.state.analyticsEnabled = analytics.Match(
-                    value => new SuccessWrapper<bool?>(true, "Analytics State", value),
-                    error => new SuccessWrapper<bool?>(false, error.Message, null));
-
-                response.needsAnalytics = false;
-                trackingApiResponse = response;
-            }
-        }
-        #endregion
     }
 }

@@ -91,32 +91,26 @@ namespace Ultraleap.TouchFree.Library.Connections
 
     [Serializable]
     public record struct ResponseToClient(string requestID, string status, string message, string originalRequest);
-    
-    public struct MaskingData
-    {
-        public float lower;
-        public float upper;
-        public float right;
-        public float left;
 
-        public MaskingData(float _lower, float _upper, float _right, float _left)
+    [Serializable]
+    public record struct MaskingData(double lower, double upper, double right, double left)
+    {
+        public static explicit operator MaskingData(Configuration.MaskingData other) => new()
         {
-            lower = _lower;
-            upper = _upper;
-            right = _right;
-            left = _left;
-        }
+            left = other.Left,
+            right = other.Right,
+            upper = other.Upper,
+            lower = other.Lower
+        };
     }
 
     [Serializable]
-    public struct TrackingApiState
-    {
-        public string requestID;
-        public SuccessWrapper<MaskingData?>? mask;
-        public SuccessWrapper<bool?>? allowImages;
-        public SuccessWrapper<bool?>? cameraReversed;
-        public SuccessWrapper<bool?>? analyticsEnabled;
-    }
+    public readonly record struct TrackingApiState(
+        string requestID,
+        SuccessWrapper<MaskingData?>? mask,
+        SuccessWrapper<bool?>? allowImages,
+        SuccessWrapper<bool?>? cameraReversed,
+        SuccessWrapper<bool?>? analyticsEnabled);
 
     public struct SuccessWrapper<T>
     {
@@ -145,45 +139,4 @@ namespace Ultraleap.TouchFree.Library.Connections
         }
     }
     public readonly record struct IncomingRequestWithId(ActionCode ActionCode, JObject ContentRoot, string RequestId, string OriginalContent);
-
-    public record struct TrackingResponse
-    {
-        public bool needsMask;
-        public bool needsImages;
-        public bool needsOrientation;
-        public bool needsAnalytics;
-
-        public string originalRequest;
-        public bool isGetRequest;
-        public TrackingApiState state;
-
-        public TrackingResponse(string _requestId,
-                                string _originalRequest,
-                                bool _isGetRequest,
-                                bool _needsMask,
-                                bool _needsImages,
-                                bool _needsOrientation,
-                                bool _needsAnalytics)
-        {
-            originalRequest = _originalRequest;
-            isGetRequest = _isGetRequest;
-            needsMask = _needsMask;
-            needsImages = _needsImages;
-            needsOrientation = _needsOrientation;
-            needsAnalytics = _needsAnalytics;
-
-            state = new TrackingApiState
-            {
-                requestID = _requestId
-            };
-        }
-
-        public bool IsReady => this is
-        {
-            needsMask: false,
-            needsImages: false,
-            needsOrientation: false,
-            needsAnalytics: false
-        };
-    }
 }
