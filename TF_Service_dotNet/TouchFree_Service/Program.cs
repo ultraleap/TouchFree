@@ -7,7 +7,7 @@ namespace Ultraleap.TouchFree.Service
 {
     public class Program
     {
-        private static TrackingConfig config = null;
+        private static ServiceConfig config = null;
 
         static void Main(string[] args)
         {
@@ -18,7 +18,7 @@ namespace Ultraleap.TouchFree.Service
             TouchFreeLog.WriteLine($"TouchFree Version: v{VersionManager.Version}");
             TouchFreeLog.WriteLine();
 
-            config = TrackingConfigFile.LoadConfig();
+            config = ServiceConfigFile.LoadConfig();
 
             TouchFreeLog.WriteLine("TouchFree IP: http://" + config.ServiceIP + ":" + config.ServicePort);
             TouchFreeLog.WriteLine();

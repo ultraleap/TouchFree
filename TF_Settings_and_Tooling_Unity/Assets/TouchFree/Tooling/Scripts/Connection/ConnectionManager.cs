@@ -81,10 +81,10 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         {
             shouldReconnect = true;
 
-            //Read IP and port from TrackingConfig before we attempt to connect
+            //Read IP and port from config before we attempt to connect
             string ip = "127.0.0.1";
             string port = "9739";
-            string configPath = ConfigFileUtils.ConfigFileDirectory + "TrackingConfig.json";
+            string configPath = ConfigFileUtils.ConfigFileDirectory + "ServiceConfig.json";
             if (File.Exists(configPath))
             {
                 JObject obj = JObject.Parse(File.ReadAllText(configPath));

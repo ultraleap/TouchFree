@@ -15,8 +15,6 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public bool AllowImages = true;
         public bool CameraReversed = false;
         public bool AnalyticsEnabled = true;
-        public string ServiceIP = "127.0.0.1";
-        public string ServicePort = "9739";
     }
 
     [Serializable]
