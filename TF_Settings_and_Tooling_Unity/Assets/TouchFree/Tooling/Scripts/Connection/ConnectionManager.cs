@@ -1,8 +1,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using System.Web.Services.Description;
-using Ultraleap.TouchFree.ServiceShared;
 using UnityEngine;
 
 namespace Ultraleap.TouchFree.Tooling.Connection
