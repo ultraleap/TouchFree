@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Unity Settings/Service: Fixed an issue where using Touch Plane with Scroll and Drag caused cursor jumps
 - Unity Settings/Service: Fixed an issue where clicking was very difficult while Touch Plane and Scroll and Drag were both active
+- Unity Settings: CTI path now correctly sets on load
 - Unity Settings: Fixed an issue with moving the bottom masking slider
 - Unity Settings: Cursor config correctly reloads when modified on disk
 - Unity Settings: Fixed render order of cursor/camera in masking screen
