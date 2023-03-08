@@ -20,7 +20,7 @@ namespace Ultraleap.TouchFree.Service
 
             config = ServiceConfigFile.LoadConfig();
 
-            TouchFreeLog.WriteLine("TouchFree IP: http://" + config.ServiceIP + ":" + config.ServicePort);
+            TouchFreeLog.WriteLine($"TouchFree IP: http://{config.ServiceIP}:{config.ServicePort}");
             TouchFreeLog.WriteLine();
 
             CreateHostBuilder(args).Build().Run();
@@ -31,7 +31,7 @@ namespace Ultraleap.TouchFree.Service
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://" + config.ServiceIP + ":" + config.ServicePort);
+                    webBuilder.UseUrls($"http://{config.ServiceIP}:{config.ServicePort}");
 #if !DEBUG
                     webBuilder.ConfigureLogging((loggingBuilder) => loggingBuilder.SetMinimumLevel(LogLevel.Warning));
 #endif
