@@ -24,10 +24,22 @@ stages:
   - package
   - installer
   - deploy
-
-TF_Tooling::Unity::build:
+  
+.Always_Build:
   stage: build
   when: always
+  timeout: 10m
+  
+.Always_Test:
+  stage: test
+  when: always
+  timeout: 10m
+
+TF_Tooling::Unity::build:
+  extends: .Always_Build
+  tags:
+    - unity
+    - win10
   script:
     # Get Unity version and changeset from the project.
     - $line = Get-Content  $TF_SETTINGS_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
@@ -66,13 +78,12 @@ TF_Tooling::Unity::build:
       - ./Tooling_for_Unity_package.log
     expire_in: 2 weeks
     when: always
+
+TF_Tooling::Web::build:
+  extends: .Always_Build
   tags:
     - unity
     - win10
-
-TF_Tooling::Web::build:
-  stage: build
-  when: always
   script:
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFW_PATH}/Version.txt --swVer ${env:TF_TFW_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_REF_NAME"
@@ -100,13 +111,11 @@ TF_Tooling::Web::build:
       - ./Tooling_Release/*
     expire_in: 2 weeks
     when: always
-  tags:
-    - unity
-    - win10
 
 TF_Tooling::Docs::build:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - docker
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
   script:
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/NaturalDocs_Config
@@ -117,12 +126,11 @@ TF_Tooling::Docs::build:
     - ./Documentation/*
     expire_in: 2 weeks
     when: always
-  tags:
-    - docker
 
 TF_Service::Wrapper::build:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - docker-windows
   image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
@@ -144,12 +152,11 @@ TF_Service::Wrapper::build:
     - ./Service_Wrapper_Build/**
     expire_in: 2 weeks
     when: always
-  tags:
-    - docker-windows
 
 TF_Service::dotNet::Windows::build:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - docker-windows
   image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
@@ -179,12 +186,11 @@ TF_Service::dotNet::Windows::build:
     - ./Service_dotNet_Build/**
     expire_in: 2 weeks
     when: always
-  tags:
-    - docker-windows
 
 TF_Service::dotNet::ARMLinux::build:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - docker-windows
   image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
@@ -220,12 +226,12 @@ TF_Service::dotNet::ARMLinux::build:
     - ./Service_dotNet_Build_ARMLinux/**
     expire_in: 2 weeks
     when: always
-  tags:
-    - docker-windows
 
 Tracking::ARMLinux::download_package:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - unity
+    - win10
   script:
     - cd ./Scripts/BrightSign_Scripts
     - python ./Download_Tracking.py -t ${env:GITLAB_TOKEN}
@@ -235,13 +241,11 @@ Tracking::ARMLinux::download_package:
     paths:
     - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/*.tar.gz
     expire_in: 1 hour
-  tags:
-    - unity
-    - win10
 
 TF_Service::dotNet::test:
-  stage: test
-  when: always
+  extends: .Always_Test
+  tags:
+    - docker-windows
   image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
   script:
     # Run unit tests
@@ -259,21 +263,20 @@ TF_Service::dotNet::test:
       coverage_report:
         coverage_format: cobertura
         path: $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
-  tags:
-    - docker-windows
 
 TF_Tooling::Web::test:
-  stage: test
+  extends: .Always_Test
   dependencies:
     - TF_Tooling::Web::build
-  when: always
+  tags:
+    - unity
+    - win10
   script:
     # Run unit tests
     - cd ${env:TF_TFW_PATH}
     - npm i
     - npm run test
     - npm run test:coverage
-
   artifacts:
     when: always
     name: "TestResults"
@@ -285,11 +288,7 @@ TF_Tooling::Web::test:
       coverage_report:
         coverage_format: cobertura
         path: ${env:TF_TFW_PATH}/coverage/cobertura-coverage.xml
-
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  tags:
-    - unity
-    - win10
 
 pages:
   stage: deploy
@@ -306,8 +305,10 @@ pages:
     - develop
 
 TF_Service::Tray::build:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - unity
+    - win10
   script:
     - MSBuild.exe $CI_PROJECT_DIR/TF_Service_Utilities/ServiceUITray/ServiceUITray.sln /p:Configuration=Release /p:Platform=x64
     # Move the built tray app to the root directory
@@ -323,13 +324,12 @@ TF_Service::Tray::build:
     - ./Service_Tray_Build/**
     expire_in: 2 weeks
     when: always
+
+TF_Settings::Windows::build:
+  extends: .Always_Build
   tags:
     - unity
     - win10
-
-TF_Settings::Windows::build:
-  stage: build
-  when: always
   script:
     # Get Unity version and changeset from the project.
     - $line = Get-Content  $TF_SETTINGS_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
@@ -368,13 +368,11 @@ TF_Settings::Windows::build:
     - ./SettingsUI_build.log
     expire_in: 2 weeks
     when: always
-  tags:
-    - unity
-    - win10
 
 TF_Settings::Web::build:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - docker-windows
   image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
   script:
     - npm -v
@@ -401,12 +399,12 @@ TF_Settings::Web::build:
     - ./TF_Settings_Web/*.exe
     expire_in: 2 weeks
     when: always
-  tags:
-    - docker-windows
 
 TouchFree::build:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - unity
+    - win10
   script:
     # Get Unity version and changeset from the project.
     - $line = Get-Content  $TF_PROJECT_PATH/ProjectSettings/ProjectVersion.txt | Select -Index 1
@@ -448,7 +446,6 @@ TouchFree::build:
     # Sign the executable with the UltraLeap certificate
     - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
     - Set-AuthenticodeSignature -FilePath $CI_PROJECT_DIR/TouchFree_Build/TouchFree.exe -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
-
   artifacts:
     name: "TouchFree_Build_${env:CI_COMMIT_SHORT_SHA}"
     paths:
@@ -456,13 +453,11 @@ TouchFree::build:
       - ./TouchFree_build.log
     expire_in: 2 weeks
     when: always
-  tags:
-    - unity
-    - win10
 
 Tracking::download:
-  stage: build
-  when: always
+  extends: .Always_Build
+  tags:
+    - unity
   script:
     - cd ./Scripts/
     - python ./Download_Tracking.py -t ${env:GITLAB_TOKEN} -j ${TARGET_TRACKING_JOBID_WIN}
@@ -473,22 +468,19 @@ Tracking::download:
     paths:
     - ./Scripts/Tracking_Build/Tracking_for_TouchFree_*.exe
     expire_in: 1 hour
-  tags:
-    - unity
 
 TF_Service::Integration::test:
-  stage: test
-  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
-
+  extends: .Always_Test
   dependencies:
     - TF_Service::dotNet::Windows::build
   needs: ["TF_Service::dotNet::Windows::build"]
-
+  tags:
+    - docker-windows
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
   script:
     - cd ./Testing/ServiceSocketTests/
     - npm install
     - ./node_modules/.bin/gulp build_machine_run
-
   artifacts:
     name: test_results
     paths:
@@ -497,8 +489,6 @@ TF_Service::Integration::test:
     reports:
       junit: ./Testing/ServiceSocketTests/results/test_results.xml
     when: always
-  tags:
-    - docker-windows
 
 TF_Tooling::Web::package:
   stage: package
