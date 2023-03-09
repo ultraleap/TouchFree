@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Service
@@ -19,6 +21,13 @@ namespace Ultraleap.TouchFree.Service
             TouchFreeLog.WriteLine();
 
             config = ServiceConfigFile.LoadConfig();
+
+            TouchFreeConfig tf = TouchFreeConfigFile.LoadConfig();
+            if (!File.Exists(tf.ctiFilePath))
+            {
+                tf.DefaultCTI();
+                TouchFreeConfigFile.SaveConfig(tf);
+            }
 
             TouchFreeLog.WriteLine($"TouchFree IP: http://{config.ServiceIP}:{config.ServicePort}");
             TouchFreeLog.WriteLine();

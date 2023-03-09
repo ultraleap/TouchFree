@@ -52,8 +52,7 @@ namespace Ultraleap.TouchFree.Service
         // If we've detected a change to the IP/port we should be operating on, close.
         private void ConfigManager_OnServiceConfigUpdated(ServiceConfig config = null)
         {
-            TouchFreeLog.WriteLine($"Closing, as we do not match new IP config: http://{config.ServiceIP}:{config.ServicePort}");
-            Environment.Exit(0);
+            TouchFreeLog.WriteLine($"Warning! TouchFree IP/port config is different to the active IP/port: http://{config.ServiceIP}:{config.ServicePort}");
         }
     }
 }

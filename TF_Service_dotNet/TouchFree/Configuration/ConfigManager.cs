@@ -10,10 +10,12 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigSaved;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
         public event IConfigManager.ServiceConfigEvent OnServiceConfigUpdated;
+        public event IConfigManager.TouchFreeConfigEvent OnTouchFreeConfigUpdated;
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
         private TrackingConfig _tracking;
         private ServiceConfig _service;
+        private TouchFreeConfig _tf;
 
         public ConfigManager()
         {
@@ -108,6 +110,23 @@ namespace Ultraleap.TouchFree.Library.Configuration
             }
         }
 
+        public TouchFreeConfig TouchFreeConfig
+        {
+            get
+            {
+                if (_tf == null && TouchFreeConfigFile.DoesConfigFileExist())
+                {
+                    _tf = TouchFreeConfigFile.LoadConfig();
+                }
+
+                return _tf;
+            }
+            set
+            {
+                _tf = value;
+            }
+        }
+
         public void LoadConfigsFromFiles()
         {
             var interactionsUpdated = false;
@@ -150,6 +169,17 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 }
             }
 
+            var tfUpdated = false;
+            if (TouchFreeConfigFile.DoesConfigFileExist())
+            {
+                var loadedTF = TouchFreeConfigFile.LoadConfig();
+                if (_tf == null || _tf != loadedTF)
+                {
+                    _tf = loadedTF;
+                    tfUpdated = true;
+                }
+            }
+
             if (interactionsUpdated)
             {
                 InteractionConfigWasUpdated();
@@ -170,6 +200,11 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 ServiceConfigWasUpdated();
             }
 
+            if (tfUpdated)
+            {
+                TouchFreeConfigWasUpdated();
+            }
+
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
@@ -178,15 +213,14 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public void InteractionConfigWasUpdated() => OnInteractionConfigUpdated?.Invoke(_interactions);
         public void TrackingConfigWasUpdated() => OnTrackingConfigUpdated?.Invoke(_tracking);
         public void ServiceConfigWasUpdated() => OnServiceConfigUpdated?.Invoke(_service);
+        public void TouchFreeConfigWasUpdated() => OnTouchFreeConfigUpdated?.Invoke(_tf);
 
 
         public bool AreConfigsInGoodState()
         {
             return !ErrorLoadingConfigFiles &&
                 _physical.ScreenWidthPX > 0 &&
-                _physical.ScreenHeightPX > 0 && 
-                Regex.Match(_service.ServiceIP, @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}").Success &&
-                int.TryParse(_service.ServicePort, out int val);
+                _physical.ScreenHeightPX > 0;
         }
     }
 }
