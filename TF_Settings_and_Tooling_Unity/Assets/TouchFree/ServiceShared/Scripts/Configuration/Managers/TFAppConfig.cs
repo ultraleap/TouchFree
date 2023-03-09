@@ -55,7 +55,7 @@ namespace Ultraleap.TouchFree.ServiceShared
 
         // CTI Settings
         public bool ctiEnabled = false;
-        public string ctiFilePath = Path.Combine(Application.streamingAssetsPath, "CallToInteract/AirPush_Portrait.mp4");
+        public string ctiFilePath = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "CTI/AirPush_Portrait.mp4");
         public CtiHideTrigger ctiHideTrigger = CtiHideTrigger.INTERACTION;
         public float ctiShowAfterTimer = 10.0f;
 
