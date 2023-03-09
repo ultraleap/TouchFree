@@ -286,7 +286,11 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             DefaultGetPayloadFunc(DApiMsgTypes.GetAnalyticsEnabled),
             DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAnalyticsEnabled));
             
-        webSocket = new WebsocketClient(url);
+        webSocket = new WebsocketClient(url)
+        {
+            ReconnectTimeout = new TimeSpan(0, 0, 10),
+            ErrorReconnectTimeout = new TimeSpan(0, 0, 30)
+        };
         SetupWebsocketSubscriptions();
 
         webSocket.Start();
