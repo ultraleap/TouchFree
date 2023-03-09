@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Leap;
 using Newtonsoft.Json;
@@ -21,14 +22,66 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     private uint? connectedDeviceID;
     public string connectedDeviceFirmware { get; private set; }
     public string connectedDeviceSerial { get; private set; }
-    public Task<DiagnosticData> RequestGetAll(GetAllInfo request)
+    public async Task<DiagnosticData> RequestGetAll(GetAllInfo request)
     {
-        
+        await EnsureConnection();
+        if (request.GetMasking)
+        {
+            maskingData.RequestGet();
+        }
+
+        if (request.GetAllowImage)
+        {
+            allowImages.RequestGet();
+        }
+
+        if (request.GetOrientation)
+        {
+            cameraReversed.RequestGet();
+        }
+
+        if (request.GetAnalytics)
+        {
+            analyticsEnabled.RequestGet();
+        }
+
+        var data = new DiagnosticData(
+            await maskingData.GetValueAsync(),
+            await allowImages.GetValueAsync(),
+            await cameraReversed.GetValueAsync(),
+            await analyticsEnabled.GetValueAsync());
+
+        return data;
     }
 
-    public Task RequestSetAll(DiagnosticData data)
+    public async Task RequestSetAll(DiagnosticData data)
     {
-        
+        await EnsureConnection();
+        if (data.Masking.HasValue)
+        {
+            maskingData.RequestSet(data.Masking.Value);
+        }
+
+        if (data.AllowImages.HasValue)
+        {
+            allowImages.RequestSet(data.AllowImages.Value);
+        }
+
+        if (data.CameraOrientation.HasValue)
+        {
+            cameraReversed.RequestSet(data.CameraOrientation.Value);
+        }
+
+        if (data.Analytics.HasValue)
+        {
+            analyticsEnabled.RequestSet(data.Analytics.Value);
+        }
+
+        // Wait for all values to have something return
+        await maskingData.GetValueAsync();
+        await allowImages.GetValueAsync();
+        await cameraReversed.GetValueAsync();
+        await analyticsEnabled.GetValueAsync();
     }
 
     public event Action<Result<MaskingData>> OnMaskingResponse;
@@ -49,6 +102,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         private readonly Func<TData, uint?, object> _setPayloadFunc;
         private readonly List<TData> _responsesToIgnore; // Not a queue as responses could come back out of order
         private TData _value;
+        private bool _expectingValueUpdate = false;
 
         public ConfigurationVariable(
             TrackingDiagnosticApi diagnosticApi,
@@ -76,9 +130,32 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             }
         }
 
-        public void RequestGet() => _diagnosticApi.SendIfConnected(_getPayloadFunc(_diagnosticApi.connectedDeviceID));
+        public async Task<TData> GetValueAsync()
+        {
+            var totalWaited = 0;
+            while(_expectingValueUpdate)
+            {
+                await Task.Delay(100);
+                totalWaited++;
+
+                // 20 seconds
+                if (totalWaited >= 200)
+                {
+                    throw new Exception("No response received after 20 seconds. Timing out.");
+                }
+            }
+
+            return Value;
+        }
+
+        public void RequestGet() {
+            _expectingValueUpdate = true;
+            _diagnosticApi.SendIfConnected(_getPayloadFunc(_diagnosticApi.connectedDeviceID));
+        }
+
         public void RequestSet(TData value)
         {
+            _expectingValueUpdate = true;
             Value = value;
             if (_connectedDeviceRequired && !_diagnosticApi.connectedDeviceID.HasValue) return; // Only send the request if we have a device, when one is required
 
@@ -96,6 +173,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             lock (_responsesToIgnore)
             {
                 var found = _responsesToIgnore.Remove(val);
+                _expectingValueUpdate = false;
                 if (found) return;
                 Value = val;
             }
@@ -415,22 +493,25 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         }
     }
 
-    private static readonly object _reconnectLock = new();
+    private static readonly SemaphoreSlim reconnectSemaphore = new SemaphoreSlim(1, 1);
     private bool _reconnecting;
 
     private async Task EnsureConnection()
     {
         // Locking to prevent race condition causing multiple Reconnect calls
         // if EnsureConnection is called at the same time from multiple threads
-        lock (_reconnectLock)
+        try
         {
+            await reconnectSemaphore.WaitAsync();
             if (IsConnected || _reconnecting) return;
             _reconnecting = true;
+        
+            await webSocket.Reconnect();
         }
-        await webSocket.Reconnect();
-        lock (_reconnectLock)
+        finally
         {
             _reconnecting = false;
+            reconnectSemaphore.Release();
         }
     }
 

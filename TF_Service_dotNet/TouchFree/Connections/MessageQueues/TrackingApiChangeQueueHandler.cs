@@ -176,36 +176,37 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
             var trackingFromFile = configManager.TrackingConfig;
 
-            if (needsMask)
+            if (trackingFromFile != null && (needsAnalytics || needsImages || needsMask || needsOrientation))
             {
-                trackingFromFile.Mask.Left = mask.left;
-                trackingFromFile.Mask.Right = mask.right;
-                trackingFromFile.Mask.Upper = mask.upper;
-                trackingFromFile.Mask.Lower = mask.lower;
-            }
+                if (needsMask)
+                {
+                    trackingFromFile.Mask.Left = data.Masking.Value.left;
+                    trackingFromFile.Mask.Right = data.Masking.Value.right;
+                    trackingFromFile.Mask.Upper = data.Masking.Value.upper;
+                    trackingFromFile.Mask.Lower = data.Masking.Value.lower;
+                }
 
-            if (needsImages)
-            {
-                trackingFromFile.AllowImages = allowImages;
-            }
+                if (needsImages)
+                {
+                    trackingFromFile.AllowImages = data.AllowImages.Value;
+                }
 
-            if (needsOrientation)
-            {
-                trackingFromFile.CameraReversed = reversed;
-            }
+                if (needsOrientation)
+                {
+                    trackingFromFile.CameraReversed = data.CameraOrientation.Value;
+                }
 
-            if (needsAnalytics)
-            {
-                trackingFromFile.AnalyticsEnabled = analyticsEnable;
-            }
+                if (needsAnalytics)
+                {
+                    trackingFromFile.AnalyticsEnabled = data.Analytics.Value;
+                }
 
-            await diagnosticApi.RequestSetAll(data);
+                await diagnosticApi.RequestSetAll(data);
 
-            if (needsAnalytics || needsImages || needsMask || needsOrientation)
-            {
                 TrackingConfigFile.SaveConfig(trackingFromFile);
             }
-            
+
+            // TODO: Handle setting config that hasn't been initialised yet
             SendTrackingDataResponse(request.RequestId, data);
         }
     }
