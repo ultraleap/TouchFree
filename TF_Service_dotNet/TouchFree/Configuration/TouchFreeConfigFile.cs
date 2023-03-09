@@ -32,22 +32,26 @@ namespace Ultraleap.TouchFree.Library.Configuration
         public float cursorSizeCm = 0.25f;
         public float cursorRingThickness = 0.15f;
         public CursorColorPreset activeCursorPreset = CursorColorPreset.LIGHT;
-        public Color primaryCustomColor = Color.White;
-        public Color secondaryCustomColor = Color.White;
-        public Color tertiaryCustomColor = Color.Black;
+        public TFColour primaryCustomColor = new TFColour() { r = 1.0, g = 1.0, b = 1.0, a = 1.0 };
+        public TFColour secondaryCustomColor = new TFColour() { r = 0.0, g = 0.0, b = 0.0, a = 1.0 };
+        public TFColour tertiaryCustomColor = new TFColour() { r = 0.0, g = 0.0, b = 0.0, a = 1.0 };
 
         // CTI Settings
         public bool ctiEnabled = false;
-        public string ctiFilePath = Path.Combine(AppContext.BaseDirectory, "../SettingsUI/TouchFreeSettingsUI_Data/StreamingAssets", "CallToInteract", "AirPush_Portrait.mp4");
+        public string ctiFilePath = "";
         public CtiHideTrigger ctiHideTrigger = CtiHideTrigger.INTERACTION;
         public float ctiShowAfterTimer = 10.0f;
 
         // Misc Settings
         public bool StartupUIShown = false;
+    }
 
-        public void DefaultCTI()
-        {
-            ctiFilePath = Path.Combine(AppContext.BaseDirectory, "../SettingsUI/TouchFreeSettingsUI_Data/StreamingAssets", "CallToInteract", "AirPush_Portrait.mp4");
-        }
+    [Serializable]
+    public class TFColour
+    {
+        public double r;
+        public double g;
+        public double b;
+        public double a;
     }
 }

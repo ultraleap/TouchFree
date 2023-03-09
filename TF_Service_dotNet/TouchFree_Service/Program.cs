@@ -4,12 +4,13 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Service.Properties;
 
 namespace Ultraleap.TouchFree.Service
 {
     public class Program
     {
-        private static ServiceConfig config = null;
+        private static string _ctiFolder;
 
         static void Main(string[] args)
         {
@@ -20,27 +21,55 @@ namespace Ultraleap.TouchFree.Service
             TouchFreeLog.WriteLine($"TouchFree Version: v{VersionManager.Version}");
             TouchFreeLog.WriteLine();
 
-            config = ServiceConfigFile.LoadConfig();
+            ServiceConfig serviceConfig = ServiceConfigFile.LoadConfig();
+            InteractionConfig interactionConfig = InteractionConfigFile.LoadConfig();
+            TouchFreeConfig tfConfig = TouchFreeConfigFile.LoadConfig();
 
-            TouchFreeConfig tf = TouchFreeConfigFile.LoadConfig();
-            if (!File.Exists(tf.ctiFilePath))
+            if (!File.Exists(tfConfig.ctiFilePath))
             {
-                tf.DefaultCTI();
-                TouchFreeConfigFile.SaveConfig(tf);
+                _ctiFolder = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "CTIs");
+                if (!Directory.Exists(_ctiFolder)) Directory.CreateDirectory(_ctiFolder);
+
+                CopyCTI("AirPush_Landscape", Resources.AirPush_Landscape);
+                CopyCTI("AirPush_Portrait", Resources.AirPush_Portrait);
+                CopyCTI("Hover_Landscape", Resources.Hover_Landscape);
+                CopyCTI("Hover_Portrait", Resources.Hover_Portrait);
+                CopyCTI("TouchPlane_Landscape", Resources.TouchPlane_Landscape);
+                CopyCTI("TouchPlane_Portrait", Resources.TouchPlane_Portrait);
+
+                switch (interactionConfig.InteractionType)
+                {
+                    case Library.InteractionType.HOVER:
+                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, "Hover_Portrait.mp4");
+                        break;
+                    case Library.InteractionType.TOUCHPLANE:
+                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, "TouchPlane_Portrait.mp4");
+                        break;
+                    default:
+                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, "AirPush_Portrait.mp4");
+                        break;
+                }
+                TouchFreeLog.WriteLine($"CTI file did not exist - setting to: '{tfConfig.ctiFilePath}'");
+                TouchFreeConfigFile.SaveConfig(tfConfig);
             }
 
-            TouchFreeLog.WriteLine($"TouchFree IP: http://{config.ServiceIP}:{config.ServicePort}");
+            TouchFreeLog.WriteLine($"TouchFree IP: http://{serviceConfig.ServiceIP}:{serviceConfig.ServicePort}");
             TouchFreeLog.WriteLine();
 
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args, serviceConfig.ServiceIP, serviceConfig.ServicePort).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        private static void CopyCTI(string name, byte[] content)
+        {
+            File.WriteAllBytes(Path.Combine(_ctiFolder, name + ".mp4"), content);
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args, string ip, string port) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls($"http://{config.ServiceIP}:{config.ServicePort}");
+                    webBuilder.UseUrls($"http://{ip}:{port}");
 #if !DEBUG
                     webBuilder.ConfigureLogging((loggingBuilder) => loggingBuilder.SetMinimumLevel(LogLevel.Warning));
 #endif
