@@ -77,7 +77,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             analyticsEnabled.RequestSet(data.Analytics.Value);
         }
 
-        // Wait for all values to have something return
+        // Wait for all requests to complete
         await maskingData.GetValueAsync();
         await allowImages.GetValueAsync();
         await cameraReversed.GetValueAsync();
