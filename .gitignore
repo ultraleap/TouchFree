@@ -99,5 +99,6 @@ TestResults/
 !/TF_Service_dotNet/**/*.csproj
 !/TF_Service_dotNet/**/*.sln
 !/TF_Service_dotNet/**/launchSettings.json
-/TF_Application/Assets/TouchFree/Tooling
+/TF_Application/Assets/TouchFree
+/TF_Settings/Assets/TouchFree
 /TF_Service_dotNet/**/wwwroot
