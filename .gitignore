@@ -100,5 +100,5 @@ TestResults/
 !/TF_Service_dotNet/**/*.sln
 !/TF_Service_dotNet/**/launchSettings.json
 /TF_Application/Assets/TouchFree
-/TF_Settings/Assets/TouchFree
+/TF_Settings_Unity/Assets/TouchFree
 /TF_Service_dotNet/**/wwwroot
