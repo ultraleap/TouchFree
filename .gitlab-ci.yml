@@ -58,7 +58,7 @@ TF_Tooling::Unity::build:
 
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFU_PATH}/Version.txt --swVer ${env:TF_TFU_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_REF_NAME"
-    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/Version.txt
 
     # Copy Version.txt to Tooling_Release folder
     - if (Test-Path -Path "./Tooling_Release") {
@@ -66,7 +66,7 @@ TF_Tooling::Unity::build:
         Remove-Item -LiteralPath ./Tooling_Release -Force -Recurse
       }
     - mkdir ./Tooling_Release
-    - cp ${env:CI_PROJECT_DIR}/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling/Version.txt ./Tooling_Release
+    - cp ${env:CI_PROJECT_DIR}/TF_Tooling_Unity/Assets/Tooling/Version.txt ./Tooling_Release
 
     # Package Tooling
     - cd ./Scripts
@@ -87,7 +87,7 @@ TF_Tooling::Web::build:
   script:
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:TF_TFW_PATH}/Version.txt --swVer ${env:TF_TFW_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_REF_NAME"
-    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/Version.txt
 
     # Build Tooling
     - cd ${env:TF_TFW_PATH}
@@ -118,7 +118,7 @@ TF_Tooling::Docs::build:
     - docker
   image: registry.ultrahaptics.com/apps/infrastructure/docker-naturaldocs:main
   script:
-    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/NaturalDocs_Config
+    - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Tooling_Unity/NaturalDocs_Config
     - mono "/opt/Natural Docs/NaturalDocs.exe" $CI_PROJECT_DIR/TF_Tooling_Web/NaturalDocs_Config
   artifacts:
     name: "TouchFree_Tooling_Documentation"
@@ -348,14 +348,14 @@ TF_Settings::Windows::build:
 
     # Update Version.txt with latest information before packaging
     - python ./Scripts/UpdateVersionFile.py --path ${env:TF_SETTINGS_PATH}/Version.txt --swVer ${env:TOUCHFREE_VERSION} --apiVer ${env:TF_TOOLING_API_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_REF_NAME"
-    - Get-Content ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt
+    - Get-Content ${env:TF_PROJECT_PATH}/Assets/Version.txt
 
     - mkdir $CI_PROJECT_DIR/UIBuild
     - cp ${env:TF_SETTINGS_PATH}/Version.txt $CI_PROJECT_DIR/UIBuild
 
     # Update ProjectSettings file with correct version & build settings
     - cd ./Scripts
-    - python ./UpdateUnityProjVer.py --path ../TF_Settings_and_Tooling_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
+    - python ./UpdateUnityProjVer.py --path ../TF_Settings_Unity/ProjectSettings/ProjectSettings.asset --ver ${env:TOUCHFREE_VERSION}
     - "& ./build_settingsUI.bat $UNITY_EXE"
 
     # Sign the executable with the UltraLeap certificate
@@ -423,8 +423,8 @@ TouchFree::build:
     - echo "$UNITY_EXE"
 
     # Update Version.txt with latest information before packaging
-    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_REF_NAME"
-    - Get-Content "${env:TF_PROJECT_PATH}/Assets/TouchFree_Application/Version.txt"
+    - python ./Scripts/UpdateVersionFile.py --path ${env:TF_PROJECT_PATH}/Assets/Version.txt --apiVer ${env:TF_TOOLING_API_VERSION} --swVer ${env:TOUCHFREE_VERSION} --ref ${env:CI_COMMIT_SHORT_SHA} --branchName "$CI_COMMIT_REF_NAME"
+    - Get-Content "${env:TF_PROJECT_PATH}/Assets/Version.txt"
 
     # Copy Version.txt to build folder
     - if (Test-Path -Path "./TouchFree_Build") {
@@ -432,11 +432,11 @@ TouchFree::build:
         Remove-Item -LiteralPath ./TouchFree_Build -Force -Recurse
       }
     - mkdir ./TouchFree_Build
-    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree_Application/Version.txt ./TouchFree_Build
+    - cp ${env:CI_PROJECT_DIR}/TF_Application/Assets/Version.txt ./TouchFree_Build
 
     # Copy Tooling to TF_Application
-    - mkdir ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree/Tooling
-    - cp -R ${env:CI_PROJECT_DIR}/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling/* ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree/Tooling
+    - mkdir ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree
+    - cp -R ${env:CI_PROJECT_DIR}/TF_Tooling_Unity/Assets/* ${env:CI_PROJECT_DIR}/TF_Application/Assets/TouchFree
 
     # Build TouchFree
     - cd ./Scripts
