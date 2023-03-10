@@ -6,5 +6,5 @@ if not "%1"=="1" (
 
 cd %~dp0
 
-mklink /J "../TF_Application/Assets/TouchFree" "../TF_Tooling_Unity/Assets/TouchFree"
-mklink /J "../TF_Settings_Unity/Assets/TouchFree" "../TF_Tooling_Unity/Assets/TouchFree"
+mklink /J "../TF_Application/Assets/TouchFree" "../TF_Tooling_Unity/Assets"
+mklink /J "../TF_Settings_Unity/Assets/TouchFree" "../TF_Tooling_Unity/Assets"
