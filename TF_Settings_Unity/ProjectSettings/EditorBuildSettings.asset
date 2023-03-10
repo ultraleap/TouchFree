@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/TouchFree/SettingsUI/Scenes/ServiceUI.unity
+    path: Assets/Scenes/ServiceUI.unity
     guid: 0bdcf645dd528a9429817c3a47891e82
   m_configObjects: {}
