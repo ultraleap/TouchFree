@@ -1,12 +1,12 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  TF_SETTINGS_PROJECT_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity
+  TF_SETTINGS_PROJECT_PATH: $CI_PROJECT_DIR/TF_Settings_Unity
   TF_PROJECT_PATH: $CI_PROJECT_DIR/TF_Application
   UNITY_HUB: "C:/Program Files/Unity Hub/Unity Hub.exe"
 
   TF_TFW_PATH: $CI_PROJECT_DIR/TF_Tooling_Web
-  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/Tooling
-  TF_SETTINGS_PATH: $CI_PROJECT_DIR/TF_Settings_and_Tooling_Unity/Assets/TouchFree/SettingsUI
+  TF_TFU_PATH: $CI_PROJECT_DIR/TF_Tooling_Unity/Assets/Tooling
+  TF_SETTINGS_PATH: $CI_PROJECT_DIR/TF_Settings_Unity/Assets
 
   BS_EXTENSION_NAME: ultouchfree
 

@@ -44,7 +44,7 @@ Shader "Unlit/CameraImages"
             // make fog work
             #pragma multi_compile LEAP_FORMAT_IR LEAP_FORMAT_RGB
 
-            #include "Assets/ThirdParty/Ultraleap/Tracking/Core/Runtime/Resources/LeapCG.cginc"
+            #include "../TF_Tooling_Unity/Packages/Tracking/Packages/Tracking/Core/Runtime/Resources/LeapCG.cginc"
             #include "UnityCG.cginc"
             #include "UnityUI.cginc"
 
