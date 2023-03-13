@@ -206,9 +206,7 @@ TF_Service::dotNet::ARMLinux::build:
     - rm ./Service_dotNet_Build_ARMLinux/interaction-tuning.json
 
     - mkdir ./Service_dotNet_Build_ARMLinux/ThirdParty
-    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
-    - mv ./Service_dotNet_Build_ARMLinux/ThirdParty/.NetRuntime.License.txt ./Service_dotNet_Build_ARMLinux/ThirdParty/dotNetRuntime.License.txt
-    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Newtonsoft.JSON.License.txt" ./Service_dotNet_Build_ARMLinux/ThirdParty
+    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Service/*" ./Service_dotNet_Build_ARMLinux/ThirdParty
 
 
     # We don't sign the Linux builds as yet as we're not sure of the method.
@@ -581,7 +579,8 @@ TF_Service::Windows::package:
     - cp -R ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -R ./TF_Settings_Web/dist/* ./Service_Package/Wrapper/wwwroot
     - cp -R ./Service_Tray_Build/* ./Service_Package/Tray/
-    - cp -R ./Third_Party_Licenses/* ./Service_Package/Licenses/
+    - cp -R ./Third_Party_Licenses/Service/* ./Service_Package/Licenses/
+    - cp -R ./Third_Party_Licenses/UnityApps/* ./Service_Package/Licenses/
 
 
   artifacts:
