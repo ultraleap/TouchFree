@@ -1,11 +1,11 @@
-//#define BRIGHTSIGN // <- This is manually modified by CI: do not edit manually.
+//#define WINDOWS // <- This is manually modified by CI: do not edit manually.
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using Ultraleap.TouchFree.Library.Configuration;
-#if !BRIGHTSIGN
+#if WINDOWS
 using Ultraleap.TouchFree.Service.Properties;
 #endif
 
@@ -28,7 +28,7 @@ namespace Ultraleap.TouchFree.Service
             InteractionConfig interactionConfig = InteractionConfigFile.LoadConfig();
             TouchFreeConfig tfConfig = TouchFreeConfigFile.LoadConfig();
 
-#if !BRIGHTSIGN
+#if WINDOWS
             if (!File.Exists(tfConfig.ctiFilePath))
             {
                 _ctiFolder = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "CTIs");
