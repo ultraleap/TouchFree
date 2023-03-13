@@ -1,10 +1,13 @@
+//#define BRIGHTSIGN // <- This is manually modified by CI: do not edit manually.
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using Ultraleap.TouchFree.Library.Configuration;
+#if !BRIGHTSIGN
 using Ultraleap.TouchFree.Service.Properties;
+#endif
 
 namespace Ultraleap.TouchFree.Service
 {
@@ -25,6 +28,7 @@ namespace Ultraleap.TouchFree.Service
             InteractionConfig interactionConfig = InteractionConfigFile.LoadConfig();
             TouchFreeConfig tfConfig = TouchFreeConfigFile.LoadConfig();
 
+#if !BRIGHTSIGN
             if (!File.Exists(tfConfig.ctiFilePath))
             {
                 _ctiFolder = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "CTIs");
@@ -52,6 +56,7 @@ namespace Ultraleap.TouchFree.Service
                 TouchFreeLog.WriteLine($"CTI file did not exist - setting to: '{tfConfig.ctiFilePath}'");
                 TouchFreeConfigFile.SaveConfig(tfConfig);
             }
+#endif
 
             TouchFreeLog.WriteLine($"TouchFree IP: http://{serviceConfig.ServiceIP}:{serviceConfig.ServicePort}");
             TouchFreeLog.WriteLine();
