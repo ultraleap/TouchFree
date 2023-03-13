@@ -1,5 +1,5 @@
 import { HandChirality, HandType, InputType, InteractionType, TouchFreeInputAction } from '../../TouchFreeToolingTypes';
-import { mockTfPluginInputAction } from '../../tests/testUtils';
+import { createInputAction, mockTfPluginInputAction } from '../../tests/testUtils';
 import { InputActionManager } from '../InputActionManager';
 import { InputActionPlugin } from '../InputActionPlugin';
 
@@ -33,16 +33,7 @@ describe('InputActionManager', () => {
 
     test('Check plugin gets called with the correct data', () => {
         expect(pluginCalled).toBeFalsy();
-        currentInputAction = new TouchFreeInputAction(
-            Date.now(),
-            InteractionType.PUSH,
-            HandType.PRIMARY,
-            HandChirality.RIGHT,
-            InputType.MOVE,
-            [0, 0],
-            5,
-            0
-        );
+        currentInputAction = createInputAction();
         mockTfPluginInputAction(currentInputAction);
         expect(pluginCalled).toBeTruthy();
         pluginCalled = false;
