@@ -10,10 +10,10 @@ describe('InputActionManager', () => {
 
     class MockPlugin extends InputActionPlugin {
         RunPlugin(inputAction: TouchFreeInputAction): TouchFreeInputAction | null {
-            pluginCalled = true;
             expect(inputAction).toStrictEqual(currentInputAction);
             const modifiedInputAction = super.RunPlugin(inputAction);
             expect(modifiedInputAction).toStrictEqual(currentModifiedAction);
+            pluginCalled = true;
             return modifiedInputAction;
         }
 
