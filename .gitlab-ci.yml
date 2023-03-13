@@ -202,6 +202,7 @@ TF_Service::dotNet::ARMLinux::build:
       
     - rm "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Properties/Resources.Designer.cs"
     - rm "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Properties/Resources.resx"
+    - rm -rf "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Resources"
 
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
