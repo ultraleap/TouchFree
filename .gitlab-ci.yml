@@ -157,13 +157,6 @@ TF_Service::dotNet::Windows::build:
       } else {
         $TOUCHFREE_SUFFIX = 'dev+' + ${env:CI_COMMIT_SHORT_SHA}
       }
-      
-    - |
-      $ServiceProgramPath = "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Program.cs";
-      $ServiceProgramContent = (Get-Content -path "$ServiceProgramPath");
-      $ServiceProgramContent[0] = "#define WINDOWS";
-      $ServiceProgramContent = [system.String]::Join("`n", $ServiceProgramContent);
-      Set-Content -Path "$ServiceProgramPath" -Value "$ServiceProgramContent";
 
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
@@ -200,9 +193,16 @@ TF_Service::dotNet::ARMLinux::build:
         $TOUCHFREE_SUFFIX = 'dev+' + ${env:CI_COMMIT_SHORT_SHA}
       }
       
-    - rm "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Properties/Resources.Designer.cs"
-    - rm "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Properties/Resources.resx"
-    - rm -rf "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Resources"
+    - Remove-Item "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Properties/Resources.Designer.cs"
+    - Remove-Item "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Properties/Resources.resx"
+    - Remove-Item "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Resources" -Recurse
+    
+    - |
+      $ServiceProgramPath = "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/Program.cs";
+      $ServiceProgramContent = (Get-Content -path "$ServiceProgramPath");
+      $ServiceProgramContent[0] = "#define BRIGHTSIGN";
+      $ServiceProgramContent = [system.String]::Join("`n", $ServiceProgramContent);
+      Set-Content -Path "$ServiceProgramPath" -Value "$ServiceProgramContent";
 
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
