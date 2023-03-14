@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
@@ -19,6 +19,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
         private readonly ITrackingDiagnosticApi diagnosticApi;
         private readonly object requestLock = new(); 
         private IncomingRequestWithId? currentRequest;
+        private Task? requestTask;
 
         public TrackingApiChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IConfigManager _configManager, IClientConnectionManager _clientMgr, ITrackingDiagnosticApi _diagnosticApi) : base(_updateBehaviour, _clientMgr)
         {
@@ -69,7 +70,6 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             if (request.ActionCode == ActionCode.SET_TRACKING_STATE)
             {
                 var atLeastOneProperty = false;
-                // TODO: Check types of properties are correct here too, then remove checks from HandleSetTrackingStateRequest below 
                 atLeastOneProperty |= request.ContentRoot.ContainsKey("mask")
                                       || request.ContentRoot.ContainsKey("allowImages")
                                       || request.ContentRoot.ContainsKey("cameraReversed")
@@ -88,10 +88,12 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 {
                     case ActionCode.GET_TRACKING_STATE:
                         currentRequest = request;
+                        requestOriginTime = DateTime.Now;
                         HandleGetTrackingStateRequest(request);
                         break;
                     case ActionCode.SET_TRACKING_STATE:
                         currentRequest = request;
+                        requestOriginTime = DateTime.Now;
                         HandleSetTrackingStateRequest(request);
                         break;
                     default:
@@ -130,7 +132,6 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 var response = new TrackingApiState
                 {
                     requestID = requestId,
-                    // TODO: Errors for cases with no value when caused by an error. Should be refactored to use Result
                     mask = data.Masking.HasValue
                         ? new SuccessWrapper<MaskingData?>(true, "Image Mask State", data.Masking.Value)
                         : new SuccessWrapper<MaskingData?>(false, string.Empty, null),
@@ -153,7 +154,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         private async void HandleGetTrackingStateRequest(IncomingRequestWithId request)
         {
-            var data = await diagnosticApi.RequestGetAll(new GetAllInfo(true, true, true, true));
+            var data = await diagnosticApi.RequestGet();
             SendTrackingDataResponse(request.RequestId, data);
         }
 
@@ -200,8 +201,8 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 {
                     trackingFromFile.AnalyticsEnabled = data.Analytics.Value;
                 }
-
-                await diagnosticApi.RequestSetAll(data);
+                
+                await diagnosticApi.RequestSet(data);
 
                 TrackingConfigFile.SaveConfig(trackingFromFile);
             }

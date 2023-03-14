@@ -102,6 +102,14 @@ namespace Ultraleap.TouchFree.Library.Connections
             upper = other.Upper,
             lower = other.Lower
         };
+
+        public static explicit operator Configuration.MaskingData(MaskingData data) => new()
+        {
+            Left = data.left,
+            Right = data.right,
+            Lower = data.lower,
+            Upper = data.upper
+        };
     }
 
     [Serializable]
