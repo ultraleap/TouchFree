@@ -342,6 +342,7 @@ namespace Ultraleap.TouchFree.ServiceUI
             // CTI settings
             EnableCTIToggle.SetIsOnWithoutNotify(TFAppConfig.Config.ctiEnabled);
             CTIFilePath = TFAppConfig.Config.ctiFilePath;
+            CurrentCTIFilepath.SetTextWithoutNotify(CTIFilePath);
             CTIShowDelayField.SetTextWithoutNotify(TFAppConfig.Config.ctiShowAfterTimer.ToString());
 
             ShowHideCursorControls(TFAppConfig.Config.cursorEnabled);

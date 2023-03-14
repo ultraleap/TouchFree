@@ -21,7 +21,12 @@ const App: React.FC = () => {
     const [trackingStatus, setTrackingStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
     useEffect(() => {
-        TouchFree.Init({ initialiseCursor: true });
+        const [ip, port] = window.location.host.split(':');
+        TouchFree.Init({
+            initialiseCursor: true,
+            // env.MODE is updated by Vite automatically. Can be manually set by running `npm start -- --mode <string>
+            address: import.meta.env.MODE !== 'development' ? { ip: ip, port: port } : undefined,
+        });
 
         const setTrackingStatusCallback = (detail: ServiceStatus) => {
             const status = detail.trackingServiceState;

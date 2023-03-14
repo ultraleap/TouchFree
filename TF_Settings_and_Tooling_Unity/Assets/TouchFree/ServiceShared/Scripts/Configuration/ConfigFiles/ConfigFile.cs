@@ -85,9 +85,10 @@ namespace Ultraleap.TouchFree.ServiceShared
             {
                 File.WriteAllText(_ConfigFilePath, JsonUtility.ToJson(config, true));
             }
-            catch(UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException e)
             {
                 PermissionController.hasFilePermission = false;
+                Debug.LogWarning("SaveConfig_Internal: " + e.ToString());
             }
             catch
             {
