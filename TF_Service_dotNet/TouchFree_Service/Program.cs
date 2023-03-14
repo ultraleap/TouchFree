@@ -26,9 +26,9 @@ namespace Ultraleap.TouchFree.Service
 
             ServiceConfig serviceConfig = ServiceConfigFile.LoadConfig();
             InteractionConfig interactionConfig = InteractionConfigFile.LoadConfig();
-            TouchFreeConfig tfConfig = TouchFreeConfigFile.LoadConfig();
 
 #if !BRIGHTSIGN
+            TouchFreeConfig tfConfig = TouchFreeConfigFile.LoadConfig();
             if (!File.Exists(tfConfig.ctiFilePath))
             {
                 _ctiFolder = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "CTIs");
