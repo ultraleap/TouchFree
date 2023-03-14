@@ -1,4 +1,3 @@
-//#define BRIGHTSIGN // <- This is manually modified by CI: do not edit manually.
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
