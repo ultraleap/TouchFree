@@ -81,7 +81,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         public Task<TData> RequestGet()
         {
             var payload = _getPayloadFunc(_diagnosticApi.ConnectedDevice);
-            if (!_diagnosticApi.SendIfConnected(payload)) return Task.FromResult(default(TData)); // Not connected, cannot get
+            if (!_diagnosticApi.SendIfConnected(payload)) return Task.FromResult(Value); // Not connected, cannot get
             lock (_tasks)
             {
                 var task = new TaskCompletionSource<TData>();

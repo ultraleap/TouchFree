@@ -201,13 +201,12 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
                 {
                     trackingFromFile.AnalyticsEnabled = data.Analytics.Value;
                 }
-                
-                await diagnosticApi.RequestSet(data);
 
                 TrackingConfigFile.SaveConfig(trackingFromFile);
             }
+            
+            await diagnosticApi.RequestSet(data);
 
-            // TODO: Handle setting config that hasn't been initialised yet
             SendTrackingDataResponse(request.RequestId, data);
         }
     }
