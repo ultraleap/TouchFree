@@ -156,14 +156,14 @@ export class MessageReceiver {
         this.CheckForHandData();
     }
 
-    // Function: CheckForResponse
+    // Function: CheckForHandshakeResponse
     // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to Sends it to <HandleCallbackList> with
     // the <responseCallbacks> dictionary if there is one.
     CheckForHandshakeResponse(): void {
-        const response: WebSocketResponse | undefined = this.responseQueue.shift();
+        const response: WebSocketResponse | undefined = this.handshakeQueue.shift();
 
         if (response !== undefined) {
-            const responseResult = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
+            const responseResult = MessageReceiver.HandleCallbackList(response, this.handshakeCallbacks);
 
             switch (responseResult) {
                 case 'NoCallbacksFound':
