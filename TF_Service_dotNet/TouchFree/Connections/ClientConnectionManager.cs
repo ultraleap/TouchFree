@@ -43,16 +43,18 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void OnHandsLost() => HandleHandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-        private void ConnectionStatusChange(TrackingServiceState state)
+        private async void ConnectionStatusChange(TrackingServiceState state)
         {
+            var deviceStatus = await trackingApi.UpdateDeviceStatus();
+            
             var currentStatus = new ServiceStatus(
                 string.Empty, // No request id as this event is not a response to a request
                 state,
                 configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
                 VersionManager.Version,
                 trackingApi.ApiInfo.GetValueOrDefault().ServiceVersion,
-                trackingApi.ConnectedDevice.GetValueOrDefault().Serial,
-                trackingApi.ConnectedDevice.GetValueOrDefault().Firmware);
+                deviceStatus.GetValueOrDefault().Serial,
+                deviceStatus.GetValueOrDefault().Firmware);
 
             SendResponse(currentStatus, ActionCode.SERVICE_STATUS);
         }

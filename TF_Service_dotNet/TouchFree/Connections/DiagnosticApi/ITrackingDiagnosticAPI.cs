@@ -13,7 +13,7 @@ public readonly record struct DiagnosticData(MaskingData? Masking, bool? AllowIm
         config.AnalyticsEnabled);
 }
 
-public readonly record struct DeviceInfo(uint DeviceId, string Firmware, string Serial, string Hardware);
+public readonly record struct DeviceInfo(uint DeviceId, string Firmware, string Serial, string Type);
 public readonly record struct ApiInfo(string ServiceVersion, string ProtocolVersion);
 
 public interface ITrackingDiagnosticApi
@@ -24,6 +24,7 @@ public interface ITrackingDiagnosticApi
     public ApiInfo? ApiInfo { get; }
     public DeviceInfo? ConnectedDevice { get; }
 
+    Task<DeviceInfo?> UpdateDeviceStatus();
     Task<DiagnosticData> RequestGet();
     Task RequestSet(DiagnosticData data);
 }

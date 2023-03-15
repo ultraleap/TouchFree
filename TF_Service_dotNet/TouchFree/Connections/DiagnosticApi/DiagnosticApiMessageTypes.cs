@@ -2,7 +2,6 @@
 
 public enum DApiMsgTypes
 {
-    GetDeviceInfo,
     GetDevices,
     GetServerInfo,
     GetVersion,
@@ -76,14 +75,8 @@ struct DiagnosticDevice
     public string type;
     public uint clients;
     public bool streaming;
-}
-
-struct DiagnosticDeviceInformation
-{
-    public string device_hardware;
-    public string device_serial;
+    public string serial_number;
     public string device_firmware;
-    public uint device_id;
 }
 
 struct ServiceInfoPayload

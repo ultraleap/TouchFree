@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Leap;
 using Newtonsoft.Json;
 using Ultraleap.TouchFree.Library.Configuration;
 using Websocket.Client;
@@ -17,6 +17,24 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     public event Action<DeviceInfo> DeviceDisconnected;
     public ApiInfo? ApiInfo { get; private set; }
     public DeviceInfo? ConnectedDevice { get; private set; }
+
+    public Task<DeviceInfo?> UpdateDeviceStatus()
+    {
+        lock (_deviceStatusTasks)
+        {
+            if (!SendIfConnected(new DApiMessage(DApiMsgTypes.GetDevices)))
+            {
+                // If we're not connected to the service we won't have a connected device
+                UpdateDevice(null);
+                return Task.FromResult<DeviceInfo?>(null);
+            }
+
+            // Add a new task to be completed when device info is updated
+            var task = new TaskCompletionSource<DeviceInfo?>();
+            _deviceStatusTasks.Add(task);
+            return task.Task;
+        }
+    }
 
     public async Task<DiagnosticData> RequestGet() => 
         new(await _maskingData.RequestGet(),
@@ -156,7 +174,9 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     private readonly WebsocketClient _webSocket;
     private readonly Timer _messageQueueTimer;
     private readonly ConcurrentQueue<string> _readMessageQueue = new();
-        
+
+    private readonly List<TaskCompletionSource<DeviceInfo?>> _deviceStatusTasks = new();
+
     private bool IsConnected => _webSocket is { IsStarted: true, IsRunning: true };
     
     private void SaveConfigIfNoneExistsAndAllVariablesAreInitialized()
@@ -189,12 +209,12 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             TouchFreeLog.WriteLine($"DiagnosticAPI connected - (re)connection type '{info.Type}'");
             SendIfConnected(new DApiMessage(DApiMsgTypes.GetServerInfo));
             SendIfConnected(new DApiMessage(DApiMsgTypes.GetVersion));
-            RefreshConnectedDevice();
+            UpdateDeviceStatus();
         });
         _webSocket.DisconnectionHappened.Subscribe(info =>
         {
             ApiInfo = null;
-            DeviceChanged(null);
+            UpdateDevice(null);
             
             _allowImages.CancelSendTasks();
             _analyticsEnabled.CancelSendTasks();
@@ -304,9 +324,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         // Both of these do a GetDevices request to force refresh the diagnostic API device information
         // and perform any action for a newly device connected such as applying existing config or
         // retrieving uninitialized variables from the device
-        void RefreshDeviceInfo(object sender, DeviceEventArgs e) => RefreshConnectedDevice();
-        trackingConnectionManager.Controller.Device += RefreshDeviceInfo;
-        trackingConnectionManager.Controller.DeviceLost += RefreshDeviceInfo;
+        trackingConnectionManager.ServiceStatusChange += _ => UpdateDeviceStatus();
 
         DeviceConnected += _ =>
         {
@@ -365,32 +383,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
                     break;
 
                 case DApiMsgTypes.GetDevices:
-                    Handle<DiagnosticDevice[]>(
-                        devices =>
-                        {
-                            uint? newConnectedDeviceId = null;
-                            if (devices.Length > 0)
-                            {
-                                newConnectedDeviceId = devices[0].device_id;
-                            }
-
-                            if (ConnectedDevice?.DeviceId != newConnectedDeviceId)
-                            {
-                                // Connection event
-                                if (newConnectedDeviceId != null)
-                                {
-                                    // Get the rest of the info about the newly connected device
-                                    // We wait for the response with full device information before firing a device
-                                    // connected event or updating ConnectedDevice
-                                    SendIfConnected(new DApiPayloadMessage<DeviceIdPayload>(DApiMsgTypes.GetDeviceInfo,
-                                        new DeviceIdPayload { device_id = newConnectedDeviceId.Value }));
-                                }
-                                else // Disconnection event
-                                {
-                                    DeviceChanged(null);
-                                }
-                            }
-                        });
+                    Handle<DiagnosticDevice[]>(devices => UpdateDevice(devices.FirstOrDefault()));
                     break;
 
                 case DApiMsgTypes.GetVersion:
@@ -409,10 +402,6 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
                         });
                     break;
 
-                case DApiMsgTypes.GetDeviceInfo:
-                    Handle<DiagnosticDeviceInformation>(information => DeviceChanged(information));
-                    break;
-
                 default:
                     TouchFreeLog.WriteLine($"DiagnosticAPI - Could not parse response of type: {response.type} with message: {message}");
                     break;
@@ -428,25 +417,35 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         return true;
     }
 
-    private void RefreshConnectedDevice() => SendIfConnected(new DApiMessage(DApiMsgTypes.GetDevices));
-
-    private void DeviceChanged(DiagnosticDeviceInformation? newDevice)
+    private void UpdateDevice(DiagnosticDevice? newDevice)
     {
-        // Fire a disconnection event for the previous device if there was one
-        if (ConnectedDevice.HasValue)
+        if (ConnectedDevice?.DeviceId != newDevice?.device_id)
         {
-            DeviceDisconnected?.Invoke(ConnectedDevice.Value);
+            // Fire a disconnection event for the previous device if there was one
+            if (ConnectedDevice.HasValue)
+            {
+                DeviceDisconnected?.Invoke(ConnectedDevice.Value);
+            }
+
+            if (newDevice.HasValue)
+            {
+                ConnectedDevice = new DeviceInfo(newDevice.Value.device_id,
+                    newDevice.Value.device_firmware,
+                    newDevice.Value.serial_number,
+                    newDevice.Value.type);
+                DeviceConnected?.Invoke(ConnectedDevice.Value);
+            }
+            else ConnectedDevice = null;
         }
 
-        if (newDevice.HasValue)
+        lock (_deviceStatusTasks)
         {
-            ConnectedDevice = new DeviceInfo(newDevice.Value.device_id,
-                newDevice.Value.device_firmware,
-                newDevice.Value.device_serial,
-                newDevice.Value.device_hardware);
-            DeviceConnected?.Invoke(ConnectedDevice.Value);
+            foreach (var statusTask in _deviceStatusTasks)
+            {
+                statusTask.SetResult(ConnectedDevice);
+            }
+            _deviceStatusTasks.Clear();
         }
-        else ConnectedDevice = null;
     }
 
     void IDisposable.Dispose()

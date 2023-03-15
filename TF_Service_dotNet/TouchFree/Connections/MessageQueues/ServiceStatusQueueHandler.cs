@@ -24,16 +24,18 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             _trackingApi = trackingApi;
         }
 
-        protected override void Handle(IncomingRequestWithId request)
+        protected override async void Handle(IncomingRequestWithId request)
         {
+            var deviceStatus = await _trackingApi.UpdateDeviceStatus();
+            
             var currentStatus = new ServiceStatus(
                 request.RequestId,
                 _handManager.ConnectionManager.TrackingServiceState,
                 _configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
                 VersionManager.Version,
                 _trackingApi.ApiInfo.GetValueOrDefault().ServiceVersion,
-                _trackingApi.ConnectedDevice.GetValueOrDefault().Serial,
-                _trackingApi.ConnectedDevice.GetValueOrDefault().Firmware);
+                deviceStatus.GetValueOrDefault().Serial,
+                deviceStatus.GetValueOrDefault().Firmware);
 
             clientMgr.SendResponse(currentStatus, ActionCode.SERVICE_STATUS);
         }
