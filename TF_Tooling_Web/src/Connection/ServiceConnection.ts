@@ -215,8 +215,8 @@ export class ServiceConnection {
         _requestID: string,
         _callback: ((detail: WebSocketResponse | T) => void) | null,
         _callbacksStore: {[id: string]: ResponseCallback}): void => {
-            if (_requestID === '') {
-                if (_callback !== null) {
+            if (!_requestID) {
+                if (_callback) {
                     const response: WebSocketResponse = new WebSocketResponse(
                         '',
                         'Failure',
@@ -230,7 +230,7 @@ export class ServiceConnection {
                 return;
             }
     
-            if (_callback != null) {
+            if (_callback) {
                 _callbacksStore[_requestID] = new ResponseCallback(
                     Date.now(),
                     _callback
