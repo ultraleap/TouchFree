@@ -113,7 +113,7 @@ export class ServiceConnection {
             this.handshakeCompleted = true;
             TouchFree.DispatchEvent('OnConnected');
         } else {
-            console.log(`Connection to Service failed. Details:\n${response.message}`);
+            console.error(`Connection to Service failed. Details:\n${response.message}`);
         }
     };
 
@@ -160,8 +160,13 @@ export class ServiceConnection {
                 break;
             }
 
+            case ActionCode.VERSION_HANDSHAKE_RESPONSE: {
+                const response = looseData.content as WebSocketResponse;
+                ConnectionManager.messageReceiver.handshakeQueue.push(response);
+                break;
+            }
+
             case ActionCode.CONFIGURATION_RESPONSE:
-            case ActionCode.VERSION_HANDSHAKE_RESPONSE:
             case ActionCode.SERVICE_STATUS_RESPONSE:
             case ActionCode.CONFIGURATION_FILE_RESPONSE:
             case ActionCode.QUICK_SETUP_RESPONSE: {

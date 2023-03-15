@@ -66,6 +66,15 @@ export class MessageReceiver {
     // that are awaiting response from the Service.
     responseCallbacks: { [id: string]: ResponseCallback } = {};
 
+    // Variable: handshakeQueue
+    // A queue of handshake <WebSocketResponses> that have been received from the Service.
+    handshakeQueue: Array<WebSocketResponse> = [];
+
+    // Variable: handshakeCallbacks
+    // A dictionary of unique request IDs and <ResponseCallbacks> that represent handshake requests
+    // that are awaiting response from the Service.
+    handshakeCallbacks: { [id: string]: ResponseCallback } = {};
+
     // Variable: configStateQueue
     // A queue of <ConfigState> that have been received from the Service.
     configStateQueue: Array<ConfigState> = [];
@@ -138,12 +147,56 @@ export class MessageReceiver {
     // Update function. Checks all queues for messages to handle. Run on an interval
     // started during the constructor
     Update(): void {
+        this.CheckForHandshakeResponse();
         this.CheckForResponse();
         this.CheckForConfigState();
         this.CheckForServiceStatus();
         this.CheckForTrackingStateResponse();
         this.CheckForAction();
         this.CheckForHandData();
+    }
+
+    // Function: CheckForResponse
+    // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to Sends it to <HandleCallbackList> with
+    // the <responseCallbacks> dictionary if there is one.
+    CheckForHandshakeResponse(): void {
+        const response: WebSocketResponse | undefined = this.responseQueue.shift();
+
+        if (response !== undefined) {
+            const responseResult = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
+
+            switch (responseResult) {
+                case 'NoCallbacksFound':
+                    this.LogNoCallbacksWarning(response);
+                    break;
+                case 'Success':
+                    if (response.message && response.status === 'Success') {
+                        if (response.message.indexOf('Handshake Warning') >= 0) {
+                            console.warn('Received Handshake Warning from TouchFree:\n' + response.message);
+                        } else {
+                            console.log('Received Handshake Success from TouchFree:\n' + response.message);
+                        }
+                    } else {
+                        console.error('Received Handshake Error from TouchFree:\n' + response.message);
+                    }
+                    break;
+            }
+        }
+    }
+
+
+    private LogNoCallbacksWarning(response: WebSocketResponse): void {
+        console.warn(
+            'Received a Handshake Response that did not match a callback.' +
+                'This is the content of the response: \n Response ID: ' +
+                response.requestID +
+                '\n Status: ' +
+                response.status +
+                '\n Message: ' +
+                response.message +
+                '\n Original request - ' +
+                response.originalRequest
+        );
     }
 
     // Function: CheckForResponse
@@ -157,17 +210,7 @@ export class MessageReceiver {
 
             switch (responseResult) {
                 case 'NoCallbacksFound':
-                    console.warn(
-                        'Received a WebSocketResponse that did not match a callback.' +
-                            'This is the content of the response: \n Response ID: ' +
-                            response.requestID +
-                            '\n Status: ' +
-                            response.status +
-                            '\n Message: ' +
-                            response.message +
-                            '\n Original request - ' +
-                            response.originalRequest
-                    );
+                    this.LogNoCallbacksWarning(response);
                     break;
                 case 'Success':
                     if (response.message) {
@@ -347,8 +390,10 @@ export class MessageReceiver {
         const lastClearTime: number = Date.now();
 
         MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.responseCallbacks);
+        MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.handshakeCallbacks);
         MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.configStateCallbacks);
         MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.serviceStatusCallbacks);
+        MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.trackingStateCallbacks);
     }
 
     private static ClearUnresponsiveItems<T>(
