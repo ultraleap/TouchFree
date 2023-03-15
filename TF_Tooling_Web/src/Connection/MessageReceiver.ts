@@ -162,7 +162,7 @@ export class MessageReceiver {
     CheckForHandshakeResponse(): void {
         const response: WebSocketResponse | undefined = this.handshakeQueue.shift();
 
-        if (response !== undefined) {
+        if (response) {
             const responseResult = MessageReceiver.HandleCallbackList(response, this.handshakeCallbacks);
 
             switch (responseResult) {
@@ -205,7 +205,7 @@ export class MessageReceiver {
     CheckForResponse(): void {
         const response: WebSocketResponse | undefined = this.responseQueue.shift();
 
-        if (response !== undefined) {
+        if (response) {
             const responseResult = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
 
             switch (responseResult) {
@@ -228,7 +228,7 @@ export class MessageReceiver {
     CheckForConfigState(): void {
         const configState: ConfigState | undefined = this.configStateQueue.shift();
 
-        if (configState !== undefined) {
+        if (configState) {
             const configResult = MessageReceiver.HandleCallbackList(configState, this.configStateCallbacks);
             switch (configResult) {
                 case 'NoCallbacksFound':
@@ -266,7 +266,7 @@ export class MessageReceiver {
     CheckForServiceStatus(): void {
         const serviceStatus: ServiceStatus | undefined = this.serviceStatusQueue.shift();
 
-        if (serviceStatus !== undefined) {
+        if (serviceStatus) {
             const callbackResult = MessageReceiver.HandleCallbackList(serviceStatus, this.serviceStatusCallbacks);
 
             switch (callbackResult) {
@@ -295,7 +295,7 @@ export class MessageReceiver {
     CheckForTrackingStateResponse(): void {
         const trackingStateResponse: TrackingStateResponse | undefined = this.trackingStateQueue.shift();
 
-        if (trackingStateResponse !== undefined) {
+        if (trackingStateResponse) {
             this.HandleTrackingStateResponse(trackingStateResponse);
         }
     }
