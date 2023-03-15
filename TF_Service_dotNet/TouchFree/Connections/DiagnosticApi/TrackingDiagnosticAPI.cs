@@ -13,19 +13,14 @@ namespace Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
 public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
 {
-    public event Action<DeviceInfo> DeviceConnected;
-    public event Action<DeviceInfo> DeviceDisconnected;
     public ApiInfo? ApiInfo { get; private set; }
-    public DeviceInfo? ConnectedDevice { get; private set; }
 
-    public Task<DeviceInfo?> UpdateDeviceStatus()
+    public Task<DeviceInfo?> RequestDeviceInfo()
     {
         lock (_deviceStatusTasks)
         {
             if (!SendIfConnected(new DApiMessage(DApiMsgTypes.GetDevices)))
             {
-                // If we're not connected to the service we won't have a connected device
-                UpdateDevice(null);
                 return Task.FromResult<DeviceInfo?>(null);
             }
 
@@ -98,7 +93,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
 
         public Task<TData> RequestGet()
         {
-            var payload = _getPayloadFunc(_diagnosticApi.ConnectedDevice);
+            var payload = _getPayloadFunc(_diagnosticApi._connectedDevice);
             if (!_diagnosticApi.SendIfConnected(payload)) return Task.FromResult(Value); // Not connected, cannot get
             lock (_tasks)
             {
@@ -112,8 +107,8 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         {
             if (!value.HasValue) return Task.CompletedTask;
             Value = value.Value;
-            if (_connectedDeviceRequired && !_diagnosticApi.ConnectedDevice.HasValue) return Task.CompletedTask; // Only send the request if we have a device, when one is required
-            var payload = _setPayloadFunc(_value, _diagnosticApi.ConnectedDevice);
+            if (_connectedDeviceRequired && !_diagnosticApi._connectedDevice.HasValue) return Task.CompletedTask; // Only send the request if we have a device, when one is required
+            var payload = _setPayloadFunc(_value, _diagnosticApi._connectedDevice);
             if (!_diagnosticApi.SendIfConnected(payload)) return Task.CompletedTask; // Couldn't send to api, will be sent next connection
             lock (_tasks)
             {
@@ -175,7 +170,9 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     private readonly Timer _messageQueueTimer;
     private readonly ConcurrentQueue<string> _readMessageQueue = new();
 
+    private DeviceInfo? _connectedDevice;
     private readonly List<TaskCompletionSource<DeviceInfo?>> _deviceStatusTasks = new();
+    private event Action<DeviceInfo> DeviceConnected;
 
     private bool IsConnected => _webSocket is { IsStarted: true, IsRunning: true };
     
@@ -209,7 +206,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             TouchFreeLog.WriteLine($"DiagnosticAPI connected - (re)connection type '{info.Type}'");
             SendIfConnected(new DApiMessage(DApiMsgTypes.GetServerInfo));
             SendIfConnected(new DApiMessage(DApiMsgTypes.GetVersion));
-            UpdateDeviceStatus();
+            RequestDeviceInfo();
         });
         _webSocket.DisconnectionHappened.Subscribe(info =>
         {
@@ -224,7 +221,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             TouchFreeLog.ErrorWriteLine($"DiagnosticAPI disconnected - disconnection type '{info.Type}'");
             if (info.Exception != null)
             {
-                TouchFreeLog.ErrorWriteLine($"Disconnection caused by exception: {info.Exception}");
+                TouchFreeLog.ErrorWriteLine($"Disconnection caused by exception: {info.Exception.Message}");
             }
 
             if (info.CloseStatus.HasValue)
@@ -321,10 +318,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         configManager.OnTrackingConfigUpdated += config => RequestSet((DiagnosticData)config);
 #pragma warning restore CS4014
         
-        // Both of these do a GetDevices request to force refresh the diagnostic API device information
-        // and perform any action for a newly device connected such as applying existing config or
-        // retrieving uninitialized variables from the device
-        trackingConnectionManager.ServiceStatusChange += _ => UpdateDeviceStatus();
+        trackingConnectionManager.ServiceStatusChange += _ => RequestDeviceInfo();
 
         DeviceConnected += _ =>
         {
@@ -411,7 +405,13 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
 
     private bool SendIfConnected(object payload)
     {
-        if (!IsConnected) return false;
+        if (!IsConnected)
+        {
+            // If we're not connected reset info we have
+            ApiInfo = null;
+            UpdateDevice(null);
+            return false;
+        }
         var requestMessage = JsonConvert.SerializeObject(payload);
         _webSocket.Send(requestMessage);
         return true;
@@ -419,30 +419,19 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
 
     private void UpdateDevice(DiagnosticDevice? newDevice)
     {
-        if (ConnectedDevice?.DeviceId != newDevice?.device_id)
-        {
-            // Fire a disconnection event for the previous device if there was one
-            if (ConnectedDevice.HasValue)
-            {
-                DeviceDisconnected?.Invoke(ConnectedDevice.Value);
-            }
-
-            if (newDevice.HasValue)
-            {
-                ConnectedDevice = new DeviceInfo(newDevice.Value.device_id,
-                    newDevice.Value.device_firmware,
-                    newDevice.Value.serial_number,
-                    newDevice.Value.type);
-                DeviceConnected?.Invoke(ConnectedDevice.Value);
-            }
-            else ConnectedDevice = null;
-        }
-
         lock (_deviceStatusTasks)
         {
+            if (_connectedDevice?.DeviceId != newDevice?.device_id)
+            {
+                _connectedDevice = newDevice.HasValue
+                    ? new DeviceInfo(newDevice.Value)
+                    : null;
+                if (_connectedDevice.HasValue) DeviceConnected?.Invoke(_connectedDevice.Value);
+            }
+
             foreach (var statusTask in _deviceStatusTasks)
             {
-                statusTask.SetResult(ConnectedDevice);
+                statusTask.SetResult(_connectedDevice);
             }
             _deviceStatusTasks.Clear();
         }

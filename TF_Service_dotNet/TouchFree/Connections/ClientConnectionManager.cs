@@ -45,7 +45,7 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private async void ConnectionStatusChange(TrackingServiceState state)
         {
-            var deviceStatus = await trackingApi.UpdateDeviceStatus();
+            var deviceStatus = await trackingApi.RequestDeviceInfo();
             
             var currentStatus = new ServiceStatus(
                 string.Empty, // No request id as this event is not a response to a request

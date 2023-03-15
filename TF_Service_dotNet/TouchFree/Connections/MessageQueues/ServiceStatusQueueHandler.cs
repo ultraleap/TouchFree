@@ -26,7 +26,7 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 
         protected override async void Handle(IncomingRequestWithId request)
         {
-            var deviceStatus = await _trackingApi.UpdateDeviceStatus();
+            var deviceStatus = await _trackingApi.RequestDeviceInfo();
             
             var currentStatus = new ServiceStatus(
                 request.RequestId,
