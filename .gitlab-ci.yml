@@ -169,10 +169,6 @@ TF_Service::dotNet::Windows::build:
     - dotnet publish -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r win-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
-    - if (Test-Path -Path "./Service_dotNet_Build") {
-        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
-        Remove-Item -LiteralPath ./Service_dotNet_Build -Force -Recurse
-      }
     - mkdir ./Service_dotNet_Build
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/win-x64/publish/*" ./Service_dotNet_Build
     - rm ./Service_dotNet_Build/interaction-tuning.json
@@ -203,10 +199,6 @@ TF_Service::dotNet::ARMLinux::build:
     - dotnet publish -p:BRIGHTSIGN=true -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-arm64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
 
     # Move the built executable to the root directory
-    - if (Test-Path -Path "./Service_dotNet_Build_ARMLinux") {
-        Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
-        Remove-Item -LiteralPath ./Service_dotNet_Build_ARMLinux -Force -Recurse
-      }
     - mkdir ./Service_dotNet_Build_ARMLinux
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/linux-arm64/publish/*" ./Service_dotNet_Build_ARMLinux
     - rm ./Service_dotNet_Build_ARMLinux/interaction-tuning.json
@@ -224,6 +216,42 @@ TF_Service::dotNet::ARMLinux::build:
     name: "TouchFree_Service_dotNet_ARMLinux"
     paths:
     - ./Service_dotNet_Build_ARMLinux/**
+    expire_in: 2 weeks
+    when: always
+
+TF_Service::dotNet::x64Linux::build:
+  extends: .Always_Build
+  tags:
+    - docker-windows
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
+  script:
+    - if ($CI_COMMIT_REF_NAME -Match 'release/.*') {
+        $TOUCHFREE_SUFFIX = 'beta'
+      } else {
+        $TOUCHFREE_SUFFIX = 'dev+' + ${env:CI_COMMIT_SHORT_SHA}
+      }
+
+    - dotnet publish -p:BRIGHTSIGN=true -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree/TouchFreeLib.csproj"
+    - dotnet publish -p:BRIGHTSIGN=true -p:VersionPrefix=$TOUCHFREE_VERSION -p:VersionSuffix=$TOUCHFREE_SUFFIX -c Release -r linux-x64 "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/TouchFree_Service.csproj"
+
+    # Move the built executable to the root directory
+    - mkdir ./Service_dotNet_Build_x64Linux
+    - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/linux-x64/publish/*" ./Service_dotNet_Build_x64Linux
+    - rm ./Service_dotNet_Build_x64Linux/interaction-tuning.json
+
+    - mkdir ./Service_dotNet_Build_x64Linux/ThirdParty
+    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/.NetRuntime.License.txt" ./Service_dotNet_Build_x64Linux/ThirdParty
+    - mv ./Service_dotNet_Build_x64Linux/ThirdParty/.NetRuntime.License.txt ./Service_dotNet_Build_x64Linux/ThirdParty/dotNetRuntime.License.txt
+    - cp "$CI_PROJECT_DIR/Third_Party_Licenses/Newtonsoft.JSON.License.txt" ./Service_dotNet_Build_x64Linux/ThirdParty
+
+
+    # We don't sign the Linux builds as yet as we're not sure of the method.
+    # - $cert=Get-ChildItem -Path Cert:\LocalMachine\My -CodeSigningCert
+    # - Set-AuthenticodeSignature -FilePath "$CI_PROJECT_DIR/Service_dotNet_Build_x64Linux/TouchFree_Service" -TimestampServer 'http://timestamp.comodoca.com/authenticode' -Certificate $cert
+  artifacts:
+    name: "TouchFree_Service_dotNet_x64Linux"
+    paths:
+    - ./Service_dotNet_Build_x64Linux/**
     expire_in: 2 weeks
     when: always
 
