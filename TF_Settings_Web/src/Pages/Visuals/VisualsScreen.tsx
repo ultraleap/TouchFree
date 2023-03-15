@@ -1,7 +1,7 @@
 import styles from './Visuals.module.scss';
 
 import classNames from 'classnames/bind';
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import tinycolor, { ColorFormats } from 'tinycolor2';
 
 import { readVisualsConfig, isDesktop, writeVisualsConfig } from '@/TauriUtils';
@@ -58,7 +58,7 @@ const VisualsScreen: React.FC = () => {
     const config = useStatefulRef<VisualsConfig>(defaultVisualsConfig);
 
     const [hasReadConfig, setHasReadConfig] = useState<boolean>(false);
-    const [cursor] = useState<SVGCursor>(TouchFree.GetCurrentCursor() as SVGCursor);
+    const [cursor] = useState<SVGCursor | undefined>(TouchFree.GetCurrentCursor() as SVGCursor | undefined);
     const [currentPreviewBgIndex, setCurrentPreviewBgIndex] = useState<number>(0);
 
     useEffect(() => {
@@ -72,8 +72,8 @@ const VisualsScreen: React.FC = () => {
         section.setProperty('--center-border', cursorStyle[2]);
 
         config.current.cursorEnabled
-            ? cursorStyle.forEach((value, index) => cursor.SetColor(index, value))
-            : cursor.ResetToDefaultColors();
+            ? cursorStyle.forEach((value, index) => cursor?.SetColor(index, value))
+            : cursor?.ResetToDefaultColors();
     }, [
         hasReadConfig,
         config.current.cursorEnabled,
@@ -84,14 +84,14 @@ const VisualsScreen: React.FC = () => {
     ]);
 
     const updateConfig = (content: Partial<VisualsConfig>) => {
-        config.current = {...config.current, ...content};
+        config.current = { ...config.current, ...content };
     };
 
     const writeVisualsConfigIfNew = () => {
         if (writtenConfig.current === config.current) return;
         writtenConfig.current = config.current;
         writeVisualsConfig(config.current).catch((err) => console.error(err));
-    }; 
+    };
 
     useEffect(() => {
         readVisualsConfig()
@@ -104,7 +104,7 @@ const VisualsScreen: React.FC = () => {
             .catch((err) => console.error(err));
 
         return () => {
-            cursor.ResetToDefaultColors();
+            cursor?.ResetToDefaultColors();
             window.removeEventListener('pointerup', writeVisualsConfigIfNew);
         };
     }, []);
@@ -237,13 +237,13 @@ const VisualsScreen: React.FC = () => {
                                 leftLabel="1 Seconds"
                                 rightLabel="60 Seconds"
                                 value={roundToTwoDP(config.current.ctiShowAfterTimer)}
-                                onChange={(value) => updateConfig({ ctiShowAfterTimer: value }) }
+                                onChange={(value) => updateConfig({ ctiShowAfterTimer: value })}
                             />
                             <RadioLine
                                 name="Close CTI When"
                                 selected={config.current.ctiHideTrigger}
                                 options={closeCtiOptions}
-                                onChange={(option) => updateConfig({ ctiHideTrigger: closeCtiOptions.indexOf(option)})}
+                                onChange={(option) => updateConfig({ ctiHideTrigger: closeCtiOptions.indexOf(option) })}
                             />
                         </>
                     )}
@@ -257,8 +257,8 @@ const roundToTwoDP = (numberIn: number) => Math.round(numberIn * 100) / 100;
 
 const setCustomColorsFromConfig = (config: VisualsConfig) => {
     const { primaryCustomColor, secondaryCustomColor, tertiaryCustomColor } = config;
-    cursorStyles.Custom = [primaryCustomColor, secondaryCustomColor, tertiaryCustomColor].map(
-        (color) => tinycolor.fromRatio(color).toHex8String()
+    cursorStyles.Custom = [primaryCustomColor, secondaryCustomColor, tertiaryCustomColor].map((color) =>
+        tinycolor.fromRatio(color).toHex8String()
     ) as CursorStyle;
 };
 
