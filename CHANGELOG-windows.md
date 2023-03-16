@@ -31,8 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unity Settings: Added preset options for dark/light outline cursor
 
 ### Changed
+- Unity Settings/Overlay Application: Split projects into two for a better dev experience
 - Unity Settings: Allow resizing of window when in windowed mode
 - Unity Settings/Service/Overlay Application: Adjusted proportions of TouchFree icon
+- Unity Settings/Service: CTIs are now managed by the Service, not the Unity Settings
+- Service: Improved error and warning messaging when TouchFree Tooling and Service API versions do not match.
 
 ### Fixed
 - Unity Settings/Service: Fixed an issue where using Touch Plane with Scroll and Drag caused cursor jumps

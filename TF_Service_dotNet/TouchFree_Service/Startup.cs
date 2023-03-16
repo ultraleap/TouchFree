@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Service.Connection;
@@ -37,6 +38,7 @@ namespace Ultraleap.TouchFree.Service
 
             var configFileWatcher = app.ApplicationServices.GetService<ConfigFileWatcher>();
             var configManager = app.ApplicationServices.GetService<IConfigManager>();
+            configManager.OnServiceConfigUpdated += ConfigManager_OnServiceConfigUpdated;
 
             app.UseTouchFreeRouter(configManager);
 
@@ -44,8 +46,13 @@ namespace Ultraleap.TouchFree.Service
 
             // This is here so the test infrastructure has some sign that the app is ready
             TouchFreeLog.WriteLine("Service Setup Complete");
-
             TouchFreeLog.WriteLine("TouchFree physical config screen height is: " + configManager.PhysicalConfig.ScreenHeightMm + " mm");
+        }
+
+        // If we've detected a change to the IP/port we should be operating on, close.
+        private void ConfigManager_OnServiceConfigUpdated(ServiceConfig config = null)
+        {
+            TouchFreeLog.WriteLine($"Warning! TouchFree IP/port config is different to the active IP/port: http://{config.ServiceIP}:{config.ServicePort}");
         }
     }
 }

@@ -18,4 +18,32 @@
 	<ItemGroup>
 	  <Folder Include="wwwroot\" />
 	</ItemGroup>
+	
+	<PropertyGroup>
+		<DefineConstants Condition=" '$(BRIGHTSIGN)' == 'true' ">$(DefineConstants);BRIGHTSIGN</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup Condition=" '$(BRIGHTSIGN)' != 'true' ">
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(BRIGHTSIGN)' != 'true' ">
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(BRIGHTSIGN)' == 'true' ">
+		<Compile Remove="Resources\**" />
+		<Content Remove="Resources\**" />
+		<EmbeddedResource Remove="Resources\**" />
+		<None Remove="Resources\**" />
+		<Compile Remove="Properties\Resources.Designer.cs" />
+		<EmbeddedResource Remove="Properties\Resources.resx" />
+	</ItemGroup>
 </Project>

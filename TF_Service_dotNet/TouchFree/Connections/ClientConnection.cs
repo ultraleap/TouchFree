@@ -112,34 +112,34 @@ namespace Ultraleap.TouchFree.Library.Connections
             this.SendInteractionZoneEvent(clientMgr.MissedInteractionZoneEvent);
         }
 
-        public static Compatibility GetVersionCompability(string _clientVersion, Version _coreVersion)
+        public static CompatibilityInformation GetVersionCompability(string _clientVersion, Version _coreVersion)
         {
             Version clientVersionParsed = new Version(_clientVersion);
 
             if (clientVersionParsed.Major < _coreVersion.Major)
             {
-                return Compatibility.CLIENT_OUTDATED;
+                return new CompatibilityInformation(Compatibility.CLIENT_OUTDATED, clientVersionParsed, _coreVersion);
             }
             else if (clientVersionParsed.Major > _coreVersion.Major)
             {
-                return Compatibility.SERVICE_OUTDATED;
+                return new CompatibilityInformation(Compatibility.SERVICE_OUTDATED, clientVersionParsed, _coreVersion);
             }
 
             else if (clientVersionParsed.Minor < _coreVersion.Minor)
             {
-                return Compatibility.CLIENT_OUTDATED_WARNING;
+                return new CompatibilityInformation(Compatibility.CLIENT_OUTDATED_WARNING, clientVersionParsed, _coreVersion);
             }
             else if (clientVersionParsed.Minor > _coreVersion.Minor)
             {
-                return Compatibility.SERVICE_OUTDATED;
+                return new CompatibilityInformation(Compatibility.SERVICE_OUTDATED, clientVersionParsed, _coreVersion);
             }
 
             if (clientVersionParsed.Build > _coreVersion.Build)
             {
-                return Compatibility.SERVICE_OUTDATED_WARNING;
+                return new CompatibilityInformation(Compatibility.SERVICE_OUTDATED_WARNING, clientVersionParsed, _coreVersion);
             }
 
-            return Compatibility.COMPATIBLE;
+            return new CompatibilityInformation(Compatibility.COMPATIBLE, clientVersionParsed, _coreVersion);
         }
 
         public void OnMessage(string _message)
@@ -211,7 +211,7 @@ namespace Ultraleap.TouchFree.Library.Connections
             }
 
             string clientApiVersion = (string)contentObj[VersionManager.API_HEADER_NAME];
-            Compatibility compatibility = GetVersionCompability(clientApiVersion, VersionManager.ApiVersion);
+            CompatibilityInformation compatibilityInfo = GetVersionCompability(clientApiVersion, VersionManager.ApiVersion);
 
             string configurationWarning = string.Empty;
 
@@ -220,22 +220,25 @@ namespace Ultraleap.TouchFree.Library.Connections
                 configurationWarning = " Configuration is in a bad state. Please update the configuration via TouchFree Settings";
             }
 
-            switch (compatibility)
+            var clientText = $"Client (API v{compatibilityInfo.ClientVersion})";
+            var serviceText = $"Service (API v{compatibilityInfo.ServiceVersion})";
+
+            switch (compatibilityInfo.Compatibility)
             {
                 case Compatibility.COMPATIBLE:
                     SendAndHandleHandshakeSuccess($"Handshake Successful.{configurationWarning}", response);
                     return;
                 case Compatibility.CLIENT_OUTDATED_WARNING:
-                    SendAndHandleHandshakeSuccess($"Handshake Warning: Client is outdated relative to Service.{configurationWarning}", response);
+                    SendAndHandleHandshakeSuccess($"Handshake Warning: {clientText} is outdated relative to {serviceText}.{configurationWarning}", response);
                     return;
                 case Compatibility.SERVICE_OUTDATED_WARNING:
-                    SendAndHandleHandshakeSuccess($"Handshake Warning: Service is outdated relative to Client.{configurationWarning}", response);
+                    SendAndHandleHandshakeSuccess($"Handshake Warning: {serviceText} is outdated relative to {clientText}.{configurationWarning}", response);
                     return;
                 case Compatibility.CLIENT_OUTDATED:
-                    SendAndHandleHandshakeFailure($"Handshake Failed: Client is outdated relative to Service.{configurationWarning}", response);
+                    SendAndHandleHandshakeFailure($"Handshake Failed: {clientText} is outdated relative to {serviceText}.{configurationWarning}", response);
                     return;
                 case Compatibility.SERVICE_OUTDATED:
-                    SendAndHandleHandshakeFailure($"Handshake Failed: Service is outdated relative to Client.{configurationWarning}", response);
+                    SendAndHandleHandshakeFailure($"Handshake Failed: {serviceText} is outdated relative to {clientText}.{configurationWarning}", response);
                     return;
             }
 

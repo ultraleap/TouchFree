@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Service: `HandEntered` & `HandExited` events, sent when the active hand enters and exits the interaction zone (if enabled) respectively
 - Service: Removed informational level logging to improve readability of log files
 
+### Changed
+
+- Service: Improved error and warning messaging when TouchFree Tooling and Service API versions do not match.
+
 ### Fixed
 
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects

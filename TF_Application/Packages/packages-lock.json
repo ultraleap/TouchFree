@@ -7,6 +7,12 @@
       "dependencies": {},
       "hash": "b870d64b5704a764fd03aaccb11f2dbe652b1756"
     },
+    "com.ultraleap.tracking": {
+      "version": "file:../../TF_Tooling_Unity/Packages/Tracking/Packages/Tracking",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
