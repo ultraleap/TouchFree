@@ -48,7 +48,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         }
         catch (OperationCanceledException canceledException)
         {
-            TouchFreeLog.WriteLine($"DiagnosticAPI Set Request canceled: {canceledException.Message}");
+            TouchFreeLog.WriteLine($"DiagnosticAPI - set request canceled: {canceledException.Message}");
         }
     }
     
@@ -64,15 +64,19 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         private readonly SetPayloadFunc _setPayloadFunc;
         private readonly List<TaskCompletionSource<TData>> _tasks;
         private TData _value;
+        private readonly string _name;
+        public override string ToString() => _name;
 
         public ConfigurationVariable(
             TrackingDiagnosticApi diagnosticApi,
+            string name,
             bool connectedDeviceRequired,
             GetPayloadFunc getPayloadFunc,
             SetPayloadFunc setPayloadFunc,
             TData initial = default)
         {
             _diagnosticApi = diagnosticApi;
+            _name = name;
             _connectedDeviceRequired = connectedDeviceRequired;
             _getPayloadFunc = getPayloadFunc;
             _setPayloadFunc = setPayloadFunc;
@@ -107,9 +111,19 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         {
             if (!value.HasValue) return Task.CompletedTask;
             Value = value.Value;
-            if (_connectedDeviceRequired && !_diagnosticApi._connectedDevice.HasValue) return Task.CompletedTask; // Only send the request if we have a device, when one is required
+            if (_connectedDeviceRequired && !_diagnosticApi._connectedDevice.HasValue)
+            {
+                TouchFreeLog.WriteLine($"DiagnosticAPI - '{this}' set to '{Value}' - device required but none connected, did not send to api");
+                return Task.CompletedTask; // Only send the request if we have a device, when one is required
+            }
+
             var payload = _setPayloadFunc(_value, _diagnosticApi._connectedDevice);
-            if (!_diagnosticApi.SendIfConnected(payload)) return Task.CompletedTask; // Couldn't send to api, will be sent next connection
+            if (!_diagnosticApi.SendIfConnected(payload))
+            {
+                TouchFreeLog.WriteLine($"DiagnosticAPI - '{this}' set to '{Value}' - api not connected, did not send");
+                return Task.CompletedTask; // Couldn't send to api, will be sent next connection
+            }
+            TouchFreeLog.WriteLine($"DiagnosticAPI - '{this}' set to '{Value}' - sent to api");
             lock (_tasks)
             {
                 var task = new TaskCompletionSource<TData>();
@@ -118,9 +132,12 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             }
         }
 
-        public void HandleResponse(TData val)
+        public void HandleResponse(TData val, bool isSetResponse)
         {
             Value = val;
+            TouchFreeLog.WriteLine(isSetResponse
+                ? $"DiagnosticAPI - '{this}' set response is '{Value}'"
+                : $"DiagnosticAPI - '{this}' get response is '{Value}'");
             lock (_tasks)
             {
                 foreach (var t in _tasks)
@@ -186,6 +203,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             _analyticsEnabled.Initialized &&
             !TrackingConfigFile.DoesConfigFileExist())
         {
+            TouchFreeLog.WriteLine($"DiagnosticAPI - saving tracking config - all variables are now initialized and none currently exists");
             var trackingConfigurationToStore = new TrackingConfig
             {
                 AllowImages = _allowImages.Value,
@@ -203,7 +221,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
     {
         _webSocket.ReconnectionHappened.Subscribe(info =>
         {
-            TouchFreeLog.WriteLine($"DiagnosticAPI connected - (re)connection type '{info.Type}'");
+            TouchFreeLog.WriteLine($"DiagnosticAPI - connected - (re)connection type '{info.Type}'");
             SendIfConnected(new DApiMessage(DApiMsgTypes.GetServerInfo));
             SendIfConnected(new DApiMessage(DApiMsgTypes.GetVersion));
             RequestDeviceInfo();
@@ -218,15 +236,15 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             _cameraReversed.CancelSendTasks();
             _maskingData.CancelSendTasks();
                 
-            TouchFreeLog.ErrorWriteLine($"DiagnosticAPI disconnected - disconnection type '{info.Type}'");
+            TouchFreeLog.ErrorWriteLine($"DiagnosticAPI - disconnected - disconnection type '{info.Type}'");
             if (info.Exception != null)
             {
-                TouchFreeLog.ErrorWriteLine($"Disconnection caused by exception: {info.Exception.Message}");
+                TouchFreeLog.ErrorWriteLine($"    Disconnection caused by exception: {info.Exception.Message}");
             }
 
             if (info.CloseStatus.HasValue)
             {
-                TouchFreeLog.ErrorWriteLine($"Disconnection close status '{info.CloseStatus.Value}': {info.CloseStatusDescription}");
+                TouchFreeLog.ErrorWriteLine($"    Disconnection close status '{info.CloseStatus.Value}': {info.CloseStatusDescription}");
             }
         });
         _webSocket.MessageReceived.Subscribe(info =>
@@ -263,7 +281,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             (val, _) => new DApiPayloadMessage<T>(requestType, val);
 
         // Configuration variable setup
-        _maskingData = new ConfigurationVariable<MaskingData>(this, true,
+        _maskingData = new ConfigurationVariable<MaskingData>(this, "Masking", true,
             DeviceIdPayloadFunc(DApiMsgTypes.GetImageMask),
             (maskData, deviceInfo) =>
             {
@@ -271,11 +289,11 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
                 return new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload);
             });
 
-        _allowImages = new ConfigurationVariable<bool>(this, false,
+        _allowImages = new ConfigurationVariable<bool>(this, "Allow Images", false,
             DefaultGetPayloadFunc(DApiMsgTypes.GetAllowImages),
             DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAllowImages));
 
-        _cameraReversed = new ConfigurationVariable<bool>(this, true,
+        _cameraReversed = new ConfigurationVariable<bool>(this, "Reverse Camera Orientation", true,
             DeviceIdPayloadFunc(DApiMsgTypes.GetCameraOrientation),
             (reversed, deviceInfo) =>
             {
@@ -287,7 +305,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
                 return new DApiPayloadMessage<CameraOrientationPayload>(DApiMsgTypes.SetCameraOrientation, payload);
             });
 
-        _analyticsEnabled = new ConfigurationVariable<bool>(this, false,
+        _analyticsEnabled = new ConfigurationVariable<bool>(this, "Analytics", false,
             DefaultGetPayloadFunc(DApiMsgTypes.GetAnalyticsEnabled),
             DefaultSetPayloadFunc<bool>(DApiMsgTypes.SetAnalyticsEnabled));
             
@@ -358,22 +376,22 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             {
                 case DApiMsgTypes.GetImageMask:
                 case DApiMsgTypes.SetImageMask:
-                    Handle<ImageMaskData>(payload => _maskingData.HandleResponse((MaskingData)payload));
+                    Handle<ImageMaskData>(payload => _maskingData.HandleResponse((MaskingData)payload, status == DApiMsgTypes.SetImageMask));
                     break;
 
                 case DApiMsgTypes.GetAnalyticsEnabled:
                 case DApiMsgTypes.SetAnalyticsEnabled:
-                    Handle<bool>(_analyticsEnabled.HandleResponse);
+                    Handle<bool>(payload => _analyticsEnabled.HandleResponse(payload, status == DApiMsgTypes.SetAnalyticsEnabled));
                     break;
 
-                case DApiMsgTypes.SetAllowImages:
                 case DApiMsgTypes.GetAllowImages:
-                    Handle<bool>(_allowImages.HandleResponse);
+                case DApiMsgTypes.SetAllowImages:
+                    Handle<bool>(payload => _allowImages.HandleResponse(payload, status == DApiMsgTypes.SetAllowImages));
                     break;
 
                 case DApiMsgTypes.GetCameraOrientation:
                 case DApiMsgTypes.SetCameraOrientation:
-                    Handle<CameraOrientationPayload>(payload => _cameraReversed.HandleResponse(payload.camera_orientation == "fixed-inverted"));
+                    Handle<CameraOrientationPayload>(payload => _cameraReversed.HandleResponse(payload.camera_orientation == "fixed-inverted", status == DApiMsgTypes.SetCameraOrientation));
                     break;
 
                 case DApiMsgTypes.GetDevices:
@@ -423,10 +441,18 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         {
             if (_connectedDevice?.DeviceId != newDevice?.device_id)
             {
+                if (_connectedDevice != null)
+                {
+                    TouchFreeLog.WriteLine($"DiagnosticAPI - device disconnected {_connectedDevice}");
+                }
                 _connectedDevice = newDevice.HasValue
                     ? new DeviceInfo(newDevice.Value)
                     : null;
-                if (_connectedDevice.HasValue) DeviceConnected?.Invoke(_connectedDevice.Value);
+                if (_connectedDevice.HasValue)
+                {
+                    TouchFreeLog.WriteLine($"DiagnosticAPI - device connected {_connectedDevice}");
+                    DeviceConnected?.Invoke(_connectedDevice.Value);
+                }
             }
 
             foreach (var statusTask in _deviceStatusTasks)
