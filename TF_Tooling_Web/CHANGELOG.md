@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to set the IP and port that tooling should connect to the service via.
 - `SVGCursor.SetColor` allows you to set the color of the SVGCursor center fill, ring fill or center border.
 - `SVGCursor.ResetToDefaultColors` allows you reset the color of the entire SVGCursor back to it's default colors.
+- Cancelled drags (i.e. due to hands lost) now send pointerOut and pointerCancel events to element where the drag started
 
 ### Changed
 
