@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SVGCursor.SetColor` allows you to set the color of the SVGCursor center fill, ring fill or center border.
 - `SVGCursor.ResetToDefaultColors` allows you reset the color of the entire SVGCursor back to it's default colors.
 
+### Changed
+
+- Improved error and warning messaging when TouchFree Tooling and Service API versions do not match.
+
 ### Deprecated
 
 - `ConnectionManager.AddConnectionListener()` - functions identically to the `WhenConnected` event added this release and has been deprecated in favor of it.

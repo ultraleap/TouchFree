@@ -1,4 +1,3 @@
-//#define BRIGHTSIGN // <- This is manually modified by CI: do not edit manually.
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -26,9 +25,9 @@ namespace Ultraleap.TouchFree.Service
 
             ServiceConfig serviceConfig = ServiceConfigFile.LoadConfig();
             InteractionConfig interactionConfig = InteractionConfigFile.LoadConfig();
-            TouchFreeConfig tfConfig = TouchFreeConfigFile.LoadConfig();
 
 #if !BRIGHTSIGN
+            TouchFreeConfig tfConfig = TouchFreeConfigFile.LoadConfig();
             if (!File.Exists(tfConfig.ctiFilePath))
             {
                 _ctiFolder = Path.Combine(ConfigFileUtils.ConfigFileDirectory, "CTIs");
@@ -41,16 +40,20 @@ namespace Ultraleap.TouchFree.Service
                 CopyCTI("TouchPlane_Landscape", Resources.TouchPlane_Landscape);
                 CopyCTI("TouchPlane_Portrait", Resources.TouchPlane_Portrait);
 
+                PhysicalConfig physicalConfig = PhysicalConfigFile.LoadConfig();
+
+                var isLandscape = physicalConfig.ScreenHeightPX > 0 && physicalConfig.ScreenHeightPX < physicalConfig.ScreenWidthPX;
+
                 switch (interactionConfig.InteractionType)
                 {
                     case Library.InteractionType.HOVER:
-                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, "Hover_Portrait.mp4");
+                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, isLandscape ? "Hover_Landscape.mp4" : "Hover_Portrait.mp4");
                         break;
                     case Library.InteractionType.TOUCHPLANE:
-                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, "TouchPlane_Portrait.mp4");
+                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, isLandscape ? "TouchPlane_Landscape.mp4" : "TouchPlane_Portrait.mp4");
                         break;
                     default:
-                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, "AirPush_Portrait.mp4");
+                        tfConfig.ctiFilePath = Path.Combine(_ctiFolder, isLandscape ? "AirPush_Landscape.mp4" : "AirPush_Portrait.mp4");
                         break;
                 }
                 TouchFreeLog.WriteLine($"CTI file did not exist - setting to: '{tfConfig.ctiFilePath}'");
