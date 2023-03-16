@@ -47,7 +47,7 @@ describe('InputActionManager', () => {
         expect(pluginCallCount).toBe(2);
     });
 
-    test('Check plugins gets called in the correct order', () => {
+    test('Check plugins get called in the correct order', () => {
         let pluginCallCount = 0;
 
         class MockOrderPlugin extends InputActionPlugin {
