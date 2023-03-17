@@ -65,6 +65,9 @@ const bitmaskFlagParams: BitmaskFlags[] = [
 ];
 
 describe('BitmaskFlag', () => {
+    // Suppress errors as they are expected during this test but spam the logging
+    console.error = jest.fn();
+
     it('should combine the same as before', () => {
         expect(FlagUtilities.GetInteractionFlags).toVerifyAllCombinations(
             interactionTypes,
