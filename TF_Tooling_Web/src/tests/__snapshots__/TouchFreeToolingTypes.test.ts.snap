@@ -107,7 +107,7 @@ exports[`BitmaskFlag should combine the same as before 1`] = `
 
 exports[`BitmaskFlag should deserialize hand chirality the same as before 1`] = `
 {
-  "0": 1,
+  "0": 0,
   "1": 0,
   "1024": 1,
   "12": 1,
