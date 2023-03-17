@@ -162,6 +162,7 @@ TF_Service::Wrapper::build:
       ARTIFACT_NAME: ""
       SIGN_BINARY: ""
       RUNTIME: ""
+      INCLUDE_SERVICE_LICENSES: ""
   tags:
     - docker-windows
   image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
@@ -180,6 +181,9 @@ TF_Service::Wrapper::build:
     - cp -R "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFree_Service/bin/Release/net6.0/${RUNTIME}/publish/*" ./Service_dotNet_Build
     - rm ./Service_dotNet_Build/interaction-tuning.json
 
+    - if ($INCLUDE_SERVICE_LICENSES -Match 'true') {
+        mkdir ./Service_dotNet_Build/ThirdParty && cp "$CI_PROJECT_DIR/Third_Party_Licenses/Service/*" ./Service_dotNet_Build/ThirdParty
+      }
 
     # Sign the executable with the UltraLeap certificate
     - if ($SIGN_BINARY -Match 'true') {
@@ -206,6 +210,7 @@ TF_Service::dotNet::ARMLinux::build:
       BRIGHTSIGN: "true"
       ARTIFACT_NAME: "TouchFree_Service_dotNet_ARMLinux"
       RUNTIME: "linux-arm64"
+      INCLUDE_SERVICE_LICENSES: "true"
 
 TF_Service::dotNet::x64Linux::build:
   extends: .Base_TF_Service_dotNet
@@ -214,6 +219,7 @@ TF_Service::dotNet::x64Linux::build:
       BRIGHTSIGN: "true"
       ARTIFACT_NAME: "TouchFree_Service_dotNet_x64Linux"
       RUNTIME: "linux-x64"
+      INCLUDE_SERVICE_LICENSES: "true"
 
 Tracking::ARMLinux::download_package:
   extends: .Always_Build
