@@ -2,6 +2,7 @@
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 using Ultraleap.TouchFree.Library.Connections;
+using Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 using Ultraleap.TouchFree.Library.Interactions;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
