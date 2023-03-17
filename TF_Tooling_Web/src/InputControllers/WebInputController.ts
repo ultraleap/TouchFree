@@ -131,6 +131,12 @@ export class WebInputController extends BaseInputController {
                     this.lastHoveredElement.dispatchEvent(outEvent);
                 }
 
+                const elementOnDown = this.GetTopNonCursorElement(this.elementsOnDown);
+                if (elementOnDown) {
+                    elementOnDown.dispatchEvent(cancelEvent);
+                    elementOnDown.dispatchEvent(outEvent);
+                }
+
                 if (elementAtPos !== null) {
                     const parentTree = this.GetOrderedParents(elementAtPos);
 
