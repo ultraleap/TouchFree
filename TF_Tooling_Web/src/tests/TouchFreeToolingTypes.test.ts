@@ -65,8 +65,13 @@ const bitmaskFlagParams: BitmaskFlags[] = [
 ];
 
 describe('BitmaskFlag', () => {
-    // Suppress errors as they are expected during this test but spam the logging
-    console.error = jest.fn();
+    // Suppress errors from console and store them in an array which we print only if a test fails
+    const errors: string[] = [];
+    console.error = jest.fn((msg: string) => errors.push(msg));
+
+    let numberOfPasses = 0;
+    let numberOfTests = 0;
+    afterEach(() => numberOfTests++);
 
     it('should combine the same as before', () => {
         expect(FlagUtilities.GetInteractionFlags).toVerifyAllCombinations(
@@ -75,21 +80,34 @@ describe('BitmaskFlag', () => {
             handChiralities,
             inputTypes
         );
+        // If the above test fails then this line won't be reached so we can detect a test failed
+        numberOfPasses++;
     });
 
     it('should deserialize hand chirality the same as before', () => {
         expect(FlagUtilities.GetChiralityFromFlags).toVerifyAllCombinations(bitmaskFlagParams);
+        numberOfPasses++;
     });
 
     it('should deserialize hand type the same as before', () => {
         expect(FlagUtilities.GetHandTypeFromFlags).toVerifyAllCombinations(bitmaskFlagParams);
+        numberOfPasses++;
     });
 
     it('should deserialize input type the same as before', () => {
         expect(FlagUtilities.GetInputTypeFromFlags).toVerifyAllCombinations(bitmaskFlagParams);
+        numberOfPasses++;
     });
 
     it('should deserialize interaction type the same as before', () => {
         expect(FlagUtilities.GetInteractionTypeFromFlags).toVerifyAllCombinations(bitmaskFlagParams);
+        numberOfPasses++;
+    });
+
+    afterAll(() => {
+        // If not all tests pass then log the errors
+        if (numberOfPasses !== numberOfTests) {
+            console.log(errors);
+        }
     });
 });
