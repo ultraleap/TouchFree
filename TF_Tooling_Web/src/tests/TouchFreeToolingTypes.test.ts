@@ -98,8 +98,8 @@ describe('BitmaskFlag', () => {
         // If not all tests pass then log the errors
         const JEST_MATCHER = Symbol.for('$$jest-matchers-object');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const numberOfNonMatches: number = (global as any)[JEST_MATCHER].state.snapshotState.unmatched;
-        if (numberOfNonMatches > 0) {
+        const numberOfNonMatches: number | undefined = (global as any)[JEST_MATCHER]?.state?.snapshotState?.unmatched;
+        if (numberOfNonMatches && numberOfNonMatches > 0) {
             console.log(errors);
         }
     });
