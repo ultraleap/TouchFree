@@ -57,6 +57,9 @@ namespace ServiceUITray
                 ContextMenu = new ContextMenu(new MenuItem[] {
                     touchFreeMenuItem,
                     new MenuItem("-"),
+                    new MenuItem("Start Service", StartService),
+                    new MenuItem("Stop Service", StopService),
+                    new MenuItem("-"),
                     new MenuItem("Settings", Settings),
                 }),
                 Visible = true
@@ -70,6 +73,18 @@ namespace ServiceUITray
             statusCheckTimer.Elapsed += CheckForTouchFree;
             statusCheckTimer.Elapsed += CheckForServiceActivity;
             statusCheckTimer.Start();
+        }
+
+        private void StartService(object sender, EventArgs e)
+        {
+            if (touchFreeService == null) return;
+            touchFreeService.Start();
+        }
+
+        private void StopService(object sender, EventArgs e)
+        {
+            if (touchFreeService == null) return;
+            touchFreeService.Stop();
         }
 
         private void LaunchApp(object sender, EventArgs e)
