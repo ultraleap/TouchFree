@@ -67,7 +67,7 @@ const bitmaskFlagParams: BitmaskFlags[] = [
 describe('BitmaskFlag', () => {
     // Suppress errors from console and store them in an array which we print only if a test fails
     const errors: string[] = [];
-    console.error = jest.fn((msg: string) => errors.push(msg));
+    const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation((msg: string) => errors.push(msg));
 
     it('should combine the same as before', () => {
         expect(FlagUtilities.GetInteractionFlags).toVerifyAllCombinations(
@@ -95,6 +95,7 @@ describe('BitmaskFlag', () => {
     });
 
     afterAll(() => {
+        consoleErrorMock.mockRestore();
         // If not all tests pass then log the errors
         const JEST_MATCHER = Symbol.for('$$jest-matchers-object');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
