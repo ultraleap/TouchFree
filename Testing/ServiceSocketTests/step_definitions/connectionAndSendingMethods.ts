@@ -3,12 +3,12 @@ import { v4 as uuidgen } from 'uuid';
 import WebSocket from 'ws';
 
 // TODO: Improve generation of these version consts and link to TF API version.
-export const expectedApiVersion = '1.3.0';
-export const patchVersionChange = '1.3.1';
-export const minorVersionDecrease = '1.2.0';
-export const minorVersionIncrease = '1.4.0';
-export const majorVersionDecrease = '0.3.0';
-export const majorVersionIncrease = '2.3.0';
+export const expectedApiVersion = '1.4.0';
+export const patchVersionChange = '1.4.1';
+export const minorVersionDecrease = '1.3.0';
+export const minorVersionIncrease = '1.5.0';
+export const majorVersionDecrease = '0.4.0';
+export const majorVersionIncrease = '2.4.0';
 
 export const reset = (world: IWorld) => {
     if (world.connectedWebSocket?.readyState === WebSocket.OPEN) {
@@ -94,7 +94,7 @@ const callbackOnHandshakeShared = (expectedStatus: string, expectedMessage: stri
             requestID: world.configuredData?.requestID,
             status: expectedStatus,
             message: expectedMessage,
-            originalRequest: '{"requestID":"","TfApiVersion":"1.3.0"}',
+            originalRequest: '{"requestID":"","TfApiVersion":"1.4.0"}',
             touchFreeVersion: '',
             apiVersion: expectedApiVersion
         }
