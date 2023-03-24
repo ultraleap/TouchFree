@@ -19,3 +19,22 @@ export const mockTfInputAction = (input?: Partial<TouchFreeInputAction>) =>
 
 export const mockTfPluginInputAction = (input?: Partial<TouchFreeInputAction>) =>
     InputActionManager.HandleInputAction(createInputAction(input));
+
+export const intervalTest = async (test: () => unknown, expected: unknown) => {
+    await new Promise<void>((resolve, reject) => {
+        let time = 0;
+        const interval = setInterval(() => {
+            try {
+                expect(test()).toBe(expected);
+                clearInterval(interval);
+                resolve();
+            } catch (e) {
+                if (time > 1000) {
+                    clearInterval(interval);
+                    reject(e);
+                }
+                time += 20;
+            }
+        }, 20);
+    });
+};
