@@ -98,7 +98,8 @@ export class ServiceConnection {
                     JSON.stringify(handshakeRequest),
                     guid,
                     this.ConnectionResultCallback,
-                    ConnectionManager.messageReceiver.handshakeCallbacks);
+                    ConnectionManager.messageReceiver.handshakeCallbacks
+                );
             }
         }
     };
@@ -207,37 +208,36 @@ export class ServiceConnection {
             _message,
             _requestID,
             _callback,
-            ConnectionManager.messageReceiver.responseCallbacks);
+            ConnectionManager.messageReceiver.responseCallbacks
+        );
     };
 
     private sendMessageWithSimpleResponse = <T extends WebSocketResponse>(
         _message: string,
         _requestID: string,
         _callback: ((detail: WebSocketResponse | T) => void) | null,
-        _callbacksStore: {[id: string]: ResponseCallback}): void => {
-            if (!_requestID) {
-                if (_callback) {
-                    const response: WebSocketResponse = new WebSocketResponse(
-                        '',
-                        'Failure',
-                        'Request failed. This is due to a missing or invalid requestID',
-                        _message
-                    );
-                    _callback(response);
-                }
-    
-                console.error('Request failed. This is due to a missing or invalid requestID');
-                return;
-            }
-    
+        _callbacksStore: { [id: string]: ResponseCallback }
+    ): void => {
+        if (!_requestID) {
             if (_callback) {
-                _callbacksStore[_requestID] = new ResponseCallback(
-                    Date.now(),
-                    _callback
+                const response: WebSocketResponse = new WebSocketResponse(
+                    '',
+                    'Failure',
+                    'Request failed. This is due to a missing or invalid requestID',
+                    _message
                 );
+                _callback(response);
             }
-    
-            this.webSocket.send(_message);
+
+            console.error('Request failed. This is due to a missing or invalid requestID');
+            return;
+        }
+
+        if (_callback) {
+            _callbacksStore[_requestID] = new ResponseCallback(Date.now(), _callback);
+        }
+
+        this.webSocket.send(_message);
     };
 
     // Function: RequestConfigState
