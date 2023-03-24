@@ -132,5 +132,5 @@ describe('Dot Cursor', () => {
 const getStyle = (key: keyof CSSStyleDeclaration) => cursor.style[key];
 
 const testCursorStyle = async (key: keyof CSSStyleDeclaration, expected: string) => {
-    await intervalTest(() => getStyle(key), expected);
+    await intervalTest(() => expect(getStyle(key)).toBe(expected));
 };
