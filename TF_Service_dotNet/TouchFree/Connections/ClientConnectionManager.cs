@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.WebSockets;
 
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
 namespace Ultraleap.TouchFree.Library.Connections
 {
@@ -42,26 +43,20 @@ namespace Ultraleap.TouchFree.Library.Connections
 
         private void OnHandsLost() => HandleHandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-        private void ConnectionStatusChange(TrackingServiceState state)
+        private async void ConnectionStatusChange(TrackingServiceState state)
         {
-            void handleDeviceInfoResponse()
-            {
-                var currentConfig = new ServiceStatus(
-                    string.Empty, // No request id as this event is not a response to a request
-                    state,
-                    configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
-                    VersionManager.Version,
-                    trackingApi.trackingServiceVersion,
-                    trackingApi.connectedDeviceSerial,
-                    trackingApi.connectedDeviceFirmware);
+            var deviceStatus = await trackingApi.RequestDeviceInfo();
+            
+            var currentStatus = new ServiceStatus(
+                string.Empty, // No request id as this event is not a response to a request
+                state,
+                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
+                VersionManager.Version,
+                trackingApi.ApiInfo.GetValueOrDefault().ServiceVersion,
+                deviceStatus.GetValueOrDefault().Serial,
+                deviceStatus.GetValueOrDefault().Firmware);
 
-                SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
-
-                trackingApi.OnTrackingDeviceInfoResponse -= handleDeviceInfoResponse;
-            };
-
-            trackingApi.OnTrackingDeviceInfoResponse += handleDeviceInfoResponse;
-            trackingApi.RequestGetDeviceInfo();
+            SendResponse(currentStatus, ActionCode.SERVICE_STATUS);
         }
 
         private void HandleHandPresenceEvent(HandPresenceState state)

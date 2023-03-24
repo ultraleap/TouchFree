@@ -7,6 +7,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
 {
     public static class TouchFreeLog
     {
+        // ReSharper disable once UnusedMember.Global
         public static void SetUpLogging()
         {
             var loggingFileDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
@@ -40,6 +41,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
                 };
 
                 Console.SetOut(streamwriter);
+                Console.SetError(streamwriter);
             }
             catch (Exception e)
             {
@@ -52,33 +54,13 @@ namespace Ultraleap.TouchFree.Library.Configuration
             WriteLine();
         }
 
-        public static void WriteLine(string text = null)
-        {
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                Console.WriteLine($"{getTimestamp()} - {text}");
-            }
-            else
-            {
-                Console.WriteLine();
-            }
-        }
+        public static void WriteLine(string text = null) => Console.WriteLine(WithTimestamp(text));
+        
+        public static void ErrorWriteLine(string text) => Console.Error.WriteLine(WithTimestamp(text));
 
-        public static void ErrorWriteLine(string text)
-        {
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                Console.Error.WriteLine($"{getTimestamp()} - {text}");
-            }
-            else
-            {
-                Console.Error.WriteLine();
-            }
-        }
-
-        private static string getTimestamp()
-        {
-            return DateTime.Now.ToString(new CultureInfo("en-GB"));
-        }
+        private static string? WithTimestamp(string text) =>
+            !string.IsNullOrEmpty(text)
+                ? $"{DateTime.Now.ToString(new CultureInfo("en-GB"))} - {text}"
+                : null;
     }
 }

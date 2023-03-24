@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
 {
-    public class ConfigurationChangeQueueHandler : BaseConfigurationChangeQueueHandler
+    public class ConfigurationChangeQueueHandler : MessageQueueHandler
     {
         private readonly IConfigManager configManager;
 
@@ -13,26 +12,24 @@ namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
             configManager = _configManager;
         }
 
-        public override ActionCode[] ActionCodes => new[] { ActionCode.SET_CONFIGURATION_STATE };
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
+        public override ActionCode[] HandledActionCodes => new[] { ActionCode.SET_CONFIGURATION_STATE };
+        protected override ActionCode failureActionCode => ActionCode.CONFIGURATION_RESPONSE;
+        protected override string whatThisHandlerDoes => "Setting configuration";
 
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+        protected override Result<Empty> ValidateContent(IncomingRequestWithId request) =>
+            MessageValidation.ValidateConfigJson(request.ContentRoot);
+
+        protected override void Handle(IncomingRequestWithId request)
         {
-            ResponseToClient response = ValidateConfigChange(_request.content, _contentObject);
-
-            if (response.status == "Success")
-            {
-                ChangeConfig(_request.content);
-            }
-
-            clientMgr.SendResponse(response, ActionCode.CONFIGURATION_RESPONSE);
+            ChangeConfig(request.OriginalContent);
+            SendSuccessResponse(request, ActionCode.CONFIGURATION_RESPONSE);
         }
 
-        void ChangeConfig(string _content)
+        void ChangeConfig(string content)
         {
             ConfigState combinedData = new ConfigState(string.Empty, configManager.InteractionConfig.ForApi(), configManager.PhysicalConfig.ForApi());
 
-            JsonConvert.PopulateObject(_content, combinedData);
+            JsonConvert.PopulateObject(content, combinedData);
 
             configManager.InteractionConfigFromApi = combinedData.interaction;
             configManager.PhysicalConfigFromApi = combinedData.physical;

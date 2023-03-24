@@ -25,15 +25,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
+- Unity Settings/Service/Overlay: Added ability to set custom IP and port
 - Service: `HandEntered` & `HandExited` events, sent when the active hand enters and exits the interaction zone (if enabled) respectively
+- Service: Removed informational level logging to improve readability of log files
+- Unity Settings: Added preset options for dark/light outline cursor
+
+### Changed
+- Unity Settings/Overlay Application: Split projects into two for a better dev experience
+- Unity Settings: Allow resizing of window when in windowed mode
+- Unity Settings/Service/Overlay Application: Adjusted proportions of TouchFree icon
+- Unity Settings/Service: CTIs are now managed by the Service, not the Unity Settings
+- Service: Improved error and warning messaging when TouchFree Tooling and Service API versions do not match.
 
 ### Fixed
-
 - Unity Settings/Service: Fixed an issue where using Touch Plane with Scroll and Drag caused cursor jumps
 - Unity Settings/Service: Fixed an issue where clicking was very difficult while Touch Plane and Scroll and Drag were both active
+- Unity Settings: CTI path now correctly sets on load
 - Unity Settings: Fixed an issue with moving the bottom masking slider
+- Unity Settings: Cursor config correctly reloads when modified on disk
+- Unity Settings: Fixed render order of cursor/camera in masking screen
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
+- Overlay Application: Fixed an issue where modified cursor alpha values would not be updated correctly
+- Service: Fixed an issue where the TouchFree Service would crash when non-integer configuration value was sent for an integer configuration property e.g. screen width.
+- Service: Fixed several issues which could cause crashes or functionality freezes requiring a restart when dealing with Tracking configuration (masking, camera orientation, etc).
+- Service: Fixed a performance sensitive stack overflow issue causing crashes.
 
 ## [2.4.0] - 2022-10-14
 

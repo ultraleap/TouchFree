@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
 namespace Ultraleap.TouchFree.Library.Interactions

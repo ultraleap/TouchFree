@@ -25,7 +25,7 @@ namespace TouchFreeTests.Connections
             var result = ClientConnection.GetVersionCompability(clientVersion, parsedServiceVersion);
 
             // Assert
-            Assert.AreEqual(expectedCompatibility, result);
+            Assert.AreEqual(expectedCompatibility, result.Compatibility);
         }
     }
 }

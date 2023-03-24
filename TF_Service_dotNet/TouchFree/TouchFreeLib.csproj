@@ -5,19 +5,26 @@
 		<Platforms>AnyCPU;ARM64</Platforms>
 		
 		<!--Adding the RuntimeIdentifier forces the build of the service to pass down the runtime-->
-		<RuntimeIdentifiers>win-x64;linux-arm64</RuntimeIdentifiers>
+		<RuntimeIdentifiers>win-x64;linux-arm64;linux-x64</RuntimeIdentifiers>
 		<RootNamespace>Ultraleap.TouchFree.Library</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ContentWithTargetPath Condition="'$(PlatformTarget)'!='ARM64'" Include="Plugins\LeapC\AnyCPU\*">
+		<ContentWithTargetPath Condition=" '$(BRIGHTSIGN)' != 'true' " Include="Plugins\LeapC\AnyCPU\*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<TargetPath>%(Filename)%(Extension)</TargetPath>
 		</ContentWithTargetPath>
 	</ItemGroup>
 
 	<ItemGroup>
-		<ContentWithTargetPath Condition="'$(PlatformTarget)'=='ARM64'" Include="Plugins\LeapC\ARM64\*">
+		<ContentWithTargetPath Condition=" '$(BRIGHTSIGN)' == 'true' and '$(PlatformTarget)'=='ARM64' " Include="Plugins\LeapC\ARM64\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>%(Filename)%(Extension)</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ContentWithTargetPath Condition=" '$(BRIGHTSIGN)' == 'true' and '$(PlatformTarget)'!='ARM64' " Include="Plugins\LeapC\ARM64\*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<TargetPath>%(Filename)%(Extension)</TargetPath>
 		</ContentWithTargetPath>
@@ -28,7 +35,11 @@
 		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
-		<PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
+		<PackageReference Include="Websocket.Client" Version="4.6.1" />
 	</ItemGroup>
+	
+	<PropertyGroup>
+		<DefineConstants Condition=" '$(BRIGHTSIGN)' == 'true' ">$(DefineConstants);BRIGHTSIGN</DefineConstants>
+	</PropertyGroup>
 
 </Project>

@@ -16,6 +16,11 @@ It contains the following features:
 -   View Service and Tracking version numbers
 -   View current camera Firmware and Serial number
 
+    Windows Only Features:
+
+-   Open Tracking and Touchfree log files
+-   Configure TouchFree Overlay App cursor and CTI
+
 ## Developer Guide
 
 ### Requirements

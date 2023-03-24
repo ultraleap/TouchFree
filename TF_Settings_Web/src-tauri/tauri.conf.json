@@ -18,7 +18,13 @@
             },
             "window": {
                 "all": false,
-                "setFullscreen": true
+                "setFullscreen": true,
+                "minimize": true,
+                "close": true
+            },
+            "dialog": {
+                "all": false,
+                "open": true
             }
         },
         "bundle": {
@@ -62,7 +68,7 @@
         },
         "windows": [
             {
-                "title": "TouchFree Settings",
+                "title": "TouchFreeSettings",
                 "fullscreen": true,
                 "maximized": true,
                 "resizable": true

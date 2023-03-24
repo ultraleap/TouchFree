@@ -1,4 +1,7 @@
-﻿namespace Ultraleap.TouchFree.Library.Configuration
+﻿using System.Text.RegularExpressions;
+using Ultraleap.TouchFree.Library.Connections;
+
+namespace Ultraleap.TouchFree.Library.Configuration
 {
     public class ConfigManager : IConfigManager
     {
@@ -6,9 +9,13 @@
         public event IConfigManager.PhysicalConfigEvent OnPhysicalConfigUpdated;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigSaved;
         public event IConfigManager.TrackingConfigEvent OnTrackingConfigUpdated;
+        public event IConfigManager.ServiceConfigEvent OnServiceConfigUpdated;
+        public event IConfigManager.TouchFreeConfigEvent OnTouchFreeConfigUpdated;
         private InteractionConfigInternal _interactions;
         private PhysicalConfigInternal _physical;
         private TrackingConfig _tracking;
+        private ServiceConfig _service;
+        private TouchFreeConfig _tf;
 
         public ConfigManager()
         {
@@ -86,6 +93,40 @@
             }
         }
 
+        public ServiceConfig ServiceConfig
+        {
+            get
+            {
+                if (_service == null && ServiceConfigFile.DoesConfigFileExist())
+                {
+                    _service = ServiceConfigFile.LoadConfig();
+                }
+
+                return _service;
+            }
+            set
+            {
+                _service = value;
+            }
+        }
+
+        public TouchFreeConfig TouchFreeConfig
+        {
+            get
+            {
+                if (_tf == null && TouchFreeConfigFile.DoesConfigFileExist())
+                {
+                    _tf = TouchFreeConfigFile.LoadConfig();
+                }
+
+                return _tf;
+            }
+            set
+            {
+                _tf = value;
+            }
+        }
+
         public void LoadConfigsFromFiles()
         {
             var interactionsUpdated = false;
@@ -117,6 +158,28 @@
                 }
             }
 
+            var serviceUpdated = false;
+            if (ServiceConfigFile.DoesConfigFileExist())
+            {
+                var loadedService = ServiceConfigFile.LoadConfig();
+                if (_service == null || _service != loadedService)
+                {
+                    _service = loadedService;
+                    serviceUpdated = true;
+                }
+            }
+
+            var tfUpdated = false;
+            if (TouchFreeConfigFile.DoesConfigFileExist())
+            {
+                var loadedTF = TouchFreeConfigFile.LoadConfig();
+                if (_tf == null || _tf != loadedTF)
+                {
+                    _tf = loadedTF;
+                    tfUpdated = true;
+                }
+            }
+
             if (interactionsUpdated)
             {
                 InteractionConfigWasUpdated();
@@ -132,6 +195,16 @@
                 TrackingConfigWasUpdated();
             }
 
+            if (serviceUpdated)
+            {
+                ServiceConfigWasUpdated();
+            }
+
+            if (tfUpdated)
+            {
+                TouchFreeConfigWasUpdated();
+            }
+
 
             ErrorLoadingConfigFiles = InteractionConfigFile.ErrorLoadingConfiguration() || PhysicalConfigFile.ErrorLoadingConfiguration();
         }
@@ -139,6 +212,8 @@
         public void PhysicalConfigWasUpdated() => OnPhysicalConfigUpdated?.Invoke(_physical);
         public void InteractionConfigWasUpdated() => OnInteractionConfigUpdated?.Invoke(_interactions);
         public void TrackingConfigWasUpdated() => OnTrackingConfigUpdated?.Invoke(_tracking);
+        public void ServiceConfigWasUpdated() => OnServiceConfigUpdated?.Invoke(_service);
+        public void TouchFreeConfigWasUpdated() => OnTouchFreeConfigUpdated?.Invoke(_tf);
 
 
         public bool AreConfigsInGoodState()

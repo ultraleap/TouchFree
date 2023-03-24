@@ -29,10 +29,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web Settings: Added a button that links to docs
 - Web Settings: Auto calibration can be progressed by pressing spacebar
 - Service: `HandEntered` & `HandExited` events, sent when the active hand enters and exits the interaction zone (if enabled) respectively
+- Service: Removed informational level logging to improve readability of log files
+
+### Changed
+
+- Service: Improved error and warning messaging when TouchFree Tooling and Service API versions do not match.
 
 ### Fixed
 
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
+- Service: Fixed an issue where the TouchFree Service would crash when non-integer configuration value was sent for an integer configuration property e.g. screen width.
+- Service: Fixed several issues which could cause crashes or functionality freezes requiring a restart when dealing with Tracking configuration (masking, camera orientation, etc).
+- Service: Fixed a performance sensitive stack overflow issue causing crashes.
 
 ## [2.5.0-beta] - 2022-11-30
 

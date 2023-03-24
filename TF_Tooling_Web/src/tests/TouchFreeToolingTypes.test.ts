@@ -65,6 +65,10 @@ const bitmaskFlagParams: BitmaskFlags[] = [
 ];
 
 describe('BitmaskFlag', () => {
+    // Suppress errors from console and store them in an array which we print only if a test fails
+    const errors: string[] = [];
+    const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation((msg: string) => errors.push(msg));
+
     it('should combine the same as before', () => {
         expect(FlagUtilities.GetInteractionFlags).toVerifyAllCombinations(
             interactionTypes,
@@ -88,5 +92,16 @@ describe('BitmaskFlag', () => {
 
     it('should deserialize interaction type the same as before', () => {
         expect(FlagUtilities.GetInteractionTypeFromFlags).toVerifyAllCombinations(bitmaskFlagParams);
+    });
+
+    afterAll(() => {
+        consoleErrorMock.mockRestore();
+        // If not all tests pass then log the errors
+        const JEST_MATCHER = Symbol.for('$$jest-matchers-object');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const numberOfNonMatches: number | undefined = (global as any)[JEST_MATCHER]?.state?.snapshotState?.unmatched;
+        if (numberOfNonMatches && numberOfNonMatches > 0) {
+            console.log(errors);
+        }
     });
 });

@@ -3,14 +3,13 @@ import styles from './About.module.scss';
 import classNames from 'classnames/bind';
 import React, { useState, useEffect } from 'react';
 
-import { openDir, isDesktop } from '@/TauriUtils';
+import { openWithShell, isDesktop } from '@/TauriUtils';
 
 import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
 import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
 import TouchFree from 'touchfree/src/TouchFree';
 
 import { TextButton } from '@/Components';
-import { TabBar } from '@/Components/TopBar';
 
 const classes = classNames.bind(styles);
 
@@ -41,40 +40,37 @@ const AboutScreen: React.FC = () => {
     }, []);
 
     return (
-        <>
-            <TabBar />
-            <div className={classes('container')}>
-                <div className={classes('title-line')}>
-                    <h1> About </h1>
-                </div>
-                <div className={classes('info-table')}>
-                    <InfoTextEntry title="TouchFree Version" text={tFVersion} />
-                    <InfoTextEntry title="Tracking Version" text={trackingVersion} />
-                    <InfoTextEntry title="Camera Firmware Version" text={cameraFWVersion} />
-                    <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
-                </div>
-                <div className={classes('page-divider')} />
-                {isDesktop() && (
-                    <>
-                        <div className={classes('title-line')}>
-                            <h1> Advanced </h1>
-                        </div>
-                        <div className={classes('info-table')}>
-                            <InfoButtonEntry
-                                title="Tracking Log Files"
-                                buttonTitle="Show Tracking Log Files"
-                                onClick={() => openDir('C:/ProgramData/Ultraleap/HandTracker/Logs')}
-                            />
-                            <InfoButtonEntry
-                                title="TouchFree Log Files"
-                                buttonTitle="Show TouchFree Log Files"
-                                onClick={() => openDir('C:/ProgramData/Ultraleap/TouchFree/Logs')}
-                            />
-                        </div>
-                    </>
-                )}
+        <div className={classes('container')}>
+            <div className={classes('title-line')}>
+                <h1> About </h1>
             </div>
-        </>
+            <div className={classes('info-table')}>
+                <InfoTextEntry title="TouchFree Version" text={tFVersion} />
+                <InfoTextEntry title="Tracking Version" text={trackingVersion} />
+                <InfoTextEntry title="Camera Firmware Version" text={cameraFWVersion} />
+                <InfoTextEntry title="Camera Serial Number" text={cameraSerial} />
+            </div>
+            <div className={classes('page-divider')} />
+            {isDesktop() && (
+                <>
+                    <div className={classes('title-line')}>
+                        <h1> Advanced </h1>
+                    </div>
+                    <div className={classes('info-table')}>
+                        <InfoButtonEntry
+                            title="Tracking Log Files"
+                            buttonTitle="Show Tracking Log Files"
+                            onClick={() => openWithShell('C:/ProgramData/Ultraleap/HandTracker/Logs')}
+                        />
+                        <InfoButtonEntry
+                            title="TouchFree Log Files"
+                            buttonTitle="Show TouchFree Log Files"
+                            onClick={() => openWithShell('C:/ProgramData/Ultraleap/TouchFree/Logs')}
+                        />
+                    </div>
+                </>
+            )}
+        </div>
     );
 };
 

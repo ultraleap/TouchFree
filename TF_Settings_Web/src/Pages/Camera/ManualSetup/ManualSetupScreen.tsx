@@ -1,7 +1,7 @@
 import styles from './ManualSetup.module.scss';
 
 import classnames from 'classnames/bind';
-import { FormEvent, useEffect, useReducer } from 'react';
+import { FormEvent, FocusEvent, useEffect, useReducer } from 'react';
 
 import { useIsLandscape } from '@/customHooks';
 
@@ -60,8 +60,8 @@ const reducer = (state: PhysicalState, content: Partial<PhysicalState>) => {
         },
         ScreenHeightM: newState.screenHeight / 100,
         ScreenRotationD: newState.screenTilt,
-        ScreenHeightPX: window.screen.height * window.devicePixelRatio,
-        ScreenWidthPX: window.screen.width * window.devicePixelRatio,
+        ScreenHeightPX: window.innerHeight,
+        ScreenWidthPX: window.innerWidth,
     };
     ConfigurationManager.RequestConfigFileChange(null, config, (result) => {
         if (result.status !== 'Success') {
@@ -87,24 +87,31 @@ const ManualSetupScreen = () => {
                 ? -config.physical.LeapRotationD.X - config.physical.LeapRotationD.Z
                 : config.physical.LeapRotationD.X;
         cameraRotation = cameraRotation <= -180 ? cameraRotation + 360 : cameraRotation;
+        cameraRotation = roundToTwoDecimals(cameraRotation);
 
         dispatch({
-            screenHeight: roundToFiveDecimals(config.physical.ScreenHeightM * 100),
-            cameraHeight: roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
-            cameraLeftToRight: roundToFiveDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
-            cameraDistanceFromScreen: roundToFiveDecimals(-config.physical.LeapPositionRelativeToScreenBottomM.Z * 100),
+            screenHeight: roundToTwoDecimals(config.physical.ScreenHeightM * 100),
+            cameraHeight: roundToTwoDecimals(config.physical.LeapPositionRelativeToScreenBottomM.Y * 100),
+            cameraLeftToRight: roundToTwoDecimals(config.physical.LeapPositionRelativeToScreenBottomM.X * 100),
+            cameraDistanceFromScreen: roundToTwoDecimals(-config.physical.LeapPositionRelativeToScreenBottomM.Z * 100),
             cameraRotation,
             physicalConfig: config.physical,
             screenTilt: config.physical.ScreenRotationD,
         });
     };
 
-    const roundToFiveDecimals = (numberIn: number) => {
-        return Math.round(numberIn * 100000) / 100000;
+    const roundToTwoDecimals = (numberIn: number) => {
+        return Math.round(numberIn * 100) / 100;
     };
 
     const update = (key: keyof PhysicalState, event: FormEvent<HTMLInputElement>) => {
-        dispatch({ [key]: parseFloat(event.currentTarget?.value) });
+        dispatch({ [key]: event.currentTarget?.value });
+    };
+
+    const unfocus = (key: keyof PhysicalState, event: FocusEvent<HTMLElement, Element>) => {
+        const val = event.target.getAttribute('value');
+        const num = val == null ? 0 : parseFloat(val);
+        dispatch({ [key]: roundToTwoDecimals(parseFloat(val == null || isNaN(num) ? '0' : val)) });
     };
 
     return (
@@ -124,6 +131,7 @@ const ManualSetupScreen = () => {
                             value={state.screenHeight.toString()}
                             onChange={(e) => update('screenHeight', e)}
                             onPointerDown={() => dispatch({ selectedView: 'screenHeight' })}
+                            onBlur={(e) => unfocus('screenHeight', e)}
                             selected={state.selectedView === 'screenHeight'}
                         />
                         <TextEntry
@@ -131,6 +139,7 @@ const ManualSetupScreen = () => {
                             value={state.cameraHeight.toString()}
                             onChange={(e) => update('cameraHeight', e)}
                             onPointerDown={() => dispatch({ selectedView: 'cameraHeight' })}
+                            onBlur={(e) => unfocus('cameraHeight', e)}
                             selected={state.selectedView === 'cameraHeight'}
                         />
                         <TextEntry
@@ -138,6 +147,7 @@ const ManualSetupScreen = () => {
                             value={state.cameraLeftToRight.toString()}
                             onChange={(e) => update('cameraLeftToRight', e)}
                             onPointerDown={() => dispatch({ selectedView: 'cameraLeftToRight' })}
+                            onBlur={(e) => unfocus('cameraLeftToRight', e)}
                             selected={state.selectedView === 'cameraLeftToRight'}
                         />
                     </div>
@@ -147,6 +157,7 @@ const ManualSetupScreen = () => {
                             value={state.screenTilt.toString()}
                             onChange={(e) => update('screenTilt', e)}
                             onPointerDown={() => dispatch({ selectedView: 'screenTilt' })}
+                            onBlur={(e) => unfocus('screenTilt', e)}
                             selected={state.selectedView === 'screenTilt'}
                         />
                         <TextEntry
@@ -154,6 +165,7 @@ const ManualSetupScreen = () => {
                             value={state.cameraRotation.toString()}
                             onChange={(e) => update('cameraRotation', e)}
                             onPointerDown={() => dispatch({ selectedView: 'cameraRotation' })}
+                            onBlur={(e) => unfocus('cameraRotation', e)}
                             selected={state.selectedView === 'cameraRotation'}
                         />
                         <TextEntry
@@ -161,6 +173,7 @@ const ManualSetupScreen = () => {
                             value={state.cameraDistanceFromScreen.toString()}
                             onChange={(e) => update('cameraDistanceFromScreen', e)}
                             onPointerDown={() => dispatch({ selectedView: 'cameraDistanceFromScreen' })}
+                            onBlur={(e) => unfocus('cameraDistanceFromScreen', e)}
                             selected={state.selectedView === 'cameraDistanceFromScreen'}
                         />
                     </div>
