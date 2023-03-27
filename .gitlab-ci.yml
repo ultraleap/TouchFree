@@ -263,8 +263,8 @@ TF_Tooling::Web::test:
   dependencies:
     - TF_Tooling::Web::build
   tags:
-    - unity
-    - win10
+    - docker-windows
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
   script:
     # Run unit tests
     - cd ${env:TF_TFW_PATH}
