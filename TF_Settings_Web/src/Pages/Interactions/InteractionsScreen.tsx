@@ -102,9 +102,9 @@ const InteractionsScreen = () => {
                             name="Hover & Hold Start Time"
                             key="Hover & Hold Start Time"
                             rangeMin={0.1}
-                            rangeMax={1}
+                            rangeMax={2}
                             leftLabel="0.1s"
-                            rightLabel="1s"
+                            rightLabel="2s"
                             value={config.HoverAndHold.HoverStartTimeS}
                             onChange={(value) =>
                                 dispatch({
@@ -117,9 +117,9 @@ const InteractionsScreen = () => {
                             name="Hover & Hold Complete Time"
                             key="Hover & Hold Complete Time"
                             rangeMin={0.1}
-                            rangeMax={1}
+                            rangeMax={2}
                             leftLabel="0.1s"
-                            rightLabel="1s"
+                            rightLabel="2s"
                             value={config.HoverAndHold.HoverCompleteTimeS}
                             onChange={(value) =>
                                 dispatch({

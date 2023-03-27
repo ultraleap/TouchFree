@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Service: Fixed an issue where the TouchFree Service would crash when non-integer configuration value was sent for an integer configuration property e.g. screen width.
 - Service: Fixed several issues which could cause crashes or functionality freezes requiring a restart when dealing with Tracking configuration (masking, camera orientation, etc).
 - Service: Fixed a performance sensitive stack overflow issue causing crashes.
+- Web Settings: Hover & Hold Start/Activation sliders updated to ranges of 0.1s-2.0s
 
 ## [2.5.0-beta] - 2022-11-30
 
