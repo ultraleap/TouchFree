@@ -1,5 +1,5 @@
 import { Vector, Vector2 } from './Configuration/ConfigurationTypes';
-import { ServiceStatus } from 'Connection/TouchFreeServiceTypes';
+import { ServiceStatus } from './Connection/TouchFreeServiceTypes';
 
 // Class: VersionInfo
 // This class is used when comparing the <ApiVersion> of the Tooling and the Service.
