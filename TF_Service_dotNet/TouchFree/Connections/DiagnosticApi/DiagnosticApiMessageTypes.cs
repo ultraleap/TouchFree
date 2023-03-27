@@ -1,6 +1,6 @@
 ﻿namespace Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
-public enum DApiMsgTypes
+enum DApiMsgTypes
 {
     GetDevices,
     GetServerInfo,
@@ -19,40 +19,30 @@ public enum DApiMsgTypes
     SetImageMask,
 }
 
-class DApiMessage
+readonly record struct DApiMessage
 {
-    public DApiMessage() { }
-    public DApiMessage(DApiMsgTypes _type)
+    public DApiMessage(DApiMsgTypes type) => this.type = type.ToString();
+
+    public readonly string type;
+}
+
+readonly record struct DApiPayloadMessage<T>
+{
+    public DApiPayloadMessage(DApiMsgTypes type, T payload)
     {
-        type = _type.ToString();
+        this.type = type.ToString();
+        this.payload = payload;
     }
-    public string type;
+
+    public readonly string type;
+    public readonly T payload;
 }
 
-class DApiPayloadMessage<T> : DApiMessage
-{
-    public DApiPayloadMessage() { }
-    public DApiPayloadMessage(DApiMsgTypes _type, T _payload) : base(_type)
-    {
-        payload = _payload;
-    }
-    public T payload;
-}
+readonly record struct DeviceIdPayload(uint device_id);
 
-struct DeviceIdPayload
+readonly record struct ImageMaskDataPayload(uint device_id, double lower, double upper, double left, double right)
 {
-    public uint device_id;
-}
-
-struct ImageMaskData
-{
-    public double lower;
-    public double upper;
-    public double right;
-    public double left;
-    public uint device_id;
-
-    public static explicit operator ImageMaskData(MaskingData other) => new()
+    public static explicit operator ImageMaskDataPayload(in MaskingData other) => new()
     {
         left = other.left,
         right = other.right,
@@ -60,7 +50,7 @@ struct ImageMaskData
         lower = other.lower
     };
         
-    public static explicit operator MaskingData(ImageMaskData other) => new()
+    public static explicit operator MaskingData(in ImageMaskDataPayload other) => new()
     {
         left = other.left,
         lower = other.lower,
@@ -69,23 +59,13 @@ struct ImageMaskData
     };
 }
 
-struct DiagnosticDevice
-{
-    public uint device_id;
-    public string type;
-    public uint clients;
-    public bool streaming;
-    public string serial_number;
-    public string device_firmware;
-}
+readonly record struct DiagnosticDevicePayload(uint device_id,
+    string type,
+    uint clients,
+    bool streaming,
+    string serial_number,
+    string device_firmware);
 
-struct ServiceInfoPayload
-{
-    public string server_version;
-}
+readonly record struct ServiceInfoPayload(string server_version);
 
-struct CameraOrientationPayload
-{
-    public uint device_id;
-    public string camera_orientation;
-}
+readonly record struct CameraOrientationPayload(uint device_id, string camera_orientation);

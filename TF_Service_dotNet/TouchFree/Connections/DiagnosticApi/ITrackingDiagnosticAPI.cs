@@ -5,7 +5,7 @@ namespace Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
 public readonly record struct DiagnosticData(MaskingData? Masking, bool? AllowImages, bool? CameraOrientation, bool? Analytics)
 {
-    public static explicit operator DiagnosticData(TrackingConfig config) => new(
+    public static explicit operator DiagnosticData(in TrackingConfig config) => new(
         (MaskingData)config.Mask,
         config.AllowImages,
         config.CameraReversed,
@@ -14,8 +14,8 @@ public readonly record struct DiagnosticData(MaskingData? Masking, bool? AllowIm
 
 public readonly record struct DeviceInfo(uint DeviceId, string Firmware, string Serial, string Type)
 {
-    internal DeviceInfo(DiagnosticDevice device)
-        : this(device.device_id, device.device_firmware, device.serial_number, device.type)
+    internal DeviceInfo(DiagnosticDevicePayload devicePayload)
+        : this(devicePayload.device_id, devicePayload.device_firmware, devicePayload.serial_number, devicePayload.type)
     { }
 }
 public readonly record struct ApiInfo(string ServiceVersion, string ProtocolVersion);

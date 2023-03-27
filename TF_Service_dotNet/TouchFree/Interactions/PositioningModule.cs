@@ -3,61 +3,55 @@ using System.Linq;
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Interactions.PositionTrackers;
 
-namespace Ultraleap.TouchFree.Library.Interactions
+namespace Ultraleap.TouchFree.Library.Interactions;
+
+public class PositioningModule : IPositioningModule
 {
-    public class PositioningModule : IPositioningModule
+    private Positions _positions;
+
+    private readonly IVirtualScreen _virtualScreen;
+
+    private readonly IEnumerable<IPositionTracker> _positionTrackers;
+
+    public PositioningModule(IVirtualScreen virtualScreen, IEnumerable<IPositionTracker> positionTrackers)
     {
-        private Positions positions;
+        _virtualScreen = virtualScreen;
+        _positionTrackers = positionTrackers;
+    }
 
-        private readonly IVirtualScreen virtualScreen;
-
-        private readonly IEnumerable<IPositionTracker> positionTrackers;
-
-        public PositioningModule(IVirtualScreen _virtualScreen, IEnumerable<IPositionTracker> _positionTrackers)
+    public Positions CalculatePositions(Leap.Hand hand, IEnumerable<PositionTrackerConfiguration> configuration)
+    {
+        if (hand == null)
         {
-            virtualScreen = _virtualScreen;
-            positionTrackers = _positionTrackers;
+            return _positions;
         }
 
-        public Positions CalculatePositions(Leap.Hand hand, IEnumerable<PositionTrackerConfiguration> configuration)
+        var trackerConfigurations = configuration as PositionTrackerConfiguration[] ?? configuration.ToArray();
+        int totalWeights = trackerConfigurations.Sum(x => x.Weighting);
+        Vector3 worldPosM = new Vector3();
+
+        foreach (var positionItem in trackerConfigurations)
         {
-            if (hand == null)
-            {
-                return positions;
-            }
-
-            int totalWeights = configuration.Sum(x => x.weighting);
-            Vector3 worldPosM = new Vector3();
-
-            foreach (var positionItem in configuration)
-            {
-                worldPosM += GetPositionFromTracker(positionItem.trackedPosition, hand) * positionItem.weighting / totalWeights;
-            }
-
-            Vector3 screenPos = virtualScreen.WorldPositionToVirtualScreen(worldPosM);
-
-            // float distanceFromScreen (measured in meters)
-            positions.DistanceFromScreen = screenPos.Z;
-
-            // Vector2 position in screen-space (measured in pixels)
-            positions.CursorPosition = new Vector2(screenPos.X, screenPos.Y);
-
-            return positions;
+            worldPosM += GetPositionFromTracker(positionItem.TrackedPosition, hand) * positionItem.Weighting / totalWeights;
         }
 
-        public Positions ApplyStabiliation(Positions positions, IPositionStabiliser stabiliser)
-        {
-            Vector2 screenPosMm = virtualScreen.PixelsToMillimeters(positions.CursorPosition);
-            screenPosMm = stabiliser.ApplyDeadzone(screenPosMm);
-            positions.CursorPosition = virtualScreen.MillimetersToPixels(screenPosMm);
+        Vector3 screenPos = _virtualScreen.WorldPositionToVirtualScreen(worldPosM);
 
-            return positions;
-        }
+        _positions = new Positions(new Vector2(screenPos.X, screenPos.Y), screenPos.Z);
 
-        public Vector3 GetPositionFromTracker(TrackedPosition trackedPosition, Leap.Hand hand)
-        {
-            var trackerToUse = positionTrackers.Single(x => x.TrackedPosition == trackedPosition);
-            return trackerToUse.GetTrackedPosition(hand);
-        }
+        return _positions;
+    }
+
+    public Positions ApplyStabilisation(Positions positions, IPositionStabiliser stabiliser)
+    {
+        Vector2 screenPosMm = _virtualScreen.PixelsToMillimeters(positions.CursorPosition);
+        screenPosMm = stabiliser.ApplyDeadzone(screenPosMm);
+        return positions with { CursorPosition = _virtualScreen.MillimetersToPixels(screenPosMm) };
+    }
+
+    public Vector3 GetPositionFromTracker(TrackedPosition trackedPosition, Leap.Hand hand)
+    {
+        var trackerToUse = _positionTrackers.Single(x => x.TrackedPosition == trackedPosition);
+        return trackerToUse.GetTrackedPosition(hand);
     }
 }

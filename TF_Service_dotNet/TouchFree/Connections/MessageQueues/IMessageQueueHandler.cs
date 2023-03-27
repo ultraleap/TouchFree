@@ -1,8 +1,7 @@
-﻿namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
+﻿namespace Ultraleap.TouchFree.Library.Connections.MessageQueues;
+
+public interface IMessageQueueHandler
 {
-    public interface IMessageQueueHandler
-    {
-        ActionCode[] HandledActionCodes { get; }
-        void AddItemToQueue(IncomingRequest request);
-    }
+    ActionCode[] HandledActionCodes { get; }
+    void AddItemToQueue(in IncomingRequest request);
 }
