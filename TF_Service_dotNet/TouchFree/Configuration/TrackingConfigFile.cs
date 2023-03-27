@@ -8,7 +8,7 @@ public class TrackingConfigFile : ConfigFile<TrackingConfig, TrackingConfigFile>
 }
 
 [Serializable]
-public record TrackingConfig(MaskingData Mask,
+public record TrackingConfig(in MaskingData Mask,
     bool AllowImages,
     bool CameraReversed,
     bool AnalyticsEnabled)

@@ -3,7 +3,7 @@ using Ultraleap.TouchFree.Library.Configuration;
 
 namespace Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
-public readonly record struct DiagnosticData(MaskingData? Masking, bool? AllowImages, bool? CameraOrientation, bool? Analytics)
+public readonly record struct DiagnosticData(in MaskingData? Masking, bool? AllowImages, bool? CameraOrientation, bool? Analytics)
 {
     public static explicit operator DiagnosticData(in TrackingConfig config) => new(
         (MaskingData)config.Mask,

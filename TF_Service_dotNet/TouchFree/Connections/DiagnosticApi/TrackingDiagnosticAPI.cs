@@ -435,7 +435,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         return true;
     }
 
-    private void UpdateDevice(DiagnosticDevicePayload? newDevice)
+    private void UpdateDevice(in DiagnosticDevicePayload? newDevice)
     {
         lock (_deviceStatusTasks)
         {

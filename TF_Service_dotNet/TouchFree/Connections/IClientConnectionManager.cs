@@ -32,7 +32,7 @@ public static class ClientConnectionManagerExtensions
         manager.SendResponse(response, responseActionCode);
     }
         
-    public static void SendErrorResponse(this IClientConnectionManager manager, IncomingRequestWithId incomingRequestWithId, ActionCode responseActionCode, Error error)
+    public static void SendErrorResponse(this IClientConnectionManager manager, in IncomingRequestWithId incomingRequestWithId, in ActionCode responseActionCode, in Error error)
     {
         var response = new ResponseToClient(incomingRequestWithId.RequestId, FailureString, error.Message, incomingRequestWithId.OriginalContent);
         manager.SendResponse(response, responseActionCode);
