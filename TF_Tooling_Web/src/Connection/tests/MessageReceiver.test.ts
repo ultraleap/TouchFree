@@ -48,6 +48,19 @@ describe('MessageReceiver', () => {
         return testFn;
     };
 
+    const createInputAction = (flag?: BitmaskFlags, position?: { x: number; y: number }) => {
+        const newFlag = flag ?? BitmaskFlags.MOVE;
+        const newPos = position ?? { x: 0, y: 0 };
+
+        return new WebsocketInputAction(
+            Date.now(),
+            BitmaskFlags.LEFT + BitmaskFlags.PRIMARY + newFlag + BitmaskFlags.PUSH,
+            newPos,
+            0,
+            0
+        );
+    };
+
     beforeEach(() => {
         // Reset service after each test to completely reset mocks
         TouchFree.Init();
@@ -248,21 +261,8 @@ describe('MessageReceiver', () => {
     it('should correctly check for an UP input action', async () => {
         mockOpen();
 
-        const moveAction = new WebsocketInputAction(
-            Date.now(),
-            BitmaskFlags.LEFT + BitmaskFlags.PRIMARY + BitmaskFlags.MOVE + BitmaskFlags.PUSH,
-            { x: 50, y: 50 },
-            0,
-            0
-        );
-
-        const upAction = new WebsocketInputAction(
-            Date.now(),
-            BitmaskFlags.LEFT + BitmaskFlags.PRIMARY + BitmaskFlags.UP + BitmaskFlags.PUSH,
-            { x: 30, y: 30 },
-            0,
-            0
-        );
+        const moveAction = createInputAction();
+        const upAction = createInputAction(BitmaskFlags.UP, { x: 30, y: 30 });
 
         const { CursorPosition } = ConvertInputAction(moveAction);
 
@@ -273,6 +273,51 @@ describe('MessageReceiver', () => {
         onMessage(ActionCode.INPUT_ACTION, { ...upAction });
 
         await intervalTest(() => expect(testFn).lastReturnedWith(CursorPosition));
+    });
+
+    it('should correctly cull excess input actions', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const updateMock = jest.spyOn(ConnectionManager.messageReceiver as any, 'Update').mockImplementation();
+        const testFn = jest.fn();
+        TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
+        mockOpen();
+
+        const moveAction = createInputAction();
+        const noneAction = createInputAction(BitmaskFlags.NONE_INPUT);
+
+        for (let i = 0; i < 5; i++) {
+            onMessage(ActionCode.INPUT_ACTION, { ...moveAction });
+            onMessage(ActionCode.INPUT_ACTION, { ...noneAction });
+        }
+
+        expect(ConnectionManager.messageReceiver.actionQueue.length).toBe(10);
+
+        updateMock.mockRestore();
+        await intervalTest(() => expect(testFn).toBeCalledTimes(2));
+    });
+
+    it('should correctly stop input action cull on key action', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const updateMock = jest.spyOn(ConnectionManager.messageReceiver as any, 'Update').mockImplementation();
+        const testFn = jest.fn();
+        TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
+        mockOpen();
+
+        const moveAction = createInputAction();
+        const upAction = createInputAction(BitmaskFlags.UP);
+
+        for (let i = 0; i < 10; i++) {
+            if (i === 5) {
+                onMessage(ActionCode.INPUT_ACTION, { ...upAction });
+                continue;
+            }
+            onMessage(ActionCode.INPUT_ACTION, { ...moveAction });
+        }
+
+        expect(ConnectionManager.messageReceiver.actionQueue.length).toBe(10);
+
+        updateMock.mockRestore();
+        await intervalTest(() => expect(testFn).toBeCalledTimes(4));
     });
 
     it('should correctly check for hand data', async () => {
