@@ -19,7 +19,7 @@ namespace Ultraleap.TouchFree.Library.Configuration
         }
 
         private static string _version = string.Empty;
-        public static readonly Version ApiVersion = new Version("1.3.0");
+        public static readonly Version ApiVersion = new Version("1.4.0");
         public const string API_HEADER_NAME = "TfApiVersion";
     }
 }
