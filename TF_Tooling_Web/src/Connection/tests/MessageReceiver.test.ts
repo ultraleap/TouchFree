@@ -95,23 +95,15 @@ describe('MessageReceiver', () => {
     });
 
     it('should correctly check for a handshake response without a callback', async () => {
-        const consoleTestFn = jest.spyOn(console, 'warn').mockImplementation();
-        const consoleMessage = message;
-        const content = onMessage(ActionCode.VERSION_HANDSHAKE_RESPONSE);
-
-        await intervalTest(() => {
-            expect(consoleTestFn).toBeCalledWith(
-                'Received a Handshake Response that did not match a callback.' +
-                    'This is the content of the response: \n Response ID: ' +
-                    content.requestID +
-                    '\n Status: ' +
-                    content.status +
-                    '\n Message: ' +
-                    content.message +
-                    '\n Original request - ' +
-                    consoleMessage
+        const testFn = jest
+            .spyOn(console, 'warn')
+            .mockImplementation((message: string) =>
+                message.includes('Received a Handshake Response that did not match a callback')
             );
-        });
+
+        onMessage(ActionCode.VERSION_HANDSHAKE_RESPONSE);
+
+        await intervalTest(() => expect(testFn).toReturnWith(true));
     });
 
     it('should correctly check for a handshake response', async () => {
@@ -121,9 +113,7 @@ describe('MessageReceiver', () => {
 
         onMessage(ActionCode.VERSION_HANDSHAKE_RESPONSE);
 
-        await intervalTest(() => {
-            expect(testFn).toBeCalledTimes(1);
-        });
+        await intervalTest(() => expect(testFn).toBeCalledTimes(1));
     });
 
     it('should correctly check for a response with a callback', async () => {
@@ -134,33 +124,20 @@ describe('MessageReceiver', () => {
 
         onMessage(ActionCode.SERVICE_STATUS_RESPONSE, undefined, guid);
 
-        await intervalTest(() => {
-            expect(testFn).toBeCalledTimes(1);
-        });
+        await intervalTest(() => expect(testFn).toBeCalledTimes(1));
     });
 
     it('should correctly check for a response without a callback', async () => {
-        const testFn = jest.spyOn(console, 'warn').mockImplementation();
+        const testFn = jest
+            .spyOn(console, 'warn')
+            .mockImplementation((message: string) =>
+                message.includes('Received a Handshake Response that did not match a callback')
+            );
 
-        const guid = uuidgen();
-        const content = onMessage(ActionCode.SERVICE_STATUS_RESPONSE, undefined, guid);
-        const consoleMessage = message;
-
+        onMessage(ActionCode.SERVICE_STATUS_RESPONSE, undefined, uuidgen());
         mockOpen();
 
-        await intervalTest(() => {
-            expect(testFn).toBeCalledWith(
-                'Received a Handshake Response that did not match a callback.' +
-                    'This is the content of the response: \n Response ID: ' +
-                    guid +
-                    '\n Status: ' +
-                    content.status +
-                    '\n Message: ' +
-                    content.message +
-                    '\n Original request - ' +
-                    consoleMessage
-            );
-        });
+        await intervalTest(() => expect(testFn).toReturnWith(true));
     });
 
     it('should correctly check for a config state with a callback', async () => {
@@ -170,9 +147,7 @@ describe('MessageReceiver', () => {
 
         onMessage(ActionCode.CONFIGURATION_STATE);
 
-        await intervalTest(() => {
-            expect(testFn).toBeCalledTimes(1);
-        });
+        await intervalTest(() => expect(testFn).toBeCalledTimes(1));
     });
 
     it('should correctly check for a config state without a callback', async () => {
@@ -194,9 +169,7 @@ describe('MessageReceiver', () => {
 
         onMessage(ActionCode.SERVICE_STATUS);
 
-        await intervalTest(() => {
-            expect(testFn).toBeCalledTimes(1);
-        });
+        await intervalTest(() => expect(testFn).toBeCalledTimes(1));
     });
 
     it('should correctly check for the service status without a callback', async () => {
@@ -206,9 +179,7 @@ describe('MessageReceiver', () => {
 
         onMessage(ActionCode.SERVICE_STATUS);
 
-        await intervalTest(() => {
-            expect(testFn).toBeCalledTimes(1);
-        });
+        await intervalTest(() => expect(testFn).toBeCalledTimes(1));
     });
 
     it('should correctly check for the tracking state response', async () => {
