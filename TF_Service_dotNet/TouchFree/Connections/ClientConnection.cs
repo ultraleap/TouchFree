@@ -99,23 +99,14 @@ public class ClientConnection : IClientConnection
     public static CompatibilityInformation GetVersionCompability(string clientVersion, Version coreVersion)
     {
         Version clientVersionParsed = new Version(clientVersion);
-
-        Compatibility compatibility = clientVersionParsed switch
-        {
-            // Major version checks
-            {Major: var major} when major < coreVersion.Major => Compatibility.CLIENT_OUTDATED,
-            {Major: var major} when major > coreVersion.Major => Compatibility.SERVICE_OUTDATED,
-                
-            // Minor version checks
-            {Minor: var minor} when minor < coreVersion.Minor => Compatibility.CLIENT_OUTDATED_WARNING,
-            {Minor: var minor} when minor > coreVersion.Minor => Compatibility.SERVICE_OUTDATED,
-                
-            // Build version check
-            {Build: var build} when build > coreVersion.Build => Compatibility.SERVICE_OUTDATED_WARNING,
-                
-            // Succeeded all checks
-            _ => Compatibility.COMPATIBLE,
-        };
+        
+        Compatibility compatibility;
+        if (clientVersionParsed.Major < coreVersion.Major) compatibility = Compatibility.CLIENT_OUTDATED;
+        else if (clientVersionParsed.Major > coreVersion.Major) compatibility = Compatibility.SERVICE_OUTDATED;
+        else if (clientVersionParsed.Minor < coreVersion.Minor) compatibility = Compatibility.CLIENT_OUTDATED_WARNING;
+        else if (clientVersionParsed.Minor > coreVersion.Minor) compatibility = Compatibility.SERVICE_OUTDATED;
+        else if (clientVersionParsed.Build > coreVersion.Build) compatibility = Compatibility.SERVICE_OUTDATED_WARNING;
+        else compatibility = Compatibility.COMPATIBLE;
 
         return new CompatibilityInformation(compatibility, clientVersionParsed, coreVersion);
     }

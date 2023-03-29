@@ -13,32 +13,37 @@ public static class Utilities
         InteractionType interactionType,
         HandType handType,
         HandChirality chirality,
-        InputType inputType) =>
-        BitmaskFlags.NONE
-        ^ handType switch
+        InputType inputType)
+    {
+        var handTypeBit = handType switch
         {
             HandType.PRIMARY => BitmaskFlags.PRIMARY,
             HandType.SECONDARY => BitmaskFlags.SECONDARY,
-        } ^ chirality switch
+        };
+        var chiralityBit = chirality switch
         {
             HandChirality.LEFT => BitmaskFlags.LEFT,
             HandChirality.RIGHT => BitmaskFlags.RIGHT,
-        } ^ inputType switch
+        };
+        var inputTypeBit = inputType switch
         {
             InputType.NONE => BitmaskFlags.NONE_INPUT,
             InputType.CANCEL => BitmaskFlags.CANCEL,
             InputType.MOVE => BitmaskFlags.MOVE,
             InputType.UP => BitmaskFlags.UP,
             InputType.DOWN => BitmaskFlags.DOWN,
-        } ^ interactionType switch
-        {
-            InteractionType.PUSH => BitmaskFlags.PUSH,
-            InteractionType.HOVER => BitmaskFlags.HOVER,
-            InteractionType.GRAB => BitmaskFlags.GRAB,
-            InteractionType.TOUCHPLANE => BitmaskFlags.TOUCHPLANE,
-            InteractionType.VELOCITYSWIPE => BitmaskFlags.VELOCITYSWIPE,
-            InteractionType.AIRCLICK => throw new NotImplementedException(),
         };
+        var interactionTypeBit = interactionType switch
+       {
+           InteractionType.PUSH => BitmaskFlags.PUSH,
+           InteractionType.HOVER => BitmaskFlags.HOVER,
+           InteractionType.GRAB => BitmaskFlags.GRAB,
+           InteractionType.TOUCHPLANE => BitmaskFlags.TOUCHPLANE,
+           InteractionType.VELOCITYSWIPE => BitmaskFlags.VELOCITYSWIPE,
+           InteractionType.AIRCLICK => throw new NotImplementedException(),
+       };
+        return handTypeBit ^ chiralityBit ^ inputTypeBit ^ interactionTypeBit;
+    }
 
     public static System.Numerics.Vector3 LeapVectorToNumerics(Leap.Vector leap)
     {
