@@ -1,6 +1,6 @@
 import TouchFree from '../../TouchFree';
 import { InputType } from '../../TouchFreeToolingTypes';
-import { mockTfInputAction } from '../../tests/testUtils';
+import { intervalTest, mockTfInputAction } from '../../tests/testUtils';
 import { DotCursor } from '../DotCursor';
 
 const CURSOR_SIZE = 75;
@@ -132,20 +132,5 @@ describe('Dot Cursor', () => {
 const getStyle = (key: keyof CSSStyleDeclaration) => cursor.style[key];
 
 const testCursorStyle = async (key: keyof CSSStyleDeclaration, expected: string) => {
-    await new Promise<void>((resolve, reject) => {
-        let time = 0;
-        const interval = setInterval(() => {
-            try {
-                expect(getStyle(key)).toBe(expected);
-                clearInterval(interval);
-                resolve();
-            } catch (e) {
-                if (time > 1000) {
-                    clearInterval(interval);
-                    reject(e);
-                }
-                time += 20;
-            }
-        }, 20);
-    });
+    await intervalTest(() => expect(getStyle(key)).toBe(expected));
 };

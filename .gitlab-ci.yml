@@ -13,9 +13,9 @@ variables:
 
   TF_TFU_VERSION: '1.1.0'
   TF_TFW_VERSION: '1.3.0'
-  TOUCHFREE_VERSION: '2.4.0'
+  TOUCHFREE_VERSION: '2.6.0'
 
-  TF_TOOLING_API_VERSION: '1.3.0'
+  TF_TOOLING_API_VERSION: '1.4.0'
 
   TARGET_TRACKING_JOBID_WIN: 859924
 
@@ -263,8 +263,8 @@ TF_Tooling::Web::test:
   dependencies:
     - TF_Tooling::Web::build
   tags:
-    - unity
-    - win10
+    - docker-windows
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
   script:
     # Run unit tests
     - cd ${env:TF_TFW_PATH}
