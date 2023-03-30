@@ -1,5 +1,5 @@
 import { HandDataManager } from '../../Plugins/HandDataManager';
-import TouchFree from '../../TouchFree';
+import TouchFree, { EventHandle } from '../../TouchFree';
 import { BitmaskFlags, ConvertInputAction, WebsocketInputAction } from '../../TouchFreeToolingTypes';
 import { intervalTest } from '../../tests/testUtils';
 import { ConnectionManager } from '../ConnectionManager';
@@ -60,6 +60,13 @@ describe('MessageReceiver', () => {
             0
         );
     };
+
+    let handler: EventHandle;
+
+    afterEach(() => {
+        if (!handler) return;
+        handler.UnregisterEventCallback();
+    });
 
     beforeEach(() => {
         // Reset service after each test to completely reset mocks
@@ -213,7 +220,7 @@ describe('MessageReceiver', () => {
 
     it('should correctly check for an input action', async () => {
         const testFn = jest.fn();
-        TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
+        handler = TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
         mockOpen();
 
         const action = new WebsocketInputAction(
@@ -238,19 +245,20 @@ describe('MessageReceiver', () => {
         const { CursorPosition } = ConvertInputAction(moveAction);
 
         const testFn = jest.fn((action) => action.CursorPosition);
-        TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
+        handler = TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
 
         onMessage(ActionCode.INPUT_ACTION, { ...moveAction });
         onMessage(ActionCode.INPUT_ACTION, { ...upAction });
 
-        await intervalTest(() => expect(testFn).lastReturnedWith(CursorPosition));
+        await intervalTest(() => {
+            expect(testFn).toBeCalledTimes(2);
+            expect(testFn).lastReturnedWith(CursorPosition);
+        });
     });
 
-    it('should correctly cull excess input actions', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const updateMock = jest.spyOn(ConnectionManager.messageReceiver as any, 'Update').mockImplementation();
+    it('should correctly cull all excess non-key actions', async () => {
         const testFn = jest.fn();
-        TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
+        handler = TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
         mockOpen();
 
         const moveAction = createInputAction();
@@ -261,17 +269,14 @@ describe('MessageReceiver', () => {
             onMessage(ActionCode.INPUT_ACTION, { ...noneAction });
         }
 
-        expect(ConnectionManager.messageReceiver.actionQueue.length).toBe(10);
-
-        updateMock.mockRestore();
-        await intervalTest(() => expect(testFn).toBeCalledTimes(2));
+        await intervalTest(() => {
+            expect(testFn).toBeCalledTimes(2);
+        });
     });
 
-    it('should correctly stop input action cull on key action', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const updateMock = jest.spyOn(ConnectionManager.messageReceiver as any, 'Update').mockImplementation();
+    it('should correctly not cull the key actions', async () => {
         const testFn = jest.fn();
-        TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
+        handler = TouchFree.RegisterEventCallback('TransmitInputAction', testFn);
         mockOpen();
 
         const moveAction = createInputAction();
@@ -285,10 +290,9 @@ describe('MessageReceiver', () => {
             onMessage(ActionCode.INPUT_ACTION, { ...moveAction });
         }
 
-        expect(ConnectionManager.messageReceiver.actionQueue.length).toBe(10);
-
-        updateMock.mockRestore();
-        await intervalTest(() => expect(testFn).toBeCalledTimes(4));
+        await intervalTest(() => {
+            expect(testFn).toBeCalledTimes(3);
+        });
     });
 
     it('should correctly check for hand data', async () => {
