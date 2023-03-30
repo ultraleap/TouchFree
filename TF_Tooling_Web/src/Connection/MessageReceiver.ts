@@ -184,7 +184,6 @@ export class MessageReceiver {
         }
     }
 
-
     private LogNoCallbacksWarning(response: WebSocketResponse): void {
         console.warn(
             'Received a Handshake Response that did not match a callback.' +

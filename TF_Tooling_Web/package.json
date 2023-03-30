@@ -5,6 +5,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
+    "jest": "jest",
     "test": "jest --ci --reporters=default --reporters=jest-junit",
     "test:coverage": "jest --ci --coverage",
     "test:watch": "jest --watch",
