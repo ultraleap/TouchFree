@@ -7,4 +7,9 @@ public record InteractionTuning(
     bool EnableInteractionConfidence,
     bool EnableAirClickWithAirPush,
     bool EnableOneEuroFilter,
-    bool EnableExtrapolation);
+    bool EnableExtrapolation)
+{
+    public InteractionTuning()
+        : this(default, default, default, default)
+    {}
+}
