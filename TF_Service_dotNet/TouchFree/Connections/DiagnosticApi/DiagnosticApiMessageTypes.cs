@@ -19,23 +19,14 @@ enum DApiMsgTypes
     SetImageMask,
 }
 
-readonly record struct DApiMessage
+readonly record struct DApiMessage(string type)
 {
-    public DApiMessage(DApiMsgTypes type) => this.type = type.ToString();
-
-    public readonly string type;
+    public DApiMessage(DApiMsgTypes type) :this(type.ToString()) {}
 }
 
-readonly record struct DApiPayloadMessage<T>
+readonly record struct DApiPayloadMessage<T>(string type, T payload)
 {
-    public DApiPayloadMessage(DApiMsgTypes type, T payload)
-    {
-        this.type = type.ToString();
-        this.payload = payload;
-    }
-
-    public readonly string type;
-    public readonly T payload;
+    public DApiPayloadMessage(DApiMsgTypes type, T payload) : this(type.ToString(), payload) {}
 }
 
 readonly record struct DeviceIdPayload(uint device_id);

@@ -353,17 +353,10 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
 
         var parsed = Enum.TryParse(response.type, out DApiMsgTypes status);
 
-        void Handle<TPayload>(Action<TPayload> onSuccess)
+        void Handle<TPayload>(Action<TPayload?> handleAction)
         {
             var payload = JsonConvert.DeserializeObject<DApiPayloadMessage<TPayload>>(message);
-            if (payload == null)
-            {
-                TouchFreeLog.WriteLine($"DiagnosticAPI - Payload for {status.ToString()} failed to deserialize: {message}");
-            }
-            else
-            {
-                onSuccess(payload.payload);
-            }
+            handleAction(payload.payload); // It's not possible to tell if 
         }
 
         if (!parsed)
