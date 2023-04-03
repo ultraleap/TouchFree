@@ -49,6 +49,7 @@ export interface InteractionConfig {
     // Interaction-specific settings
     HoverAndHold: Partial<HoverAndHoldInteractionSettings>;
     TouchPlane: Partial<TouchPlaneInteractionSettings>;
+    VelocitySwipe: Partial<VelocitySwipeSettings>;
 }
 
 // Class: InteractionConfig
@@ -115,6 +116,34 @@ export interface TouchPlaneInteractionSettings {
     // Property: TouchPlaneTrackedPosition
     // This determines which bone position will be tracked when performing the interaction.
     TouchPlaneTrackedPosition: TrackedPosition;
+}
+
+// Class: VelocitySwipeSettings
+// NOTE: This is an experiemental feature and doesn't adhere to the tooling's semantaic versioning and may
+// break or change without warning.
+//
+// This class is a container for settings that only apply to the VelocitySwipe interaction. In
+// order to modify these settings of the TouchFree Service, create an <InteractionConfig>,
+// which contains an instance of this class, modify it as required, and then pass to the service
+// using the <ConfigurationManager>.
+//
+// Like all of the Settings classes found in this file, all members are optional. If you do
+// not modify a member of this class, its value will not change when the instance is sent to
+// TouchFree Service.
+export interface VelocitySwipeSettings {
+    MinScrollVelocity_mmps: number;
+    UpwardsMinVelocityDecrease_mmps: number;
+    DownwardsMinVelocityIncrease_mmps: number;
+    MaxReleaseVelocity_mmps: number;
+    MaxLateralVelocity_mmps: number;
+    MaxOpposingVelocity_mmps: number;
+    ScrollDelayMs: number;
+    MinSwipeLength: number;
+    MaxSwipeWidth: number;
+    SwipeWidthScaling: number;
+    AllowBidirectionalScroll: boolean;
+    AllowHorizontalScroll: boolean;
+    AllowVerticalScroll: boolean;
 }
 
 // Class: PhysicalConfig

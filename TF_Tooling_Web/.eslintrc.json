@@ -69,7 +69,8 @@
                     "jsDom",
                     "color",
                     "colors",
-                    "colored"
+                    "colored",
+                    "mmps"
                 ],
                 "skipWordIfMatch": ["^pointer.*$", "(\\S+(32|64)+)"],
                 "minLength": 3
