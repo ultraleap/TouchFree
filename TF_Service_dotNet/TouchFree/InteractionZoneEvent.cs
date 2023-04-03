@@ -1,14 +1,12 @@
 ﻿using System;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library;
+
+[Serializable]
+public readonly record struct InteractionZoneEvent(InteractionZoneState state);
+
+public enum InteractionZoneState
 {
-
-    [Serializable]
-    public record struct InteractionZoneEvent(InteractionZoneState state);
-
-    public enum InteractionZoneState
-    {
-        HAND_ENTERED,
-        HAND_EXITED
-    }
+    HAND_ENTERED,
+    HAND_EXITED
 }

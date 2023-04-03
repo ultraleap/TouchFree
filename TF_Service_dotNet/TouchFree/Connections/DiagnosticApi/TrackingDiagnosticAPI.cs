@@ -107,7 +107,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             }
         }
 
-        public Task RequestSet(TData? value)
+        public Task RequestSet(in TData? value)
         {
             if (!value.HasValue) return Task.CompletedTask;
             Value = value.Value;
@@ -132,7 +132,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             }
         }
 
-        public void HandleResponse(TData val, bool isSetResponse)
+        public void HandleResponse(in TData val, bool isSetResponse)
         {
             Value = val;
             TouchFreeLog.WriteLine(isSetResponse
@@ -285,8 +285,8 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             DeviceIdPayloadFunc(DApiMsgTypes.GetImageMask),
             (maskData, deviceInfo) =>
             {
-                var payload = (ImageMaskData)maskData with { device_id = deviceInfo.GetValueOrDefault().DeviceId };
-                return new DApiPayloadMessage<ImageMaskData>(DApiMsgTypes.SetImageMask, payload);
+                var payload = (ImageMaskDataPayload)maskData with { device_id = deviceInfo.GetValueOrDefault().DeviceId };
+                return new DApiPayloadMessage<ImageMaskDataPayload>(DApiMsgTypes.SetImageMask, payload);
             });
 
         _allowImages = new ConfigurationVariable<bool>(this, "Allow Images", false,
@@ -353,17 +353,12 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
 
         var parsed = Enum.TryParse(response.type, out DApiMsgTypes status);
 
-        void Handle<TPayload>(Action<TPayload> onSuccess)
+        void Handle<TPayload>(Action<TPayload?> handleAction)
         {
             var payload = JsonConvert.DeserializeObject<DApiPayloadMessage<TPayload>>(message);
-            if (payload == null)
-            {
-                TouchFreeLog.WriteLine($"DiagnosticAPI - Payload for {status.ToString()} failed to deserialize: {message}");
-            }
-            else
-            {
-                onSuccess(payload.payload);
-            }
+            // No validation check here - it's not possible to tell generally if deserialize succeeded
+            // Could check if all fields are default values but it is possible for this to be a valid value
+            handleAction(payload.payload);
         }
 
         if (!parsed)
@@ -376,7 +371,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
             {
                 case DApiMsgTypes.GetImageMask:
                 case DApiMsgTypes.SetImageMask:
-                    Handle<ImageMaskData>(payload => _maskingData.HandleResponse((MaskingData)payload, status == DApiMsgTypes.SetImageMask));
+                    Handle<ImageMaskDataPayload>(payload => _maskingData.HandleResponse((MaskingData)payload, status == DApiMsgTypes.SetImageMask));
                     break;
 
                 case DApiMsgTypes.GetAnalyticsEnabled:
@@ -395,7 +390,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
                     break;
 
                 case DApiMsgTypes.GetDevices:
-                    Handle<DiagnosticDevice[]>(devices => UpdateDevice(devices.FirstOrDefault()));
+                    Handle<DiagnosticDevicePayload[]>(devices => UpdateDevice(devices.FirstOrDefault()));
                     break;
 
                 case DApiMsgTypes.GetVersion:
@@ -435,7 +430,7 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         return true;
     }
 
-    private void UpdateDevice(DiagnosticDevice? newDevice)
+    private void UpdateDevice(in DiagnosticDevicePayload? newDevice)
     {
         lock (_deviceStatusTasks)
         {

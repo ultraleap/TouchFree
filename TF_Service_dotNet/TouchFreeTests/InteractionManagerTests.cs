@@ -4,6 +4,7 @@ using System.Linq;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Interactions;
+using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
 namespace TouchFreeTests
 {
@@ -17,7 +18,7 @@ namespace TouchFreeTests
             var sut = CreateSut();
 
             // Assert
-            Assert.AreEqual(InteractionType.PUSH, sut.activeInteractions.Single().Key.InteractionType);
+            Assert.AreEqual(InteractionType.PUSH, sut.ActiveInteractions.Single().Key.InteractionType);
         }
 
         [Test]
@@ -32,7 +33,7 @@ namespace TouchFreeTests
             sut.OnInteractionSettingsUpdated(updatedConfig);
 
             // Assert
-            Assert.AreEqual(InteractionType.HOVER, sut.activeInteractions.Single().Key.InteractionType);
+            Assert.AreEqual(InteractionType.HOVER, sut.ActiveInteractions.Single().Key.InteractionType);
         }
 
         public InteractionManager CreateSut()

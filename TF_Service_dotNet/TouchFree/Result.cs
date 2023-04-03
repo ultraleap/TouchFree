@@ -12,15 +12,14 @@ public static class Result
 
 public readonly record struct Empty;
 
-public readonly record struct Error(string Message)
+public readonly record struct Error(in string Message)
 {
     public static Error None { get; } = new();
-    
-    public Error(string message, IReadOnlyCollection<Error> children) : this(message)
+
+    public Error(in string message, in IReadOnlyCollection<Error> children) : this(message)
     {
         Message = message;
         Children = children;
-        ErrorCount = children.Count > 0 ? children.Sum(c => c.ErrorCount) : 1;
         var errorCount = ErrorCount;
 
         if (children.Count > 0)
@@ -63,12 +62,14 @@ public readonly record struct Error(string Message)
     public IReadOnlyCollection<Error> Children { get; } = Array.Empty<Error>();
     public string MessageTree { get; } = Message;
 
-    private int ErrorCount { get; } = 1;
+    private int ErrorCount => Children.Count > 0
+        ? Children.Sum(c => c.ErrorCount)
+        : string.IsNullOrEmpty(Message) ? 0 : 1;
 
     // WARNING: These operators are explicit deliberately.
     // Making them implicit causes issues with conversion to/from Error when dealing with Result<string>
-    public static explicit operator string(Error error) => error.Message;
-    public static explicit operator Error(string error) => new(error);
+    public static explicit operator string(in Error error) => error.Message;
+    public static explicit operator Error(in string error) => new(error);
 }
 
 public delegate Result<Empty> ResultPredicate<in T>(T value);
@@ -79,60 +80,60 @@ public delegate Result<Empty> ResultPredicate<in T>(T value);
 /// <typeparam name="T">Type of contained value</typeparam>
 public readonly record struct Result<T>
 {
-    public Result(T value)
+    public Result(in T value)
     {
-        this.value = value;
-        error = Error.None;
+        this._value = value;
+        _error = Error.None;
     }
 
-    public Result(Error error)
+    public Result(in Error error)
     {
-        value = default;
-        this.error = error;
+        _value = default;
+        this._error = error;
     }
 
-    private readonly T value;
-    private readonly Error error;
+    private readonly T _value;
+    private readonly Error _error;
 
-    public static implicit operator Result<T>(T value) => new(value);
-    public static implicit operator Result<T>(Error error) => new(error);
+    public static implicit operator Result<T>(in T value) => new(value);
+    public static implicit operator Result<T>(in Error error) => new(error);
 
     public bool IsSuccess => !IsError;
-    public bool IsError => error != Error.None;
+    public bool IsError => _error != Error.None;
 
     public bool TryGetValue(out T value)
     {
-        value = this.value;
+        value = this._value;
         return IsSuccess;
     }
 
     public bool TryGetError(out Error error)
     {
-        error = this.error;
+        error = this._error;
         return IsError;
     }
 
     public Result<T> Match(Action<T> matchFunc, Action<Error> matchError)
     {
-        if (IsSuccess) matchFunc(value);
-        if (IsError) matchError(error);
+        if (IsSuccess) matchFunc(_value);
+        if (IsError) matchError(_error);
         return this;
     }
 
     public TResult Match<TResult>(Func<T, TResult> matchFunc, Func<Error, TResult> matchError) =>
         IsSuccess
-            ? matchFunc(value)
-            : matchError(error);
+            ? matchFunc(_value)
+            : matchError(_error);
 
     /// <summary>
     /// Transform Result with a mapping function if it is not an error.
     /// For errors, the error will be propagated and the mapping function will not be called. 
     /// </summary>
-    public Result<TResult> Map<TResult>(Func<T, TResult> mapFunc) => IsSuccess ? mapFunc(value) : error;
+    public Result<TResult> Map<TResult>(Func<T, TResult> mapFunc) => IsSuccess ? mapFunc(_value) : _error;
     
     /// <summary>
     /// Transform Result with a mapping function if it is not an error.
     /// For errors, the error will be propagated and the mapping function will not be called. 
     /// </summary>
-    public Result<TResult> Map<TResult>(Func<T, Result<TResult>> mapFunc) => IsSuccess ? mapFunc(value) : error;
+    public Result<TResult> Map<TResult>(Func<T, Result<TResult>> mapFunc) => IsSuccess ? mapFunc(_value) : _error;
 }

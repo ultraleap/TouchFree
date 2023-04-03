@@ -1,165 +1,162 @@
 ﻿using System.Numerics;
-
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Connections;
-using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
-namespace Ultraleap.TouchFree.Library.Interactions
+namespace Ultraleap.TouchFree.Library.Interactions.InteractionModules;
+
+public class HoverAndHoldInteraction : InteractionModule
 {
-    public class HoverAndHoldInteraction : InteractionModule
+    public override InteractionType InteractionType => InteractionType.HOVER;
+
+    private readonly ProgressTimer _progressTimer = new(600f);
+
+    private readonly float _hoverDeadzoneEnlargementDistance = 5f;
+    private readonly float _timerDeadzoneEnlargementDistance = 5f;
+
+    private readonly float _deadzoneShrinkSpeed = 0.3f;
+
+    private float _hoverTriggerTime = 500f;
+    private readonly float _clickHoldTime = 200f;
+
+    private Vector2 _previousHoverPosDeadzone = Vector2.Zero;
+    private Vector2 _previousScreenPos = Vector2.Zero;
+
+    private bool _hoverTriggered = false;
+    private float _hoverTriggeredDeadzoneRadius = 0f;
+    private readonly TimestampStopwatch _hoverTriggerTimer = new();
+
+    private bool _clickHeld = false;
+    private bool _clickAlreadySent = false;
+    private readonly TimestampStopwatch _clickingTimer = new();
+
+    public HoverAndHoldInteraction(
+        IHandManager handManager,
+        IVirtualScreen virtualScreen,
+        IConfigManager configManager,
+        IClientConnectionManager connectionManager,
+        IPositioningModule positioningModule,
+        IPositionStabiliser positionStabiliser) : base(handManager, virtualScreen, configManager, connectionManager, positioningModule, positionStabiliser)
     {
-        public override InteractionType InteractionType { get; } = InteractionType.HOVER;
-
-        public ProgressTimer progressTimer = new ProgressTimer(600f);
-
-        public float hoverDeadzoneEnlargementDistance = 5f;
-        public float timerDeadzoneEnlargementDistance = 5f;
-
-        public float deadzoneShrinkSpeed = 0.3f;
-
-        public float hoverTriggerTime = 500f;
-        public float clickHoldTime = 200f;
-
-        private Vector2 previousHoverPosDeadzone = Vector2.Zero;
-        private Vector2 previousScreenPos = Vector2.Zero;
-
-        private bool hoverTriggered = false;
-        private float hoverTriggeredDeadzoneRadius = 0f;
-        private TimestampStopwatch hoverTriggerTimer = new TimestampStopwatch();
-
-        private bool clickHeld = false;
-        private bool clickAlreadySent = false;
-        private TimestampStopwatch clickingTimer = new TimestampStopwatch();
-
-        public HoverAndHoldInteraction(
-            IHandManager _handManager,
-            IVirtualScreen _virtualScreen,
-            IConfigManager _configManager,
-            IClientConnectionManager _connectionManager,
-            IPositioningModule _positioningModule,
-            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _connectionManager, _positioningModule, _positionStabiliser)
+        PositionConfiguration = new[]
         {
-            positionConfiguration = new[]
-            {
-                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
-            };
-        }
+            new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
+        };
+    }
 
-        protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
+    protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
+    {
+        if (hand == null)
         {
-            if (hand == null)
+            if (HadHandLastFrame)
             {
-                if (hadHandLastFrame)
-                {
-                    // We lost the hand so cancel anything we may have been doing
-                    return CreateInputActionResult(InputType.CANCEL, positions, 0);
-                }
-
-                return new InputActionResult();
+                // We lost the hand so cancel anything we may have been doing
+                return CreateInputActionResult(InputType.CANCEL, positions, 0);
             }
 
-            Vector2 cursorPositionMm = virtualScreen.PixelsToMillimeters(positions.CursorPosition);
-            Vector2 hoverPosMm = ApplyHoverzone(cursorPositionMm);
-            positions = new Positions(virtualScreen.MillimetersToPixels(hoverPosMm), positions.DistanceFromScreen);
-
-            return HandleInteractions();
+            return new InputActionResult();
         }
 
-        private Vector2 ApplyHoverzone(Vector2 _screenPosMm)
-        {
-            float deadzoneRad = positionStabiliser.defaultDeadzoneRadius + hoverDeadzoneEnlargementDistance;
-            previousHoverPosDeadzone = positionStabiliser.ApplyDeadzoneSized(previousHoverPosDeadzone, _screenPosMm, deadzoneRad);
-            return previousHoverPosDeadzone;
-        }
+        Vector2 cursorPositionMm = VirtualScreen.PixelsToMillimeters(positions.CursorPosition);
+        Vector2 hoverPosMm = ApplyHoverzone(cursorPositionMm);
+        positions = new Positions(VirtualScreen.MillimetersToPixels(hoverPosMm), positions.DistanceFromScreen);
 
-        private InputActionResult HandleInteractions()
-        {
-            var inputActionResult = CreateInputActionResult(InputType.MOVE, positions, progressTimer.GetProgress(latestTimestamp));
+        return HandleInteractions();
+    }
 
-            if (!clickHeld && !hoverTriggered && positions.CursorPosition == previousScreenPos)
+    private Vector2 ApplyHoverzone(Vector2 screenPosMm)
+    {
+        float deadzoneRad = PositionStabiliser.DefaultDeadzoneRadius + _hoverDeadzoneEnlargementDistance;
+        _previousHoverPosDeadzone = PositionStabiliser.ApplyDeadzoneSized(_previousHoverPosDeadzone, screenPosMm, deadzoneRad);
+        return _previousHoverPosDeadzone;
+    }
+
+    private InputActionResult HandleInteractions()
+    {
+        var inputActionResult = CreateInputActionResult(InputType.MOVE, positions, _progressTimer.GetProgress(LatestTimestamp));
+
+        if (!_clickHeld && !_hoverTriggered && positions.CursorPosition == _previousScreenPos)
+        {
+            if (!_hoverTriggerTimer.IsRunning)
             {
-                if (!hoverTriggerTimer.IsRunning)
-                {
-                    hoverTriggerTimer.Restart(latestTimestamp);
-                }
-                else if (hoverTriggerTimer.HasBeenRunningForThreshold(latestTimestamp, hoverTriggerTime))
-                {
-                    hoverTriggered = true;
-                    hoverTriggerTimer.Stop();
-                    hoverTriggeredDeadzoneRadius = positionStabiliser.currentDeadzoneRadius;
-                    previousScreenPos = positions.CursorPosition; // To prevent instant-abandonment of hover
-                }
+                _hoverTriggerTimer.Restart(LatestTimestamp);
             }
-
-            if (hoverTriggered)
+            else if (_hoverTriggerTimer.HasBeenRunningForThreshold(LatestTimestamp, _hoverTriggerTime))
             {
-                if (positions.CursorPosition == previousScreenPos)
+                _hoverTriggered = true;
+                _hoverTriggerTimer.Stop();
+                _hoverTriggeredDeadzoneRadius = PositionStabiliser.CurrentDeadzoneRadius;
+                _previousScreenPos = positions.CursorPosition; // To prevent instant-abandonment of hover
+            }
+        }
+
+        if (_hoverTriggered)
+        {
+            if (positions.CursorPosition == _previousScreenPos)
+            {
+                if (!_clickHeld)
                 {
-                    if (!clickHeld)
+                    if (!_progressTimer.IsRunning && _progressTimer.GetProgress(LatestTimestamp) == 0f)
                     {
-                        if (!progressTimer.IsRunning && progressTimer.GetProgress(latestTimestamp) == 0f)
-                        {
-                            progressTimer.Restart(latestTimestamp);
-                        }
-                        else if (progressTimer.IsRunning && progressTimer.GetProgress(latestTimestamp) == 1f)
-                        {
-                            positionStabiliser.currentDeadzoneRadius = (timerDeadzoneEnlargementDistance + positionStabiliser.defaultDeadzoneRadius);
-                            progressTimer.Stop();
-                            clickHeld = true;
-                            clickingTimer.Restart(latestTimestamp);
-                            inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 1f);
-                        }
-                        else
-                        {
-                            float maxDeadzoneRadius = timerDeadzoneEnlargementDistance + positionStabiliser.defaultDeadzoneRadius;
-                            float deadzoneRadius = Utilities.Lerp(hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, progressTimer.GetProgress(latestTimestamp));
-
-                            positionStabiliser.currentDeadzoneRadius = deadzoneRadius;
-                        }
+                        _progressTimer.Restart(LatestTimestamp);
+                    }
+                    else if (_progressTimer.IsRunning && _progressTimer.GetProgress(LatestTimestamp) == 1f)
+                    {
+                        PositionStabiliser.CurrentDeadzoneRadius = (_timerDeadzoneEnlargementDistance + PositionStabiliser.DefaultDeadzoneRadius);
+                        _progressTimer.Stop();
+                        _clickHeld = true;
+                        _clickingTimer.Restart(LatestTimestamp);
+                        inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 1f);
                     }
                     else
                     {
-                        if (!clickAlreadySent && clickingTimer.HasBeenRunningForThreshold(latestTimestamp, clickHoldTime))
-                        {
-                            inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.GetProgress(latestTimestamp));
-                            clickAlreadySent = true;
-                        }
+                        float maxDeadzoneRadius = _timerDeadzoneEnlargementDistance + PositionStabiliser.DefaultDeadzoneRadius;
+                        float deadzoneRadius = Utilities.Lerp(_hoverTriggeredDeadzoneRadius, maxDeadzoneRadius, _progressTimer.GetProgress(LatestTimestamp));
+
+                        PositionStabiliser.CurrentDeadzoneRadius = deadzoneRadius;
                     }
                 }
                 else
                 {
-                    if (clickHeld && !clickAlreadySent)
+                    if (!_clickAlreadySent && _clickingTimer.HasBeenRunningForThreshold(LatestTimestamp, _clickHoldTime))
                     {
-                        // Handle unclick if move before timer's up
-                        inputActionResult = CreateInputActionResult(InputType.UP, positions, progressTimer.GetProgress(latestTimestamp));
+                        inputActionResult = CreateInputActionResult(InputType.UP, positions, _progressTimer.GetProgress(LatestTimestamp));
+                        _clickAlreadySent = true;
                     }
-
-                    progressTimer.Stop();
-
-                    hoverTriggered = false;
-                    hoverTriggerTimer.Stop();
-
-                    clickHeld = false;
-                    clickAlreadySent = false;
-                    clickingTimer.Stop();
-
-                    positionStabiliser.StartShrinkingDeadzone(deadzoneShrinkSpeed);
                 }
             }
+            else
+            {
+                if (_clickHeld && !_clickAlreadySent)
+                {
+                    // Handle unclick if move before timer's up
+                    inputActionResult = CreateInputActionResult(InputType.UP, positions, _progressTimer.GetProgress(LatestTimestamp));
+                }
 
-            previousScreenPos = positions.CursorPosition;
+                _progressTimer.Stop();
 
-            return inputActionResult;
+                _hoverTriggered = false;
+                _hoverTriggerTimer.Stop();
+
+                _clickHeld = false;
+                _clickAlreadySent = false;
+                _clickingTimer.Stop();
+
+                PositionStabiliser.StartShrinkingDeadzone(_deadzoneShrinkSpeed);
+            }
         }
 
-        protected override void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
+        _previousScreenPos = positions.CursorPosition;
+
+        return inputActionResult;
+    }
+
+    protected override void OnInteractionSettingsUpdated(InteractionConfigInternal interactionConfig)
+    {
+        base.OnInteractionSettingsUpdated(interactionConfig);
+        if (interactionConfig.HoverAndHold != null)
         {
-            base.OnInteractionSettingsUpdated(_config);
-            if (_config.HoverAndHold != null)
-            {
-                hoverTriggerTime = _config.HoverAndHold.HoverStartTimeS * 1000; // s to ms
-                progressTimer.timeLimit = _config.HoverAndHold.HoverCompleteTimeS * 1000; // s to ms
-            }
+            _hoverTriggerTime = interactionConfig.HoverAndHold.HoverStartTimeS * 1000; // s to ms
+            _progressTimer.TimeLimit = interactionConfig.HoverAndHold.HoverCompleteTimeS * 1000; // s to ms
         }
     }
 }

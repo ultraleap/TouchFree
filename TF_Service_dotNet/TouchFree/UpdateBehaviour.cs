@@ -2,77 +2,76 @@
 using System.Timers;
 using static Ultraleap.TouchFree.Library.IUpdateBehaviour;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library;
+
+public class UpdateBehaviour : IDisposable, IUpdateBehaviour
 {
-    public class UpdateBehaviour : IDisposable, IUpdateBehaviour
+    /// <summary>
+    /// Update event. Does not allow multiple subscriptions of the same function.
+    /// </summary>
+    public event UpdateEvent OnUpdate
     {
-        public event UpdateEvent OnUpdate
+        add { _onUpdate -= value; _onUpdate += value; }
+        remove => _onUpdate -= value;
+    }
+
+    private UpdateEvent _onUpdate;
+    
+    /// <summary>
+    /// Slow update event. Does not allow multiple subscriptions of the same function.
+    /// </summary>
+    public event UpdateEvent OnSlowUpdate
+    {
+        add { _onSlowUpdate -= value; _onSlowUpdate += value; }
+        remove => _onSlowUpdate -= value;
+    }
+
+    private UpdateEvent _onSlowUpdate;
+
+    private Timer _updateLoop;
+    private const float _targetFps = 60f;
+
+    private const int _slowUpdateCount = 5;
+    private int _slowUpdateIteration = 0;
+
+    private readonly object _invokeLock = new();
+
+    public UpdateBehaviour(float framerate = _targetFps) => SetTimer(framerate);
+
+    private void SetTimer(float framerate)
+    {
+        _updateLoop = new Timer(1000f / framerate)
         {
-            add { onUpdate -= value; onUpdate += value; }
-            remove => onUpdate -= value;
-        }
+            AutoReset = true,
+            Enabled = true
+        };
+        _updateLoop.Elapsed += OnTimerElapsed;
+    }
 
-        private event UpdateEvent onUpdate;
-
-
-        public event UpdateEvent OnSlowUpdate
+    private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+    {
+        if (System.Threading.Monitor.TryEnter(_invokeLock))
         {
-            add { onSlowUpdate -= value; onSlowUpdate += value; }
-            remove => onSlowUpdate -= value;
-        }
-
-        private event UpdateEvent onSlowUpdate;
-
-        private Timer updateLoop;
-        private const float TargetFPS = 60f;
-
-        private const int slowUpdateCount = 5;
-        private int slowUpdateIteration = 0;
-
-        private readonly object invokeLock = new object();
-
-        public UpdateBehaviour(float framerate = TargetFPS)
-        {
-            SetTimer(framerate);
-        }
-
-        private void SetTimer(float framerate)
-        {
-            updateLoop = new(1000f / framerate);
-            updateLoop.AutoReset = true;
-            updateLoop.Enabled = true;
-            updateLoop.Elapsed += OnTimerElapsed;
-        }
-
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            if (System.Threading.Monitor.TryEnter(invokeLock))
+            try
             {
-                try
+                _onUpdate?.Invoke();
+                _slowUpdateIteration++;
+                if (_slowUpdateIteration >= _slowUpdateCount)
                 {
-                    onUpdate?.Invoke();
-                    slowUpdateIteration++;
-                    if (slowUpdateIteration >= slowUpdateCount)
-                    {
-                        slowUpdateIteration = 0;
-                        onSlowUpdate?.Invoke();
-                    }
-                }
-                finally
-                {
-                    System.Threading.Monitor.Exit(invokeLock);
+                    _slowUpdateIteration = 0;
+                    _onSlowUpdate?.Invoke();
                 }
             }
+            finally
+            {
+                System.Threading.Monitor.Exit(_invokeLock);
+            }
         }
+    }
 
-        public Timer UpdateTimer()
-        {
-            return updateLoop;
-        }
-
-        public void Dispose()
-        {
-            updateLoop?.Dispose();
-        }
+    public void Dispose()
+    {
+        _updateLoop?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

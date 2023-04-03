@@ -1,22 +1,12 @@
 ﻿using System;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library;
+
+[Serializable]
+public readonly record struct HandPresenceEvent(HandPresenceState state);
+
+public enum HandPresenceState
 {
-
-    [Serializable]
-    public struct HandPresenceEvent
-    {
-        public HandPresenceState state;
-
-        public HandPresenceEvent(HandPresenceState _state)
-        {
-            state = _state;
-        }
-    }
-
-    public enum HandPresenceState
-    {
-        HAND_FOUND,
-        HANDS_LOST
-    }
+    HAND_FOUND,
+    HANDS_LOST
 }

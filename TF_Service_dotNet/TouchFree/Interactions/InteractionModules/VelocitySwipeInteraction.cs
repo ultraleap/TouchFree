@@ -1,288 +1,266 @@
-﻿using Microsoft.Extensions.Options;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
+using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Connections;
-using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
-namespace Ultraleap.TouchFree.Library.Interactions
+namespace Ultraleap.TouchFree.Library.Interactions.InteractionModules;
+
+public class VelocitySwipeInteraction : InteractionModule
 {
-    public class VelocitySwipeInteraction : InteractionModule
+    public override InteractionType InteractionType => InteractionType.VELOCITYSWIPE;
+
+    private float _minScrollVelocityMmps = 625f;
+    private float _upwardsMinVelocityDecreaseMmps = 50f;
+    private float _downwardsMinVelocityIncreaseMmps = 50f;
+    private float _maxReleaseVelocityMmps = 200f;
+
+    private float _maxLateralVelocityMmps = 300f;
+    private float _maxOpposingVelocityMmps = 65f;
+
+    private float _minSwipeLength = 10f;
+    private float _maxSwipeWidth = 10f;
+    private float _swipeWidthScaling = 0.2f;
+
+    private double _scrollDelayMs = 450;
+    private readonly Stopwatch _scrollDelayStopwatch = new();
+
+    private Axis _lockAxisToOnly = Axis.None;
+    private bool _allowBidirectional = false;
+
+    private readonly PositionFilter _filter;
+
+
+    private bool _pressing = false;
+    private Direction _currentDirection;
+
+    private bool _scrollDisallowed = false;
+
+    private long _previousTime = 0;
+
+    private Vector2 _previousScreenPos = Vector2.Zero;
+    private Vector2 _scrollOrigin = Vector2.Zero;
+    private Vector2? _potentialScrollOrigin;
+
+
+    public VelocitySwipeInteraction(
+        IHandManager handManager,
+        IVirtualScreen virtualScreen,
+        IConfigManager configManager,
+        IClientConnectionManager connectionManager,
+        IOptions<InteractionTuning> interactionTuning,
+        IPositioningModule positioningModule,
+        IPositionStabiliser positionStabiliser) : base(handManager, virtualScreen, configManager, connectionManager, positioningModule, positionStabiliser)
     {
-        public override InteractionType InteractionType { get; } = InteractionType.VELOCITYSWIPE;
-
-        private float minScrollVelocity_mmps = 625f;
-        private float upwardsMinVelocityDecrease_mmps = 50f;
-        private float downwardsMinVelocityIncrease_mmps = 50f;
-        private float maxReleaseVelocity_mmps = 200f;
-
-        private float maxLateralVelocity_mmps = 300f;
-        private float maxOpposingVelocity_mmps = 65f;
-
-        private float minSwipeLength = 10f;
-        private float maxSwipeWidth = 10f;
-        private float swipeWidthScaling = 0.2f;
-
-        private double scrollDelayMs = 450;
-        private readonly Stopwatch scrollDelayStopwatch = new Stopwatch();
-
-        private Axis lockAxisToOnly = Axis.NONE;
-        private bool allowBidirectional = false;
-
-        private readonly PositionFilter filter;
-
-
-        private bool pressing = false;
-        private Direction currentDirection;
-
-        private bool scrollDisallowed = false;
-
-        private long previousTime = 0;
-
-        private Vector2 previousScreenPos = Vector2.Zero;
-        private Vector2 scrollOrigin = Vector2.Zero;
-        private Vector2? potentialScrollOrigin;
-
-
-        public VelocitySwipeInteraction(
-            IHandManager _handManager,
-            IVirtualScreen _virtualScreen,
-            IConfigManager _configManager,
-            IClientConnectionManager _connectionManager,
-            IOptions<InteractionTuning> _interactionTuning,
-            IPositioningModule _positioningModule,
-            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _connectionManager, _positioningModule, _positionStabiliser)
+        if (configManager.InteractionConfig?.VelocitySwipe != null)
         {
-            if (_configManager.InteractionConfig?.VelocitySwipe != null)
-            {
-                OnInteractionConfigUpdated(_configManager.InteractionConfig);
-            }
-
-            filter = new PositionFilter(_interactionTuning);
-
-            positionConfiguration = new[]
-            {
-                new PositionTrackerConfiguration(TrackedPosition.INDEX_TIP, 1)
-            };
-
-            _configManager.OnInteractionConfigUpdated += OnInteractionConfigUpdated;
+            OnInteractionConfigUpdated(configManager.InteractionConfig);
         }
 
-        private void OnInteractionConfigUpdated(InteractionConfigInternal config)
-        {
-            minScrollVelocity_mmps = config.VelocitySwipe.MinScrollVelocity_mmps;
-            upwardsMinVelocityDecrease_mmps = config.VelocitySwipe.UpwardsMinVelocityDecrease_mmps;
-            downwardsMinVelocityIncrease_mmps = config.VelocitySwipe.DownwardsMinVelocityIncrease_mmps;
-            maxReleaseVelocity_mmps = config.VelocitySwipe.MaxReleaseVelocity_mmps;
-            maxLateralVelocity_mmps = config.VelocitySwipe.MaxLateralVelocity_mmps;
-            maxOpposingVelocity_mmps = config.VelocitySwipe.MaxOpposingVelocity_mmps;
-            scrollDelayMs = config.VelocitySwipe.ScrollDelayMs;
-            minSwipeLength = config.VelocitySwipe.MinSwipeLength;
-            maxSwipeWidth = config.VelocitySwipe.MaxSwipeWidth;
-            swipeWidthScaling = config.VelocitySwipe.SwipeWidthScaling;
+        _filter = new PositionFilter(interactionTuning);
 
-            if (config.VelocitySwipe.AllowHorizontalScroll && config.VelocitySwipe.AllowVerticalScroll)
+        PositionConfiguration = new[]
+        {
+            new PositionTrackerConfiguration(TrackedPosition.INDEX_TIP, 1)
+        };
+
+        configManager.OnInteractionConfigUpdated += OnInteractionConfigUpdated;
+    }
+
+    private void OnInteractionConfigUpdated(InteractionConfigInternal config)
+    {
+        _minScrollVelocityMmps = config.VelocitySwipe.MinScrollVelocity_mmps;
+        _upwardsMinVelocityDecreaseMmps = config.VelocitySwipe.UpwardsMinVelocityDecrease_mmps;
+        _downwardsMinVelocityIncreaseMmps = config.VelocitySwipe.DownwardsMinVelocityIncrease_mmps;
+        _maxReleaseVelocityMmps = config.VelocitySwipe.MaxReleaseVelocity_mmps;
+        _maxLateralVelocityMmps = config.VelocitySwipe.MaxLateralVelocity_mmps;
+        _maxOpposingVelocityMmps = config.VelocitySwipe.MaxOpposingVelocity_mmps;
+        _scrollDelayMs = config.VelocitySwipe.ScrollDelayMs;
+        _minSwipeLength = config.VelocitySwipe.MinSwipeLength;
+        _maxSwipeWidth = config.VelocitySwipe.MaxSwipeWidth;
+        _swipeWidthScaling = config.VelocitySwipe.SwipeWidthScaling;
+
+        if (config.VelocitySwipe.AllowHorizontalScroll && config.VelocitySwipe.AllowVerticalScroll)
+        {
+            _allowBidirectional = config.VelocitySwipe.AllowBidirectionalScroll;
+        }
+        else if (config.VelocitySwipe.AllowHorizontalScroll)
+        {
+            _lockAxisToOnly = Axis.X;
+        }
+        else if (config.VelocitySwipe.AllowVerticalScroll)
+        {
+            _lockAxisToOnly = Axis.Y;
+        }
+    }
+
+    protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
+    {
+        if (hand == null)
+        {
+            _pressing = false;
+
+            if (HadHandLastFrame)
             {
-                allowBidirectional = config.VelocitySwipe.AllowBidirectionalScroll;
+                // We lost the hand so cancel anything we may have been doing
+                return CreateInputActionResult(InputType.CANCEL, positions, 0);
             }
-            else if (config.VelocitySwipe.AllowHorizontalScroll)
-            {
-                lockAxisToOnly = Axis.X;
-            }
-            else if (config.VelocitySwipe.AllowVerticalScroll)
-            {
-                lockAxisToOnly = Axis.Y;
-            }
+            return new InputActionResult();
         }
 
-        protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
-        {
-            if (hand == null)
-            {
-                pressing = false;
+        return HandleInteractions(confidence);
+    }
 
-                if (hadHandLastFrame)
+    protected override Positions ApplyAdditionalPositionModifiers(Positions pos) =>
+        base.ApplyAdditionalPositionModifiers(pos)
+            .ApplyModifier(_filter);
+
+    private InputActionResult HandleInteractions(float confidence)
+    {
+        Vector2 dPerpPx = positions.CursorPosition - _previousScreenPos;
+        Vector2 dPerp = VirtualScreen.PixelsToMillimeters(dPerpPx);
+
+        long dtMicroseconds = (LatestTimestamp - _previousTime);
+        float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
+
+        dPerp = dPerp * confidence / dt; // Multiply by confidence to make it harder to use when disused
+
+        Vector2 absPerp = Vector2.Abs(dPerp);
+
+        InputActionResult inputActionResult;
+
+        if (!_pressing && CheckIfScrollStart(dPerp, absPerp))
+        {
+            if (_potentialScrollOrigin.HasValue)
+            {
+                var changeFromPossibleOrigin = Vector2.Abs(positions.CursorPosition - _potentialScrollOrigin.Value);
+                if (changeFromPossibleOrigin.X > _minSwipeLength || changeFromPossibleOrigin.Y > _minSwipeLength)
                 {
-                    // We lost the hand so cancel anything we may have been doing
-                    return CreateInputActionResult(InputType.CANCEL, positions, 0);
-                }
-                return new InputActionResult();
-            }
+                    _pressing = true;
+                    _scrollOrigin = _previousScreenPos;
+                    _potentialScrollOrigin = null;
 
-            return HandleInteractions(confidence);
-        }
+                    SetDirection(dPerp, absPerp);
 
-        protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
-        {
-            var returnPositions = base.ApplyAdditionalPositionModifiers(positions);
-            returnPositions.CursorPosition = filter.ApplyModification(returnPositions.CursorPosition);
-            return returnPositions;
-        }
-
-        private InputActionResult HandleInteractions(float confidence)
-        {
-            Vector2 dPerpPx = positions.CursorPosition - previousScreenPos;
-            Vector2 dPerp = virtualScreen.PixelsToMillimeters(dPerpPx);
-
-            long dtMicroseconds = (latestTimestamp - previousTime);
-            float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
-
-            dPerp = dPerp * confidence / dt; // Multiply by confidence to make it harder to use when disused
-
-            Vector2 absPerp = Vector2.Abs(dPerp);
-
-            InputActionResult inputActionResult;
-
-            if (!pressing && CheckIfScrollStart(dPerp, absPerp))
-            {
-                if (potentialScrollOrigin.HasValue)
-                {
-                    var changeFromPossibleOrigin = Vector2.Abs(positions.CursorPosition - potentialScrollOrigin.Value);
-                    if (changeFromPossibleOrigin.X > minSwipeLength || changeFromPossibleOrigin.Y > minSwipeLength)
-                    {
-                        pressing = true;
-                        scrollOrigin = previousScreenPos;
-                        potentialScrollOrigin = null;
-
-                        SetDirection(dPerp, absPerp);
-
-                        inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 1f);
-                    }
-                    else
-                    {
-                        inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 0);
-                    }
+                    inputActionResult = CreateInputActionResult(InputType.DOWN, positions, 1f);
                 }
                 else
                 {
-                    potentialScrollOrigin = previousScreenPos;
                     inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 0);
                 }
             }
-            else if (pressing && CheckIfScrollEnd(dPerp))
-            {
-                scrollDelayStopwatch.Restart();
-                scrollDisallowed = true;
-                pressing = false;
-                inputActionResult = CreateInputActionResult(InputType.UP, positions, 0);
-            }
             else
             {
-                potentialScrollOrigin = null;
-                inputActionResult = CreateInputActionResult(InputType.MOVE, positions, pressing ? 1 : 0);
-            }
-
-            previousScreenPos = positions.CursorPosition;
-            previousTime = latestTimestamp;
-
-            return inputActionResult;
-        }
-
-        void SetDirection(Vector2 _dPerp, Vector2 _absPerp)
-        {
-            if (_absPerp.X >= _absPerp.Y)
-            {
-                currentDirection = _dPerp.X > 0 ? Direction.RIGHT : Direction.LEFT;
-            }
-            else
-            {
-                currentDirection = _dPerp.Y > 0 ? Direction.UP : Direction.DOWN;
+                _potentialScrollOrigin = _previousScreenPos;
+                inputActionResult = CreateInputActionResult(InputType.MOVE, positions, 0);
             }
         }
-
-        bool CheckIfScrollStart(Vector2 _dPerp, Vector2 _absPerp)
+        else if (_pressing && CheckIfScrollEnd(dPerp))
         {
-            if (!CheckIfScrollAllowed(_dPerp))
-            {
-                return false;
-            }
+            _scrollDelayStopwatch.Restart();
+            _scrollDisallowed = true;
+            _pressing = false;
+            inputActionResult = CreateInputActionResult(InputType.UP, positions, 0);
+        }
+        else
+        {
+            _potentialScrollOrigin = null;
+            inputActionResult = CreateInputActionResult(InputType.MOVE, positions, _pressing ? 1 : 0);
+        }
 
-            if (allowBidirectional)
-            {
-                if (_absPerp.X > minScrollVelocity_mmps || VerticalVelocityOverMinScrollVelocity(_dPerp))
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                if (((_absPerp.X > minScrollVelocity_mmps) && (_absPerp.Y < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.Y) ||
-                    (VerticalVelocityOverMinScrollVelocity(_dPerp) && (_absPerp.X < maxLateralVelocity_mmps) && lockAxisToOnly != Axis.X))
-                {
-                    return true;
-                }
-            }
+        _previousScreenPos = positions.CursorPosition;
+        _previousTime = LatestTimestamp;
 
+        return inputActionResult;
+    }
+
+    private void SetDirection(Vector2 dPerp, Vector2 absPerp)
+    {
+        if (absPerp.X >= absPerp.Y)
+        {
+            _currentDirection = dPerp.X > 0 ? Direction.Right : Direction.Left;
+        }
+        else
+        {
+            _currentDirection = dPerp.Y > 0 ? Direction.Up : Direction.Down;
+        }
+    }
+
+    private bool CheckIfScrollStart(Vector2 dPerp, Vector2 absPerp)
+    {
+        if (!CheckIfScrollAllowed(dPerp))
+        {
             return false;
         }
 
-        bool VerticalVelocityOverMinScrollVelocity(Vector2 _dPerp)
+        if (_allowBidirectional)
         {
-            return _dPerp.Y > (minScrollVelocity_mmps - upwardsMinVelocityDecrease_mmps) || -_dPerp.Y > (downwardsMinVelocityIncrease_mmps + minScrollVelocity_mmps);
-        }
-
-        bool CheckIfScrollAllowed(Vector2 _dPerp)
-        {
-            if (scrollDisallowed)
+            if (absPerp.X > _minScrollVelocityMmps || VerticalVelocityOverMinScrollVelocity(dPerp))
             {
-                if (scrollDelayStopwatch.IsRunning && scrollDelayStopwatch.ElapsedMilliseconds > scrollDelayMs)
-                {
-                    switch (currentDirection)
-                    {
-                        case Direction.LEFT:
-                            scrollDisallowed = _dPerp.X >= maxOpposingVelocity_mmps;
-                            break;
-                        case Direction.RIGHT:
-                            scrollDisallowed = _dPerp.X <= -maxOpposingVelocity_mmps;
-                            break;
-                        case Direction.UP:
-                            scrollDisallowed = _dPerp.Y <= -maxOpposingVelocity_mmps;
-                            break;
-                        case Direction.DOWN:
-                            scrollDisallowed = _dPerp.Y >= maxOpposingVelocity_mmps;
-                            break;
-                    }
-                }
-
-                return false;
+                return true;
             }
-
-            return true;
         }
-
-        bool CheckIfScrollEnd(Vector2 _dPerp)
+        else
         {
-            var changeFromScrollOriginPx = positions.CursorPosition - scrollOrigin;
-            var changeFromScrollOriginMm = Vector2.Abs(virtualScreen.PixelsToMillimeters(changeFromScrollOriginPx));
-
-            switch (currentDirection)
+            if (((absPerp.X > _minScrollVelocityMmps) && (absPerp.Y < _maxLateralVelocityMmps) && _lockAxisToOnly != Axis.Y) ||
+                (VerticalVelocityOverMinScrollVelocity(dPerp) && (absPerp.X < _maxLateralVelocityMmps) && _lockAxisToOnly != Axis.X))
             {
-                case Direction.LEFT:
-                    return _dPerp.X > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
-                case Direction.RIGHT:
-                    return _dPerp.X < maxReleaseVelocity_mmps || changeFromScrollOriginMm.Y > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.X);
-                case Direction.UP:
-                    return _dPerp.Y < maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
-                case Direction.DOWN:
-                    return _dPerp.Y > -maxReleaseVelocity_mmps || changeFromScrollOriginMm.X > (maxSwipeWidth + swipeWidthScaling * changeFromScrollOriginMm.Y);
-                default:
-                    return false;
+                return true;
             }
         }
 
-        enum Direction
+        return false;
+    }
+
+    private bool VerticalVelocityOverMinScrollVelocity(Vector2 dPerp) =>
+        dPerp.Y > (_minScrollVelocityMmps - _upwardsMinVelocityDecreaseMmps)
+        || -dPerp.Y > (_downwardsMinVelocityIncreaseMmps + _minScrollVelocityMmps);
+
+    private bool CheckIfScrollAllowed(Vector2 dPerp)
+    {
+        if (!_scrollDisallowed) return true;
+        if (_scrollDelayStopwatch.IsRunning && _scrollDelayStopwatch.ElapsedMilliseconds > _scrollDelayMs)
         {
-            LEFT,
-            RIGHT,
-            UP,
-            DOWN
+            _scrollDisallowed = _currentDirection switch
+            {
+                Direction.Left => dPerp.X >= _maxOpposingVelocityMmps,
+                Direction.Right => dPerp.X <= -_maxOpposingVelocityMmps,
+                Direction.Up => dPerp.Y <= -_maxOpposingVelocityMmps,
+                Direction.Down => dPerp.Y >= _maxOpposingVelocityMmps,
+                _ => _scrollDisallowed
+            };
         }
 
-        enum Axis
+        return false;
+    }
+
+    private bool CheckIfScrollEnd(Vector2 dPerp)
+    {
+        var changeFromScrollOriginPx = positions.CursorPosition - _scrollOrigin;
+        var changeFromScrollOriginMm = Vector2.Abs(VirtualScreen.PixelsToMillimeters(changeFromScrollOriginPx));
+
+        return _currentDirection switch
         {
-            NONE,
-            X,
-            Y
-        }
+            Direction.Left => dPerp.X > -_maxReleaseVelocityMmps || changeFromScrollOriginMm.Y > (_maxSwipeWidth + _swipeWidthScaling * changeFromScrollOriginMm.X),
+            Direction.Right => dPerp.X < _maxReleaseVelocityMmps || changeFromScrollOriginMm.Y > (_maxSwipeWidth + _swipeWidthScaling * changeFromScrollOriginMm.X),
+            Direction.Up => dPerp.Y < _maxReleaseVelocityMmps || changeFromScrollOriginMm.X > (_maxSwipeWidth + _swipeWidthScaling * changeFromScrollOriginMm.Y),
+            Direction.Down => dPerp.Y > -_maxReleaseVelocityMmps || changeFromScrollOriginMm.X > (_maxSwipeWidth + _swipeWidthScaling * changeFromScrollOriginMm.Y),
+            _ => false
+        };
+    }
+
+    private enum Direction
+    {
+        Left,
+        Right,
+        Up,
+        Down
+    }
+
+    private enum Axis
+    {
+        None,
+        X,
+        Y
     }
 }
