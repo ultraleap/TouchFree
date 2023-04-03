@@ -356,7 +356,9 @@ public class TrackingDiagnosticApi : ITrackingDiagnosticApi, IDisposable
         void Handle<TPayload>(Action<TPayload?> handleAction)
         {
             var payload = JsonConvert.DeserializeObject<DApiPayloadMessage<TPayload>>(message);
-            handleAction(payload.payload); // It's not possible to tell if 
+            // No validation check here - it's not possible to tell generally if deserialize succeeded
+            // Could check if all fields are default values but it is possible for this to be a valid value
+            handleAction(payload.payload);
         }
 
         if (!parsed)
