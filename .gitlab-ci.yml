@@ -653,14 +653,14 @@ Linux_Image::ARMLinux::package:
     - cp ./LeapSDK/ThirdPartyNotices.md ./licenses
 
     - tar zcf linux_image.tar.gz ext_ultouchfree.squashfs licenses
-    artifacts:
-      name: "TouchFree_Linux_Image_${CI_COMMIT_SHORT_SHA}"
-      paths:
-        - ./linux_image.tar.gz
-      expire_in: 2 weeks
-      when: always
-    tags:
-      - docker
+  artifacts:
+    name: "TouchFree_Linux_Image_${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - ./linux_image.tar.gz
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - docker
 
 TF_Service::ARMLinux::package:
   stage: package
