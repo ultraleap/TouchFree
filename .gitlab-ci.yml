@@ -632,7 +632,7 @@ Linux_Image::ARMLinux::package:
 
     # Uncompress & chmod tracking service
     - tar -xzf $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_*.tar.gz
-    - chmod +x $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/TrackingService/bin/libtrack_server
+    - chmod +x ./TrackingService/bin/libtrack_server
 
     # Combine services into one directory
     - mkdir ./TouchFree_Extension
