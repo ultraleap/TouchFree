@@ -57,8 +57,13 @@ export abstract class TouchlessCursor {
     }
 
     protected GetDimensions(cursor: HTMLElement): [number, number] {
-        const getFloat = (dimension: string) => parseFloat(dimension.replace('px', ''));
-        return [getFloat(cursor.style.width), getFloat(cursor.style.height)];
+        if (cursor.style.width && cursor.style.height) {
+            const getFloat = (dimension: string) => parseFloat(dimension.replace('px', ''));
+            return [getFloat(cursor.style.width), getFloat(cursor.style.height)];
+        }
+
+        const newCursor = cursor as HTMLImageElement;
+        return [newCursor.width, newCursor.height];
     }
 
     // Function: HandleInputAction
