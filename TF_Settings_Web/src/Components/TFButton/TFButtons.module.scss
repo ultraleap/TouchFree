@@ -1,0 +1,114 @@
+@use '@/variables.module.scss' as v;
+
+.tf-button {
+    background: v.$dark-grey-gradient;
+    box-shadow: v.$dark-box-shadow;
+    border: 1px solid #ffffff1a;
+    border-radius: 10px;
+
+    user-select: none;
+
+    h1 {
+        color: white;
+        text-align: left;
+        font-size: 26px;
+        font-family: v.$base-font;
+        font-weight: normal;
+        padding-left: 20px;
+        margin-bottom: 10px;
+    }
+
+    &--hovered {
+        box-shadow: 0px 0px 30px v.$ultraleap-green;
+    }
+
+    &--pressed {
+        box-shadow: 0px 0px 30px white;
+        transform: scale(0.95, 0.95);
+    }
+
+    &--horizontal {
+        display: flex;
+        flex-direction: row;
+        height: 200px;
+
+        .tf-button-text-container {
+            width: 65%;
+            align-self: flex-end;
+            padding-bottom: 3%;
+        }
+
+        img {
+            margin: auto;
+        }
+    }
+
+    &--text {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        p {
+            padding: 0;
+            text-align: center;
+            line-height: 40px;
+        }
+    }
+
+    &--misc {
+        height: 4rem;
+        padding: 0.3rem;
+
+        background-image: v.$dark-grey-gradient, v.$outline-button-gradient;
+        background-clip: content-box, border-box;
+        border-radius: 50px;
+
+        > h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            padding: 0 20px;
+            color: white;
+            text-align: center;
+        }
+
+        &--hovered {
+            box-shadow: none;
+            background-image: v.$ultraleap-green-gradient, v.$outline-button-gradient;
+        }
+    }
+
+    &--back {
+        width: 200px;
+        height: 80px;
+        border-radius: 30px;
+        background: v.$light-grey-gradient;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .back-container {
+            width: 50%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    p {
+        color: white;
+        text-align: left;
+        font-size: 20px;
+        font-family: v.$base-font;
+        opacity: 0.5;
+        margin: 0 20px;
+        min-height: 40px;
+    }
+
+    img {
+        pointer-events: none;
+    }
+}

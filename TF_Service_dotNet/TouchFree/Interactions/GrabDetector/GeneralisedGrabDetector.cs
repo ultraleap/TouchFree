@@ -1,53 +1,43 @@
 ﻿using System;
 
-using Ultraleap.TouchFree.Library;
+namespace Ultraleap.TouchFree.Library.Interactions.GrabDetector;
 
-namespace Ultraleap.TouchFree.Service
+public class GeneralisedGrabDetector
 {
-    public class GeneralisedGrabDetector
+    public float GrabThreshold { get; set; } = 0.8f;
+    public float UngrabThreshold { get; set; } = 0.7f;
+    public bool Grabbing { get; private set; } = false;
+    public float GeneralisedGrabStrength { get; private set; } = 0;
+
+    public bool IsGrabbing(Leap.Hand hand)
     {
-        public float grabThreshold = 0.8f;
-        public float ungrabThreshold = 0.7f;
+        ResolveClassicGrab(hand);
+        return Grabbing;
+    }
 
-        public bool grabbing;
-        public float grabStrength;
-        public float GeneralisedGrabStrength = 0;
+    private void ResolveClassicGrab(Leap.Hand hand)
+    {
+        float grabStrength = hand.GrabStrength;
 
-        public GeneralisedGrabDetector()
+        if (Grabbing)
         {
-            grabbing = false;
+            bool classicGrabbing = (grabStrength >= UngrabThreshold);
+            Grabbing = classicGrabbing;
+        }
+        else
+        {
+            bool classicGrabbing = (grabStrength >= GrabThreshold);
+            Grabbing = classicGrabbing;
         }
 
-        public bool IsGrabbing(Leap.Hand hand)
+        if (Grabbing)
         {
-            ResolveClassicGrab(hand);
-            return grabbing;
+            GeneralisedGrabStrength = 1;
         }
-
-        private void ResolveClassicGrab(Leap.Hand hand)
+        else
         {
-            float grabStrength = hand.GrabStrength;
-
-            if (grabbing)
-            {
-                bool classicGrabbing = (grabStrength >= ungrabThreshold);
-                grabbing = classicGrabbing;
-            }
-            else
-            {
-                bool classicGrabbing = (grabStrength >= grabThreshold);
-                grabbing = classicGrabbing;
-            }
-
-            if (grabbing)
-            {
-                GeneralisedGrabStrength = 1;
-            }
-            else
-            {
-                float normalisedGrabStrength = Utilities.MapRangeToRange(Math.Clamp(grabStrength, 0, grabThreshold), 0, grabThreshold, 0, 1);
-                GeneralisedGrabStrength = normalisedGrabStrength;
-            }
+            float normalisedGrabStrength = Utilities.MapRangeToRange(Math.Clamp(grabStrength, 0, GrabThreshold), 0, GrabThreshold, 0, 1);
+            GeneralisedGrabStrength = normalisedGrabStrength;
         }
     }
 }

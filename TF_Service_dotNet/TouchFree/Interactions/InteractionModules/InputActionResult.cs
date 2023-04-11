@@ -1,18 +1,3 @@
-﻿namespace Ultraleap.TouchFree.Library.Interactions.InteractionModules
-{
-    public class InputActionResult
-    {
-        public readonly bool actionDetected = false;
-        public readonly InputAction? inputAction;
-        public readonly float confidence;
+﻿namespace Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
-        public InputActionResult() { }
-
-        public InputActionResult(InputAction _inputAction, float _confidence)
-        {
-            inputAction = _inputAction;
-            confidence = _confidence;
-            actionDetected = true;
-        }
-    }
-}
+public readonly record struct InputActionResult(in InputAction? InputAction, float Confidence);

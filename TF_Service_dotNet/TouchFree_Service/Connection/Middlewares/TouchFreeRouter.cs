@@ -1,82 +1,80 @@
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Ultraleap.TouchFree.Library;
+using Microsoft.AspNetCore.Http;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Connections.MessageQueues;
 
-namespace Ultraleap.TouchFree.Service.Connection
+namespace Ultraleap.TouchFree.Service.Connection.Middlewares;
+
+public class TouchFreeRouter
 {
-    public class TouchFreeRouter
+    private readonly RequestDelegate _next;
+    private readonly IClientConnectionManager _clientMgr;
+    private readonly IEnumerable<IMessageQueueHandler> _messageQueueHandlers;
+    private readonly IConfigManager _configManager;
+
+    public TouchFreeRouter(RequestDelegate next, IClientConnectionManager clientMgr, IEnumerable<IMessageQueueHandler> messageQueueHandlers, IConfigManager configManager)
     {
-        private readonly RequestDelegate next;
-        private readonly IClientConnectionManager clientMgr;
-        private readonly IEnumerable<IMessageQueueHandler> messageQueueHandlers;
-        private readonly IConfigManager configManager;
+        _next = next;
+        _clientMgr = clientMgr;
+        _messageQueueHandlers = messageQueueHandlers;
+        _configManager = configManager;
+    }
 
-        public TouchFreeRouter(RequestDelegate _next, IClientConnectionManager _clientMgr, IEnumerable<IMessageQueueHandler> _messageQueueHandlers, IConfigManager _configManager)
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (context.WebSockets.IsWebSocketRequest)
         {
-            next = _next;
-            clientMgr = _clientMgr;
-            messageQueueHandlers = _messageQueueHandlers;
-            configManager = _configManager;
-        }
+            WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-        public async Task InvokeAsync(HttpContext context)
-        {
-            if (context.WebSockets.IsWebSocketRequest)
+            ClientConnection connection = new ClientConnection(webSocket, _messageQueueHandlers, _clientMgr, _configManager);
+            _clientMgr.AddConnection(connection);
+
+            TouchFreeLog.WriteLine("WebSocket Connected");
+
+            await Receive(webSocket, async (result, buffer) =>
             {
-                WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-
-                ClientConnection connection = new ClientConnection(webSocket, messageQueueHandlers, clientMgr, configManager);
-                clientMgr.AddConnection(connection);
-
-                TouchFreeLog.WriteLine("WebSocket Connected");
-
-                await Receive(webSocket, async (result, buffer) =>
+                if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    if (result.MessageType == WebSocketMessageType.Text)
-                    {
-                        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-                        connection.OnMessage(message);
-                        return;
-                    }
-                    else if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        clientMgr.RemoveConnection(webSocket);
+                    connection.OnMessage(message);
+                    return;
+                }
+                else if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    _clientMgr.RemoveConnection(webSocket);
 
-                        await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                    await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 
-                        TouchFreeLog.WriteLine("Websocket Connection Closed");
+                    TouchFreeLog.WriteLine("Websocket Connection Closed");
 
-                        return;
-                    }
-                });
-            }
-            else
-            {
-                TouchFreeLog.WriteLine("A request was made to the server that was not an attempt to connect to a WebSocket?");
-                await next(context);
-            }
+                    return;
+                }
+            });
         }
-
-        private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+        else
         {
-            var buffer = new byte[1024 * 4];
+            TouchFreeLog.WriteLine("A request was made to the server that was not an attempt to connect to a WebSocket?");
+            await _next(context);
+        }
+    }
 
-            while (socket.State == WebSocketState.Open)
-            {
-                var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
-                                                       cancellationToken: CancellationToken.None);
+    private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+    {
+        var buffer = new byte[1024 * 4];
 
-                handleMessage(result, buffer);
-            }
+        while (socket.State == WebSocketState.Open)
+        {
+            var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
+                cancellationToken: CancellationToken.None);
+
+            handleMessage(result, buffer);
         }
     }
 }

@@ -21,6 +21,8 @@ import {
     TrackingStateCallback,
     TrackingStateResponse,
     WebSocketResponse,
+    InteractionZoneState,
+    EventUpdate,
 } from './TouchFreeServiceTypes';
 
 // Class: MessageReceiver
@@ -64,6 +66,15 @@ export class MessageReceiver {
     // that are awaiting response from the Service.
     responseCallbacks: { [id: string]: ResponseCallback } = {};
 
+    // Variable: handshakeQueue
+    // A queue of handshake <WebSocketResponses> that have been received from the Service.
+    handshakeQueue: Array<WebSocketResponse> = [];
+
+    // Variable: handshakeCallbacks
+    // A dictionary of unique request IDs and <ResponseCallbacks> that represent handshake requests
+    // that are awaiting response from the Service.
+    handshakeCallbacks: { [id: string]: ResponseCallback } = {};
+
     // Variable: configStateQueue
     // A queue of <ConfigState> that have been received from the Service.
     configStateQueue: Array<ConfigState> = [];
@@ -84,7 +95,14 @@ export class MessageReceiver {
 
     // Variable: lastStateUpdate
     // The last hand presence state update received from the Service.
-    lastStateUpdate: HandPresenceState;
+    lastStateUpdate: HandPresenceState = HandPresenceState.PROCESSED;
+
+    // Variable: lastInteractionZoneUpdate
+    // The last interaction zone event update received from the Service.
+    lastInteractionZoneUpdate: EventUpdate<InteractionZoneState> = {
+        state: InteractionZoneState.HAND_EXITED,
+        status: 'PROCESSED',
+    };
 
     // Variable: trackingStateQueue
     // A queue of <TrackingStates> that have been received from the Service.
@@ -115,7 +133,6 @@ export class MessageReceiver {
     // Starts the two regular intervals managed for this (running <ClearUnresponsiveCallbacks> on an
     // interval of <callbackClearTimer> and <Update> on an interval of updateDuration
     constructor() {
-        this.lastStateUpdate = HandPresenceState.PROCESSED;
         this.updateDuration = (1 / this.updateRate) * 1000;
 
         this.callbackClearInterval = setInterval(
@@ -130,6 +147,7 @@ export class MessageReceiver {
     // Update function. Checks all queues for messages to handle. Run on an interval
     // started during the constructor
     Update(): void {
+        this.CheckForHandshakeResponse();
         this.CheckForResponse();
         this.CheckForConfigState();
         this.CheckForServiceStatus();
@@ -138,32 +156,63 @@ export class MessageReceiver {
         this.CheckForHandData();
     }
 
+    // Function: CheckForHandshakeResponse
+    // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to Sends it to <HandleCallbackList> with
+    // the <responseCallbacks> dictionary if there is one.
+    CheckForHandshakeResponse(): void {
+        const response: WebSocketResponse | undefined = this.handshakeQueue.shift();
+
+        if (response) {
+            const responseResult = MessageReceiver.HandleCallbackList(response, this.handshakeCallbacks);
+
+            switch (responseResult) {
+                case 'NoCallbacksFound':
+                    this.LogNoCallbacksWarning(response);
+                    break;
+                case 'Success':
+                    if (response.message && response.status === 'Success') {
+                        if (response.message.indexOf('Handshake Warning') >= 0) {
+                            console.warn('Received Handshake Warning from TouchFree:\n' + response.message);
+                        } else {
+                            console.log('Received Handshake Success from TouchFree:\n' + response.message);
+                        }
+                    } else {
+                        console.error('Received Handshake Error from TouchFree:\n' + response.message);
+                    }
+                    break;
+            }
+        }
+    }
+
+    private LogNoCallbacksWarning(response: WebSocketResponse): void {
+        console.warn(
+            'Received a Handshake Response that did not match a callback.' +
+                'This is the content of the response: \n Response ID: ' +
+                response.requestID +
+                '\n Status: ' +
+                response.status +
+                '\n Message: ' +
+                response.message +
+                '\n Original request - ' +
+                response.originalRequest
+        );
+    }
+
     // Function: CheckForResponse
     // Used to check the <responseQueue> for a <WebSocketResponse>. Sends it to Sends it to <HandleCallbackList> with
     // the <responseCallbacks> dictionary if there is one.
     CheckForResponse(): void {
         const response: WebSocketResponse | undefined = this.responseQueue.shift();
 
-        if (response !== undefined) {
+        if (response) {
             const responseResult = MessageReceiver.HandleCallbackList(response, this.responseCallbacks);
-            
-            switch(responseResult)
-            {
+
+            switch (responseResult) {
                 case 'NoCallbacksFound':
-                    console.warn(
-                        'Received a WebSocketResponse that did not match a callback.' +
-                            'This is the content of the response: \n Response ID: ' +
-                            response.requestID +
-                            '\n Status: ' +
-                            response.status +
-                            '\n Message: ' +
-                            response.message +
-                            '\n Original request - ' +
-                            response.originalRequest
-                    );
+                    this.LogNoCallbacksWarning(response);
                     break;
                 case 'Success':
-                    if(response.message) {
+                    if (response.message) {
                         // This is logged to aid users in debugging
                         console.log('Successfully received WebSocketResponse from TouchFree:\n' + response.message);
                     }
@@ -178,10 +227,9 @@ export class MessageReceiver {
     CheckForConfigState(): void {
         const configState: ConfigState | undefined = this.configStateQueue.shift();
 
-        if (configState !== undefined) {
+        if (configState) {
             const configResult = MessageReceiver.HandleCallbackList(configState, this.configStateCallbacks);
-            switch(configResult)
-            {
+            switch (configResult) {
                 case 'NoCallbacksFound':
                     console.warn('Received a ConfigState message that did not match a callback.');
                     break;
@@ -200,7 +248,6 @@ export class MessageReceiver {
         callbackResult: T,
         callbacks: { [id: string]: TouchFreeRequestCallback<T> }
     ): 'Success' | 'NoCallbacksFound' {
-
         for (const key in callbacks) {
             if (key === callbackResult.requestID) {
                 callbacks[key].callback(callbackResult);
@@ -218,19 +265,21 @@ export class MessageReceiver {
     CheckForServiceStatus(): void {
         const serviceStatus: ServiceStatus | undefined = this.serviceStatusQueue.shift();
 
-        if (serviceStatus !== undefined) {
+        if (serviceStatus) {
             const callbackResult = MessageReceiver.HandleCallbackList(serviceStatus, this.serviceStatusCallbacks);
 
-            switch(callbackResult)
-            {
+            switch (callbackResult) {
                 // If callback didn't happen for known reasons, we can be sure it's an independent status event rather
                 // than a request response
-                // TODO: Send/handle this request from service differently from normal response so we can be sure it's an independent event
+                // TODO: Send/handle this request from service differently from normal response so
+                // we can be sure it's an independent event
                 case 'NoCallbacksFound':
                     // If service state is null we didn't get info about it from this message
                     if (serviceStatus.trackingServiceState !== null) {
                         TouchFree.DispatchEvent('OnTrackingServiceStateChange', serviceStatus.trackingServiceState);
                     }
+
+                    TouchFree.DispatchEvent('OnServiceStatusChange', serviceStatus);
                     break;
                 case 'Success':
                     // no-op
@@ -245,7 +294,7 @@ export class MessageReceiver {
     CheckForTrackingStateResponse(): void {
         const trackingStateResponse: TrackingStateResponse | undefined = this.trackingStateQueue.shift();
 
-        if (trackingStateResponse !== undefined) {
+        if (trackingStateResponse) {
             this.HandleTrackingStateResponse(trackingStateResponse);
         }
     }
@@ -311,6 +360,11 @@ export class MessageReceiver {
             ConnectionManager.HandleHandPresenceEvent(this.lastStateUpdate);
             this.lastStateUpdate = HandPresenceState.PROCESSED;
         }
+
+        if (this.lastInteractionZoneUpdate.status === 'UNPROCESSED') {
+            ConnectionManager.HandleInteractionZoneEvent(this.lastInteractionZoneUpdate.state);
+            this.lastInteractionZoneUpdate.status = 'PROCESSED';
+        }
     }
 
     // Function: CheckForHandData
@@ -335,8 +389,10 @@ export class MessageReceiver {
         const lastClearTime: number = Date.now();
 
         MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.responseCallbacks);
+        MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.handshakeCallbacks);
         MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.configStateCallbacks);
         MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.serviceStatusCallbacks);
+        MessageReceiver.ClearUnresponsiveItems(lastClearTime, this.trackingStateCallbacks);
     }
 
     private static ClearUnresponsiveItems<T>(

@@ -22,7 +22,7 @@ a transparent overlay that enables you to use TouchFree interactions with any ex
 TouchFree Overlay requires the TouchFree Service to run properly.
 
 As TouchFree Overlay depends on TouchFree Tooling, if you intend to work on TouchFree Overlay as a
-devloper, you will need to run the `setup_repository.bat` script in the `Scripts` directory. Ensure
+developer, you will need to run the `setup_repository.bat` script in the `Scripts` directory. Ensure
 that if you have previously worked on the Overlay, that you delete the `TF_Application/Assets/TouchFree`
 folder before running this script.
 

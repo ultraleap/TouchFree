@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="35.416" height="40.888" viewBox="0 0 35.416 40.888">
+  <defs>
+    <filter id="Path_131" x="0" y="0" width="35.416" height="40.888" filterUnits="userSpaceOnUse">
+      <feOffset dy="2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.302"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Path_132" x="8.7" y="0.029" width="26.666" height="26.417" filterUnits="userSpaceOnUse">
+      <feOffset dy="2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-2"/>
+      <feFlood flood-opacity="0.302"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Line_98" x="4.832" y="15.841" width="25.296" height="19" filterUnits="userSpaceOnUse">
+      <feOffset dy="2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-3"/>
+      <feFlood flood-opacity="0.302"/>
+      <feComposite operator="in" in2="blur-3"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Line_99" x="4.832" y="12.193" width="25.296" height="19" filterUnits="userSpaceOnUse">
+      <feOffset dy="2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-4"/>
+      <feFlood flood-opacity="0.302"/>
+      <feComposite operator="in" in2="blur-4"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_70" data-name="Group 70" transform="translate(-958.25 -436.619)">
+    <g transform="matrix(1, 0, 0, 1, 958.25, 436.62)" filter="url(#Path_131)">
+      <path id="Path_131-2" data-name="Path 131" d="M7.688,7.975V0h14.2V16.416H0V7.975Z" transform="translate(25.92 7.5) rotate(90)" fill="none" stroke="#fff" stroke-width="1"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 958.25, 436.62)" filter="url(#Path_132)">
+      <path id="Path_132-2" data-name="Path 132" d="M-7029.594-12813.227l7.972,7.7" transform="translate(7047.64 12820.62)" fill="none" stroke="#fff" stroke-width="1"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 958.25, 436.62)" filter="url(#Line_98)">
+      <line id="Line_98-2" data-name="Line 98" x2="7.296" transform="translate(13.83 23.34)" fill="none" stroke="#fff" stroke-width="1"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 958.25, 436.62)" filter="url(#Line_99)">
+      <line id="Line_99-2" data-name="Line 99" x2="7.296" transform="translate(13.83 19.69)" fill="none" stroke="#fff" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

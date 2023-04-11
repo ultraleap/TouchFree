@@ -22,7 +22,7 @@
         }
     },
     "plugins": ["@typescript-eslint", "spellcheck"],
-    "ignorePatterns": ["/dist*", "/release", "build/*", "*_Example.html"],
+    "ignorePatterns": ["/dist*", "/release", "build/*", "*_Example.html", "coverage/"],
     "rules": {
         "indent": "off",
         "linebreak-style": "off",
@@ -36,6 +36,7 @@
                 "skipWords": [
                     "touchfree",
                     "touchfreecursor",
+                    "chiralities",
                     "bitmask",
                     "umd",
                     "tsx",
@@ -61,7 +62,15 @@
                     "rect",
                     "center",
                     "snapforce",
-                    "etc"
+                    "etc",
+                    "Impl",
+                    "Impls",
+                    "ts",
+                    "jsDom",
+                    "color",
+                    "colors",
+                    "colored",
+                    "mmps"
                 ],
                 "skipWordIfMatch": ["^pointer.*$", "(\\S+(32|64)+)"],
                 "minLength": 3

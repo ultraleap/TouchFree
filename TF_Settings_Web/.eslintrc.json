@@ -18,7 +18,7 @@
         "sourceType": "module"
     },
     "plugins": ["react", "@typescript-eslint", "no-relative-import-paths"],
-    "ignorePatterns": ["src/TouchFree", "build/"],
+    "ignorePatterns": ["src-tauri/target/", "build/", "dist/"],
     "rules": {
         "indent": "off",
         "linebreak-style": "off",
@@ -37,6 +37,7 @@
             }
         ],
         "@typescript-eslint/no-empty-interface": "warn",
+        "@typescript-eslint/no-empty-function": "off",
         "no-relative-import-paths/no-relative-import-paths": ["error", { "allowSameFolder": true, "rootDir": "src" }]
     }
 }

@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/TouchFree_Application/Scenes/TouchlessOverlay.unity
+    path: Assets/Scenes/TouchlessOverlay.unity
     guid: 4ba52e65dae01504594a5edc8be60f81
   m_configObjects: {}

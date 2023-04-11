@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration;
+
+public static class VersionManager
 {
-    public static class VersionManager
-    {
-        public static string Version
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_version))
-                {
-                    _version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
-                }
+    public static string Version =>
+        string.IsNullOrEmpty(_version)
+            ? _version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty
+            : _version;
 
-                return _version;
-            }
-        }
-
-        private static string _version = string.Empty;
-        public static readonly Version ApiVersion = new Version("1.3.0");
-        public const string API_HEADER_NAME = "TfApiVersion";
-    }
+    private static string _version = string.Empty;
+    public static readonly Version ApiVersion = new("1.4.0");
+    public const string API_HEADER_NAME = "TfApiVersion";
 }

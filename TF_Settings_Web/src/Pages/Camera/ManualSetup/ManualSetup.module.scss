@@ -1,0 +1,419 @@
+@use '@/variables.module.scss' as v;
+@use '@/App.module.scss';
+
+.container {
+    margin: 0 2vw;
+}
+
+.sub-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    @media (orientation: landscape) {
+        grid-template-columns: 0.7fr 1fr;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5vh 0;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    @media (orientation: landscape) {
+        height: 70vh;
+    }
+}
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.screen-images {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    @media (orientation: landscape) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.title-line {
+    @include App.title-line;
+}
+
+.pageDivider {
+    height: 200px;
+}
+
+.screen-container {
+    width: 450px;
+    height: 500px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.screenFrontOutside {
+    width: 231px;
+    height: 338px;
+
+    background: transparent linear-gradient(146deg, #535353 0%, #313131 100%) 0% 0% no-repeat padding-box;
+    box-shadow: v.$dark-box-shadow;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.screenFrontInside {
+    width: 209px;
+    height: 314px;
+    background: transparent linear-gradient(146deg, #909090 0%, #454545 100%) 0% 0% no-repeat padding-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.screenFrontCamera {
+    top: 30px;
+    width: 66px;
+    height: 29px;
+
+    background: transparent linear-gradient(90deg, #ffffff 0%, #e8e8e8 23%, #e8e8e8 77%, #ffffff 100%) 0% 0% no-repeat
+        padding-box;
+    box-shadow: v.$dark-box-shadow;
+    border-radius: 9px;
+    position: absolute;
+}
+
+$left-to-right: 57px;
+
+.cameraLeftToRight .screenFrontCamera {
+    transform: translate(-$left-to-right, 0);
+}
+
+.cameraLeftToRight .screenFrontInside {
+    justify-content: center;
+    * {
+        position: absolute;
+        transform: translate(-(calc($left-to-right / 2)), 0);
+    }
+}
+
+.screenFrontCameraBottom {
+    top: 22px;
+    position: relative;
+    background: transparent linear-gradient(180deg, #000000 0%, #808080 100%) 0% 0% no-repeat padding-box;
+    border-radius: 0px 0px 9px 9px;
+    width: 66px;
+    height: 7px;
+}
+
+$vert-base-height: 314px;
+$height-diff: 10px;
+
+.screenFrontCenterLineVert {
+    width: 0px;
+    height: $vert-base-height;
+    border-left: 4px dotted v.$ultraleap-green;
+    position: absolute;
+}
+
+.cameraHeight .screenFrontCenterLineVert {
+    top: 60px;
+    height: $vert-base-height + 23px;
+}
+
+.cameraLeftToRight .screenFrontCenterLineVert {
+    width: $left-to-right;
+    height: $vert-base-height + $height-diff * 4;
+
+    border-left: 3px solid v.$ultraleap-green;
+    border-right: 3px solid v.$ultraleap-green;
+}
+
+.screenTilt .screenFrontCenterLineVert,
+.cameraRotation .screenFrontCenterLineVert {
+    display: none;
+}
+
+.cameraDistanceFromScreen .screenFrontCenterLineVert {
+    top: 385px;
+    width: 20px;
+    height: 20px;
+
+    border: 3px solid v.$ultraleap-green;
+    border-radius: 20px;
+    position: absolute;
+}
+
+.screenFrontTopLine {
+    width: 288px;
+    height: 0px;
+
+    border-top: 3px solid v.$ultraleap-green;
+}
+
+.cameraHeight .screenFrontTopLine {
+    height: 0;
+    width: 0;
+}
+
+.cameraLeftToRight .screenFrontTopLine {
+    width: 52px;
+    height: 0px;
+
+    border-top: 4px dotted v.$ultraleap-green;
+}
+
+.screenTilt .screenFrontTopLine,
+.cameraRotation .screenFrontTopLine,
+.cameraDistanceFromScreen .screenFrontTopLine {
+    display: none;
+}
+
+.screenFrontBottomLine {
+    width: 288px;
+    height: 0px;
+    border-top: 3px solid v.$ultraleap-green;
+}
+
+.cameraLeftToRight .screenFrontBottomLine,
+.screenTilt .screenFrontBottomLine,
+.cameraRotation .screenFrontBottomLine,
+.cameraDistanceFromScreen .screenFrontBottomLine {
+    display: none;
+}
+
+.screen-mock {
+    width: 450px;
+    height: 500px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.screen-label {
+    text-align: center;
+    color: #ffffff;
+    opacity: 0.5;
+}
+
+.screenSideOutside {
+    width: 32px;
+    height: 338px;
+
+    background: transparent linear-gradient(175deg, #525252 0%, #323232 100%) 0% 0% no-repeat padding-box;
+    box-shadow: v.$dark-box-shadow;
+    border-radius: 10px 0px 0px 10px;
+}
+
+.screenTilt .screenSideOutside {
+    width: 32px;
+    height: 335px;
+    transform-origin: 0% 100%;
+    transform: rotate(-15deg);
+}
+
+.screenSideInside {
+    width: 10px;
+    height: 314px;
+
+    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
+    opacity: 0.54;
+}
+
+.screenTilt .screenSideInside {
+    top: 75px;
+    left: 236px;
+    transform-origin: 0% 100%;
+    transform: rotate(-15deg);
+
+    background: transparent linear-gradient(90deg, #d0d0d0 0%, #d0d0d000 100%) 0% 0% no-repeat padding-box;
+    position: absolute;
+}
+
+.screenSideCenterLineVert {
+    left: 265px;
+    width: 0px;
+    height: 314px;
+
+    border-left: 4px dotted v.$ultraleap-green;
+    position: absolute;
+}
+
+.cameraHeight .screenSideCenterLineVert {
+    top: 65px;
+    left: 320px;
+    height: 330px;
+    position: absolute;
+}
+
+.cameraLeftToRight .screenSideCenterLineVert {
+    display: none;
+}
+
+.screenTilt .screenSideCenterLineVert {
+    top: 68px;
+    left: 240px;
+    height: 338px;
+}
+
+.cameraRotation .screenSideCenterLineVert {
+    top: 60px;
+    left: 410px;
+    height: 340px;
+    transform-origin: 0% 100%;
+    transform: rotate(-15deg);
+}
+
+.cameraDistanceFromScreen .screenSideCenterLineVert {
+    top: 60px;
+    left: 320px;
+    width: 0px;
+    height: 348px;
+
+    border-left: 3px solid v.$ultraleap-green;
+}
+
+.cameraDistanceFromScreen .screenSideExtraLineVert {
+    top: 390px;
+    left: 235px;
+    width: 0px;
+    height: 21px;
+
+    border-left: 3px solid v.$ultraleap-green;
+    position: absolute;
+}
+
+.screenSideTopLine {
+    top: 400px;
+    left: 240px;
+    width: 55px;
+    height: 0px;
+
+    border-top: 3px solid v.$ultraleap-green;
+    position: absolute;
+}
+
+.cameraHeight .screenSideTopLine,
+.cameraLeftToRight .screenSideTopLine,
+.screenTilt .screenSideTopLine,
+.cameraRotation .screenSideTopLine,
+.cameraDistanceFromScreen .screenSideTopLine {
+    display: none;
+}
+
+.screenSideBottomLine {
+    top: 80px;
+    left: 240px;
+    width: 55px;
+    height: 0px;
+
+    border-top: 3px solid v.$ultraleap-green;
+    position: absolute;
+}
+
+.cameraHeight .screenSideBottomLine {
+    top: 400px;
+    width: 155px;
+}
+
+.cameraLeftToRight .screenSideBottomLine,
+.screenTilt .screenSideBottomLine,
+.cameraRotation .screenSideBottomLine {
+    display: none;
+}
+
+.cameraDistanceFromScreen .screenSideBottomLine {
+    top: 400px;
+    left: 243px;
+    width: 70px;
+
+    border-top: 4px dotted v.$ultraleap-green;
+}
+
+.screenSideCamera {
+    top: 30px;
+    left: 300px;
+    width: 39px;
+    height: 36px;
+    transform: matrix(0.97, -0.24, 0.24, 0.97, 0, 0);
+
+    background: transparent linear-gradient(90deg, #ffffff 0%, #e8e8e8 23%, #e8e8e8 77%, #ffffff 100%) 0% 0% no-repeat
+        padding-box;
+    box-shadow: v.$dark-box-shadow;
+    border-radius: 9px;
+    position: absolute;
+}
+
+.screenSideCameraBottom {
+    margin-top: 27px;
+    width: 39px;
+    height: 9px;
+
+    background: transparent linear-gradient(180deg, #000000 0%, #808080 100%) 0% 0% no-repeat padding-box;
+    border-radius: 0px 0px 9px 9px;
+}
+
+.screenTilt .screenSideTiltBox {
+    overflow: hidden;
+    top: -272px;
+    left: 153px;
+    width: 350px;
+    height: 350px;
+    transform-origin: 0% 100%;
+    transform: rotate(75deg) skew(75deg);
+
+    position: absolute;
+}
+
+.screenTilt .screenSideTiltBox::before {
+    content: ' ';
+    transform-origin: 0% 100%;
+    transform: skew(-75deg);
+    width: 350px;
+    height: 350px;
+    opacity: 0.17;
+    background: transparent linear-gradient(180deg, v.$ultraleap-green 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
+    border-top-left-radius: 350px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.cameraRotation .screenSideTiltBox {
+    overflow: hidden;
+    top: 50px;
+    left: 410px;
+    width: 350px;
+    height: 350px;
+    transform-origin: 0% 100%;
+    transform: rotate(255deg) skew(75deg);
+
+    position: absolute;
+}
+
+.cameraRotation .screenSideTiltBox::before {
+    content: ' ';
+    transform-origin: 0% 100%;
+    transform: skew(-75deg);
+    width: 350px;
+    height: 350px;
+    opacity: 0.17;
+    background: transparent linear-gradient(180deg, v.$ultraleap-green 0%, #00ccce 100%) 0% 0% no-repeat padding-box;
+    border-top-left-radius: 350px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}

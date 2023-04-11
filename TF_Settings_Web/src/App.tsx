@@ -1,59 +1,72 @@
-import './App.scss';
+import styles from './App.module.scss';
 
+import classnames from 'classnames/bind';
 import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { ConnectionManager } from 'TouchFree/src/Connection/ConnectionManager';
-import { ServiceStatus } from 'TouchFree/src/Connection/TouchFreeServiceTypes';
-import { WebInputController } from 'TouchFree/src/InputControllers/WebInputController';
-import { TrackingServiceState } from 'TouchFree/src/TouchFreeToolingTypes';
+import { isDesktop, toggleFullScreen } from '@/TauriUtils';
 
-import ControlBar from 'Components/ControlBar';
-import { CursorManager } from 'Components/CursorManager';
-import CameraManager from 'Components/Pages/Camera/CameraManager';
-import { InteractionsPage } from 'Components/Pages/InteractionsPage';
+import { ConnectionManager } from 'touchfree/src/Connection/ConnectionManager';
+import { ServiceStatus } from 'touchfree/src/Connection/TouchFreeServiceTypes';
+import TouchFree, { EventHandle } from 'touchfree/src/TouchFree';
+import { TrackingServiceState } from 'touchfree/src/TouchFreeToolingTypes';
+
+import { AboutScreen, CameraManager, InteractionsScreen, VisualsScreen } from '@/Pages';
+
+import { Header } from '@/Components';
+
+const classes = classnames.bind(styles);
 
 const App: React.FC = () => {
-    const [tfStatus, setTfStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
-    const [touchFreeVersion, setTouchFreeVersion] = React.useState<string>('');
+    const [trackingStatus, setTrackingStatus] = React.useState<TrackingServiceState>(TrackingServiceState.UNAVAILABLE);
 
     useEffect(() => {
-        ConnectionManager.init();
+        const [ip, port] = window.location.host.split(':');
+        TouchFree.Init({
+            initialiseCursor: true,
+            // env.MODE is updated by Vite automatically. Can be manually set by running `npm start -- --mode <string>
+            address: import.meta.env.MODE !== 'development' ? { ip: ip, port: port } : undefined,
+        });
 
-        const onConnected = () => {
-            ConnectionManager.RequestServiceStatus((detail: ServiceStatus) => {
-                const status = detail.trackingServiceState;
-                if (status) {
-                    setTfStatus(status);
-                }
-            });
-
-            const serviceConnection = ConnectionManager.serviceConnection();
-            const tfVersion = serviceConnection?.touchFreeVersion ?? '';
-            setTouchFreeVersion(tfVersion);
+        const setTrackingStatusCallback = (detail: ServiceStatus) => {
+            const status = detail.trackingServiceState;
+            setTrackingStatus(status ?? TrackingServiceState.UNAVAILABLE);
         };
 
-        ConnectionManager.AddConnectionListener(onConnected);
-        ConnectionManager.AddServiceStatusListener(setTfStatus);
-        const controller: WebInputController = new WebInputController();
+        let serviceChangeCallback: EventHandle;
+        const whenConnectedHandler = TouchFree.RegisterEventCallback('WhenConnected', () => {
+            ConnectionManager.RequestServiceStatus(setTrackingStatusCallback);
+            serviceChangeCallback = TouchFree.RegisterEventCallback('OnServiceStatusChange', setTrackingStatusCallback);
+        });
 
-        new CursorManager();
+        const fullScreenListener = (event: KeyboardEvent) => {
+            if (event.code === 'F11' || (event.altKey && event.code === 'Enter')) {
+                toggleFullScreen();
+            }
+        };
+
+        if (isDesktop()) {
+            window.addEventListener('keydown', fullScreenListener);
+        }
 
         return () => {
-            controller.disconnect();
+            whenConnectedHandler.UnregisterEventCallback();
+            serviceChangeCallback.UnregisterEventCallback();
+            TouchFree.GetInputController()?.disconnect();
+            window.removeEventListener('keydown', fullScreenListener);
         };
     }, []);
 
     return (
-        <div className="app">
-            <ControlBar tfStatus={tfStatus} touchFreeVersion={touchFreeVersion} />
-            <div className="page-content">
-                <Routes>
-                    <Route path="/settings/camera/*" element={<CameraManager />} />
-                    <Route path="/settings/interactions" element={<InteractionsPage />} />
-                    <Route path="*" element={<Navigate to="/settings/camera" replace />} />
-                </Routes>
-            </div>
+        <div className={classes('app')}>
+            <Header trackingStatus={trackingStatus} />
+            <Routes>
+                <Route path="/settings/camera/*" element={<CameraManager trackingStatus={trackingStatus} />} />
+                <Route path="/settings/interactions" element={<InteractionsScreen />} />
+                <Route path="/settings/about" element={<AboutScreen />} />
+                <Route path="/settings/visuals" element={<VisualsScreen />} />
+                <Route path="*" element={<Navigate to="/settings/camera" replace />} />
+            </Routes>
         </div>
     );
 };

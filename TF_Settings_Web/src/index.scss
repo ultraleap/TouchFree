@@ -1,4 +1,4 @@
-@use 'Styles/variables.module.scss' as v;
+@use '@/variables.module.scss' as v;
 
 body {
     margin: 0;
@@ -7,44 +7,17 @@ body {
         'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
+    overflow-x: hidden;
+    overflow-y: hidden;
 
-#svg-cursor-dot {
-    transition: transform 200ms, opacity 666ms;
-    transform-box: fill-box;
-    transform-origin: center;
-    transform: scale(1);
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
-    pointer-events: none;
-}
-
-#svg-cursor-dot.clicked {
-    transform: scale(0.5);
-}
-
-#svg-cursor {
-    pointer-events: none;
-}
-
-#svg-cursor.hidden {
-    opacity: 0;
-}
-
-#svg-cursor-ring {
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
-    pointer-events: none;
-}
-
-#svg-cursor.light #svg-cursor-ring {
-    stroke: white;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
-}
-
-#svg-cursor.light #svg-cursor-dot {
-    fill: white;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+    ::-webkit-scrollbar {
+        width: 2px;
+        &-track {
+            background: v.$dark-grey;
+        }
+        &-thumb {
+            background: #ffffff;
+        }
+    }
 }

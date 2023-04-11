@@ -1,0 +1,20 @@
+.radio-button {
+    min-height: 2rem;
+    max-height: 3.5rem;
+    min-width: 2rem;
+    max-width: 3.5rem;
+
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.radio-button:checked + label {
+    font-family: MontserratBold;
+}
+
+.horizontalRadioContainer {
+    max-height: 3rem;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+}

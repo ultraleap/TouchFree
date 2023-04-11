@@ -1,9 +1,8 @@
-﻿namespace Ultraleap.TouchFree.Library
+﻿namespace Ultraleap.TouchFree.Library;
+
+public enum TrackingMode
 {
-    public enum TrackingMode
-    {
-        DESKTOP,
-        HMD,
-        SCREENTOP
-    }
+    DESKTOP,
+    HMD,
+    SCREENTOP
 }

@@ -1,0 +1,189 @@
+@use '@/variables.module.scss' as v;
+
+.content-container {
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.instructions {
+    display: block;
+    align-items: center;
+    height: 10vh;
+    width: 100%;
+    text-align: center;
+
+    > h1 {
+        height: 7vh;
+        color: white;
+        font-size: 3rem;
+        font-family: v.$base-font;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .instruction-text {
+        animation: fadeInAnimation ease 1s;
+    }
+
+    .calibrating-text {
+        display: flex;
+        justify-content: center;
+        height: 3.2vh;
+        animation: fadeInAnimation ease 0.5s;
+    }
+
+    .green-text {
+        color: v.$ultraleap-green;
+    }
+}
+
+.loading {
+    font-size: 3rem;
+    font-family: v.$base-font;
+    &:after {
+        display: inline-block;
+        animation: loadingDots steps(1, end) 1s infinite;
+        content: '';
+    }
+}
+
+@keyframes loadingDots {
+    0% {
+        content: '';
+    }
+    25% {
+        content: '.';
+    }
+    50% {
+        content: '..';
+    }
+    75% {
+        content: '...';
+    }
+}
+
+@media only screen and (max-height: 1600px) {
+    .arrow {
+        display: none;
+    }
+}
+
+.arrow {
+    height: 3vh;
+    width: 3vh;
+    margin: 1vh auto;
+}
+
+.touch-circle {
+    display: flex;
+    padding: 0.5vh;
+    height: 3vh;
+    width: 3vh;
+    border-radius: 50%;
+    border: 0.5vh solid v.$ultraleap-green;
+}
+
+.touch-circle-progress {
+    z-index: 0;
+    position: absolute;
+    left: calc(50% - 4.5vh);
+    height: 9vh;
+    width: 9vh;
+}
+
+.hand-not-found-container {
+    display: inline-flex;
+    margin: auto;
+    background: linear-gradient(180deg, #e1164d 0%, #d11882 100%);
+    border-radius: 15px;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 30px;
+
+    p {
+        flex: none;
+        color: white;
+        font-size: 1.6rem;
+        font-family: v.$base-font;
+        text-align: center;
+        margin-left: 5px;
+        font-weight: bold;
+    }
+
+    #return-message * {
+        font-weight: normal;
+        display: inline-flex;
+        align-items: flex-end;
+    }
+}
+
+.interaction-guide {
+    display: block;
+    margin: auto;
+    width: 780px;
+    height: 32vh;
+}
+
+.setup-complete-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.setup-complete-options-container {
+    height: 60vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 10vh;
+
+    animation: fadeInAnimation ease 1s;
+}
+
+.setup-complete-title {
+    color: white;
+    font-size: 5rem;
+    font-family: v.$base-font;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.setup-practice-button {
+    width: 60%;
+    height: 25%;
+    text-align: center;
+    font-size: 3rem;
+    font-family: v.$base-font;
+    background: linear-gradient(107deg, #00ccce 0%, v.$ultraleap-green 100%);
+    border: 0px;
+    border-radius: 25px;
+}
+
+.setup-practice-button-hovered {
+    box-shadow: 0px 5px 30px v.$ultraleap-green;
+}
+
+.full-screen-prompt {
+    display: inline-flex;
+    margin: auto;
+    height: auto;
+    border-radius: 15px;
+    border: 1px solid white;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 30px;
+    font-size: 1.2rem;
+
+    p {
+        flex: none;
+        color: white;
+        font-family: v.$base-font;
+        text-align: center;
+        margin-left: 5px;
+    }
+}

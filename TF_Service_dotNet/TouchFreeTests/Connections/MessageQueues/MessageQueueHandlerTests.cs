@@ -1,5 +1,4 @@
 ﻿using Moq;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using Ultraleap.TouchFree.Library;
@@ -11,54 +10,13 @@ namespace TouchFreeTests.Connections.MessageQueues
     public class MessageQueueHandlerTests
     {
         [Test]
-        public void RequestIdExists_RequestIDOnObject_ReturnsTrue()
-        {
-            // Arrange
-            JObject testObject = new JObject();
-            testObject.Add("requestID", "test");
-
-            // Act
-            var result = MessageQueueHandler.RequestIdExists(testObject);
-
-            // Assert
-            Assert.AreEqual(true, result);
-        }
-
-        [Test]
-        public void RequestIdExists_NoRequestIDOnObject_ReturnsFalse()
-        {
-            // Arrange
-            JObject testObject = new JObject();
-
-            // Act
-            var result = MessageQueueHandler.RequestIdExists(testObject);
-
-            // Assert
-            Assert.AreEqual(false, result);
-        }
-
-        [Test]
-        public void RequestIdExists_NoRequestIDIsEmptyOnObject_ReturnsFalse()
-        {
-            // Arrange
-            JObject testObject = new JObject();
-            testObject.Add("requestID", string.Empty);
-
-            // Act
-            var result = MessageQueueHandler.RequestIdExists(testObject);
-
-            // Assert
-            Assert.AreEqual(false, result);
-        }
-
-        [Test]
         public void AddItemToQueue_ItemAddedToQueueAndUpdateBehaviourTriggered_HandlesItemOnQueue()
         {
             // Arrange
             var updateBehaviour = new TestUpdateBehaviour();
             var mockClientConnectionManager = new Mock<IClientConnectionManager>();
             var sut = new TestMessageQueueHandler(new[] { ActionCode.HAND_DATA }, updateBehaviour, mockClientConnectionManager.Object);
-            var request = new IncomingRequest(ActionCode.HAND_DATA, "", "{\"requestID\": \"1\"}");
+            var request = new IncomingRequest(ActionCode.HAND_DATA, "{\"requestID\": \"1\"}");
 
             // Act
             sut.AddItemToQueue(request);
@@ -67,9 +25,8 @@ namespace TouchFreeTests.Connections.MessageQueues
             // Assert
             Assert.AreNotSame(request, sut.LastRequestHandleWasCalledAgainst);
             Assert.IsNotNull(sut.LastRequestHandleWasCalledAgainst);
-            Assert.AreEqual(request.action, sut.LastRequestHandleWasCalledAgainst.Value.action);
-            Assert.AreEqual(request.requestId, sut.LastRequestHandleWasCalledAgainst.Value.requestId);
-            Assert.AreEqual(request.content, sut.LastRequestHandleWasCalledAgainst.Value.content);
+            Assert.AreEqual(request.ActionCode, sut.LastRequestHandleWasCalledAgainst.Value.ActionCode);
+            Assert.AreEqual(request.Content, sut.LastRequestHandleWasCalledAgainst.Value.OriginalContent);
         }
 
         [Test]
@@ -79,7 +36,7 @@ namespace TouchFreeTests.Connections.MessageQueues
             var updateBehaviour = new TestUpdateBehaviour();
             var mockClientConnectionManager = new Mock<IClientConnectionManager>();
             var sut = new TestMessageQueueHandler(new[] { ActionCode.HAND_DATA }, updateBehaviour, mockClientConnectionManager.Object);
-            var request = new IncomingRequest(ActionCode.SERVICE_STATUS, "", "");
+            var request = new IncomingRequest(ActionCode.SERVICE_STATUS, "");
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => sut.AddItemToQueue(request));
@@ -92,19 +49,19 @@ namespace TouchFreeTests.Connections.MessageQueues
                 ConfiguredActionCodes = actionCodes;
             }
 
-            public override ActionCode[] ActionCodes => ConfiguredActionCodes;
+            public override ActionCode[] HandledActionCodes => ConfiguredActionCodes;
             public ActionCode[] ConfiguredActionCodes { get; set; }
 
-            protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+            protected override void Handle(in IncomingRequestWithId request)
             {
-                LastRequestHandleWasCalledAgainst = _request;
+                LastRequestHandleWasCalledAgainst = request;
             }
 
-            public IncomingRequest? LastRequestHandleWasCalledAgainst { get; set; }
+            public IncomingRequestWithId? LastRequestHandleWasCalledAgainst { get; set; }
 
-            protected override string noRequestIdFailureMessage => string.Empty;
+            protected override string WhatThisHandlerDoes => string.Empty;
 
-            protected override ActionCode noRequestIdFailureActionCode => ActionCode.INPUT_ACTION;
+            protected override ActionCode FailureActionCode => ActionCode.INPUT_ACTION;
         }
 
         private class TestUpdateBehaviour : IUpdateBehaviour

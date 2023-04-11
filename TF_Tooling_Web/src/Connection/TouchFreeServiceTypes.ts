@@ -26,6 +26,7 @@ import { Mask } from '../Tracking/TrackingTypes';
 // HAND_DATA - Represents more complete hand data sent from the service.
 // SET_HAND_DATA_STREAM_STATE - Represents a request to the Service to enable/disable
 //                              the HAND_DATA stream or change the lens to have the hand position relative to.
+// INTERACTION_ZONE_EVENT - Represents the interaction zone state received from the Service
 export enum ActionCode {
     INPUT_ACTION = 'INPUT_ACTION',
 
@@ -58,7 +59,11 @@ export enum ActionCode {
 
     HAND_DATA = 'HAND_DATA',
     SET_HAND_DATA_STREAM_STATE = 'SET_HAND_DATA_STREAM_STATE',
+
+    INTERACTION_ZONE_EVENT = 'INTERACTION_ZONE_EVENT',
 }
+
+export type EventStatus = 'PROCESSED' | 'UNPROCESSED';
 
 // Enum: HandPresenceState
 // HAND_FOUND - Sent when the first hand is found when no hand has been present for a moment
@@ -69,6 +74,25 @@ export enum HandPresenceState {
     HAND_FOUND,
     HANDS_LOST,
     PROCESSED,
+}
+
+// Enum: InteractionZoneState
+// HAND_ENTERED - Sent when the "active" hand enters the interaction zone
+// HAND_EXITED - Sent when the "active" hand leaves the interaction zone
+export enum InteractionZoneState {
+    HAND_ENTERED,
+    HAND_EXITED,
+}
+
+// Class: EventUpdate
+// Generic interface for handling events from the service.
+// status - indicates whether the event has been processed by the service
+// state - the received state from the event
+export interface EventUpdate<T> {
+    // Variable: status
+    status: EventStatus;
+    // Variable: state
+    state: T;
 }
 
 // Enum: Compatibility
@@ -89,6 +113,12 @@ export class HandPresenceEvent {
     constructor(_state: HandPresenceState) {
         this.state = _state;
     }
+}
+
+// Class: InteractionZoneEvent
+// This data structure is used to receive interaction zone requests
+export interface InteractionZoneEvent {
+    state: InteractionZoneState;
 }
 
 // Class: TouchFreeRequestCallback
@@ -187,18 +217,34 @@ export class ConfigStateCallback extends TouchFreeRequestCallback<ConfigState> {
 // When receiving a configuration from the Service this structure contains ALL status data
 export class ServiceStatus extends TouchFreeRequest {
     // Variable: trackingServiceState
-    trackingServiceState: TrackingServiceState | null;
+    trackingServiceState: TrackingServiceState;
     // Variable: configurationState
-    configurationState: ConfigurationState | null;
+    configurationState: ConfigurationState;
+    // Variable: serviceVersion
+    serviceVersion: string;
+    // Variable: trackingVersion
+    trackingVersion: string;
+    // Variable: cameraSerial
+    cameraSerial: string;
+    // Variable: cameraFirmwareVersion
+    cameraFirmwareVersion: string;
 
     constructor(
         _id: string,
-        _trackingServiceState: TrackingServiceState | null,
-        _configurationState: ConfigurationState | null
+        _trackingServiceState: TrackingServiceState,
+        _configurationState: ConfigurationState,
+        _serviceVersion: string,
+        _trackingVersion: string,
+        _cameraSerial: string,
+        _cameraFirmwareVersion: string
     ) {
         super(_id);
         this.trackingServiceState = _trackingServiceState;
         this.configurationState = _configurationState;
+        this.serviceVersion = _serviceVersion;
+        this.trackingVersion = _trackingVersion;
+        this.cameraSerial = _cameraSerial;
+        this.cameraFirmwareVersion = _cameraFirmwareVersion;
     }
 }
 

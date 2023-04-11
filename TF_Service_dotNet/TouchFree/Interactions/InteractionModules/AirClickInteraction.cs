@@ -3,220 +3,205 @@ using System;
 using System.Linq;
 using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
+using Ultraleap.TouchFree.Library.Connections;
 
-namespace Ultraleap.TouchFree.Library.Interactions
+namespace Ultraleap.TouchFree.Library.Interactions.InteractionModules;
+
+public class AirClickInteraction : InteractionModule
 {
-    public class AirClickInteraction : InteractionModule
+    public override InteractionType InteractionType => InteractionType.AIRCLICK;
+
+    private bool _touchComplete = false;
+
+    private Vector2 _downPos;
+
+    private bool _isDragging = false;
+    private readonly float _dragStartDistanceThresholdMm = 30f;
+
+    private bool _clickProgressing = false;
+    private float _prevAngle;
+    private float _startAngle;
+    private float _endAngle;
+    private readonly float _maxAngleChange = 30;
+    private readonly float _minAngleChangePerSecond = 180;
+    private bool _progressHit1 = false;
+    private bool _isTouching = false;
+    private long _previousTimeStamp = 0;
+
+    private readonly ExtrapolationPositionModifier _extrapolation;
+    private readonly PositionFilter _filter;
+
+    public AirClickInteraction(
+        IHandManager handManager,
+        IVirtualScreen virtualScreen,
+        IConfigManager configManager,
+        IClientConnectionManager connectionManager,
+        IOptions<InteractionTuning> interactionTuning,
+        IPositioningModule positioningModule,
+        IPositionStabiliser positionStabiliser) : base(handManager, virtualScreen, configManager, connectionManager, positioningModule, positionStabiliser)
     {
-        public override InteractionType InteractionType { get; } = InteractionType.AIRCLICK;
+        _extrapolation = new ExtrapolationPositionModifier(interactionTuning);
+        _filter = new PositionFilter(interactionTuning);
 
-        bool touchComplete = false;
-
-        private Vector2 downPos;
-
-        bool isDragging = false;
-        float dragStartDistanceThresholdMm = 30f;
-
-        bool clickProgressing = false;
-        float prevAngle;
-        float startAngle;
-        float endAngle;
-        public float maxAngleChange = 30;
-        public float minAngleChangePerSecond = 180;
-        bool progressHit1 = false;
-        bool isTouching = false;
-        long previousTimeStamp = 0;
-
-        private readonly ExtrapolationPositionModifier extrapolation;
-        private readonly PositionFilter filter;
-
-        public AirClickInteraction(
-            IHandManager _handManager,
-            IVirtualScreen _virtualScreen,
-            IConfigManager _configManager,
-            IOptions<InteractionTuning> _interactionTuning,
-            IPositioningModule _positioningModule,
-            IPositionStabiliser _positionStabiliser) : base(_handManager, _virtualScreen, _configManager, _positioningModule, _positionStabiliser)
+        PositionConfiguration = new[]
         {
-            extrapolation = new ExtrapolationPositionModifier(_interactionTuning);
-            filter = new PositionFilter(_interactionTuning);
+            new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
+        };
+    }
 
-            positionConfiguration = new[]
-            {
-                new PositionTrackerConfiguration(TrackedPosition.INDEX_STABLE, 1)
-            };
+    protected override Positions ApplyAdditionalPositionModifiers(Positions pos) =>
+        base.ApplyAdditionalPositionModifiers(pos)
+            .ApplyModifier(_extrapolation)
+            .ApplyModifier(_filter);
+
+    private float CalculateProgress(Leap.Hand hand, float confidence)
+    {
+        if (hand == null)
+        {
+            _touchComplete = false;
+            _isDragging = false;
+            _isTouching = false;
+            return 0;
         }
 
-        protected override Positions ApplyAdditionalPositionModifiers(Positions positions)
+        Vector3 palmForward = Utilities.LeapVectorToNumerics(hand.Fingers.Single(x => x.Type == Leap.Finger.FingerType.TYPE_MIDDLE).bones[0].NextJoint - hand.PalmPosition);
+        palmForward /= palmForward.Length();
+        Vector3 indexForward = Utilities.LeapVectorToNumerics(hand.Fingers.Single(x => x.Type == Leap.Finger.FingerType.TYPE_INDEX).Direction);
+        indexForward /= indexForward.Length();
+
+        float dot = Vector3.Dot(palmForward, indexForward);
+
+        float angle = (float)(Math.Acos(dot) * 180 / Math.PI);
+
+        float progress = 0;
+
+        if (_previousTimeStamp != 0)
         {
-            var returnPositions = base.ApplyAdditionalPositionModifiers(positions);
-            returnPositions.CursorPosition = extrapolation.ApplyModification(returnPositions.CursorPosition);
-            returnPositions.CursorPosition = filter.ApplyModification(returnPositions.CursorPosition);
-            return returnPositions;
-        }
+            long dtMicroseconds = (LatestTimestamp - _previousTimeStamp);
+            float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
 
-        public float CalculateProgress(Leap.Hand _hand, float confidence)
-        {
-            if (_hand == null)
+            if (!_isTouching)
             {
-                touchComplete = false;
-                isDragging = false;
-                isTouching = false;
-                return 0;
-            }
-
-            Vector3 palmForward = Utilities.LeapVectorToNumerics(_hand.Fingers.Single(x => x.Type == Leap.Finger.FingerType.TYPE_MIDDLE).bones[0].NextJoint - _hand.PalmPosition);
-            palmForward = palmForward / palmForward.Length();
-            Vector3 indexForward = Utilities.LeapVectorToNumerics(_hand.Fingers.Single(x => x.Type == Leap.Finger.FingerType.TYPE_INDEX).Direction);
-            indexForward = indexForward / indexForward.Length();
-
-            float dot = Vector3.Dot(palmForward, indexForward);
-
-            float angle = (float)(Math.Acos(dot) * 180 / Math.PI);
-
-            float simpleAngle = Math.Abs(dot - 1) * 90;
-            float progress = 0;
-
-            if (previousTimeStamp != 0)
-            {
-                long dtMicroseconds = (latestTimestamp - previousTimeStamp);
-                float dt = dtMicroseconds / (1000f * 1000f);     // Seconds
-
-                if (!isTouching)
+                if ((angle - _prevAngle) * confidence > _minAngleChangePerSecond * dt)  // Multiply by confidence to make it harder to use when disused
                 {
-                    if ((angle - prevAngle) * confidence > minAngleChangePerSecond * dt)  // Multiply by confidence to make it harder to use when disused
+                    // we are moving fast enough!
+                    if (!_clickProgressing)
                     {
-                        // we are moving fast enough!
-                        if (!clickProgressing)
-                        {
-                            clickProgressing = true;
-                            startAngle = angle;
-                        }
-
-                        float angleChange = angle - startAngle;
-                        progress = Math.Clamp(Utilities.MapRangeToRange(maxAngleChange - angleChange, maxAngleChange, 0, 0, 1), 0, 1);
-
-                        if (progress == 1 && !progressHit1)
-                        {
-                            progressHit1 = true;
-                            endAngle = angle;
-                        }
-                    }
-                    else
-                    {
-                        clickProgressing = false;
+                        _clickProgressing = true;
+                        _startAngle = angle;
                     }
 
-                    if (progressHit1)
+                    float angleChange = angle - _startAngle;
+                    progress = Math.Clamp(Utilities.MapRangeToRange(_maxAngleChange - angleChange, _maxAngleChange, 0, 0, 1), 0, 1);
+
+                    if (progress == 1 && !_progressHit1)
                     {
-                        progress = 1;
+                        _progressHit1 = true;
+                        _endAngle = angle;
                     }
                 }
                 else
                 {
-                    progressHit1 = false;
-                    clickProgressing = false;
-
-                    progress = Math.Clamp(Utilities.MapRangeToRange(angle, endAngle, startAngle, 1, 0), 0, 1);
+                    _clickProgressing = false;
                 }
 
-                prevAngle = angle;
-            }
-
-            previousTimeStamp = latestTimestamp;
-
-            return progress;
-        }
-
-        protected override InputActionResult UpdateData(Leap.Hand _hand, float confidence)
-        {
-            if (_hand == null)
-            {
-
-                touchComplete = false;
-                isDragging = false;
-                isTouching = false;
-
-                if (hadHandLastFrame)
+                if (_progressHit1)
                 {
-                    // We lost the hand so cancel anything we may have been doing
-                    return CreateInputActionResult(InputType.CANCEL, positions, 0);
-                }
-                return new InputActionResult();
-            }
-
-            var _progress = CalculateProgress(_hand, confidence);
-
-            InputActionResult result = new InputActionResult();
-
-            if (_progress >= 1 || (_progress > 0.8f && isDragging))
-            {
-                // we are touching the screen
-                if (!isTouching)
-                {
-                    result = CreateInputActionResult(InputType.DOWN, positions, _progress);
-                    positionStabiliser.SetDeadzoneOffset();
-                    positionStabiliser.currentDeadzoneRadius = dragStartDistanceThresholdMm;
-                    downPos = positions.CursorPosition;
-                    isTouching = true;
-                }
-                else if (!ignoreDragging)
-                {
-                    if (!isDragging && CheckForStartDrag(downPos, positions.CursorPosition))
-                    {
-                        isDragging = true;
-                        positionStabiliser.StartShrinkingDeadzone(0.9f);
-                    }
-
-                    if (isDragging)
-                    {
-                        result = CreateInputActionResult(InputType.MOVE, positions, _progress);
-                        positionStabiliser.ReduceDeadzoneOffset();
-                    }
-                    else
-                    {
-                        // NONE causes the client to react to data without using Input.
-                        result = CreateInputActionResult(InputType.NONE, positions, _progress);
-                    }
-                }
-                else if (!touchComplete)
-                {
-                    result = CreateInputActionResult(InputType.UP, positions, _progress);
-
-                    touchComplete = true;
+                    progress = 1;
                 }
             }
             else
             {
-                positionStabiliser.ScaleDeadzoneByProgress(_progress, 0.02f);
+                _progressHit1 = false;
+                _clickProgressing = false;
 
-                if (isTouching && !touchComplete)
+                progress = Math.Clamp(Utilities.MapRangeToRange(angle, _endAngle, _startAngle, 1, 0), 0, 1);
+            }
+
+            _prevAngle = angle;
+        }
+
+        _previousTimeStamp = LatestTimestamp;
+
+        return progress;
+    }
+
+    protected override InputActionResult UpdateData(Leap.Hand hand, float confidence)
+    {
+        if (hand == null)
+        {
+            _touchComplete = false;
+            _isDragging = false;
+            _isTouching = false;
+
+            if (HadHandLastFrame)
+            {
+                // We lost the hand so cancel anything we may have been doing
+                return CreateInputActionResult(InputType.CANCEL, positions, 0);
+            }
+            return new InputActionResult();
+        }
+
+        var progress = CalculateProgress(hand, confidence);
+
+        InputActionResult result = new InputActionResult();
+
+        if (progress >= 1 || (progress > 0.8f && _isDragging))
+        {
+            // we are touching the screen
+            if (!_isTouching)
+            {
+                result = CreateInputActionResult(InputType.DOWN, positions, progress);
+                PositionStabiliser.SetDeadzoneOffset();
+                PositionStabiliser.CurrentDeadzoneRadius = _dragStartDistanceThresholdMm;
+                _downPos = positions.CursorPosition;
+                _isTouching = true;
+            }
+            else if (!IgnoreDragging)
+            {
+                if (!_isDragging && CheckForStartDrag(_downPos, positions.CursorPosition))
                 {
-                    result = CreateInputActionResult(InputType.UP, positions, _progress);
+                    _isDragging = true;
+                    PositionStabiliser.StartShrinkingDeadzone(0.9f);
+                }
+
+                if (_isDragging)
+                {
+                    result = CreateInputActionResult(InputType.MOVE, positions, progress);
+                    PositionStabiliser.ReduceDeadzoneOffset();
                 }
                 else
                 {
-                    result = CreateInputActionResult(InputType.MOVE, positions, _progress);
-                    positionStabiliser.ReduceDeadzoneOffset();
+                    // NONE causes the client to react to data without using Input.
+                    result = CreateInputActionResult(InputType.NONE, positions, progress);
                 }
-
-                touchComplete = false;
-                isTouching = false;
-                isDragging = false;
             }
-
-            return result;
-        }
-
-        private bool CheckForStartDrag(Vector2 _startPos, Vector2 _currentPos)
-        {
-            if (_currentPos != _startPos)
+            else if (!_touchComplete)
             {
-                return true;
+                result = CreateInputActionResult(InputType.UP, positions, progress);
+
+                _touchComplete = true;
+            }
+        }
+        else
+        {
+            PositionStabiliser.ScaleDeadzoneByProgress(progress, 0.02f);
+
+            if (_isTouching && !_touchComplete)
+            {
+                result = CreateInputActionResult(InputType.UP, positions, progress);
+            }
+            else
+            {
+                result = CreateInputActionResult(InputType.MOVE, positions, progress);
+                PositionStabiliser.ReduceDeadzoneOffset();
             }
 
-            return false;
+            _touchComplete = false;
+            _isTouching = false;
+            _isDragging = false;
         }
+
+        return result;
     }
 }

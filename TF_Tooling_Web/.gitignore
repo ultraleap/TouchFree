@@ -9,3 +9,10 @@
 dist
 
 ./Plugins/**/Snapping_Plugin.js
+
+# ============ #
+# Test Outputs #
+# ============ #
+
+*.xml
+coverage/

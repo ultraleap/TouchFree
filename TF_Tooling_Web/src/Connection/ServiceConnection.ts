@@ -9,6 +9,7 @@ import {
     ConfigState,
     ConfigStateCallback,
     HandPresenceEvent,
+    InteractionZoneEvent,
     ResponseCallback,
     ServiceStatus,
     ServiceStatusCallback,
@@ -93,7 +94,12 @@ export class ServiceConnection {
             if (!this.handshakeRequested) {
                 this.handshakeRequested = true;
                 // send message
-                this.SendMessage(JSON.stringify(handshakeRequest), guid, this.ConnectionResultCallback);
+                this.sendMessageWithSimpleResponse(
+                    JSON.stringify(handshakeRequest),
+                    guid,
+                    this.ConnectionResultCallback,
+                    ConnectionManager.messageReceiver.handshakeCallbacks
+                );
             }
         }
     };
@@ -112,7 +118,7 @@ export class ServiceConnection {
             this.handshakeCompleted = true;
             TouchFree.DispatchEvent('OnConnected');
         } else {
-            console.log(`Connection to Service failed. Details:\n${response.message}`);
+            console.error(`Connection to Service failed. Details:\n${response.message}`);
         }
     };
 
@@ -132,7 +138,7 @@ export class ServiceConnection {
 
         const looseData: CommunicationWrapper<unknown> = JSON.parse(_message.data);
 
-        switch (looseData.action as ActionCode) {
+        switch (looseData.action) {
             case ActionCode.INPUT_ACTION: {
                 const wsInput = looseData.content as WebsocketInputAction;
                 ConnectionManager.messageReceiver.actionQueue.push(wsInput);
@@ -159,8 +165,13 @@ export class ServiceConnection {
                 break;
             }
 
+            case ActionCode.VERSION_HANDSHAKE_RESPONSE: {
+                const response = looseData.content as WebSocketResponse;
+                ConnectionManager.messageReceiver.handshakeQueue.push(response);
+                break;
+            }
+
             case ActionCode.CONFIGURATION_RESPONSE:
-            case ActionCode.VERSION_HANDSHAKE_RESPONSE:
             case ActionCode.SERVICE_STATUS_RESPONSE:
             case ActionCode.CONFIGURATION_FILE_RESPONSE:
             case ActionCode.QUICK_SETUP_RESPONSE: {
@@ -171,6 +182,12 @@ export class ServiceConnection {
             case ActionCode.TRACKING_STATE: {
                 const trackingResponse = looseData.content as TrackingStateResponse;
                 ConnectionManager.messageReceiver.trackingStateQueue.push(trackingResponse);
+                break;
+            }
+
+            case ActionCode.INTERACTION_ZONE_EVENT: {
+                const { state } = looseData.content as InteractionZoneEvent;
+                ConnectionManager.messageReceiver.lastInteractionZoneUpdate = { status: 'UNPROCESSED', state: state };
                 break;
             }
         }
@@ -187,8 +204,22 @@ export class ServiceConnection {
         _requestID: string,
         _callback: ((detail: WebSocketResponse | T) => void) | null
     ): void => {
-        if (_requestID === '') {
-            if (_callback !== null) {
+        this.sendMessageWithSimpleResponse(
+            _message,
+            _requestID,
+            _callback,
+            ConnectionManager.messageReceiver.responseCallbacks
+        );
+    };
+
+    private sendMessageWithSimpleResponse = <T extends WebSocketResponse>(
+        _message: string,
+        _requestID: string,
+        _callback: ((detail: WebSocketResponse | T) => void) | null,
+        _callbacksStore: { [id: string]: ResponseCallback }
+    ): void => {
+        if (!_requestID) {
+            if (_callback) {
                 const response: WebSocketResponse = new WebSocketResponse(
                     '',
                     'Failure',
@@ -202,11 +233,8 @@ export class ServiceConnection {
             return;
         }
 
-        if (_callback != null) {
-            ConnectionManager.messageReceiver.responseCallbacks[_requestID] = new ResponseCallback(
-                Date.now(),
-                _callback
-            );
+        if (_callback) {
+            _callbacksStore[_requestID] = new ResponseCallback(Date.now(), _callback);
         }
 
         this.webSocket.send(_message);

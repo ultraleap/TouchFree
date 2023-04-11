@@ -1,0 +1,62 @@
+@use '@/variables.module.scss' as v;
+
+.slider-container {
+    flex: 1 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 3rem;
+
+    &__slider {
+        height: 0.75rem;
+
+        border-radius: 0.5rem;
+        background: #262626;
+        box-shadow: inset 0px 2px 4px #00000061;
+
+        appearance: none;
+
+        &::-webkit-slider-thumb {
+            appearance: none;
+
+            width: 1.5rem;
+            height: 1.5rem;
+
+            border-radius: 1.5rem;
+            box-shadow: v.$dark-box-shadow;
+            background-image: v.$ultraleap-green-gradient;
+        }
+    }
+
+    &__labels {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+}
+
+.slider-text-container {
+    margin-right: 0.8rem;
+
+    background: v.$light-grey-gradient;
+    box-shadow: v.$dark-box-shadow;
+    border: 1px solid #ffffff1a;
+    border-radius: 10px;
+
+    &__text {
+        background: transparent;
+        border: none;
+        max-width: 4rem;
+        min-height: 3rem;
+
+        text-align: center;
+        font-family: MontserratBold, Arial;
+        font-size: 1.5rem;
+        color: white;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            display: none;
+        }
+    }
+}

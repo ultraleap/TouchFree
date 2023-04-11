@@ -1,7 +1,6 @@
-﻿namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
+﻿namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup;
+
+public interface IQuickSetupHandler
 {
-    public interface IQuickSetupHandler
-    {
-        QuickSetupResponse HandlePositionRecording(QuickSetupPosition position);
-    }
+    QuickSetupResponse HandlePositionRecording(QuickSetupPosition position);
 }

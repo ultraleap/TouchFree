@@ -2,7 +2,16 @@ import TouchFree from '../TouchFree';
 import { TrackingServiceState } from '../TouchFreeToolingTypes';
 import { MessageReceiver } from './MessageReceiver';
 import { ServiceConnection } from './ServiceConnection';
-import { HandPresenceState, ServiceStatus } from './TouchFreeServiceTypes';
+import { HandPresenceState, InteractionZoneState, ServiceStatus } from './TouchFreeServiceTypes';
+
+export interface Address {
+    ip?: string;
+    port?: string;
+}
+
+interface InitParams {
+    address?: Address;
+}
 
 // Class: ConnectionManager
 // This Class manages the connection to the Service. It provides static variables
@@ -20,7 +29,7 @@ export class ConnectionManager extends EventTarget {
 
     // Variable: currentServiceConnection
     // The private reference to the currently managed <ServiceConnection>.
-    private static currentServiceConnection: ServiceConnection | null;
+    private static currentServiceConnection: ServiceConnection | null = null;
 
     // Variable: serviceConnection
     // The public get-only reference to the currently managed <ServiceConnection>.
@@ -51,30 +60,38 @@ export class ConnectionManager extends EventTarget {
     // Private reference to the current hand presence state
     private static currentHandPresence: HandPresenceState = HandPresenceState.HANDS_LOST;
 
+    // Variable: currentInteractionZoneState
+    // Private reference to the current interaction zone state
+    private static currentInteractionZoneState: InteractionZoneState = InteractionZoneState.HAND_EXITED;
+
     // Group: Functions
 
     // Function: init
     // Used to begin the connection. Creates the required <MessageReceiver>.
     // Also attempts to immediately <Connect> to a WebSocket.
-    public static init() {
+    public static init(initParams?: InitParams) {
         ConnectionManager.messageReceiver = new MessageReceiver();
         ConnectionManager.instance = new ConnectionManager();
-        ConnectionManager.Connect();
+        if (initParams?.address) {
+            ConnectionManager.SetAddress(initParams.address);
+        } else {
+            ConnectionManager.Connect();
+        }
     }
 
     // Function: AddConnectionListener
     // Used to both add the _onConnectFunc action to the listeners of <OnConnected>
     // as well as auto-call the _onConnectFunc if a connection is already made.
     public static AddConnectionListener(_onConnectFunc: () => void): void {
-        TouchFree.RegisterEventCallback('OnConnected', _onConnectFunc);
+        TouchFree.RegisterEventCallback('WhenConnected', _onConnectFunc);
+    }
 
-        if (
+    public static get IsConnected(): boolean {
+        return (
             ConnectionManager.currentServiceConnection !== null &&
             ConnectionManager.currentServiceConnection.webSocket.readyState === WebSocket.OPEN &&
             ConnectionManager.currentServiceConnection.handshakeComplete
-        ) {
-            _onConnectFunc();
-        }
+        );
     }
 
     public static AddServiceStatusListener(_serviceStatusFunc: (serviceStatus: TrackingServiceState) => void): void {
@@ -104,6 +121,19 @@ export class ConnectionManager extends EventTarget {
         }
     }
 
+    // Function: HandleInteractionZoneEvent
+    // Called by the <MessageReciever> to pass InteractionZone events via the <HandEntered> and
+    // <HandsExited> events on this class
+    public static HandleInteractionZoneEvent(_state: InteractionZoneState): void {
+        ConnectionManager.currentInteractionZoneState = _state;
+
+        if (_state === InteractionZoneState.HAND_ENTERED) {
+            TouchFree.DispatchEvent('HandEntered');
+        } else {
+            TouchFree.DispatchEvent('HandExited');
+        }
+    }
+
     // Function: Disconnect
     // Disconnects <currentServiceConnection> if it is connected to a WebSocket and
     // sets it to null.
@@ -128,9 +158,24 @@ export class ConnectionManager extends EventTarget {
         ConnectionManager.serviceConnection()?.RequestServiceStatus(_callback);
     }
 
-    // Function: RequestServiceStatus
+    // Function: GetCurrentHandPresence
     // Function to get the current hand presense state
     public static GetCurrentHandPresence(): HandPresenceState {
         return ConnectionManager.currentHandPresence;
+    }
+
+    // Function: GetCurrentInteractionZoneState
+    // Function to get the current hand presense state
+    public static GetCurrentInteractionZoneState(): InteractionZoneState {
+        return ConnectionManager.currentInteractionZoneState;
+    }
+
+    // Function: SetAddress
+    // Function to set the ip and port that Tooling should attempt to connect to the Service via
+    public static SetAddress(address: Address): void {
+        ConnectionManager.iPAddress = address.ip ?? '127.0.0.1';
+        ConnectionManager.port = address.port ?? '9739';
+        ConnectionManager.Disconnect();
+        ConnectionManager.Connect();
     }
 }

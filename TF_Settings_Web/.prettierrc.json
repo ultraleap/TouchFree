@@ -5,12 +5,13 @@
     "printWidth": 120,
     "importOrder": [
         "(.*)(.css|.scss)$",
-        "(.*)react(.*)|canvas-confetti|twgl.js",
+        "(.*)react(.*)|canvas-confetti|classnames|tinycolor2",
         "uuid",
-        "(index|customHooks)",
-        "^TouchFree/(.*)",
-        "^(Videos|Images)/(.*)",
-        "^(Components/)(.*)",
+        "^@/(index|customHooks|TauriUtils)",
+        "^touchfree/(.*)",
+        "^@/(Images|Videos)",
+        "^@/Pages(.*)",
+        "^@/Components(.*)",
         "^[./]"
     ],
     "importOrderSeparation": true

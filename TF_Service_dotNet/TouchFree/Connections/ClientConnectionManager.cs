@@ -2,154 +2,172 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.WebSockets;
-
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
-namespace Ultraleap.TouchFree.Library.Connections
+namespace Ultraleap.TouchFree.Library.Connections;
+
+public class ClientConnectionManager : IClientConnectionManager
 {
-    public class ClientConnectionManager : IClientConnectionManager
+    private readonly ConcurrentDictionary<Guid, IClientConnection> _activeConnections = new();
+
+    public IEnumerable<IClientConnection> ClientConnections => _activeConnections.Values;
+
+    public HandPresenceEvent MissedHandPresenceEvent { get; private set; }
+    public InteractionZoneEvent MissedInteractionZoneEvent { get; private set; }
+
+    private readonly IHandManager _handManager;
+    private readonly IConfigManager _configManager;
+    private readonly ITrackingDiagnosticApi _trackingApi;
+
+    public ClientConnectionManager(IHandManager handManager, IConfigManager configManager, ITrackingDiagnosticApi trackingApi)
     {
-        private readonly ConcurrentDictionary<Guid, IClientConnection> activeConnections = new ConcurrentDictionary<Guid, IClientConnection>();
+        MissedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
+        _handManager = handManager;
+        _configManager = configManager;
+        _trackingApi = trackingApi;
+        _handManager.HandFound += OnHandFound;
+        _handManager.HandsLost += OnHandsLost;
+        _handManager.ConnectionManager.ServiceStatusChange += ConnectionStatusChange;
 
-        public IEnumerable<IClientConnection> ClientConnections => activeConnections.Values;
+        // This is here so the test infrastructure has some sign that the app is ready
+        TouchFreeLog.WriteLine("Service Setup Complete");
+    }
 
-        public event Action LostAllConnections;
+    private void OnHandFound() => HandleHandPresenceEvent(HandPresenceState.HAND_FOUND);
 
-        public short port = 9739;
+    private void OnHandsLost() => HandleHandPresenceEvent(HandPresenceState.HANDS_LOST);
 
-        public HandPresenceEvent MissedHandPresenceEvent { get; private set; }
+    private async void ConnectionStatusChange(TrackingServiceState state)
+    {
+        var deviceInfo = await _trackingApi.RequestDeviceInfo();
+            
+        var currentStatus = ServiceStatus.FromDApiTypes(string.Empty, // No request id as this event is not a response to a request
+            state,
+            _configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
+            VersionManager.Version,
+            _trackingApi.ApiInfo,
+            deviceInfo);
 
-        private readonly IHandManager handManager;
-        private readonly IConfigManager configManager;
+        SendResponse(currentStatus, ActionCode.SERVICE_STATUS);
+    }
 
-        public ClientConnectionManager(IHandManager _handManager, IConfigManager _configManager)
+    private void HandleHandPresenceEvent(HandPresenceState state)
+    {
+        HandPresenceEvent handsLostEvent = new HandPresenceEvent(state);
+
+        SendMessageToWebSockets((connection) =>
         {
-            MissedHandPresenceEvent = new HandPresenceEvent(HandPresenceState.HANDS_LOST);
-            handManager = _handManager;
-            configManager = _configManager;
-            handManager.HandFound += OnHandFound;
-            handManager.HandsLost += OnHandsLost;
-            handManager.ConnectionManager.ServiceStatusChange += ConnectionStatusChange;
+            connection.SendHandPresenceEvent(handsLostEvent);
+        });
 
-            // This is here so the test infrastructure has some sign that the app is ready
-            TouchFreeLog.WriteLine("Service Setup Complete");
+        // Cache handPresenceEvent when no clients are connected
+        if (_activeConnections.IsEmpty)
+        {
+            MissedHandPresenceEvent = handsLostEvent;
         }
+    }
 
-        private void OnHandFound() => HandleHandPresenceEvent(HandPresenceState.HAND_FOUND);
+    public void HandleInteractionZoneEvent(InteractionZoneState interactionZoneState)
+    {
+        InteractionZoneEvent interactionZoneEvent = new InteractionZoneEvent(interactionZoneState);
 
-        private void OnHandsLost() => HandleHandPresenceEvent(HandPresenceState.HANDS_LOST);
-
-        private void ConnectionStatusChange(TrackingServiceState state)
+        SendMessageToWebSockets((connection) =>
         {
-            var currentConfig = new ServiceStatus(
-                string.Empty, // No request id as this event is not a response to a request
-                state,
-                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
+            connection.SendInteractionZoneEvent(interactionZoneEvent);
+        });
 
-            SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+        // Cache interactionZoneEvent when no clients are connected
+        if (_activeConnections.IsEmpty)
+        {
+            MissedInteractionZoneEvent = interactionZoneEvent;
         }
+    }
 
-        private void HandleHandPresenceEvent(HandPresenceState state)
+    public void AddConnection(IClientConnection clientConnection)
+    {
+        if (clientConnection != null)
         {
-            HandPresenceEvent handsLostEvent = new HandPresenceEvent(state);
+            _activeConnections.TryAdd(Guid.NewGuid(), clientConnection);
+            TouchFreeLog.WriteLine("Connection set up");
+            _handManager.ConnectionManager.Connect();
+        }
+    }
 
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendHandPresenceEvent(handsLostEvent);
-            });
+    public void RemoveConnection(WebSocket webSocket)
+    {
+        Guid connectionKeyToRemove = Guid.Empty;
 
-            // Cache handPresenceEvent when no clients are connected
-            if (activeConnections.IsEmpty)
+        foreach (var connectionKvp in _activeConnections)
+        {
+            if (connectionKvp.Value.Socket == webSocket)
             {
-                MissedHandPresenceEvent = handsLostEvent;
+                connectionKeyToRemove = connectionKvp.Key;
+                break;
             }
         }
 
-        public void AddConnection(IClientConnection _connection)
+        if (connectionKeyToRemove != Guid.Empty)
         {
-            if (_connection != null)
-            {
-                activeConnections.TryAdd(Guid.NewGuid(), _connection);
-                TouchFreeLog.WriteLine("Connection set up");
-                handManager.ConnectionManager.Connect();
-            }
+            _activeConnections.TryRemove(connectionKeyToRemove, out _);
+            TouchFreeLog.WriteLine("Connection closed");
+        }
+        else
+        {
+            TouchFreeLog.WriteLine("Attempted to close a connection that was no longer active");
         }
 
-        public void RemoveConnection(WebSocket _socket)
+        if (_activeConnections.IsEmpty)
         {
-            Guid connectionKeyToRemove = Guid.Empty;
+            // there are no connections
+            _handManager.ConnectionManager.Disconnect();
+        }
+    }
 
-            foreach (var connectionKvp in activeConnections)
-            {
-                if (connectionKvp.Value.Socket == _socket)
-                {
-                    connectionKeyToRemove = connectionKvp.Key;
-                    break;
-                }
-            }
-
-            if (connectionKeyToRemove != Guid.Empty)
-            {
-                _ = activeConnections.TryRemove(connectionKeyToRemove, out _);
-                TouchFreeLog.WriteLine("Connection closed");
-            }
-            else
-            {
-                TouchFreeLog.WriteLine("Attempted to close a connection that was no longer active");
-            }
-
-            if (activeConnections.IsEmpty)
-            {
-                // there are no connections
-                LostAllConnections?.Invoke();
-                handManager.ConnectionManager.Disconnect();
-            }
+    // TODO: Change from callback style and make Send methods have 'in' parameters (can't use 'in' parameters in lambdas)
+    private void SendMessageToWebSockets(Action<IClientConnection> connectionMethod)
+    {
+        if (_activeConnections == null ||
+            _activeConnections.IsEmpty)
+        {
+            return;
         }
 
-        private void SendMessageToWebSockets(Action<IClientConnection> connectionMethod)
+        foreach (IClientConnection connection in _activeConnections.Values)
         {
-            if (activeConnections == null ||
-                activeConnections.IsEmpty)
+            if (connection.Socket.State == WebSocketState.Open)
             {
-                return;
+                connectionMethod(connection);
             }
-
-            foreach (IClientConnection connection in activeConnections.Values)
+            else if (connection.Socket.State != WebSocketState.Connecting)
             {
-                if (connection.Socket.State == WebSocketState.Open)
-                {
-                    connectionMethod(connection);
-                }
-                else if (connection.Socket.State != WebSocketState.Connecting)
-                {
-                    // Clear down connections that have closed
-                    RemoveConnection(connection.Socket);
-                }
+                // Clear down connections that have closed
+                RemoveConnection(connection.Socket);
             }
         }
+    }
 
-        public void SendInputAction(InputAction _data)
+    public void SendInputAction(InputAction inputAction)
+    {
+        SendMessageToWebSockets((connection) =>
         {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendInputAction(_data);
-            });
-        }
+            connection.SendInputAction(inputAction);
+        });
+    }
 
-        public void SendHandData(HandFrame _data, ArraySegment<byte> lastHandData)
+    public void SendHandData(HandFrame handFrame, ArraySegment<byte> lastHandData)
+    {
+        SendMessageToWebSockets((connection) =>
         {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendHandData(_data, lastHandData);
-            });
-        }
+            connection.SendHandData(handFrame, lastHandData);
+        });
+    }
 
-        public void SendResponse<T>(T _response, ActionCode _actionCode)
+    public void SendResponse<T>(T response, ActionCode actionCode)
+    {
+        SendMessageToWebSockets((connection) =>
         {
-            SendMessageToWebSockets((connection) =>
-            {
-                connection.SendResponse(_response, _actionCode);
-            });
-        }
+            connection.SendResponse(response, actionCode);
+        });
     }
 }

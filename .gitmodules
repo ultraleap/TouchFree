@@ -1,0 +1,3 @@
+[submodule "TF_Tooling_Unity/Packages/Tracking"]
+	path = TF_Tooling_Unity/Packages/Tracking
+	url = https://github.com/ultraleap/UnityPlugin

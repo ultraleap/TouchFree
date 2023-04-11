@@ -1,59 +1,48 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 using Ultraleap.TouchFree.Library.Configuration.QuickSetup;
 
-namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues;
+
+public class QuickSetupQueueHandler : MessageQueueHandler
 {
-    public class QuickSetupQueueHandler : MessageQueueHandler
+    public override ActionCode[] HandledActionCodes => new[] { ActionCode.QUICK_SETUP };
+
+    protected override string WhatThisHandlerDoes => "Config state request";
+
+    protected override ActionCode FailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
+
+    private readonly IQuickSetupHandler _quickSetupHandler;
+
+    public QuickSetupQueueHandler(IUpdateBehaviour updateBehaviour, IClientConnectionManager clientMgr, IQuickSetupHandler quickSetupHandler)
+        : base(updateBehaviour, clientMgr)
+        => _quickSetupHandler = quickSetupHandler;
+
+    protected override void Handle(in IncomingRequestWithId request)
     {
-        public override ActionCode[] ActionCodes => new[] { ActionCode.QUICK_SETUP };
+        var quickSetupRequest = JsonConvert.DeserializeObject<QuickSetupRequest>(request.OriginalContent);
 
-        protected override string noRequestIdFailureMessage => "Config state request failed. This is due to a missing or invalid requestID";
+        var quickSetupResponse = _quickSetupHandler.HandlePositionRecording(quickSetupRequest.Position);
 
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
-
-        private readonly IQuickSetupHandler quickSetupHandler;
-
-        public QuickSetupQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IQuickSetupHandler _quickSetupHandler) : base(_updateBehaviour, _clientMgr)
+        if (quickSetupResponse.ConfigurationUpdated)
         {
-            quickSetupHandler = _quickSetupHandler;
+            InteractionConfig interactions = InteractionConfigFile.LoadConfig();
+            PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
+
+            ConfigState currentConfig = new ConfigState(
+                request.RequestId,
+                interactions,
+                physical);
+
+            clientMgr.SendResponse(currentConfig, ActionCode.QUICK_SETUP_CONFIG);
         }
-
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
+        else if (quickSetupResponse.PositionRecorded)
         {
-            QuickSetupRequest? quickSetupRequest = null;
-
-            try
-            {
-                quickSetupRequest = JsonConvert.DeserializeObject<QuickSetupRequest>(_request.content);
-            }
-            catch { }
-
-            var quickSetupResponse = quickSetupHandler.HandlePositionRecording(quickSetupRequest.Value.Position);
-
-            if (quickSetupResponse?.ConfigurationUpdated == true)
-            {
-                InteractionConfig interactions = InteractionConfigFile.LoadConfig();
-                PhysicalConfig physical = PhysicalConfigFile.LoadConfig();
-
-                ConfigState currentConfig = new ConfigState(
-                    requestId,
-                    interactions,
-                    physical);
-
-                clientMgr.SendResponse(currentConfig, ActionCode.QUICK_SETUP_CONFIG);
-            }
-            else if (quickSetupResponse?.PositionRecorded == true)
-            {
-                ResponseToClient response = new ResponseToClient(requestId, "Success", string.Empty, _request.content);
-                clientMgr.SendResponse(response, ActionCode.QUICK_SETUP_RESPONSE);
-            }
-            else
-            {
-                ResponseToClient response = new ResponseToClient(requestId, "Failure", quickSetupResponse?.QuickSetupError ?? string.Empty, _request.content);
-                clientMgr.SendResponse(response, ActionCode.QUICK_SETUP_RESPONSE);
-            }
+            SendSuccessResponse(request, ActionCode.QUICK_SETUP_RESPONSE);
+        }
+        else
+        {
+            SendErrorResponse(request, quickSetupResponse.QuickSetupError, ActionCode.QUICK_SETUP_RESPONSE);
         }
     }
 }

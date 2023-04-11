@@ -1,50 +1,33 @@
 ﻿using System;
 
-using Stopwatch = System.Diagnostics.Stopwatch;
+namespace Ultraleap.TouchFree.Library.Interactions;
 
-namespace Ultraleap.TouchFree.Library.Interactions
+public class ProgressTimer
 {
-    public class ProgressTimer
+    public float TimeLimit { get; set; }
+
+    private long? _startMilliseconds;
+
+    public ProgressTimer(float timeLimit) => TimeLimit = timeLimit;
+    public bool IsRunning => _startMilliseconds.HasValue;
+    public void Restart(long timestamp) => _startMilliseconds = ConvertTimestamp(timestamp);
+
+    public void Stop() => _startMilliseconds = null;
+    public bool HasBeenRunningForThreshold(long currentTimestamp, double threshold) =>
+        IsRunning
+        && ConvertTimestamp(currentTimestamp) - _startMilliseconds >= threshold;
+
+    public float GetProgress(long currentTimestamp)
     {
-        public float timeLimit = 500f;
-
-        private Stopwatch stopwatch = new Stopwatch();
-
-        public ProgressTimer(float _timeLimit)
+        if (!IsRunning)
         {
-            timeLimit = _timeLimit;
+            return 0.0f;
         }
 
-        public bool IsRunning
-        {
-            get { return stopwatch.IsRunning; }
-        }
-
-        public float Progress
-        {
-            get { return GetProgress(); }
-        }
-
-        private float GetProgress()
-        {
-            float progress = stopwatch.ElapsedMilliseconds / timeLimit;
-            progress = Math.Min(progress, 1f);
-            return progress;
-        }
-
-        public void StartTimer()
-        {
-            stopwatch.Restart();
-        }
-
-        public void StopTimer()
-        {
-            stopwatch.Stop();
-        }
-
-        public void ResetTimer()
-        {
-            stopwatch.Reset();
-        }
+        float progress = (ConvertTimestamp(currentTimestamp) - _startMilliseconds!.Value) / TimeLimit;
+        progress = Math.Min(progress, 1f);
+        return progress;
     }
+    
+    private static long ConvertTimestamp(long timestamp) => timestamp / 1000;
 }
