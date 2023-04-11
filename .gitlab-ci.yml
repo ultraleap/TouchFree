@@ -182,7 +182,8 @@ TF_Service::Wrapper::build:
     - rm ./Service_dotNet_Build/interaction-tuning.json
 
     - if ($INCLUDE_SERVICE_LICENSES -Match 'true') {
-        mkdir ./Service_dotNet_Build/ThirdParty -and cp "$CI_PROJECT_DIR/Third_Party_Licenses/Service/*" ./Service_dotNet_Build/ThirdParty
+        mkdir ./Service_dotNet_Build/ThirdParty;
+        cp "$CI_PROJECT_DIR/Third_Party_Licenses/Service/*" ./Service_dotNet_Build/ThirdParty;
       }
 
     # Sign the executable with the UltraLeap certificate
