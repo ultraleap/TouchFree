@@ -631,7 +631,7 @@ Linux_Image::ARMLinux::package:
     - cp ./Service_dotNet_Build/ThirdParty/* ./licenses
 
     # Uncompress & chmod tracking service
-    - tar -xzf $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Ultraleap_Tracking_Installer_*.tar.gz
+    - tar -xzf $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_*.tar.gz
     - chmod +x $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/TrackingService/bin/libtrack_server
 
     # Combine services into one directory
