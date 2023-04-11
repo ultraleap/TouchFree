@@ -1,0 +1,8 @@
+{
+    "name": "touchfree-workspaces",
+    "workspaces": [
+        "./TF_Settings_Web",
+        "./TF_Tooling_Web"
+    ],
+    "private": true
+}

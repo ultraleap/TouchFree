@@ -1,0 +1,24 @@
+@use '@/variables.module.scss' as v;
+
+.window-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 100%;
+    width: 25%;
+    gap: 0 10%;
+    height: 50%;
+    justify-self: flex-end;
+    padding-right: 3%;
+
+    &__control {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+    }
+}

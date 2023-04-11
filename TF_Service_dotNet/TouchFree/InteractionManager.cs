@@ -1,194 +1,199 @@
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Microsoft.Extensions.Options;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 using Ultraleap.TouchFree.Library.Interactions;
+using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library;
+
+public class InteractionManager
 {
-    public class InteractionManager
+    private readonly IEnumerable<IInteraction> _interactions;
+    private readonly InteractionTuning _interactionTuning;
+    private readonly IHandManager _handManager;
+    private readonly ITrackingConnectionManager _trackingConnectionManager;
+    private readonly IClientConnectionManager _connectionManager;
+
+    public Dictionary<IInteraction, float> ActiveInteractions { get; private set; }
+    private IInteraction _interactionCurrentlyDown;
+    private IInteraction _locationInteraction;
+
+    private InputAction _lastLocationInputAction;
+    private InputAction _nonLocationRelativeInputAction;
+
+    private Vector2? _lastDownPosition;
+
+    public InteractionManager(
+        IUpdateBehaviour updateBehaviour,
+        IClientConnectionManager connectionManager,
+        IEnumerable<IInteraction> interactions,
+        IOptions<InteractionTuning> interactionTuning,
+        IConfigManager configManager,
+        IHandManager handManager,
+        ITrackingConnectionManager trackingConnectionManager)
     {
-        private readonly IEnumerable<IInteraction> interactions;
-        private readonly InteractionTuning interactionTuning;
-        private readonly IHandManager handManager;
-        private readonly IUpdateBehaviour updateBehaviour;
-        private readonly IClientConnectionManager connectionManager;
+        _connectionManager = connectionManager;
+        _interactions = interactions;
+        _interactionTuning = interactionTuning?.Value;
+        _handManager = handManager;
+        _trackingConnectionManager = trackingConnectionManager;
 
-        public Dictionary<IInteraction, float> activeInteractions { get; private set; }
-        private IInteraction interactionCurrentlyDown;
-        private IInteraction locationInteraction;
+        configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
 
-        private InputAction lastLocationInputAction;
-        private InputAction nonLocationRelativeInputAction;
+        OnInteractionSettingsUpdated(configManager.InteractionConfig);
 
-        private Vector2? lastDownPosition;
+        updateBehaviour.OnUpdate += Update;
+        updateBehaviour.OnSlowUpdate += UpdateHands;
+    }
 
-        public InteractionManager(
-            IUpdateBehaviour _updateBehaviour,
-            IClientConnectionManager _connectionManager,
-            IEnumerable<IInteraction> _interactions,
-            IOptions<InteractionTuning> _interactionTuning,
-            IConfigManager _configManager,
-            IHandManager _handManager)
+    // TODO: Should not be public only to facilitate for tests
+    public void OnInteractionSettingsUpdated(InteractionConfigInternal config)
+    {
+        List<InteractionType> interactionsToUse = new List<InteractionType>();
+
+        if (config.InteractionType == InteractionType.PUSH)
         {
-            updateBehaviour = _updateBehaviour;
-            connectionManager = _connectionManager;
-            interactions = _interactions;
-            interactionTuning = _interactionTuning?.Value;
-            handManager = _handManager;
+            interactionsToUse.Add(InteractionType.PUSH);
 
-            _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
-
-            OnInteractionSettingsUpdated(_configManager.InteractionConfig);
+            if (_interactionTuning?.EnableAirClickWithAirPush == true)
+            {
+                interactionsToUse.Add(InteractionType.AIRCLICK);
+            }
+        }
+        else
+        {
+            interactionsToUse.Add(config.InteractionType);
         }
 
-        public void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
+        if (config.InteractionType != InteractionType.GRAB && config?.UseSwipeInteraction == true)
         {
-            var initialisationNotStarted = activeInteractions == null;
+            interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
+        }
 
-            List<InteractionType> interactionsToUse = new List<InteractionType>();
+        ActiveInteractions = _interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
+        _locationInteraction = _interactions.SingleOrDefault(x => x.InteractionType == config.InteractionType);
 
-            if (_config.InteractionType == InteractionType.PUSH)
+        // Reset the down position between interactions
+        _lastDownPosition = null;
+        _interactionCurrentlyDown = null;
+    }
+
+    private void UpdateHands()
+    {
+        if (_trackingConnectionManager.ShouldSendHandData)
+        {
+            _connectionManager.SendHandData(_handManager.RawHands, _handManager.LastImageData);
+        }
+    }
+
+    private void Update()
+    {
+        if (ActiveInteractions != null)
+        {
+            InputAction? inputAction = null;
+            float currentMaxProgress = 0;
+            InputAction? lastLocationActionToUpdate = null;
+
+            if (_interactionCurrentlyDown != null)
             {
-                interactionsToUse.Add(InteractionType.PUSH);
+                var interactionInputAction = _interactionCurrentlyDown.Update(1);
+                inputAction = interactionInputAction.InputAction;
+                currentMaxProgress = inputAction?.ProgressToClick ?? 0;
 
-                if (interactionTuning?.EnableAirClickWithAirPush == true)
+                if (_interactionCurrentlyDown == _locationInteraction)
                 {
-                    interactionsToUse.Add(InteractionType.AIRCLICK);
+                    lastLocationActionToUpdate = inputAction;
+                }
+
+                if (!inputAction.HasValue || inputAction.Value.InputType is InputType.UP or InputType.CANCEL)
+                {
+                    if (_interactionCurrentlyDown != _locationInteraction)
+                    {
+                        lastLocationActionToUpdate = _locationInteraction.Update(1).InputAction;
+                    }
+                    _interactionCurrentlyDown = null;
                 }
             }
             else
             {
-                interactionsToUse.Add(_config.InteractionType);
-            }
-
-            if (_config.InteractionType != InteractionType.GRAB && _config?.UseSwipeInteraction == true)
-            {
-                interactionsToUse.Add(InteractionType.VELOCITYSWIPE);
-            }
-
-            activeInteractions = interactions.Where(x => interactionsToUse.Contains(x.InteractionType)).ToDictionary(x => x, x => 1f);
-            locationInteraction = interactions.SingleOrDefault(x => x.InteractionType == _config.InteractionType);
-
-            if (initialisationNotStarted)
-            {
-                updateBehaviour.OnUpdate += Update;
-            }
-
-            // Reset the down position between interactions
-            lastDownPosition = null;
-            interactionCurrentlyDown = null;
-        }
-
-        public void Update()
-        {
-            connectionManager.SendHandData(handManager.RawHands);
-
-            if (activeInteractions != null)
-            {
-                InputAction? inputAction = null;
-                float currentMaxProgress = 0;
-                InputAction? lastLocationActionToUpdate = null;
-
-                if (interactionCurrentlyDown != null)
+                foreach (var interaction in ActiveInteractions)
                 {
-                    var interactionInputAction = interactionCurrentlyDown.Update(1);
-                    inputAction = interactionInputAction.inputAction;
-                    currentMaxProgress = inputAction?.ProgressToClick ?? 0;
+                    var interactionInputAction = interaction.Key.Update(interaction.Value);
 
-                    if (interactionCurrentlyDown == locationInteraction)
+                    if (interaction.Key == _locationInteraction)
                     {
-                        lastLocationActionToUpdate = inputAction;
+                        lastLocationActionToUpdate = interactionInputAction.InputAction;
+                        if (_interactionCurrentlyDown == null)
+                        {
+                            inputAction = interactionInputAction.InputAction;
+                        }
                     }
 
-                    if (!inputAction.HasValue || inputAction.Value.InputType == InputType.UP || inputAction.Value.InputType == InputType.CANCEL)
+                    if (_interactionCurrentlyDown == null && interactionInputAction.InputAction is { InputType: InputType.DOWN })
                     {
-                        if (interactionCurrentlyDown != locationInteraction)
-                        {
-                            lastLocationActionToUpdate = locationInteraction.Update(1).inputAction;
-                        }
-                        interactionCurrentlyDown = null;
-                    }
-                }
-                else
-                {
-                    foreach (var interaction in activeInteractions)
-                    {
-                        var interactionInputAction = interaction.Key.Update(interaction.Value);
+                        inputAction = interactionInputAction.InputAction;
+                        _interactionCurrentlyDown = interaction.Key;
+                        _nonLocationRelativeInputAction = interactionInputAction.InputAction.Value;
 
-                        if (interaction.Key == locationInteraction)
+                        if (_interactionTuning?.EnableInteractionConfidence == true)
                         {
-                            lastLocationActionToUpdate = interactionInputAction.inputAction;
-                            if (interactionCurrentlyDown == null)
-                            { 
-                                inputAction = interactionInputAction.inputAction;
-                            }
-                        }
-
-                        if (interactionCurrentlyDown == null && interactionInputAction?.inputAction != null && interactionInputAction.actionDetected && interactionInputAction.inputAction.Value.InputType == InputType.DOWN)
-                        {
-                            inputAction = interactionInputAction.inputAction;
-                            interactionCurrentlyDown = interaction.Key;
-                            nonLocationRelativeInputAction = interactionInputAction.inputAction.Value;
-
-                            if (interactionTuning?.EnableInteractionConfidence == true)
+                            ActiveInteractions[interaction.Key] = (float)Math.Min(1, interaction.Value + 0.05);
+                            foreach (var key in ActiveInteractions.Keys)
                             {
-                                activeInteractions[interaction.Key] = (float)Math.Min(1, interaction.Value + 0.05);
-                                foreach (var key in activeInteractions.Keys)
+                                if (key != interaction.Key)
                                 {
-                                    if (key != interaction.Key)
-                                    {
-                                        activeInteractions[key] = (float)Math.Max(0.25, activeInteractions[key] - 0.05);
-                                    }
+                                    ActiveInteractions[key] = (float)Math.Max(0.25, ActiveInteractions[key] - 0.05);
                                 }
                             }
                         }
+                    }
 
-                        if (interactionInputAction?.inputAction != null && currentMaxProgress < interactionInputAction.inputAction.Value.ProgressToClick)
-                        {
-                            currentMaxProgress = interactionInputAction.inputAction.Value.ProgressToClick;
-                        }
+                    if (interactionInputAction.InputAction.HasValue && currentMaxProgress < interactionInputAction.InputAction.Value.ProgressToClick)
+                    {
+                        currentMaxProgress = interactionInputAction.InputAction.Value.ProgressToClick;
                     }
                 }
+            }
 
-                if (lastLocationActionToUpdate.HasValue)
+            if (lastLocationActionToUpdate.HasValue)
+            {
+                _lastLocationInputAction = lastLocationActionToUpdate.Value;
+            }
+
+            if (inputAction.HasValue)
+            {
+                if (_interactionCurrentlyDown != null)
                 {
-                    lastLocationInputAction = lastLocationActionToUpdate.Value;
-                }
-
-                if (inputAction.HasValue)
-                {
-                    if (interactionCurrentlyDown != null)
+                    // We don't need to do anything if the location interaction is the one causing the DOWN
+                    if (_interactionCurrentlyDown != _locationInteraction)
                     {
-                        // We don't need to do anything if the location interaction is the one causing the DOWN
-                        if (interactionCurrentlyDown != locationInteraction)
-                        {
-                            lastDownPosition = lastLocationInputAction.CursorPosition + inputAction.Value.CursorPosition - nonLocationRelativeInputAction.CursorPosition;
-                            var updatedPosition = new Positions(lastDownPosition.Value, inputAction.Value.DistanceFromScreen);
-                            inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
-                                updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
-                        }
-                    }
-                    else if (interactionCurrentlyDown == null)
-                    {
-                        if (lastDownPosition.HasValue)
-                        {
-                            var differenceInLocations = lastDownPosition.Value - lastLocationInputAction.CursorPosition;
-                            var differenceLength = differenceInLocations.Length();
-                            var decrease = Utilities.MapRangeToRange(differenceLength, 10, Math.Max(300, differenceLength), 10, 50);
-                            var decreaseRatio = decrease / differenceLength;
-                            // Soften moving back to the location cursor position (this should be changed to use time so that it is consistent when we have lower frame rate)
-                            lastDownPosition = differenceLength > 10 ? (differenceInLocations * decreaseRatio) + lastLocationInputAction.CursorPosition : null;
-                        }
-
-                        var updatedPosition = new Positions(lastDownPosition ?? lastLocationInputAction.CursorPosition, lastLocationInputAction.DistanceFromScreen);
+                        _lastDownPosition = _lastLocationInputAction.CursorPosition + inputAction.Value.CursorPosition - _nonLocationRelativeInputAction.CursorPosition;
+                        var updatedPosition = new Positions(_lastDownPosition.Value, inputAction.Value.DistanceFromScreen);
                         inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
                             updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
                     }
-                    connectionManager.SendInputAction(inputAction.Value);
                 }
+                else if (_interactionCurrentlyDown == null)
+                {
+                    if (_lastDownPosition.HasValue)
+                    {
+                        var differenceInLocations = _lastDownPosition.Value - _lastLocationInputAction.CursorPosition;
+                        var differenceLength = differenceInLocations.Length();
+                        var decrease = Utilities.MapRangeToRange(differenceLength, 10, Math.Max(300, differenceLength), 10, 50);
+                        var decreaseRatio = decrease / differenceLength;
+                        // Soften moving back to the location cursor position (this should be changed to use time so that it is consistent when we have lower frame rate)
+                        _lastDownPosition = differenceLength > 10 ? (differenceInLocations * decreaseRatio) + _lastLocationInputAction.CursorPosition : null;
+                    }
+
+                    var updatedPosition = new Positions(_lastDownPosition ?? _lastLocationInputAction.CursorPosition, _lastLocationInputAction.DistanceFromScreen);
+                    inputAction = new InputAction(inputAction.Value.Timestamp, inputAction.Value.InteractionType, inputAction.Value.HandType, inputAction.Value.Chirality, inputAction.Value.InputType,
+                        updatedPosition, Math.Max(inputAction.Value.ProgressToClick, currentMaxProgress));
+                }
+                _connectionManager.SendInputAction(inputAction.Value);
             }
         }
     }

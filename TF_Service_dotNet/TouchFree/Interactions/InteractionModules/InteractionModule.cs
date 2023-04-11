@@ -1,147 +1,143 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Ultraleap.TouchFree.Library.Configuration;
-using Ultraleap.TouchFree.Library.Interactions.InteractionModules;
+using Ultraleap.TouchFree.Library.Connections;
 
-namespace Ultraleap.TouchFree.Library.Interactions
+namespace Ultraleap.TouchFree.Library.Interactions.InteractionModules;
+
+public abstract class InteractionModule : IInteraction
 {
-    public abstract class InteractionModule : IInteraction
+    public virtual InteractionType InteractionType => InteractionType.PUSH;
+
+    private HandChirality _handChirality;
+    private HandType _handType; // TODO: This is never set?
+
+    protected bool IgnoreDragging { get; private set; }
+    protected bool IgnoreSwiping { get; private set; }
+
+    protected Positions positions;
+
+    protected float DistanceFromScreenMm { get; private set; }
+    protected long LatestTimestamp { get; private set; }
+    protected bool HadHandLastFrame { get; private set; }
+
+    protected IPositioningModule PositioningModule { get; }
+    protected IPositionStabiliser PositionStabiliser { get; }
+    protected IHandManager HandManager { get; }
+    protected IVirtualScreen VirtualScreen { get; }
+    protected IEnumerable<PositionTrackerConfiguration> PositionConfiguration { get; set; }
+
+    private InteractionZoneState _lastInteractionZoneState = InteractionZoneState.HAND_EXITED;
+    
+    private readonly IConfigManager _configManager;
+    private readonly IClientConnectionManager _connectionManager;
+
+    protected InteractionModule(
+        IHandManager handManager, 
+        IVirtualScreen virtualScreen,
+        IConfigManager configManager,
+        IClientConnectionManager connectionManager,
+        IPositioningModule positioningModule,
+        IPositionStabiliser positionStabiliser
+    )
     {
-        public virtual InteractionType InteractionType { get; } = InteractionType.PUSH;
+        HandManager = handManager;
+        VirtualScreen = virtualScreen;
+        _configManager = configManager;
+        _connectionManager = connectionManager;
+        PositioningModule = positioningModule;
+        PositionStabiliser = positionStabiliser;
 
-        private HandChirality handChirality;
-        public HandType handType;
+        _configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
+        
+        // TODO: Virtual member call in constructor - rearchitect this out
+        OnInteractionSettingsUpdated(_configManager.InteractionConfig);
+    }
 
-        public bool ignoreDragging;
-        public bool ignoreSwiping;
+    public InputActionResult Update(float confidence)
+    {
+        // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
+        LatestTimestamp = HandManager.Timestamp;
 
-        protected Positions positions;
+        var hand = GetHand();
+        var inputAction = UpdateData(hand, confidence);
 
-        protected float distanceFromScreenMm;
+        HadHandLastFrame = hand != null;
 
-        protected long latestTimestamp;
+        return inputAction;
+    }
 
-        protected bool hadHandLastFrame = false;
+    // This is the main update loop of the interaction module
+    protected abstract InputActionResult UpdateData(Leap.Hand hand, float confidence);
 
-        protected IPositioningModule positioningModule;
-        protected IPositionStabiliser positionStabiliser;
+    protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal interactionConfig)
+    {
+        IgnoreDragging = !interactionConfig.UseScrollingOrDragging;
+        IgnoreSwiping = !interactionConfig.UseSwipeInteraction;
+        PositionStabiliser.ResetValues();
+    }
 
-        protected readonly IHandManager handManager;
-        protected readonly IVirtualScreen virtualScreen;
-        private readonly IConfigManager configManager;
+    protected InputActionResult CreateInputActionResult(InputType inputType, Positions pos, float progressToClick) =>
+        new(new InputAction(LatestTimestamp, InteractionType, _handType, _handChirality, inputType, pos, progressToClick),
+            progressToClick);
 
-        protected IEnumerable<PositionTrackerConfiguration> positionConfiguration;
-
-        public InteractionModule(IHandManager _handManager, IVirtualScreen _virtualScreen, IConfigManager _configManager, IPositioningModule _positioningModule, IPositionStabiliser _positionStabiliser)
+    private Leap.Hand GetHand()
+    {
+        var hand = _handType switch
         {
-            handManager = _handManager;
-            virtualScreen = _virtualScreen;
-            configManager = _configManager;
-            positioningModule = _positioningModule;
-            positionStabiliser = _positionStabiliser;
+            HandType.PRIMARY => HandManager.PrimaryHand,
+            HandType.SECONDARY => HandManager.SecondaryHand,
+            _ => null
+        };
 
-            configManager.OnInteractionConfigUpdated += OnInteractionSettingsUpdated;
-            OnInteractionSettingsUpdated(configManager.InteractionConfig);
+        if (hand != null)
+        {
+            _handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
+
+            positions = PositioningModule.CalculatePositions(hand, PositionConfiguration);
+            positions = ApplyAdditionalPositionModifiers(positions);
+            positions = PositioningModule.ApplyStabilisation(positions, PositionStabiliser);
+            DistanceFromScreenMm = positions.DistanceFromScreen * 1000f;
+            hand = CheckHandInInteractionZone(hand);
         }
 
-        public InputActionResult Update(float confidence)
+        return hand;
+    }
+
+    protected virtual Positions ApplyAdditionalPositionModifiers(Positions pos) => pos;
+    
+    protected virtual bool CheckForStartDrag(Vector2 startPos, Vector2 currentPos) => startPos != currentPos;
+
+    /// <summary>
+    /// Check if the hand is within the interaction zone. Return relevant results.
+    /// This should be performed after 'positions' has been calculated.
+    /// </summary>
+    /// <param name="hand"></param>
+    /// <returns>Returns null if the hand is outside of the interaction zone</returns>
+    private Leap.Hand CheckHandInInteractionZone(Leap.Hand hand)
+    {
+        if (hand != null && _configManager.InteractionConfig.InteractionZoneEnabled)
         {
-            // Obtain the relevant Hand Data from the HandManager, and call the main UpdateData function
-            latestTimestamp = handManager.Timestamp;
+            if (DistanceFromScreenMm < _configManager.InteractionConfig.InteractionMinDistanceMm ||
+                DistanceFromScreenMm > _configManager.InteractionConfig.InteractionMaxDistanceMm)
+            {   
 
-            var hand = GetHand();
-            var inputAction = UpdateData(hand, confidence);
-
-            if (hand != null)
-            {
-                hadHandLastFrame = true;
-            }
-            else
-            {
-                hadHandLastFrame = false;
-            }
-
-            return inputAction;
-        }
-
-        // This is the main update loop of the interaction module
-        protected abstract InputActionResult UpdateData(Leap.Hand hand, float confidence);
-
-        protected virtual void OnInteractionSettingsUpdated(InteractionConfigInternal _config)
-        {
-            ignoreDragging = !_config.UseScrollingOrDragging;
-            ignoreSwiping = !_config.UseSwipeInteraction;
-            positionStabiliser.ResetValues();
-        }
-
-        protected InputActionResult CreateInputActionResult(InputType _inputType, Positions _positions, float _progressToClick)
-        {
-            return new InputActionResult(new InputAction(latestTimestamp, InteractionType, handType, handChirality, _inputType, _positions, _progressToClick), _progressToClick);
-        } 
-
-        Leap.Hand GetHand()
-        {
-            Leap.Hand hand = null;
-
-            switch (handType)
-            {
-                case HandType.PRIMARY:
-                    hand = handManager.PrimaryHand;
-                    break;
-                case HandType.SECONDARY:
-                    hand = handManager.SecondaryHand;
-                    break;
-            }
-
-            if (hand != null)
-            {
-                handChirality = hand.IsLeft ? HandChirality.LEFT : HandChirality.RIGHT;
-
-                positions = positioningModule.CalculatePositions(hand, positionConfiguration);
-                positions = ApplyAdditionalPositionModifiers(positions);
-                positions = positioningModule.ApplyStabiliation(positions, positionStabiliser);
-                distanceFromScreenMm = positions.DistanceFromScreen * 1000f;
-                hand = CheckHandInInteractionZone(hand);
-            }
-
-            return hand;
-        }
-
-        protected virtual Positions ApplyAdditionalPositionModifiers(Positions positions)
-        {
-            return positions;
-        }
-
-        /// <summary>
-        /// Check if the hand is within the interaction zone. Return relevant results.
-        /// This should be performed after 'positions' has been calculated.
-        /// </summary>
-        /// <param name="_hand"></param>
-        /// <returns>Returns null if the hand is outside of the interaction zone</returns>
-        Leap.Hand CheckHandInInteractionZone(Leap.Hand _hand)
-        {
-            if (_hand != null && configManager.InteractionConfig.InteractionZoneEnabled)
-            {
-                if (distanceFromScreenMm < configManager.InteractionConfig.InteractionMinDistanceMm ||
-                    distanceFromScreenMm > configManager.InteractionConfig.InteractionMaxDistanceMm)
+                if (_lastInteractionZoneState != InteractionZoneState.HAND_EXITED) 
                 {
-                    return null;
+                    _connectionManager.HandleInteractionZoneEvent(InteractionZoneState.HAND_EXITED);
+                    _lastInteractionZoneState = InteractionZoneState.HAND_EXITED;
                 }
+                return null;
             }
 
-            return _hand;
+            if (_lastInteractionZoneState != InteractionZoneState.HAND_ENTERED) 
+            {
+                _connectionManager.HandleInteractionZoneEvent(InteractionZoneState.HAND_ENTERED);
+                _lastInteractionZoneState = InteractionZoneState.HAND_ENTERED;
+            }
+
         }
 
-        /// <summary>
-        /// Returns whether the hand is within the interaction zone.
-        /// This should be performed after 'positions' has been calculated.
-        /// </summary>
-        /// <returns>Returns whether the hand is within the interaction zone.</returns>
-        public bool IsHandInInteractionZone()
-        {
-            return !configManager.InteractionConfig.InteractionZoneEnabled ||
-                (distanceFromScreenMm >= configManager.InteractionConfig.InteractionMinDistanceMm &&
-                 distanceFromScreenMm <= configManager.InteractionConfig.InteractionMaxDistanceMm);
-        }
+        return hand;
     }
 }

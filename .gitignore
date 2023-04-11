@@ -6,11 +6,13 @@ Obj/
 UnityGenerated/
 Library/
 Logs/
+[Uu]ser[Ss]ettings/
 
 # ======= #
 # Node.js #
 # ======= #
 
+/node_modules/*
 **/node_modules/*
 **/node_modules/**
 
@@ -75,14 +77,13 @@ Documentation/Tooling for Unity/**
 #  Testing  #
 # ========= #
 
-**/package-lock.json
-**/packages-lock.json
 **/usage.txt
 Testing/ServiceSocketTests/results/*
 Testing/ServiceSocketTests/results/**
 !Testing/ServiceSocketTests/results/results.md
 **/PUT_TEST_BUILD_IN_HERE/*
 !**/PUT_TEST_BUILD_IN_HERE/info.md
+TestResults/
 
 # =================== #
 #  Service Utilities  #
@@ -98,5 +99,6 @@ Testing/ServiceSocketTests/results/**
 !/TF_Service_dotNet/**/*.csproj
 !/TF_Service_dotNet/**/*.sln
 !/TF_Service_dotNet/**/launchSettings.json
-/TF_Application/Assets/TouchFree/Tooling
+/TF_Application/Assets/TouchFree
+/TF_Settings_Unity/Assets/TouchFree
 /TF_Service_dotNet/**/wwwroot

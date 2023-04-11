@@ -1,0 +1,17 @@
+@use '@/variables.module.scss' as v;
+
+.tab-bar {
+    position: sticky;
+    top: v.$header-height;
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.5fr;
+    width: 100vw;
+    height: v.$tab-height;
+    @media (orientation: landscape) {
+        height: v.$tab-height-landscape;
+    }
+
+    &--show-visuals {
+        grid-template-columns: 1fr 1fr 1fr 0.5fr;
+    }
+}

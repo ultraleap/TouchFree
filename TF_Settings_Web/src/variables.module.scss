@@ -1,0 +1,50 @@
+$app-width: 1080px;
+$app-margin-left: calc((100% - $app-width) / 2);
+$app-background-color: #222222;
+$ultraleap-green: #00eb85;
+$ultraleap-green-gradient: linear-gradient(180deg, $ultraleap-green, #00ccce);
+$light-grey: #5c5c5c;
+$dark-grey: #363636;
+$light-grey-gradient: linear-gradient(180deg, $light-grey 0%, #454545 100%);
+$dark-grey-gradient: linear-gradient(180deg, $dark-grey 0%, #2c2c2c 100%);
+$outline-button-gradient: linear-gradient(180deg, $ultraleap-green, #00cdcf);
+$dark-box-shadow: 0px 2px 10px #00000080;
+$base-font: MontserratRegular, Arial;
+$header-height: 8vh;
+$tab-height: 5vh;
+$tab-height-landscape: 10vh;
+
+:export {
+    appWidth: $app-width;
+    appMarginLeft: $app-margin-left;
+    appBackgroundColor: $app-background-color;
+    ultraleapGreen: $ultraleap-green;
+    ultraleapGreenGradient: $ultraleap-green-gradient;
+    lightGrey: $light-grey;
+    darkGrey: $dark-grey;
+    lightGreyGradient: $light-grey-gradient;
+    darkGreyGradient: $dark-grey-gradient;
+    baseFont: $base-font;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInOutAnimation {
+    0% {
+        opacity: 0;
+    }
+    20%,
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

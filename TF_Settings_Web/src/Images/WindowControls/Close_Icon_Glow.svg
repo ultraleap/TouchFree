@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="39.109" height="39.109" viewBox="0 0 39.109 39.109">
+  <defs>
+    <filter id="Line_53" x="0" y="0" width="39.109" height="39.109" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#00eb85"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Line_54" x="0" y="0" width="39.109" height="39.109" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-2"/>
+      <feFlood flood-color="#00eb85"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_32" data-name="Group 32" transform="translate(10.415 28.695) rotate(-90)">
+    <g transform="matrix(0, 1, -1, 0, 28.69, -10.41)" filter="url(#Line_53)">
+      <line id="Line_53-2" data-name="Line 53" x2="0.001" y2="25.852" transform="translate(10.41 28.69) rotate(-135)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    </g>
+    <g transform="matrix(0, 1, -1, 0, 28.69, -10.41)" filter="url(#Line_54)">
+      <line id="Line_54-2" data-name="Line 54" x1="0.001" y2="25.852" transform="translate(10.41 10.41) rotate(-45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+    </g>
+  </g>
+</svg>

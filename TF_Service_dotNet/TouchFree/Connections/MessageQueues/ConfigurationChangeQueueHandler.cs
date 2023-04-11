@@ -1,44 +1,39 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues;
+
+public class ConfigurationChangeQueueHandler : MessageQueueHandler
 {
-    public class ConfigurationChangeQueueHandler : BaseConfigurationChangeQueueHandler
+    private readonly IConfigManager _configManager;
+
+    public ConfigurationChangeQueueHandler(IUpdateBehaviour updateBehaviour, IClientConnectionManager clientMgr, IConfigManager configManager)
+        : base(updateBehaviour, clientMgr)
+        => _configManager = configManager;
+
+    public override ActionCode[] HandledActionCodes => new[] { ActionCode.SET_CONFIGURATION_STATE };
+    protected override ActionCode FailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
+    protected override string WhatThisHandlerDoes => "Setting configuration";
+
+    protected override Result<Empty> ValidateContent(in IncomingRequestWithId request) =>
+        MessageValidation.ValidateConfigJson(request.ContentRoot);
+
+    protected override void Handle(in IncomingRequestWithId request)
     {
-        private readonly IConfigManager configManager;
+        ChangeConfig(request.OriginalContent);
+        SendSuccessResponse(request, ActionCode.CONFIGURATION_RESPONSE);
+    }
 
-        public ConfigurationChangeQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager) : base(_updateBehaviour, _clientMgr)
-        {
-            configManager = _configManager;
-        }
+    void ChangeConfig(string content)
+    {
+        ConfigState combinedData = new ConfigState(string.Empty, _configManager.InteractionConfig.ForApi(), _configManager.PhysicalConfig.ForApi());
 
-        public override ActionCode[] ActionCodes => new[] { ActionCode.SET_CONFIGURATION_STATE };
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.CONFIGURATION_RESPONSE;
+        JsonConvert.PopulateObject(content, combinedData);
 
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
-        {
-            ResponseToClient response = ValidateConfigChange(_request.content, _contentObject);
+        _configManager.InteractionConfigFromApi = combinedData.interaction;
+        _configManager.PhysicalConfigFromApi = combinedData.physical;
 
-            if (response.status == "Success")
-            {
-                ChangeConfig(_request.content);
-            }
-
-            clientMgr.SendResponse(response, ActionCode.CONFIGURATION_RESPONSE);
-        }
-
-        void ChangeConfig(string _content)
-        {
-            ConfigState combinedData = new ConfigState(string.Empty, configManager.InteractionConfig.ForApi(), configManager.PhysicalConfig.ForApi());
-
-            JsonConvert.PopulateObject(_content, combinedData);
-
-            configManager.InteractionConfigFromApi = combinedData.interaction;
-            configManager.PhysicalConfigFromApi = combinedData.physical;
-
-            configManager.PhysicalConfigWasUpdated();
-            configManager.InteractionConfigWasUpdated();
-        }
+        _configManager.PhysicalConfigWasUpdated();
+        _configManager.InteractionConfigWasUpdated();
     }
 }

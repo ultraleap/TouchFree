@@ -57,7 +57,7 @@ gulp.task('startServer', function (callback) {
     var timerId = -1;
 
     function testWS() {
-        var ws = new WebSocket('ws://localhost:9739/connect');
+        var ws = new WebSocket('ws://127.0.0.1:9739/connect');
 
         ws.onopen = function () {
             console.log("Successfully connected to Server");

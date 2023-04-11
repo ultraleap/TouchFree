@@ -43,3 +43,18 @@ export const useStatefulRef = function <T>(initialValue: T): {
 
     return statefulRef;
 };
+
+export const useIsLandscape = () => {
+    const [isLandscape, setIsLandscape] = useState(innerHeight < innerWidth);
+
+    const update = () => {
+        setIsLandscape(innerHeight < innerWidth);
+    };
+
+    useEffect(() => {
+        window.addEventListener('resize', update);
+        return () => window.removeEventListener('resize', update);
+    }, []);
+
+    return isLandscape;
+};

@@ -1,4 +1,4 @@
-import { InteractionType } from "../TouchFreeToolingTypes";
+import { InteractionType } from '../TouchFreeToolingTypes';
 
 // Class: InteractionConfig
 // This class is a container for all of the settings related to the interactions being processed
@@ -14,7 +14,7 @@ import { InteractionType } from "../TouchFreeToolingTypes";
 // TouchFree Service.
 export interface InteractionConfig {
     // Property: UseScrollingOrDragging
-    // If true, allows interactions to send up/down events seperately, enabling dragging or
+    // If true, allows interactions to send up/down events separately, enabling dragging or
     // touchscreen-like scrolling behaviours. If false, up/down events will be sent together,
     // and every down will function like a click of its own.
     UseScrollingOrDragging: boolean;
@@ -49,6 +49,7 @@ export interface InteractionConfig {
     // Interaction-specific settings
     HoverAndHold: Partial<HoverAndHoldInteractionSettings>;
     TouchPlane: Partial<TouchPlaneInteractionSettings>;
+    VelocitySwipe: Partial<VelocitySwipeSettings>;
 }
 
 // Class: InteractionConfig
@@ -57,7 +58,7 @@ export interface InteractionConfig {
 // the current state of the Service's config or its config files.
 export interface InteractionConfigFull {
     UseScrollingOrDragging: boolean;
-    
+
     UseSwipeInteraction: boolean;
 
     DeadzoneRadius: number;
@@ -115,6 +116,34 @@ export interface TouchPlaneInteractionSettings {
     // Property: TouchPlaneTrackedPosition
     // This determines which bone position will be tracked when performing the interaction.
     TouchPlaneTrackedPosition: TrackedPosition;
+}
+
+// Class: VelocitySwipeSettings
+// NOTE: This is an experiemental feature and doesn't adhere to the tooling's semantaic versioning and may
+// break or change without warning.
+//
+// This class is a container for settings that only apply to the VelocitySwipe interaction. In
+// order to modify these settings of the TouchFree Service, create an <InteractionConfig>,
+// which contains an instance of this class, modify it as required, and then pass to the service
+// using the <ConfigurationManager>.
+//
+// Like all of the Settings classes found in this file, all members are optional. If you do
+// not modify a member of this class, its value will not change when the instance is sent to
+// TouchFree Service.
+export interface VelocitySwipeSettings {
+    MinScrollVelocity_mmps: number;
+    UpwardsMinVelocityDecrease_mmps: number;
+    DownwardsMinVelocityIncrease_mmps: number;
+    MaxReleaseVelocity_mmps: number;
+    MaxLateralVelocity_mmps: number;
+    MaxOpposingVelocity_mmps: number;
+    ScrollDelayMs: number;
+    MinSwipeLength: number;
+    MaxSwipeWidth: number;
+    SwipeWidthScaling: number;
+    AllowBidirectionalScroll: boolean;
+    AllowHorizontalScroll: boolean;
+    AllowVerticalScroll: boolean;
 }
 
 // Class: PhysicalConfig
@@ -178,6 +207,18 @@ export interface Vector {
     Z: number;
 }
 
+// Class: Vector2
+// This class is a container for a simple 2 dimensional vector
+export interface Vector2 {
+    // Property: x
+    // The X co-ordinate of the vector
+    x: number;
+
+    // Property: y
+    // The Y co-ordinate of the vector
+    y: number;
+}
+
 // Enum: TrackedPosition
 // INDEX_STABLE - Towards the screen from the proximal knuckle position of the index finger
 // INDEX_TIP - The index finger tip position
@@ -187,5 +228,5 @@ export enum TrackedPosition {
     INDEX_STABLE,
     INDEX_TIP,
     WRIST,
-    NEAREST
+    NEAREST,
 }

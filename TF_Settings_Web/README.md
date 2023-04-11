@@ -1,57 +1,42 @@
-# Getting Started with Create React App
+# TouchFree Web Settings
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+TouchFree Web Settings provides a user interface to interact with the TouchFree service
 
-## Available Scripts
+It contains the following features:
 
-In the project directory, you can run:
+-   Calibrate the service either automatically or manually
+-   Mask off problematic areas of the camera feed, e.g. bright, reflective areas
+-   Flip the camera feed vertically
+-   Toggle allowing analytics
+-   Toggle allowing access to the camera feed
+-   Switch between interaction types (Hover and Hold, AirPush etc)
+-   Edit interaction specific settings
+-   Control sensitivity of the TouchFree cursor
+-   Edit Interaction Zone settings
+-   View Service and Tracking version numbers
+-   View current camera Firmware and Serial number
 
-### `npm start`
+    Windows Only Features:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+-   Open Tracking and Touchfree log files
+-   Configure TouchFree Overlay App cursor and CTI
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Developer Guide
 
-### `npm test`
+### Requirements
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-   [NodeJS](https://nodejs.dev/)
+-   [Rust + Build tools](https://tauri.app/v1/guides/getting-started/prerequisites)
 
-### `npm run build`
+### Usage
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-## Formatting and Linting
-
-We use Prettier and ESLint to keep our formatting consistent.
-The following command are available:
-
--   `npm run lint` to run ESLint
--   `npm run pretty` to run Prettier
--   `npm run prettyLint` to run both (Prettier then ESLint) **Recommended**
-
-**Note: these commands will overwrite files with their formatted equivalent**
+-   Install: `npm i`
+    -   Install the required dependencies
+-   Run: `npm start`
+    -   Start the app in development mode. Includes hot reloading when changes are made
+-   Run (desktop): `npm run tauri dev`
+    -   Start the app in development mode using Tauri. Includes hot reloading when changes are made
+-   Build: `npm run tauri build`
+    -   Build the application (and Tauri wrapper) into a production state
+-   Fix linting: `npm run prettyLint`
+    -   Runs prettier and eslint and writes any possible fixes to problems

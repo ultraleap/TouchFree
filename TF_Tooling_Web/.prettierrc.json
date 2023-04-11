@@ -1,0 +1,16 @@
+{
+    "singleQuote": true,
+    "tabWidth": 4,
+    "endOfLine": "crlf",
+    "printWidth": 120,
+    "importOrder": ["^(@/)?TouchFree", ".*"],
+    "importOrderSeparation": true,
+    "overrides": [
+        {
+            "files": "*.md",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}

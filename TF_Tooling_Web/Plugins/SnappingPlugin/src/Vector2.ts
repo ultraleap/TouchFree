@@ -7,11 +7,11 @@ export class Vector2 {
         this.y = y;
     }
 
-    public static FromTuple(tuple: { x: number, y: number }): Vector2 {
+    public static FromTuple(tuple: { x: number; y: number }): Vector2 {
         return new Vector2(tuple.x, tuple.y);
     }
 
-    public toTuple(): { x: number, y: number } {
+    public toTuple(): { x: number; y: number } {
         return { x: this.x, y: this.y };
     }
 }

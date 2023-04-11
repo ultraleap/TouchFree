@@ -1,41 +1,77 @@
 ﻿using System;
 using System.Timers;
+using static Ultraleap.TouchFree.Library.IUpdateBehaviour;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library;
+
+public class UpdateBehaviour : IDisposable, IUpdateBehaviour
 {
-    public class UpdateBehaviour : IDisposable, IUpdateBehaviour
+    /// <summary>
+    /// Update event. Does not allow multiple subscriptions of the same function.
+    /// </summary>
+    public event UpdateEvent OnUpdate
     {
-        public event IUpdateBehaviour.UpdateEvent OnUpdate;
+        add { _onUpdate -= value; _onUpdate += value; }
+        remove => _onUpdate -= value;
+    }
 
-        private Timer updateLoop;
-        private const float TargetFPS = 60f;
+    private UpdateEvent _onUpdate;
+    
+    /// <summary>
+    /// Slow update event. Does not allow multiple subscriptions of the same function.
+    /// </summary>
+    public event UpdateEvent OnSlowUpdate
+    {
+        add { _onSlowUpdate -= value; _onSlowUpdate += value; }
+        remove => _onSlowUpdate -= value;
+    }
 
-        public UpdateBehaviour(float framerate = TargetFPS)
+    private UpdateEvent _onSlowUpdate;
+
+    private Timer _updateLoop;
+    private const float _targetFps = 60f;
+
+    private const int _slowUpdateCount = 5;
+    private int _slowUpdateIteration = 0;
+
+    private readonly object _invokeLock = new();
+
+    public UpdateBehaviour(float framerate = _targetFps) => SetTimer(framerate);
+
+    private void SetTimer(float framerate)
+    {
+        _updateLoop = new Timer(1000f / framerate)
         {
-            SetTimer(framerate);
-        }
+            AutoReset = true,
+            Enabled = true
+        };
+        _updateLoop.Elapsed += OnTimerElapsed;
+    }
 
-        private void SetTimer(float framerate)
+    private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+    {
+        if (System.Threading.Monitor.TryEnter(_invokeLock))
         {
-            updateLoop = new(1000f / framerate);
-            updateLoop.AutoReset = true;
-            updateLoop.Enabled = true;
-            updateLoop.Elapsed += OnTimerElapsed;
+            try
+            {
+                _onUpdate?.Invoke();
+                _slowUpdateIteration++;
+                if (_slowUpdateIteration >= _slowUpdateCount)
+                {
+                    _slowUpdateIteration = 0;
+                    _onSlowUpdate?.Invoke();
+                }
+            }
+            finally
+            {
+                System.Threading.Monitor.Exit(_invokeLock);
+            }
         }
+    }
 
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            OnUpdate?.Invoke();
-        }
-
-        public Timer UpdateTimer()
-        {
-            return updateLoop;
-        }
-
-        public void Dispose()
-        {
-            updateLoop?.Dispose();
-        }
+    public void Dispose()
+    {
+        _updateLoop?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

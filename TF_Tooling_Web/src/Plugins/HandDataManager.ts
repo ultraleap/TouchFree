@@ -1,5 +1,3 @@
-import { HandFrame } from "../TouchFreeToolingTypes";
-
 // Class: HandDataManager
 // The manager for all <HandFrame> to be handled and distributed. This distributes the data
 // via the <TransmitHandData> event which should be listened to by any class hoping to make
@@ -12,6 +10,8 @@ export class HandDataManager extends EventTarget {
     // Variable: instance
     // The instance of the singleton for referencing the events transmitted
     private static _instance: HandDataManager;
+
+    private static readonly maximumFrameFrequencyMs = 50;
 
     public static get instance() {
         if (HandDataManager._instance === undefined) {
@@ -26,13 +26,15 @@ export class HandDataManager extends EventTarget {
     // Function: HandleHandFrame
     // Called by the <messageReceiver> to relay a <HandFrame> that has been received to any
     // listeners of <TransmitHandData>.
-    public static HandleHandFrame(_data: HandFrame): void {
+    public static HandleHandFrame(_data: ArrayBuffer): void {
         const currentTimeStamp = Date.now();
-        if (!HandDataManager.lastFrame || HandDataManager.lastFrame + 100 < currentTimeStamp ) {
-            let rawHandsEvent: CustomEvent<HandFrame> = new CustomEvent<HandFrame>(
-                'TransmitHandData',
-                { detail: _data }
-            );
+        if (
+            !HandDataManager.lastFrame ||
+            HandDataManager.lastFrame + HandDataManager.maximumFrameFrequencyMs < currentTimeStamp
+        ) {
+            const rawHandsEvent: CustomEvent<ArrayBuffer> = new CustomEvent<ArrayBuffer>('TransmitHandData', {
+                detail: _data,
+            });
             HandDataManager.instance.dispatchEvent(rawHandsEvent);
             HandDataManager.lastFrame = currentTimeStamp;
         }

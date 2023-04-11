@@ -1,5 +1,6 @@
-import { TouchFreeInputAction } from "../TouchFreeToolingTypes";
-import { InputActionPlugin } from "./InputActionPlugin";
+import TouchFree from '../TouchFree';
+import { TouchFreeInputAction } from '../TouchFreeToolingTypes';
+import { InputActionPlugin } from './InputActionPlugin';
 
 // Class: InputActionManager
 // The manager for all <TouchFreeInputActions> to be handled and distributed. This runs the
@@ -40,18 +41,13 @@ export class InputActionManager extends EventTarget {
     // Called by the <messageReceiver> to relay a <TouchFreeInputAction> that has been received to any
     // listeners of <TransmitInputAction>.
     public static HandleInputAction(_action: TouchFreeInputAction): void {
-
-        let rawInputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
-            'TransmitInputActionRaw',
-            { detail: _action }
-        );
-        InputActionManager.instance.dispatchEvent(rawInputActionEvent);
+        TouchFree.DispatchEvent('TransmitInputActionRaw', _action);
 
         let action = _action;
 
         if (this.plugins !== null) {
-            for (var i = 0; i < this.plugins.length; i++) {
-                let modifiedAction = this.plugins[i].RunPlugin(action);
+            for (let i = 0; i < this.plugins.length; i++) {
+                const modifiedAction = this.plugins[i].RunPlugin(action);
 
                 if (modifiedAction !== null) {
                     action = modifiedAction;
@@ -62,14 +58,9 @@ export class InputActionManager extends EventTarget {
             }
         }
 
-        let inputActionEvent: CustomEvent<TouchFreeInputAction> = new CustomEvent<TouchFreeInputAction>(
-            'TransmitInputAction',
-            { detail: action }
-        );
-
         // Wrapping the function in a timeout of 0 seconds allows the dispatch to be asynchronous
         setTimeout(() => {
-            InputActionManager.instance.dispatchEvent(inputActionEvent);
+            TouchFree.DispatchEvent('TransmitInputAction', action);
         }, 0);
     }
 }

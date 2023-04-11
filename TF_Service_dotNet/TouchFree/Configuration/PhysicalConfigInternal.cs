@@ -1,53 +1,41 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration;
+
+[Serializable]
+public record PhysicalConfigInternal
 {
-    [Serializable]
-    public class PhysicalConfigInternal
+    public float ScreenHeightMm = 330f;
+    public Vector3 LeapPositionRelativeToScreenBottomMm = new Vector3(0f, -120f, -250f);
+    public Vector3 LeapRotationD = Vector3.Zero;
+    public float ScreenRotationD = 0f;
+
+    public int ScreenWidthPX = 0;
+    public int ScreenHeightPX = 0;
+
+    public PhysicalConfig ForApi() =>
+        new()
+        {
+            LeapPositionRelativeToScreenBottomM = LeapPositionRelativeToScreenBottomMm / 1000f,
+            LeapRotationD = LeapRotationD,
+            ScreenHeightM = ScreenHeightMm / 1000f,
+            ScreenHeightPX = ScreenHeightPX,
+            ScreenRotationD = ScreenRotationD,
+            ScreenWidthPX = ScreenWidthPX
+        };
+
+    public PhysicalConfigInternal() { /* Defaults set in field initializers */ }
+
+    public PhysicalConfigInternal(PhysicalConfig cfg)
     {
-        public float ScreenHeightMm = 330f;
-        public Vector3 LeapPositionRelativeToScreenBottomMm = new Vector3(0f, -120f, -250f);
-        public Vector3 LeapRotationD = Vector3.Zero;
-        public float ScreenRotationD = 0f;
+        ScreenHeightMm = cfg.ScreenHeightM * 1000f;
+        LeapPositionRelativeToScreenBottomMm = cfg.LeapPositionRelativeToScreenBottomM * 1000f;
 
-        public int ScreenWidthPX = 0;
-        public int ScreenHeightPX = 0;
+        LeapRotationD = cfg.LeapRotationD;
+        ScreenRotationD = cfg.ScreenRotationD;
 
-        public PhysicalConfig ForApi()
-        {
-            return new PhysicalConfig()
-            {
-                LeapPositionRelativeToScreenBottomM = LeapPositionRelativeToScreenBottomMm / 1000f,
-                LeapRotationD = LeapRotationD,
-                ScreenHeightM = ScreenHeightMm / 1000f,
-                ScreenHeightPX = ScreenHeightPX,
-                ScreenRotationD = ScreenRotationD,
-                ScreenWidthPX = ScreenWidthPX
-            };
-        }
-
-        public PhysicalConfigInternal()
-        {
-            this.ScreenHeightMm = 330f;
-            this.LeapPositionRelativeToScreenBottomMm = new Vector3(0f, -120f, -250f);
-            this.LeapRotationD = Vector3.Zero;
-            this.ScreenRotationD = 0f;
-
-            this.ScreenWidthPX = 0;
-            this.ScreenHeightPX = 0;
-        }
-
-        public PhysicalConfigInternal(PhysicalConfig fromFile)
-        {
-            this.ScreenHeightMm = fromFile.ScreenHeightM * 1000f;
-            this.LeapPositionRelativeToScreenBottomMm = fromFile.LeapPositionRelativeToScreenBottomM * 1000f;
-
-            this.LeapRotationD = fromFile.LeapRotationD;
-            this.ScreenRotationD = fromFile.ScreenRotationD;
-
-            this.ScreenWidthPX = fromFile.ScreenWidthPX;
-            this.ScreenHeightPX = fromFile.ScreenHeightPX;
-        }
+        ScreenWidthPX = cfg.ScreenWidthPX;
+        ScreenHeightPX = cfg.ScreenHeightPX;
     }
 }

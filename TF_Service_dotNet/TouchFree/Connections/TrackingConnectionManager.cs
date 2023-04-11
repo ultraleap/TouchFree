@@ -1,188 +1,196 @@
-﻿using System;
+﻿using Leap;
+using System;
 using System.Threading.Tasks;
 using Ultraleap.TouchFree.Library.Configuration;
 
-namespace Ultraleap.TouchFree.Library.Connections
+namespace Ultraleap.TouchFree.Library.Connections;
+
+public class TrackingConnectionManager : ITrackingConnectionManager
 {
-    public class TrackingConnectionManager : ITrackingConnectionManager
+    public IController Controller { get; }
+
+    private readonly IConfigManager _configManager;
+
+    private const int _maximumWaitTimeSeconds = 30;
+    private const int _initialWaitTimeSeconds = 1;
+    private bool _shouldConnect = false;
+
+    public bool ShouldSendHandData { get; private set; }
+    public TrackingMode CurrentTrackingMode { get; private set; }
+
+    public TrackingServiceState TrackingServiceState =>
+        (Controller.IsServiceConnected, Controller.IsConnected) switch
+        {
+            (true, true) => TrackingServiceState.CONNECTED,
+            (true, false) => TrackingServiceState.NO_CAMERA,
+            // (false, true) => ???, Weird state that's currently impossible if you inspect the implementation of IsConnected
+            _ => TrackingServiceState.UNAVAILABLE
+        };
+
+    public event Action<TrackingServiceState> ServiceStatusChange;
+
+    // ReSharper disable once UnusedMember.Global
+    public TrackingConnectionManager(IConfigManager configManager) : this(configManager, new Controller()) { }
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public TrackingConnectionManager(IConfigManager configManager, IController controller)
     {
-        public Leap.Controller controller { get; private set; }
+        _configManager = configManager;
+        Controller = controller;
+        Controller.Connect += ControllerOnConnect;
+        Controller.Disconnect += ControllerOnDisconnect;
+        Controller.Device += ControllerOnDevice;
+        Controller.DeviceLost += ControllerOnDeviceLost;
+        UpdateTrackingMode(configManager.PhysicalConfig);
+        configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
+        Controller.StopConnection();
+    }
 
-        private readonly ITrackingDiagnosticApi diagnosticApi;
-        private readonly IConfigManager configManager;
+    private void ControllerOnDevice(object sender, DeviceEventArgs e)
+    {
+        // More than 1 device connected now, ignore this event as we only care about at least one device connection
+        if (Controller.Devices.Count > 1) return;
+        ServiceStatusChange?.Invoke(TrackingServiceState.CONNECTED);
+    }
 
-        private const int maximumWaitTimeSeconds = 30;
-        private const int initialWaitTimeSeconds = 1;
-        private bool ShouldConnect = false;
+    private void ControllerOnDeviceLost(object sender, DeviceEventArgs e)
+    {
+        // We still have at least one device, ignore this event as we only care about at least one device connection
+        if (Controller.Devices.Count >= 1) return;
+        ServiceStatusChange?.Invoke(TrackingServiceState.NO_CAMERA);
+    }
 
-        private TrackingMode currentTrackingMode;
+    public void Connect()
+    {
+        _shouldConnect = true;
+        CheckConnectionAndRetryOnFailure();
+    }
 
-        public TrackingMode CurrentTrackingMode
+    public void Disconnect()
+    {
+        _shouldConnect = false;
+        if (Controller.IsServiceConnected)
         {
-            get { return currentTrackingMode; }
+            Controller.StopConnection();
         }
+    }
 
-        public TrackingConnectionManager(IConfigManager _configManager, ITrackingDiagnosticApi _diagnosticApi)
+    private void ControllerOnConnect(object sender, ConnectionEventArgs e)
+    {
+
+        UpdateTrackingMode(_configManager.PhysicalConfig);
+        ServiceStatusChange?.Invoke(TrackingServiceState.NO_CAMERA);
+
+        CheckTrackingModeIsCorrectAfterDelay();
+    }
+
+    private async void CheckTrackingModeIsCorrectAfterDelay()
+    {
+        await Task.Delay(5000);
+        if (Controller.IsServiceConnected)
         {
-            diagnosticApi = _diagnosticApi;
-            configManager = _configManager;
-            controller = new Leap.Controller();
-            controller.Connect += Controller_Connect;
-            controller.Disconnect += Controller_Disconnect;
-            UpdateTrackingMode(_configManager.PhysicalConfig);
-            _configManager.OnPhysicalConfigUpdated += UpdateTrackingMode;
-            controller.StopConnection();
+            var trackingMode = GetTrackingModeFromConfig(_configManager.PhysicalConfig);
 
-            controller.Device += Controller_CameraConnected;
-        }
+            var inScreenTop = Controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+            var inHmd = Controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
 
-        public void Connect()
-        {
-            ShouldConnect = true;
-            CheckConnectionAndRetryOnFailure();
-        }
-
-        public void Disconnect()
-        {
-            ShouldConnect = false;
-            if (controller.IsServiceConnected)
+            if (TrackingModeIsIncorrect(trackingMode, inScreenTop, inHmd))
             {
-                controller.StopConnection();
+                UpdateTrackingMode(_configManager.PhysicalConfig);
             }
         }
+    }
 
-        public void Controller_CameraConnected(object sender, Leap.DeviceEventArgs e)
+    public static bool TrackingModeIsIncorrect(TrackingMode trackingMode, bool inScreenTop, bool inHmd) =>
+        (trackingMode == TrackingMode.SCREENTOP && !inScreenTop)
+        || (trackingMode == TrackingMode.HMD && !inHmd)
+        || (trackingMode == TrackingMode.DESKTOP && (inScreenTop || inHmd));
+
+    private void ControllerOnDisconnect(object sender, Leap.ConnectionLostEventArgs e)
+    {
+        ServiceStatusChange?.Invoke(TrackingServiceState.UNAVAILABLE);
+        if (_shouldConnect)
         {
-            diagnosticApi.TriggerUpdatingTrackingConfiguration();
+            CheckConnectionAndRetryOnFailure(true);
+        }
+    }
+
+    private async void CheckConnectionAndRetryOnFailure(bool includeInitialDelay = false)
+    {
+        var waitTimeSeconds = _initialWaitTimeSeconds;
+
+        if (includeInitialDelay)
+        {
+            await Task.Delay(1000);
+            waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
         }
 
-        private void Controller_Connect(object sender, Leap.ConnectionEventArgs e)
+        while (!Controller.IsServiceConnected && _shouldConnect)
         {
-            UpdateTrackingMode(configManager.PhysicalConfig);
+            Controller.StartConnection();
 
-            CheckTrackingModeIsCorrectAfterDelay();
+            await Task.Delay(1000 * waitTimeSeconds);
+            waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
+        }
+    }
+
+    private static int IncreaseWaitTimeSeconds(int currentWaitTime)
+    {
+        if (currentWaitTime == _maximumWaitTimeSeconds)
+        {
+            return currentWaitTime;
         }
 
-        private async void CheckTrackingModeIsCorrectAfterDelay()
-        {
-            await Task.Delay(5000);
-            if (controller.IsServiceConnected)
-            {
-                var trackingMode = GetTrackingModeFromConfig(configManager.PhysicalConfig);
+        var updatedWaitTime = currentWaitTime * 2;
+        return updatedWaitTime > _maximumWaitTimeSeconds ? _maximumWaitTimeSeconds : updatedWaitTime;
+    }
 
-                var inScreenTop = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                var inHmd = controller.IsPolicySet(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+    private void UpdateTrackingMode(PhysicalConfigInternal config) => SetTrackingMode(GetTrackingModeFromConfig(config));
 
-                if (TrackingModeIsIncorrect(trackingMode, inScreenTop, inHmd))
-                {
-                    UpdateTrackingMode(configManager.PhysicalConfig);
-                }
-            }
-        }
-
-        public static bool TrackingModeIsIncorrect(TrackingMode trackingMode, bool inScreenTop, bool inHmd)
-        {
-            return (trackingMode == TrackingMode.SCREENTOP && !inScreenTop) ||
-                (trackingMode == TrackingMode.HMD && !inHmd) ||
-                (trackingMode == TrackingMode.DESKTOP && (inScreenTop || inHmd));
-        }
-
-        private void Controller_Disconnect(object sender, Leap.ConnectionLostEventArgs e)
-        {
-            if (ShouldConnect)
-            {
-                CheckConnectionAndRetryOnFailure(true);
-            }
-        }
-
-        private async void CheckConnectionAndRetryOnFailure(bool includeInitialDelay = false)
-        {
-            var waitTimeSeconds = initialWaitTimeSeconds;
-
-            if (includeInitialDelay)
-            {
-                await Task.Delay(1000 * waitTimeSeconds);
-                waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
-            }
-
-            while (!controller.IsServiceConnected && ShouldConnect)
-            {
-                controller.StartConnection();
-
-                await Task.Delay(1000 * waitTimeSeconds);
-                waitTimeSeconds = IncreaseWaitTimeSeconds(waitTimeSeconds);
-            }
-        }
-
-        private static int IncreaseWaitTimeSeconds(int currentWaitTime)
-        {
-            if (currentWaitTime == maximumWaitTimeSeconds)
-            {
-                return currentWaitTime;
-            }
-
-            var updatedWaitTime = currentWaitTime * 2;
-            return updatedWaitTime > maximumWaitTimeSeconds ? maximumWaitTimeSeconds : updatedWaitTime;
-        }
-
-        public void UpdateTrackingMode(PhysicalConfigInternal _config)
-        {
-            SetTrackingMode(GetTrackingModeFromConfig(_config));
-        }
-
-        TrackingMode GetTrackingModeFromConfig(PhysicalConfigInternal _config)
+    private static TrackingMode GetTrackingModeFromConfig(PhysicalConfigInternal config) =>
+        Math.Abs(config.LeapRotationD.Z) switch
         {
             // leap is looking down
-            if (Math.Abs(_config.LeapRotationD.Z) > 90f)
-            {
-                if (_config.LeapRotationD.X <= 0f)
-                {
-                    return TrackingMode.SCREENTOP;
-                }
-                else
-                {
-                    return TrackingMode.HMD;
-                }
-            }
-            else
-            {
-                return TrackingMode.DESKTOP;
-            }
-        }
+            > 90f when config.LeapRotationD.X <= 0f => TrackingMode.SCREENTOP,
+            > 90f => TrackingMode.HMD,
+            _ => TrackingMode.DESKTOP
+        };
 
-        void SetTrackingMode(TrackingMode _mode)
+    private void SetTrackingMode(TrackingMode trackingMode)
+    {
+        TouchFreeLog.WriteLine($"Requesting {trackingMode} tracking mode");
+
+        CurrentTrackingMode = trackingMode;
+
+        switch (trackingMode)
         {
-            TouchFreeLog.WriteLine($"Requesting {_mode} tracking mode");
-
-            currentTrackingMode = _mode;
-
-            switch (_mode)
-            {
-                case TrackingMode.DESKTOP:
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-                    break;
-                case TrackingMode.HMD:
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-                    break;
-                case TrackingMode.SCREENTOP:
-                    controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
-                    controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-                    break;
-            }
+            case TrackingMode.DESKTOP:
+                Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                break;
+            case TrackingMode.HMD:
+                Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                Controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                break;
+            case TrackingMode.SCREENTOP:
+                Controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
+                Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(trackingMode), trackingMode, null);
         }
+    }
 
-        public void SetImagesState(bool enabled)
+    public void SetImagesState(bool enabled)
+    {
+        ShouldSendHandData = enabled;
+        if (enabled)
         {
-            if (enabled)
-            {
-                controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
-            }
-            else
-            {
-                controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
-            }
+            Controller.SetPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
+        }
+        else
+        {
+            Controller.ClearPolicy(Leap.Controller.PolicyFlag.POLICY_IMAGES);
         }
     }
 }

@@ -1,70 +1,89 @@
 ﻿using System.IO;
 
-namespace Ultraleap.TouchFree.Library.Configuration
+namespace Ultraleap.TouchFree.Library.Configuration;
+
+public class ConfigFileWatcher
 {
-    public class ConfigFileWatcher
+    private readonly IConfigManager _configManager;
+    private readonly FileSystemWatcher _interactionWatcher;
+    private readonly FileSystemWatcher _physicalWatcher;
+    private readonly FileSystemWatcher _trackingWatcher;
+    private readonly FileSystemWatcher _serviceWatcher;
+    private readonly FileSystemWatcher _tfWatcher;
+    private int _trackingWatcherIgnoreEventCount;
+
+    private bool _configFileChanged = false;
+    private readonly object _loadSyncRoot = new();
+
+    public ConfigFileWatcher(IUpdateBehaviour updateBehaviour, IConfigManager configManager)
     {
-        private readonly IConfigManager configManager;
-        private readonly FileSystemWatcher interactionWatcher;
-        private readonly FileSystemWatcher physicalWatcher;
-        private readonly FileSystemWatcher trackingWatcher;
+        // We ask the config manager for references for these as this will cause the
+        // files to be created if they don't already exist, and FileSystemWatchers will
+        // error if the file they need to watch does not exist.
+        InteractionConfigInternal interactionCfg = configManager.InteractionConfig;
+        PhysicalConfigInternal physicalCfg = configManager.PhysicalConfig;
+        TrackingConfig trackingCfg = configManager.TrackingConfig;
+        ServiceConfig serviceCfg = configManager.ServiceConfig;
+        TouchFreeConfig tfConfig = configManager.TouchFreeConfig;
 
-        private bool configFileChanged = false;
+        _configManager = configManager;
+        _configManager.OnTrackingConfigSaved += _ => _trackingWatcherIgnoreEventCount++;
 
-        public ConfigFileWatcher(IUpdateBehaviour updateBehaviour, IConfigManager _configManager)
+        _interactionWatcher = CreateWatcherForFile(InteractionConfigFile.ConfigFileName);
+        _physicalWatcher = CreateWatcherForFile(PhysicalConfigFile.ConfigFileName);
+        _trackingWatcher = CreateWatcherForFile(TrackingConfigFile.ConfigFileName);
+        _serviceWatcher = CreateWatcherForFile(ServiceConfigFile.ConfigFileName);
+        _tfWatcher = CreateWatcherForFile(TouchFreeConfigFile.ConfigFileName);
+
+        updateBehaviour.OnUpdate += Update;
+    }
+
+    private FileSystemWatcher CreateWatcherForFile(string fileName)
+    {
+        var fileWatcher = new FileSystemWatcher();
+        fileWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+        fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
+        fileWatcher.Filter = fileName;
+        fileWatcher.Changed += FileUpdated;
+        fileWatcher.IncludeSubdirectories = true;
+        fileWatcher.EnableRaisingEvents = true;
+
+        return fileWatcher;
+    }
+
+    private void Update()
+    {
+        lock (_loadSyncRoot)
         {
-            // We ask the config manager for references for these as this will cause the
-            // files to be created if they don't already exist, and FileSystemWatchers will
-            // error if the file they need to watch does not exist.
-            InteractionConfigInternal InteractionCfg = _configManager.InteractionConfig;
-            PhysicalConfigInternal PhysicalCfg = _configManager.PhysicalConfig;
-            TrackingConfig TrackingCfg = _configManager.TrackingConfig;
-
-            configManager = _configManager;
-
-            interactionWatcher = CreateWatcherForFile(InteractionConfigFile.ConfigFileName);
-            physicalWatcher = CreateWatcherForFile(PhysicalConfigFile.ConfigFileName);
-            trackingWatcher = CreateWatcherForFile(TrackingConfigFile.ConfigFileName);
-
-            updateBehaviour.OnUpdate += Update;
-        }
-
-        public FileSystemWatcher CreateWatcherForFile(string fileName)
-        {
-            var fileWatcher = new FileSystemWatcher();
-            fileWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-            fileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess;
-            fileWatcher.Filter = fileName;
-            fileWatcher.Changed += new FileSystemEventHandler(FileUpdated);
-            fileWatcher.IncludeSubdirectories = true;
-            fileWatcher.EnableRaisingEvents = true;
-
-            return fileWatcher;
-        }
-
-        public void Update()
-        {
-            if (configFileChanged)
+            if (_configFileChanged)
             {
-                try
-                {
-                    ConfigFileUtils.CheckForConfigDirectoryChange();
-                    interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    trackingWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
-                    configManager.LoadConfigsFromFiles();
-                    TouchFreeLog.WriteLine("A config file was changed. Re-loading configs from files.");
-                    configFileChanged = false;
-                }
-                catch
-                {
-                }
+                ConfigFileUtils.CheckForConfigDirectoryChange();
+                _interactionWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                _physicalWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                _trackingWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                _serviceWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                _tfWatcher.Path = ConfigFileUtils.ConfigFileDirectory;
+                _configManager.LoadConfigsFromFiles();
+                TouchFreeLog.WriteLine("A config file was changed. Re-loading configs from files.");
+                _configFileChanged = false;
             }
         }
+    }
 
-        private void FileUpdated(object source, FileSystemEventArgs e)
+    private void FileUpdated(object source, FileSystemEventArgs e)
+    {
+        lock (TrackingConfigFile.SaveConfigSyncRoot)
         {
-            configFileChanged = true;
+            if (e.Name == TrackingConfigFile.ConfigFileName && _trackingWatcherIgnoreEventCount > 0)
+            {
+                _trackingWatcherIgnoreEventCount--;
+                return;
+            }
+
+            lock (_loadSyncRoot)
+            {
+                _configFileChanged = true;
+            }
         }
     }
 }

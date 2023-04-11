@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Ultraleap.TouchFree.Library.Interactions
+namespace Ultraleap.TouchFree.Library.Interactions;
+
+public interface IPositioningModule
 {
-    public interface IPositioningModule
-    {
-        Positions CalculatePositions(Leap.Hand hand, IEnumerable<PositionTrackerConfiguration> configuration);
-        Positions ApplyStabiliation(Positions positions, IPositionStabiliser stabiliser);
-    }
+    Positions CalculatePositions(Leap.Hand hand, IEnumerable<PositionTrackerConfiguration> configuration);
+    Positions ApplyStabilisation(Positions positions, IPositionStabiliser stabiliser);
 }

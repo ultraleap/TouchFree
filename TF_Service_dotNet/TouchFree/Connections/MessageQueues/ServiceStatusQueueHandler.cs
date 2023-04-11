@@ -1,41 +1,47 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Ultraleap.TouchFree.Library.Configuration;
+﻿using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections.DiagnosticApi;
 
-namespace Ultraleap.TouchFree.Library.Connections.MessageQueues
+namespace Ultraleap.TouchFree.Library.Connections.MessageQueues;
+
+public class ServiceStatusQueueHandler : MessageQueueHandler
 {
-    public class ServiceStatusQueueHandler : MessageQueueHandler
+    private readonly IConfigManager _configManager;
+    private readonly IHandManager _handManager;
+    private readonly ITrackingDiagnosticApi _trackingApi;
+
+    public override ActionCode[] HandledActionCodes => new[] { ActionCode.REQUEST_SERVICE_STATUS };
+
+    protected override string WhatThisHandlerDoes => "Service state request";
+
+    protected override ActionCode FailureActionCode => ActionCode.SERVICE_STATUS_RESPONSE;
+
+    public ServiceStatusQueueHandler(IUpdateBehaviour updateBehaviour, IClientConnectionManager clientMgr,
+        IConfigManager configManager, IHandManager handManager, ITrackingDiagnosticApi trackingApi)
+        : base(updateBehaviour, clientMgr)
     {
-        private readonly IConfigManager configManager;
-        private readonly IHandManager handManager;
+        _configManager = configManager;
+        _handManager = handManager;
+        _trackingApi = trackingApi;
+    }
 
-        public override ActionCode[] ActionCodes => new[] { ActionCode.REQUEST_SERVICE_STATUS };
-
-        protected override string noRequestIdFailureMessage => "Service state request failed. This is due to a missing or invalid requestID";
-
-        protected override ActionCode noRequestIdFailureActionCode => ActionCode.SERVICE_STATUS_RESPONSE;
-
-        public ServiceStatusQueueHandler(IUpdateBehaviour _updateBehaviour, IClientConnectionManager _clientMgr, IConfigManager _configManager, IHandManager _handManager) : base(_updateBehaviour, _clientMgr)
+    protected override void Handle(in IncomingRequestWithId request)
+    {
+        var requestWithId = request; // Copy as 'in' parameter cannot be used in local function
+        
+        // Implementation moved to local async function because Handle cannot be made 'async' while having 'in' parameter
+        HandleAsync();
+        async void HandleAsync()
         {
-            configManager = _configManager;
-            handManager = _handManager;
-        }
+            var deviceInfo = await _trackingApi.RequestDeviceInfo();
 
-        protected override void Handle(IncomingRequest _request, JObject _contentObject, string requestId)
-        {
-            TrackingServiceState trackingServiceState = TrackingServiceState.UNAVAILABLE;
-            if (handManager.TrackingServiceConnected())
-            {
-                trackingServiceState = handManager.CameraConnected() ? TrackingServiceState.CONNECTED : TrackingServiceState.NO_CAMERA;
-            }
+            var currentStatus = ServiceStatus.FromDApiTypes(requestWithId.RequestId,
+                _handManager.ConnectionManager.TrackingServiceState,
+                _configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED,
+                VersionManager.Version,
+                _trackingApi.ApiInfo,
+                deviceInfo);
 
-            ServiceStatus currentConfig = new ServiceStatus(
-                requestId,
-                trackingServiceState,
-                configManager.ErrorLoadingConfigFiles ? ConfigurationState.ERRORED : ConfigurationState.LOADED);
-
-
-            clientMgr.SendResponse(currentConfig, ActionCode.SERVICE_STATUS);
+            clientMgr.SendResponse(currentStatus, ActionCode.SERVICE_STATUS);
         }
     }
 }

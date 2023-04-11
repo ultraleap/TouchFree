@@ -1,7 +1,9 @@
 ﻿using Leap;
+using Moq;
 using NUnit.Framework;
 using Ultraleap.TouchFree.Library;
 using Ultraleap.TouchFree.Library.Configuration;
+using Ultraleap.TouchFree.Library.Connections;
 
 namespace TouchFreeTests
 {
@@ -31,7 +33,18 @@ namespace TouchFreeTests
 
         private HandManager CreateSut()
         {
-            return new(null, null, null);
+            var controller = new Mock<IController>();
+            controller.SetupAllProperties();
+            var connectionManager = new Mock<ITrackingConnectionManager>();
+            connectionManager.SetupAllProperties();
+            connectionManager.SetupGet(manager => manager.Controller).Returns(controller.Object);
+            var physicalConfig = new Mock<PhysicalConfigInternal>();
+            var configManager = new Mock<IConfigManager>();
+            configManager.SetupAllProperties();
+            configManager.SetupGet(manager => manager.PhysicalConfig).Returns(physicalConfig.Object);
+            var virtualScreen = new Mock<IVirtualScreen>();
+            virtualScreen.SetupAllProperties();
+            return new(connectionManager.Object, configManager.Object, virtualScreen.Object, new Mock<IUpdateBehaviour>().Object);
         }
 
         #region UpdateTrackingTransform

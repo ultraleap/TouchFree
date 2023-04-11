@@ -1,15 +1,15 @@
-﻿using System.Net.WebSockets;
-using Ultraleap.TouchFree.Library.Connections;
+﻿using System;
+using System.Net.WebSockets;
 
-namespace Ultraleap.TouchFree.Library
+namespace Ultraleap.TouchFree.Library.Connections;
+
+public interface IClientConnection
 {
-    public interface IClientConnection
-    {
-        WebSocket Socket { get; }
+    WebSocket Socket { get; }
 
-        void SendInputAction(InputAction data);
-        void SendHandData(HandFrame data);
-        void SendHandPresenceEvent(HandPresenceEvent handsLostEvent);
-        void SendResponse<T>(T _response, ActionCode actionCode);
-    }
+    void SendInputAction(in InputAction inputAction);
+    void SendHandData(in HandFrame handFrame, in ArraySegment<byte> lastHandData);
+    void SendHandPresenceEvent(in HandPresenceEvent handPresenceEvent);
+    void SendInteractionZoneEvent(in InteractionZoneEvent interactionZoneEvent);
+    void SendResponse<T>(in T response, in ActionCode actionCode);
 }

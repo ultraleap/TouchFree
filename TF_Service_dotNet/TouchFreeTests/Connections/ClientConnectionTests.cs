@@ -22,10 +22,10 @@ namespace TouchFreeTests.Connections
             var parsedServiceVersion = new Version(serviceVersion);
 
             // Act
-            var result = clientConnection.GetVersionCompability(clientVersion, parsedServiceVersion);
+            var result = ClientConnection.GetVersionCompability(clientVersion, parsedServiceVersion);
 
             // Assert
-            Assert.AreEqual(expectedCompatibility, result);
+            Assert.AreEqual(expectedCompatibility, result.Compatibility);
         }
     }
 }

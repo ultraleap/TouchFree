@@ -1,8 +1,7 @@
-﻿namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup
+﻿namespace Ultraleap.TouchFree.Library.Configuration.QuickSetup;
+
+public enum QuickSetupPosition
 {
-    public enum QuickSetupPosition
-    {
-        Top,
-        Bottom,
-    }
+    Top,
+    Bottom,
 }
