@@ -647,7 +647,7 @@ Linux_Image::ARMLinux::package:
     - cp $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Version.txt ./TouchFree_Extension
 
     - mkdir ./temp
-    - cp -rf ./TouchFree_Extension* ./temp
+    - cp -rf ./TouchFree_Extension/* ./temp
     - mksquashfs ./temp ext_ultouchfree.squashfs
 
     - cp ./LeapSDK/ThirdPartyNotices.md ./licenses
