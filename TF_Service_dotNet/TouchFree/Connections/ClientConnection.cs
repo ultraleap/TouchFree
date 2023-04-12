@@ -79,7 +79,20 @@ public class ClientConnection : IClientConnection
 
     public void SendInteractionZoneEvent(in InteractionZoneEvent interactionZoneEvent) => SendResponse(interactionZoneEvent, ActionCode.INTERACTION_ZONE_EVENT);
 
-    private void SendHandshakeResponse(in HandShakeResponse response) => SendResponse(response, ActionCode.VERSION_HANDSHAKE_RESPONSE);
+    private void SendHandshakeResponse(in HandShakeResponse response)
+    {
+        var message = new CommunicationWrapper<HandShakeResponse>(
+            ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(),
+            response);
+
+        string jsonMessage = JsonConvert.SerializeObject(message);
+
+        Socket.SendAsync(
+            Encoding.UTF8.GetBytes(jsonMessage),
+            WebSocketMessageType.Text,
+            true,
+            CancellationToken.None);
+    }
 
     public void SendResponse<T>(in T response, in ActionCode actionCode)
     {
