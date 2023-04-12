@@ -1,4 +1,5 @@
 import { ConnectionManager } from '../Connection/ConnectionManager';
+import { SVGCursor } from '../Cursors/SvgCursor';
 import TouchFree from '../TouchFree';
 import { TouchFreeEventSignatures, TouchFreeEvent } from '../TouchFreeToolingTypes';
 
@@ -26,15 +27,15 @@ describe('TouchFree', () => {
                 TouchFree.DispatchEvent('OnConnected');
                 expect(fn).toBeCalled();
             });
-            return;
+        } else {
+            it(`Should trigger appropriate callbacks when ${key} event is dispatched`, () => {
+                TouchFree.Init();
+                const newKey = key as TouchFreeEvent;
+                TouchFree.RegisterEventCallback(newKey, fn);
+                TouchFree.DispatchEvent(newKey);
+                expect(fn).toBeCalled();
+            });
         }
-        it(`Should trigger appropriate callbacks when ${key} event is dispatched`, () => {
-            TouchFree.Init();
-            const newKey = key as TouchFreeEvent;
-            TouchFree.RegisterEventCallback(newKey, fn);
-            TouchFree.DispatchEvent(newKey);
-            expect(fn).toBeCalled();
-        });
     }
 
     it('Should pass a given address to the ConnectionManager', () => {
@@ -42,5 +43,12 @@ describe('TouchFree', () => {
         TouchFree.Init({ address: newAddress });
         expect(ConnectionManager.iPAddress).toBe(newAddress.ip);
         expect(ConnectionManager.port).toBe(newAddress.port);
+    });
+
+    it('Should set the cursor correctly', () => {
+        const cursor = new SVGCursor();
+        cursor.DisableCursor();
+        TouchFree.SetCurrentCursor(cursor);
+        expect(TouchFree.GetCurrentCursor()).toBe(cursor);
     });
 });
