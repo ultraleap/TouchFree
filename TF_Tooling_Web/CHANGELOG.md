@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2023-04-06
+
 ### Added
 
 - `ServiceStatus` now includes the service version, tracking version, camera serial number and camera firmware version.

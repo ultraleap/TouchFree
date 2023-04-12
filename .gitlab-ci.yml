@@ -9,7 +9,7 @@ variables:
 
   BS_EXTENSION_NAME: ultouchfree
 
-  TF_TFW_VERSION: '1.3.0'
+  TF_TFW_VERSION: '1.4.0'
   TOUCHFREE_VERSION: '2.6.0'
 
   TF_TOOLING_API_VERSION: '1.4.0'
@@ -134,7 +134,8 @@ TF_Service::Wrapper::build:
     - rm ./Service_dotNet_Build/interaction-tuning.json
 
     - if ($INCLUDE_SERVICE_LICENSES -Match 'true') {
-        mkdir ./Service_dotNet_Build/ThirdParty && cp "$CI_PROJECT_DIR/Third_Party_Licenses/Service/*" ./Service_dotNet_Build/ThirdParty
+        mkdir ./Service_dotNet_Build/ThirdParty;
+        cp "$CI_PROJECT_DIR/Third_Party_Licenses/Service/*" ./Service_dotNet_Build/ThirdParty;
       }
 
     # Sign the executable with the UltraLeap certificate
@@ -525,6 +526,62 @@ TF_Service::dotNet::Brightsign::example:
     when: always
   tags:
     - win10
+
+Linux_Image::ARMLinux::package:
+  stage: package
+  image: ubuntu:20.04
+  dependencies:
+    - Tracking::ARMLinux::download_package
+    - TF_Settings::Web::build
+    - TF_Service::dotNet::ARMLinux::build
+  needs: [
+    "Tracking::ARMLinux::download_package",
+    "TF_Settings::Web::build",
+    "TF_Service::dotNet::ARMLinux::build"
+  ]
+  script:
+    - apt-get update
+    - apt-get --assume-yes install squashfs-tools
+    - mkdir licenses
+
+    # Uncompress & chmod TouchFree Service
+    - ln ./Service_dotNet_Build/libatomic.so.1.2.0 ./Service_dotNet_Build/libatomic.so.1
+    - ln ./Service_dotNet_Build/libLeapC.so.5 ./Service_dotNet_Build/libLeapC.so
+    - ln ./Service_dotNet_Build/libstdc++.so.6.0.28 ./Service_dotNet_Build/libstdc++.so.6
+    - chmod +x ./Service_dotNet_Build/TouchFree_Service
+    - cp ./Service_dotNet_Build/ThirdParty/* ./licenses
+
+    # Uncompress & chmod tracking service
+    - tar -xzf $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/Ultraleap_Tracking_Installer_*.tar.gz
+    - chmod +x ./TrackingService/bin/libtrack_server
+
+    # Combine services into one directory
+    - mkdir ./TouchFree_Extension
+    - mkdir ./TouchFree_Extension/TouchFree
+    - mkdir ./TouchFree_Extension/wwwroot
+    - mkdir ./TouchFree_Extension/Tracking
+    - mkdir ./TouchFree_Extension/Tracking/bin
+    - cp -R ./TrackingService/bin/* ./TouchFree_Extension/Tracking/bin
+    - cp ./LeapSDK/ThirdPartyNotices.md ./TouchFree_Extension/Tracking
+    - cp -R $CI_PROJECT_DIR/Service_dotNet_Build/* ./TouchFree_Extension/TouchFree
+    - cp -R $CI_PROJECT_DIR/TF_Settings_Web/dist/* ./TouchFree_Extension/wwwroot
+    - cp $CI_PROJECT_DIR/Scripts/BrightSign_Scripts/Version.txt ./TouchFree_Extension
+
+    - mkdir ./temp
+    - cp -rf ./TouchFree_Extension/* ./temp
+    - mksquashfs ./temp ext_ultouchfree.squashfs
+
+    - cp ./LeapSDK/ThirdPartyNotices.md ./licenses
+
+    - tar zcf linux_image.tar.gz ext_ultouchfree.squashfs licenses
+  artifacts:
+    name: "TouchFree_Linux_Image_${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - ./linux_image.tar.gz
+    expire_in: 2 weeks
+    when: always
+  tags:
+    - docker
 
 TF_Service::ARMLinux::package:
   stage: package
