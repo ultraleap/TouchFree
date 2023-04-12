@@ -1,10 +1,11 @@
 {
   "dependencies": {
     "com.coffee.softmask-for-ugui": "git+https://github.com/mob-sakai/SoftMaskForUGUI.git",
-    "com.ultraleap.tracking": "file:../../TF_Tooling_Unity/Packages/Tracking/Packages/Tracking",
-    "com.ultraleap.touchfree.tooling": "file:../../TF_Tooling_Unity/Packages/TouchFree Tooling",
+    "com.ultraleap.touchfree.tooling": "file:../../submodules/TouchFreeUnityTooling",
+    "com.ultraleap.tracking": "file:../../submodules/UnityPlugin/Packages/Tracking",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "2.0.1",
+    "com.unity.ide.rider": "3.0.18",
     "com.unity.ide.visualstudio": "2.0.17",
     "com.unity.ide.vscode": "1.2.5",
     "com.unity.test-framework": "1.1.31",

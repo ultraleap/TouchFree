@@ -8,13 +8,13 @@
       "hash": "b870d64b5704a764fd03aaccb11f2dbe652b1756"
     },
     "com.ultraleap.touchfree.tooling": {
-      "version": "file:../../TF_Tooling_Unity/Packages/TouchFree Tooling",
+      "version": "file:../../submodules/TouchFreeUnityTooling",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "com.ultraleap.tracking": {
-      "version": "file:../../TF_Tooling_Unity/Packages/Tracking/Packages/Tracking",
+      "version": "file:../../submodules/UnityPlugin/Packages/Tracking",
       "depth": 0,
       "source": "local",
       "dependencies": {}
@@ -37,6 +37,15 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ide.rider": {
+      "version": "3.0.18",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ext.nunit": "1.0.6"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
