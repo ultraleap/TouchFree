@@ -56,7 +56,7 @@ public class ClientConnection : IClientConnection
         }
 
         // TODO: Reduce allocations in this method
-        
+
         string jsonMessage = JsonConvert.SerializeObject(handFrame);
 
         byte[] jsonAsBytes = Encoding.UTF8.GetBytes(jsonMessage);
@@ -83,6 +83,11 @@ public class ClientConnection : IClientConnection
 
     public void SendResponse<T>(in T response, in ActionCode actionCode)
     {
+        if (!_handshakeCompleted)
+        {
+            return;
+        }
+
         var message = new CommunicationWrapper<T>(actionCode.ToString(), response);
 
         string jsonMessage = JsonConvert.SerializeObject(message);
@@ -99,7 +104,7 @@ public class ClientConnection : IClientConnection
     public static CompatibilityInformation GetVersionCompability(string clientVersion, Version coreVersion)
     {
         Version clientVersionParsed = new Version(clientVersion);
-        
+
         Compatibility compatibility;
         if (clientVersionParsed.Major < coreVersion.Major) compatibility = Compatibility.CLIENT_OUTDATED;
         else if (clientVersionParsed.Major > coreVersion.Major) compatibility = Compatibility.SERVICE_OUTDATED;
