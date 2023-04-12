@@ -1,3 +1,3 @@
 [submodule "submodules/UnityPlugin"]
 	path = submodules/UnityPlugin
-	url = git@github.com:ultraleap/UnityPlugin.git
+	url = https://github.com/ultraleap/UnityPlugin.git
