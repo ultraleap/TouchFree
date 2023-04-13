@@ -1,4 +1,3 @@
-
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -187,7 +186,7 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright [yyyy] [name of copyright owner]
+   Copyright 2020 Ultraleap, Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -200,3 +199,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+   These works bundle third party packages which are not covered by the Apache 
+   License and are provided under alternate licenses. For details, see the
+   THIRD PARTY NOTICES document.
