@@ -17,6 +17,7 @@ export interface TfInitParams {
 }
 
 const GetCurrentCursor = () => CurrentCursor;
+const SetCurrentCursor = (cursor: TouchlessCursor) => (CurrentCursor = cursor);
 const GetInputController = () => InputController;
 
 // Function: Init
@@ -254,6 +255,7 @@ const DispatchEvent = <TEvent extends TouchFreeEvent>(
 export default {
     CurrentCursor,
     GetCurrentCursor,
+    SetCurrentCursor,
     DispatchEvent,
     Init,
     InputController,
