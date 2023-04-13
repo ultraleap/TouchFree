@@ -1,4 +1,5 @@
 import { ConnectionManager } from '../Connection/ConnectionManager';
+import { DotCursor } from '../Cursors/DotCursor';
 import { SVGCursor } from '../Cursors/SvgCursor';
 import TouchFree from '../TouchFree';
 import { TouchFreeEventSignatures, TouchFreeEvent } from '../TouchFreeToolingTypes';
@@ -50,5 +51,9 @@ describe('TouchFree', () => {
         cursor.DisableCursor();
         TouchFree.SetCurrentCursor(cursor);
         expect(TouchFree.GetCurrentCursor()).toBe(cursor);
+
+        const newCursor = new DotCursor(new Image(), new Image());
+        TouchFree.SetCurrentCursor(newCursor);
+        expect(TouchFree.GetCurrentCursor()).toBe(newCursor);
     });
 });
