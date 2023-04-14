@@ -32,19 +32,7 @@ public class ClientConnection : IClientConnection
         TouchFreeLog.WriteLine("Websocket Connection opened");
     }
 
-    public void SendInputAction(in InputAction inputAction)
-    {
-        if (!_handshakeCompleted)
-        {
-            // Long-term we shouldn't get this far until post-handshake, but the systems should
-            // be designed cohesively when the Service gets its polish
-            return;
-        }
-
-        WebsocketInputAction converted = (WebsocketInputAction)inputAction;
-
-        SendResponse(converted, ActionCode.INPUT_ACTION);
-    }
+    public void SendInputAction(in InputAction inputAction) => SendResponse(inputAction, ActionCode.INPUT_ACTION);
 
     public void SendHandData(in HandFrame handFrame, in ArraySegment<byte> lastHandData)
     {
