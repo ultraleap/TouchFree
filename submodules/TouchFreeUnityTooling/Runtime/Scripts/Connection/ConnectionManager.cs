@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using UnityEngine;
 
 namespace Ultraleap.TouchFree.Tooling.Connection
@@ -55,6 +54,12 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
         static bool shouldReconnect = false;
 
+        public const string DefaultIp = "127.0.0.1";
+        public const string DefaultPort = "9739";
+
+        public static string Ip = DefaultIp;
+        public static string Port = DefaultPort;
+
         // Group: Functions
 
         // Function: AddConnectionListener
@@ -76,20 +81,10 @@ namespace Ultraleap.TouchFree.Tooling.Connection
         public void Connect()
         {
             shouldReconnect = true;
+            
+            Debug.Log("Attempting to connect to TouchFree at: http://" + Ip + ":" + Port);
 
-            //Read IP and port from config before we attempt to connect
-            string ip = "127.0.0.1";
-            string port = "9739";
-            // string configPath = ConfigFileUtils.ConfigFileDirectory + "ServiceConfig.json";
-            // if (File.Exists(configPath))
-            // {
-            //     JObject obj = JObject.Parse(File.ReadAllText(configPath));
-            //     if (obj.ContainsKey("ServiceIP")) ip = obj["ServiceIP"].ToString();
-            //     if (obj.ContainsKey("ServicePort")) port = obj["ServicePort"].ToString();
-            // }
-            Debug.Log("Attempting to connect to TouchFree at: http://" + ip + ":" + port);
-
-            currentServiceConnection = new ServiceConnection(ip, port, RetryConnecting);
+            currentServiceConnection = new ServiceConnection(Ip, Port, RetryConnecting);
             if (currentServiceConnection.IsConnected())
             {
                 OnConnected?.Invoke();
@@ -164,11 +159,9 @@ namespace Ultraleap.TouchFree.Tooling.Connection
 
         // Function: Awake
         // Run by Unity on Initialization. Finds the required <MessageReceiver> component.
-        // Also attempts to immediately <Connect> to a WebSocket.
         private void Awake()
         {
             messageReceiver = GetComponent<MessageReceiver>();
-            Connect();
         }
 
         // Function: OnEnable
