@@ -32,7 +32,7 @@ public class ClientConnection : IClientConnection
         TouchFreeLog.WriteLine("Websocket Connection opened");
     }
 
-    public void SendInputAction(in InputAction inputAction) => SendResponse(inputAction, ActionCode.INPUT_ACTION);
+    public void SendInputAction(in InputAction inputAction) => SendResponse((WebsocketInputAction)inputAction, ActionCode.INPUT_ACTION);
 
     public void SendHandData(in HandFrame handFrame, in ArraySegment<byte> lastHandData)
     {
