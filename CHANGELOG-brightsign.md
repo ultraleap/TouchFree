@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+### Fixed
+- Service: will no longer send some classes of message before a successful handshake from a connecting client
 - Service: Fixed an issue where the TouchFree Service would frequently throw exceptions when a client disconnects
 - Service: Fixed an issue where the TouchFree Service would crash when non-integer configuration value was sent for an integer configuration property e.g. screen width.
 - Service: Fixed several issues which could cause crashes or functionality freezes requiring a restart when dealing with Tracking configuration (masking, camera orientation, etc).

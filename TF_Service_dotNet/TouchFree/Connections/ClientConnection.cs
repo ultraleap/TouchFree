@@ -32,19 +32,7 @@ public class ClientConnection : IClientConnection
         TouchFreeLog.WriteLine("Websocket Connection opened");
     }
 
-    public void SendInputAction(in InputAction inputAction)
-    {
-        if (!_handshakeCompleted)
-        {
-            // Long-term we shouldn't get this far until post-handshake, but the systems should
-            // be designed cohesively when the Service gets its polish
-            return;
-        }
-
-        WebsocketInputAction converted = (WebsocketInputAction)inputAction;
-
-        SendResponse(converted, ActionCode.INPUT_ACTION);
-    }
+    public void SendInputAction(in InputAction inputAction) => SendResponse((WebsocketInputAction)inputAction, ActionCode.INPUT_ACTION);
 
     public void SendHandData(in HandFrame handFrame, in ArraySegment<byte> lastHandData)
     {
@@ -56,7 +44,7 @@ public class ClientConnection : IClientConnection
         }
 
         // TODO: Reduce allocations in this method
-        
+
         string jsonMessage = JsonConvert.SerializeObject(handFrame);
 
         byte[] jsonAsBytes = Encoding.UTF8.GetBytes(jsonMessage);
@@ -79,10 +67,28 @@ public class ClientConnection : IClientConnection
 
     public void SendInteractionZoneEvent(in InteractionZoneEvent interactionZoneEvent) => SendResponse(interactionZoneEvent, ActionCode.INTERACTION_ZONE_EVENT);
 
-    private void SendHandshakeResponse(in HandShakeResponse response) => SendResponse(response, ActionCode.VERSION_HANDSHAKE_RESPONSE);
+    private void SendHandshakeResponse(in HandShakeResponse response)
+    {
+        var message = new CommunicationWrapper<HandShakeResponse>(
+            ActionCode.VERSION_HANDSHAKE_RESPONSE.ToString(),
+            response);
+
+        string jsonMessage = JsonConvert.SerializeObject(message);
+
+        Socket.SendAsync(
+            Encoding.UTF8.GetBytes(jsonMessage),
+            WebSocketMessageType.Text,
+            true,
+            CancellationToken.None);
+    }
 
     public void SendResponse<T>(in T response, in ActionCode actionCode)
     {
+        if (!_handshakeCompleted)
+        {
+            return;
+        }
+
         var message = new CommunicationWrapper<T>(actionCode.ToString(), response);
 
         string jsonMessage = JsonConvert.SerializeObject(message);
@@ -99,7 +105,7 @@ public class ClientConnection : IClientConnection
     public static CompatibilityInformation GetVersionCompability(string clientVersion, Version coreVersion)
     {
         Version clientVersionParsed = new Version(clientVersion);
-        
+
         Compatibility compatibility;
         if (clientVersionParsed.Major < coreVersion.Major) compatibility = Compatibility.CLIENT_OUTDATED;
         else if (clientVersionParsed.Major > coreVersion.Major) compatibility = Compatibility.SERVICE_OUTDATED;

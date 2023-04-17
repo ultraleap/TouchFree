@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Service will no longer send some classes of message before a successful handshake from a connecting client
+
 ## [2.6.0] - 2022-03-20
 
 ### Added
