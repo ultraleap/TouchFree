@@ -43,11 +43,6 @@ export class WebInputController extends BaseInputController {
     constructor() {
         super();
 
-        this.HandsLostHandle = TouchFree.RegisterEventCallback(
-            'HandsLost',
-            this.HandleHandsLostBehaviour.bind(this)
-        );
-
         this.baseEventProps = {
             pointerId: this.pointerId,
             bubbles: true,
@@ -73,18 +68,15 @@ export class WebInputController extends BaseInputController {
     //     _element - The DOM element under the cursor this frame
     HandleMove(_element: Element | null): void {
         if (_element !== this.lastHoveredElement) {
-            console.log("Element != lastHovered");
             // Handle sending pointerover/pointerout to the individual elements
             // These events bubble, so we only have to dispatch them to the element directly under
             // the cursor
             if (this.lastHoveredElement !== null) {
-                console.log("Element != lastHovered && lastHovered != null");
                 const outEvent: PointerEvent = new PointerEvent('pointerout', this.activeEventProps);
                 this.lastHoveredElement.dispatchEvent(outEvent);
             }
 
             if (_element !== null) {
-                console.log("element != lastHovered && element != null");
                 const overEvent: PointerEvent = new PointerEvent('pointerover', this.activeEventProps);
                 _element.dispatchEvent(overEvent);
                 console.log(`sending PointerOver to ${_element.tagName}`);
@@ -137,9 +129,11 @@ export class WebInputController extends BaseInputController {
                 const cancelEvent: PointerEvent = new PointerEvent('pointercancel', this.activeEventProps);
                 const outEvent: PointerEvent = new PointerEvent('pointerout', this.activeEventProps);
 
-                if (this.lastHoveredElement !== null && this.lastHoveredElement !== elementAtPos) {
+                if (this.lastHoveredElement !== null) {
                     this.lastHoveredElement.dispatchEvent(cancelEvent);
                     this.lastHoveredElement.dispatchEvent(outEvent);
+
+                    this.lastHoveredElement = null;
                 }
 
                 const elementOnDown = this.GetTopNonCursorElement(this.elementsOnDown);
@@ -383,7 +377,6 @@ export class WebInputController extends BaseInputController {
             });
 
             newParents.forEach((parentNode: Node | null) => {
-                // if (_element != null ) console.log(`sending PointerEnter to ${_element.tagName}`);
                 parentNode?.dispatchEvent(enterEvent);
             });
         } else {
@@ -392,23 +385,9 @@ export class WebInputController extends BaseInputController {
             });
 
             newParents.slice(highestCommonIndex).forEach((parentNode) => {
-                // if (_element != null ) console.log(`sending PointerEnter to ${_element.tagName}`);
                 parentNode?.dispatchEvent(enterEvent);
             });
         }
-    }
-
-    // Handle HandLost event to ensure hover events work on hands found
-    private HandleHandsLostBehaviour() {
-        if (this.lastHoveredElement !== null) {
-            const outEvent: PointerEvent = new PointerEvent('pointerout', this. activeEventProps);
-            this.lastHoveredElement.dispatchEvent(outEvent);
-        }
-
-        this.HandleEnterLeaveBehaviour(null);
-        this.lastHoveredElement = null;
-
-        console.log("Resetting lastHoveredElement");
     }
 
     // Collects the stack of parent nodes, ordered from highest (document body) to lowest
