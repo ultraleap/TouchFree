@@ -19,20 +19,20 @@ export class WebInputController extends BaseInputController {
     // to the UI.
     enterLeaveEnabled = true;
 
-    private lastHoveredElement: Element | null = null;
-    private readonly pointerId: number = 0;
-    private readonly baseEventProps: PointerEventInit;
-    private readonly activeEventProps: PointerEventInit;
-    private elementsOnDown: HTMLElement[] | null = null;
-    private scrollElementsOnDown: HTMLElement[] | null = null;
-    private lastPosition: Array<number> | null = null;
-    private scrollDirection: ScrollDirection | undefined = undefined;
-    private elementToScroll: HTMLElement | undefined = undefined;
+    protected lastHoveredElement: Element | null = null;
+    protected readonly pointerId: number = 0;
+    protected readonly baseEventProps: PointerEventInit;
+    protected readonly activeEventProps: PointerEventInit;
+    protected elementsOnDown: HTMLElement[] | null = null;
+    protected scrollElementsOnDown: HTMLElement[] | null = null;
+    protected lastPosition: Array<number> | null = null;
+    protected scrollDirection: ScrollDirection | undefined = undefined;
+    protected elementToScroll: HTMLElement | undefined = undefined;
 
     // Constant: noScrollClassName
     // Any element with this class name in its css class list will be ignored when trying to find
     // the correct element for the WebInputController to scroll
-    private readonly noScrollClassName: string = 'touchfree-no-scroll';
+    protected readonly noScrollClassName: string = 'touchfree-no-scroll';
 
     // Group: Methods
 
@@ -192,21 +192,21 @@ export class WebInputController extends BaseInputController {
         }
     }
 
-    private clickableElementsAtPosition(elements: Element[] | null): HTMLElement[] {
+    protected clickableElementsAtPosition(elements: Element[] | null): HTMLElement[] {
         return (elements ?? [])
             .map((e) => e as HTMLElement)
             .filter((e) => e && !e.classList.contains('touchfreecursor') && !e.classList.contains('touchfree-cursor'));
     }
 
     // Clears information about the current scroll
-    private ResetScrollData(): void {
+    protected ResetScrollData(): void {
         this.scrollElementsOnDown = null;
         this.scrollDirection = undefined;
         this.elementToScroll = undefined;
     }
 
     // Applies scrolling to any elements that should be scrolled
-    private HandleScroll(_position: Array<number>): void {
+    protected HandleScroll(_position: Array<number>): void {
         if (this.scrollElementsOnDown && this.lastPosition) {
             const changeInPositionX = this.lastPosition[0] - _position[0];
             const changeInPositionY = this.lastPosition[1] - _position[1];
@@ -297,7 +297,7 @@ export class WebInputController extends BaseInputController {
     // Gets the element that should have scrolling applied to it.
     // Any elements with the class name listed as noScrollClassName applied will be ignored when
     // finding which element to scroll
-    private GetElementToScroll = (
+    protected GetElementToScroll = (
         scrollValidation: (element: HTMLElement) => boolean,
         parentScrollValidation: (element: HTMLElement, parentElement: HTMLElement) => boolean
     ): HTMLElement | undefined => {
@@ -336,7 +336,7 @@ export class WebInputController extends BaseInputController {
 
     // Gets the stack of elements (topmost->bottommost) at this position and return the first non-
     // cursor element. Depends on all cursor elements being branded with the "cursor" class.
-    private GetTopNonCursorElement(elementsAtPos: Element[] | null): Element | null {
+    protected GetTopNonCursorElement(elementsAtPos: Element[] | null): Element | null {
         let elementAtPos: Element | null = null;
 
         if (elementsAtPos !== null) {
@@ -357,7 +357,7 @@ export class WebInputController extends BaseInputController {
     // Handle sending pointerleave/pointerenter events to the parent stacks
     // These events do not bubble, in order to deliver expected behaviour we must consider
     // the entire stack of elements above our current target in the document tree
-    private HandleEnterLeaveBehaviour(_element: Element | null) {
+    protected HandleEnterLeaveBehaviour(_element: Element | null) {
         const oldParents: Array<Node | null> = this.GetOrderedParents(this.lastHoveredElement);
         const newParents: Array<Node | null> = this.GetOrderedParents(_element);
 
@@ -387,7 +387,7 @@ export class WebInputController extends BaseInputController {
 
     // Collects the stack of parent nodes, ordered from highest (document body) to lowest
     // (the node provided)
-    private GetOrderedParents(_node: Node | null): Array<Node | null> {
+    protected GetOrderedParents(_node: Node | null): Array<Node | null> {
         const parentStack: Array<Node | null> = [_node];
 
         for (; _node; _node = _node.parentNode) {
@@ -399,7 +399,7 @@ export class WebInputController extends BaseInputController {
 
     // Takes two ordered arrays of Nodes (as produced by GetOrderedParents) and identifies the
     // lowest common ancestor of the two sets. Used in HandleMove for identifying the events to send
-    private GetCommonAncestorIndex(oldParents: Array<Node | null>, newParents: Array<Node | null>): number | null {
+    protected GetCommonAncestorIndex(oldParents: Array<Node | null>, newParents: Array<Node | null>): number | null {
         if (oldParents[0] !== newParents[0]) {
             return null;
         }
@@ -415,7 +415,7 @@ export class WebInputController extends BaseInputController {
 
     // Checks if the target element is null and correctly dispatches the provided event to the
     // element or document body appropriately
-    private DispatchToTarget(event: PointerEvent, target: Element | null) {
+    protected DispatchToTarget(event: PointerEvent, target: Element | null) {
         if (target !== null) {
             target.dispatchEvent(event);
         } else {
