@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved reliability of Scrolling with the WebInput Controller
 - Improved reliability of `touchfree-no-scroll` making elements unscrollable (with TouchFree Tooling)
+- Improved reliability of button hover states when a hand is first detected
 
 ## [1.3.0] - 2022-11-23
 
