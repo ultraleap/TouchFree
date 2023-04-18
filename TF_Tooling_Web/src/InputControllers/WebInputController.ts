@@ -1,4 +1,4 @@
-import TouchFree, { EventHandle } from '../TouchFree';
+import TouchFree from '../TouchFree';
 import { TouchFreeInputAction, InputType } from '../TouchFreeToolingTypes';
 import { BaseInputController } from './BaseInputController';
 
@@ -28,8 +28,6 @@ export class WebInputController extends BaseInputController {
     private lastPosition: Array<number> | null = null;
     private scrollDirection: ScrollDirection | undefined = undefined;
     private elementToScroll: HTMLElement | undefined = undefined;
-
-    private HandsLostHandle: EventHandle | undefined;
 
     // Constant: noScrollClassName
     // Any element with this class name in its css class list will be ignored when trying to find
@@ -79,7 +77,6 @@ export class WebInputController extends BaseInputController {
             if (_element !== null) {
                 const overEvent: PointerEvent = new PointerEvent('pointerover', this.activeEventProps);
                 _element.dispatchEvent(overEvent);
-                console.log(`sending PointerOver to ${_element.tagName}`);
             }
 
             if (this.enterLeaveEnabled) {
@@ -426,12 +423,6 @@ export class WebInputController extends BaseInputController {
         } else {
             document.dispatchEvent(event);
         }
-    }
-
-    override disconnect(): void {
-        this.HandsLostHandle?.UnregisterEventCallback();
-
-        super.disconnect();
     }
 }
 
