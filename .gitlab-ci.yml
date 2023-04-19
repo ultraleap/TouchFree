@@ -22,16 +22,20 @@ stages:
   - package
   - installer
   - deploy
-  
+
 .Always_Build:
   stage: build
   when: always
   timeout: 10m
-  
+
 .Always_Test:
   stage: test
   when: always
   timeout: 10m
+
+# Build Stage
+
+## Tooling Build jobs
 
 TF_Tooling::Web::build:
   extends: .Always_Build
@@ -79,6 +83,8 @@ TF_Tooling::Docs::build:
     - ./Documentation/*
     expire_in: 2 weeks
     when: always
+
+## Service Build jobs
 
 TF_Service::Wrapper::build:
   extends: .Always_Build
@@ -189,68 +195,6 @@ Tracking::ARMLinux::download_package:
     - ./Scripts/BrightSign_Scripts/Build_ARM64_Linux_release/*.tar.gz
     expire_in: 1 hour
 
-TF_Service::dotNet::test:
-  extends: .Always_Test
-  tags:
-    - docker-windows
-  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
-  script:
-    # Run unit tests
-    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --results-directory $CI_PROJECT_DIR/TestResults --collect:"XPlat Code Coverage;Format=Cobertura" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
-    - reportgenerator "-reports:$CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml" "-targetdir:TestReports"
-  artifacts:
-    when: always
-    name: "TestResults"
-    paths:
-    - $CI_PROJECT_DIR/TestResults/Test_Results.xml
-    - $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
-    - $CI_PROJECT_DIR/TestReports/
-    reports:
-      junit: $CI_PROJECT_DIR/TestResults/Test_Results.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
-
-TF_Tooling::Web::test:
-  extends: .Always_Test
-  dependencies:
-    - TF_Tooling::Web::build
-  tags:
-    - docker-windows
-  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
-  script:
-    # Run unit tests
-    - cd ${env:TF_TFW_PATH}
-    - npm i
-    - npm run test
-    - npm run test:coverage
-  artifacts:
-    when: always
-    name: "TestResults"
-    paths:
-    - ${env:TF_TFW_PATH}/junit.xml
-    - ${env:TF_TFW_PATH}/coverage/
-    reports:
-      junit: ${env:TF_TFW_PATH}/junit.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: ${env:TF_TFW_PATH}/coverage/cobertura-coverage.xml
-  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-
-pages:
-  stage: deploy
-  dependencies:
-    - TF_Tooling::Web::test
-  script:
-    - mkdir .public
-    - cp ${env:TF_TFW_PATH}/coverage/* .public
-    - mv .public public
-  artifacts:
-    paths:
-      - public
-  only:
-    - develop
-
 TF_Service::Tray::build:
   extends: .Always_Build
   tags:
@@ -271,6 +215,8 @@ TF_Service::Tray::build:
     - ./Service_Tray_Build/**
     expire_in: 2 weeks
     when: always
+
+## Settings Build jobs
 
 TF_Settings::Windows::build:
   extends: .Always_Build
@@ -347,6 +293,8 @@ TF_Settings::Web::build:
     expire_in: 2 weeks
     when: always
 
+## Overlay Build jobs
+
 TouchFree::build:
   extends: .Always_Build
   tags:
@@ -412,6 +360,56 @@ Tracking::download:
     - ./Scripts/Tracking_Build/Tracking_for_TouchFree_*.exe
     expire_in: 1 hour
 
+# Test Stage
+
+TF_Service::dotNet::test:
+  extends: .Always_Test
+  tags:
+    - docker-windows
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-dotnet-toolchain:latest
+  script:
+    # Run unit tests
+    - dotnet test "$CI_PROJECT_DIR/TF_Service_dotNet/TouchFreeTests/TouchFreeTests.csproj" --results-directory $CI_PROJECT_DIR/TestResults --collect:"XPlat Code Coverage;Format=Cobertura" --logger:"junit;LogFilePath=$CI_PROJECT_DIR/TestResults/Test_Results.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
+    - reportgenerator "-reports:$CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml" "-targetdir:TestReports"
+  artifacts:
+    when: always
+    name: "TestResults"
+    paths:
+    - $CI_PROJECT_DIR/TestResults/Test_Results.xml
+    - $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
+    - $CI_PROJECT_DIR/TestReports/
+    reports:
+      junit: $CI_PROJECT_DIR/TestResults/Test_Results.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
+
+TF_Tooling::Web::test:
+  extends: .Always_Test
+  dependencies:
+    - TF_Tooling::Web::build
+  tags:
+    - docker-windows
+  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
+  script:
+    # Run unit tests
+    - cd ${env:TF_TFW_PATH}
+    - npm i
+    - npm run test
+    - npm run test:coverage
+  artifacts:
+    when: always
+    name: "TestResults"
+    paths:
+    - ${env:TF_TFW_PATH}/junit.xml
+    - ${env:TF_TFW_PATH}/coverage/
+    reports:
+      junit: ${env:TF_TFW_PATH}/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: ${env:TF_TFW_PATH}/coverage/cobertura-coverage.xml
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+
 TF_Service::Integration::test:
   extends: .Always_Test
   dependencies:
@@ -432,6 +430,8 @@ TF_Service::Integration::test:
     reports:
       junit: ./Testing/ServiceSocketTests/results/test_results.xml
     when: always
+
+# Package Stage
 
 TF_Tooling::Web::package:
   stage: package
@@ -459,7 +459,6 @@ TF_Tooling::Web::package:
 TF_Service::Windows::package:
   stage: package
   dependencies:
-    - TF_Settings::Windows::build
     - TF_Settings::Web::build
     - TF_Service::dotNet::Windows::build
     - TF_Service::Wrapper::build
@@ -467,7 +466,6 @@ TF_Service::Windows::package:
   needs: [
     "TF_Service::dotNet::Windows::build",
     "TF_Settings::Web::build",
-    "TF_Settings::Windows::build",
     "TF_Service::Wrapper::build",
     "TF_Service::Tray::build"
   ]
@@ -487,12 +485,11 @@ TF_Service::Windows::package:
     - Get-Content "${env:CI_PROJECT_DIR}/Service_dotNet_Build/Version.txt"
 
     - cp -R ./Service_dotNet_Build/* ./Service_Package/Service/
-    - cp -R ./UIBuild/* ./Service_Package/SettingsUI/
+    - cp -R ./TF_Settings_Web/*.exe ./Service_Package/SettingsUI/
     - cp -R ./Service_Wrapper_Build/* ./Service_Package/Wrapper/
     - cp -R ./TF_Settings_Web/dist/* ./Service_Package/Wrapper/wwwroot
     - cp -R ./Service_Tray_Build/* ./Service_Package/Tray/
     - cp -R ./Third_Party_Licenses/* ./Service_Package/Licenses/
-
 
   artifacts:
     name: "TouchFree_Service_Package_${CI_COMMIT_SHORT_SHA}"
@@ -638,6 +635,8 @@ TF_Service::ARMLinux::package:
   tags:
     - docker
 
+# Installer Stage
+
 TouchFree::installer:
   stage: installer
   dependencies:
@@ -666,3 +665,19 @@ TouchFree::installer:
   tags:
     - unity
     - win10
+
+# Deploy Stage
+
+pages:
+  stage: deploy
+  dependencies:
+    - TF_Tooling::Web::test
+  script:
+    - mkdir .public
+    - cp ${env:TF_TFW_PATH}/coverage/* .public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - develop
