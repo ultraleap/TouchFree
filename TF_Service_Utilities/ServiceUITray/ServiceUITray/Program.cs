@@ -35,7 +35,7 @@ namespace ServiceUITray
 
     public class ServiceUITray : ApplicationContext
     {
-        const string SERVICE_SETTINGS_PATH = "../SettingsUI/TouchFreeSettingsUI.exe";
+        const string SERVICE_SETTINGS_PATH = "../SettingsUI/touchfree-settings-web.exe";
         const string APPLICATION_PATH = "../TouchFree/TouchFree.exe";
 
         private NotifyIcon trayIcon;
@@ -76,9 +76,6 @@ namespace ServiceUITray
         {
             if (startedAppProcess != null && !startedAppProcess.HasExited)
             {
-                // Trying to launch the Unity application will force the exsisting one to focus as we use 'Force Single Instance'
-                // LaunchApplication(Path.GetFullPath(APPLICATION_PATH));
-
                 startedAppProcess.Kill();
             }
             else
