@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- TouchFree now installs a Web-based settings UI instead of a Windows one, with improved visuals & functionality
+
 ### Fixed
 - Service will no longer send some classes of message before a successful handshake from a connecting client
 
