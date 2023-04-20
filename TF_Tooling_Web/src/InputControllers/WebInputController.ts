@@ -126,9 +126,11 @@ export class WebInputController extends BaseInputController {
                 const cancelEvent: PointerEvent = new PointerEvent('pointercancel', this.activeEventProps);
                 const outEvent: PointerEvent = new PointerEvent('pointerout', this.activeEventProps);
 
-                if (this.lastHoveredElement !== null && this.lastHoveredElement !== elementAtPos) {
+                if (this.lastHoveredElement !== null) {
                     this.lastHoveredElement.dispatchEvent(cancelEvent);
                     this.lastHoveredElement.dispatchEvent(outEvent);
+
+                    this.lastHoveredElement = null;
                 }
 
                 const elementOnDown = this.GetTopNonCursorElement(this.elementsOnDown);
