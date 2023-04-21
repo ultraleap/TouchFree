@@ -1,3 +1,9 @@
 [submodule "submodules/UnityPlugin"]
 	path = submodules/UnityPlugin
 	url = https://github.com/ultraleap/UnityPlugin.git
+[submodule "submodules/TouchFreeWebTooling"]
+	path = submodules/TouchFreeWebTooling
+	url = https://github.com/ultraleap/TouchFreeWebTooling.git
+[submodule "submodules/TouchFreeUnityTooling"]
+	path = submodules/TouchFreeUnityTooling
+	url = https://github.com/ultraleap/TouchFreeUnityTooling.git

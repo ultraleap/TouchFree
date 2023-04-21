@@ -28,10 +28,9 @@ _These tasks are for the pull request creator to tick off._
 - [ ] XDR review (optional depending on work type)
 - [ ] QA review (or another developer if no QA is available)
 - [ ] Ensure documentation requirements are met e.g., public API is commented
-- [ ] Relevant changelogs have been updated with user-visible changes
+- [ ] Changelog updated with user-visible changes
     - [ ] [TouchFree Windows](/ultraleap/touchfree/blob/-/CHANGELOG-windows.md)
     - [ ] [TouchFree BrightSign](/ultraleap/touchfree/blob/-/CHANGELOG-brightsign.md)
-    - [ ] [TouchFree Web Tooling](/ultraleap/touchfree/blob/-/TF_Tooling_Web/CHANGELOG.md)
 - [ ] Consider any licensing/other legal implications e.g., notices required
 
 If there is an associated JIRA issue:
