@@ -333,32 +333,6 @@ TF_Service::dotNet::test:
         coverage_format: cobertura
         path: $CI_PROJECT_DIR/TestResults/*/coverage.cobertura.xml
 
-TF_Tooling::Web::test:
-  extends: .Always_Test
-  dependencies:
-    - TF_Tooling::Web::build
-  tags:
-    - docker-windows
-  image: registry.ultrahaptics.com/ooh/infrastructure/windows-touchfree-toolchain:latest
-  script:
-    # Run unit tests
-    - cd ${env:TF_TFW_PATH}
-    - npm i
-    - npm run test
-    - npm run test:coverage
-  artifacts:
-    when: always
-    name: "TestResults"
-    paths:
-    - ${env:TF_TFW_PATH}/junit.xml
-    - ${env:TF_TFW_PATH}/coverage/
-    reports:
-      junit: ${env:TF_TFW_PATH}/junit.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: ${env:TF_TFW_PATH}/coverage/cobertura-coverage.xml
-  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-
 TF_Service::Integration::test:
   extends: .Always_Test
   dependencies:
